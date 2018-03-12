@@ -19,12 +19,16 @@ keterangan_list = ['begitu','begini','demikian','perlahan','cepat','lena','akan'
 arah_list = ['atas','bawah','tepi','antara','hadapan','utara','sisi','luar']
 hubung_list = ['agar','apabila','atau','bahawa','dan','hingga','jika','jikalau','kecuali','kerana',
                'lalu','manakala','sambil','serta','semenjak','sementara','sungguhpun','supaya','walaupun','tetapi']
+gantinama_list = ['aku','saya','hamba','patik','beta','kami','kita','anda','awak','engkau','tuanku','kalian',
+                  'kamu','baginda','beliau','mereka']
 
-permulaan = ['ber','bel','be','ke','se','ter','men','pen','per','memper','di','pe','me']
-hujung = ['an','wan','wati','ita','kan','nya', 'kah','lah','tah']
+# pos permulaan[:-1]
+permulaan = ['ber','bel','be','se','ter','men','pen','per','memper','di','pe','me','ke']
+# pos hujung [:1]
+hujung = ['kan', 'kah','lah','tah','nya','an','wan','wati','ita']
 alphabet = 'qwertyuiopasdfghjklzxcvbnm'
 
 tatabahasa_dict = {'KT':tanya_list,'KP':perintah_list,'KPA':pangkal_list,'KB':bantu_list,'KPENGUAT':penguat_list,
                    'KPENEGAS':penegas_list,'KN':nafi_list, 'KPEMERI':pemeri_list,'KS':sendi_list,'KPEMBENAR':pembenar_list,
                    'NO':nombor_list,'SUKU':suku_bilangan_list,'PISAHAN':pisahan_list,'KETERANGAN':keterangan_list,
-                   'ARAH':arah_list,'KH':hubung_list}
+                   'ARAH':arah_list,'KH':hubung_list,'GN':gantinama_list}

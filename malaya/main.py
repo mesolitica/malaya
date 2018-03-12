@@ -5,7 +5,7 @@ from fuzzywuzzy import fuzz
 from nltk.tokenize import sent_tokenize, word_tokenize
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.feature_extraction.text import TfidfTransformer
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn import metrics
 from sklearn.cross_validation import train_test_split
 from unidecode import unidecode
@@ -14,24 +14,47 @@ from tatabahasa import *
 
 stopword_tatabahasa = list(set(tanya_list+perintah_list+pangkal_list+bantu_list+penguat_list+\
                 penegas_list+nafi_list+pemeri_list+sendi_list+pembenar_list+nombor_list+\
-                suku_bilangan_list+pisahan_list+keterangan_list+arah_list+hubung_list))
+                suku_bilangan_list+pisahan_list+keterangan_list+arah_list+hubung_list+gantinama_list))
 
 with open('stop-word-kerulnet','r') as fopen:
     stopword_kerulnet = fopen.read().split()
     
 USER_BAYES = None
 USER_NORMALIZE = None
+VECTORIZE = None
     
 def tokenizer(string):
     return [word_tokenize(t) for t in sent_tokenize(s)]
 
-def stemming(string):
+def naive_POS(word):
+    for key, vals in tatabahasa_dict:
+        if word in vals:
+            return (key,word)
     try:
-        string = re.findall(r'^(.*?)(%s)$'%('|'.join(hujung)), string)[0][0]
-        mula = re.findall(r'^(.*?)(%s)'%('|'.join(permulaan)), string)[0][1]
-        return string.replace(mula,'')
+        if len(re.findall(r'^(.*?)(%s)$'%('|'.join(hujung[:1])), i)[0]) > 1:
+            return ('KJ',word)
     except:
-        return string
+        return ('KN',word)
+    try:
+        if len(re.findall(r'^(.*?)(%s)'%('|'.join(permulaan[:-1])), word)[0]) > 1:
+            return ('KJ',word)
+    except:
+        return ('KN',word)
+    return ('KN',word)
+
+def naive_POS_string(string):
+    results = []
+    for i in word_tokenize(string):
+        results.append(naive_POS(i))
+    return results
+
+def stemming(word):
+    try:
+        word = re.findall(r'^(.*?)(%s)$'%('|'.join(hujung)), word)[0][0]
+        mula = re.findall(r'^(.*?)(%s)'%('|'.join(permulaan)), word)[0][1]
+        return word.replace(mula,'')
+    except:
+        return word
     
 def clearstring(string,tokenize=True):
     string = unidecode(string)
@@ -91,9 +114,12 @@ def train_bayes(corpus,tokenizing=True,cleaning=True,normalizing=True,stem=True,
         for i in range(len(trainset.data)): trainset.data[i] = ' '.join([stemming(k) for k in trainset.data[i].split()])
     if cleaning: 
         for i in range(len(trainset.data)): trainset.data[i] = clearstring(trainset.data[i],tokenizing)
-    vectors = CountVectorizer().fit_transform(trainset.data)
     if vector.lower().find('tfidf') >= 0:
-        vectors = TfidfTransformer().fit_transform(vectors)
+        VECTORIZE = TfidfVectorizer().fit(trainset.data)
+        vectors = VECTORIZE.transform(trainset.data)
+    else:
+        VECTORIZE = CountVectorizer().fit(trainset.data)
+        vectors = VECTORIZE.transform(trainset.data)
     USER_BAYES = MultinomialNB()
     if split:
         train_X, test_X, train_Y, test_Y = train_test_split(vectors, trainset.target, test_size = split)
@@ -103,4 +129,10 @@ def train_bayes(corpus,tokenizing=True,cleaning=True,normalizing=True,stem=True,
     else:
         USER_BAYES.partial_fit(vectors, trainset.target)
         predicted = USER_BAYES.predict(vectors)
-        print(metrics.classification_report(trainset.target, predicted, target_names = trainset.target_names)) 
+        print(metrics.classification_report(trainset.target, predicted, target_names = trainset.target_names))
+        
+def classify_bayes(string):
+    if USER_BAYES is None or VECTORIZE is None:
+        raise Exception('you need to train the classifier first, train_bayes')
+    vectors = VECTORIZE.transform([string])
+    return USER_BAYES.predict(vectors)[0]
