@@ -21,11 +21,10 @@ pip3 install sklearn fuzzywuzzy nltk unidecode numpy scipy
 - [x] stemming
 - [x] tatabahasa gathering
 - [x] Multinomial naive bayes
-- [x] Naive POS
+- [x] Naive Part-Of-Speech
+- [x] number to words (currency, numbers, position, year)
 - [ ] stopwords
 - [ ] normalizer
-- [ ] number to word
-- [ ] money to word
 - [ ] corpus gathering
 - [ ] top-k hot topic
 
