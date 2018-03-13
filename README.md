@@ -24,13 +24,16 @@ pip3 install sklearn fuzzywuzzy nltk unidecode numpy scipy
 - [x] Naive Part-Of-Speech
 - [x] number to words (currency, numbers, position, year)
 - [ ] stopwords
-- [ ] normalizer
+- [x] normalizer (pre-train, self-train)
 - [ ] corpus gathering
 - [ ] top-k hot topic
+- [ ] sentiment analysis
+- [ ] word-vector
+- [ ] bahasa malaysia checker
 
 ## Warning
 
-There is no type checking, no assert.
+There is no type checking, no assert. Still on development process.
 
 ## Disclaimer
 

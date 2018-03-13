@@ -21,6 +21,7 @@ with open('stop-word-kerulnet','r') as fopen:
     
 USER_BAYES = None
 USER_NORMALIZE = None
+USER_NORMALIZE_CORPUS = None
 VECTORIZE = None
     
 def tokenizer(string):
@@ -85,7 +86,36 @@ def basic_normalize(string):
             result.append(i)
     return ' '.join(result)
 
-#def train_normalize(corpus)
+def train_normalize(corpus):
+    if not isinstance(corpus, list) or not isinstance(corpus, tuple):
+        raise Exception('a list or a tuple of word needed for the corpus')
+    transform = []
+    for i in corpus:
+        i = i.lower()
+        result = []
+        result.append(''.join(char for char in i if char not in 'aeiou'))
+        if i[-1] == 'a':
+            result.append(i[:-1]+'e')
+            result.append(i+'k')
+        if i[-2:] == 'ar':
+            result.append(i[:-2]+'o')
+        if i[:2] == 'ha':
+            result.append(i[1:])
+        transform.append(result)
+    USER_NORMALIZE = transform
+    USER_NORMALIZE_CORPUS = corpus
+    print('done caching')
+    
+def user_normalize(string):
+    if USER_NORMALIZE is None:
+        raise Exception('you need to train the normalizer first, train_normalize')
+    results = []
+    for i in range(len(USER_NORMALIZE)):
+        total = 0
+        for k in USER_NORMALIZE[i]: results += fuzz.ratio(string, k)
+        results.append(total)
+    ids = np.argmax(results)
+    return USER_NORMALIZE_CORPUS[ids]
 
 def separate_dataset(trainset):
     datastring = []
