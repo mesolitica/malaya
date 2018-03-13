@@ -2,6 +2,7 @@
 NLTK like for bahasa Malaysia
 
 ## Requirements
+  * Python >= 3.0
   * NumPy >= 1.0
   * Sklearn >= 0.18
   * Fuzzywuzzy
@@ -11,8 +12,25 @@ NLTK like for bahasa Malaysia
 
 ## Installation
 
+1. Install dependencies
 ```bash
-pip3 install sklearn fuzzywuzzy nltk unidecode numpy scipy
+pip3 install sklearn fuzzywuzzy nltk unidecode numpy scipy python-levenshtein
+```
+
+```python
+import nltk
+nltk.download('punkt')
+```
+
+2. Clone this repository
+```bash
+git clone https://github.com/DevconX/Malaya
+```
+
+3. copy Malaya/malaya to any local folder directories.
+4. Import.
+```python
+import malaya
 ```
 
 ## To do
@@ -28,7 +46,7 @@ pip3 install sklearn fuzzywuzzy nltk unidecode numpy scipy
 - [ ] corpus gathering
 - [ ] top-k hot topic
 - [ ] sentiment analysis
-- [ ] word-vector
+- [ ] semantic searching
 - [ ] bahasa malaysia checker
 
 ## Example
@@ -88,6 +106,12 @@ malaya.user_normalize('srious')
 ## Warning
 
 There is no type checking, no assert. Still on development process.
+
+Part Of Speech will not yet binded with any corpuses, I still having a problem with Dewan Pustaka.
+
+Also, I cannot released primary corpuses for sentiment analysis and normalizer YET because got corporate issues.
+
+Documentation will be released soon.
 
 ## Disclaimer
 
