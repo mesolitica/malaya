@@ -28,7 +28,7 @@ errmsg_negord = "Cannot treat negative number as ordinal"
 errmsg_toobig = "Too large"
 max_num = 10 ** 36
 
-def verify_ordinal(self, value):
+def verify_ordinal(value):
     if not value == int(value):
         raise TypeError(errmsg_floatord % value)
     if not abs(value) == value:
@@ -45,7 +45,7 @@ def ratus(number):
     else:
         return BASE[int(number)] + ['ratus']
 
-def puluh(self, number):
+def puluh(number):
     if number[0] == '1':
         if number[1] == '0':
             return ['sepuluh']
@@ -56,7 +56,7 @@ def puluh(self, number):
     elif number[0] == '0':
         return BASE[int(number[1])]
     else:
-        return (BASE[int(number[0])] + ['puluh']BASE[int(number[1])])
+        return (BASE[int(number[0])] + ['puluh']+BASE[int(number[1])])
 
 def split_by_3(number):
     blocks = ()
@@ -96,10 +96,10 @@ def spell_float(float_part):
         if n == '0':
             word_list += ['nol']
             continue
-        word_list += self.BASE[int(n)]
+        word_list += BASE[int(n)]
     return ' '.join(['', 'koma'] + word_list)
 
-def join(self, word_blocks, float_part):
+def join(word_blocks, float_part):
     word_list = []
     length = len(word_blocks) - 1
     first_block = word_blocks[0],

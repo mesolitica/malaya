@@ -15,15 +15,15 @@ suku_bilangan_list = ['per','suku','setengah','separuh','tiga suku']
 pisahan_list = ['setiap','tiap']
 keterangan_list = ['begitu','begini','demikian','perlahan','cepat','lena','akan','sedang','belum',
                    'telah','sekarang','sebentar','semalam','mungkin','agak','barangkali','pasti','tentu',
-                   'sudah','selalu','kadang','acapkali','sesekali']
+                   'sudah','selalu','kadang','acapkali','sesekali','yang']
 arah_list = ['atas','bawah','tepi','antara','hadapan','utara','sisi','luar']
 hubung_list = ['agar','apabila','atau','bahawa','dan','hingga','jika','jikalau','kecuali','kerana',
                'lalu','manakala','sambil','serta','semenjak','sementara','sungguhpun','supaya','walaupun','tetapi']
 gantinama_list = ['aku','saya','hamba','patik','beta','kami','kita','anda','awak','engkau','tuanku','kalian',
                   'kamu','baginda','beliau','mereka']
 
-# pos permulaan[:-1]
-permulaan = ['ber','bel','be','se','ter','men','pen','per','memper','di','pe','me','ke']
+# pos permulaan[:-4]
+permulaan = ['bel','be','se','ter','men','memper','di','pe','me','ke','ber','pen','per']
 # pos hujung [:1]
 hujung = ['kan', 'kah','lah','tah','nya','an','wan','wati','ita']
 alphabet = 'qwertyuiopasdfghjklzxcvbnm'

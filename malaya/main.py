@@ -1,4 +1,5 @@
 import re
+import os
 import numpy as np
 import sklearn.datasets
 from fuzzywuzzy import fuzz
@@ -6,44 +7,54 @@ from nltk.tokenize import sent_tokenize, word_tokenize
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.preprocessing import LabelEncoder
 from sklearn import metrics
 from sklearn.cross_validation import train_test_split
 from unidecode import unidecode
 import random
-from tatabahasa import *
+from .tatabahasa import *
 
 stopword_tatabahasa = list(set(tanya_list+perintah_list+pangkal_list+bantu_list+penguat_list+\
                 penegas_list+nafi_list+pemeri_list+sendi_list+pembenar_list+nombor_list+\
                 suku_bilangan_list+pisahan_list+keterangan_list+arah_list+hubung_list+gantinama_list))
 
-with open('stop-word-kerulnet','r') as fopen:
+LOC = os.path.dirname(os.path.abspath(__file__))
+with open(LOC+'/stop-word-kerulnet','r') as fopen:
     stopword_kerulnet = fopen.read().split()
     
-USER_BAYES = None
-USER_NORMALIZE = None
-USER_NORMALIZE_CORPUS = None
-VECTORIZE = None
+class USER_BAYES:
+    multinomial = None
+    label = None
+    vectorize = None
+    
+class NORMALIZE:
+    user = None
+    corpus = None
     
 def tokenizer(string):
     return [word_tokenize(t) for t in sent_tokenize(s)]
 
 def naive_POS(word):
-    for key, vals in tatabahasa_dict:
+    for key, vals in tatabahasa_dict.items():
         if word in vals:
             return (key,word)
     try:
         if len(re.findall(r'^(.*?)(%s)$'%('|'.join(hujung[:1])), i)[0]) > 1:
             return ('KJ',word)
     except:
-        return ('KN',word)
+        pass
     try:
-        if len(re.findall(r'^(.*?)(%s)'%('|'.join(permulaan[:-1])), word)[0]) > 1:
+        if len(re.findall(r'^(.*?)(%s)'%('|'.join(permulaan[:-4])), word)[0]) > 1:
             return ('KJ',word)
-    except:
+    except Exception as e:
+        pass
+    if len(word) > 2:
         return ('KN',word)
-    return ('KN',word)
+    else:
+        return ('',word)
 
 def naive_POS_string(string):
+    string = string.lower()
     results = []
     for i in word_tokenize(string):
         results.append(naive_POS(i))
@@ -52,7 +63,7 @@ def naive_POS_string(string):
 def stemming(word):
     try:
         word = re.findall(r'^(.*?)(%s)$'%('|'.join(hujung)), word)[0][0]
-        mula = re.findall(r'^(.*?)(%s)'%('|'.join(permulaan)), word)[0][1]
+        mula = re.findall(r'^(.*?)(%s)'%('|'.join(permulaan[::-1])), word)[0][1]
         return word.replace(mula,'')
     except:
         return word
@@ -87,7 +98,7 @@ def basic_normalize(string):
     return ' '.join(result)
 
 def train_normalize(corpus):
-    if not isinstance(corpus, list) or not isinstance(corpus, tuple):
+    if not isinstance(corpus, list) and not isinstance(corpus, tuple):
         raise Exception('a list or a tuple of word needed for the corpus')
     transform = []
     for i in corpus:
@@ -101,21 +112,24 @@ def train_normalize(corpus):
             result.append(i[:-2]+'o')
         if i[:2] == 'ha':
             result.append(i[1:])
+        splitted_double = i.split('-')
+        if len(splitted_double) > 1 and splitted_double[0] == splitted_double[1]:
+            result.append(splitted_double[0]+'2')
         transform.append(result)
-    USER_NORMALIZE = transform
-    USER_NORMALIZE_CORPUS = corpus
-    print('done caching')
+    NORMALIZE.user = transform
+    NORMALIZE.corpus = corpus
+    print('done train normalizer')
     
 def user_normalize(string):
-    if USER_NORMALIZE is None:
+    if NORMALIZE.user is None or NORMALIZE.corpus is None:
         raise Exception('you need to train the normalizer first, train_normalize')
     results = []
-    for i in range(len(USER_NORMALIZE)):
+    for i in range(len(NORMALIZE.user)):
         total = 0
-        for k in USER_NORMALIZE[i]: results += fuzz.ratio(string, k)
+        for k in NORMALIZE.user[i]: total += fuzz.ratio(string, k)
         results.append(total)
     ids = np.argmax(results)
-    return USER_NORMALIZE_CORPUS[ids]
+    return NORMALIZE.corpus[ids]
 
 def separate_dataset(trainset):
     datastring = []
@@ -134,35 +148,45 @@ def train_bayes(corpus,tokenizing=True,cleaning=True,normalizing=True,stem=True,
     if isinstance(corpus, str):
         trainset = sklearn.datasets.load_files(container_path = corpus, encoding = 'UTF-8')
         trainset.data, trainset.target = separate_dataset(trainset)
+        data, target = trainset.data, trainset.target
+        labels = trainset.target_names
+        USER_BAYES.label = labels
     if isinstance(corpus, list) or isinstance(corpus, tuple):
         corpus = np.array(corpus)
-        trainset.data, trainset.target = corpus[:,0].tolist(),corpus[:,1].tolist()
-    c = list(zip(trainset.data, trainset.target))
+        data, target = corpus[:,0].tolist(),corpus[:,1].tolist()
+        labels = np.unique(target).tolist()
+        USER_BAYES.label = labels
+        target = LabelEncoder().fit_transform(target)
+    c = list(zip(data, target))
     random.shuffle(c)
-    trainset.data, trainset.target = zip(*c)
+    data, target = zip(*c)
+    data, target = list(data), list(target)
     if stem: 
-        for i in range(len(trainset.data)): trainset.data[i] = ' '.join([stemming(k) for k in trainset.data[i].split()])
+        for i in range(len(data)): data[i] = ' '.join([stemming(k) for k in data[i].split()])
     if cleaning: 
-        for i in range(len(trainset.data)): trainset.data[i] = clearstring(trainset.data[i],tokenizing)
+        for i in range(len(data)): data[i] = clearstring(data[i],tokenizing)
     if vector.lower().find('tfidf') >= 0:
-        VECTORIZE = TfidfVectorizer().fit(trainset.data)
-        vectors = VECTORIZE.transform(trainset.data)
+        USER_BAYES.vectorize = TfidfVectorizer().fit(data)
+        vectors = USER_BAYES.vectorize.transform(data)
     else:
-        VECTORIZE = CountVectorizer().fit(trainset.data)
-        vectors = VECTORIZE.transform(trainset.data)
-    USER_BAYES = MultinomialNB()
+        USER_BAYES.vectorize = CountVectorizer().fit(data)
+        vectors = USER_BAYES.vectorize.transform(data)
+    USER_BAYES.multinomial = MultinomialNB()
     if split:
-        train_X, test_X, train_Y, test_Y = train_test_split(vectors, trainset.target, test_size = split)
-        USER_BAYES.partial_fit(train_X, train_Y)
-        predicted = USER_BAYES.predict(test_X)
-        print(metrics.classification_report(test_Y, predicted, target_names = trainset.target_names))
+        train_X, test_X, train_Y, test_Y = train_test_split(vectors, target, test_size = split)
+        USER_BAYES.multinomial.partial_fit(train_X, train_Y,classes=np.unique(target))
+        predicted = USER_BAYES.multinomial.predict(test_X)
+        print(metrics.classification_report(test_Y, predicted, target_names = labels))
     else:
-        USER_BAYES.partial_fit(vectors, trainset.target)
-        predicted = USER_BAYES.predict(vectors)
-        print(metrics.classification_report(trainset.target, predicted, target_names = trainset.target_names))
+        USER_BAYES.multinomial.partial_fit(vectors,target,classes=np.unique(target))
+        predicted = USER_BAYES.multinomial.predict(vectors)
+        print(metrics.classification_report(target, predicted, target_names = labels))
         
 def classify_bayes(string):
-    if USER_BAYES is None or VECTORIZE is None:
+    if USER_BAYES.multinomial is None or USER_BAYES.vectorize is None:
         raise Exception('you need to train the classifier first, train_bayes')
-    vectors = VECTORIZE.transform([string])
-    return USER_BAYES.predict(vectors)[0]
+    vectors = USER_BAYES.vectorize.transform([string])
+    results = USER_BAYES.multinomial.predict_proba(vectors)[0]
+    for no, i in enumerate(USER_BAYES.label):
+        print('%s: %f'%(i,results[no]))
+    
