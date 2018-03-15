@@ -46,7 +46,7 @@ import malaya
 - [ ] corpus gathering
 - [ ] top-k hot topic
 - [ ] sentiment analysis
-- [ ] semantic searching
+- [x] semantic and similar words searching
 - [ ] bahasa malaysia checker
 
 ## Example

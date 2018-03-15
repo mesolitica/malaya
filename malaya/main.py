@@ -21,16 +21,16 @@ stopword_tatabahasa = list(set(tanya_list+perintah_list+pangkal_list+bantu_list+
 LOC = os.path.dirname(os.path.abspath(__file__))
 with open(LOC+'/stop-word-kerulnet','r') as fopen:
     stopword_kerulnet = fopen.read().split()
-    
+
 class USER_BAYES:
     multinomial = None
     label = None
     vectorize = None
-    
+
 class NORMALIZE:
     user = None
     corpus = None
-    
+
 def tokenizer(string):
     return [word_tokenize(t) for t in sent_tokenize(s)]
 
@@ -67,7 +67,7 @@ def stemming(word):
         return word.replace(mula,'')
     except:
         return word
-    
+
 def clearstring(string,tokenize=True):
     string = unidecode(string)
     string = re.sub('^[ivxlcmIVXLCM]+','',string)
@@ -76,7 +76,7 @@ def clearstring(string,tokenize=True):
     string = filter(None, string)
     string = [y.strip() for y in string]
     return ' '.join(string).lower()
-    
+
 def variant(word):
     word = word.lower()
     splits = [(word[:i], word[i:]) for i in range(len(word)+1)]
@@ -119,7 +119,7 @@ def train_normalize(corpus):
     NORMALIZE.user = transform
     NORMALIZE.corpus = corpus
     print('done train normalizer')
-    
+
 def user_normalize(string):
     if NORMALIZE.user is None or NORMALIZE.corpus is None:
         raise Exception('you need to train the normalizer first, train_normalize')
@@ -161,9 +161,9 @@ def train_bayes(corpus,tokenizing=True,cleaning=True,normalizing=True,stem=True,
     random.shuffle(c)
     data, target = zip(*c)
     data, target = list(data), list(target)
-    if stem: 
+    if stem:
         for i in range(len(data)): data[i] = ' '.join([stemming(k) for k in data[i].split()])
-    if cleaning: 
+    if cleaning:
         for i in range(len(data)): data[i] = clearstring(data[i],tokenizing)
     if vector.lower().find('tfidf') >= 0:
         USER_BAYES.vectorize = TfidfVectorizer().fit(data)
@@ -181,12 +181,13 @@ def train_bayes(corpus,tokenizing=True,cleaning=True,normalizing=True,stem=True,
         USER_BAYES.multinomial.partial_fit(vectors,target,classes=np.unique(target))
         predicted = USER_BAYES.multinomial.predict(vectors)
         print(metrics.classification_report(target, predicted, target_names = labels))
-        
+
 def classify_bayes(string):
     if USER_BAYES.multinomial is None or USER_BAYES.vectorize is None:
         raise Exception('you need to train the classifier first, train_bayes')
     vectors = USER_BAYES.vectorize.transform([string])
     results = USER_BAYES.multinomial.predict_proba(vectors)[0]
+    out = []
     for no, i in enumerate(USER_BAYES.label):
-        print('%s: %f'%(i,results[no]))
-    
+        out.append((i,results[no]))
+    return out
