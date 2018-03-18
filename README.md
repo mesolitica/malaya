@@ -141,7 +141,7 @@ malaya.semantic_search('najib')
  (7, 'restoran'),
  (8, 'stres'),
  (9, 'terhasil')]
-
+```
 
 ## Warning
 
