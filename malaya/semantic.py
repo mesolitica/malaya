@@ -6,7 +6,10 @@ import numpy as np
 from nltk.tokenize import word_tokenize
 from fuzzywuzzy import fuzz
 from unidecode import unidecode
+import itertools
 import random
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 data_index = 0
 
 class VECTORIZE:
@@ -106,7 +109,7 @@ def train_vector(corpus, count_neighbors,iteration=10000,checkpoint=1000,dimensi
     VECTORIZE.vectors = sess.run(model.normalized_embeddings)
     VECTORIZE.cosine = NearestNeighbors(count_neighbors, metric='cosine').fit(VECTORIZE.vectors)
     VECTORIZE.euclidean = NearestNeighbors(count_neighbors, metric='euclidean').fit(VECTORIZE.vectors)
-    VECTORIZE.keys = list(VECTORIZE.dictionary.keys())
+    VECTORIZE.keys = list(VECTORIZE.dictionary.values())
     print("done train")
 
 def semantic_search(word):
