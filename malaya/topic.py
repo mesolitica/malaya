@@ -40,7 +40,7 @@ def topic_lda(len_topic):
         results.append((no, " ".join([TOPIC.tf_features[i] for i in topic.argsort()[:-len_topic -1:-1]])))
     return results
 
-def train_nmf(corpus,n_topics=10, max_df=0.95, min_df=2,cleaning=clearstring,stop_words='english'):
+def train_nmf(corpus,n_topics=10, max_df=0.95, min_df=2,cleaning=None,stop_words='english'):
     if cleaning is not None:
         for i in range(len(corpus)): corpus[i] = clearstring(corpus[i])
     tfidf_vectorizer = TfidfVectorizer(max_df = max_df, min_df = min_df, stop_words = stop_words)
@@ -56,7 +56,7 @@ def topic_nmf(len_topic):
         results.append((no, " ".join([TOPIC.tfidf_features[i] for i in topic.argsort()[:-len_topic -1:-1]])))
     return results
 
-def train_lsa(corpus,n_topics, max_df=0.95, min_df=2,cleaning=clearstring,stop_words='english'):
+def train_lsa(corpus,n_topics, max_df=0.95, min_df=2,cleaning=None,stop_words='english'):
     tfidf_vectorizer = TfidfVectorizer(max_df = max_df, min_df = min_df, stop_words = stop_words)
     tfidf = tfidf_vectorizer.fit_transform(corpus)
     TOPIC.tfidf_features = tfidf_vectorizer.get_feature_names()
