@@ -27,10 +27,9 @@ nltk.download('punkt')
 git clone https://github.com/DevconX/Malaya
 ```
 
-3. copy Malaya/malaya to any local folder directories.
-4. Import.
-```python
-import malaya
+3. install using setup.py
+```bash
+python3 setup.py install
 ```
 
 ## To do
@@ -190,6 +189,8 @@ malaya.topic_lsa(10)
 ```
 
 ## Warning
+
+Install this library with fully aware that this library is still in alpha stage.
 
 There is no type checking, no assert. Still on development process.
 
