@@ -3,6 +3,7 @@ NLTK like for bahasa Malaysia
 
 ## Requirements
   * Python >= 3.0
+  * Tensorflow >= 1.3
   * NumPy >= 1.0
   * Sklearn >= 0.18
   * Fuzzywuzzy
@@ -14,7 +15,7 @@ NLTK like for bahasa Malaysia
 
 1. Install dependencies
 ```bash
-pip3 install sklearn fuzzywuzzy nltk unidecode numpy scipy python-levenshtein
+pip3 install sklearn fuzzywuzzy nltk unidecode numpy scipy python-levenshtein tensorflow==1.3
 ```
 
 ```python
