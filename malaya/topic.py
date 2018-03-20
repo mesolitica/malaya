@@ -24,7 +24,7 @@ def clearstring(string):
     string = ' '.join(string).lower()
     return ''.join(''.join(s)[:2] for _, s in itertools.groupby(string))
 
-def train_lda(corpus,n_topics=10, max_df=0.95, min_df=2,cleaning=clearstring,stop_words='english'):
+def train_lda(corpus,n_topics=10, max_df=0.95, min_df=2,cleaning=None,stop_words='english'):
     if cleaning is not None:
         for i in range(len(corpus)): corpus[i] = clearstring(corpus[i])
     tf_vectorizer = CountVectorizer(max_df=max_df, min_df=min_df, stop_words=stop_words)
