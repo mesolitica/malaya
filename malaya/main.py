@@ -19,8 +19,8 @@ stopword_tatabahasa = list(set(tanya_list+perintah_list+pangkal_list+bantu_list+
                 suku_bilangan_list+pisahan_list+keterangan_list+arah_list+hubung_list+gantinama_list))
 
 LOC = os.path.dirname(os.path.abspath(__file__))
-with open(LOC+'/stop-word-kerulnet','r') as fopen:
-    stopword_kerulnet = fopen.read().split()
+#with open(LOC+'/stop-word-kerulnet','r') as fopen:
+#    stopword_kerulnet = fopen.read().split()
 
 class USER_BAYES:
     multinomial = None
