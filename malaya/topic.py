@@ -24,14 +24,14 @@ def clearstring(string):
     string = ' '.join(string).lower()
     return ''.join(''.join(s)[:2] for _, s in itertools.groupby(string))
 
-def train_lda(corpus,n_topics=10, max_df=0.95, min_df=2,cleaning=None,stop_words='english'):
+def train_lda(corpus,n_topics=10, max_df=0.95, min_df=2,cleaning=clearstring,stop_words='english'):
     if cleaning is not None:
-        for i in range(len(corpus)): corpus[i] = clearstring(corpus[i])
+        for i in range(len(corpus)): corpus[i] = cleaning(corpus[i])
     tf_vectorizer = CountVectorizer(max_df=max_df, min_df=min_df, stop_words=stop_words)
     tf = tf_vectorizer.fit_transform(corpus)
     TOPIC.tf_features = tf_vectorizer.get_feature_names()
     TOPIC.lda = LatentDirichletAllocation(n_topics=n_topics, max_iter = 5, learning_method = 'online', learning_offset=50., random_state=0).fit(tf)
-    
+
 def topic_lda(len_topic):
     if TOPIC.lda is None or TOPIC.tf_features is None:
         raise Exception('you need to train LDA first, train_lda')
@@ -40,14 +40,14 @@ def topic_lda(len_topic):
         results.append((no, " ".join([TOPIC.tf_features[i] for i in topic.argsort()[:-len_topic -1:-1]])))
     return results
 
-def train_nmf(corpus,n_topics=10, max_df=0.95, min_df=2,cleaning=None,stop_words='english'):
+def train_nmf(corpus,n_topics=10, max_df=0.95, min_df=2,cleaning=clearstring,stop_words='english'):
     if cleaning is not None:
-        for i in range(len(corpus)): corpus[i] = clearstring(corpus[i])
+        for i in range(len(corpus)): corpus[i] = cleaning(corpus[i])
     tfidf_vectorizer = TfidfVectorizer(max_df = max_df, min_df = min_df, stop_words = stop_words)
     tfidf = tfidf_vectorizer.fit_transform(corpus)
     TOPIC.tfidf_features = tfidf_vectorizer.get_feature_names()
     TOPIC.nmf = NMF(n_components=n_topics, random_state = 1, alpha =.1, l1_ratio=.5, init = 'nndsvd').fit(tfidf)
-    
+
 def topic_nmf(len_topic):
     if TOPIC.lda is None or TOPIC.tfidf_features is None:
         raise Exception('you need to train NMF first, train_nmf')
@@ -56,13 +56,15 @@ def topic_nmf(len_topic):
         results.append((no, " ".join([TOPIC.tfidf_features[i] for i in topic.argsort()[:-len_topic -1:-1]])))
     return results
 
-def train_lsa(corpus,n_topics, max_df=0.95, min_df=2,cleaning=None,stop_words='english'):
+def train_lsa(corpus,n_topics, max_df=0.95, min_df=2,cleaning=clearstring,stop_words='english'):
+    if cleaning is not None:
+        for i in range(len(corpus)): corpus[i] = cleaning(corpus[i])
     tfidf_vectorizer = TfidfVectorizer(max_df = max_df, min_df = min_df, stop_words = stop_words)
     tfidf = tfidf_vectorizer.fit_transform(corpus)
     TOPIC.tfidf_features = tfidf_vectorizer.get_feature_names()
     tfidf = Normalizer().fit_transform(tfidf)
     TOPIC.lsa = TruncatedSVD(n_topics).fit(tfidf)
-    
+
 def topic_lsa(len_topic):
     if TOPIC.lsa is None or TOPIC.tfidf_features is None:
         raise Exception('you need to train LSA first, train_lsa')
