@@ -125,6 +125,8 @@ def user_normalize(string):
         raise Exception('you need to train the normalizer first, train_normalize')
     string = string.lower()
     if string[0] == 'x':
+        if len(string) == 1:
+            return 'tak'
         result_string = 'tak '
         string = string[1:]
     else:
