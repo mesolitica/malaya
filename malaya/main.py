@@ -123,13 +123,19 @@ def train_normalize(corpus):
 def user_normalize(string):
     if NORMALIZE.user is None or NORMALIZE.corpus is None:
         raise Exception('you need to train the normalizer first, train_normalize')
+    string = string.lower()
+    if string[0] == 'x':
+        result_string = 'tak '
+        string = string[1:]
+    else:
+        result_string = ''
     results = []
     for i in range(len(NORMALIZE.user)):
         total = 0
         for k in NORMALIZE.user[i]: total += fuzz.ratio(string, k)
         results.append(total)
     ids = np.argmax(results)
-    return NORMALIZE.corpus[ids]
+    return result_string + NORMALIZE.corpus[ids]
 
 def separate_dataset(trainset):
     datastring = []
