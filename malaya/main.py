@@ -123,6 +123,7 @@ def train_normalize(corpus):
 def user_normalize(string):
     if NORMALIZE.user is None or NORMALIZE.corpus is None:
         raise Exception('you need to train the normalizer first, train_normalize')
+    original_string = string
     string = string.lower()
     if string[0] == 'x':
         if len(string) == 1:
@@ -136,6 +137,8 @@ def user_normalize(string):
         total = 0
         for k in NORMALIZE.user[i]: total += fuzz.ratio(string, k)
         results.append(total)
+    if len(np.where(np.array(results) > 60)[0]) < 1:
+        return original_string
     ids = np.argmax(results)
     return result_string + NORMALIZE.corpus[ids]
 
