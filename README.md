@@ -1,3 +1,7 @@
+<p align="center">
+    <img src="training/towns-of-malaya.jpg" alt="pyecharts logo" />
+</p>
+
 # Malaya
 NLTK like for bahasa Malaysia, powered by Deep Learning
 
