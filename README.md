@@ -3,7 +3,7 @@ NLTK like for bahasa Malaysia
 
 ## Requirements
   * Python >= 3.0
-  * Tensorflow >= 1.3
+  * Tensorflow >= 1.5
   * NumPy >= 1.0
   * Sklearn >= 0.18
   * Fuzzywuzzy
@@ -15,7 +15,11 @@ NLTK like for bahasa Malaysia
 
 1. Install dependencies
 ```bash
-pip3 install sklearn fuzzywuzzy nltk unidecode numpy scipy python-levenshtein tensorflow==1.3
+# using gpu if you installed CUDA and libcudnn
+pip3 install sklearn fuzzywuzzy nltk unidecode numpy scipy python-levenshtein tensorflow-gpu==1.5
+
+# using cpu
+pip3 install sklearn fuzzywuzzy nltk unidecode numpy scipy python-levenshtein tensorflow==1.5
 ```
 
 ```python
@@ -32,22 +36,6 @@ git clone https://github.com/DevconX/Malaya
 ```bash
 python3 setup.py install
 ```
-
-## To do
-
-- [x] tokenizer
-- [x] stemming
-- [x] tatabahasa gathering
-- [x] Multinomial naive bayes
-- [x] Naive Part-Of-Speech
-- [x] number to words (currency, numbers, position, year)
-- [ ] stopwords
-- [x] normalizer
-- [ ] corpus gathering
-- [x] top-k hot topic (LSA, NMF, LDA)
-- [ ] sentiment analysis
-- [x] semantic and similar words searching
-- [ ] bahasa malaysia checker
 
 ## Example
 
@@ -189,15 +177,25 @@ malaya.topic_lsa(10)
  (9, 'yang di menteri untuk keputusan perdana ada sebelum apa sudah')]
 ```
 
+## To do
+
+- [x] tokenizer
+- [x] stemming
+- [x] tatabahasa gathering
+- [x] Multinomial naive bayes
+- [x] Part-Of-Speech using Regex
+- [x] Part-Of-Speech using Deep Learning
+- [x] number to words (currency, numbers, position, year)
+- [x] stopwords
+- [x] normalizer
+- [x] top-k hot topic (LSA, NMF, LDA)
+- [x] semantic and similar words searching
+- [ ] sentiment analysis
+- [ ] bahasa malaysia checker
+
 ## Warning
 
 Install this library with fully aware that this library is still in alpha stage.
-
-There is no type checking, no assert. Still on development process.
-
-Part Of Speech will not yet binded with any corpuses, I still having a problem with Dewan Pustaka.
-
-Also, I cannot released primary corpuses for sentiment analysis and normalizer YET because got corporate issues.
 
 Documentation will be released soon.
 

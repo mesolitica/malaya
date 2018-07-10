@@ -12,15 +12,23 @@ from sklearn import metrics
 from sklearn.cross_validation import train_test_split
 from unidecode import unidecode
 import random
+import sys
+from pathlib import Path
 from .tatabahasa import *
 
+home = str(Path.home())+'/Malaya'
 stopword_tatabahasa = list(set(tanya_list+perintah_list+pangkal_list+bantu_list+penguat_list+\
                 penegas_list+nafi_list+pemeri_list+sendi_list+pembenar_list+nombor_list+\
                 suku_bilangan_list+pisahan_list+keterangan_list+arah_list+hubung_list+gantinama_list))
 
 LOC = os.path.dirname(os.path.abspath(__file__))
-#with open(LOC+'/stop-word-kerulnet','r') as fopen:
-#    stopword_kerulnet = fopen.read().split()
+
+try:
+    if not os.path.exists(home):
+        os.makedirs(home)
+except:
+    print('cannot make directory for cache, exiting.')
+    sys.exit(1)
 
 class USER_BAYES:
     multinomial = None
@@ -30,6 +38,10 @@ class USER_BAYES:
 class NORMALIZE:
     user = None
     corpus = None
+
+class DEEP_ENTITY_POS:
+    graph = None
+    function = None
 
 def tokenizer(string):
     return [word_tokenize(t) for t in sent_tokenize(s)]
