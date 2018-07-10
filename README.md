@@ -1,5 +1,5 @@
 # Malaya
-NLTK like for bahasa Malaysia
+NLTK like for bahasa Malaysia, powered by Deep Learning
 
 ## Requirements
   * Python >= 3.0
@@ -47,7 +47,28 @@ python3 setup.py install
 
 ## Example
 
+#### check more in example/deep-learning.ipynb
+```python
+import malaya
 
+# default is 'concat'
+model=malaya.deep_learning('char')
+model.predict('KUALA LUMPUR: Sempena sambutan Aidilfitri minggu depan, Perdana Menteri Tun Dr Mahathir Mohamad dan Menteri Pengangkutan Anthony Loke Siew Fook menitipkan pesanan khas kepada orang ramai yang mahu pulang ke kampung halaman masing-masing. Dalam video pendek terbitan Jabatan Keselamatan Jalan Raya (JKJR) itu, Dr Mahathir menasihati mereka supaya berhenti berehat dan tidur sebentar  sekiranya mengantuk ketika memandu.')
+
+[('KUALA', 'LOC', 'KN'),
+ ('LUMPUR:', 'LOC', 'KN'),
+ ('Sempena', 'O', 'KN'),
+ ('sambutan', 'O', 'KN'),
+ ('Aidilfitri', 'EVENT', 'KN'),
+ ('minggu', 'O', 'KN'),
+ ('depan,', 'O', 'KN'),
+ ('Perdana', 'PRN', 'KN'),
+ ('Menteri', 'PRN', 'KN'),
+ ('Tun', 'PRN', 'KN'),
+ ('Dr', 'PRN', 'KN'),
+ ('Mahathir', 'PRN', 'KN'),
+ ('Mohamad', 'PRN', 'KN'),
+```
 
 #### Check more in example/example.ipynb
 
@@ -55,13 +76,13 @@ python3 setup.py install
 import malaya
 
 print(malaya.stemming('makanan'))
--> makan
+makan
 
 print(malaya.naive_POS_string('bapa sedang menulis surat'))
--> [('KN', 'bapa'), ('KETERANGAN', 'sedang'), ('KJ', 'menulis'), ('KN', 'surat')]
+[('KN', 'bapa'), ('KETERANGAN', 'sedang'), ('KJ', 'menulis'), ('KN', 'surat')]
 
 print(malaya.naive_POS_string('Dalam ayat pertama Kucing ialah pembuat, menangkap ialah perbuatan melampau dan seekor burung ialah benda yang kena buat atau penyambut'))
--> [('KS', 'dalam'),
+[('KS', 'dalam'),
  ('KN', 'ayat'),
  ('KJ', 'pertama'),
  ('KN', 'kucing'),
@@ -84,22 +105,20 @@ print(malaya.naive_POS_string('Dalam ayat pertama Kucing ialah pembuat, menangka
  ('KJ', 'penyambut')]
 
 malaya.to_cardinal(123456789)
--> 'seratus dua puluh tiga juta empat ratus lima puluh enam ribu tujuh ratus lapan puluh sembilan'
+'seratus dua puluh tiga juta empat ratus lima puluh enam ribu tujuh ratus lapan puluh sembilan'
 
 malaya.to_ordinal(11)
--> 'kesebelas'
+'kesebelas'
 
-malaya.classify_bayes('kelulusan perlu melalui jawatankuasa')
--> negative: 0.589947
+bayes=malaya.train_bayes(sample_corpus)
+bayes.predict('kelulusan perlu melalui jawatankuasa')
+negative: 0.589947
 positive: 0.410053
 
 corpus_normalize = ['maka','serious','yeke','masing-masing']
-malaya.train_normalize(corpus_normalize)
-malaya.user_normalize('masing2')
--> 'masing-masing'
-malaya.user_normalize('srious')
--> 'serious'
-```
+normalizer = malaya.train_normalize(corpus_normalize)
+normalizer.normalize('masing2')
+'masing-masing'
 
 #### Semantic search example, semantic-example/example-semantic-search.ipynb
 ```python
@@ -200,7 +219,8 @@ malaya.topic_lsa(10)
 - [x] normalizer
 - [x] top-k hot topic (LSA, NMF, LDA)
 - [x] semantic and similar words searching
-- [ ] sentiment analysis
+- [ ] deep learning topic modelling
+- [ ] pretrained deep learning sentiment analysis
 - [ ] bahasa malaysia checker
 
 ## Warning

@@ -24,6 +24,7 @@ stopwords_location = home+'/stop-word-kerulnet'
 char_settings = home+'/char-settings.json'
 char_frozen = home+'/char_frozen_model.pb'
 concat_settings = home+'/concat-settings.json'
+concat_frozen = home+'/concat_frozen_model.pb'
 STOPWORDS = None
 
 stopword_tatabahasa = list(set(tanya_list+perintah_list+pangkal_list+bantu_list+penguat_list+\
@@ -75,7 +76,7 @@ class NORMALIZE:
         results = []
         for i in range(len(self.user)):
             total = 0
-            for k in user[i]: total += fuzz.ratio(string, k)
+            for k in self.user[i]: total += fuzz.ratio(string, k)
             results.append(total)
         if len(np.where(np.array(results) > 60)[0]) < 1:
             return original_string
@@ -144,7 +145,7 @@ def get_entity_concat(string,sess,model):
                                               model['char_ids']:batch_x_char})
     results = []
     for no, i in enumerate(string.split()):
-        results.append((i,idx2tag[str(Y_pred[0,no])],idx2pos[str(Y_pos[0,no])]))
+        results.append((i,model['idx2tag'][str(Y_pred[0,no])],model['idx2pos'][str(Y_pos[0,no])]))
     return results
 
 def load_graph(frozen_graph_filename):
@@ -181,9 +182,11 @@ def deep_learning(model='concat'):
             urlretrieve("https://raw.githubusercontent.com/DevconX/Malaya/master/data/concat_frozen_model.pb", concat_frozen)
         g=load_graph(concat_frozen)
         nodes['word_ids'] = g.get_tensor_by_name('import/Placeholder:0')
-        nodes['x_char'] = g.get_tensor_by_name('import/Placeholder_1:0')
+        nodes['char_ids'] = g.get_tensor_by_name('import/Placeholder_1:0')
         nodes['crf_decode'] = g.get_tensor_by_name('import/entity-logits/cond/Merge:0')
         nodes['crf_decode_pos'] = g.get_tensor_by_name('import/pos-logits/cond/Merge:0')
+        nodes['idx2word'] = {int(k):v for k,v in nodes['idx2word'].items()}
+        return DEEP_MODELS(nodes,tf.InteractiveSession(graph=g),get_entity_concat)
     else:
         print('model not supported,exit.')
         sys.exit(1)
