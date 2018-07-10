@@ -11,6 +11,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn import metrics
 from sklearn.cross_validation import train_test_split
 from unidecode import unidecode
+import itertools
 import random
 import sys
 import json
@@ -91,6 +92,49 @@ class DEEP_MODELS:
     def predict(self,string):
         return self.__predict(string,self.sess,self.nodes)
 
+VOWELS = "aeiou"
+PHONES = ['sh', 'ch', 'ph', 'sz', 'cz', 'sch', 'rz', 'dz']
+
+def isWord(word):
+    if word:
+        consecutiveVowels = 0
+        consecutiveConsonents = 0
+        for idx, letter in enumerate(word.lower()):
+            vowel = True if letter in VOWELS else False
+            if idx:
+                prev = word[idx-1]
+                prevVowel = True if prev in VOWELS else False
+                if not vowel and letter == 'y' and not prevVowel:
+                    vowel = True
+                if prevVowel != vowel:
+                    consecutiveVowels = 0
+                    consecutiveConsonents = 0
+            if vowel:
+                consecutiveVowels += 1
+            else:
+                consecutiveConsonents +=1
+            if consecutiveVowels >= 3 or consecutiveConsonents > 3:
+                return False
+            if consecutiveConsonents == 3:
+                subStr = word[idx-2:idx+1]
+                if any(phone in subStr for phone in PHONES):
+                    consecutiveConsonents -= 1
+                    continue
+                return False
+    return True
+
+list_laughing = ['huhu','haha','gaga','hihi','wkawka','wkwk','kiki','keke','rt']
+def textcleaning(string):
+    string = re.sub('http\S+|www.\S+', '',' '.join([i for i in string.split() if i.find('#')<0 and i.find('@')<0]))
+    string = unidecode(string).replace('.', '. ')
+    string = string.replace(',', ', ')
+    string = re.sub('[^\'\"A-Za-z\- ]+', '', unidecode(string))
+    string = [y.strip() for y in word_tokenize(string.lower()) if isWord(y.strip())]
+    string = [y for y in string if all([y.find(k) < 0 for k in list_laughing]) and y[:len(y)//2] != y[len(y)//2:]]
+    string = ' '.join(string).lower()
+    string = (''.join(''.join(s)[:2] for _, s in itertools.groupby(string))).split()
+    return ' '.join([y for y in string if y not in STOPWORDS])
+
 def process_word(word, lower=True):
     if lower:
         word = word.lower()
@@ -101,6 +145,16 @@ def process_word(word, lower=True):
     if word.isdigit():
         word = 'NUM'
     return word
+
+def clearstring(string):
+    string = unidecode(string)
+    string = re.sub('[^A-Za-z ]+', '', string)
+    string = word_tokenize(string)
+    string = filter(None, string)
+    string = [y.strip() for y in string]
+    string = ' '.join(string).lower()
+    string = ''.join(''.join(s)[:2] for _, s in itertools.groupby(string))
+    return ' '.join([i for i in string.split() if i not in STOPWORDS])
 
 def str_idx(corpus, dic, UNK=3):
     maxlen = max([len(i) for i in corpus])
@@ -227,15 +281,6 @@ def stemming(word):
         return word.replace(mula,'')
     except:
         return word
-
-def clearstring(string,tokenize=True):
-    string = unidecode(string)
-    string = re.sub('^[ivxlcmIVXLCM]+','',string)
-    string = re.sub('[^A-Za-z ]+', '', string)
-    string = word_tokenize(string) if tokenize else string.split(' ')
-    string = filter(None, string)
-    string = [y.strip() for y in string]
-    return ' '.join(string).lower()
 
 def variant(word):
     word = word.lower()

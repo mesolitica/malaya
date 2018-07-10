@@ -164,48 +164,44 @@ vectorized.semantic_search('najib')
 
 #### k-topic modelling example, topic-example/example-topic.ipynb
 ```python
-malaya.train_lda(corpus,10)
-malaya.topic_lda(10)
--> [(0,
-  'kemahirannya memainkan kawasan peranan membangun luar membangunkan antara berkongsi pengalaman'),
- (1,
-  'penting berkembang negara harus mengeluarkan perlembagaan raya tersebut juga pilihan'),
- (2,
-  'ros pemilihan parti perlembagaan umno melebihi tempoh bulan keputusan benar'),
- (3, 'nak bayar macam mana mdb tutup selepas sewa tanah rumah'),
- (4, 'kalau minta mca kita tidak daripada lah ada apaapa tahunan'),
- (5, 'dan kami dalam tidak yang dengan untuk ia ini itu'),
- (6, 'yang dan dalam dengan menteri oleh itu seperti pengalaman telah'),
- (7, 'dan yang kita di akan dalam ini untuk saya itu'),
- (8, 'sebab akan tumpuan pada di dan untuk mahu rm harga'),
- (9, 'ada global perlu kerana kita pas pengalaman baiah percaya pilihanraya')]
+lda = malaya.train_lda(corpus,10,cleaning=clearstring_stopwords)
+lda.get_topics(10)
+[(0, 'projek hutang mengambil tutup bayar memerlukan tanah sewa bulan undi'),
+ (1, 'perniagaan malaysia rakyat raya pilihan masalah kali takut bekerjasama penting'),
+ (2, 'asli rasa menteri memastikan berjaya pembangunan perdana berkembang masyarakat berjalan'),
+ (3, 'menteri low membuat serahkan jho keputusan kapal ph melakukan kena'),
+ (4, 'harus mana diterjemahkan wang dasar bank awam bahasa ilmu dana'),
+ (5, 'kelulusan ros membenarkan digunakan harga bersedia malaysia seri pesawat airasia'),
+ (6, 'rakyat kenyataan negara tersebut kepimpinan islam memudahkan negeri mencari menulis'),
+ (7, 'malaysia negara kewangan asli hutang diselesaikan pengalaman pembangunan isu menunjukkan'),
+ (8, 'kerajaan bahasa syarikat projek terus dilakukan negara awam swasta tumpuan'),
+ (9, 'kementerian memberikan putrajaya kedudukan pengurusan pihak rakyat saiful anak perlembagaan')]
 
-malaya.train_nmf(corpus,10)
-malaya.topic_nmf(10)
--> [(0, 'yang dan dalam malaysia di dengan negara telah kepada itu'),
- (1, 'kita akan kalau bahasa ppsmi tak nak inggeris ilmu ambil'),
- (2, 'saya mungkin itu harap perlu membuat diri cina adalah tetapi'),
- (3, 'kami akan dan itu tiada dalam jppm pihak pesawat keduadua'),
- (4, 'ini masa untuk pada adalah rakyat bukan terus meningkatkan dan'),
- (5, 'tidak ada lagi pernah kerajaan pas boleh berlaku politik bulan'),
- (6, 'kapal jho low tak di itu ada dirampas dah mana'),
- (7, 'berjalan lancar gembira projek ia amat melihat dengan semakin saya'),
- (8,
-  'parti ros umno pemilihan perlembagaan keputusan kebenaran melebihi bersatu dah'),
- (9, 'orang asli masyarakat jakoa menjadi temiar harus mereka kerana sumber')]
+nmf=malaya.train_nmf(corpus,10)
+nmf.get_topics(10)
+[(0, 'negara malaysia pengalaman ekonomi teknikal membangun tindakan kepentingan kerjasama menunjukkan'),
+ (1, 'menteri perdana jemaah seri berlaku razak penjelasan najib baik kuok'),
+ (2, 'rakyat kepimpinan malaysia memudahkan hal negeri serius kepentingan berdasarkan pendapatan'),
+ (3, 'ros kebenaran pemilihan umno pendaftaran kelulusan perlembagaan minta melebihi tempoh'),
+ (4, 'kerajaan sedar pas memastikan mengambil menjatuhkan khususnya pengajaran kemajuan terus'),
+ (5, 'kapal jho low dirampas doj perniagaan indonesia anak sivil tuntutan'),
+ (6, 'bulan undi harapan pakatan umno diberikan keluarga kasih melonjak terima'),
+ (7, 'raya pilihan kononnya semakin penting meminta awal kuok perlembagaan kerusi'),
+ (8, 'diselesaikan kewangan hutang tempoh pendek bergantung memerlukan mewujudkan rasa perancangan'),
+ (9, 'asli masyarakat jakoa pendapatan temiar harus sumber memalukan arus pelopor')]
 
 malaya.train_lsa(corpus,10)
 malaya.topic_lsa(10)
--> [(0, 'dan yang kita dalam akan ini itu kami untuk dengan'),
- (1, 'kita kalau ini tak masa rakyat bahasa ada nak parti'),
- (2, 'saya tidak ada itu yang menteri mungkin mdb perdana tak'),
- (3, 'kami tidak akan itu ada parti tak mereka kita tiada'),
- (4, 'dalam negara ada tidak dengan yang pengalaman pas berkongsi mempunyai'),
- (5, 'tidak ia dengan ada lagi kerajaan pas berjalan pernah boleh'),
- (6, 'ini mereka masa pada parti yang kepada bukan oleh ros'),
- (7, 'dengan ia berjalan parti umno lancar ros pemilihan saya dan'),
- (8, 'untuk orang asli di ada ia kerajaan kapal malaysia bulan'),
- (9, 'yang di menteri untuk keputusan perdana ada sebelum apa sudah')]
+[(0, 'rakyat negara malaysia kerajaan pengalaman menunjukkan kepimpinan isu menteri terus'),
+ (1, 'rakyat kepimpinan memudahkan hal serius malaysia negeri pendapatan maklumat kepentingan'),
+ (2, 'negara pengalaman malaysia teknikal bidang membangun ekonomi kewangan pendidikan tindakan'),
+ (3, 'bulan umno ros undi pemilihan negara harapan keputusan status melebihi'),
+ (4, 'jho kapal low kerajaan perniagaan doj pihak sivil dirampas dana'),
+ (5, 'kerajaan pas terus masalah memastikan dilakukan masyarakat sedar khususnya proses'),
+ (6, 'bulan harapan undi raya pilihan pakatan semakin wang luar bandar'),
+ (7, 'raya pilihan penting asli ros semakin pendaftaran masyarakat kononnya ph'),
+ (8, 'hutang pendapatan asli diselesaikan kewangan projek masyarakat besar sumber tempoh'),
+ (9, 'raya pilihan kewangan bulan diselesaikan hutang negara kerajaan tindakan undi')]
 ```
 
 ## To do
