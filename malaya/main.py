@@ -127,7 +127,7 @@ def get_entity_char(string,sess,model):
     logits, logits_pos = sess.run([tf.argmax(model['logits'],1),tf.argmax(model['logits_pos'],1)],feed_dict={model['X']:batch_x})
     results = []
     for no, i in enumerate(string.split()):
-        results.append(i,model['idx2tag'][logits[no]],model['idx2pos'][logits_pos[no]])
+        results.append((i,model['idx2tag'][str(logits[no])],model['idx2pos'][str(logits_pos[no])]))
     return results
 
 def get_entity_concat(string,sess,model):
@@ -144,7 +144,7 @@ def get_entity_concat(string,sess,model):
                                               model['char_ids']:batch_x_char})
     results = []
     for no, i in enumerate(string.split()):
-        results.append(i,idx2tag[Y_pred[0,no]],idx2pos[Y_pos[0,no]])
+        results.append((i,idx2tag[str(Y_pred[0,no])],idx2pos[str(Y_pos[0,no])]))
     return results
 
 def load_graph(frozen_graph_filename):
@@ -155,7 +155,7 @@ def load_graph(frozen_graph_filename):
         tf.import_graph_def(graph_def)
     return graph
 
-def deep_learning(model='char'):
+def deep_learning(model='concat'):
     if model == 'char':
         if not os.path.isfile(char_settings):
             print('downloading char settings')
@@ -171,7 +171,19 @@ def deep_learning(model='char'):
         nodes['logits_pos'] = g.get_tensor_by_name('import/logits_pos:0')
         return DEEP_MODELS(nodes,tf.InteractiveSession(graph=g),get_entity_char)
     elif model == 'concat':
-        pass
+        if not os.path.isfile(concat_settings):
+            print('downloading concat settings')
+            urlretrieve("https://raw.githubusercontent.com/DevconX/Malaya/master/data/concat-settings.json", concat_settings)
+        with open(concat_settings,'r') as fopen:
+            nodes = json.loads(fopen.read())
+        if not os.path.isfile(concat_frozen):
+            print('downloading frozen concat model')
+            urlretrieve("https://raw.githubusercontent.com/DevconX/Malaya/master/data/concat_frozen_model.pb", concat_frozen)
+        g=load_graph(concat_frozen)
+        nodes['word_ids'] = g.get_tensor_by_name('import/Placeholder:0')
+        nodes['x_char'] = g.get_tensor_by_name('import/Placeholder_1:0')
+        nodes['crf_decode'] = g.get_tensor_by_name('import/entity-logits/cond/Merge:0')
+        nodes['crf_decode_pos'] = g.get_tensor_by_name('import/pos-logits/cond/Merge:0')
     else:
         print('model not supported,exit.')
         sys.exit(1)

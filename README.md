@@ -12,7 +12,6 @@ NLTK like for bahasa Malaysia
   * scipy
 
 ## Installation
-
 1. Install dependencies
 ```bash
 # using gpu if you installed CUDA and libcudnn
@@ -37,7 +36,18 @@ git clone https://github.com/DevconX/Malaya
 python3 setup.py install
 ```
 
+## Features
+  * Deep learning Named entity recognition
+  * Deep learning Part-of-speech tagging
+  * Naive Part-of-speech tagging
+  * Text Normalizer
+  * Naive Stemming
+  * Naive Bayes
+  * Topic Modelling
+
 ## Example
+
+
 
 #### Check more in example/example.ipynb
 
