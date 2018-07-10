@@ -45,6 +45,7 @@ python3 setup.py install
   * Naive Bayes
   * Topic Modelling
 
+You can read [REPORT.md](training/REPORT.md) for supported Entities and POS.
 ## Example
 
 #### check more in example/deep-learning.ipynb

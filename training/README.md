@@ -1,4 +1,50 @@
-#### Character-wise model
+# Bahasa-Entities-POS-Recognition
+Use deep learning models to classify entities and POS
+
+## Entities supported
+```text
+PRN - person, group of people, believes, etc
+LOC - location
+NORP - Military, police, government, Parties, etc
+ORG - Organization, company
+LAW - related law document, etc
+ART - art of work, special names, etc
+EVENT - event happen, etc
+FAC - facility, hospitals, clinics, etc
+TIME - date, day, time, etc
+O - not related, out scope
+```
+
+## POS supported
+```
+KT - Kata Tanya
+KP - Kata Perintah
+KPA - Kata Pangkal
+KB - Kata Bantu
+KPENGUAT - Kata Penguat
+KPENEGAS - Kata Penegas
+NAFI - Kata Nafi
+KPEMERI - Kata Pemeri
+KS - Kata Sendi
+KPEMBENAR - Kata Pembenar
+NAFI - Kata Nafi
+NO - Numbers
+SUKU - Suku Bilangan
+PISAHAN - Kata Pisahan
+KETERANGAN - Kata Keterangan
+ARAH - Kata Arah
+KH - Kata Hubung
+GN - Ganti Nama
+KA - Kata Adjektif
+O - not related, out scope
+```
+
+## Models used
+1. LSTM + CRF + chars embeddings + Static Bidirectional
+2. LSTM + chars sequence + Static Bidirectional
+3. LSTM + CRF + chars embeddings + Static Bidirectional + Bahdanau Attention
+
+## Character-wise model
 ```text
 	     precision    recall  f1-score   support
 
@@ -46,7 +92,7 @@ avg / total       0.91      0.91      0.91     14976
 avg / total       0.92      0.92      0.92     14976
 ```
 
-#### Concat-wise model
+## Concat-wise model
 ```text
 	     precision    recall  f1-score   support
 
@@ -91,5 +137,4 @@ avg / total       0.98      0.98      0.98    299520
     KPEMERI       0.94      0.85      0.89        20
 
 avg / total       0.98      0.98      0.98    299520
-
 
