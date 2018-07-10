@@ -45,7 +45,7 @@ python3 setup.py install
   * Naive Bayes
   * Topic Modelling
 
-You can read [README](https://github.com/DevconX/Malaya/tree/master/training) for supported Entities and POS.
+You can read [README](https://github.com/DevconX/Malaya/tree/master/training) for supported Entities and POS, also for comparison accuracies among models.
 ## Example
 
 #### check more in example/deep-learning.ipynb
@@ -54,6 +54,10 @@ import malaya
 
 # default is 'attention'
 # support 'attention','concat','char'
+# in term of accuracy (accurate to not)
+# attention > concat > char
+# in term of speed (fastest to slowest)
+# char > concat > attention
 model=malaya.deep_learning()
 model.predict('KUALA LUMPUR: Sempena sambutan Aidilfitri minggu depan, Perdana Menteri Tun Dr Mahathir Mohamad dan Menteri Pengangkutan Anthony Loke Siew Fook menitipkan pesanan khas kepada orang ramai yang mahu pulang ke kampung halaman masing-masing. Dalam video pendek terbitan Jabatan Keselamatan Jalan Raya (JKJR) itu, Dr Mahathir menasihati mereka supaya berhenti berehat dan tidur sebentar  sekiranya mengantuk ketika memandu.')
 
