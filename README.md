@@ -52,23 +52,33 @@ You can read [README](https://github.com/DevconX/Malaya/tree/master/training) fo
 ```python
 import malaya
 
-# default is 'concat'
-model=malaya.deep_learning('char')
+# default is 'attention'
+# support 'attention','concat','char'
+model=malaya.deep_learning()
 model.predict('KUALA LUMPUR: Sempena sambutan Aidilfitri minggu depan, Perdana Menteri Tun Dr Mahathir Mohamad dan Menteri Pengangkutan Anthony Loke Siew Fook menitipkan pesanan khas kepada orang ramai yang mahu pulang ke kampung halaman masing-masing. Dalam video pendek terbitan Jabatan Keselamatan Jalan Raya (JKJR) itu, Dr Mahathir menasihati mereka supaya berhenti berehat dan tidur sebentar  sekiranya mengantuk ketika memandu.')
 
-[('KUALA', 'LOC', 'KN'),
- ('LUMPUR:', 'LOC', 'KN'),
- ('Sempena', 'O', 'KN'),
- ('sambutan', 'O', 'KN'),
- ('Aidilfitri', 'EVENT', 'KN'),
- ('minggu', 'O', 'KN'),
- ('depan,', 'O', 'KN'),
- ('Perdana', 'PRN', 'KN'),
- ('Menteri', 'PRN', 'KN'),
- ('Tun', 'PRN', 'KN'),
- ('Dr', 'PRN', 'KN'),
- ('Mahathir', 'PRN', 'KN'),
- ('Mohamad', 'PRN', 'KN'),
+KUALA LOC KN
+LUMPUR: LOC KN
+Sempena O KN
+sambutan O KN
+Aidilfitri EVENT KN
+minggu TIME KN
+depan, TIME KN
+Perdana PRN KN
+Menteri PRN KN
+Tun PRN KN
+Dr PRN KN
+Mahathir PRN KN
+Mohamad PRN KN
+dan O KH
+Menteri NORP KN
+Pengangkutan NORP KN
+Anthony PRN KN
+Loke PRN KN
+Siew PRN KN
+Fook PRN KN
+menitipkan NORP KN
+pesanan NORP KN
 ```
 
 #### Check more in example/example.ipynb
@@ -218,6 +228,7 @@ malaya.topic_lsa(10)
 - [x] top-k hot topic (LSA, NMF, LDA)
 - [x] semantic and similar words searching
 - [ ] deep learning topic modelling
+- [ ] deep learning stemming
 - [ ] pretrained deep learning sentiment analysis
 - [ ] bahasa malaysia checker
 

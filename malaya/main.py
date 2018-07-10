@@ -26,6 +26,8 @@ char_settings = home+'/char-settings.json'
 char_frozen = home+'/char_frozen_model.pb'
 concat_settings = home+'/concat-settings.json'
 concat_frozen = home+'/concat_frozen_model.pb'
+attention_settings = home+'/attention-settings.json'
+attention_frozen = home+'/attention_frozen_model.pb'
 STOPWORDS = None
 
 stopword_tatabahasa = list(set(tanya_list+perintah_list+pangkal_list+bantu_list+penguat_list+\
@@ -210,7 +212,7 @@ def load_graph(frozen_graph_filename):
         tf.import_graph_def(graph_def)
     return graph
 
-def deep_learning(model='concat'):
+def deep_learning(model='attention'):
     if model == 'char':
         if not os.path.isfile(char_settings):
             print('downloading char settings')
@@ -235,6 +237,22 @@ def deep_learning(model='concat'):
             print('downloading frozen concat model')
             urlretrieve("https://raw.githubusercontent.com/DevconX/Malaya/master/data/concat_frozen_model.pb", concat_frozen)
         g=load_graph(concat_frozen)
+        nodes['word_ids'] = g.get_tensor_by_name('import/Placeholder:0')
+        nodes['char_ids'] = g.get_tensor_by_name('import/Placeholder_1:0')
+        nodes['crf_decode'] = g.get_tensor_by_name('import/entity-logits/cond/Merge:0')
+        nodes['crf_decode_pos'] = g.get_tensor_by_name('import/pos-logits/cond/Merge:0')
+        nodes['idx2word'] = {int(k):v for k,v in nodes['idx2word'].items()}
+        return DEEP_MODELS(nodes,tf.InteractiveSession(graph=g),get_entity_concat)
+    elif model == 'attention':
+        if not os.path.isfile(attention_settings):
+            print('downloading attention settings')
+            urlretrieve("https://raw.githubusercontent.com/DevconX/Malaya/master/data/attention-settings.json", attention_settings)
+        with open(attention_settings,'r') as fopen:
+            nodes = json.loads(fopen.read())
+        if not os.path.isfile(attention_frozen):
+            print('downloading frozen attention model')
+            urlretrieve("https://raw.githubusercontent.com/DevconX/Malaya/master/data/attention_frozen_model.pb", attention_frozen)
+        g=load_graph(attention_frozen)
         nodes['word_ids'] = g.get_tensor_by_name('import/Placeholder:0')
         nodes['char_ids'] = g.get_tensor_by_name('import/Placeholder_1:0')
         nodes['crf_decode'] = g.get_tensor_by_name('import/entity-logits/cond/Merge:0')
