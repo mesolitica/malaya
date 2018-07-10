@@ -9,15 +9,31 @@ from unidecode import unidecode
 import itertools
 import random
 import os
-os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 data_index = 0
 
 class VECTORIZE:
-    vectors = None
-    dictionary = None
-    cosine = None
-    euclidean = None
-    keys = None
+    def __init__(self,vectors,dictionary,cosine,euclidean,keys):
+        self.vectors = vectors
+        self.dictionary = dictionary
+        self.cosine = cosine
+        self.euclidean = euclidean
+        self.keys = keys
+    def semantic_search(self, word):
+        ids = np.argmax([fuzz.ratio(i, word) for i in self.keys])
+        xtest = self.vectors[ids, :].reshape((1,-1))
+        distances, indices = self.cosine.kneighbors(xtest)
+        out = []
+        for no, i in enumerate(indices[0]):
+            out.append((no, self.dictionary[i]))
+        return out
+    def word_search(self, word):
+        ids = np.argmax([fuzz.ratio(i, word) for i in self.keys])
+        xtest = self.vectors[ids, :].reshape((1,-1))
+        distances, indices = self.euclidean.kneighbors(xtest)
+        out = []
+        for no, i in enumerate(indices[0]):
+            out.append((no, self.dictionary[i]))
+        return out
 
 def clearstring(string):
     string = unidecode(string)
@@ -106,26 +122,9 @@ def train_vector(corpus, count_neighbors,iteration=10000,checkpoint=1000,dimensi
         _, loss = sess.run([model.optimizer, model.loss], feed_dict=feed_dict)
         if ((step + 1) % checkpoint) == 0:
             print("epoch: %d, loss: %f"%(step+1, loss))
-    VECTORIZE.vectors = sess.run(model.normalized_embeddings)
-    VECTORIZE.cosine = NearestNeighbors(count_neighbors, metric='cosine').fit(VECTORIZE.vectors)
-    VECTORIZE.euclidean = NearestNeighbors(count_neighbors, metric='euclidean').fit(VECTORIZE.vectors)
-    VECTORIZE.keys = list(VECTORIZE.dictionary.values())
+    vectors = sess.run(model.normalized_embeddings)
+    cosine = NearestNeighbors(count_neighbors, metric='cosine').fit(VECTORIZE.vectors)
+    euclidean = NearestNeighbors(count_neighbors, metric='euclidean').fit(VECTORIZE.vectors)
+    keys = list(VECTORIZE.dictionary.values())
     print("done train")
-
-def semantic_search(word):
-    ids = np.argmax([fuzz.ratio(i, word) for i in VECTORIZE.keys])
-    xtest = VECTORIZE.vectors[ids, :].reshape((1,-1))
-    distances, indices = VECTORIZE.cosine.kneighbors(xtest)
-    out = []
-    for no, i in enumerate(indices[0]):
-        out.append((no, VECTORIZE.dictionary[i]))
-    return out
-
-def word_search(word):
-    ids = np.argmax([fuzz.ratio(i, word) for i in VECTORIZE.keys])
-    xtest = VECTORIZE.vectors[ids, :].reshape((1,-1))
-    distances, indices = VECTORIZE.euclidean.kneighbors(xtest)
-    out = []
-    for no, i in enumerate(indices[0]):
-        out.append((no, VECTORIZE.dictionary[i]))
-    return out
+    return VECTORIZE(vectors,dictionary,cosine,euclidean,keys)

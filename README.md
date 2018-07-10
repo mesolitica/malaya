@@ -120,10 +120,11 @@ corpus_normalize = ['maka','serious','yeke','masing-masing']
 normalizer = malaya.train_normalize(corpus_normalize)
 normalizer.normalize('masing2')
 'masing-masing'
+```
 
 #### Semantic search example, semantic-example/example-semantic-search.ipynb
 ```python
-malaya.train_vector(corpus,10)
+vectorized = malaya.train_vector(corpus,10)
 epoch: 1000, loss: 4.156271
 epoch: 2000, loss: 3.501364
 epoch: 3000, loss: 2.607565
@@ -136,8 +137,8 @@ epoch: 9000, loss: 1.611805
 epoch: 10000, loss: 1.972360
 done train
 
-malaya.semantic_search('mahathir')
--> [(0, 'mahathir'),
+vectorized.semantic_search('mahathir')
+[(0, 'mahathir'),
  (1, 'ketokohan'),
  (2, 'berfikiran'),
  (3, 'guru'),
@@ -148,8 +149,8 @@ malaya.semantic_search('mahathir')
  (8, 'mengharapkan'),
  (9, 'hasil')]
 
-malaya.semantic_search('najib')
--> [(0, 'najib'),
+vectorized.semantic_search('najib')
+[(0, 'najib'),
  (1, 'dijadikan'),
  (2, 'mengatasi'),
  (3, 'tersedia'),
