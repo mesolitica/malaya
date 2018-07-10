@@ -13,10 +13,19 @@ from sklearn.cross_validation import train_test_split
 from unidecode import unidecode
 import random
 import sys
+import json
+import tensorflow as tf
 from pathlib import Path
+from urllib.request import urlretrieve
 from .tatabahasa import *
 
 home = str(Path.home())+'/Malaya'
+stopwords_location = home+'/stop-word-kerulnet'
+char_settings = home+'/char-settings.json'
+char_frozen = home+'/char_frozen_model.pb'
+concat_settings = home+'/concat-settings.json'
+STOPWORDS = None
+
 stopword_tatabahasa = list(set(tanya_list+perintah_list+pangkal_list+bantu_list+penguat_list+\
                 penegas_list+nafi_list+pemeri_list+sendi_list+pembenar_list+nombor_list+\
                 suku_bilangan_list+pisahan_list+keterangan_list+arah_list+hubung_list+gantinama_list))
@@ -30,18 +39,142 @@ except:
     print('cannot make directory for cache, exiting.')
     sys.exit(1)
 
+if not os.path.isfile(stopwords_location):
+    print('downloading stopwords')
+    urlretrieve("https://raw.githubusercontent.com/DevconX/Malaya/master/data/stop-word-kerulnet", stopwords_location)
+with open(home+'/stop-word-kerulnet','r') as fopen:
+    STOPWORDS = list(filter(None, fopen.read().split('\n')))
+
 class USER_BAYES:
-    multinomial = None
-    label = None
-    vectorize = None
+    def __init__(self,multinomial,label,vectorize):
+        self.multinomial = multinomial
+        self.label = label
+        self.vectorize = vectorize
+    def predict(self, string):
+        vectors = self.vectorize.transform([string])
+        results = self.multinomial.predict_proba(vectors)[0]
+        out = []
+        for no, i in enumerate(self.label):
+            out.append((i,results[no]))
+        return out
 
 class NORMALIZE:
-    user = None
-    corpus = None
+    def __init__(self,user,corpus):
+        self.user = user
+        self.corpus = corpus
+    def normalize(self,string):
+        original_string = string
+        string = string.lower()
+        if string[0] == 'x':
+            if len(string) == 1:
+                return 'tak'
+            result_string = 'tak '
+            string = string[1:]
+        else:
+            result_string = ''
+        results = []
+        for i in range(len(self.user)):
+            total = 0
+            for k in user[i]: total += fuzz.ratio(string, k)
+            results.append(total)
+        if len(np.where(np.array(results) > 60)[0]) < 1:
+            return original_string
+        ids = np.argmax(results)
+        return result_string + self.corpus[ids]
 
-class DEEP_ENTITY_POS:
-    graph = None
-    function = None
+class DEEP_MODELS:
+    def __init__(self,nodes,sess,predict):
+        self.nodes = nodes
+        self.sess = sess
+        self.__predict = predict
+    def predict(self,string):
+        return self.__predict(string,self.sess,self.nodes)
+
+def process_word(word, lower=True):
+    if lower:
+        word = word.lower()
+    else:
+        if word.isupper():
+            word = word.title()
+    word = re.sub('[^A-Za-z0-9\- ]+', '', word)
+    if word.isdigit():
+        word = 'NUM'
+    return word
+
+def str_idx(corpus, dic, UNK=3):
+    maxlen = max([len(i) for i in corpus])
+    X = np.zeros((len(corpus),maxlen))
+    for i in range(len(corpus)):
+        for no, k in enumerate(corpus[i][:maxlen][::-1]):
+            try:
+                X[i,-1 - no]=dic[k]
+            except Exception as e:
+                X[i,-1 - no]=UNK
+    return X
+
+def generate_char_seq(batch,idx2word,char2idx):
+    x = [[len(idx2word[i]) for i in k] for k in batch]
+    maxlen = max([j for i in x for j in i])
+    temp = np.zeros((batch.shape[0],batch.shape[1],maxlen),dtype=np.int32)
+    for i in range(batch.shape[0]):
+        for k in range(batch.shape[1]):
+            for no, c in enumerate(idx2word[batch[i,k]]):
+                temp[i,k,-1-no] = char2idx[c]
+    return temp
+
+def get_entity_char(string,sess,model):
+    batch_x = str_idx([process_word(w) for w in string.split()],model['char2idx'])
+    logits, logits_pos = sess.run([tf.argmax(model['logits'],1),tf.argmax(model['logits_pos'],1)],feed_dict={model['X']:batch_x})
+    results = []
+    for no, i in enumerate(string.split()):
+        results.append(i,model['idx2tag'][logits[no]],model['idx2pos'][logits_pos[no]])
+    return results
+
+def get_entity_concat(string,sess,model):
+    test_X = []
+    for w in string.split():
+        w = process_word(w)
+        try:
+            test_X.append(model['word2idx'][w])
+        except:
+            test_X.append(2)
+    array_X = np.array([test_X])
+    batch_x_char = generate_char_seq(array_X,model['idx2word'],model['char2idx'])
+    Y_pred,Y_pos = sess.run([model['crf_decode'],model['crf_decode_pos']],feed_dict={model['word_ids']:array_X,
+                                              model['char_ids']:batch_x_char})
+    results = []
+    for no, i in enumerate(string.split()):
+        results.append(i,idx2tag[Y_pred[0,no]],idx2pos[Y_pos[0,no]])
+    return results
+
+def load_graph(frozen_graph_filename):
+    with tf.gfile.GFile(frozen_graph_filename, "rb") as f:
+        graph_def = tf.GraphDef()
+        graph_def.ParseFromString(f.read())
+    with tf.Graph().as_default() as graph:
+        tf.import_graph_def(graph_def)
+    return graph
+
+def deep_learning(model='char'):
+    if model == 'char':
+        if not os.path.isfile(char_settings):
+            print('downloading char settings')
+            urlretrieve("https://raw.githubusercontent.com/DevconX/Malaya/master/data/char-settings.json", char_settings)
+        with open(char_settings,'r') as fopen:
+            nodes = json.loads(fopen.read())
+        if not os.path.isfile(char_frozen):
+            print('downloading frozen char model')
+            urlretrieve("https://raw.githubusercontent.com/DevconX/Malaya/master/data/char_frozen_model.pb", char_frozen)
+        g=load_graph(char_frozen)
+        nodes['X'] = g.get_tensor_by_name('import/Placeholder:0')
+        nodes['logits'] = g.get_tensor_by_name('import/logits:0')
+        nodes['logits_pos'] = g.get_tensor_by_name('import/logits_pos:0')
+        return DEEP_MODELS(nodes,tf.InteractiveSession(graph=g),get_entity_char)
+    elif model == 'concat':
+        pass
+    else:
+        print('model not supported,exit.')
+        sys.exit(1)
 
 def tokenizer(string):
     return [word_tokenize(t) for t in sent_tokenize(s)]
@@ -128,31 +261,7 @@ def train_normalize(corpus):
         if len(splitted_double) > 1 and splitted_double[0] == splitted_double[1]:
             result.append(splitted_double[0]+'2')
         transform.append(result)
-    NORMALIZE.user = transform
-    NORMALIZE.corpus = corpus
-    print('done train normalizer')
-
-def user_normalize(string):
-    if NORMALIZE.user is None or NORMALIZE.corpus is None:
-        raise Exception('you need to train the normalizer first, train_normalize')
-    original_string = string
-    string = string.lower()
-    if string[0] == 'x':
-        if len(string) == 1:
-            return 'tak'
-        result_string = 'tak '
-        string = string[1:]
-    else:
-        result_string = ''
-    results = []
-    for i in range(len(NORMALIZE.user)):
-        total = 0
-        for k in NORMALIZE.user[i]: total += fuzz.ratio(string, k)
-        results.append(total)
-    if len(np.where(np.array(results) > 60)[0]) < 1:
-        return original_string
-    ids = np.argmax(results)
-    return result_string + NORMALIZE.corpus[ids]
+    return NORMALIZE(transform,corpus)
 
 def separate_dataset(trainset):
     datastring = []
@@ -166,6 +275,7 @@ def separate_dataset(trainset):
     return datastring, datatarget
 
 def train_bayes(corpus,tokenizing=True,cleaning=True,normalizing=True,stem=True,vector='tfidf',split=0.2):
+    multinomial,labels,vectorize = None, None, None
     if vector.lower().find('tfidf') < 0 and vector.lower().find('bow'):
         raise Exception('Invalid vectorization technique')
     if isinstance(corpus, str):
@@ -173,12 +283,10 @@ def train_bayes(corpus,tokenizing=True,cleaning=True,normalizing=True,stem=True,
         trainset.data, trainset.target = separate_dataset(trainset)
         data, target = trainset.data, trainset.target
         labels = trainset.target_names
-        USER_BAYES.label = labels
     if isinstance(corpus, list) or isinstance(corpus, tuple):
         corpus = np.array(corpus)
         data, target = corpus[:,0].tolist(),corpus[:,1].tolist()
         labels = np.unique(target).tolist()
-        USER_BAYES.label = labels
         target = LabelEncoder().fit_transform(target)
     c = list(zip(data, target))
     random.shuffle(c)
@@ -189,28 +297,19 @@ def train_bayes(corpus,tokenizing=True,cleaning=True,normalizing=True,stem=True,
     if cleaning:
         for i in range(len(data)): data[i] = clearstring(data[i],tokenizing)
     if vector.lower().find('tfidf') >= 0:
-        USER_BAYES.vectorize = TfidfVectorizer().fit(data)
-        vectors = USER_BAYES.vectorize.transform(data)
+        vectorize = TfidfVectorizer().fit(data)
+        vectors = vectorize.transform(data)
     else:
-        USER_BAYES.vectorize = CountVectorizer().fit(data)
-        vectors = USER_BAYES.vectorize.transform(data)
-    USER_BAYES.multinomial = MultinomialNB()
+        vectorize = CountVectorizer().fit(data)
+        vectors = vectorize.transform(data)
+    multinomial = MultinomialNB()
     if split:
         train_X, test_X, train_Y, test_Y = train_test_split(vectors, target, test_size = split)
-        USER_BAYES.multinomial.partial_fit(train_X, train_Y,classes=np.unique(target))
-        predicted = USER_BAYES.multinomial.predict(test_X)
+        multinomial.partial_fit(train_X, train_Y,classes=np.unique(target))
+        predicted = multinomial.predict(test_X)
         print(metrics.classification_report(test_Y, predicted, target_names = labels))
     else:
-        USER_BAYES.multinomial.partial_fit(vectors,target,classes=np.unique(target))
-        predicted = USER_BAYES.multinomial.predict(vectors)
+        multinomial.partial_fit(vectors,target,classes=np.unique(target))
+        predicted = multinomial.predict(vectors)
         print(metrics.classification_report(target, predicted, target_names = labels))
-
-def classify_bayes(string):
-    if USER_BAYES.multinomial is None or USER_BAYES.vectorize is None:
-        raise Exception('you need to train the classifier first, train_bayes')
-    vectors = USER_BAYES.vectorize.transform([string])
-    results = USER_BAYES.multinomial.predict_proba(vectors)[0]
-    out = []
-    for no, i in enumerate(USER_BAYES.label):
-        out.append((i,results[no]))
-    return out
+    return USER_BAYES(multinomial,labels,vectorize)
