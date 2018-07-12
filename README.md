@@ -140,47 +140,19 @@ normalizer.normalize('masing2')
 'masing-masing'
 ```
 
-#### Semantic search example, semantic-example/example-semantic-search.ipynb
+#### word2vec example, example/load-embedded.ipynb
 ```python
-vectorized = malaya.train_vector(corpus,10)
-epoch: 1000, loss: 4.156271
-epoch: 2000, loss: 3.501364
-epoch: 3000, loss: 2.607565
-epoch: 4000, loss: 2.888038
-epoch: 5000, loss: 2.324599
-epoch: 6000, loss: 2.288272
-epoch: 7000, loss: 1.827932
-epoch: 8000, loss: 2.251363
-epoch: 9000, loss: 1.611805
-epoch: 10000, loss: 1.972360
-done train
-
-vectorized.semantic_search('mahathir')
-[(0, 'mahathir'),
- (1, 'ketokohan'),
- (2, 'berfikiran'),
- (3, 'guru'),
- (4, 'tnb'),
- (5, 'menyebut'),
- (6, 'muda'),
- (7, 'bermasalah'),
- (8, 'mengharapkan'),
- (9, 'hasil')]
-
-vectorized.semantic_search('najib')
-[(0, 'najib'),
- (1, 'dijadikan'),
- (2, 'mengatasi'),
- (3, 'tersedia'),
- (4, 'sampai'),
- (5, 'mencari'),
- (6, 'pucuk'),
- (7, 'restoran'),
- (8, 'stres'),
- (9, 'terhasil')]
+embedded = malaya.get_word2vec(64)
+word_vector = malaya.Word2Vec(embedded['nce_weights'], embedded['dictionary'])
+word = 'anwar'
+print("Embedding layer: 8 closest words to: '%s'"%(word))
+print(word_vector.n_closest(word=word, num_closest=8, metric='cosine'))
+['razali', 'farid', 'zaid', 'khairuddin', 'najib', 'undss', 'sirul', 'duterte']
+print(word_vector.analogy('anwar', 'penjara', 'kerajaan', 5))
+['kerajaan', 'lima', 'tujuh', 'enam', 'hadapan']
 ```
 
-#### k-topic modelling example, topic-example/example-topic.ipynb
+#### k-topic modelling example, example/example-topic.ipynb
 ```python
 lda = malaya.train_lda(corpus,10,cleaning=clearstring_stopwords)
 lda.get_topics(10)

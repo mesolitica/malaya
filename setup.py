@@ -2,7 +2,7 @@ from distutils.core import setup
 setup(
     name = "malaya",
     packages = ["malaya"],
-    version = "0.5",
+    version = "0.6",
     description = "nltk like for Bahasa Malaysia",
     author = "huseinzol05",
     author_email = "husein.zol05@gmail.com",
