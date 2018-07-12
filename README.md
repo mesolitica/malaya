@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="training/towns-of-malaya.jpg" alt="pyecharts logo" />
+    <img src="entities-pos/towns-of-malaya.jpg" alt="malaya logo" />
 </p>
 
 # Malaya
