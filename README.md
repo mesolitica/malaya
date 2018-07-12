@@ -29,12 +29,10 @@ pip3 install sklearn fuzzywuzzy nltk unidecode numpy scipy python-levenshtein te
 import nltk
 nltk.download('punkt')
 ```
-
 2. Clone this repository
 ```bash
 git clone https://github.com/DevconX/Malaya
 ```
-
 3. install using setup.py
 ```bash
 python3 setup.py install
@@ -60,7 +58,7 @@ You can read [EXAMPLE](EXAMPLE.md) for some examples.
 1. import
 ```python3
 import malaya
-
+```
 2. crawler
 ```bash
 cd crawl/crawler
