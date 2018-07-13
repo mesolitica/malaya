@@ -9,6 +9,7 @@ from urllib.request import urlretrieve
 import pickle
 import os
 import sys
+from sklearn.neighbors import NearestNeighbors
 from pathlib import Path
 
 home = str(Path.home())+'/Malaya'
@@ -146,15 +147,23 @@ class Word2Vec:
     def get_vector_by_name(self, word):
         return np.ravel(self._embed_matrix[self._dictionary[word], :])
 
-    def n_closest(self, word, num_closest=5, metric='cosine'):
-        wv = self.get_vector_by_name(word)
-        closest_indices = self.closest_row_indices(wv, num_closest + 1, metric)
-        word_list = []
-        for i in closest_indices:
-            word_list.append(self._reverse_dictionary[i])
-        if word in word_list:
-            word_list.remove(word)
-        return word_list
+    def n_closest(self, word, num_closest=5, metric='cosine', return_similarity=True):
+        if return_similarity:
+            nn = NearestNeighbors(num_closest + 1,metric=metric).fit(self._embed_matrix)
+            distances, idx = nn.kneighbors(self._embed_matrix[self._dictionary[word], :].reshape((1,-1)))
+            word_list = []
+            for i in range(1,idx.shape[1]):
+                word_list.append([self._reverse_dictionary[idx[0,i]],1-distances[0,i]])
+            return word_list
+        else:
+            wv = self.get_vector_by_name(word)
+            closest_indices = self.closest_row_indices(wv, num_closest + 1, metric)
+            word_list = []
+            for i in closest_indices:
+                word_list.append(self._reverse_dictionary[i])
+            if word in word_list:
+                word_list.remove(word)
+            return word_list
 
     def closest_row_indices(self, wv, num, metric):
         dist_array = np.ravel(cdist(self._embed_matrix, wv.reshape((1, -1)),metric=metric))
