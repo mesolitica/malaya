@@ -92,10 +92,10 @@ normalizer.normalize('masing2')
 ```python
 embedded = malaya.get_word2vec(64)
 word_vector = malaya.Word2Vec(embedded['nce_weights'], embedded['dictionary'])
-word = 'anwar'
+word = 'mahathir'
 print("Embedding layer: 8 closest words to: '%s'"%(word))
 print(word_vector.n_closest(word=word, num_closest=8, metric='cosine'))
-['razali', 'farid', 'zaid', 'khairuddin', 'najib', 'undss', 'sirul', 'duterte']
+[['azalina', 0.42232489585876465], ['kyi', 0.39500147104263306], ['jho', 0.39347755908966064], ['kandis', 0.39313936233520508], ['kejahilan', 0.38966810703277588], ['razali', 0.38890910148620605], ['hishamuddin', 0.38873559236526489], ['tia', 0.38481009006500244]]
 print(word_vector.analogy('anwar', 'penjara', 'kerajaan', 5))
 ['kerajaan', 'lima', 'tujuh', 'enam', 'hadapan']
 ```
