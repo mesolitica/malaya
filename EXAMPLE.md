@@ -1,5 +1,43 @@
 # Example
 
+#### check more in example/deep-sentiment.ipynb
+```python
+import malaya
+model = malaya.deep_sentiment()
+model.predict('Itu luahan ibu kepada Adam Rayqal Mohd. Sufi berusia lima bulan yang ditemukan maut dalam peti sejuk di rumah pengasuhnya di Kampung Nakhoda, Batu Caves dekat sini malam tadi.')
+{'attention': [['itu', 0.010114629],
+  ['luahan', 0.011603625],
+  ['ibu', 0.013130191],
+  ['kepada', 0.014695615],
+  ['adam', 0.019652419],
+  ['rayqal', 0.023623446],
+  ['mohd', 0.026430555],
+  ['sufi', 0.02637163],
+  ['berusia', 0.024927197],
+  ['lima', 0.021254309],
+  ['bulan', 0.020151515],
+  ['yang', 0.018860165],
+  ['ditemukan', 0.023863137],
+  ['maut', 0.024894103],
+  ['dalam', 0.022707025],
+  ['peti', 0.02510267],
+  ['sejuk', 0.027117774],
+  ['di', 0.027523432],
+  ['rumah', 0.03352615],
+  ['pengasuhnya', 0.040462654],
+  ['di', 0.042655356],
+  ['kampung', 0.05751138],
+  ['nakhoda', 0.064501695],
+  ['batu', 0.074137],
+  ['caves', 0.07565814],
+  ['dekat', 0.068563],
+  ['sini', 0.06280588],
+  ['malam', 0.053027365],
+  ['tadi', 0.045127857]],
+ 'negative': 0.8487525,
+ 'positive': 0.15124744}
+```
+
 #### check more in example/deep-learning.ipynb
 ```python
 import malaya

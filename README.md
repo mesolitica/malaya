@@ -48,6 +48,7 @@ python3 setup.py install
   * Topic Modelling
   * Pretrained word2vec from local news
   * Google news crawler
+  * Pretrained deep learning sentiment analysis with attention
 
 You can read [README](https://github.com/DevconX/Malaya/tree/master/training) for supported Entities and POS, also for comparison accuracies among models.
 
@@ -83,7 +84,7 @@ issue ='isu sekolah'
 - [x] semantic and similar words searching
 - [ ] deep learning topic modelling
 - [ ] deep learning stemming
-- [ ] pretrained deep learning sentiment analysis
+- [x] pretrained deep learning sentiment analysis
 - [ ] bahasa malaysia checker
 
 ## Warning
