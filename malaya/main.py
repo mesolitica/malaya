@@ -19,6 +19,7 @@ import tensorflow as tf
 from pathlib import Path
 from urllib.request import urlretrieve
 from .tatabahasa import *
+from .utils import *
 
 home = str(Path.home())+'/Malaya'
 stopwords_location = home+'/stop-word-kerulnet'
@@ -27,7 +28,7 @@ char_frozen = home+'/char_frozen_model.pb'
 concat_settings = home+'/concat-settings.json'
 concat_frozen = home+'/concat_frozen_model.pb'
 attention_settings = home+'/attention-settings.json'
-attention_frozen = home+'/attention_frozen_model.pb'
+attention_frozen = home+'/attention_pos_frozen_model.pb'
 STOPWORDS = None
 
 stopword_tatabahasa = list(set(tanya_list+perintah_list+pangkal_list+bantu_list+penguat_list+\
@@ -45,8 +46,8 @@ except:
 
 if not os.path.isfile(stopwords_location):
     print('downloading stopwords')
-    urlretrieve("https://raw.githubusercontent.com/DevconX/Malaya/master/data/stop-word-kerulnet", stopwords_location)
-with open(home+'/stop-word-kerulnet','r') as fopen:
+    download_file("https://raw.githubusercontent.com/DevconX/Malaya/master/data/stop-word-kerulnet", stopwords_location)
+with open(stopwords_location,'r') as fopen:
     STOPWORDS = list(filter(None, fopen.read().split('\n')))
 
 class USER_BAYES:
@@ -216,12 +217,12 @@ def deep_learning(model='attention'):
     if model == 'char':
         if not os.path.isfile(char_settings):
             print('downloading char settings')
-            urlretrieve("https://raw.githubusercontent.com/DevconX/Malaya/master/data/char-settings.json", char_settings)
+            download_file("https://raw.githubusercontent.com/DevconX/Malaya/master/data/char-settings.json", char_settings)
         with open(char_settings,'r') as fopen:
             nodes = json.loads(fopen.read())
         if not os.path.isfile(char_frozen):
             print('downloading frozen char model')
-            urlretrieve("https://raw.githubusercontent.com/DevconX/Malaya/master/data/char_frozen_model.pb", char_frozen)
+            download_file("https://raw.githubusercontent.com/DevconX/Malaya/master/data/char_frozen_model.pb", char_frozen)
         g=load_graph(char_frozen)
         nodes['X'] = g.get_tensor_by_name('import/Placeholder:0')
         nodes['logits'] = g.get_tensor_by_name('import/logits:0')
@@ -230,12 +231,12 @@ def deep_learning(model='attention'):
     elif model == 'concat':
         if not os.path.isfile(concat_settings):
             print('downloading concat settings')
-            urlretrieve("https://raw.githubusercontent.com/DevconX/Malaya/master/data/concat-settings.json", concat_settings)
+            download_file("https://raw.githubusercontent.com/DevconX/Malaya/master/data/concat-settings.json", concat_settings)
         with open(concat_settings,'r') as fopen:
             nodes = json.loads(fopen.read())
         if not os.path.isfile(concat_frozen):
             print('downloading frozen concat model')
-            urlretrieve("https://raw.githubusercontent.com/DevconX/Malaya/master/data/concat_frozen_model.pb", concat_frozen)
+            download_file("https://raw.githubusercontent.com/DevconX/Malaya/master/data/concat_frozen_model.pb", concat_frozen)
         g=load_graph(concat_frozen)
         nodes['word_ids'] = g.get_tensor_by_name('import/Placeholder:0')
         nodes['char_ids'] = g.get_tensor_by_name('import/Placeholder_1:0')
@@ -246,12 +247,12 @@ def deep_learning(model='attention'):
     elif model == 'attention':
         if not os.path.isfile(attention_settings):
             print('downloading attention settings')
-            urlretrieve("https://raw.githubusercontent.com/DevconX/Malaya/master/data/attention-settings.json", attention_settings)
+            download_file("https://raw.githubusercontent.com/DevconX/Malaya/master/data/attention-settings.json", attention_settings)
         with open(attention_settings,'r') as fopen:
             nodes = json.loads(fopen.read())
         if not os.path.isfile(attention_frozen):
             print('downloading frozen attention model')
-            urlretrieve("https://raw.githubusercontent.com/DevconX/Malaya/master/data/attention_frozen_model.pb", attention_frozen)
+            download_file("https://raw.githubusercontent.com/DevconX/Malaya/master/data/attention_frozen_model.pb", attention_frozen)
         g=load_graph(attention_frozen)
         nodes['word_ids'] = g.get_tensor_by_name('import/Placeholder:0')
         nodes['char_ids'] = g.get_tensor_by_name('import/Placeholder_1:0')
@@ -260,8 +261,7 @@ def deep_learning(model='attention'):
         nodes['idx2word'] = {int(k):v for k,v in nodes['idx2word'].items()}
         return DEEP_MODELS(nodes,tf.InteractiveSession(graph=g),get_entity_concat)
     else:
-        print('model not supported,exit.')
-        sys.exit(1)
+        raise Exception('model not supported')
 
 def tokenizer(string):
     return [word_tokenize(t) for t in sent_tokenize(s)]

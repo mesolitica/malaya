@@ -11,16 +11,16 @@ import os
 import sys
 from sklearn.neighbors import NearestNeighbors
 from pathlib import Path
+from .utils import *
 
 home = str(Path.home())+'/Malaya'
 
-def get_word2vec(size=128):
+def get_word2vec(size=256):
     if size not in [32,64,128,256,512]:
-        print('size word2vec not supported, exiting.')
-        sys.exit(1)
+        raise Exception('size word2vec not supported')
     if not os.path.isfile('%s/word2vec-%d.p'%(home,size)):
         print('downloading word2vec-%d embedded'%(size))
-        urlretrieve('http://s3-ap-southeast-1.amazonaws.com/huseinhouse-storage/word2vec-%d.p'%(size), '%s/word2vec-%d.p'%(home,size))
+        download_file('http://s3-ap-southeast-1.amazonaws.com/huseinhouse-storage/word2vec-%d.p'%(size),'%s/word2vec-%d.p'%(home,size))
     with open('%s/word2vec-%d.p'%(home,size), 'rb') as fopen:
         return pickle.load(fopen)
 
