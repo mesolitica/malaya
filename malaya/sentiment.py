@@ -92,11 +92,17 @@ class deep_sentiment:
         string = textcleaning(string)
         splitted = string.split()
         batch_x = str_idx([string], self.embedded['dictionary'], len(splitted), UNK=0)
-        if self.mode == 'attention' or self.mode == 'luong' or self.mode == 'bahdanau':
+        if self.mode == 'attention':
             probs, alphas = self.sess.run([tf.nn.softmax(self.logits),self.alphas],feed_dict={self.X:batch_x})
             words = []
             for i in range(alphas.shape[1]):
                 words.append([splitted[i],alphas[0,i]])
+            return {'negative':probs[0,0],'positive':probs[0,1],'attention':words}
+        if self.mode == 'luong' or self.mode == 'bahdanau':
+            probs, alphas = self.sess.run([tf.nn.softmax(self.logits),self.alphas],feed_dict={self.X:batch_x})
+            words = []
+            for i in range(alphas.shape[0]):
+                words.append([splitted[i],alphas[i]])
             return {'negative':probs[0,0],'positive':probs[0,1],'attention':words}
         if self.mode == 'normal':
             probs = self.sess.run(tf.nn.softmax(self.logits),feed_dict={self.X:batch_x})
