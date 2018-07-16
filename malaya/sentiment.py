@@ -109,7 +109,7 @@ class deep_sentiment:
             return {'negative':probs[0,0],'positive':probs[0,1]}
     def predict_batch(self,strings):
         strings = [textcleaning(i) for i in strings]
-        maxlen = [len(i.split()) for i in strings]
+        maxlen = max([len(i.split()) for i in strings])
         batch_x = str_idx(strings, self.embedded['dictionary'], maxlen, UNK=0)
         probs = self.sess.run(tf.nn.softmax(self.logits),feed_dict={self.X:batch_x})
         dicts = []
