@@ -50,7 +50,7 @@ python3 setup.py install
   * Google news crawler
   * Pretrained deep learning sentiment analysis with attention
 
-You can read [README](https://github.com/DevconX/Malaya/tree/master/training) for supported Entities and POS, also for comparison accuracies among models.
+You can read [README](https://github.com/DevconX/Malaya/blob/master/entities-pos/README.md) for supported Entities and POS, also for comparison accuracies among models.
 
 You can read [EXAMPLE](EXAMPLE.md) for some examples.
 
