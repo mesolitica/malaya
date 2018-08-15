@@ -18,6 +18,7 @@ O - not related, out scope
 ## POS supported
 ```
 KT - Kata Tanya
+KJ - Kata Kerja
 KP - Kata Perintah
 KPA - Kata Pangkal
 KB - Kata Bantu
@@ -185,4 +186,3 @@ avg / total       1.00      1.00      1.00    299520
 
 avg / total       1.00      1.00      1.00    299520
 ```
-
