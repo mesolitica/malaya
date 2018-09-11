@@ -1,19 +1,9 @@
 import re
 import os
 import numpy as np
-import sklearn.datasets
-from nltk.tokenize import sent_tokenize, word_tokenize
-from sklearn.naive_bayes import MultinomialNB
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.preprocessing import LabelEncoder
-from sklearn import metrics
-from sklearn.cross_validation import train_test_split
+from nltk.tokenize import word_tokenize
 from unidecode import unidecode
 import itertools
-import random
-import json
-import tensorflow as tf
 from .utils import download_file
 from .tatabahasa import stopword_tatabahasa
 from . import home
@@ -82,6 +72,10 @@ def simple_textcleaning_language_detection(string):
     string = filter(None, string.split())
     string = [y.strip() for y in string if len(y) > 1]
     return ' '.join(string).lower()
+
+def entities_textcleaning(string):
+    string = re.sub('[^A-Za-z0-9\-\/ ]+', ' ', string).split()
+    return [y.strip() for y in string]
 
 def deep_sentiment_textcleaning(string):
     string = re.sub('http\S+|www.\S+', '',' '.join([i for i in string.split() if i.find('#')<0 and i.find('@')<0]))

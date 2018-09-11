@@ -2,7 +2,7 @@ from distutils.core import setup
 setup(
     name = "malaya",
     packages = ["malaya"],
-    version = "0.1",
+    version = "0.2",
     description = "Natural-Language-Toolkit for bahasa Malaysia, powered by Deep Learning.",
     author = "huseinzol05",
     author_email = "husein.zol05@gmail.com",

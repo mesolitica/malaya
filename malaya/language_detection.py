@@ -1,5 +1,4 @@
 import pickle
-import json
 import os
 from .text_functions import simple_textcleaning_language_detection
 from .utils import download_file

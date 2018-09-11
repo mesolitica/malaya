@@ -13,13 +13,13 @@ Natural-Language-Toolkit for bahasa Malaysia, powered by Deep Learning.
 
 Using CPU
 ```bash
-pip3 install sklearn requests fuzzywuzzy tqdm nltk unidecode numpy scipy python-levenshtein tensorflow==1.5
+pip3 install scikit-learn==0.19.1 requests fuzzywuzzy tqdm nltk unidecode numpy scipy python-levenshtein tensorflow==1.5
 python3 -m nltk.downloader punkt
 ```
 
 Using GPU
 ```bash
-pip3 install sklearn requests fuzzywuzzy tqdm nltk unidecode numpy scipy python-levenshtein tensorflow-gpu==1.5
+pip3 install scikit-learn==0.19.1 requests fuzzywuzzy tqdm nltk unidecode numpy scipy python-levenshtein tensorflow-gpu==1.5
 python3 -m nltk.downloader punkt
 ```
 
@@ -46,9 +46,7 @@ python3 setup.py install
   * Topic Modelling
   * Google news crawler
 
-You can read [README](example/entities-pos/README.md) for supported Entities and POS.
-
-You can check [EXAMPLE DIRECTORY](example) for some examples.
+You can check [EXAMPLE DIRECTORY](example) for some APIs and examples.
 
 ## How-to
 

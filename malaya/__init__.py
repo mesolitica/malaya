@@ -1,5 +1,7 @@
 from pathlib import Path
 import os
+import warnings
+warnings.simplefilter("ignore", DeprecationWarning)
 
 home = str(Path.home())+'/Malaya'
 
@@ -10,6 +12,7 @@ except:
     print('cannot make directory for cache, exiting.')
     sys.exit(1)
 
+from .entities import multinomial_entities
 from .language_detection import get_language_labels, detect_language, detect_languages
 from .normalizer import naive_normalizer, basic_normalizer
 from .num2word import to_cardinal,to_ordinal,to_ordinal_num,to_currency,to_year
@@ -54,3 +57,12 @@ def describe_entities_malaya():
     print('FAC - facility, hospitals, clinics, etc')
     print('TIME - date, day, time, etc')
     print('O - not related, out scope')
+
+def describe_entities():
+    print('OTHER - not related, out of scope')
+    print('law - documents, law related')
+    print('location - location, place')
+    print('organization - Organization, company, government, parties')
+    print('person - person, group of people, believes, special names')
+    print('quantity - countable')
+    print('time - date, day, time')
