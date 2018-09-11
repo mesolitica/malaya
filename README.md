@@ -2,10 +2,8 @@
     <img src="entities-pos/towns-of-malaya.jpg" alt="malaya logo" />
 </p>
 
-# Malaya
+# Malaya ![alt text](https://travis-ci.org/DevconX/Malaya.svg?branch=master)
 Natural-Language-Toolkit for bahasa Malaysia, powered by Deep Learning.
-
-![alt text](https://travis-ci.org/DevconX/Malaya.svg?branch=master)
 
 ## Requirements
   * Python < 3.7
