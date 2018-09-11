@@ -32,3 +32,7 @@ tatabahasa_dict = {'KT':tanya_list,'KP':perintah_list,'KPA':pangkal_list,'KB':ba
                    'KPENEGAS':penegas_list,'NAFI':nafi_list, 'KPEMERI':pemeri_list,'KS':sendi_list,'KPEMBENAR':pembenar_list,
                    'NO':nombor_list,'SUKU':suku_bilangan_list,'PISAHAN':pisahan_list,'KETERANGAN':keterangan_list,
                    'ARAH':arah_list,'KH':hubung_list,'GN':gantinama_list}
+
+stopword_tatabahasa = list(set(tanya_list+perintah_list+pangkal_list+bantu_list+penguat_list+\
+                penegas_list+nafi_list+pemeri_list+sendi_list+pembenar_list+nombor_list+\
+                suku_bilangan_list+pisahan_list+keterangan_list+arah_list+hubung_list+gantinama_list))

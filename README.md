@@ -3,36 +3,33 @@
 </p>
 
 # Malaya
-NLTK like for bahasa Malaysia, powered by Deep Learning
+Natural-Language-Toolkit for bahasa Malaysia, powered by Deep Learning.
 
 ## Requirements
-  * Python >= 3.0
-  * Tensorflow >= 1.5
-  * NumPy >= 1.0
-  * Sklearn >= 0.18
-  * Fuzzywuzzy
-  * unidecode
-  * nltk
-  * scipy
+  * Python < 3.7
 
 ## Installation
 1. Install dependencies
-```bash
-# using gpu if you installed CUDA and libcudnn
-pip3 install sklearn fuzzywuzzy nltk unidecode numpy scipy python-levenshtein tensorflow-gpu==1.5
 
-# using cpu
+Using CPU
+```bash
 pip3 install sklearn fuzzywuzzy nltk unidecode numpy scipy python-levenshtein tensorflow==1.5
 ```
 
-```python
-import nltk
-nltk.download('punkt')
+Using GPU
+```bash
+pip3 install sklearn fuzzywuzzy nltk unidecode numpy scipy python-levenshtein tensorflow-gpu==1.5
 ```
+
+```bash
+python3 -m nltk.downloader punkt
+```
+
 2. Clone this repository
 ```bash
 git clone https://github.com/DevconX/Malaya
 ```
+
 3. install using setup.py
 ```bash
 python3 setup.py install
@@ -50,7 +47,7 @@ python3 setup.py install
   * Google news crawler
   * Pretrained deep learning sentiment analysis with attention
 
-You can read [README](https://github.com/DevconX/Malaya/blob/master/entities-pos/README.md) for supported Entities and POS, also for comparison accuracies among models.
+You can read [README](/entities-pos/README.md) for supported Entities and POS, also for comparison accuracies among models.
 
 You can read [EXAMPLE](EXAMPLE.md) for some examples.
 
@@ -72,30 +69,34 @@ issue ='isu sekolah'
 ## To do
 
 - [x] tokenizer
-- [x] stemming
+- [x] naive stemmer
 - [x] tatabahasa gathering
 - [x] Multinomial naive bayes
-- [x] Part-Of-Speech using Regex
+- [x] naive Part-Of-Speech
 - [x] Part-Of-Speech using Deep Learning
 - [x] number to words (currency, numbers, position, year)
 - [x] stopwords
-- [x] normalizer
+- [x] naive normalizer
 - [x] top-k hot topic (LSA, NMF, LDA)
-- [x] semantic and similar words searching
+- [x] semantic and similar words searching (Word2Vec)
+- [x] pretrained deep learning sentiment analysis
+- [x] pretrained naive bayes sentiment analysis
+- [x] bahasa malaysia checker
+- [x] summarization agent (LSA, NMF, LDA)
 - [ ] deep learning topic modelling
 - [ ] deep learning stemming
-- [x] pretrained deep learning sentiment analysis
-- [ ] bahasa malaysia checker
-
-## Warning
-
-Install this library with fully aware that this library is still in alpha stage.
-
-Documentation will be released soon.
 
 ## Disclaimer
 
 Most of the data gathered using crawlers crawled through targeted malaysia websites. I am not aware of any data protection.
+
+Documentation will be released soon.
+
+## References
+
+1. Banko, M., Cafarella, M.J., Soderland, S., Broadhead, M. and Etzioni, O., 2007, January. Open Information Extraction from the Web. In IJCAI (Vol. 7, pp. 2670-2676).
+2. Angeli, G., Premkumar, M.J. and Manning, C.D., 2015, July. Leveraging linguistic structure for open domain information extraction. In Proceedings of the 53rd Annual Meeting of the Association for Computational Linguistics (ACL 2015).
+3. Suhartono, D., 2014. Lemmatization Technique in Bahasa: Indonesian. Journal of Software, 9(5), p.1203.
 
 ## Authors
 

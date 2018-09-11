@@ -1,21 +1,18 @@
+from sklearn.utils import shuffle
+from sklearn.manifold import TSNE
+from scipy.spatial.distance import cdist
+from sklearn.neighbors import NearestNeighbors
+import pickle
+import os
+import sys
 import collections
 import re
 import numpy as np
 import tensorflow as tf
-from sklearn.utils import shuffle
-from sklearn.manifold import TSNE
-from scipy.spatial.distance import cdist
-from urllib.request import urlretrieve
-import pickle
-import os
-import sys
-from sklearn.neighbors import NearestNeighbors
-from pathlib import Path
-from .utils import *
+from . import home
+from .utils import download_file
 
-home = str(Path.home())+'/Malaya'
-
-def get_word2vec(size=256):
+def malaya_word2vec(size = 256):
     if size not in [32,64,128,256,512]:
         raise Exception('size word2vec not supported')
     if not os.path.isfile('%s/word2vec-%d.p'%(home,size)):

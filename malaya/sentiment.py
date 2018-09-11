@@ -1,33 +1,26 @@
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.preprocessing import LabelEncoder
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+from .text_functions import separate_dataset, stemmer, malaya_clearstring, deep_sentiment_textcleaning
+from sklearn.cross_validation import train_test_split
+from sklearn import metrics
 import tensorflow as tf
 import re
 import numpy as np
 import os
-from pathlib import Path
 import itertools
-from urllib.request import urlretrieve
 from unidecode import unidecode
 import pickle
-from .utils import *
+from .utils import download_file, load_graph
+from . import home
 
-home = str(Path.home())+'/Malaya'
 path_attention = home+'/attention_frozen_model.pb'
 path_bahdanau = home+'/bahdanau_frozen_model.pb'
 path_luong = home+'/luong_frozen_model.pb'
 path_normal = home+'/normal_frozen_model.pb'
-
-def textcleaning(string):
-    string = re.sub('http\S+|www.\S+', '',' '.join([i for i in string.split() if i.find('#')<0 and i.find('@')<0]))
-    string = unidecode(string).replace('.', '. ').replace(',', ', ')
-    string = re.sub('[^\'\"A-Za-z\- ]+', '', string)
-    return ' '.join([i for i in re.findall("[\\w']+|[;:\-\(\)&.,!?\"]", string) if len(i)>1]).lower()
-
-def load_graph(frozen_graph_filename):
-    with tf.gfile.GFile(frozen_graph_filename, "rb") as f:
-        graph_def = tf.GraphDef()
-        graph_def.ParseFromString(f.read())
-    with tf.Graph().as_default() as graph:
-        tf.import_graph_def(graph_def)
-    return graph
+bayes_location = home + '/bayes.pkl'
+bow_location = home + '/bow.pkl'
+tfidf_location = home + '/tfidf.pkl'
 
 def str_idx(corpus, dic, maxlen, UNK=0):
     X = np.zeros((len(corpus),maxlen))
@@ -89,7 +82,8 @@ class deep_sentiment:
         else:
             raise Exception('model sentiment not supported')
     def predict(self,string):
-        string = textcleaning(string)
+        assert (isinstance(string, str)), "input must be a string"
+        string = deep_sentiment_textcleaning(string)
         splitted = string.split()
         batch_x = str_idx([string], self.embedded['dictionary'], len(splitted), UNK=0)
         if self.mode == 'attention':
@@ -108,7 +102,8 @@ class deep_sentiment:
             probs = self.sess.run(tf.nn.softmax(self.logits),feed_dict={self.X:batch_x})
             return {'negative':probs[0,0],'positive':probs[0,1]}
     def predict_batch(self,strings):
-        strings = [textcleaning(i) for i in strings]
+        assert (isinstance(strings, list) and isinstance(strings[0], str)), "input must be list of strings"
+        strings = [deep_sentiment_textcleaning(i) for i in strings]
         maxlen = max([len(i.split()) for i in strings])
         batch_x = str_idx(strings, self.embedded['dictionary'], maxlen, UNK=0)
         probs = self.sess.run(tf.nn.softmax(self.logits),feed_dict={self.X:batch_x})
@@ -116,3 +111,80 @@ class deep_sentiment:
         for i in range(probs.shape[0]):
             dicts.append({'negative':probs[i,0],'positive':probs[i,1]})
         return dicts
+
+class USER_BAYES:
+    def __init__(self,multinomial, label, vectorize):
+        self.multinomial = multinomial
+        self.label = label
+        self.vectorize = vectorize
+    def predict(self, string):
+        assert (isinstance(string, str)), "input must be a string"
+        vectors = self.vectorize.transform([string])
+        results = self.multinomial.predict_proba(vectors)[0]
+        out = []
+        for no, i in enumerate(self.label):
+            out.append((i,results[no]))
+        return out
+
+def bayes_sentiment(
+                corpus,
+                tokenizing = True,
+                cleaning = ,
+                stemming = True,
+                vector = 'tfidf',
+                split_size = 0.2, **kwargs):
+    multinomial,labels,vectorize = None, None, None
+    if vector.lower().find('tfidf') < 0 and vector.lower().find('bow') < 0:
+        raise Exception('Invalid vectorization technique')
+    if isinstance(corpus, str):
+        trainset = sklearn.datasets.load_files(container_path = corpus, encoding = 'UTF-8')
+        trainset.data, trainset.target = separate_dataset(trainset)
+        data, target = trainset.data, trainset.target
+        labels = trainset.target_names
+    if isinstance(corpus, list) or isinstance(corpus, tuple):
+        corpus = np.array(corpus)
+        data, target = corpus[:,0].tolist(), corpus[:,1].tolist()
+        labels = np.unique(target).tolist()
+        target = LabelEncoder().fit_transform(target)
+    c = list(zip(data, target))
+    random.shuffle(c)
+    data, target = zip(*c)
+    data, target = list(data), list(target)
+    if stemming:
+        for i in range(len(data)): data[i] = ' '.join([naive_stemmer(k) for k in data[i].split()])
+    if cleaning:
+        for i in range(len(data)): data[i] = malaya_clearstring(data[i], tokenizing)
+    if vector.lower().find('tfidf') >= 0:
+        vectorize = TfidfVectorizer(**kwargs).fit(data)
+        vectors = vectorize.transform(data)
+    else:
+        vectorize = CountVectorizer(**kwargs).fit(data)
+        vectors = vectorize.transform(data)
+    multinomial = MultinomialNB(**kwargs)
+    if split_size:
+        train_X, test_X, train_Y, test_Y = train_test_split(vectors, target, test_size = split)
+        multinomial.partial_fit(train_X, train_Y,classes=np.unique(target))
+        predicted = multinomial.predict(test_X)
+        print(metrics.classification_report(test_Y, predicted, target_names = labels))
+    else:
+        multinomial.partial_fit(vectors,target,classes=np.unique(target))
+        predicted = multinomial.predict(vectors)
+        print(metrics.classification_report(target, predicted, target_names = labels))
+    return USER_BAYES(multinomial, labels, vectorize)
+
+def pretrained_bayes_sentiment(tfidf = True):
+    if not os.path.isfile(bayes_location):
+        print('downloading pickled multinomial model')
+        download_file("", bayes_location)
+    if not os.path.isfile(tfidf_location):
+        print('downloading pickled tfidf vectorizations')
+        download_file("", tfidf_location)
+    if not os.path.isfile(bow_location):
+        print('downloading pickled bow vectorizations')
+        download_file("", bow_location)
+    with open(bayes_location,'rb') as fopen:
+        multinomial = pickle.load(fopen)
+    location_vector = tfidf_location if tfidf else bow_location
+    with open(location_vector,'rb') as fopen:
+        vectorize = pickle.load(fopen)
+    return USER_BAYES(multinomial, ['negative','positive'], vectorize)

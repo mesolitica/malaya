@@ -2,11 +2,11 @@ from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.decomposition import TruncatedSVD, NMF, LatentDirichletAllocation
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import Normalizer
-import numpy as np
-import re
-from nltk.tokenize import word_tokenize
+from .text_functions import simple_textcleaning
 from unidecode import unidecode
 import itertools
+import numpy as np
+import re
 
 class TOPIC:
     def __init__(self,features,comp):
@@ -18,16 +18,8 @@ class TOPIC:
             results.append((no, " ".join([self.features[i] for i in topic.argsort()[:-len_topic -1:-1]])))
         return results
 
-def clearstring(string):
-    string = unidecode(string)
-    string = re.sub('[^A-Za-z ]+', '', string)
-    string = word_tokenize(string)
-    string = filter(None, string)
-    string = [y.strip() for y in string]
-    string = ' '.join(string).lower()
-    return ''.join(''.join(s)[:2] for _, s in itertools.groupby(string))
-
-def train_lda(corpus,n_topics=10, max_df=0.95, min_df=2,cleaning=clearstring,stop_words='english'):
+def lda_topic_modelling(corpus,n_topics=10, max_df=0.95, min_df=2,cleaning=simple_textcleaning,stop_words='english'):
+    assert (isinstance(strings, list) and isinstance(strings[0], str)), "input must be list of strings"
     if cleaning is not None:
         for i in range(len(corpus)): corpus[i] = cleaning(corpus[i])
     tf_vectorizer = CountVectorizer(max_df=max_df, min_df=min_df, stop_words=stop_words)
@@ -36,7 +28,8 @@ def train_lda(corpus,n_topics=10, max_df=0.95, min_df=2,cleaning=clearstring,sto
     lda = LatentDirichletAllocation(n_topics=n_topics, max_iter = 5, learning_method = 'online', learning_offset=50., random_state=0).fit(tf)
     return TOPIC(tf_features,lda)
 
-def train_nmf(corpus,n_topics=10, max_df=0.95, min_df=2,cleaning=clearstring,stop_words='english'):
+def nmf_topic_modelling(corpus,n_topics=10, max_df=0.95, min_df=2,cleaning=simple_textcleaning,stop_words='english'):
+    assert (isinstance(strings, list) and isinstance(strings[0], str)), "input must be list of strings"
     if cleaning is not None:
         for i in range(len(corpus)): corpus[i] = cleaning(corpus[i])
     tfidf_vectorizer = TfidfVectorizer(max_df = max_df, min_df = min_df, stop_words = stop_words)
@@ -45,7 +38,8 @@ def train_nmf(corpus,n_topics=10, max_df=0.95, min_df=2,cleaning=clearstring,sto
     nmf = NMF(n_components=n_topics, random_state = 1, alpha =.1, l1_ratio=.5, init = 'nndsvd').fit(tfidf)
     return TOPIC(tfidf_features,nmf)
 
-def train_lsa(corpus,n_topics, max_df=0.95, min_df=2,cleaning=clearstring,stop_words='english'):
+def lsa_topic_modelling(corpus,n_topics, max_df=0.95, min_df=2,cleaning=simple_textcleaning,stop_words='english'):
+    assert (isinstance(strings, list) and isinstance(strings[0], str)), "input must be list of strings"
     if cleaning is not None:
         for i in range(len(corpus)): corpus[i] = cleaning(corpus[i])
     tfidf_vectorizer = TfidfVectorizer(max_df = max_df, min_df = min_df, stop_words = stop_words)
