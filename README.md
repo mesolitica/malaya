@@ -54,13 +54,13 @@ You can check [EXAMPLE DIRECTORY](example) for some APIs and examples.
 ```python3
 import malaya
 ```
+
 2. crawler
 ```bash
-cd crawl/crawler
-```
-```python3
+cd crawl
 # change into any topic / issue in main.py
-issue ='isu sekolah'
+# issue ='isu sekolah'
+python3 main.py
 ```
 
 ## To do
