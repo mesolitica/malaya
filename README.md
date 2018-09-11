@@ -13,15 +13,13 @@ Natural-Language-Toolkit for bahasa Malaysia, powered by Deep Learning.
 
 Using CPU
 ```bash
-pip3 install sklearn fuzzywuzzy nltk unidecode numpy scipy python-levenshtein tensorflow==1.5
+pip3 install sklearn requests fuzzywuzzy tqdm nltk unidecode numpy scipy python-levenshtein tensorflow==1.5
+python3 -m nltk.downloader punkt
 ```
 
 Using GPU
 ```bash
-pip3 install sklearn fuzzywuzzy nltk unidecode numpy scipy python-levenshtein tensorflow-gpu==1.5
-```
-
-```bash
+pip3 install sklearn requests fuzzywuzzy tqdm nltk unidecode numpy scipy python-levenshtein tensorflow-gpu==1.5
 python3 -m nltk.downloader punkt
 ```
 
@@ -38,18 +36,19 @@ python3 setup.py install
 ## Features
   * Deep learning Named entity recognition
   * Deep learning Part-of-speech tagging
+  * Deep learning sentiment analysis with attention
+  * Pretrained word2vec from local news
+  * Multinomial sentiment analysis
+  * Multinomial language detection
   * Naive Part-of-speech tagging
   * Text Normalizer
   * Naive Stemming
-  * Naive Bayes
   * Topic Modelling
-  * Pretrained word2vec from local news
   * Google news crawler
-  * Pretrained deep learning sentiment analysis with attention
 
-You can read [README](/entities-pos/README.md) for supported Entities and POS, also for comparison accuracies among models.
+You can read [README](example/entities-pos/README.md) for supported Entities and POS.
 
-You can read [EXAMPLE](EXAMPLE.md) for some examples.
+You can check [EXAMPLE DIRECTORY](example) for some examples.
 
 ## How-to
 
@@ -75,7 +74,7 @@ issue ='isu sekolah'
 - [x] naive Part-Of-Speech
 - [x] Part-Of-Speech using Deep Learning
 - [x] number to words (currency, numbers, position, year)
-- [x] stopwords
+- [x] stopwords combination of indonesian and malaysian
 - [x] naive normalizer
 - [x] top-k hot topic (LSA, NMF, LDA)
 - [x] semantic and similar words searching (Word2Vec)

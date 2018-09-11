@@ -1,6 +1,8 @@
 import pickle
 import json
+import os
 from .text_functions import simple_textcleaning_language_detection
+from .utils import download_file
 from . import home
 
 bow_pkl = home+'/bow-language-detection.pkl'
@@ -50,6 +52,9 @@ def detect_languages(strings, get_proba=False):
             MULTINOMIAL = pickle.load(fopen)
     if get_proba:
         results = MULTINOMIAL.predict_proba(BOW.transform(strings))
-        return [{lang_labels[i]:result[i] for i in range(len(result)) for result in results}]
+        outputs = []
+        for result in results:
+            outputs.append({lang_labels[i]:result[i] for i in range(len(result))})
+        return outputs
     else:
         return [lang_labels[result] for result in MULTINOMIAL.predict(BOW.transform(strings))]

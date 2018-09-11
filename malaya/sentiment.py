@@ -1,7 +1,8 @@
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.preprocessing import LabelEncoder
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
-from .text_functions import separate_dataset, stemmer, malaya_clearstring, deep_sentiment_textcleaning
+from .text_functions import separate_dataset, deep_sentiment_textcleaning
+from .stemmer import naive_stemmer
 from sklearn.cross_validation import train_test_split
 from sklearn import metrics
 import tensorflow as tf
@@ -18,9 +19,8 @@ path_attention = home+'/attention_frozen_model.pb'
 path_bahdanau = home+'/bahdanau_frozen_model.pb'
 path_luong = home+'/luong_frozen_model.pb'
 path_normal = home+'/normal_frozen_model.pb'
-bayes_location = home + '/bayes.pkl'
-bow_location = home + '/bow.pkl'
-tfidf_location = home + '/tfidf.pkl'
+bayes_location = home + '/bayes-news.pkl'
+tfidf_location = home + '/tfidf-news.pkl'
 
 def str_idx(corpus, dic, maxlen, UNK=0):
     X = np.zeros((len(corpus),maxlen))
@@ -31,6 +31,9 @@ def str_idx(corpus, dic, maxlen, UNK=0):
             except Exception as e:
                 X[i,-1 - no]=UNK
     return X
+
+def get_available_sentiment_models():
+    return ['bahdanau','attention','luong','normal']
 
 class deep_sentiment:
     def __init__(self,model='bahdanau'):
@@ -119,7 +122,7 @@ class USER_BAYES:
         self.vectorize = vectorize
     def predict(self, string):
         assert (isinstance(string, str)), "input must be a string"
-        vectors = self.vectorize.transform([string])
+        vectors = self.vectorize.transform([deep_sentiment_textcleaning(string)])
         results = self.multinomial.predict_proba(vectors)[0]
         out = []
         for no, i in enumerate(self.label):
@@ -128,8 +131,7 @@ class USER_BAYES:
 
 def bayes_sentiment(
                 corpus,
-                tokenizing = True,
-                cleaning = ,
+                cleaning = True,
                 stemming = True,
                 vector = 'tfidf',
                 split_size = 0.2, **kwargs):
@@ -153,7 +155,7 @@ def bayes_sentiment(
     if stemming:
         for i in range(len(data)): data[i] = ' '.join([naive_stemmer(k) for k in data[i].split()])
     if cleaning:
-        for i in range(len(data)): data[i] = malaya_clearstring(data[i], tokenizing)
+        for i in range(len(data)): data[i] = deep_sentiment_textcleaning(data[i])
     if vector.lower().find('tfidf') >= 0:
         vectorize = TfidfVectorizer(**kwargs).fit(data)
         vectors = vectorize.transform(data)
@@ -172,19 +174,15 @@ def bayes_sentiment(
         print(metrics.classification_report(target, predicted, target_names = labels))
     return USER_BAYES(multinomial, labels, vectorize)
 
-def pretrained_bayes_sentiment(tfidf = True):
+def pretrained_bayes_sentiment():
     if not os.path.isfile(bayes_location):
         print('downloading pickled multinomial model')
-        download_file("", bayes_location)
+        download_file("http://s3-ap-southeast-1.amazonaws.com/huseinhouse-storage/multinomial-sentiment-news.pkl", bayes_location)
     if not os.path.isfile(tfidf_location):
         print('downloading pickled tfidf vectorizations')
-        download_file("", tfidf_location)
-    if not os.path.isfile(bow_location):
-        print('downloading pickled bow vectorizations')
-        download_file("", bow_location)
+        download_file("http://s3-ap-southeast-1.amazonaws.com/huseinhouse-storage/tfidf-news.pkl", tfidf_location)
     with open(bayes_location,'rb') as fopen:
         multinomial = pickle.load(fopen)
-    location_vector = tfidf_location if tfidf else bow_location
-    with open(location_vector,'rb') as fopen:
+    with open(tfidf_location,'rb') as fopen:
         vectorize = pickle.load(fopen)
     return USER_BAYES(multinomial, ['negative','positive'], vectorize)

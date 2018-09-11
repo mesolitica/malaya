@@ -6,7 +6,7 @@ def download_file(url, filename):
     r = requests.get(url, stream = True)
     total_size = int(r.headers['content-length'])
     with open(filename, 'wb') as f:
-        for data in tqdm(iterable = r.iter_content(chunk_size = 1048576), total = total_size/chunk_size, unit = 'MB'):
+        for data in tqdm(iterable = r.iter_content(chunk_size = 1048576), total = total_size/1048576, unit = 'MB'):
             f.write(data)
 
 def load_graph(frozen_graph_filename):

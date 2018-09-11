@@ -1,8 +1,8 @@
 import re
 import tensorflow as tf
 import numpy as np
-from nltk.tokenize import word_tokenize
-from .tatabahasa import tatabahasa_dict, hujung, permulaan
+import os
+import json
 from . import home
 from .utils import load_graph, download_file
 
@@ -79,16 +79,19 @@ def get_entity_concat(string,sess,model):
         results.append((i,model['idx2tag'][str(Y_pred[0,no])],model['idx2pos'][str(Y_pos[0,no])]))
     return results
 
+def get_available_pos_entities_models():
+    return ['char', 'concat', 'attention']
+
 def deep_pos_entities(model='attention'):
     if model == 'char':
         if not os.path.isfile(char_settings):
             print('downloading char settings')
-            download_file("https://raw.githubusercontent.com/DevconX/Malaya/master/data/char-settings.json", char_settings)
+            download_file("http://s3-ap-southeast-1.amazonaws.com/huseinhouse-storage/char-settings-pos-entities.json", char_settings)
         with open(char_settings,'r') as fopen:
             nodes = json.loads(fopen.read())
         if not os.path.isfile(char_frozen):
             print('downloading frozen char model')
-            download_file("https://raw.githubusercontent.com/DevconX/Malaya/master/data/char_frozen_model.pb", char_frozen)
+            download_file("http://s3-ap-southeast-1.amazonaws.com/huseinhouse-storage/char-frozen-model-pos-entities.pb", char_frozen)
         g=load_graph(char_frozen)
         nodes['X'] = g.get_tensor_by_name('import/Placeholder:0')
         nodes['logits'] = g.get_tensor_by_name('import/logits:0')
@@ -97,12 +100,12 @@ def deep_pos_entities(model='attention'):
     elif model == 'concat':
         if not os.path.isfile(concat_settings):
             print('downloading concat settings')
-            download_file("https://raw.githubusercontent.com/DevconX/Malaya/master/data/concat-settings.json", concat_settings)
+            download_file("http://s3-ap-southeast-1.amazonaws.com/huseinhouse-storage/concat-settings-pos-entities.json", concat_settings)
         with open(concat_settings,'r') as fopen:
             nodes = json.loads(fopen.read())
         if not os.path.isfile(concat_frozen):
             print('downloading frozen concat model')
-            download_file("https://raw.githubusercontent.com/DevconX/Malaya/master/data/concat_frozen_model.pb", concat_frozen)
+            download_file("http://s3-ap-southeast-1.amazonaws.com/huseinhouse-storage/concat-frozen-model-pos-entities.pb", concat_frozen)
         g=load_graph(concat_frozen)
         nodes['word_ids'] = g.get_tensor_by_name('import/Placeholder:0')
         nodes['char_ids'] = g.get_tensor_by_name('import/Placeholder_1:0')
@@ -113,12 +116,12 @@ def deep_pos_entities(model='attention'):
     elif model == 'attention':
         if not os.path.isfile(attention_settings):
             print('downloading attention settings')
-            download_file("https://raw.githubusercontent.com/DevconX/Malaya/master/data/attention-settings.json", attention_settings)
+            download_file("http://s3-ap-southeast-1.amazonaws.com/huseinhouse-storage/attention-settings-pos-entities.json", attention_settings)
         with open(attention_settings,'r') as fopen:
             nodes = json.loads(fopen.read())
         if not os.path.isfile(attention_frozen):
             print('downloading frozen attention model')
-            download_file("https://raw.githubusercontent.com/DevconX/Malaya/master/data/attention_frozen_model.pb", attention_frozen)
+            download_file("http://s3-ap-southeast-1.amazonaws.com/huseinhouse-storage/attention-frozen-model-pos-entities.pb", attention_frozen)
         g=load_graph(attention_frozen)
         nodes['word_ids'] = g.get_tensor_by_name('import/Placeholder:0')
         nodes['char_ids'] = g.get_tensor_by_name('import/Placeholder_1:0')
@@ -128,30 +131,3 @@ def deep_pos_entities(model='attention'):
         return DEEP_MODELS(nodes,tf.InteractiveSession(graph=g),get_entity_concat)
     else:
         raise Exception('model not supported')
-
-def naive_POS_word(word):
-    for key, vals in tatabahasa_dict.items():
-        if word in vals:
-            return (key,word)
-    try:
-        if len(re.findall(r'^(.*?)(%s)$'%('|'.join(hujung[:1])), i)[0]) > 1:
-            return ('KJ',word)
-    except:
-        pass
-    try:
-        if len(re.findall(r'^(.*?)(%s)'%('|'.join(permulaan[:-4])), word)[0]) > 1:
-            return ('KJ',word)
-    except Exception as e:
-        pass
-    if len(word) > 2:
-        return ('KN',word)
-    else:
-        return ('',word)
-
-def naive_pos(string):
-    assert (isinstance(string, str)), "input must be a string"
-    string = string.lower()
-    results = []
-    for i in word_tokenize(string):
-        results.append(naive_POS_word(i))
-    return results

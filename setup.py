@@ -2,8 +2,8 @@ from distutils.core import setup
 setup(
     name = "malaya",
     packages = ["malaya"],
-    version = "0.0.8",
-    description = "nltk like for Bahasa Malaysia",
+    version = "0.1",
+    description = "Natural-Language-Toolkit for bahasa Malaysia, powered by Deep Learning.",
     author = "huseinzol05",
     author_email = "husein.zol05@gmail.com",
     url = "https://github.com/DevconX/Malaya",
@@ -37,5 +37,5 @@ Detects
  - ISO-8859-8, windows-1255 (Visual and Logical Hebrew)
  - TIS-620 (Thai)
 
-This version requires Python 3 or later; a Python 2 version is available separately.
+This version requires Python 3 or later, less than 3.7 .
 """)

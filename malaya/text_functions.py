@@ -22,7 +22,7 @@ STOPWORDS = None
 stopwords_location = home+'/stop-word-kerulnet'
 if not os.path.isfile(stopwords_location):
     print('downloading stopwords')
-    download_file("https://raw.githubusercontent.com/DevconX/Malaya/master/data/stop-word-kerulnet", stopwords_location)
+    download_file("http://s3-ap-southeast-1.amazonaws.com/huseinhouse-storage/stop-word-kerulnet", stopwords_location)
 with open(stopwords_location,'r') as fopen:
     STOPWORDS = list(filter(None, fopen.read().split('\n')))
 
@@ -87,7 +87,7 @@ def deep_sentiment_textcleaning(string):
     string = re.sub('http\S+|www.\S+', '',' '.join([i for i in string.split() if i.find('#')<0 and i.find('@')<0]))
     string = unidecode(string).replace('.', '. ').replace(',', ', ')
     string = re.sub('[^\'\"A-Za-z\- ]+', '', string)
-    return ' '.join([i for i in re.findall("[\\w']+|[;:\-\(\)&.,!?\"]", string) if len(i)>1]).lower()
+    return ' '.join([i for i in re.findall("[\\w']+|[;:\-\(\)&.,!?\"]", string) if len(i)>1 and i not in STOPWORDS]).lower()
 
 def variant(word):
     word = word.lower()
