@@ -20,6 +20,7 @@ from .pos_entities import deep_pos_entities, get_available_pos_entities_models
 from .pos import naive_pos
 from .sentiment import deep_sentiment, bayes_sentiment, pretrained_bayes_sentiment, get_available_sentiment_models
 from .stemmer import naive_stemmer
+from .summarization import summarize_lsa, summarize_nmf, summarize_lda
 from .topic_modelling import lda_topic_modelling, nmf_topic_modelling, lsa_topic_modelling
 from .word2vec import malaya_word2vec, Word2Vec
 

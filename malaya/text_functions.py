@@ -77,6 +77,10 @@ def entities_textcleaning(string):
     string = re.sub('[^A-Za-z0-9\-\/ ]+', ' ', string).split()
     return [y.strip() for y in string]
 
+def summary_textcleaning(string):
+    string = re.sub('[^A-Za-z0-9\-\/\'\"\.\, ]+', ' ', string).split()
+    return ' '.join([y.strip() for y in string])
+
 def deep_sentiment_textcleaning(string):
     string = re.sub('http\S+|www.\S+', '',' '.join([i for i in string.split() if i.find('#')<0 and i.find('@')<0]))
     string = unidecode(string).replace('.', '. ').replace(',', ', ')

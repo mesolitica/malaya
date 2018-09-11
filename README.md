@@ -43,7 +43,8 @@ python3 setup.py install
   * Naive Part-of-speech tagging
   * Text Normalizer
   * Naive Stemming
-  * Topic Modelling
+  * Topic Modelling (LSA, NMF, LDA)
+  * Summarization (LSA, NMF, LDA)
   * Google news crawler
 
 You can check [EXAMPLE DIRECTORY](example) for some APIs and examples.
@@ -75,11 +76,11 @@ python3 main.py
 - [x] stopwords combination of indonesian and malaysian
 - [x] naive normalizer
 - [x] top-k hot topic (LSA, NMF, LDA)
+- [x] summarization agent (LSA, NMF, LDA)
 - [x] semantic and similar words searching (Word2Vec)
 - [x] pretrained deep learning sentiment analysis
 - [x] pretrained naive bayes sentiment analysis
 - [x] bahasa malaysia checker
-- [x] summarization agent (LSA, NMF, LDA)
 - [ ] deep learning topic modelling
 - [ ] deep learning stemming
 

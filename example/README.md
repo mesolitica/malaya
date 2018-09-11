@@ -77,3 +77,16 @@ Stemming words.
 ```python
 malaya.naive_stemmer(string)
 ```
+
+#### 8. Summarization
+
+summarization agent, supported on LSA, LDA, NMF decompositions.
+
+```python
+'''
+corpus = list of strings
+top_k = number of top similar sentences (int)
+important_words = number of top important words (int)
+'''
+malaya.summarize_lsa(corpus, top_k, important_words)
+```
