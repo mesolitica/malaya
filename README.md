@@ -13,13 +13,13 @@ Natural-Language-Toolkit for bahasa Malaysia, powered by Deep Learning.
 
 Using CPU
 ```bash
-pip3 install scikit-learn==0.19.1 requests fuzzywuzzy tqdm nltk unidecode numpy scipy python-levenshtein tensorflow==1.5
+pip3 install scikit-learn==0.19.1 requests fuzzywuzzy tqdm nltk unidecode numpy scipy python-levenshtein tensorflow==1.5 pandas
 python3 -m nltk.downloader punkt
 ```
 
 Using GPU
 ```bash
-pip3 install scikit-learn==0.19.1 requests fuzzywuzzy tqdm nltk unidecode numpy scipy python-levenshtein tensorflow-gpu==1.5
+pip3 install scikit-learn==0.19.1 requests fuzzywuzzy tqdm nltk unidecode numpy scipy python-levenshtein tensorflow-gpu==1.5 pandas
 python3 -m nltk.downloader punkt
 ```
 

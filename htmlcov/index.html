@@ -1,0 +1,230 @@
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Coverage report</title>
+    <link rel="stylesheet" href="style.css" type="text/css">
+    
+    <script type="text/javascript" src="jquery.min.js"></script>
+    <script type="text/javascript" src="jquery.ba-throttle-debounce.min.js"></script>
+    <script type="text/javascript" src="jquery.tablesorter.min.js"></script>
+    <script type="text/javascript" src="jquery.hotkeys.js"></script>
+    <script type="text/javascript" src="coverage_html.js"></script>
+    <script type="text/javascript">
+        jQuery(document).ready(coverage.index_ready);
+    </script>
+</head>
+<body class="indexfile">
+
+<div id="header">
+    <div class="content">
+        <h1>Coverage report:
+            <span class="pc_cov">83%</span>
+        </h1>
+
+        <img id="keyboard_icon" src="keybd_closed.png" alt="Show keyboard shortcuts" />
+
+        <form id="filter_container">
+            <input id="filter" type="text" value="" placeholder="filter..." />
+        </form>
+    </div>
+</div>
+
+<div class="help_panel">
+    <img id="panel_icon" src="keybd_open.png" alt="Hide keyboard shortcuts" />
+    <p class="legend">Hot-keys on this page</p>
+    <div>
+    <p class="keyhelp">
+        <span class="key">n</span>
+        <span class="key">s</span>
+        <span class="key">m</span>
+        <span class="key">x</span>
+        
+        <span class="key">c</span> &nbsp; change column sorting
+    </p>
+    </div>
+</div>
+
+<div id="index">
+    <table class="index">
+        <thead>
+            
+            <tr class="tablehead" title="Click to sort">
+                <th class="name left headerSortDown shortkey_n">Module</th>
+                <th class="shortkey_s">statements</th>
+                <th class="shortkey_m">missing</th>
+                <th class="shortkey_x">excluded</th>
+                
+                <th class="right shortkey_c">coverage</th>
+            </tr>
+        </thead>
+        
+        <tfoot>
+            <tr class="total">
+                <td class="name left">Total</td>
+                <td>918</td>
+                <td>160</td>
+                <td>0</td>
+                
+                <td class="right" data-ratio="758 918">83%</td>
+            </tr>
+        </tfoot>
+        <tbody>
+            
+            <tr class="file">
+                <td class="name left"><a href="malaya___init___py.html">malaya/__init__.py</a></td>
+                <td>63</td>
+                <td>3</td>
+                <td>0</td>
+                
+                <td class="right" data-ratio="60 63">95%</td>
+            </tr>
+            
+            <tr class="file">
+                <td class="name left"><a href="malaya_entities_py.html">malaya/entities.py</a></td>
+                <td>24</td>
+                <td>0</td>
+                <td>0</td>
+                
+                <td class="right" data-ratio="24 24">100%</td>
+            </tr>
+            
+            <tr class="file">
+                <td class="name left"><a href="malaya_language_detection_py.html">malaya/language_detection.py</a></td>
+                <td>38</td>
+                <td>0</td>
+                <td>0</td>
+                
+                <td class="right" data-ratio="38 38">100%</td>
+            </tr>
+            
+            <tr class="file">
+                <td class="name left"><a href="malaya_normalizer_py.html">malaya/normalizer.py</a></td>
+                <td>54</td>
+                <td>9</td>
+                <td>0</td>
+                
+                <td class="right" data-ratio="45 54">83%</td>
+            </tr>
+            
+            <tr class="file">
+                <td class="name left"><a href="malaya_num2word_py.html">malaya/num2word.py</a></td>
+                <td>105</td>
+                <td>24</td>
+                <td>0</td>
+                
+                <td class="right" data-ratio="81 105">77%</td>
+            </tr>
+            
+            <tr class="file">
+                <td class="name left"><a href="malaya_pos_py.html">malaya/pos.py</a></td>
+                <td>30</td>
+                <td>1</td>
+                <td>0</td>
+                
+                <td class="right" data-ratio="29 30">97%</td>
+            </tr>
+            
+            <tr class="file">
+                <td class="name left"><a href="malaya_pos_entities_py.html">malaya/pos_entities.py</a></td>
+                <td>121</td>
+                <td>8</td>
+                <td>0</td>
+                
+                <td class="right" data-ratio="113 121">93%</td>
+            </tr>
+            
+            <tr class="file">
+                <td class="name left"><a href="malaya_sentiment_py.html">malaya/sentiment.py</a></td>
+                <td>173</td>
+                <td>48</td>
+                <td>0</td>
+                
+                <td class="right" data-ratio="125 173">72%</td>
+            </tr>
+            
+            <tr class="file">
+                <td class="name left"><a href="malaya_stemmer_py.html">malaya/stemmer.py</a></td>
+                <td>10</td>
+                <td>0</td>
+                <td>0</td>
+                
+                <td class="right" data-ratio="10 10">100%</td>
+            </tr>
+            
+            <tr class="file">
+                <td class="name left"><a href="malaya_summarization_py.html">malaya/summarization.py</a></td>
+                <td>55</td>
+                <td>0</td>
+                <td>0</td>
+                
+                <td class="right" data-ratio="55 55">100%</td>
+            </tr>
+            
+            <tr class="file">
+                <td class="name left"><a href="malaya_tatabahasa_py.html">malaya/tatabahasa.py</a></td>
+                <td>22</td>
+                <td>0</td>
+                <td>0</td>
+                
+                <td class="right" data-ratio="22 22">100%</td>
+            </tr>
+            
+            <tr class="file">
+                <td class="name left"><a href="malaya_text_functions_py.html">malaya/text_functions.py</a></td>
+                <td>96</td>
+                <td>50</td>
+                <td>0</td>
+                
+                <td class="right" data-ratio="46 96">48%</td>
+            </tr>
+            
+            <tr class="file">
+                <td class="name left"><a href="malaya_topic_modelling_py.html">malaya/topic_modelling.py</a></td>
+                <td>46</td>
+                <td>0</td>
+                <td>0</td>
+                
+                <td class="right" data-ratio="46 46">100%</td>
+            </tr>
+            
+            <tr class="file">
+                <td class="name left"><a href="malaya_utils_py.html">malaya/utils.py</a></td>
+                <td>16</td>
+                <td>0</td>
+                <td>0</td>
+                
+                <td class="right" data-ratio="16 16">100%</td>
+            </tr>
+            
+            <tr class="file">
+                <td class="name left"><a href="malaya_word2vec_py.html">malaya/word2vec.py</a></td>
+                <td>65</td>
+                <td>17</td>
+                <td>0</td>
+                
+                <td class="right" data-ratio="48 65">74%</td>
+            </tr>
+            
+        </tbody>
+    </table>
+
+    <p id="no_rows">
+        No items found using the specified filter.
+    </p>
+</div>
+
+<div id="footer">
+    <div class="content">
+        <p>
+            <a class="nav" href="https://coverage.readthedocs.io">coverage.py v4.5.1</a>,
+            created at 2018-09-12 09:31
+        </p>
+    </div>
+</div>
+
+</body>
+</html>

@@ -2,7 +2,9 @@ language: python
 
 python:
   - "3.5"
-  
+
 install: ./build-dependencies.sh
 
-script: coverage run tests.py
+script: pytest --cov=malaya/ tests/
+
+after_success: coveralls
