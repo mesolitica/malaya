@@ -87,15 +87,6 @@ def deep_sentiment_textcleaning(string):
     string = re.sub('[^\'\"A-Za-z\- ]+', '', string)
     return ' '.join([i for i in re.findall("[\\w']+|[;:\-\(\)&.,!?\"]", string) if len(i)>1 and i not in STOPWORDS]).lower()
 
-def variant(word):
-    word = word.lower()
-    splits = [(word[:i], word[i:]) for i in range(len(word)+1)]
-    deletes = [a + b[1:] for a, b in splits if b]
-    transposes = [a + b[1] + b[0] + b[2:] for a, b in splits if len(b) > 1]
-    replaces = [a + c + b[1:] for a, b in splits for c in alphabet if b]
-    inserts = [a + c + b for a, b in splits for c in alphabet]
-    return np.unique(deletes + transposes + replaces + inserts, return_counts=True)
-
 def separate_dataset(trainset):
     datastring = []
     datatarget = []

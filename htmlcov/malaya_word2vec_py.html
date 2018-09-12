@@ -8,7 +8,7 @@
     
     
     <meta http-equiv="X-UA-Compatible" content="IE=emulateIE7" />
-    <title>Coverage for malaya/word2vec.py: 74%</title>
+    <title>Coverage for malaya/word2vec.py: 86%</title>
     <link rel="stylesheet" href="style.css" type="text/css">
     
     <script type="text/javascript" src="jquery.min.js"></script>
@@ -24,15 +24,15 @@
 <div id="header">
     <div class="content">
         <h1>Coverage for <b>malaya/word2vec.py</b> :
-            <span class="pc_cov">74%</span>
+            <span class="pc_cov">86%</span>
         </h1>
 
         <img id="keyboard_icon" src="keybd_closed.png" alt="Show keyboard shortcuts" />
 
         <h2 class="stats">
             65 statements &nbsp;
-            <span class="run hide_run shortkey_r button_toggle_run">48 run</span>
-            <span class="mis shortkey_m button_toggle_mis">17 missing</span>
+            <span class="run hide_run shortkey_r button_toggle_run">56 run</span>
+            <span class="mis shortkey_m button_toggle_mis">9 missing</span>
             <span class="exc shortkey_x button_toggle_exc">0 excluded</span>
 
             
@@ -108,14 +108,14 @@
 <p id="n39" class="stm run hide_run"><a href="#n39">39</a></p>
 <p id="n40" class="stm run hide_run"><a href="#n40">40</a></p>
 <p id="n41" class="pln"><a href="#n41">41</a></p>
-<p id="n42" class="stm mis"><a href="#n42">42</a></p>
-<p id="n43" class="stm mis"><a href="#n43">43</a></p>
-<p id="n44" class="stm mis"><a href="#n44">44</a></p>
-<p id="n45" class="stm mis"><a href="#n45">45</a></p>
-<p id="n46" class="stm mis"><a href="#n46">46</a></p>
-<p id="n47" class="stm mis"><a href="#n47">47</a></p>
-<p id="n48" class="stm mis"><a href="#n48">48</a></p>
-<p id="n49" class="stm mis"><a href="#n49">49</a></p>
+<p id="n42" class="stm run hide_run"><a href="#n42">42</a></p>
+<p id="n43" class="stm run hide_run"><a href="#n43">43</a></p>
+<p id="n44" class="stm run hide_run"><a href="#n44">44</a></p>
+<p id="n45" class="stm run hide_run"><a href="#n45">45</a></p>
+<p id="n46" class="stm run hide_run"><a href="#n46">46</a></p>
+<p id="n47" class="stm run hide_run"><a href="#n47">47</a></p>
+<p id="n48" class="stm run hide_run"><a href="#n48">48</a></p>
+<p id="n49" class="stm run hide_run"><a href="#n49">49</a></p>
 <p id="n50" class="pln"><a href="#n50">50</a></p>
 <p id="n51" class="stm run hide_run"><a href="#n51">51</a></p>
 <p id="n52" class="stm run hide_run"><a href="#n52">52</a></p>
@@ -184,14 +184,14 @@
 <p id="t39" class="stm run hide_run">                <span class="nam">word_list</span><span class="op">.</span><span class="nam">append</span><span class="op">(</span><span class="op">[</span><span class="nam">self</span><span class="op">.</span><span class="nam">_reverse_dictionary</span><span class="op">[</span><span class="nam">idx</span><span class="op">[</span><span class="num">0</span><span class="op">,</span><span class="nam">i</span><span class="op">]</span><span class="op">]</span><span class="op">,</span><span class="num">1</span><span class="op">-</span><span class="nam">distances</span><span class="op">[</span><span class="num">0</span><span class="op">,</span><span class="nam">i</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
 <p id="t40" class="stm run hide_run">            <span class="key">return</span> <span class="nam">word_list</span><span class="strut">&nbsp;</span></p>
 <p id="t41" class="pln">        <span class="key">else</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
-<p id="t42" class="stm mis">            <span class="nam">wv</span> <span class="op">=</span> <span class="nam">self</span><span class="op">.</span><span class="nam">get_vector_by_name</span><span class="op">(</span><span class="nam">word</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t43" class="stm mis">            <span class="nam">closest_indices</span> <span class="op">=</span> <span class="nam">self</span><span class="op">.</span><span class="nam">closest_row_indices</span><span class="op">(</span><span class="nam">wv</span><span class="op">,</span> <span class="nam">num_closest</span> <span class="op">+</span> <span class="num">1</span><span class="op">,</span> <span class="nam">metric</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t44" class="stm mis">            <span class="nam">word_list</span> <span class="op">=</span> <span class="op">[</span><span class="op">]</span><span class="strut">&nbsp;</span></p>
-<p id="t45" class="stm mis">            <span class="key">for</span> <span class="nam">i</span> <span class="key">in</span> <span class="nam">closest_indices</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
-<p id="t46" class="stm mis">                <span class="nam">word_list</span><span class="op">.</span><span class="nam">append</span><span class="op">(</span><span class="nam">self</span><span class="op">.</span><span class="nam">_reverse_dictionary</span><span class="op">[</span><span class="nam">i</span><span class="op">]</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t47" class="stm mis">            <span class="key">if</span> <span class="nam">word</span> <span class="key">in</span> <span class="nam">word_list</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
-<p id="t48" class="stm mis">                <span class="nam">word_list</span><span class="op">.</span><span class="nam">remove</span><span class="op">(</span><span class="nam">word</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t49" class="stm mis">            <span class="key">return</span> <span class="nam">word_list</span><span class="strut">&nbsp;</span></p>
+<p id="t42" class="stm run hide_run">            <span class="nam">wv</span> <span class="op">=</span> <span class="nam">self</span><span class="op">.</span><span class="nam">get_vector_by_name</span><span class="op">(</span><span class="nam">word</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t43" class="stm run hide_run">            <span class="nam">closest_indices</span> <span class="op">=</span> <span class="nam">self</span><span class="op">.</span><span class="nam">closest_row_indices</span><span class="op">(</span><span class="nam">wv</span><span class="op">,</span> <span class="nam">num_closest</span> <span class="op">+</span> <span class="num">1</span><span class="op">,</span> <span class="nam">metric</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t44" class="stm run hide_run">            <span class="nam">word_list</span> <span class="op">=</span> <span class="op">[</span><span class="op">]</span><span class="strut">&nbsp;</span></p>
+<p id="t45" class="stm run hide_run">            <span class="key">for</span> <span class="nam">i</span> <span class="key">in</span> <span class="nam">closest_indices</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
+<p id="t46" class="stm run hide_run">                <span class="nam">word_list</span><span class="op">.</span><span class="nam">append</span><span class="op">(</span><span class="nam">self</span><span class="op">.</span><span class="nam">_reverse_dictionary</span><span class="op">[</span><span class="nam">i</span><span class="op">]</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t47" class="stm run hide_run">            <span class="key">if</span> <span class="nam">word</span> <span class="key">in</span> <span class="nam">word_list</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
+<p id="t48" class="stm run hide_run">                <span class="nam">word_list</span><span class="op">.</span><span class="nam">remove</span><span class="op">(</span><span class="nam">word</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t49" class="stm run hide_run">            <span class="key">return</span> <span class="nam">word_list</span><span class="strut">&nbsp;</span></p>
 <p id="t50" class="pln"><span class="strut">&nbsp;</span></p>
 <p id="t51" class="stm run hide_run">    <span class="key">def</span> <span class="nam">closest_row_indices</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">wv</span><span class="op">,</span> <span class="nam">num</span><span class="op">,</span> <span class="nam">metric</span><span class="op">)</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
 <p id="t52" class="stm run hide_run">        <span class="nam">dist_array</span> <span class="op">=</span> <span class="nam">np</span><span class="op">.</span><span class="nam">ravel</span><span class="op">(</span><span class="nam">cdist</span><span class="op">(</span><span class="nam">self</span><span class="op">.</span><span class="nam">_embed_matrix</span><span class="op">,</span> <span class="nam">wv</span><span class="op">.</span><span class="nam">reshape</span><span class="op">(</span><span class="op">(</span><span class="num">1</span><span class="op">,</span> <span class="op">-</span><span class="num">1</span><span class="op">)</span><span class="op">)</span><span class="op">,</span><span class="nam">metric</span><span class="op">=</span><span class="nam">metric</span><span class="op">)</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
@@ -226,7 +226,7 @@
     <div class="content">
         <p>
             <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a class="nav" href="https://coverage.readthedocs.io">coverage.py v4.5.1</a>,
-            created at 2018-09-12 09:31
+            created at 2018-09-12 10:32
         </p>
     </div>
 </div>

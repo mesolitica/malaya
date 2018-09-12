@@ -12,6 +12,7 @@ import os
 import itertools
 from unidecode import unidecode
 import pickle
+import random
 from .utils import download_file, load_graph
 from . import home
 
@@ -164,7 +165,7 @@ def bayes_sentiment(
         vectors = vectorize.transform(data)
     multinomial = MultinomialNB(**kwargs)
     if split_size:
-        train_X, test_X, train_Y, test_Y = train_test_split(vectors, target, test_size = split)
+        train_X, test_X, train_Y, test_Y = train_test_split(vectors, target, test_size = split_size)
         multinomial.partial_fit(train_X, train_Y,classes=np.unique(target))
         predicted = multinomial.predict(test_X)
         print(metrics.classification_report(test_Y, predicted, target_names = labels))
