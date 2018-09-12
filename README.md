@@ -2,7 +2,7 @@
     <img src="entities-pos/towns-of-malaya.jpg" alt="malaya logo" />
 </p>
 
-# Malaya ![alt text](https://travis-ci.org/DevconX/Malaya.svg?branch=master) [![Coverage Status-90](https://coveralls.io/repos/github/DevconX/Malaya/badge.svg?branch=master)](https://coveralls.io/github/DevconX/Malaya?branch=master)
+# Malaya ![alt text](https://travis-ci.org/DevconX/Malaya.svg?branch=master) [![Coverage Status-90](https://s3.amazonaws.com/assets.coveralls.io/badges/coveralls_90.svg)](https://coveralls.io/github/DevconX/Malaya?branch=master)
 Natural-Language-Toolkit for bahasa Malaysia, powered by Deep Learning.
 
 ## Requirements
