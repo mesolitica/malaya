@@ -4,7 +4,7 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from .text_functions import separate_dataset, deep_sentiment_textcleaning
 from .stemmer import naive_stemmer
 from sklearn.cross_validation import train_test_split
-from sklearn import metrics
+from sklearn import metrics, datasets
 import tensorflow as tf
 import re
 import numpy as np
@@ -13,6 +13,7 @@ import itertools
 from unidecode import unidecode
 import pickle
 import random
+from .language_detection import USER_XGB, USER_BAYES
 from .utils import download_file, load_graph
 from . import home
 
@@ -22,6 +23,8 @@ path_luong = home+'/luong_frozen_model.pb'
 path_normal = home+'/normal_frozen_model.pb'
 bayes_location = home + '/bayes-news.pkl'
 tfidf_location = home + '/tfidf-news.pkl'
+xgb_location = home + '/xgboost-sentiment.pkl'
+xgb_tfidf_location = home + '/xgboost-tfidf.pkl'
 
 def str_idx(corpus, dic, maxlen, UNK=0):
     X = np.zeros((len(corpus),maxlen))
@@ -116,20 +119,6 @@ class deep_sentiment:
             dicts.append({'negative':probs[i,0],'positive':probs[i,1]})
         return dicts
 
-class USER_BAYES:
-    def __init__(self,multinomial, label, vectorize):
-        self.multinomial = multinomial
-        self.label = label
-        self.vectorize = vectorize
-    def predict(self, string):
-        assert (isinstance(string, str)), "input must be a string"
-        vectors = self.vectorize.transform([deep_sentiment_textcleaning(string)])
-        results = self.multinomial.predict_proba(vectors)[0]
-        out = []
-        for no, i in enumerate(self.label):
-            out.append((i,results[no]))
-        return out
-
 def bayes_sentiment(
                 corpus,
                 cleaning = True,
@@ -140,7 +129,7 @@ def bayes_sentiment(
     if vector.lower().find('tfidf') < 0 and vector.lower().find('bow') < 0:
         raise Exception('Invalid vectorization technique')
     if isinstance(corpus, str):
-        trainset = sklearn.datasets.load_files(container_path = corpus, encoding = 'UTF-8')
+        trainset = datasets.load_files(container_path = corpus, encoding = 'UTF-8')
         trainset.data, trainset.target = separate_dataset(trainset)
         data, target = trainset.data, trainset.target
         labels = trainset.target_names
@@ -187,3 +176,16 @@ def pretrained_bayes_sentiment():
     with open(tfidf_location,'rb') as fopen:
         vectorize = pickle.load(fopen)
     return USER_BAYES(multinomial, ['negative','positive'], vectorize)
+
+def pretrained_xgb_sentiment():
+    if not os.path.isfile(xgb_location):
+        print('downloading pickled xgb model')
+        download_file("http://s3-ap-southeast-1.amazonaws.com/huseinhouse-storage/xgboost-sentiment.pkl", xgb_location)
+    if not os.path.isfile(xgb_tfidf_location):
+        print('downloading pickled tfidf vectorizations')
+        download_file("http://s3-ap-southeast-1.amazonaws.com/huseinhouse-storage/xgboost-tfidf.pkl", xgb_tfidf_location)
+    with open(xgb_location,'rb') as fopen:
+        xgb = pickle.load(fopen)
+    with open(xgb_tfidf_location,'rb') as fopen:
+        vectorize = pickle.load(fopen)
+    return USER_XGB(xgb, ['negative','positive'], vectorize)

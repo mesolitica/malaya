@@ -8,7 +8,7 @@
     
     
     <meta http-equiv="X-UA-Compatible" content="IE=emulateIE7" />
-    <title>Coverage for malaya/__init__.py: 95%</title>
+    <title>Coverage for malaya/__init__.py: 94%</title>
     <link rel="stylesheet" href="style.css" type="text/css">
     
     <script type="text/javascript" src="jquery.min.js"></script>
@@ -24,15 +24,15 @@
 <div id="header">
     <div class="content">
         <h1>Coverage for <b>malaya/__init__.py</b> :
-            <span class="pc_cov">95%</span>
+            <span class="pc_cov">94%</span>
         </h1>
 
         <img id="keyboard_icon" src="keybd_closed.png" alt="Show keyboard shortcuts" />
 
         <h2 class="stats">
-            63 statements &nbsp;
+            64 statements &nbsp;
             <span class="run hide_run shortkey_r button_toggle_run">60 run</span>
-            <span class="mis shortkey_m button_toggle_mis">3 missing</span>
+            <span class="mis shortkey_m button_toggle_mis">4 missing</span>
             <span class="exc shortkey_x button_toggle_exc">0 excluded</span>
 
             
@@ -76,7 +76,7 @@
 <p id="n7" class="pln"><a href="#n7">7</a></p>
 <p id="n8" class="stm run hide_run"><a href="#n8">8</a></p>
 <p id="n9" class="stm run hide_run"><a href="#n9">9</a></p>
-<p id="n10" class="stm run hide_run"><a href="#n10">10</a></p>
+<p id="n10" class="stm mis"><a href="#n10">10</a></p>
 <p id="n11" class="stm mis"><a href="#n11">11</a></p>
 <p id="n12" class="stm mis"><a href="#n12">12</a></p>
 <p id="n13" class="stm mis"><a href="#n13">13</a></p>
@@ -92,8 +92,8 @@
 <p id="n23" class="stm run hide_run"><a href="#n23">23</a></p>
 <p id="n24" class="stm run hide_run"><a href="#n24">24</a></p>
 <p id="n25" class="stm run hide_run"><a href="#n25">25</a></p>
-<p id="n26" class="pln"><a href="#n26">26</a></p>
-<p id="n27" class="stm run hide_run"><a href="#n27">27</a></p>
+<p id="n26" class="stm run hide_run"><a href="#n26">26</a></p>
+<p id="n27" class="pln"><a href="#n27">27</a></p>
 <p id="n28" class="stm run hide_run"><a href="#n28">28</a></p>
 <p id="n29" class="stm run hide_run"><a href="#n29">29</a></p>
 <p id="n30" class="stm run hide_run"><a href="#n30">30</a></p>
@@ -115,8 +115,8 @@
 <p id="n46" class="stm run hide_run"><a href="#n46">46</a></p>
 <p id="n47" class="stm run hide_run"><a href="#n47">47</a></p>
 <p id="n48" class="stm run hide_run"><a href="#n48">48</a></p>
-<p id="n49" class="pln"><a href="#n49">49</a></p>
-<p id="n50" class="stm run hide_run"><a href="#n50">50</a></p>
+<p id="n49" class="stm run hide_run"><a href="#n49">49</a></p>
+<p id="n50" class="pln"><a href="#n50">50</a></p>
 <p id="n51" class="stm run hide_run"><a href="#n51">51</a></p>
 <p id="n52" class="stm run hide_run"><a href="#n52">52</a></p>
 <p id="n53" class="stm run hide_run"><a href="#n53">53</a></p>
@@ -127,8 +127,8 @@
 <p id="n58" class="stm run hide_run"><a href="#n58">58</a></p>
 <p id="n59" class="stm run hide_run"><a href="#n59">59</a></p>
 <p id="n60" class="stm run hide_run"><a href="#n60">60</a></p>
-<p id="n61" class="pln"><a href="#n61">61</a></p>
-<p id="n62" class="stm run hide_run"><a href="#n62">62</a></p>
+<p id="n61" class="stm run hide_run"><a href="#n61">61</a></p>
+<p id="n62" class="pln"><a href="#n62">62</a></p>
 <p id="n63" class="stm run hide_run"><a href="#n63">63</a></p>
 <p id="n64" class="stm run hide_run"><a href="#n64">64</a></p>
 <p id="n65" class="stm run hide_run"><a href="#n65">65</a></p>
@@ -136,6 +136,7 @@
 <p id="n67" class="stm run hide_run"><a href="#n67">67</a></p>
 <p id="n68" class="stm run hide_run"><a href="#n68">68</a></p>
 <p id="n69" class="stm run hide_run"><a href="#n69">69</a></p>
+<p id="n70" class="stm run hide_run"><a href="#n70">70</a></p>
 
             </td>
             <td class="text">
@@ -148,66 +149,67 @@
 <p id="t7" class="pln"><span class="strut">&nbsp;</span></p>
 <p id="t8" class="stm run hide_run"><span class="key">try</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
 <p id="t9" class="stm run hide_run">    <span class="key">if</span> <span class="key">not</span> <span class="nam">os</span><span class="op">.</span><span class="nam">path</span><span class="op">.</span><span class="nam">exists</span><span class="op">(</span><span class="nam">home</span><span class="op">)</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
-<p id="t10" class="stm run hide_run">        <span class="nam">os</span><span class="op">.</span><span class="nam">makedirs</span><span class="op">(</span><span class="nam">home</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t10" class="stm mis">        <span class="nam">os</span><span class="op">.</span><span class="nam">makedirs</span><span class="op">(</span><span class="nam">home</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
 <p id="t11" class="stm mis"><span class="key">except</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
 <p id="t12" class="stm mis">    <span class="nam">print</span><span class="op">(</span><span class="str">'cannot make directory for cache, exiting.'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
 <p id="t13" class="stm mis">    <span class="nam">sys</span><span class="op">.</span><span class="nam">exit</span><span class="op">(</span><span class="num">1</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
 <p id="t14" class="pln"><span class="strut">&nbsp;</span></p>
 <p id="t15" class="stm run hide_run"><span class="key">from</span> <span class="op">.</span><span class="nam">entities</span> <span class="key">import</span> <span class="nam">multinomial_entities</span><span class="strut">&nbsp;</span></p>
-<p id="t16" class="stm run hide_run"><span class="key">from</span> <span class="op">.</span><span class="nam">language_detection</span> <span class="key">import</span> <span class="nam">get_language_labels</span><span class="op">,</span> <span class="nam">detect_language</span><span class="op">,</span> <span class="nam">detect_languages</span><span class="strut">&nbsp;</span></p>
+<p id="t16" class="stm run hide_run"><span class="key">from</span> <span class="op">.</span><span class="nam">language_detection</span> <span class="key">import</span> <span class="nam">multinomial_detect_languages</span><span class="op">,</span> <span class="nam">xgb_detect_languages</span><span class="op">,</span> <span class="nam">get_language_labels</span><span class="strut">&nbsp;</span></p>
 <p id="t17" class="stm run hide_run"><span class="key">from</span> <span class="op">.</span><span class="nam">normalizer</span> <span class="key">import</span> <span class="nam">naive_normalizer</span><span class="op">,</span> <span class="nam">basic_normalizer</span><span class="strut">&nbsp;</span></p>
 <p id="t18" class="stm run hide_run"><span class="key">from</span> <span class="op">.</span><span class="nam">num2word</span> <span class="key">import</span> <span class="nam">to_cardinal</span><span class="op">,</span><span class="nam">to_ordinal</span><span class="op">,</span><span class="nam">to_ordinal_num</span><span class="op">,</span><span class="nam">to_currency</span><span class="op">,</span><span class="nam">to_year</span><span class="strut">&nbsp;</span></p>
 <p id="t19" class="stm run hide_run"><span class="key">from</span> <span class="op">.</span><span class="nam">pos_entities</span> <span class="key">import</span> <span class="nam">deep_pos_entities</span><span class="op">,</span> <span class="nam">get_available_pos_entities_models</span><span class="strut">&nbsp;</span></p>
 <p id="t20" class="stm run hide_run"><span class="key">from</span> <span class="op">.</span><span class="nam">pos</span> <span class="key">import</span> <span class="nam">naive_pos</span><span class="strut">&nbsp;</span></p>
-<p id="t21" class="stm run hide_run"><span class="key">from</span> <span class="op">.</span><span class="nam">sentiment</span> <span class="key">import</span> <span class="nam">deep_sentiment</span><span class="op">,</span> <span class="nam">bayes_sentiment</span><span class="op">,</span> <span class="nam">pretrained_bayes_sentiment</span><span class="op">,</span> <span class="nam">get_available_sentiment_models</span><span class="strut">&nbsp;</span></p>
+<p id="t21" class="stm run hide_run"><span class="key">from</span> <span class="op">.</span><span class="nam">sentiment</span> <span class="key">import</span> <span class="nam">deep_sentiment</span><span class="op">,</span> <span class="nam">bayes_sentiment</span><span class="op">,</span> <span class="nam">pretrained_bayes_sentiment</span><span class="op">,</span> <span class="nam">get_available_sentiment_models</span><span class="op">,</span> <span class="nam">pretrained_xgb_sentiment</span><span class="strut">&nbsp;</span></p>
 <p id="t22" class="stm run hide_run"><span class="key">from</span> <span class="op">.</span><span class="nam">stemmer</span> <span class="key">import</span> <span class="nam">naive_stemmer</span><span class="strut">&nbsp;</span></p>
 <p id="t23" class="stm run hide_run"><span class="key">from</span> <span class="op">.</span><span class="nam">summarization</span> <span class="key">import</span> <span class="nam">summarize_lsa</span><span class="op">,</span> <span class="nam">summarize_nmf</span><span class="op">,</span> <span class="nam">summarize_lda</span><span class="strut">&nbsp;</span></p>
 <p id="t24" class="stm run hide_run"><span class="key">from</span> <span class="op">.</span><span class="nam">topic_modelling</span> <span class="key">import</span> <span class="nam">lda_topic_modelling</span><span class="op">,</span> <span class="nam">nmf_topic_modelling</span><span class="op">,</span> <span class="nam">lsa_topic_modelling</span><span class="strut">&nbsp;</span></p>
-<p id="t25" class="stm run hide_run"><span class="key">from</span> <span class="op">.</span><span class="nam">word2vec</span> <span class="key">import</span> <span class="nam">malaya_word2vec</span><span class="op">,</span> <span class="nam">Word2Vec</span><span class="strut">&nbsp;</span></p>
-<p id="t26" class="pln"><span class="strut">&nbsp;</span></p>
-<p id="t27" class="stm run hide_run"><span class="key">def</span> <span class="nam">describe_pos_malaya</span><span class="op">(</span><span class="op">)</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
-<p id="t28" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'KT - Kata Tanya'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t29" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'KJ - Kata Kerja'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t30" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'KP - Kata Perintah'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t31" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'KPA - Kata Pangkal'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t32" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'KB - Kata Bantu'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t33" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'KPENGUAT - Kata Penguat'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t34" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'KPENEGAS - Kata Penegas'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t35" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'NAFI - Kata Nafi'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t36" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'KPEMERI - Kata Pemeri'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t37" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'KS - Kata Sendi'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t38" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'KPEMBENAR - Kata Pembenar'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t39" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'NAFI - Kata Nafi'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t40" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'NO - Numbers'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t41" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'SUKU - Suku Bilangan'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t42" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'PISAHAN - Kata Pisahan'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t43" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'KETERANGAN - Kata Keterangan'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t44" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'ARAH - Kata Arah'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t45" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'KH - Kata Hubung'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t46" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'GN - Ganti Nama'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t47" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'KA - Kata Adjektif'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t48" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'O - not related, out scope'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t49" class="pln"><span class="strut">&nbsp;</span></p>
-<p id="t50" class="stm run hide_run"><span class="key">def</span> <span class="nam">describe_entities_malaya</span><span class="op">(</span><span class="op">)</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
-<p id="t51" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'PRN - person, group of people, believes, etc'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t52" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'LOC - location'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t53" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'NORP - Military, police, government, Parties, etc'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t54" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'ORG - Organization, company'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t55" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'LAW - related law document, etc'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t56" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'ART - art of work, special names, etc'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t57" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'EVENT - event happen, etc'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t58" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'FAC - facility, hospitals, clinics, etc'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t59" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'TIME - date, day, time, etc'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t60" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'O - not related, out scope'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t61" class="pln"><span class="strut">&nbsp;</span></p>
-<p id="t62" class="stm run hide_run"><span class="key">def</span> <span class="nam">describe_entities</span><span class="op">(</span><span class="op">)</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
-<p id="t63" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'OTHER - not related, out of scope'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t64" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'law - documents, law related'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t65" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'location - location, place'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t66" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'organization - Organization, company, government, parties'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t67" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'person - person, group of people, believes, special names'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t68" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'quantity - countable'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-<p id="t69" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'time - date, day, time'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t25" class="stm run hide_run"><span class="key">from</span> <span class="op">.</span><span class="nam">topics_influencers</span> <span class="key">import</span> <span class="nam">get_influencers</span><span class="op">,</span> <span class="nam">get_topics</span><span class="strut">&nbsp;</span></p>
+<p id="t26" class="stm run hide_run"><span class="key">from</span> <span class="op">.</span><span class="nam">word2vec</span> <span class="key">import</span> <span class="nam">malaya_word2vec</span><span class="op">,</span> <span class="nam">Word2Vec</span><span class="strut">&nbsp;</span></p>
+<p id="t27" class="pln"><span class="strut">&nbsp;</span></p>
+<p id="t28" class="stm run hide_run"><span class="key">def</span> <span class="nam">describe_pos_malaya</span><span class="op">(</span><span class="op">)</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
+<p id="t29" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'KT - Kata Tanya'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t30" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'KJ - Kata Kerja'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t31" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'KP - Kata Perintah'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t32" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'KPA - Kata Pangkal'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t33" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'KB - Kata Bantu'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t34" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'KPENGUAT - Kata Penguat'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t35" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'KPENEGAS - Kata Penegas'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t36" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'NAFI - Kata Nafi'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t37" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'KPEMERI - Kata Pemeri'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t38" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'KS - Kata Sendi'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t39" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'KPEMBENAR - Kata Pembenar'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t40" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'NAFI - Kata Nafi'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t41" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'NO - Numbers'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t42" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'SUKU - Suku Bilangan'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t43" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'PISAHAN - Kata Pisahan'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t44" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'KETERANGAN - Kata Keterangan'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t45" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'ARAH - Kata Arah'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t46" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'KH - Kata Hubung'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t47" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'GN - Ganti Nama'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t48" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'KA - Kata Adjektif'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t49" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'O - not related, out scope'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t50" class="pln"><span class="strut">&nbsp;</span></p>
+<p id="t51" class="stm run hide_run"><span class="key">def</span> <span class="nam">describe_entities_malaya</span><span class="op">(</span><span class="op">)</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
+<p id="t52" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'PRN - person, group of people, believes, etc'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t53" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'LOC - location'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t54" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'NORP - Military, police, government, Parties, etc'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t55" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'ORG - Organization, company'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t56" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'LAW - related law document, etc'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t57" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'ART - art of work, special names, etc'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t58" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'EVENT - event happen, etc'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t59" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'FAC - facility, hospitals, clinics, etc'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t60" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'TIME - date, day, time, etc'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t61" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'O - not related, out scope'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t62" class="pln"><span class="strut">&nbsp;</span></p>
+<p id="t63" class="stm run hide_run"><span class="key">def</span> <span class="nam">describe_entities</span><span class="op">(</span><span class="op">)</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
+<p id="t64" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'OTHER - not related, out of scope'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t65" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'law - documents, law related'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t66" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'location - location, place'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t67" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'organization - Organization, company, government, parties'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t68" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'person - person, group of people, believes, special names'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t69" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'quantity - countable'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t70" class="stm run hide_run">    <span class="nam">print</span><span class="op">(</span><span class="str">'time - date, day, time'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
 
             </td>
         </tr>
@@ -218,7 +220,7 @@
     <div class="content">
         <p>
             <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a class="nav" href="https://coverage.readthedocs.io">coverage.py v4.5.1</a>,
-            created at 2018-09-12 10:32
+            created at 2018-09-13 08:32
         </p>
     </div>
 </div>

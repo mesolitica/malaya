@@ -1,23 +1,44 @@
 import malaya
-from malaya.language_detection import MULTINOMIAL, BOW
 
 def test_lang_labels():
     assert malaya.get_language_labels()[0] == 'OTHER'
 
-def test_lang_sentence():
+def test_multinomial_lang_sentence():
+    multinomial = malaya.multinomial_detect_languages()
     malay_text = 'beliau berkata program Inisitif Peduli Rakyat (IPR) yang diperkenalkan oleh kerajaan negeri Selangor lebih besar sumbangannya'
-    assert malaya.detect_language(malay_text) == 'MALAY'
+    assert multinomial.predict(malay_text) == 'MALAY'
 
-def test_lang_sentence_proba():
+def test_multinomial_lang_sentence_proba():
+    multinomial = malaya.multinomial_detect_languages()
     malay_text = 'beliau berkata program Inisitif Peduli Rakyat (IPR) yang diperkenalkan oleh kerajaan negeri Selangor lebih besar sumbangannya'
-    assert malaya.detect_language(malay_text,get_proba=True)['MALAY'] > 0
+    assert multinomial.predict(malay_text,get_proba=True)['MALAY'] > 0
 
-def test_lang_sentences():
-    global MULTINOMIAL, BOW
-    MULTINOMIAL, BOW = None, None
+def test_multinomial_lang_sentences():
+    multinomial = malaya.multinomial_detect_languages()
     malay_text = 'beliau berkata program Inisitif Peduli Rakyat (IPR) yang diperkenalkan oleh kerajaan negeri Selangor lebih besar sumbangannya'
-    assert malaya.detect_languages([malay_text,malay_text])[0] == 'MALAY'
+    assert multinomial.predict_batch([malay_text,malay_text])[0] == 'MALAY'
 
-def test_lang_sentences_proba():
+def test_multinomial_lang_sentences_proba():
+    multinomial = malaya.multinomial_detect_languages()
     malay_text = 'beliau berkata program Inisitif Peduli Rakyat (IPR) yang diperkenalkan oleh kerajaan negeri Selangor lebih besar sumbangannya'
-    assert malaya.detect_languages([malay_text,malay_text],get_proba=True)[0]['MALAY'] > 0
+    assert multinomial.predict_batch([malay_text,malay_text],get_proba=True)[0]['MALAY'] > 0
+
+def test_xgb_lang_sentence():
+    xgb = malaya.xgb_detect_languages()
+    malay_text = 'beliau berkata program Inisitif Peduli Rakyat (IPR) yang diperkenalkan oleh kerajaan negeri Selangor lebih besar sumbangannya'
+    assert xgb.predict(malay_text) == 'MALAY'
+
+def test_xgb_lang_sentence_proba():
+    xgb = malaya.xgb_detect_languages()
+    malay_text = 'beliau berkata program Inisitif Peduli Rakyat (IPR) yang diperkenalkan oleh kerajaan negeri Selangor lebih besar sumbangannya'
+    assert xgb.predict(malay_text,get_proba=True)['MALAY'] > 0
+
+def test_xgb_lang_sentences():
+    xgb = malaya.xgb_detect_languages()
+    malay_text = 'beliau berkata program Inisitif Peduli Rakyat (IPR) yang diperkenalkan oleh kerajaan negeri Selangor lebih besar sumbangannya'
+    assert xgb.predict_batch([malay_text,malay_text])[0] == 'MALAY'
+
+def test_xgb_lang_sentences_proba():
+    xgb = malaya.xgb_detect_languages()
+    malay_text = 'beliau berkata program Inisitif Peduli Rakyat (IPR) yang diperkenalkan oleh kerajaan negeri Selangor lebih besar sumbangannya'
+    assert xgb.predict_batch([malay_text,malay_text],get_proba=True)[0]['MALAY'] > 0

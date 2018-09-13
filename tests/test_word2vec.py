@@ -16,3 +16,9 @@ def test_word2vec_analogy():
     embedded = malaya.malaya_word2vec(256)
     word_vector = malaya.Word2Vec(embedded['nce_weights'], embedded['dictionary'])
     assert len(word_vector.analogy('anwar', 'penjara', 'kerajaan', 5)) == 5
+
+def test_word2vec_tsne():
+    embedded = malaya.malaya_word2vec(32)
+    word_vector = malaya.Word2Vec(embedded['nce_weights'], embedded['dictionary'])
+    embed_2d, word_list = word_vector.project_2d(0, 100)
+    assert embed_2d.shape[1] == 2

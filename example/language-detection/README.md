@@ -30,14 +30,9 @@ malay_text = 'beliau berkata program Inisitif Peduli Rakyat (IPR) yang diperkena
 
 
 ```python
-malaya.detect_language(chinese_text)
+multinomial = malaya.multinomial_detect_languages()
+multinomial.predict(chinese_text)
 ```
-
-    /usr/local/lib/python3.6/site-packages/sklearn/base.py:311: UserWarning: Trying to unpickle estimator CountVectorizer from version 0.19.1 when using version 0.19.2. This might lead to breaking code or invalid results. Use at your own risk.
-      UserWarning)
-    /usr/local/lib/python3.6/site-packages/sklearn/base.py:311: UserWarning: Trying to unpickle estimator MultinomialNB from version 0.19.1 when using version 0.19.2. This might lead to breaking code or invalid results. Use at your own risk.
-      UserWarning)
-
 
 
 
@@ -48,7 +43,7 @@ malaya.detect_language(chinese_text)
 
 
 ```python
-malaya.detect_language(english_text)
+multinomial.predict(english_text)
 ```
 
 
@@ -60,7 +55,7 @@ malaya.detect_language(english_text)
 
 
 ```python
-malaya.detect_language(indon_text)
+multinomial.predict(indon_text)
 ```
 
 
@@ -72,7 +67,7 @@ malaya.detect_language(indon_text)
 
 
 ```python
-malaya.detect_language(malay_text)
+multinomial.predict(malay_text)
 ```
 
 
@@ -84,7 +79,7 @@ malaya.detect_language(malay_text)
 
 
 ```python
-malaya.detect_language(malay_text,get_proba=True)
+multinomial.predict(malay_text,get_proba=True)
 ```
 
 
@@ -99,7 +94,7 @@ malaya.detect_language(malay_text,get_proba=True)
 
 
 ```python
-malaya.detect_languages([english_text,malay_text])
+multinomial.predict_batch([english_text,malay_text])
 ```
 
 
@@ -111,8 +106,7 @@ malaya.detect_languages([english_text,malay_text])
 
 
 ```python
-import malaya
-malaya.detect_languages([english_text,malay_text],get_proba=True)
+multinomial.predict_batch([english_text,malay_text],get_proba=True)
 ```
 
 
@@ -126,6 +120,53 @@ malaya.detect_languages([english_text,malay_text],get_proba=True)
       'ENGLISH': 0.0,
       'INDONESIA': 1.485952831042105e-173,
       'MALAY': 1.0}]
+
+
+
+
+```python
+xgb = malaya.xgb_detect_languages()
+xgb.predict(chinese_text)
+```
+
+
+
+
+    'OTHER'
+
+
+
+
+```python
+xgb.predict(indon_text,get_proba=True)
+```
+
+
+
+
+    {'OTHER': 6.92337e-10,
+     'ENGLISH': 3.507782e-11,
+     'INDONESIA': 0.9995041,
+     'MALAY': 0.0004959471}
+
+
+
+
+```python
+xgb.predict_batch([indon_text,malay_text],get_proba=True)
+```
+
+
+
+
+    [{'OTHER': 6.92337e-10,
+      'ENGLISH': 3.507782e-11,
+      'INDONESIA': 0.9995041,
+      'MALAY': 0.0004959471},
+     {'OTHER': 1.174448e-09,
+      'ENGLISH': 1.4715874e-10,
+      'INDONESIA': 0.001421933,
+      'MALAY': 0.9985781}]
 
 
 
