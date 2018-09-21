@@ -2,23 +2,35 @@ import numpy as np
 import pandas as pd
 import re
 from fuzzywuzzy import fuzz
+import zipfile
+import os
 from .text_functions import STOPWORDS
+from . import home
+from .utils import download_file
+
+zip_location = home+'/rules-based.zip'
+
+if not os.path.isfile(zip_location):
+    print('downloading ZIP rules-based')
+    download_file("rules-based.zip", zip_location)
+    with zipfile.ZipFile(zip_location, 'r') as zip_ref:
+        zip_ref.extractall(home)
 
 def apply_stopwords_calon(string):
     string = re.sub('[^A-Za-z ]+', '', string)
     return ' '.join([i for i in string.split() if i not in STOPWORDS and len(i) > 1])
 
-df = pd.read_csv('malaya/rules-based/calon.csv')
+df = pd.read_csv(home+'/rules-based/calon.csv')
 namacalon = df.NamaCalon.str.lower().unique().tolist()
 for i in range(len(namacalon)):
     namacalon[i] = apply_stopwords_calon(namacalon[i])
 
-df = pd.read_csv('malaya/rules-based/negeri.csv')
+df = pd.read_csv(home+'/rules-based/negeri.csv')
 negeri = df.negeri.str.lower().unique().tolist()
 parlimen = df.parlimen.str.lower().unique().tolist()
 dun = df.dun.str.lower().unique().tolist()[:-1]
 
-with open('malaya/rules-based/person-normalized','r') as fopen:
+with open(home+'/rules-based/person-normalized','r') as fopen:
     person = list(filter(None, fopen.read().split('\n')))
 
 person_dict = {}
@@ -27,7 +39,7 @@ for i in range(len(person)):
     uniques = list(filter(None,(set([k.strip().lower() for k in splitted[1].split(', ')] + [splitted[0].lower()]))))
     person_dict[splitted[0]] = uniques
 
-with open('malaya/rules-based/topic-normalized','r') as fopen:
+with open(home+'/rules-based/topic-normalized','r') as fopen:
     topic = list(filter(None, fopen.read().split('\n')))
 
 topic_dict = {}
@@ -36,7 +48,7 @@ for i in range(len(topic)):
     uniques = list(filter(None,(set([k.strip().lower() for k in splitted[1].split(', ')] + [splitted[0].lower()]))))
     topic_dict[splitted[0]] = uniques
 
-with open('malaya/rules-based/short-normalized','r') as fopen:
+with open(home+'/rules-based/short-normalized','r') as fopen:
     short = list(filter(None, fopen.read().split('\n')))
 
 short_dict = {}

@@ -5,6 +5,7 @@ import pandas as pd
 import malaya
 ```
 
+    Using TensorFlow backend.
     /usr/local/lib/python3.6/site-packages/sklearn/cross_validation.py:41: DeprecationWarning: This module was deprecated in version 0.18 in favor of the model_selection module into which all the refactored classes and functions are moved. Also note that the interface of the new CV iterators are different from that of this module. This module will be removed in 0.20.
       "This module will be removed in 0.20.", DeprecationWarning)
 
@@ -20,39 +21,107 @@ corpus = df.text.tolist()
 
 ```python
 lda = malaya.lda_topic_modelling(corpus,10)
-lda.get_topics(10)
+lda.print_topics(5)
 ```
 
     /usr/local/lib/python3.6/site-packages/sklearn/decomposition/online_lda.py:294: DeprecationWarning: n_topics has been renamed to n_components in version 0.19 and will be removed in 0.21
       DeprecationWarning)
 
 
+    topic 0       topic 1       topic 2       topic 3       topic 4       
+    --------      --------      --------      --------      --------      
+    kerajaan      bahasa        negara        projek        diterjemahkan
+    negara        keputusan     bank          faktor        ilmu          
+    parti         raya          teknikal      parti         wujud         
+    kelulusan     pilihan       malaysia      meningkatkan  dasar         
+    malaysia      inggeris      pertumbuhan   harga         bahasa        
+    tindakan      ilmu          berkongsi     nilai         bukti         
+    pas           pengurusan    ekonomi       kerajaan      serahkan      
+    undi          tanah         pengalaman    syarikat      mengumpul     
+    masyarakat    sewa          selatan       tumpuan       asalnya       
+    mengambil     parti         dibenarkan    bahasa        proses        
 
 
 
-    [(0, 'parti keputusan kelulusan umno tindakan mengambil faktor ph dana awam'),
-     (1, 'pesawat berbeza dasar strategi terima mencari kempen kasih kuok rm'),
+
+
+```python
+lda.get_sentences(5)
+```
+
+    bermakna strategi set dasar kondusif destinasi malaysia mestilah bijak berterusan strategi kempen pemasaran merancang pendekatan pasaran berbeza
+    kerja keras ahli jentera parti dilaksanakan henti pru membuktikankesungguhan kepimpinan menabur bakti masyarakat ketinggalan manfaat disediakan kerajaan
+    amanah bermasalah pas hati terbuka mengajak parti islam pakatan harapan harapan menyelamatkan negara
+    politik perbezaan pandangan langsungkah titik persamaan pas parti pembangkang menjatuhkan kerajaan gagal mentadbir negara
+    berfungsi semak imbang pakatan pelbagai isu berkaitan pergerakan sosial suara akar umbi terpinggir
+
+
+
+```python
+lda.get_topics(10)
+```
+
+
+
+
+    [(0,
+      'kerajaan negara parti kelulusan malaysia tindakan pas undi masyarakat mengambil'),
+     (1,
+      'bahasa keputusan raya pilihan inggeris ilmu pengurusan tanah sewa parti'),
      (2,
-      'kerajaan meningkatkan awam isu bahasa penjelasan kemajuan menerima mewujudkan proses'),
+      'negara bank teknikal malaysia pertumbuhan berkongsi ekonomi pengalaman selatan dibenarkan'),
      (3,
-      'projek hutang negara mdb kewangan diselesaikan syarikat malaysia wang sewa'),
+      'projek faktor parti meningkatkan harga nilai kerajaan syarikat tumpuan bahasa'),
      (4,
-      'asli malaysia masyarakat bahasa jakoa pembangunan ambil perdana ilmu inggeris'),
-     (5, 'air kapal low jho bersih rm selesa harga dana nik'),
+      'diterjemahkan ilmu wujud dasar bahasa bukti serahkan mengumpul asalnya proses'),
+     (5, 'mdb low jho kenyataan ambil masyarakat sebarang kapal doj perniagaan'),
      (6,
-      'malaysia rakyat undi antarabangsa dasar memalukan bukti bertanding kenyataan proses'),
+      'awam ahli syarikat parti menteri pesawat berlaku tatakelakuan lembaga politik'),
      (7,
-      'pertumbuhan takut ros pesara tentera pekan pendapatan mca membenarkan jppm'),
+      'rakyat malaysia asli perniagaan pendapatan sumber menerima negara ros penambahbaikan'),
      (8,
-      'mdb perniagaan rakyat negara pilihan raya malaysia kepimpinan wujud hutang'),
+      'hutang menteri mdb malaysia diselesaikan kewangan asli perdana isu negara'),
      (9,
-      'menteri perdana malaysia tumpuan najib seri jemaah arab keselamatan saudi')]
+      'wang tinggal memakan disediakan pekan kampung hasil hutang najib membabitkan')]
 
 
 
 
 ```python
 nmf = malaya.nmf_topic_modelling(corpus,10)
+nmf.print_topics(5)
+```
+
+    topic 0       topic 1       topic 2       topic 3       topic 4       
+    --------      --------      --------      --------      --------      
+    rakyat        keputusan     parti         hutang        menteri       
+    malaysia      ambil         ros           mdb           perdana       
+    negara        benda         umno          diselesaikan  berlaku       
+    kepimpinan    kena          kebenaran     kewangan      jemaah        
+    ppsmi         bersatu       pemilihan     tempoh        seri          
+    kepentingan   peringkat     perlembagaan  pendek        penjelasan    
+    memudahkan    negeri        kelulusan     wujud         isu           
+    serius        ph            pendaftaran   projek        razak         
+    negeri        sarawak       melebihi      tutup         najib         
+    mengatasi     sabah         bersatu       bergantung    kuok          
+
+
+
+
+
+```python
+nmf.get_sentences(5)
+```
+
+    rakyat
+    terpulang rakyat pertimbangkan
+    rakyat malaysia kepentingan negara
+    percaya berkongsi maklumat berasas terutamanya maklumat berkaitan kepimpinan negara rakyat malaysia rakyat memilih kepimpinan negara berkaliber sesuai pandangan rakyat
+    memudahkan rakyat
+
+
+
+```python
 nmf.get_topics(10)
 ```
 
@@ -60,7 +129,7 @@ nmf.get_topics(10)
 
 
     [(0,
-      'rakyat malaysia negara kepimpinan ppsmi memudahkan kepentingan serius negeri mengatasi'),
+      'rakyat malaysia negara kepimpinan ppsmi kepentingan memudahkan serius negeri mengatasi'),
      (1, 'keputusan ambil benda kena bersatu peringkat negeri ph sarawak sabah'),
      (2,
       'parti ros umno kebenaran pemilihan perlembagaan kelulusan pendaftaran melebihi bersatu'),
@@ -70,7 +139,7 @@ nmf.get_topics(10)
      (5,
       'raya pilihan memandangkan kononnya perlembagaan kerusi prestasi kuok artikel mendakwa'),
      (6,
-      'kerajaan negara meningkatkan tindakan pengangkutan malaysia pengajaran kemajuan bidang pendidikan'),
+      'kerajaan negara meningkatkan pengangkutan tindakan malaysia pengajaran kemajuan bidang pembelajaran'),
      (7, 'kapal jho low dirampas perniagaan doj indonesia anak tuntutan sivil'),
      (8,
       'undi mengundi harapan pakatan catatan cina mendakwa demokrasi bahagian kepentingan'),
@@ -82,6 +151,39 @@ nmf.get_topics(10)
 
 ```python
 lsa = malaya.lsa_topic_modelling(corpus,10)
+lsa.print_topics(5)
+```
+
+    topic 0       topic 1       topic 2       topic 3       topic 4       
+    --------      --------      --------      --------      --------      
+    rakyat        rakyat        hutang        hutang        menteri       
+    malaysia      malaysia      mdb           rakyat        perdana       
+    negara        kepimpinan    negara        mdb           berlaku       
+    kerajaan      ppsmi         projek        projek        kerajaan      
+    parti         memudahkan    kewangan      diselesaikan  rakyat        
+    isu           serius        diselesaikan  tempoh        jemaah        
+    tindakan      dasar         kerajaan      kewangan      seri          
+    menteri       berita        malaysia      pendek        penjelasan    
+    berkongsi     kepentingan   kapal         tutup         asli          
+    kepimpinan    mengatasi     low           sumber        isu           
+
+
+
+
+
+```python
+lsa.get_sentences(5)
+```
+
+    rakyat malaysia kepentingan negara
+    rakyat malaysia celik serius isu kepimpinan negara negeri
+    rakyat malaysia penyelesaian konkrit kerajaan mengatasi
+    percaya berkongsi maklumat berasas terutamanya maklumat berkaitan kepimpinan negara rakyat malaysia rakyat memilih kepimpinan negara berkaliber sesuai pandangan rakyat
+    terpulang rakyat pertimbangkan
+
+
+
+```python
 lsa.get_topics(10)
 ```
 
@@ -89,27 +191,19 @@ lsa.get_topics(10)
 
 
     [(0,
-      'rakyat malaysia negara kerajaan parti isu tindakan kepimpinan berkongsi menteri'),
+      'rakyat malaysia negara kerajaan parti isu tindakan menteri berkongsi kepimpinan'),
      (1,
-      'rakyat malaysia kepimpinan ppsmi memudahkan serius berita mengatasi kepentingan negeri'),
-     (2, 'hutang mdb negara projek kewangan diselesaikan kerajaan kapal low jho'),
+      'rakyat malaysia kepimpinan ppsmi memudahkan serius dasar berita kepentingan mengatasi'),
+     (2,
+      'hutang mdb negara projek kewangan diselesaikan kerajaan malaysia kapal low'),
      (3,
-      'hutang rakyat mdb projek diselesaikan tempoh kewangan pendek tutup wujud'),
+      'hutang rakyat mdb projek diselesaikan tempoh kewangan pendek tutup sumber'),
      (4,
-      'menteri perdana kerajaan rakyat berlaku seri jemaah penjelasan isu asli'),
+      'menteri perdana berlaku kerajaan rakyat jemaah seri penjelasan asli isu'),
      (5,
-      'pilihan raya memandangkan perlembagaan kononnya prestasi kerusi kuok menerima pertumbuhan'),
-     (6, 'kerajaan jho kapal low perniagaan dana doj dirampas ahli pas'),
-     (7,
-      'kerajaan hutang masyarakat meningkatkan asli pas pendidikan pembelajaran pengajaran proses'),
+      'raya pilihan memandangkan perlembagaan kononnya prestasi kerusi kuok negara mendakwa'),
+     (6, 'kerajaan jho kapal low perniagaan doj dirampas dana sivil ahli'),
+     (7, 'kapal low jho menteri negara perdana doj berlaku anak perniagaan'),
      (8,
-      'undi asli harapan pendapatan cina pertumbuhan catatan masyarakat pakatan mengundi'),
-     (9,
-      'projek berjalan lancar ros gembira kebenaran asli pendidikan sumber pencarian')]
-
-
-
-
-```python
-
-```
+      'undi pertumbuhan asli harapan pendapatan pakatan mengundi masyarakat cina catatan'),
+     (9, 'undi harapan pas isu pakatan amanah parti mdb menteri tindakan')]

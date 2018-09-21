@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="entities-pos/towns-of-malaya.jpg" alt="malaya logo" />
+    <img src="session/towns-of-malaya.jpg" alt="malaya logo" />
 </p>
 
 # Malaya ![alt text](https://travis-ci.org/DevconX/Malaya.svg?branch=master) [![Coverage Status-90](https://s3.amazonaws.com/assets.coveralls.io/badges/coveralls_95.svg)](https://coveralls.io/github/DevconX/Malaya?branch=master)

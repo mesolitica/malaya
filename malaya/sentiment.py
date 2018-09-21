@@ -43,14 +43,14 @@ class deep_sentiment:
     def __init__(self,model='bahdanau'):
         size = 256
         if not os.path.isfile('%s/word2vec-%d.p'%(home,size)):
-            print('downloading word2vec-%d embedded'%(size))
-            download_file('http://s3-ap-southeast-1.amazonaws.com/huseinhouse-storage/word2vec-%d.p'%(size),'%s/word2vec-%d.p'%(home,size))
+            print('downloading SENTIMENT word2vec-%d embedded'%(size))
+            download_file('word2vec-%d.p'%(size),'%s/word2vec-%d.p'%(home,size))
         with open('%s/word2vec-%d.p'%(home,size), 'rb') as fopen:
             self.embedded = pickle.load(fopen)
         if model == 'attention':
             if not os.path.isfile(path_attention):
-                print('downloading frozen attention model')
-                download_file('http://s3-ap-southeast-1.amazonaws.com/huseinhouse-storage/attention_frozen_model.pb',path_attention)
+                print('downloading SENTIMENT frozen attention model')
+                download_file('attention_frozen_model.pb',path_attention)
             g=load_graph(path_attention)
             self.X = g.get_tensor_by_name('import/Placeholder:0')
             self.logits = g.get_tensor_by_name('import/logits:0')
@@ -59,8 +59,8 @@ class deep_sentiment:
             self.mode = 'attention'
         elif model == 'bahdanau':
             if not os.path.isfile(path_bahdanau):
-                print('downloading frozen bahdanau model')
-                download_file('http://s3-ap-southeast-1.amazonaws.com/huseinhouse-storage/bahdanau_frozen_model.pb',path_bahdanau)
+                print('downloading SENTIMENT frozen bahdanau model')
+                download_file('bahdanau_frozen_model.pb',path_bahdanau)
             g=load_graph(path_bahdanau)
             self.X = g.get_tensor_by_name('import/Placeholder:0')
             self.logits = g.get_tensor_by_name('import/logits:0')
@@ -69,8 +69,8 @@ class deep_sentiment:
             self.mode = 'bahdanau'
         elif model == 'luong':
             if not os.path.isfile(path_luong):
-                print('downloading frozen luong model')
-                download_file('http://s3-ap-southeast-1.amazonaws.com/huseinhouse-storage/luong_frozen_model.pb',path_luong)
+                print('downloading SENTIMENT frozen luong model')
+                download_file('luong_frozen_model.pb',path_luong)
             g=load_graph(path_luong)
             self.X = g.get_tensor_by_name('import/Placeholder:0')
             self.logits = g.get_tensor_by_name('import/logits:0')
@@ -79,8 +79,8 @@ class deep_sentiment:
             self.mode = 'luong'
         elif model == 'normal':
             if not os.path.isfile(path_normal):
-                print('downloading frozen normal model')
-                download_file('http://s3-ap-southeast-1.amazonaws.com/huseinhouse-storage/normal_frozen_model.pb',path_normal)
+                print('downloading SENTIMENT frozen normal model')
+                download_file('normal_frozen_model.pb',path_normal)
             g=load_graph(path_normal)
             self.X = g.get_tensor_by_name('import/Placeholder:0')
             self.logits = g.get_tensor_by_name('import/logits:0')
@@ -166,11 +166,11 @@ def bayes_sentiment(
 
 def pretrained_bayes_sentiment():
     if not os.path.isfile(bayes_location):
-        print('downloading pickled multinomial model')
-        download_file("http://s3-ap-southeast-1.amazonaws.com/huseinhouse-storage/multinomial-sentiment-news.pkl", bayes_location)
+        print('downloading SENTIMENT pickled multinomial model')
+        download_file("multinomial-sentiment-news.pkl", bayes_location)
     if not os.path.isfile(tfidf_location):
-        print('downloading pickled tfidf vectorizations')
-        download_file("http://s3-ap-southeast-1.amazonaws.com/huseinhouse-storage/tfidf-news.pkl", tfidf_location)
+        print('downloading SENTIMENT pickled tfidf vectorizations')
+        download_file("tfidf-news.pkl", tfidf_location)
     with open(bayes_location,'rb') as fopen:
         multinomial = pickle.load(fopen)
     with open(tfidf_location,'rb') as fopen:
@@ -179,11 +179,11 @@ def pretrained_bayes_sentiment():
 
 def pretrained_xgb_sentiment():
     if not os.path.isfile(xgb_location):
-        print('downloading pickled xgb model')
-        download_file("http://s3-ap-southeast-1.amazonaws.com/huseinhouse-storage/xgboost-sentiment.pkl", xgb_location)
+        print('downloading SENTIMENT pickled XGB model')
+        download_file("xgboost-sentiment.pkl", xgb_location)
     if not os.path.isfile(xgb_tfidf_location):
-        print('downloading pickled tfidf vectorizations')
-        download_file("http://s3-ap-southeast-1.amazonaws.com/huseinhouse-storage/xgboost-tfidf.pkl", xgb_tfidf_location)
+        print('downloading SENTIMENT pickled tfidf vectorizations')
+        download_file("xgboost-tfidf.pkl", xgb_tfidf_location)
     with open(xgb_location,'rb') as fopen:
         xgb = pickle.load(fopen)
     with open(xgb_tfidf_location,'rb') as fopen:

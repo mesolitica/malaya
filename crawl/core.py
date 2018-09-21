@@ -18,6 +18,9 @@ from queue import Queue
 from urllib.parse import quote
 import urllib.request
 from unidecode import unidecode
+import malaya
+
+xgb_language = malaya.xgb_detect_languages()
 
 NUMBER_OF_CALLS_TO_GOOGLE_NEWS_ENDPOINT = 0
 
@@ -57,7 +60,6 @@ def extract_links(content):
     today = datetime.now().strftime("%m/%d/%Y")
     links_list = [v.attrs['href'] for v in soup.find_all('a', {'class': ['lLrAF']})]
     dates_list = [v.text for v in soup.find_all('div', {'class': ['slp']})]
-    print(dates_list)
     output = []
     for (link, date) in zip(links_list, dates_list):
         try:
@@ -81,14 +83,16 @@ def get_article(link, news, date):
     article.download()
     article.parse()
     article.nlp()
-    lang = 'eng'
+    lang = 'ENGLISH'
     if len(article.title) < 5 or len(article.text) < 5:
         print('found BM/ID article')
         article = Article(link, language='id')
         article.download()
         article.parse()
-        article.nlp()
-        lang = 'id'
+        lang = xgb_language.predict(article.text)
+        malaya_summarized = malaya.summarize_lsa(article.text.split('\n'),important_words = 20)
+        article.summary = malaya_summarized['summary']
+        article.keywords = malaya_summarized['cluster-top-words']
     return {'title': article.title, 'url': link, 'authors': article.authors, 'top-image': article.top_image,'text': article.text,
             'keyword':article.keywords, 'summary':article.summary, 'news':news, 'date':date,'language':lang}
 
@@ -116,7 +120,11 @@ def google_news_run(keyword, limit=10, year_start=2010, year_end=2011, debug=Tru
             if nb_links == 0:
                 print('No more news to read for keyword {}.'.format(keyword))
                 return results
-            results += run_parallel_in_threads(get_article, links)
+            for link in links:
+                try:
+                    results.append(get_article(*link))
+                except:
+                    pass
             success = True
         except requests.exceptions.Timeout:
             logging.debug('Google news TimeOut. Maybe the connection is too slow. Skipping.')

@@ -4,20 +4,40 @@ import warnings
 warnings.simplefilter("ignore", DeprecationWarning)
 
 home = str(Path.home())+'/Malaya'
+version = '0.4'
+version_path = home+'/version'
 
 try:
     if not os.path.exists(home):
         os.makedirs(home)
 except:
-    print('cannot make directory for cache, exiting.')
+    print('cannot make directory for caching, exiting.')
     sys.exit(1)
 
-from .entities import multinomial_entities
+if not os.path.isfile(version_path):
+    print('not found any version, deleting previous version models..')
+    files = os.listdir(home)
+    for f in files:
+        os.remove(os.path.join(home,f))
+    with open(version_path,'w') as fopen:
+        fopen.write(version)
+else:
+    with open(version_path,'r') as fopen:
+        cached_version = fopen.read()
+    if version not in cached_version:
+        print('deleting previous version models..')
+        files = os.listdir(home)
+        for f in files:
+            os.remove(os.path.join(home,f))
+    else:
+        pass
+
+from .entities import multinomial_entities, xgb_entities, deep_entities, get_available_entities_models
 from .language_detection import multinomial_detect_languages, xgb_detect_languages, get_language_labels
 from .normalizer import naive_normalizer, basic_normalizer
 from .num2word import to_cardinal,to_ordinal,to_ordinal_num,to_currency,to_year
 from .pos_entities import deep_pos_entities, get_available_pos_entities_models
-from .pos import naive_pos
+from .pos import naive_pos, multinomial_pos, xgb_pos, deep_pos, get_available_pos_models
 from .sentiment import deep_sentiment, bayes_sentiment, pretrained_bayes_sentiment, get_available_sentiment_models, pretrained_xgb_sentiment
 from .stemmer import naive_stemmer
 from .summarization import summarize_lsa, summarize_nmf, summarize_lda
@@ -48,6 +68,23 @@ def describe_pos_malaya():
     print('KA - Kata Adjektif')
     print('O - not related, out scope')
 
+def describe_pos():
+    print('ADJ - Adjective, kata sifat')
+    print('ADP - Adposition')
+    print('ADV - Adverb, kata keterangan')
+    print('ADX - Auxiliary verb, kata kerja tambahan')
+    print('CCONJ - Coordinating conjuction, kata hubung')
+    print('DET - Determiner, kata penentu')
+    print('NOUN - Noun, kata nama')
+    print('NUM - Number, nombor')
+    print('PART - Particle')
+    print('PRON - Pronoun, kata ganti')
+    print('PROPN - Proper noun, kata ganti nama khas')
+    print('SCONJ - Subordinating conjunction')
+    print('SYM - Symbol')
+    print('VERB - Verb, kata kerja')
+    print('X - Other')
+
 def describe_entities_malaya():
     print('PRN - person, group of people, believes, etc')
     print('LOC - location')
@@ -59,12 +96,12 @@ def describe_entities_malaya():
     print('FAC - facility, hospitals, clinics, etc')
     print('TIME - date, day, time, etc')
     print('O - not related, out scope')
-
+    
 def describe_entities():
-    print('OTHER - not related, out of scope')
-    print('law - documents, law related')
+    print('OTHER - Other')
+    print('law - related law documents, documents, etc')
     print('location - location, place')
-    print('organization - Organization, company, government, parties')
-    print('person - person, group of people, believes, special names')
-    print('quantity - countable')
-    print('time - date, day, time')
+    print('organization - organization, company, government, facilities, etc')
+    print('person - person, group of people, believes, etc')
+    print('quantity - numbers, quantity')
+    print('time - date, day, time, etc')

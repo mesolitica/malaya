@@ -20,7 +20,7 @@ arah_list = ['atas','bawah','tepi','antara','hadapan','utara','sisi','luar']
 hubung_list = ['agar','apabila','atau','bahawa','dan','hingga','jika','jikalau','kecuali','kerana',
                'lalu','manakala','sambil','serta','semenjak','sementara','sungguhpun','supaya','walaupun','tetapi','berkenan','berkenaan']
 gantinama_list = ['aku','saya','hamba','patik','beta','kami','kita','anda','awak','engkau','tuanku','kalian',
-                  'kamu','baginda','beliau','mereka','ini','itu','sini','situ','sana','kini','dia']
+                  'kamu','baginda','beliau','mereka','ini','itu','sini','situ','sana','kini','dia','rm']
 
 # pos permulaan[:-4]
 permulaan = ['bel','be','se','ter','men','memper','di','pe','me','ke','ber','pen','per']

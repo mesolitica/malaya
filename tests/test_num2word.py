@@ -3,6 +3,12 @@ import malaya
 def test_to_cardinal():
     assert malaya.to_cardinal(123456789) == 'seratus dua puluh tiga juta empat ratus lima puluh enam ribu tujuh ratus lapan puluh sembilan'
 
+def test_to_cardinal_negative():
+    assert 'negatif' in malaya.to_cardinal(-123456789)
+
+def test_to_cardinal_negative_decimal():
+    assert 'perpuluhan' in malaya.to_cardinal(-1234567.89)
+
 def test_to_ordinal():
     assert malaya.to_ordinal(11) == 'kesebelas'
 

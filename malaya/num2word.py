@@ -90,6 +90,15 @@ def spell(blocks):
         word_blocks += block,
     return word_blocks
 
+def spell_float(float_part):
+    word_list = []
+    for n in float_part:
+        if n == '0':
+            word_list += ['nol']
+            continue
+        word_list += BASE[int(n)]
+    return ' '.join(['', 'perpuluhan'] + word_list)
+
 def join(word_blocks, float_part):
     word_list = []
     length = len(word_blocks) - 1
@@ -118,6 +127,8 @@ def to_cardinal(number):
         minus = 'negatif '
     float_word = ''
     n = split_by_koma(abs(number))
+    if len(n) == 2:
+        float_word = spell_float(n[1])
     return minus + join(spell(split_by_3(n[0])), float_word)
 
 def to_ordinal(number):

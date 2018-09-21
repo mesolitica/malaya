@@ -71,11 +71,11 @@ class USER_BAYES:
 
 def multinomial_detect_languages():
     if not os.path.isfile(bow_pkl):
-        print('downloading pickled bag-of-word language detection')
-        download_file("http://s3-ap-southeast-1.amazonaws.com/huseinhouse-storage/bow-language-detection.pkl", bow_pkl)
+        print('downloading LANGUAGE-DETECTION pickled bag-of-word')
+        download_file("bow-language-detection.pkl", bow_pkl)
     if not os.path.isfile(multinomial_pkl):
-        print('downloading pickled multinomial language detection model')
-        download_file("https://s3-ap-southeast-1.amazonaws.com/huseinhouse-storage/multinomial-language-detection.pkl", multinomial_pkl)
+        print('downloading LANGUAGE-DETECTION pickled multinomial model')
+        download_file("multinomial-language-detection.pkl", multinomial_pkl)
     with open(bow_pkl,'rb') as fopen:
         BOW = pickle.load(fopen)
     with open(multinomial_pkl,'rb') as fopen:
@@ -84,11 +84,11 @@ def multinomial_detect_languages():
 
 def xgb_detect_languages():
     if not os.path.isfile(xgb_bow_pkl):
-        print('downloading pickled bag-of-word xgb language detection')
-        download_file("http://s3-ap-southeast-1.amazonaws.com/huseinhouse-storage/bow-xgboost-language-detection.pkl", xgb_bow_pkl)
+        print('downloading LANGUAGE-DETECTION pickled bag-of-word XGB')
+        download_file("bow-xgboost-language-detection.pkl", xgb_bow_pkl)
     if not os.path.isfile(xgb_pkl):
-        print('downloading pickled xgb language detection model')
-        download_file("http://s3-ap-southeast-1.amazonaws.com/huseinhouse-storage/xgboost-language-detection.pkl", xgb_pkl)
+        print('downloading LANGUAGE-DETECTION pickled XGB model')
+        download_file("xgboost-language-detection.pkl", xgb_pkl)
     with open(xgb_bow_pkl,'rb') as fopen:
         BOW = pickle.load(fopen)
     with open(xgb_pkl,'rb') as fopen:

@@ -9,10 +9,16 @@ isu_kerajaan = ['Institusi raja khususnya Yang di-Pertuan Agong adalah kedaulata
                'Seri Paduka turut menitahkan supaya Majlis Rumah Terbuka Aidilfitri tahun ini tidak diadakan di Istana Negara dengan peruntukan majlis itu digunakan bagi membantu golongan yang kurang bernasib baik.']
 
 def test_lsa():
-    assert len(malaya.summarize_lsa(isu_kerajaan)['top-words']) > 0
+    assert len(malaya.summarize_lsa(isu_kerajaan)['top-words'])
+
+def test_lsa_original():
+    assert len(malaya.summarize_lsa(isu_kerajaan,maintain_original=True)['top-words'])
+
+def test_lsa_not_cluster():
+    assert len(malaya.summarize_lsa(isu_kerajaan,return_cluster=False)['top-words'])
 
 def test_nmf():
-    assert len(malaya.summarize_nmf(isu_kerajaan)['top-words']) > 0
+    assert len(malaya.summarize_nmf(isu_kerajaan)['top-words'])
 
 def test_lda():
-    assert len(malaya.summarize_lda(isu_kerajaan)['top-words']) > 0
+    assert len(malaya.summarize_lda(isu_kerajaan)['top-words'])

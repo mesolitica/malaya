@@ -1,23 +1,31 @@
 # How-to-Crawl
 
 1. Install dependencies
+
+Malaya must installed first.
+
+For ubuntu / debian based
 ```bash
-sudo apt update
-sudo apt install python3-pip -y
-export LC_ALL=C
-sudo pip3 install bs4 newspaper3k fake_useragent unidecode
-sudo apt-get install libxml2-dev libxslt-dev libjpeg-dev zlib1g-dev libpng12-dev -y
+pip3 install bs4 newspaper3k fake_useragent unidecode
+apt-get install libxml2-dev libxslt-dev libjpeg-dev zlib1g-dev libpng12-dev -y
 curl https://raw.githubusercontent.com/codelucas/newspaper/master/download_corpora.py | python3
 ```
-2. Edit main.py
-```python
-# can be anything
-issue ='isu sekolah'
-# edit parameters as you want
-google_news_run(issue, limit=1000, year_start=2010, year_end=2019, debug=False, sleep_time_every_ten_articles=10)
-3. Run main.py
-```python3 main.py
+
+For Mac OS
+```bash
+brew install libxml2 libxslt
+brew install libtiff libjpeg webp little-cms2
+pip3 install bs4 newspaper3k fake_useragent unidecode
+curl https://raw.githubusercontent.com/codelucas/newspaper/master/download_corpora.py | python3
 ```
+
+2. Run main.py
+
+```bash
+python3 main.py -i "isu mahathir" -s 2009 -e 2019 -l 10
+```
+
+You can read more about crawler in [Malaya Wiki](https://github.com/DevconX/Malaya/wiki).
 
 ## Issues crawled
 

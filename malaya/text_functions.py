@@ -12,7 +12,7 @@ STOPWORDS = None
 stopwords_location = home+'/stop-word-kerulnet'
 if not os.path.isfile(stopwords_location):
     print('downloading stopwords')
-    download_file("http://s3-ap-southeast-1.amazonaws.com/huseinhouse-storage/stop-word-kerulnet", stopwords_location)
+    download_file("stop-word-kerulnet", stopwords_location)
 with open(stopwords_location,'r') as fopen:
     STOPWORDS = list(filter(None, fopen.read().split('\n')))
 
@@ -84,8 +84,19 @@ def summary_textcleaning(string):
 def deep_sentiment_textcleaning(string):
     string = re.sub('http\S+|www.\S+', '',' '.join([i for i in string.split() if i.find('#')<0 and i.find('@')<0]))
     string = unidecode(string).replace('.', '. ').replace(',', ', ')
-    string = re.sub('[^\'\"A-Za-z\- ]+', '', string)
+    string = re.sub('[^\'\"A-Za-z\- ]+', ' ', string)
     return ' '.join([i for i in re.findall("[\\w']+|[;:\-\(\)&.,!?\"]", string) if len(i)>1 and i not in STOPWORDS]).lower()
+
+def process_word_pos_entities(word, lower=True):
+    if lower:
+        word = word.lower()
+    else:
+        if word.isupper():
+            word = word.title()
+    word = re.sub('[^A-Za-z0-9\- ]+', '', word)
+    if word.isdigit():
+        word = 'NUM'
+    return word
 
 def separate_dataset(trainset):
     datastring = []
@@ -97,3 +108,34 @@ def separate_dataset(trainset):
         for n in range(len(data_)):
             datatarget.append(trainset.target[i])
     return datastring, datatarget
+
+def print_topics_modelling(topics, feature_names, sorting, topics_per_chunk=6, n_words=20):
+    for i in range(0, len(topics), topics_per_chunk):
+        these_topics = topics[i: i + topics_per_chunk]
+        len_this_chunk = len(these_topics)
+        print(("topic {:<8}" * len_this_chunk).format(*these_topics))
+        print(("-------- {0:<5}" * len_this_chunk).format(""))
+        for i in range(n_words):
+            try:
+                print(("{:<14}" * len_this_chunk).format(*feature_names[sorting[these_topics, i]]))
+            except Exception as e:
+                print(e)
+                pass
+        print("\n")
+
+def cluster_words(list_words):
+    dict_words = {}
+    for word in list_words:
+        found = False
+        for key in dict_words.keys():
+            if word in key or any([word in inside for inside in dict_words[key]]):
+                dict_words[key].append(word)
+                found = True
+            if key in word:
+                dict_words[key].append(word)
+        if not found:
+            dict_words[word] = [word]
+    results = []
+    for key, words in dict_words.items():
+        results.append(max(list(set([key] + words)), key=len))
+    return list(set(results))
