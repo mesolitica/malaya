@@ -7,4 +7,4 @@ install: ./build-dependencies.sh
 
 script: pytest --cov=malaya/ tests/
 
-after_success: coveralls
+after_success: travis_wait 30 coveralls
