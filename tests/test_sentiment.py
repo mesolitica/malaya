@@ -24,7 +24,7 @@ def test_bahdanau_sentiment():
 def test_attention_sentiment():
     malaya.get_available_sentiment_models()
     negative_text = 'kerajaan sebenarnya sangat bencikan rakyatnya, minyak naik dan segalanya'
-    news_sentiment = malaya.deep_sentiment('attention')
+    news_sentiment = malaya.deep_sentiment('hierarchical')
     assert len(news_sentiment.predict(negative_text)['attention']) > 1
 
 def test_luong_sentiment():
@@ -36,13 +36,25 @@ def test_luong_sentiment():
 def test_normal_sentiment():
     malaya.get_available_sentiment_models()
     negative_text = 'kerajaan sebenarnya sangat bencikan rakyatnya, minyak naik dan segalanya'
-    news_sentiment = malaya.deep_sentiment('normal')
+    news_sentiment = malaya.deep_sentiment('bidirectional')
+    assert news_sentiment.predict(negative_text)['negative'] > 0
+
+def test_fasttext_sentiment():
+    malaya.get_available_sentiment_models()
+    negative_text = 'kerajaan sebenarnya sangat bencikan rakyatnya, minyak naik dan segalanya'
+    news_sentiment = malaya.deep_sentiment('fast-text')
     assert news_sentiment.predict(negative_text)['negative'] > 0
 
 def test_normal_sentiment_batch():
     malaya.get_available_sentiment_models()
     negative_text = 'kerajaan sebenarnya sangat bencikan rakyatnya, minyak naik dan segalanya'
-    news_sentiment = malaya.deep_sentiment('normal')
+    news_sentiment = malaya.deep_sentiment('bidirectional')
+    assert len(news_sentiment.predict_batch([negative_text,negative_text])) > 0
+
+def test_fasttext_sentiment_batch():
+    malaya.get_available_sentiment_models()
+    negative_text = 'kerajaan sebenarnya sangat bencikan rakyatnya, minyak naik dan segalanya'
+    news_sentiment = malaya.deep_sentiment('fast-text')
     assert len(news_sentiment.predict_batch([negative_text,negative_text])) > 0
 
 def test_bayes_sentiment():

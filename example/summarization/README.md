@@ -29,22 +29,24 @@ malaya.summarize_lsa(isu_kerajaan,important_words=10)
 
 
     {'summary': 'ketika merasmikan istiadat pembukaan penggal pertama parlimen julai seri paduka bertitah mengalu alukan pendekatan kerajaan pakatan harapan menegakkan ketelusan terutamanya mendedahkan kedudukan kewangan negara sebenar mengkaji perbelanjaan kos projek mengurus kewangan berhemat menangani kos sara hidup. pada jun sultan muhammad memperkenankan peruntukan gaji emolumen yang pertuan agong dikurangkan peratus pemerintahan berikutan keprihatinan seri paduka tahap hutang ekonomi negara. seri paduka menitahkan majlis rumah terbuka aidilfitri diadakan istana negara peruntukan majlis membantu golongan bernasib',
-     'top-words': ['sultan muhammad',
-      'raya',
-      'pilihan raya',
-      'pilihan',
-      'peruntukan',
+     'top-words': ['titah',
+      'perintah',
+      'alih',
+      'buka',
       'malaysia',
       'mei',
-      'sultan',
       'muhammad',
-      'paduka'],
-     'cluster-top-words': ['mei',
+      'paduka titah',
       'sultan muhammad',
-      'peruntukan',
+      'peran'],
+     'cluster-top-words': ['alih',
+      'perintah',
+      'buka',
+      'peran',
       'malaysia',
-      'paduka',
-      'pilihan raya']}
+      'mei',
+      'sultan muhammad',
+      'paduka titah']}
 
 
 
@@ -57,22 +59,24 @@ malaya.summarize_lsa(isu_kerajaan, important_words=10,maintain_original=True)
 
 
     {'summary': 'Ketika merasmikan Istiadat Pembukaan Penggal Pertama, Parlimen ke-14 pada 17 Julai lepas, Seri Paduka bertitah mengalu-alukan pendekatan kerajaan Pakatan Harapan dalam menegakkan ketelusan terutamanya dengan mendedahkan kedudukan kewangan negara yang sebenar serta mengkaji semula perbelanjaan, kos projek dan mengurus kewangan secara berhemat bagi menangani kos sara hidup. Pada Jun lepas, Sultan Muhammad V memperkenankan supaya peruntukan gaji dan emolumen Yang di-Pertuan Agong dikurangkan sebanyak 10 peratus sepanjang pemerintahan sehingga 2021 berikutan keprihatinan Seri Paduka terhadap tahap hutang dan keadaan ekonomi negara. Seri Paduka turut menitahkan supaya Majlis Rumah Terbuka Aidilfitri tahun ini tidak diadakan di Istana Negara dengan peruntukan majlis itu digunakan bagi membantu golongan yang kurang bernasib baik',
-     'top-words': ['sultan muhammad',
-      'pilihan',
+     'top-words': ['titah',
+      'pilih',
+      'alih',
+      'buka',
       'malaysia',
       'mei',
       'muhammad',
-      'sultan',
-      'peruntukan',
-      '10',
-      'pilihan raya',
-      'raya'],
-     'cluster-top-words': ['mei',
-      'sultan muhammad',
-      'peruntukan',
+      'paduka titah',
+      'peran',
+      'sultan muhammad'],
+     'cluster-top-words': ['alih',
+      'buka',
+      'peran',
       'malaysia',
-      'pilihan raya',
-      '10']}
+      'mei',
+      'sultan muhammad',
+      'paduka titah',
+      'pilih']}
 
 
 
@@ -85,22 +89,24 @@ malaya.summarize_nmf(isu_kerajaan,important_words=10)
 
 
     {'summary': 'ketika merasmikan istiadat pembukaan penggal pertama parlimen julai seri paduka bertitah mengalu alukan pendekatan kerajaan pakatan harapan menegakkan ketelusan terutamanya mendedahkan kedudukan kewangan negara sebenar mengkaji perbelanjaan kos projek mengurus kewangan berhemat menangani kos sara hidup. pada jun sultan muhammad memperkenankan peruntukan gaji emolumen yang pertuan agong dikurangkan peratus pemerintahan berikutan keprihatinan seri paduka tahap hutang ekonomi negara. seri paduka menitahkan majlis rumah terbuka aidilfitri diadakan istana negara peruntukan majlis membantu golongan bernasib',
-     'top-words': ['sultan muhammad',
-      'raya',
-      'pilihan raya',
-      'pilihan',
-      'peruntukan',
+     'top-words': ['titah',
+      'perintah',
+      'alih',
+      'buka',
       'malaysia',
       'mei',
-      'sultan',
       'muhammad',
-      'paduka'],
-     'cluster-top-words': ['mei',
+      'paduka titah',
       'sultan muhammad',
-      'peruntukan',
+      'peran'],
+     'cluster-top-words': ['alih',
+      'perintah',
+      'buka',
+      'peran',
       'malaysia',
-      'paduka',
-      'pilihan raya']}
+      'mei',
+      'sultan muhammad',
+      'paduka titah']}
 
 
 
@@ -117,22 +123,24 @@ malaya.summarize_lda(isu_kerajaan,important_words=10)
 
 
     {'summary': 'ketika merasmikan istiadat pembukaan penggal pertama parlimen julai seri paduka bertitah mengalu alukan pendekatan kerajaan pakatan harapan menegakkan ketelusan terutamanya mendedahkan kedudukan kewangan negara sebenar mengkaji perbelanjaan kos projek mengurus kewangan berhemat menangani kos sara hidup. pada jun sultan muhammad memperkenankan peruntukan gaji emolumen yang pertuan agong dikurangkan peratus pemerintahan berikutan keprihatinan seri paduka tahap hutang ekonomi negara. seri paduka menitahkan majlis rumah terbuka aidilfitri diadakan istana negara peruntukan majlis membantu golongan bernasib',
-     'top-words': ['sultan muhammad',
-      'raya',
-      'pilihan raya',
-      'pilihan',
-      'peruntukan',
+     'top-words': ['titah',
+      'perintah',
+      'alih',
+      'buka',
       'malaysia',
       'mei',
-      'sultan',
       'muhammad',
-      'paduka'],
-     'cluster-top-words': ['mei',
+      'paduka titah',
       'sultan muhammad',
-      'peruntukan',
+      'peran'],
+     'cluster-top-words': ['alih',
+      'perintah',
+      'buka',
+      'peran',
       'malaysia',
-      'paduka',
-      'pilihan raya']}
+      'mei',
+      'sultan muhammad',
+      'paduka titah']}
 
 
 
@@ -149,16 +157,16 @@ malaya.summarize_lda(isu_kerajaan,important_words=10,return_cluster=False)
 
 
     {'summary': 'ketika merasmikan istiadat pembukaan penggal pertama parlimen julai seri paduka bertitah mengalu alukan pendekatan kerajaan pakatan harapan menegakkan ketelusan terutamanya mendedahkan kedudukan kewangan negara sebenar mengkaji perbelanjaan kos projek mengurus kewangan berhemat menangani kos sara hidup. pada jun sultan muhammad memperkenankan peruntukan gaji emolumen yang pertuan agong dikurangkan peratus pemerintahan berikutan keprihatinan seri paduka tahap hutang ekonomi negara. seri paduka menitahkan majlis rumah terbuka aidilfitri diadakan istana negara peruntukan majlis membantu golongan bernasib',
-     'top-words': ['sultan muhammad',
-      'raya',
-      'pilihan raya',
-      'pilihan',
-      'peruntukan',
+     'top-words': ['titah',
+      'perintah',
+      'alih',
+      'buka',
       'malaysia',
       'mei',
-      'sultan',
       'muhammad',
-      'paduka']}
+      'paduka titah',
+      'sultan muhammad',
+      'peran']}
 
 
 

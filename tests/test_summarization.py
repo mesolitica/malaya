@@ -17,6 +17,12 @@ def test_lsa_original():
 def test_lsa_not_cluster():
     assert len(malaya.summarize_lsa(isu_kerajaan,return_cluster=False)['top-words'])
 
+def test_nmf_not_cluster():
+    assert len(malaya.summarize_nmf(isu_kerajaan,return_cluster=False)['top-words'])
+
+def test_lda_not_cluster():
+    assert len(malaya.summarize_lda(isu_kerajaan,return_cluster=False)['top-words'])
+
 def test_nmf():
     assert len(malaya.summarize_nmf(isu_kerajaan)['top-words'])
 

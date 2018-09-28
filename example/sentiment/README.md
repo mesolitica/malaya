@@ -5,14 +5,23 @@ import malaya
 import pandas as pd
 ```
 
+    Using TensorFlow backend.
     /usr/local/lib/python3.6/site-packages/sklearn/cross_validation.py:41: DeprecationWarning: This module was deprecated in version 0.18 in favor of the model_selection module into which all the refactored classes and functions are moved. Also note that the interface of the new CV iterators are different from that of this module. This module will be removed in 0.20.
       "This module will be removed in 0.20.", DeprecationWarning)
 
 
 
 ```python
-news_sentiment = malaya.pretrained_bayes_sentiment()
+bayes_sentiment = malaya.pretrained_bayes_sentiment()
 ```
+
+    /usr/local/lib/python3.6/site-packages/sklearn/base.py:311: UserWarning: Trying to unpickle estimator MultinomialNB from version 0.19.1 when using version 0.19.2. This might lead to breaking code or invalid results. Use at your own risk.
+      UserWarning)
+    /usr/local/lib/python3.6/site-packages/sklearn/base.py:311: UserWarning: Trying to unpickle estimator TfidfTransformer from version 0.19.1 when using version 0.19.2. This might lead to breaking code or invalid results. Use at your own risk.
+      UserWarning)
+    /usr/local/lib/python3.6/site-packages/sklearn/base.py:311: UserWarning: Trying to unpickle estimator TfidfVectorizer from version 0.19.1 when using version 0.19.2. This might lead to breaking code or invalid results. Use at your own risk.
+      UserWarning)
+
 
 
 ```python
@@ -21,7 +30,7 @@ positive_text = 'Kerajaan negeri Kelantan mempersoalkan motif kenyataan Menteri 
 
 
 ```python
-news_sentiment.predict(positive_text)
+bayes_sentiment.predict(positive_text)
 ```
 
 
@@ -33,60 +42,58 @@ news_sentiment.predict(positive_text)
 
 
 ```python
-news_sentiment.predict(positive_text,get_proba=True)
+bayes_sentiment.predict(positive_text,get_proba=True)
 ```
 
 
 
 
-    {'negative': 0.2341921505296387, 'positive': 0.7658078494703627}
+    {'negative': 0.19013070424544617, 'positive': 0.8098692957545561}
 
 
 
 
 ```python
 negative_text = 'kerajaan sebenarnya sangat bencikan rakyatnya, minyak naik dan segalanya'
-news_sentiment.predict(negative_text,get_proba=True)
+bayes_sentiment.predict(negative_text,get_proba=True)
 ```
 
 
 
 
-    {'negative': 0.19026157818306375, 'positive': 0.8097384218169362}
+    {'negative': 0.3723520311772738, 'positive': 0.6276479688227262}
 
 
 
 
 ```python
-news_sentiment.predict_batch([negative_text,negative_text],get_proba=True)
+bayes_sentiment.predict_batch([negative_text,negative_text],get_proba=True)
 ```
 
 
 
 
-    [{'negative': 0.19026157818306375, 'positive': 0.8097384218169362},
-     {'negative': 0.19026157818306375, 'positive': 0.8097384218169362}]
+    [{'negative': 0.3723520311772738, 'positive': 0.6276479688227262},
+     {'negative': 0.3723520311772738, 'positive': 0.6276479688227262}]
 
 
 
 
 ```python
-news_sentiment = malaya.pretrained_xgb_sentiment()
-news_sentiment.predict(negative_text,get_proba=True)
+xgb_sentiment = malaya.pretrained_xgb_sentiment()
+xgb_sentiment.predict(negative_text,get_proba=True)
 ```
 
-      0%|          | 0/2.806271553039551 [00:00<?, ?MB/s]
-
-    downloading pickled tfidf vectorizations
-
-
-    3MB [00:02,  1.45MB/s]                                       
+    /usr/local/lib/python3.6/site-packages/sklearn/base.py:311: UserWarning: Trying to unpickle estimator TfidfTransformer from version 0.19.1 when using version 0.19.2. This might lead to breaking code or invalid results. Use at your own risk.
+      UserWarning)
+    /usr/local/lib/python3.6/site-packages/sklearn/base.py:311: UserWarning: Trying to unpickle estimator TfidfVectorizer from version 0.19.1 when using version 0.19.2. This might lead to breaking code or invalid results. Use at your own risk.
+      UserWarning)
 
 
 
 
 
-    {'negative': 0.38166726, 'positive': 0.61833274}
+    {'negative': 0.3550796, 'positive': 0.6449204}
 
 
 
@@ -99,7 +106,7 @@ sentiment_available_models
 
 
 
-    ['bahdanau', 'attention', 'luong', 'normal']
+    ['bahdanau', 'hierarchical', 'luong', 'bidirectional', 'fast-text']
 
 
 
@@ -113,16 +120,19 @@ for i in sentiment_available_models:
 ```
 
     Testing bahdanau model
-    {'negative': 0.42894447, 'positive': 0.57105553, 'attention': [['kerajaan', 0.07550501], ['bencikan', 0.29057813], ['rakyatnya', 0.1474754], ['minyak', 0.48644146]]}
+    {'negative': 0.99867034, 'positive': 0.0013296733, 'attention': [['kerajaan', 0.04794306], ['sebenarnya', 0.019771717], ['sangat', 0.01688926], ['bencikan', 0.016135536], ['rakyatnya', 0.018904446], ['minyak', 0.044418886], ['naik', 0.01919316], ['dan', 0.019459246], ['segalanya', 0.79728466]]}
 
-    Testing attention model
-    {'negative': 0.43696418, 'positive': 0.56303585, 'attention': [['kerajaan', 0.26913235], ['bencikan', 0.38034844], ['rakyatnya', 0.28445157], ['minyak', 0.06606761]]}
+    Testing hierarchical model
+    {'negative': 0.17229004, 'positive': 0.82771, 'attention': [['kerajaan', 0.0039255945], ['sebenarnya', 0.00531989], ['sangat', 0.0146343], ['bencikan', 0.029050263], ['rakyatnya', 0.073665366], ['minyak', 0.28049424], ['naik', 0.28645015], ['dan', 0.21241833], ['segalanya', 0.09404183]]}
 
     Testing luong model
-    {'negative': 0.49942672, 'positive': 0.5005733, 'attention': [['kerajaan', 0.056799203], ['bencikan', 0.2996163], ['rakyatnya', 0.58679783], ['minyak', 0.056786623]]}
+    {'negative': 0.9494788, 'positive': 0.05052119, 'attention': [['kerajaan', 0.11111111], ['sebenarnya', 0.11111111], ['sangat', 0.11111111], ['bencikan', 0.11111111], ['rakyatnya', 0.11111111], ['minyak', 0.11111111], ['naik', 0.11111111], ['dan', 0.11111111], ['segalanya', 0.11111111]]}
 
-    Testing normal model
-    {'negative': 0.48782662, 'positive': 0.5121734}
+    Testing bidirectional model
+    {'negative': 0.9589319, 'positive': 0.041068066}
+
+    Testing fast-text model
+    {'negative': 0.7411294, 'positive': 0.25887057}
 
 
 
@@ -142,11 +152,11 @@ bayes=malaya.bayes_sentiment(dataset)
 
                  precision    recall  f1-score   support
 
-       Negative       0.00      0.00      0.00         9
-        Neutral       0.67      0.08      0.15        24
-       Positive       0.47      0.96      0.63        28
+       Negative       0.00      0.00      0.00        15
+        Neutral       0.29      0.17      0.21        12
+       Positive       0.63      1.00      0.77        34
 
-    avg / total       0.48      0.48      0.35        61
+    avg / total       0.41      0.59      0.47        61
 
 
 
@@ -173,14 +183,14 @@ bayes = malaya.bayes_sentiment('tests/local')
 
                  precision    recall  f1-score   support
 
-         adidas       0.97      0.53      0.69       325
-          apple       0.98      0.54      0.70       488
-         hungry       0.79      0.91      0.85      1038
-       kerajaan       0.87      0.80      0.83      1380
-           nike       0.93      0.56      0.70       293
-    pembangkang       0.69      0.88      0.78      1535
+         adidas       0.91      0.59      0.71       297
+          apple       0.98      0.63      0.76       471
+         hungry       0.83      0.91      0.87      1074
+       kerajaan       0.84      0.82      0.83      1387
+           nike       0.95      0.58      0.72       321
+    pembangkang       0.70      0.85      0.77      1509
 
-    avg / total       0.82      0.79      0.79      5059
+    avg / total       0.82      0.80      0.80      5059
 
 
 

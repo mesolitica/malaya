@@ -20,7 +20,7 @@ corpus = df.text.tolist()
 
 
 ```python
-lda = malaya.lda_topic_modelling(corpus,10)
+lda = malaya.lda_topic_modelling(corpus,10,stemming=False)
 lda.print_topics(5)
 ```
 
@@ -49,11 +49,15 @@ lda.print_topics(5)
 lda.get_sentences(5)
 ```
 
-    bermakna strategi set dasar kondusif destinasi malaysia mestilah bijak berterusan strategi kempen pemasaran merancang pendekatan pasaran berbeza
-    kerja keras ahli jentera parti dilaksanakan henti pru membuktikankesungguhan kepimpinan menabur bakti masyarakat ketinggalan manfaat disediakan kerajaan
-    amanah bermasalah pas hati terbuka mengajak parti islam pakatan harapan harapan menyelamatkan negara
-    politik perbezaan pandangan langsungkah titik persamaan pas parti pembangkang menjatuhkan kerajaan gagal mentadbir negara
-    berfungsi semak imbang pakatan pelbagai isu berkaitan pergerakan sosial suara akar umbi terpinggir
+
+
+
+    ['bermakna strategi set dasar kondusif destinasi malaysia mestilah bijak berterusan strategi kempen pemasaran merancang pendekatan pasaran berbeza',
+     'kerja keras ahli jentera parti dilaksanakan henti pru membuktikankesungguhan kepimpinan menabur bakti masyarakat ketinggalan manfaat disediakan kerajaan',
+     'amanah bermasalah pas hati terbuka mengajak parti islam pakatan harapan harapan menyelamatkan negara',
+     'politik perbezaan pandangan langsungkah titik persamaan pas parti pembangkang menjatuhkan kerajaan gagal mentadbir negara',
+     'berfungsi semak imbang pakatan pelbagai isu berkaitan pergerakan sosial suara akar umbi terpinggir']
+
 
 
 
@@ -94,16 +98,16 @@ nmf.print_topics(5)
 
     topic 0       topic 1       topic 2       topic 3       topic 4       
     --------      --------      --------      --------      --------      
-    rakyat        keputusan     parti         hutang        menteri       
-    malaysia      ambil         ros           mdb           perdana       
-    negara        benda         umno          diselesaikan  berlaku       
-    kepimpinan    kena          kebenaran     kewangan      jemaah        
-    ppsmi         bersatu       pemilihan     tempoh        seri          
-    kepentingan   peringkat     perlembagaan  pendek        penjelasan    
-    memudahkan    negeri        kelulusan     wujud         isu           
-    serius        ph            pendaftaran   projek        razak         
-    negeri        sarawak       melebihi      tutup         najib         
-    mengatasi     sabah         bersatu       bergantung    kuok          
+    rakyat        ros           menteri       hutang        ambil         
+    malaysia      tangguh       perdana       selesai       putus         
+    kena          parti         terima        mdb           tindak        
+    pimpin        umno          isu           wang          langkah       
+    mudah         pilih         seri          wujud         dar           
+    negara        lembaga       jemaah        tutup         mahkamah      
+    negeri        putus         nyata         tempoh        punca         
+    dasar         daftar        kena          projek        bahagian      
+    serius        kelulus       razak         pendek        kelulus       
+    tingkat       tempoh        raja          gantung       sarawak       
 
 
 
@@ -113,11 +117,15 @@ nmf.print_topics(5)
 nmf.get_sentences(5)
 ```
 
-    rakyat
-    terpulang rakyat pertimbangkan
-    rakyat malaysia kepentingan negara
-    percaya berkongsi maklumat berasas terutamanya maklumat berkaitan kepimpinan negara rakyat malaysia rakyat memilih kepimpinan negara berkaliber sesuai pandangan rakyat
-    memudahkan rakyat
+
+
+
+    ['rakyat malaysia negara',
+     'kena rakyat',
+     'mudah rakyat',
+     'rakyat malaysia selesai konkrit raja',
+     'rakyat malaysia celik serius isu pimpin negara negeri']
+
 
 
 
@@ -128,23 +136,16 @@ nmf.get_topics(10)
 
 
 
-    [(0,
-      'rakyat malaysia negara kepimpinan ppsmi kepentingan memudahkan serius negeri mengatasi'),
-     (1, 'keputusan ambil benda kena bersatu peringkat negeri ph sarawak sabah'),
-     (2,
-      'parti ros umno kebenaran pemilihan perlembagaan kelulusan pendaftaran melebihi bersatu'),
-     (3,
-      'hutang mdb diselesaikan kewangan tempoh pendek wujud projek tutup bergantung'),
-     (4, 'menteri perdana berlaku jemaah seri penjelasan isu razak najib kuok'),
-     (5,
-      'raya pilihan memandangkan kononnya perlembagaan kerusi prestasi kuok artikel mendakwa'),
-     (6,
-      'kerajaan negara meningkatkan pengangkutan tindakan malaysia pengajaran kemajuan bidang pembelajaran'),
-     (7, 'kapal jho low dirampas perniagaan doj indonesia anak tuntutan sivil'),
-     (8,
-      'undi mengundi harapan pakatan catatan cina mendakwa demokrasi bahagian kepentingan'),
-     (9,
-      'berjalan projek lancar gembira pencarian peribadi pendidikan asalnya mengalami perdana')]
+    [(0, 'rakyat malaysia kena pimpin mudah negara negeri dasar serius tingkat'),
+     (1, 'ros tangguh parti umno pilih lembaga putus daftar kelulus tempoh'),
+     (2, 'menteri perdana terima isu seri jemaah nyata kena razak raja'),
+     (3, 'hutang selesai mdb wang wujud tutup tempoh projek pendek gantung'),
+     (4, 'ambil putus tindak langkah dar mahkamah punca bahagian kelulus sarawak'),
+     (5, 'bangun negara kongsi malaysia alam sedia selatan kawasan main mahir'),
+     (6, 'undi pakat impak tuju rana wujud catat cina dakwa sumber'),
+     (7, 'kapal jho low rampas doj niaga dakwa sivil tuntut milik'),
+     (8, 'laku ajar wujud bimbang proses raja didik bukti maju bidang'),
+     (9, 'raya pilih konon lembaga selesai dengar pandang buah selesa kuok')]
 
 
 
@@ -156,16 +157,16 @@ lsa.print_topics(5)
 
     topic 0       topic 1       topic 2       topic 3       topic 4       
     --------      --------      --------      --------      --------      
-    rakyat        rakyat        hutang        hutang        menteri       
-    malaysia      malaysia      mdb           rakyat        perdana       
-    negara        kepimpinan    negara        mdb           berlaku       
-    kerajaan      ppsmi         projek        projek        kerajaan      
-    parti         memudahkan    kewangan      diselesaikan  rakyat        
-    isu           serius        diselesaikan  tempoh        jemaah        
-    tindakan      dasar         kerajaan      kewangan      seri          
-    menteri       berita        malaysia      pendek        penjelasan    
-    berkongsi     kepentingan   kapal         tutup         asli          
-    kepimpinan    mengatasi     low           sumber        isu           
+    rakyat        parti         laku          hutang        ambil         
+    malaysia      pilih         hutang        mdb           putus         
+    negara        ros           mdb           wang          undi          
+    raja          tangguh       selesai       selesai       rana          
+    menteri       umno          menteri       negara        tindak        
+    parti         putus         projek        bangun        parti         
+    selesai       lembaga       wujud         wujud         pas           
+    kena          raya          terima        tutup         langkah       
+    bangun        ambil         wang          tempoh        ph            
+    ambil         daftar        nyata         pilih         kena          
 
 
 
@@ -175,11 +176,15 @@ lsa.print_topics(5)
 lsa.get_sentences(5)
 ```
 
-    rakyat malaysia kepentingan negara
-    rakyat malaysia celik serius isu kepimpinan negara negeri
-    rakyat malaysia penyelesaian konkrit kerajaan mengatasi
-    percaya berkongsi maklumat berasas terutamanya maklumat berkaitan kepimpinan negara rakyat malaysia rakyat memilih kepimpinan negara berkaliber sesuai pandangan rakyat
-    terpulang rakyat pertimbangkan
+
+
+
+    ['rakyat malaysia negara',
+     'rakyat malaysia selesai konkrit raja',
+     'rakyat malaysia celik serius isu pimpin negara negeri',
+     'perdana menteri isu kena nyata raja terima',
+     'percaya kongsi maklumat asas utama maklumat kait pimpin negara rakyat malaysia rakyat pilih pimpin negara kaliber sesuai pandang rakyat']
+
 
 
 
@@ -190,20 +195,20 @@ lsa.get_topics(10)
 
 
 
-    [(0,
-      'rakyat malaysia negara kerajaan parti isu tindakan menteri berkongsi kepimpinan'),
-     (1,
-      'rakyat malaysia kepimpinan ppsmi memudahkan serius dasar berita kepentingan mengatasi'),
-     (2,
-      'hutang mdb negara projek kewangan diselesaikan kerajaan malaysia kapal low'),
-     (3,
-      'hutang rakyat mdb projek diselesaikan tempoh kewangan pendek tutup sumber'),
-     (4,
-      'menteri perdana berlaku kerajaan rakyat jemaah seri penjelasan asli isu'),
-     (5,
-      'raya pilihan memandangkan perlembagaan kononnya prestasi kerusi kuok negara mendakwa'),
-     (6, 'kerajaan jho kapal low perniagaan doj dirampas dana sivil ahli'),
-     (7, 'kapal low jho menteri negara perdana doj berlaku anak perniagaan'),
-     (8,
-      'undi pertumbuhan asli harapan pendapatan pakatan mengundi masyarakat cina catatan'),
-     (9, 'undi harapan pas isu pakatan amanah parti mdb menteri tindakan')]
+    [(0, 'rakyat malaysia negara raja menteri parti selesai kena bangun ambil'),
+     (1, 'parti pilih ros tangguh umno putus lembaga raya ambil daftar'),
+     (2, 'laku hutang mdb selesai menteri projek wujud terima wang nyata'),
+     (3, 'hutang mdb wang selesai negara bangun wujud tutup tempoh pilih'),
+     (4, 'ambil putus undi rana tindak parti pas langkah ph kena'),
+     (5, 'rakyat selesai hutang kena mdb malaysia menteri undi timbang wujud'),
+     (6, 'undi laku ajar ros rakyat parti dakwa cina catat wujud'),
+     (7, 'low jho kapal nyata dakwa rakyat niaga doj dana tumbuh'),
+     (8, 'laku ambil ajar pilih dakwa bidang didik tindak putus raya'),
+     (9, 'menteri bangun negara perdana laku putus kongsi alam parti nyata')]
+
+
+
+
+```python
+
+```

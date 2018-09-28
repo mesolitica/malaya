@@ -5,6 +5,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import NMF, LatentDirichletAllocation
 from operator import itemgetter
 from .text_functions import cluster_words, summary_textcleaning, deep_sentiment_textcleaning, STOPWORDS
+from .stemmer import sastrawi_stemmer
 
 def summarize_lsa(corpus, maintain_original = False, top_k = 3, important_words = 3,
     return_cluster = True, **kwargs):
@@ -13,8 +14,9 @@ def summarize_lsa(corpus, maintain_original = False, top_k = 3, important_words 
     corpus = ' '.join(corpus)
     splitted_fullstop = re.findall('(?=\S)[^.\n]+(?<=\S)', corpus)
     splitted_fullstop = [deep_sentiment_textcleaning(i) if not maintain_original else i for i in splitted_fullstop if len(i)]
-    tfidf = TfidfVectorizer(ngram_range=(1, 3),min_df=2,stop_words=STOPWORDS,**kwargs).fit(splitted_fullstop)
-    U, S, Vt = svd(tfidf.transform(splitted_fullstop).todense().T, full_matrices =False)
+    stemmed = [sastrawi_stemmer(i) for i in splitted_fullstop]
+    tfidf = TfidfVectorizer(ngram_range=(1, 3),min_df=2,stop_words=STOPWORDS,**kwargs).fit(stemmed)
+    U, S, Vt = svd(tfidf.transform(stemmed).todense().T, full_matrices =False)
     summary =[(splitted_fullstop[i],
     np.linalg.norm(np.dot(np.diag(S),Vt[:,b]),2)) for i in range(len(splitted_fullstop)) for b in range(len(Vt))]
     summary = sorted(summary, key=itemgetter(1))
@@ -34,8 +36,9 @@ def summarize_nmf(corpus, maintain_original = False, top_k = 3, important_words 
     corpus = ' '.join(corpus)
     splitted_fullstop = re.findall('(?=\S)[^.\n]+(?<=\S)', corpus)
     splitted_fullstop = [deep_sentiment_textcleaning(i) if not maintain_original else i for i in splitted_fullstop if len(i)]
-    tfidf = TfidfVectorizer(ngram_range=(1, 3),min_df=2,stop_words=STOPWORDS,**kwargs).fit(splitted_fullstop)
-    densed_tfidf = tfidf.transform(splitted_fullstop).todense()
+    stemmed = [sastrawi_stemmer(i) for i in splitted_fullstop]
+    tfidf = TfidfVectorizer(ngram_range=(1, 3),min_df=2,stop_words=STOPWORDS,**kwargs).fit(stemmed)
+    densed_tfidf = tfidf.transform(stemmed).todense()
     nmf = NMF(len(splitted_fullstop)).fit(densed_tfidf)
     vectors = nmf.transform(densed_tfidf)
     components = nmf.components_.mean(axis=1)
@@ -58,8 +61,9 @@ def summarize_lda(corpus, maintain_original = False, top_k = 3, important_words 
     corpus = ' '.join(corpus)
     splitted_fullstop = re.findall('(?=\S)[^.\n]+(?<=\S)', corpus)
     splitted_fullstop = [deep_sentiment_textcleaning(i) if not maintain_original else i for i in splitted_fullstop if len(i)]
-    tfidf = TfidfVectorizer(ngram_range=(1, 3),min_df=2,stop_words=STOPWORDS,**kwargs).fit(splitted_fullstop)
-    densed_tfidf = tfidf.transform(splitted_fullstop).todense()
+    stemmed = [sastrawi_stemmer(i) for i in splitted_fullstop]
+    tfidf = TfidfVectorizer(ngram_range=(1, 3),min_df=2,stop_words=STOPWORDS,**kwargs).fit(stemmed)
+    densed_tfidf = tfidf.transform(stemmed).todense()
     lda = LatentDirichletAllocation(len(splitted_fullstop)).fit(densed_tfidf)
     vectors = lda.transform(densed_tfidf)
     components = lda.components_.mean(axis=1)

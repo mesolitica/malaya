@@ -1,10 +1,11 @@
 from pathlib import Path
+import shutil
 import os
 import warnings
 warnings.simplefilter("ignore", DeprecationWarning)
 
 home = str(Path.home())+'/Malaya'
-version = '0.4'
+version = '0.5'
 version_path = home+'/version'
 
 try:
@@ -16,9 +17,8 @@ except:
 
 if not os.path.isfile(version_path):
     print('not found any version, deleting previous version models..')
-    files = os.listdir(home)
-    for f in files:
-        os.remove(os.path.join(home,f))
+    shutil.rmtree(home)
+    os.makedirs(home)
     with open(version_path,'w') as fopen:
         fopen.write(version)
 else:
@@ -26,11 +26,10 @@ else:
         cached_version = fopen.read()
     if version not in cached_version:
         print('deleting previous version models..')
-        files = os.listdir(home)
-        for f in files:
-            os.remove(os.path.join(home,f))
-    else:
-        pass
+        shutil.rmtree(home)
+        os.makedirs(home)
+        with open(version_path,'w') as fopen:
+            fopen.write(version)
 
 from .entities import multinomial_entities, xgb_entities, deep_entities, get_available_entities_models
 from .language_detection import multinomial_detect_languages, xgb_detect_languages, get_language_labels
@@ -39,7 +38,7 @@ from .num2word import to_cardinal,to_ordinal,to_ordinal_num,to_currency,to_year
 from .pos_entities import deep_pos_entities, get_available_pos_entities_models
 from .pos import naive_pos, multinomial_pos, xgb_pos, deep_pos, get_available_pos_models
 from .sentiment import deep_sentiment, bayes_sentiment, pretrained_bayes_sentiment, get_available_sentiment_models, pretrained_xgb_sentiment
-from .stemmer import naive_stemmer
+from .stemmer import naive_stemmer, sastrawi_stemmer, deep_stemmer
 from .summarization import summarize_lsa, summarize_nmf, summarize_lda
 from .topic_modelling import lda_topic_modelling, nmf_topic_modelling, lsa_topic_modelling
 from .topics_influencers import get_influencers, get_topics
@@ -96,7 +95,7 @@ def describe_entities_malaya():
     print('FAC - facility, hospitals, clinics, etc')
     print('TIME - date, day, time, etc')
     print('O - not related, out scope')
-    
+
 def describe_entities():
     print('OTHER - Other')
     print('law - related law documents, documents, etc')

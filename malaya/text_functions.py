@@ -53,7 +53,7 @@ def malaya_textcleaning(string):
     string = re.sub('http\S+|www.\S+', '',' '.join([i for i in string.split() if i.find('#')<0 and i.find('@')<0]))
     string = unidecode(string).replace('.', '. ')
     string = string.replace(',', ', ')
-    string = re.sub('[^\'\"A-Za-z\- ]+', '', unidecode(string))
+    string = re.sub('[^\'\"A-Za-z\- ]+', ' ', unidecode(string))
     string = [y.strip() for y in word_tokenize(string.lower()) if isWord(y.strip())]
     string = [y for y in string if all([y.find(k) < 0 for k in list_laughing]) and y[:len(y)//2] != y[len(y)//2:]]
     string = ' '.join(string).lower()
@@ -81,18 +81,17 @@ def summary_textcleaning(string):
     string = re.sub('[^A-Za-z0-9\-\/\'\"\.\, ]+', ' ', string).split()
     return ' '.join([y.strip() for y in string])
 
-def deep_sentiment_textcleaning(string):
+def deep_sentiment_textcleaning(string,no_stopwords=False):
     string = re.sub('http\S+|www.\S+', '',' '.join([i for i in string.split() if i.find('#')<0 and i.find('@')<0]))
     string = unidecode(string).replace('.', '. ').replace(',', ', ')
     string = re.sub('[^\'\"A-Za-z\- ]+', ' ', string)
-    return ' '.join([i for i in re.findall("[\\w']+|[;:\-\(\)&.,!?\"]", string) if len(i)>1 and i not in STOPWORDS]).lower()
-
-def process_word_pos_entities(word, lower=True):
-    if lower:
-        word = word.lower()
+    if no_stopwords:
+        return ' '.join([i for i in re.findall("[\\w']+|[;:\-\(\)&.,!?\"]", string) if len(i)>1]).lower()
     else:
-        if word.isupper():
-            word = word.title()
+        return ' '.join([i for i in re.findall("[\\w']+|[;:\-\(\)&.,!?\"]", string) if len(i)>1 and i not in STOPWORDS]).lower()
+
+def process_word_pos_entities(word):
+    word = word.lower()
     word = re.sub('[^A-Za-z0-9\- ]+', '', word)
     if word.isdigit():
         word = 'NUM'
@@ -116,11 +115,7 @@ def print_topics_modelling(topics, feature_names, sorting, topics_per_chunk=6, n
         print(("topic {:<8}" * len_this_chunk).format(*these_topics))
         print(("-------- {0:<5}" * len_this_chunk).format(""))
         for i in range(n_words):
-            try:
-                print(("{:<14}" * len_this_chunk).format(*feature_names[sorting[these_topics, i]]))
-            except Exception as e:
-                print(e)
-                pass
+            print(("{:<14}" * len_this_chunk).format(*feature_names[sorting[these_topics, i]]))
         print("\n")
 
 def cluster_words(list_words):
@@ -139,3 +134,58 @@ def cluster_words(list_words):
     for key, words in dict_words.items():
         results.append(max(list(set([key] + words)), key=len))
     return list(set(results))
+
+def str_idx(corpus, dic, maxlen, UNK=0):
+    X = np.zeros((len(corpus),maxlen))
+    for i in range(len(corpus)):
+        for no, k in enumerate(corpus[i].split()[:maxlen][::-1]):
+            try:
+                X[i,-1 - no]=dic[k]
+            except Exception as e:
+                X[i,-1 - no]=UNK
+    return X
+
+def stemmer_str_idx(corpus, dic, UNK=3):
+    X = []
+    for i in corpus:
+        ints = []
+        for k in i:
+            try:
+                ints.append(dic[k])
+            except Exception as e:
+                ints.append(UNK)
+        X.append(ints)
+    return X
+
+def fasttext_str_idx(texts, dictionary):
+    idx_trainset = []
+    for text in texts:
+        idx = []
+        for t in text.split():
+            try:
+                idx.append(dictionary[t])
+            except:
+                pass
+        idx_trainset.append(idx)
+    return idx_trainset
+
+def pad_sentence_batch(sentence_batch, pad_int):
+    padded_seqs = []
+    seq_lens = []
+    max_sentence_len = max([len(sentence) for sentence in sentence_batch])
+    for sentence in sentence_batch:
+        padded_seqs.append(sentence + [pad_int] * (max_sentence_len - len(sentence)))
+        seq_lens.append(len(sentence))
+    return padded_seqs, seq_lens
+
+def add_ngram(sequences, token_indice):
+    new_sequences = []
+    for input_list in sequences:
+        new_list = input_list[:]
+        for ngram_value in range(2, 3):
+            for i in range(len(new_list) - ngram_value + 1):
+                ngram = tuple(new_list[i:i + ngram_value])
+                if ngram in token_indice:
+                    new_list.append(token_indice[ngram])
+        new_sequences.append(new_list)
+    return new_sequences

@@ -26,8 +26,7 @@ class NAIVE_NORMALIZE:
         return result_string + self.corpus[ids]
 
 def naive_normalizer(corpus):
-    if not isinstance(corpus, list) and not isinstance(corpus, tuple):
-        raise Exception('a list or a tuple of word needed for the corpus')
+    assert (isinstance(corpus, list) and isinstance(corpus[0], str)), 'input must be list of strings'
     transform = []
     for i in corpus:
         i = i.lower()
