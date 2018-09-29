@@ -11,162 +11,183 @@ import malaya
 
 
 ```python
+malaya.describe_entities()
+```
+
+    OTHER - not related, out of scope
+    law - documents, law related
+    location - location, place
+    organization - Organization, company, government, parties
+    person - person, group of people, believes, special names
+    quantity - countable
+    time - date, day, time
+
+
+
+```python
 string = 'KUALA LUMPUR: Sempena sambutan Aidilfitri minggu depan, Perdana Menteri Tun Dr Mahathir Mohamad dan Menteri Pengangkutan Anthony Loke Siew Fook menitipkan pesanan khas kepada orang ramai yang mahu pulang ke kampung halaman masing-masing. Dalam video pendek terbitan Jabatan Keselamatan Jalan Raya (JKJR) itu, Dr Mahathir menasihati mereka supaya berhenti berehat dan tidur sebentar  sekiranya mengantuk ketika memandu.'
 ```
 
 
 ```python
-malaya.describe_pos_malaya()
+malaya.multinomial_entities(string)
 ```
 
-    KT - Kata Tanya
-    KJ - Kata Kerja
-    KP - Kata Perintah
-    KPA - Kata Pangkal
-    KB - Kata Bantu
-    KPENGUAT - Kata Penguat
-    KPENEGAS - Kata Penegas
-    NAFI - Kata Nafi
-    KPEMERI - Kata Pemeri
-    KS - Kata Sendi
-    KPEMBENAR - Kata Pembenar
-    NAFI - Kata Nafi
-    NO - Numbers
-    SUKU - Suku Bilangan
-    PISAHAN - Kata Pisahan
-    KETERANGAN - Kata Keterangan
-    ARAH - Kata Arah
-    KH - Kata Hubung
-    GN - Ganti Nama
-    KA - Kata Adjektif
-    O - not related, out scope
-
-
-
-```python
-malaya.describe_entities_malaya()
-```
-
-    PRN - person, group of people, believes, etc
-    LOC - location
-    NORP - Military, police, government, Parties, etc
-    ORG - Organization, company
-    LAW - related law document, etc
-    ART - art of work, special names, etc
-    EVENT - event happen, etc
-    FAC - facility, hospitals, clinics, etc
-    TIME - date, day, time, etc
-    O - not related, out scope
-
-
-
-```python
-malaya.naive_pos(string)
-```
+    /usr/local/lib/python3.6/site-packages/sklearn/base.py:311: UserWarning: Trying to unpickle estimator CountVectorizer from version 0.19.1 when using version 0.19.2. This might lead to breaking code or invalid results. Use at your own risk.
+      UserWarning)
+    /usr/local/lib/python3.6/site-packages/sklearn/base.py:311: UserWarning: Trying to unpickle estimator MultinomialNB from version 0.19.1 when using version 0.19.2. This might lead to breaking code or invalid results. Use at your own risk.
+      UserWarning)
 
 
 
 
-    [('KN', 'kuala'),
-     ('KN', 'lumpur'),
-     ('', ':'),
-     ('KJ', 'sempena'),
-     ('KN', 'sambutan'),
-     ('KJ', 'aidilfitri'),
-     ('KN', 'minggu'),
-     ('KN', 'depan'),
-     ('', ','),
-     ('KJ', 'perdana'),
-     ('KJ', 'menteri'),
-     ('KN', 'tun'),
-     ('', 'dr'),
-     ('KN', 'mahathir'),
-     ('KN', 'mohamad'),
-     ('KH', 'dan'),
-     ('KJ', 'menteri'),
-     ('KJ', 'pengangkutan'),
-     ('KN', 'anthony'),
-     ('KN', 'loke'),
-     ('KN', 'siew'),
-     ('KN', 'fook'),
-     ('KJ', 'menitipkan'),
-     ('KJ', 'pesanan'),
-     ('KN', 'khas'),
-     ('KS', 'kepada'),
-     ('KN', 'orang'),
-     ('KN', 'ramai'),
-     ('KETERANGAN', 'yang'),
-     ('KN', 'mahu'),
-     ('KN', 'pulang'),
-     ('KS', 'ke'),
-     ('KN', 'kampung'),
-     ('KN', 'halaman'),
-     ('KN', 'masing-masing'),
-     ('', '.'),
-     ('KS', 'dalam'),
-     ('KN', 'video'),
-     ('KJ', 'pendek'),
-     ('KJ', 'terbitan'),
-     ('KN', 'jabatan'),
-     ('KJ', 'keselamatan'),
-     ('KN', 'jalan'),
-     ('KN', 'raya'),
-     ('', '('),
-     ('KN', 'jkjr'),
-     ('', ')'),
-     ('GN', 'itu'),
-     ('', ','),
-     ('', 'dr'),
-     ('KN', 'mahathir'),
-     ('KJ', 'menasihati'),
-     ('GN', 'mereka'),
-     ('KH', 'supaya'),
-     ('KJ', 'berhenti'),
-     ('KJ', 'berehat'),
-     ('KH', 'dan'),
-     ('KN', 'tidur'),
-     ('KETERANGAN', 'sebentar'),
-     ('KJ', 'sekiranya'),
-     ('KJ', 'mengantuk'),
-     ('KN', 'ketika'),
-     ('KJ', 'memandu'),
-     ('', '.')]
+
+    [('KUALA', 'location'),
+     ('LUMPUR', 'location'),
+     ('Sempena', 'OTHER'),
+     ('sambutan', 'OTHER'),
+     ('Aidilfitri', 'person'),
+     ('minggu', 'OTHER'),
+     ('depan', 'OTHER'),
+     ('Perdana', 'person'),
+     ('Menteri', 'OTHER'),
+     ('Tun', 'person'),
+     ('Dr', 'person'),
+     ('Mahathir', 'person'),
+     ('Mohamad', 'person'),
+     ('dan', 'OTHER'),
+     ('Menteri', 'OTHER'),
+     ('Pengangkutan', 'OTHER'),
+     ('Anthony', 'person'),
+     ('Loke', 'person'),
+     ('Siew', 'person'),
+     ('Fook', 'organization'),
+     ('menitipkan', 'OTHER'),
+     ('pesanan', 'OTHER'),
+     ('khas', 'OTHER'),
+     ('kepada', 'OTHER'),
+     ('orang', 'OTHER'),
+     ('ramai', 'OTHER'),
+     ('yang', 'OTHER'),
+     ('mahu', 'OTHER'),
+     ('pulang', 'OTHER'),
+     ('ke', 'OTHER'),
+     ('kampung', 'OTHER'),
+     ('halaman', 'OTHER'),
+     ('masing-masing', 'OTHER'),
+     ('Dalam', 'OTHER'),
+     ('video', 'OTHER'),
+     ('pendek', 'OTHER'),
+     ('terbitan', 'OTHER'),
+     ('Jabatan', 'organization'),
+     ('Keselamatan', 'OTHER'),
+     ('Jalan', 'location'),
+     ('Raya', 'person'),
+     ('JKJR', 'OTHER'),
+     ('itu', 'OTHER'),
+     ('Dr', 'person'),
+     ('Mahathir', 'person'),
+     ('menasihati', 'OTHER'),
+     ('mereka', 'OTHER'),
+     ('supaya', 'OTHER'),
+     ('berhenti', 'OTHER'),
+     ('berehat', 'OTHER'),
+     ('dan', 'OTHER'),
+     ('tidur', 'OTHER'),
+     ('sebentar', 'OTHER'),
+     ('sekiranya', 'OTHER'),
+     ('mengantuk', 'OTHER'),
+     ('ketika', 'OTHER'),
+     ('memandu', 'OTHER')]
 
 
 
 
 ```python
-available_models = malaya.get_available_pos_entities_models()
-available_models
+malaya.xgb_entities(string)
 ```
 
+    /usr/local/lib/python3.6/site-packages/sklearn/base.py:311: UserWarning: Trying to unpickle estimator CountVectorizer from version 0.19.1 when using version 0.19.2. This might lead to breaking code or invalid results. Use at your own risk.
+      UserWarning)
 
 
 
-    ['char', 'concat', 'attention']
+
+
+    [('KUALA', 'location'),
+     ('LUMPUR', 'location'),
+     ('Sempena', 'OTHER'),
+     ('sambutan', 'OTHER'),
+     ('Aidilfitri', 'OTHER'),
+     ('minggu', 'time'),
+     ('depan', 'OTHER'),
+     ('Perdana', 'person'),
+     ('Menteri', 'OTHER'),
+     ('Tun', 'person'),
+     ('Dr', 'person'),
+     ('Mahathir', 'person'),
+     ('Mohamad', 'person'),
+     ('dan', 'OTHER'),
+     ('Menteri', 'OTHER'),
+     ('Pengangkutan', 'OTHER'),
+     ('Anthony', 'person'),
+     ('Loke', 'OTHER'),
+     ('Siew', 'person'),
+     ('Fook', 'OTHER'),
+     ('menitipkan', 'OTHER'),
+     ('pesanan', 'OTHER'),
+     ('khas', 'organization'),
+     ('kepada', 'OTHER'),
+     ('orang', 'OTHER'),
+     ('ramai', 'OTHER'),
+     ('yang', 'OTHER'),
+     ('mahu', 'OTHER'),
+     ('pulang', 'OTHER'),
+     ('ke', 'OTHER'),
+     ('kampung', 'OTHER'),
+     ('halaman', 'OTHER'),
+     ('masing-masing', 'OTHER'),
+     ('Dalam', 'OTHER'),
+     ('video', 'OTHER'),
+     ('pendek', 'OTHER'),
+     ('terbitan', 'OTHER'),
+     ('Jabatan', 'OTHER'),
+     ('Keselamatan', 'OTHER'),
+     ('Jalan', 'location'),
+     ('Raya', 'OTHER'),
+     ('JKJR', 'OTHER'),
+     ('itu', 'OTHER'),
+     ('Dr', 'person'),
+     ('Mahathir', 'person'),
+     ('menasihati', 'OTHER'),
+     ('mereka', 'OTHER'),
+     ('supaya', 'OTHER'),
+     ('berhenti', 'OTHER'),
+     ('berehat', 'OTHER'),
+     ('dan', 'OTHER'),
+     ('tidur', 'OTHER'),
+     ('sebentar', 'OTHER'),
+     ('sekiranya', 'OTHER'),
+     ('mengantuk', 'OTHER'),
+     ('ketika', 'OTHER'),
+     ('memandu', 'OTHER')]
 
 
 
 
 ```python
-for i in available_models:
+for i in malaya.get_available_entities_models():
     print('Testing %s model'%(i))
-    print(malaya.deep_pos_entities(i).predict(string))
+    model = malaya.deep_entities(i)
+    print(model.predict(string))
     print()
 ```
 
     Testing char model
-    [('KUALA', 'LOC', 'KN'), ('LUMPUR:', 'LOC', 'KN'), ('Sempena', 'O', 'KN'), ('sambutan', 'O', 'KN'), ('Aidilfitri', 'EVENT', 'KN'), ('minggu', 'O', 'KN'), ('depan,', 'O', 'KN'), ('Perdana', 'PRN', 'KN'), ('Menteri', 'PRN', 'KN'), ('Tun', 'PRN', 'KN'), ('Dr', 'PRN', 'KN'), ('Mahathir', 'PRN', 'KN'), ('Mohamad', 'PRN', 'KN'), ('dan', 'O', 'KH'), ('Menteri', 'PRN', 'KN'), ('Pengangkutan', 'LAW', 'KN'), ('Anthony', 'PRN', 'KN'), ('Loke', 'PRN', 'KN'), ('Siew', 'PRN', 'KN'), ('Fook', 'PRN', 'KN'), ('menitipkan', 'O', 'KN'), ('pesanan', 'O', 'KN'), ('khas', 'O', 'KN'), ('kepada', 'O', 'KS'), ('orang', 'O', 'KN'), ('ramai', 'O', 'KN'), ('yang', 'O', 'KETERANGAN'), ('mahu', 'O', 'KN'), ('pulang', 'O', 'KN'), ('ke', 'O', 'KS'), ('kampung', 'LOC', 'KN'), ('halaman', 'LOC', 'KN'), ('masing-masing.', 'O', 'KN'), ('Dalam', 'O', 'KS'), ('video', 'O', 'KN'), ('pendek', 'O', 'KN'), ('terbitan', 'O', 'KN'), ('Jabatan', 'NORP', 'KN'), ('Keselamatan', 'O', 'KN'), ('Jalan', 'LOC', 'KN'), ('Raya', 'ART', 'KN'), ('(JKJR)', 'PRN', 'KN'), ('itu,', 'O', 'GN'), ('Dr', 'PRN', 'KN'), ('Mahathir', 'PRN', 'KN'), ('menasihati', 'O', 'KJ'), ('mereka', 'O', 'GN'), ('supaya', 'O', 'KH'), ('berhenti', 'O', 'KJ'), ('berehat', 'O', 'KA'), ('dan', 'O', 'KH'), ('tidur', 'O', 'KN'), ('sebentar', 'O', 'KETERANGAN'), ('sekiranya', 'O', 'KN'), ('mengantuk', 'O', 'KJ'), ('ketika', 'O', 'KN'), ('memandu.', 'O', 'KJ')]
+    [('kuala', 'OTHER'), ('lumpur', 'OTHER'), ('sempena', 'OTHER'), ('sambutan', 'OTHER'), ('aidilfitri', 'OTHER'), ('minggu', 'time'), ('depan', 'OTHER'), ('perdana', 'OTHER'), ('menteri', 'OTHER'), ('tun', 'OTHER'), ('dr', 'person'), ('mahathir', 'person'), ('mohamad', 'person'), ('dan', 'OTHER'), ('menteri', 'OTHER'), ('pengangkutan', 'OTHER'), ('anthony', 'person'), ('loke', 'OTHER'), ('siew', 'OTHER'), ('fook', 'OTHER'), ('menitipkan', 'OTHER'), ('pesanan', 'OTHER'), ('khas', 'OTHER'), ('kepada', 'OTHER'), ('orang', 'OTHER'), ('ramai', 'OTHER'), ('yang', 'OTHER'), ('mahu', 'OTHER'), ('pulang', 'OTHER'), ('ke', 'OTHER'), ('kampung', 'OTHER'), ('halaman', 'OTHER'), ('masing-masing', 'OTHER'), ('dalam', 'OTHER'), ('video', 'OTHER'), ('pendek', 'OTHER'), ('terbitan', 'OTHER'), ('jabatan', 'OTHER'), ('keselamatan', 'OTHER'), ('jalan', 'OTHER'), ('raya', 'OTHER'), ('jkjr', 'location'), ('itu', 'OTHER'), ('dr', 'person'), ('mahathir', 'person'), ('menasihati', 'OTHER'), ('mereka', 'OTHER'), ('supaya', 'OTHER'), ('berhenti', 'OTHER'), ('berehat', 'OTHER'), ('dan', 'OTHER'), ('tidur', 'OTHER'), ('sebentar', 'OTHER'), ('sekiranya', 'OTHER'), ('mengantuk', 'OTHER'), ('ketika', 'OTHER'), ('memandu', 'OTHER')]
+
+    Testing word model
+    [('kuala', 'location'), ('lumpur', 'location'), ('sempena', 'OTHER'), ('sambutan', 'OTHER'), ('aidilfitri', 'OTHER'), ('minggu', 'OTHER'), ('depan', 'OTHER'), ('perdana', 'person'), ('menteri', 'person'), ('tun', 'person'), ('dr', 'person'), ('mahathir', 'person'), ('mohamad', 'OTHER'), ('dan', 'OTHER'), ('menteri', 'OTHER'), ('pengangkutan', 'organization'), ('anthony', 'person'), ('loke', 'person'), ('siew', 'person'), ('fook', 'person'), ('menitipkan', 'person'), ('pesanan', 'person'), ('khas', 'OTHER'), ('kepada', 'OTHER'), ('orang', 'OTHER'), ('ramai', 'OTHER'), ('yang', 'OTHER'), ('mahu', 'OTHER'), ('pulang', 'OTHER'), ('ke', 'OTHER'), ('kampung', 'OTHER'), ('halaman', 'organization'), ('masing-masing', 'OTHER'), ('dalam', 'OTHER'), ('video', 'OTHER'), ('pendek', 'OTHER'), ('terbitan', 'OTHER'), ('jabatan', 'OTHER'), ('keselamatan', 'organization'), ('jalan', 'organization'), ('raya', 'organization'), ('jkjr', 'organization'), ('itu', 'OTHER'), ('dr', 'person'), ('mahathir', 'person'), ('menasihati', 'OTHER'), ('mereka', 'OTHER'), ('supaya', 'OTHER'), ('berhenti', 'OTHER'), ('berehat', 'OTHER'), ('dan', 'OTHER'), ('tidur', 'OTHER'), ('sebentar', 'OTHER'), ('sekiranya', 'OTHER'), ('mengantuk', 'OTHER'), ('ketika', 'OTHER'), ('memandu', 'OTHER')]
 
     Testing concat model
-    [('KUALA', 'LOC', 'KN'), ('LUMPUR:', 'LOC', 'KN'), ('Sempena', 'O', 'KN'), ('sambutan', 'EVENT', 'KN'), ('Aidilfitri', 'EVENT', 'KN'), ('minggu', 'O', 'KN'), ('depan,', 'O', 'KN'), ('Perdana', 'PRN', 'KN'), ('Menteri', 'PRN', 'KN'), ('Tun', 'PRN', 'KN'), ('Dr', 'PRN', 'KN'), ('Mahathir', 'PRN', 'KN'), ('Mohamad', 'PRN', 'KN'), ('dan', 'O', 'KH'), ('Menteri', 'O', 'KN'), ('Pengangkutan', 'O', 'KN'), ('Anthony', 'PRN', 'KN'), ('Loke', 'PRN', 'KN'), ('Siew', 'PRN', 'KN'), ('Fook', 'PRN', 'KN'), ('menitipkan', 'O', 'KN'), ('pesanan', 'O', 'KN'), ('khas', 'O', 'KN'), ('kepada', 'O', 'KS'), ('orang', 'O', 'KN'), ('ramai', 'O', 'KN'), ('yang', 'O', 'KETERANGAN'), ('mahu', 'O', 'KN'), ('pulang', 'O', 'KN'), ('ke', 'O', 'KS'), ('kampung', 'O', 'KN'), ('halaman', 'TIME', 'KN'), ('masing-masing.', 'TIME', 'KN'), ('Dalam', 'O', 'KN'), ('video', 'O', 'KN'), ('pendek', 'O', 'KN'), ('terbitan', 'O', 'KN'), ('Jabatan', 'NORP', 'KN'), ('Keselamatan', 'NORP', 'KN'), ('Jalan', 'O', 'KN'), ('Raya', 'ART', 'KN'), ('(JKJR)', 'ART', 'KN'), ('itu,', 'O', 'GN'), ('Dr', 'PRN', 'KN'), ('Mahathir', 'PRN', 'KN'), ('menasihati', 'PRN', 'KN'), ('mereka', 'O', 'GN'), ('supaya', 'O', 'KH'), ('berhenti', 'O', 'KJ'), ('berehat', 'O', 'KN'), ('dan', 'O', 'KH'), ('tidur', 'O', 'KN'), ('sebentar', 'O', 'KA'), ('sekiranya', 'O', 'KJ'), ('mengantuk', 'O', 'KN'), ('ketika', 'O', 'KN'), ('memandu.', 'O', 'KJ')]
-
-    Testing attention model
-    [('KUALA', 'LOC', 'KN'), ('LUMPUR:', 'LOC', 'KN'), ('Sempena', 'O', 'KN'), ('sambutan', 'O', 'KN'), ('Aidilfitri', 'EVENT', 'KN'), ('minggu', 'O', 'KN'), ('depan,', 'O', 'KN'), ('Perdana', 'PRN', 'KN'), ('Menteri', 'PRN', 'KN'), ('Tun', 'PRN', 'KN'), ('Dr', 'PRN', 'KN'), ('Mahathir', 'PRN', 'KN'), ('Mohamad', 'PRN', 'KN'), ('dan', 'O', 'KH'), ('Menteri', 'NORP', 'KN'), ('Pengangkutan', 'NORP', 'KN'), ('Anthony', 'PRN', 'KN'), ('Loke', 'PRN', 'KN'), ('Siew', 'PRN', 'KN'), ('Fook', 'PRN', 'KN'), ('menitipkan', 'O', 'KN'), ('pesanan', 'O', 'KN'), ('khas', 'O', 'KN'), ('kepada', 'O', 'KS'), ('orang', 'O', 'KN'), ('ramai', 'O', 'KN'), ('yang', 'O', 'KETERANGAN'), ('mahu', 'O', 'KN'), ('pulang', 'O', 'KN'), ('ke', 'O', 'KS'), ('kampung', 'O', 'KN'), ('halaman', 'O', 'KN'), ('masing-masing.', 'O', 'KN'), ('Dalam', 'O', 'KN'), ('video', 'O', 'KN'), ('pendek', 'O', 'KN'), ('terbitan', 'O', 'KN'), ('Jabatan', 'O', 'KN'), ('Keselamatan', 'O', 'KN'), ('Jalan', 'NORP', 'KN'), ('Raya', 'NORP', 'KN'), ('(JKJR)', 'O', 'KN'), ('itu,', 'O', 'GN'), ('Dr', 'PRN', 'KN'), ('Mahathir', 'PRN', 'KN'), ('menasihati', 'O', 'KN'), ('mereka', 'O', 'GN'), ('supaya', 'O', 'KH'), ('berhenti', 'O', 'KJ'), ('berehat', 'O', 'KN'), ('dan', 'O', 'KH'), ('tidur', 'O', 'KN'), ('sebentar', 'O', 'KETERANGAN'), ('sekiranya', 'O', 'KJ'), ('mengantuk', 'O', 'KN'), ('ketika', 'O', 'KN'), ('memandu.', 'O', 'KJ')]
-
-
-
-
-```python
-
-```
+    [('kuala', 'location'), ('lumpur', 'location'), ('sempena', 'OTHER'), ('sambutan', 'OTHER'), ('aidilfitri', 'OTHER'), ('minggu', 'time'), ('depan', 'time'), ('perdana', 'person'), ('menteri', 'person'), ('tun', 'person'), ('dr', 'person'), ('mahathir', 'person'), ('mohamad', 'person'), ('dan', 'OTHER'), ('menteri', 'OTHER'), ('pengangkutan', 'OTHER'), ('anthony', 'person'), ('loke', 'person'), ('siew', 'person'), ('fook', 'person'), ('menitipkan', 'OTHER'), ('pesanan', 'OTHER'), ('khas', 'OTHER'), ('kepada', 'OTHER'), ('orang', 'OTHER'), ('ramai', 'OTHER'), ('yang', 'OTHER'), ('mahu', 'OTHER'), ('pulang', 'OTHER'), ('ke', 'OTHER'), ('kampung', 'OTHER'), ('halaman', 'OTHER'), ('masing-masing', 'OTHER'), ('dalam', 'OTHER'), ('video', 'OTHER'), ('pendek', 'OTHER'), ('terbitan', 'OTHER'), ('jabatan', 'organization'), ('keselamatan', 'organization'), ('jalan', 'organization'), ('raya', 'organization'), ('jkjr', 'organization'), ('itu', 'OTHER'), ('dr', 'person'), ('mahathir', 'person'), ('menasihati', 'OTHER'), ('mereka', 'OTHER'), ('supaya', 'OTHER'), ('berhenti', 'OTHER'), ('berehat', 'OTHER'), ('dan', 'OTHER'), ('tidur', 'OTHER'), ('sebentar', 'OTHER'), ('sekiranya', 'OTHER'), ('mengantuk', 'OTHER'), ('ketika', 'OTHER'), ('memandu', 'OTHER')]
