@@ -1,6 +1,10 @@
 Malaya
 ======
 
+.. image:: https://raw.githubusercontent.com/DevconX/Malaya/master/session/towns-of-malaya.jpg
+    :target: https://github.com/devconx/malaya
+    :alt: Latest Version
+
 .. image:: https://s3.amazonaws.com/assets.coveralls.io/badges/coveralls_98.svg
     :target: https://github.com/devconx/malaya
     :alt: Latest Version
@@ -12,7 +16,6 @@ Malaya support:
 * Entities Recognition
 * Language Detection
 * Normalizer
-* Language Detection
 * Num2Word
 * Part-of-Speech Recognition
 * Sentiment Analysis
