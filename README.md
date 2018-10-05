@@ -9,6 +9,8 @@ Natural-Language-Toolkit for bahasa Malaysia, powered by Deep Learning.
 
 All the documentations moved to [Malaya Wiki](https://github.com/DevconX/Malaya/wiki).
 
-## Authors
+## Contributors
 
 * **Husein Zolkepli** - *Initial work* - [huseinzol05](https://github.com/huseinzol05)
+
+* **Sani** - *build PIP package* - [khursani8](https://github.com/khursani8)
