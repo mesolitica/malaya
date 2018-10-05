@@ -48,43 +48,52 @@ def isWord(word):
                 return False
     return True
 
-list_laughing = ['huhu','haha','gaga','hihi','wkawka','wkwk','kiki','keke','rt']
+list_laughing = ['huhu','haha','gaga','hihi','wkawka','wkwk','kiki','keke','huehue']
 def malaya_textcleaning(string):
     string = re.sub('http\S+|www.\S+', '',' '.join([i for i in string.split() if i.find('#')<0 and i.find('@')<0]))
     string = unidecode(string).replace('.', '. ')
     string = string.replace(',', ', ')
-    string = re.sub('[^\'\"A-Za-z\- ]+', ' ', unidecode(string))
+    string = re.sub('[^\'\"A-Za-z\- ]+', ' ', string)
     string = [y.strip() for y in word_tokenize(string.lower()) if isWord(y.strip())]
     string = [y for y in string if all([y.find(k) < 0 for k in list_laughing]) and y[:len(y)//2] != y[len(y)//2:]]
-    string = ' '.join(string).lower()
+    string = ' '.join(string)
     string = (''.join(''.join(s)[:2] for _, s in itertools.groupby(string))).split()
     return ' '.join([y for y in string if y not in STOPWORDS])
 
-def simple_textcleaning(string):
-    string = unidecode(string)
+def normalizer_textcleaning(string):
+    string = re.sub('http\S+|www.\S+', '',' '.join([i for i in string.split() if i.find('#')<0 and i.find('@')<0]))
     string = re.sub('[^A-Za-z ]+', ' ', string)
-    string = filter(None, string.split())
-    string = [y.strip() for y in string if len(y) > 1]
-    return ' '.join(string).lower()
+    string = [y.strip() for y in string.lower().split() if len(y.strip())]
+    string = [y for y in string if all([y.find(k) < 0 for k in list_laughing])]
+    string = ' '.join(string).lower()
+    return ''.join(''.join(s)[:2] for _, s in itertools.groupby(string))
 
-def simple_textcleaning_language_detection(string):
+def simple_textcleaning(string, decode=False):
+    '''
+    use by language_detection, topic modelling
+    only accept A-Z, a-z
+    '''
+    string = unidecode(string) if decode else string
     string = re.sub('[^A-Za-z ]+', ' ', string)
-    string = filter(None, string.split())
-    string = [y.strip() for y in string if len(y) > 1]
+    string = [y.strip() for y in string if len(y)]
     return ' '.join(string).lower()
 
 def entities_textcleaning(string):
     string = re.sub('[^A-Za-z0-9\-\/ ]+', ' ', string).split()
-    return [y.strip() for y in string]
+    return [y.strip() for y in string if len(y)]
 
 def summary_textcleaning(string):
     string = re.sub('[^A-Za-z0-9\-\/\'\"\.\, ]+', ' ', string).split()
-    return ' '.join([y.strip() for y in string])
+    return ' '.join([y.strip() for y in string if len(y)])
 
-def deep_sentiment_textcleaning(string,no_stopwords=False):
+def classification_textcleaning(string,no_stopwords=False):
+    '''
+    use by our text classifiers, stemmer, summarization, topic-modelling
+    remove links, hashtags, alias
+    '''
     string = re.sub('http\S+|www.\S+', '',' '.join([i for i in string.split() if i.find('#')<0 and i.find('@')<0]))
     string = unidecode(string).replace('.', '. ').replace(',', ', ')
-    string = re.sub('[^\'\"A-Za-z\- ]+', ' ', string)
+    string = re.sub('[^A-Za-z\- ]+', ' ', string)
     if no_stopwords:
         return ' '.join([i for i in re.findall("[\\w']+|[;:\-\(\)&.,!?\"]", string) if len(i)>1]).lower()
     else:
@@ -189,3 +198,24 @@ def add_ngram(sequences, token_indice):
                     new_list.append(token_indice[ngram])
         new_sequences.append(new_list)
     return new_sequences
+
+def char_str_idx(corpus, dic, UNK=0):
+    maxlen = max([len(i) for i in corpus])
+    X = np.zeros((len(corpus),maxlen))
+    for i in range(len(corpus)):
+        for no, k in enumerate(corpus[i][:maxlen][::-1]):
+            try:
+                X[i,-1 - no]=dic[k]
+            except Exception as e:
+                X[i,-1 - no]=UNK
+    return X
+
+def generate_char_seq(batch,idx2word,char2idx):
+    x = [[len(idx2word[i]) for i in k] for k in batch]
+    maxlen = max([j for i in x for j in i])
+    temp = np.zeros((batch.shape[0],batch.shape[1],maxlen),dtype=np.int32)
+    for i in range(batch.shape[0]):
+        for k in range(batch.shape[1]):
+            for no, c in enumerate(idx2word[batch[i,k]].lower()):
+                temp[i,k,-1-no] = char2idx[c]
+    return temp

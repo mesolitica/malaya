@@ -6,41 +6,65 @@ from keras.layers import LSTM, Embedding, Dense, TimeDistributed, Dropout, Bidir
 from keras_contrib.layers import CRF
 from keras import backend as K
 from keras.backend.tensorflow_backend import set_session
-from .utils import str_idx, generate_char_seq
-from .text_functions import entities_textcleaning
+from .text_functions import entities_textcleaning, classification_textcleaning, char_str_idx, generate_char_seq, str_idx
 set_session(tf.InteractiveSession())
 
-class Concat_Model:
+class CLASSIFIER:
+    def __init__(self, model, dictionary, labels):
+        self._model = model
+        self._dictionary = dictionary
+        self._labels = labels
+
+    def predict(self, string):
+        assert (isinstance(string, str)), "input must be a string"
+        string = classification_textcleaning(string,True)
+        splitted = string.split()
+        batch_x = str_idx([string], self._dictionary, len(splitted), UNK=3)
+        probs = self._model.predict(batch_x)
+        return {label:probs[0,no] for no, label in enumerate(self._labels)}
+
+    def predict_batch(self, strings):
+        assert (isinstance(strings, list) and isinstance(strings[0], str)), 'input must be list of strings'
+        strings = [classification_textcleaning(i,True) for i in strings]
+        maxlen = max([len(i.split()) for i in strings])
+        batch_x = str_idx(strings, self._dictionary, maxlen, UNK=3)
+        probs = self._model.predict(batch_x)
+        dicts = []
+        for i in range(probs.shape[0]):
+            dicts.append({label:probs[i,no] for no, label in enumerate(self._labels)})
+        return dicts
+
+class CONCAT_MODEL:
     def __init__(self, model, settings):
         self._model = model
         self._settings = settings
     def predict(self, string):
         assert (isinstance(string, str)), "input must be a string"
         string = entities_textcleaning(string.lower())
-        batch_x = str_idx([string],self._settings['word2idx'],2)
+        batch_x = char_str_idx([string],self._settings['word2idx'],2)
         batch_x_char = generate_char_seq(batch_x,self._settings['idx2word'],self._settings['char2idx'])
         results = np.argmax(self._model.predict([batch_x, batch_x_char])[0],1)
         return [(string[no],self._settings['idx2tag'][str(i)]) for no, i in enumerate(results)]
 
-class Word_Model:
+class WORD_MODEL:
     def __init__(self, model, settings):
         self._model = model
         self._settings = settings
     def predict(self, string):
         assert (isinstance(string, str)), "input must be a string"
         string = entities_textcleaning(string.lower())
-        batch_x = str_idx([string],self._settings['word2idx'],2)
+        batch_x = char_str_idx([string],self._settings['word2idx'],2)
         results = np.argmax(self._model.predict(batch_x)[0],1)
         return [(string[no],self._settings['idx2tag'][str(i)]) for no, i in enumerate(results)]
 
-class Char_Model:
+class CHAR_MODEL:
     def __init__(self, model, settings):
         self._model = model
         self._settings = settings
     def predict(self, string):
         assert (isinstance(string, str)), "input must be a string"
         string = entities_textcleaning(string.lower())
-        batch_x = str_idx(string,self._settings['char2idx'],0)
+        batch_x = char_str_idx(string,self._settings['char2idx'],0)
         results = np.argmax(self._model.predict(batch_x),1)
         return [(string[no],self._settings['idx2tag'][str(i)]) for no, i in enumerate(results)]
 

@@ -7,7 +7,7 @@ from .utils import download_file
 from . import home
 from .text_functions import entities_textcleaning
 from .keras_model import get_char_bidirectional, get_crf_lstm_bidirectional, get_crf_lstm_concat_bidirectional
-from .keras_model import Concat_Model, Word_Model, Char_Model
+from .keras_model import CONCAT_MODEL, WORD_MODEL, CHAR_MODEL
 
 bow_pkl = home+'/bow-entities.pkl'
 multinomial_pkl = home+'/multinomial-entities.pkl'
@@ -79,7 +79,7 @@ def deep_entities(model='concat'):
             download_file("char-bidirectional.h5", char_frozen)
         model = get_char_bidirectional(nodes['char2idx'],nodes['tag2idx'])
         model.load_weights(char_frozen)
-        return Char_Model(model,nodes)
+        return CHAR_MODEL(model,nodes)
     elif model == 'word':
         if not os.path.isfile(word_settings):
             print('downloading ENTITIES word settings')
@@ -91,7 +91,7 @@ def deep_entities(model='concat'):
             download_file("crf-lstm-bidirectional.h5", word_frozen)
         model = get_crf_lstm_bidirectional(nodes['word2idx'],nodes['tag2idx'])
         model.load_weights(word_frozen)
-        return Word_Model(model,nodes)
+        return WORD_MODEL(model,nodes)
     elif model == 'concat':
         if not os.path.isfile(concat_settings):
             print('downloading ENTITIES concat settings')
@@ -104,6 +104,6 @@ def deep_entities(model='concat'):
             download_file("crf-lstm-concat-bidirectional.h5", concat_frozen)
         model = get_crf_lstm_concat_bidirectional(nodes['char2idx'],nodes['word2idx'],nodes['tag2idx'])
         model.load_weights(concat_frozen)
-        return Concat_Model(model,nodes)
+        return CONCAT_MODEL(model,nodes)
     else:
         raise Exception('model not supported')

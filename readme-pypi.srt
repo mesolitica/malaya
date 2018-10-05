@@ -1,0 +1,27 @@
+Malaya
+======
+
+.. image:: https://s3.amazonaws.com/assets.coveralls.io/badges/coveralls_98.svg
+    :target: https://github.com/devconx/malaya
+    :alt: Latest Version
+
+Natural-Language-Toolkit for bahasa Malaysia, powered by Deep Learning.
+
+Malaya support:
+
+* Entities Recognition
+* Language Detection
+* Normalizer
+* Language Detection
+* Num2Word
+* Part-of-Speech Recognition
+* Sentiment Analysis
+* Spell Correction
+* Stemmer
+* Summarization
+* Topic Modelling
+* Topic and Influencers Analysis
+* Toxicity Analysis
+* Word2Vec
+
+Malaya fully utilised Github Wiki, you can read more about `Malaya Wiki <https://github.com/DevconX/Malaya/wiki>`__

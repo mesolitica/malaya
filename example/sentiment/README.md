@@ -15,14 +15,6 @@ import pandas as pd
 bayes_sentiment = malaya.pretrained_bayes_sentiment()
 ```
 
-    /usr/local/lib/python3.6/site-packages/sklearn/base.py:311: UserWarning: Trying to unpickle estimator MultinomialNB from version 0.19.1 when using version 0.19.2. This might lead to breaking code or invalid results. Use at your own risk.
-      UserWarning)
-    /usr/local/lib/python3.6/site-packages/sklearn/base.py:311: UserWarning: Trying to unpickle estimator TfidfTransformer from version 0.19.1 when using version 0.19.2. This might lead to breaking code or invalid results. Use at your own risk.
-      UserWarning)
-    /usr/local/lib/python3.6/site-packages/sklearn/base.py:311: UserWarning: Trying to unpickle estimator TfidfVectorizer from version 0.19.1 when using version 0.19.2. This might lead to breaking code or invalid results. Use at your own risk.
-      UserWarning)
-
-
 
 ```python
 positive_text = 'Kerajaan negeri Kelantan mempersoalkan motif kenyataan Menteri Kewangan Lim Guan Eng yang hanya menyebut Kelantan penerima terbesar bantuan kewangan dari Kerajaan Persekutuan. Sedangkan menurut Timbalan Menteri Besarnya, Datuk Mohd Amar Nik Abdullah, negeri lain yang lebih maju dari Kelantan turut mendapat pembiayaan dan pinjaman.'
@@ -48,7 +40,7 @@ bayes_sentiment.predict(positive_text,get_proba=True)
 
 
 
-    {'negative': 0.19013070424544617, 'positive': 0.8098692957545561}
+    {'negative': 0.45994922524730797, 'positive': 0.5400507747526919}
 
 
 
@@ -61,7 +53,7 @@ bayes_sentiment.predict(negative_text,get_proba=True)
 
 
 
-    {'negative': 0.3723520311772738, 'positive': 0.6276479688227262}
+    {'negative': 0.45994922524730797, 'positive': 0.5400507747526919}
 
 
 
@@ -73,8 +65,8 @@ bayes_sentiment.predict_batch([negative_text,negative_text],get_proba=True)
 
 
 
-    [{'negative': 0.3723520311772738, 'positive': 0.6276479688227262},
-     {'negative': 0.3723520311772738, 'positive': 0.6276479688227262}]
+    [{'negative': 0.45994922524730797, 'positive': 0.5400507747526919},
+     {'negative': 0.45994922524730797, 'positive': 0.5400507747526919}]
 
 
 
@@ -84,16 +76,10 @@ xgb_sentiment = malaya.pretrained_xgb_sentiment()
 xgb_sentiment.predict(negative_text,get_proba=True)
 ```
 
-    /usr/local/lib/python3.6/site-packages/sklearn/base.py:311: UserWarning: Trying to unpickle estimator TfidfTransformer from version 0.19.1 when using version 0.19.2. This might lead to breaking code or invalid results. Use at your own risk.
-      UserWarning)
-    /usr/local/lib/python3.6/site-packages/sklearn/base.py:311: UserWarning: Trying to unpickle estimator TfidfVectorizer from version 0.19.1 when using version 0.19.2. This might lead to breaking code or invalid results. Use at your own risk.
-      UserWarning)
 
 
 
-
-
-    {'negative': 0.3550796, 'positive': 0.6449204}
+    {'negative': 0.4963528, 'positive': 0.5036472}
 
 
 
@@ -106,7 +92,7 @@ sentiment_available_models
 
 
 
-    ['bahdanau', 'hierarchical', 'luong', 'bidirectional', 'fast-text']
+    ['bahdanau', 'hierarchical', 'luong', 'bidirectional', 'fast-text', 'stack']
 
 
 
@@ -120,19 +106,34 @@ for i in sentiment_available_models:
 ```
 
     Testing bahdanau model
-    {'negative': 0.99867034, 'positive': 0.0013296733, 'attention': [['kerajaan', 0.04794306], ['sebenarnya', 0.019771717], ['sangat', 0.01688926], ['bencikan', 0.016135536], ['rakyatnya', 0.018904446], ['minyak', 0.044418886], ['naik', 0.01919316], ['dan', 0.019459246], ['segalanya', 0.79728466]]}
+    {'negative': 0.9987398, 'positive': 0.0012602198, 'attention': [['kerajaan', 0.04892652], ['sebenarnya', 0.020006381], ['sangat', 0.017095787], ['bencikan', 0.016283441], ['rakyatnya', 0.019184407], ['minyak', 0.0450745], ['naik', 0.019356105], ['dan', 0.019716889], ['segalanya', 0.794356]]}
 
     Testing hierarchical model
-    {'negative': 0.17229004, 'positive': 0.82771, 'attention': [['kerajaan', 0.0039255945], ['sebenarnya', 0.00531989], ['sangat', 0.0146343], ['bencikan', 0.029050263], ['rakyatnya', 0.073665366], ['minyak', 0.28049424], ['naik', 0.28645015], ['dan', 0.21241833], ['segalanya', 0.09404183]]}
+    {'negative': 0.15909557, 'positive': 0.8409045, 'attention': [['kerajaan', 0.0019194365], ['sebenarnya', 0.004214599], ['sangat', 0.028645746], ['bencikan', 0.040212832], ['rakyatnya', 0.111732095], ['minyak', 0.14156568], ['naik', 0.24453603], ['dan', 0.24232633], ['segalanya', 0.1848472]]}
 
     Testing luong model
-    {'negative': 0.9494788, 'positive': 0.05052119, 'attention': [['kerajaan', 0.11111111], ['sebenarnya', 0.11111111], ['sangat', 0.11111111], ['bencikan', 0.11111111], ['rakyatnya', 0.11111111], ['minyak', 0.11111111], ['naik', 0.11111111], ['dan', 0.11111111], ['segalanya', 0.11111111]]}
+    {'negative': 0.9172633, 'positive': 0.08273667, 'attention': [['kerajaan', 0.11111111], ['sebenarnya', 0.11111111], ['sangat', 0.11111111], ['bencikan', 0.11111111], ['rakyatnya', 0.11111111], ['minyak', 0.11111111], ['naik', 0.11111111], ['dan', 0.11111111], ['segalanya', 0.11111111]]}
 
     Testing bidirectional model
-    {'negative': 0.9589319, 'positive': 0.041068066}
+    {'negative': 0.9765419, 'positive': 0.023458067}
 
     Testing fast-text model
     {'negative': 0.7411294, 'positive': 0.25887057}
+
+    Testing stack model
+    downloading SENTIMENT frozen stack model
+
+
+    65.0MB [03:12, 2.97s/MB]                          
+
+
+    downloading SENTIMENT stack dictionary
+
+
+    1.00MB [00:01, 1.38s/MB]                   
+
+
+    {'negative': 0.636537, 'positive': 0.36346304}
 
 
 
@@ -152,11 +153,11 @@ bayes=malaya.bayes_sentiment(dataset)
 
                  precision    recall  f1-score   support
 
-       Negative       0.00      0.00      0.00        15
-        Neutral       0.29      0.17      0.21        12
-       Positive       0.63      1.00      0.77        34
+       Negative       0.00      0.00      0.00         9
+        Neutral       1.00      0.13      0.24        15
+       Positive       0.63      1.00      0.77        37
 
-    avg / total       0.41      0.59      0.47        61
+    avg / total       0.63      0.64      0.53        61
 
 
 
@@ -183,14 +184,14 @@ bayes = malaya.bayes_sentiment('tests/local')
 
                  precision    recall  f1-score   support
 
-         adidas       0.91      0.59      0.71       297
-          apple       0.98      0.63      0.76       471
-         hungry       0.83      0.91      0.87      1074
-       kerajaan       0.84      0.82      0.83      1387
-           nike       0.95      0.58      0.72       321
-    pembangkang       0.70      0.85      0.77      1509
+         adidas       0.97      0.62      0.75       310
+          apple       0.96      0.60      0.74       419
+         hungry       0.82      0.92      0.87      1070
+       kerajaan       0.84      0.82      0.83      1371
+           nike       0.93      0.60      0.73       326
+    pembangkang       0.72      0.85      0.78      1563
 
-    avg / total       0.82      0.80      0.80      5059
+    avg / total       0.82      0.81      0.80      5059
 
 
 

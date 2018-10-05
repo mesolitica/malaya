@@ -4,8 +4,8 @@ import numpy as np
 import os
 import json
 from . import home
-from .text_functions import process_word_pos_entities
-from .utils import load_graph, download_file, str_idx, generate_char_seq
+from .text_functions import process_word_pos_entities, char_str_idx, generate_char_seq
+from .utils import load_graph, download_file
 
 char_settings = home+'/char-settings.json'
 char_frozen = home+'/char_frozen_model.pb'

@@ -2,10 +2,11 @@ from pathlib import Path
 import shutil
 import os
 import warnings
+import sys
 warnings.simplefilter("ignore", DeprecationWarning)
 
 home = str(Path.home())+'/Malaya'
-version = '0.5'
+version = '0.6'
 version_path = home+'/version'
 
 try:
@@ -33,15 +34,17 @@ else:
 
 from .entities import multinomial_entities, xgb_entities, deep_entities, get_available_entities_models
 from .language_detection import multinomial_detect_languages, xgb_detect_languages, get_language_labels
-from .normalizer import naive_normalizer, basic_normalizer
+from .normalizer import spell_normalizer, fuzzy_normalizer, load_malay_dictionary, basic_normalizer, deep_normalizer
 from .num2word import to_cardinal,to_ordinal,to_ordinal_num,to_currency,to_year
 from .pos_entities import deep_pos_entities, get_available_pos_entities_models
 from .pos import naive_pos, multinomial_pos, xgb_pos, deep_pos, get_available_pos_models
 from .sentiment import deep_sentiment, bayes_sentiment, pretrained_bayes_sentiment, get_available_sentiment_models, pretrained_xgb_sentiment
+from .spell import naive_speller
 from .stemmer import naive_stemmer, sastrawi_stemmer, deep_stemmer
 from .summarization import summarize_lsa, summarize_nmf, summarize_lda
 from .topic_modelling import lda_topic_modelling, nmf_topic_modelling, lsa_topic_modelling
 from .topics_influencers import get_influencers, get_topics
+from .toxic import multinomial_detect_toxic, logistics_detect_toxic, deep_toxic
 from .word2vec import malaya_word2vec, Word2Vec
 
 def describe_pos_malaya():

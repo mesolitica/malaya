@@ -2,7 +2,7 @@ import pickle
 import os
 import xgboost as xgb
 import numpy as np
-from .text_functions import simple_textcleaning_language_detection
+from .text_functions import simple_textcleaning
 from .utils import download_file
 from . import home
 
@@ -24,7 +24,7 @@ class USER_XGB:
         self.vectorize = vectorize
     def predict(self, string, get_proba=False):
         assert (isinstance(string, str)), "input must be a string"
-        vectors = self.vectorize.transform([simple_textcleaning_language_detection(string)])
+        vectors = self.vectorize.transform([simple_textcleaning(string,True)])
         result = self.xgb.predict(xgb.DMatrix(vectors),ntree_limit=self.xgb.best_ntree_limit)[0]
         if get_proba:
             return {self.label[i]:result[i] for i in range(len(result))}
@@ -32,7 +32,7 @@ class USER_XGB:
             return self.label[np.argmax(result)]
     def predict_batch(self, strings, get_proba=False):
         assert (isinstance(strings, list) and isinstance(strings[0], str)), "input must be list of strings"
-        strings = [simple_textcleaning_language_detection(string) for string in strings]
+        strings = [simple_textcleaning(string,True) for string in strings]
         vectors = self.vectorize.transform(strings)
         results = self.xgb.predict(xgb.DMatrix(vectors),ntree_limit=self.xgb.best_ntree_limit)
         if get_proba:
@@ -50,7 +50,7 @@ class USER_BAYES:
         self.vectorize = vectorize
     def predict(self, string, get_proba=False):
         assert (isinstance(string, str)), "input must be a string"
-        vectors = self.vectorize.transform([simple_textcleaning_language_detection(string)])
+        vectors = self.vectorize.transform([simple_textcleaning(string,True)])
         if get_proba:
             result = self.multinomial.predict_proba(vectors)[0]
             return {self.label[i]:result[i] for i in range(len(result))}
@@ -58,7 +58,7 @@ class USER_BAYES:
             return self.label[self.multinomial.predict(vectors)[0]]
     def predict_batch(self, strings, get_proba=False):
         assert (isinstance(strings, list) and isinstance(strings[0], str)), "input must be list of strings"
-        strings = [simple_textcleaning_language_detection(string) for string in strings]
+        strings = [simple_textcleaning(string,True) for string in strings]
         vectors = self.vectorize.transform(strings)
         if get_proba:
             results = self.multinomial.predict_proba(vectors)
