@@ -24,7 +24,7 @@ class DEEP_MODELS:
         return self.__predict(string,self.sess,self.nodes)
 
 def get_entity_char(string,sess,model):
-    batch_x = str_idx([process_word_pos_entities(w) for w in string.split()],model['char2idx'],0)
+    batch_x = char_str_idx([process_word_pos_entities(w) for w in string.split()],model['char2idx'],0)
     logits, logits_pos = sess.run([tf.argmax(model['logits'],1),tf.argmax(model['logits_pos'],1)],feed_dict={model['X']:batch_x})
     results = []
     for no, i in enumerate(string.split()):
@@ -32,7 +32,7 @@ def get_entity_char(string,sess,model):
     return results
 
 def get_entity_concat(string,sess,model):
-    array_X = str_idx([[process_word_pos_entities(w) for w in string.split()]],model['word2idx'],2)
+    array_X = char_str_idx([[process_word_pos_entities(w) for w in string.split()]],model['word2idx'],2)
     batch_x_char = generate_char_seq(array_X,model['idx2word'],model['char2idx'])
     Y_pred,Y_pos = sess.run([model['crf_decode'],model['crf_decode_pos']],feed_dict={model['word_ids']:array_X,
                                               model['char_ids']:batch_x_char})
