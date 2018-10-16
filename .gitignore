@@ -3,3 +3,4 @@ dist
 malaya.egg-info
 .ipynb_checkpoints
 malaya/__pycache__
+how-to.sh

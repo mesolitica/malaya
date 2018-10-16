@@ -61,6 +61,8 @@ class SPELL:
         assert (isinstance(string, str)) and not string.count(' '), "input must be a single word"
         assert len(string) > 1, "input must be long than 1 characters"
         string = normalizer_textcleaning(string)
+        if not string:
+            return string
         if first_char:
             candidates = return_known([string], self.occurences[string[0]]) or return_known(edit_normalizer(string), self.occurences[string[0]]) or return_possible(string, self.occurences[string[0]], edit_normalizer) or [string]
         else:
