@@ -25,10 +25,16 @@ def edit_normalizer(word):
     for c in vowels:
         pseudo.append(''.join([w+c for w in word]))
     fuzziness = []
-    if word[-1] == 'e':
-        fuzziness.append(word[:-1]+'a')
-    if word[-2:] == 'ak':
-        fuzziness.append(word[:-1])
+    try:
+        if word[-1] == 'e':
+            fuzziness.append(word[:-1]+'a')
+    except:
+        pass
+    try:
+        if word[-2:] == 'ak':
+            fuzziness.append(word[:-1])
+    except:
+        pass
     try:
         if word[0] in consonants and word[1] in consonants and word[2] in vowels:
             fuzziness.append(word[0]+word[2]+word[1:])
@@ -39,10 +45,16 @@ def edit_normalizer(word):
             fuzziness.append(word[:-2]+word[0]+word[-1])
     except:
         pass
-    if word[-1] == 'o' and word[-3] in vowels and word[-2] in consonants:
-        fuzziness.append(word[:-1]+'ar')
-    if word[0] == 'a' and word[1] in consonants:
-        fuzziness.append('h'+word)
+    try:
+        if word[-1] == 'o' and word[-3] in vowels and word[-2] in consonants:
+            fuzziness.append(word[:-1]+'ar')
+    except:
+        pass
+    try:
+        if word[0] == 'a' and word[1] in consonants:
+            fuzziness.append('h'+word)
+    except:
+        pass
     return set(deletes + transposes + replaces + inserts + fuzziness + pseudo)
 
 def return_possible(word, dicts, edits):
