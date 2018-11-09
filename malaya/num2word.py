@@ -1,32 +1,37 @@
 from __future__ import print_function, unicode_literals
 
-BASE = {0: [],
-        1: ["satu"],
-        2: ["dua"],
-        3: ["tiga"],
-        4: ["empat"],
-        5: ["lima"],
-        6: ["enam"],
-        7: ["tujuh"],
-        8: ["lapan"],
-        9: ["sembilan"]}
+BASE = {
+    0: [],
+    1: ['satu'],
+    2: ['dua'],
+    3: ['tiga'],
+    4: ['empat'],
+    5: ['lima'],
+    6: ['enam'],
+    7: ['tujuh'],
+    8: ['lapan'],
+    9: ['sembilan'],
+}
 
-TENS_TO = {3: "ribu",
-           6: "juta",
-           9: "billion",
-           12: "trillion",
-           15: "quadrillion",
-           18: "quintillion",
-           21: "sextillion",
-           24: "septillion",
-           27: "oktillion",
-           30: "nonillion",
-           33: "decillion"}
+TENS_TO = {
+    3: 'ribu',
+    6: 'juta',
+    9: 'billion',
+    12: 'trillion',
+    15: 'quadrillion',
+    18: 'quintillion',
+    21: 'sextillion',
+    24: 'septillion',
+    27: 'oktillion',
+    30: 'nonillion',
+    33: 'decillion',
+}
 
-errmsg_floatord = "Cannot treat float number as ordinal"
-errmsg_negord = "Cannot treat negative number as ordinal"
-errmsg_toobig = "Too large"
+errmsg_floatord = 'Cannot treat float number as ordinal'
+errmsg_negord = 'Cannot treat negative number as ordinal'
+errmsg_toobig = 'Too large'
 max_num = 10 ** 36
+
 
 def verify_ordinal(value):
     if not value == int(value):
@@ -34,8 +39,10 @@ def verify_ordinal(value):
     if not abs(value) == value:
         raise TypeError(errmsg_negord % value)
 
+
 def split_by_koma(number):
     return str(number).split('.')
+
 
 def ratus(number):
     if number == '1':
@@ -44,6 +51,7 @@ def ratus(number):
         return []
     else:
         return BASE[int(number)] + ['ratus']
+
 
 def puluh(number):
     if number[0] == '1':
@@ -56,7 +64,8 @@ def puluh(number):
     elif number[0] == '0':
         return BASE[int(number[1])]
     else:
-        return (BASE[int(number[0])] + ['puluh']+BASE[int(number[1])])
+        return BASE[int(number[0])] + ['puluh'] + BASE[int(number[1])]
+
 
 def split_by_3(number):
     blocks = ()
@@ -66,10 +75,11 @@ def split_by_3(number):
     else:
         len_of_first_block = length % 3
         if len_of_first_block > 0:
-            blocks += number[0:len_of_first_block],
+            blocks += (number[0:len_of_first_block],)
         for i in range(len_of_first_block, length, 3):
-            blocks += (number[i:i + 3],),
+            blocks += ((number[i : i + 3],),)
     return blocks
+
 
 def spell(blocks):
     word_blocks = ()
@@ -82,13 +92,14 @@ def spell(blocks):
     elif len(first_block[0]) == 2:
         spelling = puluh(first_block[0])
     else:
-        spelling = (ratus(first_block[0][0]) + puluh(first_block[0][1:3]))
-    word_blocks += (first_block[0], spelling),
+        spelling = ratus(first_block[0][0]) + puluh(first_block[0][1:3])
+    word_blocks += ((first_block[0], spelling),)
     for block in blocks[1:]:
         spelling = ratus(block[0][0]) + puluh(block[0][1:3])
-        block += spelling,
-        word_blocks += block,
+        block += (spelling,)
+        word_blocks += (block,)
     return word_blocks
+
 
 def spell_float(float_part):
     word_list = []
@@ -99,10 +110,11 @@ def spell_float(float_part):
         word_list += BASE[int(n)]
     return ' '.join(['', 'perpuluhan'] + word_list)
 
+
 def join(word_blocks, float_part):
     word_list = []
     length = len(word_blocks) - 1
-    first_block = word_blocks[0],
+    first_block = (word_blocks[0],)
     start = 0
 
     if length == 1 and first_block[0][0] == '1':
@@ -119,6 +131,7 @@ def join(word_blocks, float_part):
 
     return ' '.join(word_list) + float_part
 
+
 def to_cardinal(number):
     if number >= max_num:
         raise OverflowError(errmsg_toobig % (number, max_num))
@@ -131,19 +144,23 @@ def to_cardinal(number):
         float_word = spell_float(n[1])
     return minus + join(spell(split_by_3(n[0])), float_word)
 
+
 def to_ordinal(number):
     verify_ordinal(number)
     out_word = to_cardinal(number)
-    if out_word == "satu":
-        return "pertama"
-    return "ke" + out_word
+    if out_word == 'satu':
+        return 'pertama'
+    return 'ke' + out_word
+
 
 def to_ordinal_num(number):
     verify_ordinal(number)
-    return "ke-" + str(number)
+    return 'ke-' + str(number)
+
 
 def to_currency(value):
-    return to_cardinal(value) + " ringgit"
+    return to_cardinal(value) + ' ringgit'
+
 
 def to_year(value):
     return to_cardinal(value)

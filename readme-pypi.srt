@@ -7,10 +7,6 @@ Malaya
 
 Natural-Language-Toolkit for bahasa Malaysia, powered by Deep Learning.
 
-.. image:: https://s3.amazonaws.com/assets.coveralls.io/badges/coveralls_98.svg
-    :target: https://github.com/devconx/malaya
-    :alt: Latest Version
-
 Malaya support:
 
 * Entities Recognition
