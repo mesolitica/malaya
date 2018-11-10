@@ -102,17 +102,19 @@ def normalizer_textcleaning(string):
     string = re.sub('[^A-Za-z ]+', ' ', string)
     string = [y.strip() for y in string.lower().split() if len(y.strip())]
     string = [y for y in string if all([y.find(k) < 0 for k in list_laughing])]
-    string = ' '.join(string).lower()
+    string = ' '.join(string)
     return ''.join(''.join(s)[:2] for _, s in itertools.groupby(string))
 
 
 def simple_textcleaning(string, decode = False):
     """
-    use by language_detection, topic modelling
+    use by topic modelling
     only accept A-Z, a-z
     """
-    string = unidecode(string) if decode else string
-    string = re.sub('[^A-Za-z ]+', ' ', string)
+    if decode:
+        string = unidecode(string).split()
+    else:
+        string = re.sub('[^A-Za-z ]+', ' ', string).split()
     string = [y.strip() for y in string if len(y)]
     return ' '.join(string).lower()
 

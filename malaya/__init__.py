@@ -33,6 +33,21 @@ else:
         with open(version_path, 'w') as fopen:
             fopen.write(version)
 
+
+def delete_cache():
+    try:
+        print('deleting cached models..')
+        shutil.rmtree(home)
+        os.makedirs(home)
+        with open(version_path, 'w') as fopen:
+            fopen.write(version)
+    except:
+        print(
+            'failed to clear cached models. Please make sure %s is able to overwrite from Malaya'
+            % (home)
+        )
+
+
 from .entities import (
     multinomial_entities,
     xgb_entities,
