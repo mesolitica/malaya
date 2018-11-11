@@ -12,9 +12,10 @@ Supported examples,
 8. Spelling correction
 9. Stemmer
 9. summarization
-10. topic-modelling
-11. topics and influencers analysis
-12. Toxicity analysis
-13. word2vec
+10. Helpful text functions
+11. topic-modelling
+12. topics and influencers analysis
+13. Toxicity analysis
+14. word2vec
 
 You can read more about API from [Malaya Wiki](https://github.com/DevconX/Malaya/wiki)
