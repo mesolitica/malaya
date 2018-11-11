@@ -10,6 +10,13 @@ home = str(Path.home()) + '/Malaya'
 version = '0.6'
 version_path = home + '/version'
 
+
+def delete_folder(home):
+    for root, dirs, files in os.walk(home):
+        for file in files:
+            os.remove(os.path.join(root, file))
+
+
 try:
     if not os.path.exists(home):
         os.makedirs(home)
@@ -19,8 +26,7 @@ except:
 
 if not os.path.isfile(version_path):
     print('not found any version, deleting previous version models..')
-    shutil.rmtree(home)
-    os.makedirs(home)
+    delete_folder(home)
     with open(version_path, 'w') as fopen:
         fopen.write(version)
 else:
@@ -28,8 +34,7 @@ else:
         cached_version = fopen.read()
     if version not in cached_version:
         print('deleting previous version models..')
-        shutil.rmtree(home)
-        os.makedirs(home)
+        delete_folder(home)
         with open(version_path, 'w') as fopen:
             fopen.write(version)
 
@@ -37,10 +42,10 @@ else:
 def delete_cache():
     try:
         print('deleting cached models..')
-        shutil.rmtree(home)
-        os.makedirs(home)
+        delete_folder(home)
         with open(version_path, 'w') as fopen:
             fopen.write(version)
+        print('Done.')
     except:
         print(
             'failed to clear cached models. Please make sure %s is able to overwrite from Malaya'
