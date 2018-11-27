@@ -1,3 +1,9 @@
+import sys
+import warnings
+
+if not sys.warnoptions:
+    warnings.simplefilter('ignore')
+
 import numpy as np
 from fuzzywuzzy import fuzz
 import pickle
@@ -15,6 +21,7 @@ from .text_functions import (
 )
 from .tatabahasa import rules_normalizer
 from .spell import return_possible, edit_normalizer, build_dicts, return_known
+from .topics_influencers import is_location
 
 consonants = 'bcdfghjklmnpqrstvwxyz'
 vowels = 'aeiou'
@@ -79,6 +86,9 @@ class SPELL_NORMALIZE:
         assert isinstance(string, str), 'input must be a string'
         result = []
         for word in normalizer_textcleaning(string).split():
+            if word.istitle():
+                result.append(word)
+                continue
             if word[0] == 'x' and len(word) > 1:
                 result_string = 'tak '
                 word = word[1:]
@@ -110,15 +120,23 @@ class SPELL_NORMALIZE:
                 or [word]
             )
             candidates = list(candidates)
+            candidates = [
+                (candidate, is_location(candidate))
+                for candidate in list(candidates)
+            ]
             if debug:
-                print([(k, fuzz.ratio(word, k)) for k in candidates])
-            result.append(
-                result_string
-                + candidates[
-                    np.argmax([fuzz.ratio(word, k) for k in candidates])
-                ]
-                + end_result_string
+                print([(k, fuzz.ratio(string, k[0])) for k in candidates], '\n')
+            strings = [fuzz.ratio(string, k[0]) for k in candidates]
+            descending_sort = np.argsort(strings)[::-1]
+            selected = None
+            for index in descending_sort:
+                if not candidates[index][1]:
+                    selected = candidates[index][0]
+                    break
+            selected = (
+                candidates[descending_sort[0]][0] if not selected else selected
             )
+            result.append(result_string + selected + end_result_string)
         return ' '.join(result)
 
 
@@ -131,6 +149,9 @@ class FUZZY_NORMALIZE:
         assert isinstance(string, str), 'input must be a string'
         result = []
         for word in normalizer_textcleaning(string).split():
+            if word.istitle():
+                result.append(word)
+                continue
             if word[0] == 'x' and len(word) > 1:
                 result_string = 'tak '
                 word = word[1:]
@@ -220,13 +241,16 @@ def load_malay_dictionary():
 def basic_normalizer(string):
     assert isinstance(string, str), 'input must be a string'
     result = []
-    for i in normalizer_textcleaning(string).split():
-        if i in sounds:
-            result.append(sounds[i])
-        elif i[-1] == '2':
-            result.append(i[:-1])
+    for word in normalizer_textcleaning(string).split():
+        if word.istitle():
+            result.append(word)
+            continue
+        if word in sounds:
+            result.append(sounds[word])
+        elif word[-1] == '2':
+            result.append(word[:-1])
         else:
-            result.append(i)
+            result.append(word)
     return ' '.join(result)
 
 

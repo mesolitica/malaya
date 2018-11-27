@@ -1,3 +1,9 @@
+import sys
+import warnings
+
+if not sys.warnoptions:
+    warnings.simplefilter('ignore')
+
 import pickle
 import os
 import json
@@ -87,44 +93,53 @@ char_settings = home + '/entities-char-settings.json'
 word_settings = home + '/entities-word-settings.json'
 concat_settings = home + '/entities-concat-settings.json'
 
+char_frozen_location = 'char-bidirectional.h5'
+char_settings_location = 'char-bidirectional.json'
+
+word_frozen_location = 'crf-lstm-bidirectional.h5'
+word_settings_location = 'crf-lstm-bidirectional.json'
+
+concat_frozen_location = 'crf-lstm-concat-bidirectional.h5'
+concat_settings_location = 'crf-lstm-concat-bidirectional.json'
+
 
 def deep_entities(model = 'concat'):
     if model == 'char':
         if not os.path.isfile(char_settings):
             print('downloading ENTITIES char settings')
-            download_file('char-bidirectional.json', char_settings)
+            download_file(char_settings_location, char_settings)
         with open(char_settings, 'r') as fopen:
             nodes = json.loads(fopen.read())
         if not os.path.isfile(char_frozen):
-            print('downloading ENTITIES frozen char model')
-            download_file('char-bidirectional.h5', char_frozen)
+            print('downloading ENTITIES char frozen model')
+            download_file(char_frozen_location, char_frozen)
         model = get_char_bidirectional(nodes['char2idx'], nodes['tag2idx'])
         model.load_weights(char_frozen)
         return CHAR_MODEL(model, nodes)
     elif model == 'word':
         if not os.path.isfile(word_settings):
             print('downloading ENTITIES word settings')
-            download_file('crf-lstm-bidirectional.json', word_settings)
+            download_file(word_settings_location, word_settings)
         with open(word_settings, 'r') as fopen:
             nodes = json.loads(fopen.read())
         if not os.path.isfile(word_frozen):
-            print('downloading ENTITIES frozen word model')
-            download_file('crf-lstm-bidirectional.h5', word_frozen)
+            print('downloading ENTITIES word frozen model')
+            download_file(word_frozen_location, word_frozen)
         model = get_crf_lstm_bidirectional(nodes['word2idx'], nodes['tag2idx'])
         model.load_weights(word_frozen)
         return WORD_MODEL(model, nodes)
     elif model == 'concat':
         if not os.path.isfile(concat_settings):
             print('downloading ENTITIES concat settings')
-            download_file('crf-lstm-concat-bidirectional.json', concat_settings)
+            download_file(concat_settings_location, concat_settings)
         with open(concat_settings, 'r') as fopen:
             nodes = json.loads(fopen.read())
             nodes['idx2word'] = {
                 int(k): v for k, v in nodes['idx2word'].items()
             }
         if not os.path.isfile(concat_frozen):
-            print('downloading ENTITIES frozen concat model')
-            download_file('crf-lstm-concat-bidirectional.h5', concat_frozen)
+            print('downloading ENTITIES concat frozen model')
+            download_file(concat_frozen_location, concat_frozen)
         model = get_crf_lstm_concat_bidirectional(
             nodes['char2idx'], nodes['word2idx'], nodes['tag2idx']
         )

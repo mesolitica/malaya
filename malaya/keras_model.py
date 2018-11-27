@@ -1,3 +1,9 @@
+import sys
+import warnings
+
+if not sys.warnoptions:
+    warnings.simplefilter('ignore')
+
 import keras
 import numpy as np
 import tensorflow as tf
@@ -58,13 +64,15 @@ class CLASSIFIER:
 
 
 class CONCAT_MODEL:
-    def __init__(self, model, settings):
+    def __init__(self, model, settings, is_lower = True):
         self._model = model
         self._settings = settings
+        self._is_lower = is_lower
 
     def predict(self, string):
         assert isinstance(string, str), 'input must be a string'
-        string = entities_textcleaning(string.lower())
+        string = string.lower() if self._is_lower else string
+        string = entities_textcleaning(string)
         batch_x = char_str_idx([string], self._settings['word2idx'], 2)
         batch_x_char = generate_char_seq(
             batch_x, self._settings['idx2word'], self._settings['char2idx']
@@ -77,13 +85,15 @@ class CONCAT_MODEL:
 
 
 class WORD_MODEL:
-    def __init__(self, model, settings):
+    def __init__(self, model, settings, is_lower = True):
         self._model = model
         self._settings = settings
+        self._is_lower = is_lower
 
     def predict(self, string):
         assert isinstance(string, str), 'input must be a string'
-        string = entities_textcleaning(string.lower())
+        string = string.lower() if self._is_lower else string
+        string = entities_textcleaning(string)
         batch_x = char_str_idx([string], self._settings['word2idx'], 2)
         results = np.argmax(self._model.predict(batch_x)[0], 1)
         return [
@@ -93,13 +103,15 @@ class WORD_MODEL:
 
 
 class CHAR_MODEL:
-    def __init__(self, model, settings):
+    def __init__(self, model, settings, is_lower = True):
         self._model = model
         self._settings = settings
+        self._is_lower = is_lower
 
     def predict(self, string):
         assert isinstance(string, str), 'input must be a string'
-        string = entities_textcleaning(string.lower())
+        string = string.lower() if self._is_lower else string
+        string = entities_textcleaning(string)
         batch_x = char_str_idx(string, self._settings['char2idx'], 0)
         results = np.argmax(self._model.predict(batch_x), 1)
         return [

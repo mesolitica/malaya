@@ -1,3 +1,9 @@
+import sys
+import warnings
+
+if not sys.warnoptions:
+    warnings.simplefilter('ignore')
+
 from sklearn.utils import shuffle
 from sklearn.manifold import TSNE
 from scipy.spatial.distance import cdist
@@ -15,12 +21,14 @@ from .utils import download_file
 
 
 def malaya_word2vec(size = 256):
+    assert isinstance(size, int), 'input must be an integer'
     if size not in [32, 64, 128, 256, 512]:
         raise Exception('size word2vec not supported')
     if not os.path.isfile('%s/word2vec-%d.p' % (home, size)):
         print('downloading word2vec-%d embedded' % (size))
         download_file(
-            'word2vec-%d.p' % (size), '%s/word2vec-%d.p' % (home, size)
+            'v7/word2vec/word2vec-%d.p' % (size),
+            '%s/word2vec-%d.p' % (home, size),
         )
     with open('%s/word2vec-%d.p' % (home, size), 'rb') as fopen:
         return pickle.load(fopen)

@@ -5,8 +5,6 @@ import malaya
 ```
 
     Using TensorFlow backend.
-    /usr/local/lib/python3.6/site-packages/sklearn/cross_validation.py:41: DeprecationWarning: This module was deprecated in version 0.18 in favor of the model_selection module into which all the refactored classes and functions are moved. Also note that the interface of the new CV iterators are different from that of this module. This module will be removed in 0.20.
-      "This module will be removed in 0.20.", DeprecationWarning)
 
 
 
@@ -28,135 +26,15 @@ malaya.summarize_lsa(isu_kerajaan,important_words=10)
 
 
 
-    {'summary': 'ketika merasmikan istiadat pembukaan penggal pertama parlimen julai seri paduka bertitah mengalu alukan pendekatan kerajaan pakatan harapan menegakkan ketelusan terutamanya mendedahkan kedudukan kewangan negara sebenar mengkaji perbelanjaan kos projek mengurus kewangan berhemat menangani kos sara hidup. pada jun sultan muhammad memperkenankan peruntukan gaji emolumen yang pertuan agong dikurangkan peratus pemerintahan berikutan keprihatinan seri paduka tahap hutang ekonomi negara. seri paduka menitahkan majlis rumah terbuka aidilfitri diadakan istana negara peruntukan majlis membantu golongan bernasib',
-     'top-words': ['titah',
+    {'cluster-top-words': ['mei',
       'perintah',
       'alih',
-      'buka',
-      'malaysia',
-      'mei',
-      'muhammad',
-      'paduka titah',
-      'sultan muhammad',
-      'peran'],
-     'cluster-top-words': ['alih',
-      'perintah',
-      'buka',
-      'peran',
-      'malaysia',
-      'mei',
-      'sultan muhammad',
-      'paduka titah']}
-
-
-
-
-```python
-malaya.summarize_lsa(isu_kerajaan, important_words=10,maintain_original=True)
-```
-
-
-
-
-    {'summary': 'Ketika merasmikan Istiadat Pembukaan Penggal Pertama, Parlimen ke-14 pada 17 Julai lepas, Seri Paduka bertitah mengalu-alukan pendekatan kerajaan Pakatan Harapan dalam menegakkan ketelusan terutamanya dengan mendedahkan kedudukan kewangan negara yang sebenar serta mengkaji semula perbelanjaan, kos projek dan mengurus kewangan secara berhemat bagi menangani kos sara hidup. Pada Jun lepas, Sultan Muhammad V memperkenankan supaya peruntukan gaji dan emolumen Yang di-Pertuan Agong dikurangkan sebanyak 10 peratus sepanjang pemerintahan sehingga 2021 berikutan keprihatinan Seri Paduka terhadap tahap hutang dan keadaan ekonomi negara. Seri Paduka turut menitahkan supaya Majlis Rumah Terbuka Aidilfitri tahun ini tidak diadakan di Istana Negara dengan peruntukan majlis itu digunakan bagi membantu golongan yang kurang bernasib baik',
-     'top-words': ['titah',
-      'pilih',
-      'alih',
-      'buka',
-      'malaysia',
-      'mei',
-      'muhammad',
-      'paduka titah',
-      'peran',
-      'sultan muhammad'],
-     'cluster-top-words': ['alih',
-      'buka',
-      'peran',
-      'malaysia',
-      'mei',
       'sultan muhammad',
       'paduka titah',
-      'pilih']}
-
-
-
-
-```python
-malaya.summarize_nmf(isu_kerajaan,important_words=10)
-```
-
-
-
-
-    {'summary': 'ketika merasmikan istiadat pembukaan penggal pertama parlimen julai seri paduka bertitah mengalu alukan pendekatan kerajaan pakatan harapan menegakkan ketelusan terutamanya mendedahkan kedudukan kewangan negara sebenar mengkaji perbelanjaan kos projek mengurus kewangan berhemat menangani kos sara hidup. pada jun sultan muhammad memperkenankan peruntukan gaji emolumen yang pertuan agong dikurangkan peratus pemerintahan berikutan keprihatinan seri paduka tahap hutang ekonomi negara. seri paduka menitahkan majlis rumah terbuka aidilfitri diadakan istana negara peruntukan majlis membantu golongan bernasib',
-     'top-words': ['titah',
-      'perintah',
-      'alih',
-      'buka',
-      'malaysia',
-      'mei',
-      'muhammad',
-      'paduka titah',
-      'sultan muhammad',
-      'peran'],
-     'cluster-top-words': ['alih',
-      'perintah',
-      'buka',
       'peran',
-      'malaysia',
-      'mei',
-      'sultan muhammad',
-      'paduka titah']}
-
-
-
-
-```python
-malaya.summarize_lda(isu_kerajaan,important_words=10)
-```
-
-    /usr/local/lib/python3.6/site-packages/sklearn/decomposition/online_lda.py:536: DeprecationWarning: The default value for 'learning_method' will be changed from 'online' to 'batch' in the release 0.20. This warning was introduced in 0.18.
-      DeprecationWarning)
-
-
-
-
-
-    {'summary': 'ketika merasmikan istiadat pembukaan penggal pertama parlimen julai seri paduka bertitah mengalu alukan pendekatan kerajaan pakatan harapan menegakkan ketelusan terutamanya mendedahkan kedudukan kewangan negara sebenar mengkaji perbelanjaan kos projek mengurus kewangan berhemat menangani kos sara hidup. pada jun sultan muhammad memperkenankan peruntukan gaji emolumen yang pertuan agong dikurangkan peratus pemerintahan berikutan keprihatinan seri paduka tahap hutang ekonomi negara. seri paduka menitahkan majlis rumah terbuka aidilfitri diadakan istana negara peruntukan majlis membantu golongan bernasib',
-     'top-words': ['titah',
-      'perintah',
-      'alih',
       'buka',
-      'malaysia',
-      'mei',
-      'muhammad',
-      'paduka titah',
-      'sultan muhammad',
-      'peran'],
-     'cluster-top-words': ['alih',
-      'perintah',
-      'buka',
-      'peran',
-      'malaysia',
-      'mei',
-      'sultan muhammad',
-      'paduka titah']}
-
-
-
-
-```python
-malaya.summarize_lda(isu_kerajaan,important_words=10,return_cluster=False)
-```
-
-    /usr/local/lib/python3.6/site-packages/sklearn/decomposition/online_lda.py:536: DeprecationWarning: The default value for 'learning_method' will be changed from 'online' to 'batch' in the release 0.20. This warning was introduced in 0.18.
-      DeprecationWarning)
-
-
-
-
-
-    {'summary': 'ketika merasmikan istiadat pembukaan penggal pertama parlimen julai seri paduka bertitah mengalu alukan pendekatan kerajaan pakatan harapan menegakkan ketelusan terutamanya mendedahkan kedudukan kewangan negara sebenar mengkaji perbelanjaan kos projek mengurus kewangan berhemat menangani kos sara hidup. pada jun sultan muhammad memperkenankan peruntukan gaji emolumen yang pertuan agong dikurangkan peratus pemerintahan berikutan keprihatinan seri paduka tahap hutang ekonomi negara. seri paduka menitahkan majlis rumah terbuka aidilfitri diadakan istana negara peruntukan majlis membantu golongan bernasib',
+      'malaysia'],
+     'summary': 'dilantik pertuan agong dis kerajaan diterajui barisan nasional mei kepimpinan negara diambil alih pakatan harapan memenangi pilihan raya. merasmikan istiadat pembukaan penggal parlimen julai seri paduka bertitah mengalu alukan pendekatan kerajaan pakatan harapan menegakkan ketelusan terutamanya mendedahkan kedudukan kewangan negara sebenar mengkaji perbelanjaan kos projek mengurus kewangan berhemat menangani kos sara hidup. peralihan kerajaan menyaksikan sultan muhammad v mencatat sejarah tersendiri pertuan agong malaysia memerintah era kerajaan berbeza',
      'top-words': ['titah',
       'perintah',
       'alih',
@@ -172,5 +50,127 @@ malaya.summarize_lda(isu_kerajaan,important_words=10,return_cluster=False)
 
 
 ```python
-
+malaya.summarize_lsa(isu_kerajaan, important_words=10,maintain_original=True)
 ```
+
+
+
+
+    {'cluster-top-words': ['pilih',
+      'mei',
+      'alih',
+      'sultan muhammad',
+      'paduka titah',
+      'peran',
+      'buka',
+      'malaysia'],
+     'summary': 'semasa dilantik sebagai yang di-pertuan agong ke-15 pada 13 dis 2016, kerajaan ketika itu diterajui oleh barisan nasional dan pada 10 mei lepas, kepimpinan negara diambil alih oleh pakatan harapan yang memenangi pilihan raya umum ke-14. peralihan kerajaan itu menyaksikan sultan muhammad v mencatat sejarah tersendiri dengan menjadi yang di-pertuan agong malaysia yang pertama memerintah dalam era dua kerajaan berbeza. pada jun lepas, sultan muhammad v memperkenankan supaya peruntukan gaji dan emolumen yang di-pertuan agong dikurangkan sebanyak 10 peratus sepanjang pemerintahan sehingga 2021 berikutan keprihatinan seri paduka terhadap tahap hutang dan keadaan ekonomi negara',
+     'top-words': ['titah',
+      'pilih',
+      'alih',
+      'buka',
+      'malaysia',
+      'mei',
+      'muhammad',
+      'paduka titah',
+      'peran',
+      'sultan muhammad']}
+
+
+
+
+```python
+malaya.summarize_nmf(isu_kerajaan,important_words=10)
+```
+
+
+
+
+    {'cluster-top-words': ['mei',
+      'perintah',
+      'alih',
+      'sultan muhammad',
+      'paduka titah',
+      'peran',
+      'buka',
+      'malaysia'],
+     'summary': 'dilantik pertuan agong dis kerajaan diterajui barisan nasional mei kepimpinan negara diambil alih pakatan harapan memenangi pilihan raya. merasmikan istiadat pembukaan penggal parlimen julai seri paduka bertitah mengalu alukan pendekatan kerajaan pakatan harapan menegakkan ketelusan terutamanya mendedahkan kedudukan kewangan negara sebenar mengkaji perbelanjaan kos projek mengurus kewangan berhemat menangani kos sara hidup. peralihan kerajaan menyaksikan sultan muhammad v mencatat sejarah tersendiri pertuan agong malaysia memerintah era kerajaan berbeza',
+     'top-words': ['titah',
+      'perintah',
+      'alih',
+      'buka',
+      'malaysia',
+      'mei',
+      'muhammad',
+      'paduka titah',
+      'sultan muhammad',
+      'peran']}
+
+
+
+
+```python
+malaya.summarize_lda(isu_kerajaan,important_words=10)
+```
+
+
+
+
+    {'cluster-top-words': ['mei',
+      'perintah',
+      'alih',
+      'sultan muhammad',
+      'paduka titah',
+      'peran',
+      'buka',
+      'malaysia'],
+     'summary': 'dilantik pertuan agong dis kerajaan diterajui barisan nasional mei kepimpinan negara diambil alih pakatan harapan memenangi pilihan raya. merasmikan istiadat pembukaan penggal parlimen julai seri paduka bertitah mengalu alukan pendekatan kerajaan pakatan harapan menegakkan ketelusan terutamanya mendedahkan kedudukan kewangan negara sebenar mengkaji perbelanjaan kos projek mengurus kewangan berhemat menangani kos sara hidup. peralihan kerajaan menyaksikan sultan muhammad v mencatat sejarah tersendiri pertuan agong malaysia memerintah era kerajaan berbeza',
+     'top-words': ['titah',
+      'perintah',
+      'alih',
+      'buka',
+      'malaysia',
+      'mei',
+      'muhammad',
+      'paduka titah',
+      'sultan muhammad',
+      'peran']}
+
+
+
+
+```python
+malaya.summarize_lda(isu_kerajaan,important_words=10,return_cluster=False)
+```
+
+
+
+
+    {'summary': 'dilantik pertuan agong dis kerajaan diterajui barisan nasional mei kepimpinan negara diambil alih pakatan harapan memenangi pilihan raya. merasmikan istiadat pembukaan penggal parlimen julai seri paduka bertitah mengalu alukan pendekatan kerajaan pakatan harapan menegakkan ketelusan terutamanya mendedahkan kedudukan kewangan negara sebenar mengkaji perbelanjaan kos projek mengurus kewangan berhemat menangani kos sara hidup. peralihan kerajaan menyaksikan sultan muhammad v mencatat sejarah tersendiri pertuan agong malaysia memerintah era kerajaan berbeza',
+     'top-words': ['titah',
+      'perintah',
+      'alih',
+      'buka',
+      'malaysia',
+      'mei',
+      'muhammad',
+      'paduka titah',
+      'sultan muhammad',
+      'peran']}
+
+
+
+
+```python
+deep_summary = malaya.summarize_deep_learning()
+```
+
+
+```python
+deep_summary.summarize(isu_kerajaan)
+```
+
+
+
+
+    'peralihan kerajaan itu menyaksikan sultan muhammad v mencatat sejarah tersendiri dengan menjadi yang di-pertuan agong malaysia yang pertama memerintah dalam era dua kerajaan berbeza. semasa dilantik sebagai yang di-pertuan agong ke-15 pada 13 dis 2016, kerajaan ketika itu diterajui oleh barisan nasional dan pada 10 mei lepas, kepimpinan negara diambil alih oleh pakatan harapan yang memenangi pilihan raya umum ke-14. seri paduka turut menitahkan supaya majlis rumah terbuka aidilfitri tahun ini tidak diadakan di istana negara dengan peruntukan majlis itu digunakan bagi membantu golongan yang kurang bernasib baik'

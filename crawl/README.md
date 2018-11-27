@@ -33,29 +33,54 @@ You can get download some crawled data from [here](https://s3-ap-southeast-1.ama
 
 Last updated (15th August 2018), crawled until the end of google results.
 
-1. isu agama
-2. isu air
-3. isu artis
-4. isu astro
-5. isu bahasa melayu
-6. isu barisan nasional
-7. isu dunia
-8. isu ekonomi
-9. isu harga
-10. isu kerajaan
-11. isu kesihatan
-12. isu lgbt
-13. isu mahathir
-14. isu malaysia
-15. isu minyak
-16. isu najib razak
-17. isu pelakon
-18. isu pembangkang
-19. isu politik
-20. isu rosmah
-21. isu sekolah
-22. isu sosial media
-23. isu sosial
-24. isu sultan melayu
-25. isu teknologi
-26. isu tm
+1. isu 1mdb
+2. isu agama
+3. isu agong
+4. isu agrikulture
+5. isu air
+6. isu anwar ibrahim
+7. isu artis
+8. isu astro
+9. isu bahasa melayu
+10. isu barisan nasional
+11. isu cikgu
+12. isu cukai
+13. isu cyberjaya
+14. isu dunia
+15. isu ekonomi
+16. isu gst
+17. isu harakah
+18. isu harga
+19. isu icerd
+20. isu imigren
+21. isu kapitalis
+22. isu kerajaan
+23. isu kesihatan
+24. isu kuala lumpur
+25. isu lgbt
+26. isu mahathir
+27. isu makanan
+28. isu malaysia airlines
+29. isu malaysia
+30. isu minyak
+31. isu najib razak
+32. isu pelajar
+33. isu pelakon
+34. isu pembangkang
+35. isu perkauman
+36. isu permainan
+37. isu pertanian
+38. isu politik
+39. isu rosmah
+40. isu sabah
+41. isu sarawak
+42. isu sekolah
+43. isu sosial media
+44. isu sultan melayu
+45. isu teknologi
+46. isu tm
+47. isu ubat
+48. isu universiti
+49. isu wan azizah
+50. peluang pekerjaan
+51. perkahwinan

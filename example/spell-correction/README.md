@@ -5,8 +5,6 @@ import malaya
 ```
 
     Using TensorFlow backend.
-    /usr/local/lib/python3.6/site-packages/sklearn/cross_validation.py:41: DeprecationWarning: This module was deprecated in version 0.18 in favor of the model_selection module into which all the refactored classes and functions are moved. Also note that the interface of the new CV iterators are different from that of this module. This module will be removed in 0.20.
-      "This module will be removed in 0.20.", DeprecationWarning)
 
 
 
@@ -20,7 +18,8 @@ corrector = malaya.naive_speller(malays)
 corrector.correct('mknn')
 ```
 
-    [('mena', 50), ('makin', 67), ('makan', 67), ('makanan', 73), ('mini', 50), ('min', 57), ('main', 50), ('makna', 67), ('mani', 50), ('mana', 50), ('maun', 50), ('menu', 50)]
+    [(('mani', False), 50), (('menu', False), 50), (('main', False), 50), (('maun', False), 50), (('mena', False), 50), (('makan', False), 67), (('makin', False), 67), (('min', False), 57), (('mana', False), 50), (('makna', False), 67), (('mini', False), 50), (('makanan', False), 73)]
+
 
 
 
@@ -35,25 +34,27 @@ corrector.correct('mknn')
 corrector.correct('tmpat',debug=True)
 ```
 
-    [('tumpat', 91), ('tepat', 80), ('tempat', 91)]
+    [(('tempat', False), 91), (('tumpat', True), 91), (('tepat', False), 80)]
 
 
 
 
 
-    'tumpat'
+
+    'tempat'
 
 
 
 
 ```python
-%time
+%%time
 corrector.correct('mknn',first_char=True)
 ```
 
-    CPU times: user 4 µs, sys: 1e+03 ns, total: 5 µs
-    Wall time: 7.87 µs
-    [('mena', 50), ('makin', 67), ('makan', 67), ('makanan', 73), ('mini', 50), ('min', 57), ('main', 50), ('makna', 67), ('mani', 50), ('mana', 50), ('maun', 50), ('menu', 50)]
+    [(('mani', False), 50), (('menu', False), 50), (('main', False), 50), (('maun', False), 50), (('mena', False), 50), (('makan', False), 67), (('makin', False), 67), (('min', False), 57), (('mana', False), 50), (('makna', False), 67), (('mini', False), 50), (('makanan', False), 73)]
+
+    CPU times: user 144 ms, sys: 0 ns, total: 144 ms
+    Wall time: 140 ms
 
 
 
@@ -65,13 +66,14 @@ corrector.correct('mknn',first_char=True)
 
 
 ```python
-%time
+%%time
 corrector.correct('mknn',first_char=False)
 ```
 
-    CPU times: user 4 µs, sys: 1 µs, total: 5 µs
-    Wall time: 8.82 µs
-    [('mena', 50), ('makin', 67), ('makan', 67), ('makanan', 73), ('ikan', 50), ('mini', 50), ('min', 57), ('ikon', 50), ('makna', 67), ('main', 50), ('mani', 50), ('ken', 57), ('mana', 50), ('kan', 57), ('kun', 57), ('kon', 57), ('menu', 50), ('akan', 50), ('maun', 50)]
+    [(('mani', False), 50), (('menu', False), 50), (('main', False), 50), (('kun', False), 57), (('maun', False), 50), (('mena', False), 50), (('makan', False), 67), (('ikan', False), 50), (('min', False), 57), (('kon', False), 57), (('akan', False), 50), (('mana', False), 50), (('makin', False), 67), (('ken', False), 57), (('makna', False), 67), (('ikon', False), 50), (('mini', False), 50), (('kan', False), 57), (('makanan', False), 73)]
+
+    CPU times: user 216 ms, sys: 0 ns, total: 216 ms
+    Wall time: 214 ms
 
 
 
@@ -86,17 +88,11 @@ corrector.correct('mknn',first_char=False)
 corrector.correct('tempat')
 ```
 
-    [('tempat', 100)]
+    [(('tempat', False), 100)]
+
 
 
 
 
 
     'tempat'
-
-
-
-
-```python
-
-```

@@ -1,6 +1,8 @@
 build
 dist
 malaya.egg-info
+malaya_gpu.egg-info
 .ipynb_checkpoints
 malaya/__pycache__
-how-to.sh
+*__pycache__
+*.json

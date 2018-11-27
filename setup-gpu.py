@@ -15,7 +15,7 @@ def _post_install():
         'Cudnn 7 and above seems has problem with Malaya fast-text models, we prefer to use Tensorflow Version 1.5 CUDA 8.0 Cudnn 5'
     )
     print(
-        'You can simply downgrade by `pip uninstall tensorflow && pip install tensorflow==1.5`'
+        'You can simply downgrade by `pip uninstall tensorflow-gpu && pip install tensorflow-gpu==1.5`'
     )
 
 
@@ -25,13 +25,13 @@ class new_install(install):
         atexit.register(_post_install)
 
 
-__packagename__ = 'malaya'
+__packagename__ = 'malaya-gpu'
 
 setuptools.setup(
     name = __packagename__,
     packages = setuptools.find_packages(),
     version = '0.7',
-    description = 'Natural-Language-Toolkit for bahasa Malaysia, powered by Deep Learning.',
+    description = 'Natural-Language-Toolkit for bahasa Malaysia, powered by Deep Learning. GPU Version',
     author = 'huseinzol05',
     author_email = 'husein.zol05@gmail.com',
     url = 'https://github.com/DevconX/Malaya',
@@ -46,7 +46,7 @@ setuptools.setup(
         'tqdm',
         'nltk',
         'unidecode',
-        'tensorflow',
+        'tensorflow-gpu',
         'numpy',
         'scipy',
         'python-levenshtein',

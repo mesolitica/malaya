@@ -1,3 +1,9 @@
+import sys
+import warnings
+
+if not sys.warnoptions:
+    warnings.simplefilter('ignore')
+
 import re
 import os
 import numpy as np
@@ -69,39 +75,62 @@ def malaya_textcleaning(string):
         'http\S+|www.\S+',
         '',
         ' '.join(
-            [i for i in string.split() if i.find('#') < 0 and i.find('@') < 0]
+            [
+                word
+                for word in string.split()
+                if word.find('#') < 0 and word.find('@') < 0
+            ]
         ),
     )
     string = unidecode(string).replace('.', '. ')
     string = string.replace(',', ', ')
     string = re.sub('[^\'"A-Za-z\- ]+', ' ', string)
+    string = re.sub(r'[ ]+', ' ', string.lower()).strip()
+    string = [word for word in word_tokenize(string.lower()) if isWord(word)]
     string = [
-        y.strip() for y in word_tokenize(string.lower()) if isWord(y.strip())
-    ]
-    string = [
-        y
-        for y in string
-        if all([y.find(k) < 0 for k in list_laughing])
-        and y[: len(y) // 2] != y[len(y) // 2 :]
+        word
+        for word in string
+        if not any([laugh in word for laugh in list_laughing])
+        and word[: len(word) // 2] != word[len(word) // 2 :]
     ]
     string = ' '.join(string)
     string = (
         ''.join(''.join(s)[:2] for _, s in itertools.groupby(string))
     ).split()
-    return ' '.join([y for y in string if y not in STOPWORDS])
+    return ' '.join([word for word in string if word not in STOPWORDS])
 
 
 def normalizer_textcleaning(string):
+    """
+    use by normalizer, spell
+    remove links, hashtags, alias
+    only accept A-Z, a-z
+    remove any laugh
+    remove any repeated char more than 2 times
+    """
     string = re.sub(
         'http\S+|www.\S+',
         '',
         ' '.join(
-            [i for i in string.split() if i.find('#') < 0 and i.find('@') < 0]
+            [
+                word
+                for word in string.split()
+                if word.find('#') < 0 and word.find('@') < 0
+            ]
         ),
     )
     string = re.sub('[^A-Za-z ]+', ' ', string)
-    string = [y.strip() for y in string.lower().split() if len(y.strip())]
-    string = [y for y in string if all([y.find(k) < 0 for k in list_laughing])]
+    string = re.sub(r'[ ]+', ' ', string).strip()
+    string = [
+        word.title() if word.isupper() else word
+        for word in string.split()
+        if len(word)
+    ]
+    string = [
+        word
+        for word in string
+        if not any([laugh in word for laugh in list_laughing])
+    ]
     string = ' '.join(string)
     return ''.join(''.join(s)[:2] for _, s in itertools.groupby(string))
 
@@ -112,25 +141,42 @@ def simple_textcleaning(string, decode = False):
     only accept A-Z, a-z
     """
     if decode:
-        string = unidecode(string).split()
+        string = unidecode(string)
     else:
-        string = re.sub('[^A-Za-z ]+', ' ', string).split()
-    string = [y.strip() for y in string if len(y)]
-    return ' '.join(string).lower()
+        string = re.sub('[^A-Za-z ]+', ' ', string)
+    return re.sub(r'[ ]+', ' ', string.lower()).strip()
 
 
 def entities_textcleaning(string):
-    string = re.sub('[^A-Za-z0-9\-\/ ]+', ' ', string).split()
-    return [y.strip() for y in string if len(y)]
+    """
+    use by xgb entities, multinomial entities, xgb pos, xgb entities, char model, word model, concat model
+    """
+    string = re.sub('[^A-Za-z0-9\-\/ ]+', ' ', string)
+    string = re.sub(r'[ ]+', ' ', string).strip()
+    return [
+        word.title() if word.isupper() else word
+        for word in string.split()
+        if len(word)
+    ]
 
 
 def summary_textcleaning(string):
-    string = re.sub('[^A-Za-z0-9\-\/\'"\.\, ]+', ' ', string).split()
-    return ' '.join([y.strip() for y in string if len(y)])
+    string = re.sub('[^A-Za-z0-9\-\/\'"\.\, ]+', ' ', string)
+    return re.sub(r'[ ]+', ' ', string.lower()).strip()
 
 
 def get_hashtags(string):
     return [hash.lower() for hash in re.findall('#(\w+)', string)]
+
+
+def split_by_dot(string):
+    string = re.sub(
+        r'(?<!\d)\.(?!\d)',
+        'SPLITTT',
+        string.replace('\n', '').replace('/', ' '),
+    )
+    string = string.split('SPLITTT')
+    return [re.sub(r'[ ]+', ' ', sentence).strip() for sentence in string]
 
 
 def cluster_pos(result):
@@ -195,6 +241,30 @@ def cluster_entities(result):
     return output
 
 
+def pos_entities_textcleaning(string):
+    """
+    use by text entities and pos
+    remove links, hashtags, alias
+    """
+    string = re.sub(
+        'http\S+|www.\S+',
+        '',
+        ' '.join(
+            [i for i in string.split() if i.find('#') < 0 and i.find('@') < 0]
+        ),
+    )
+    string = unidecode(string).replace('.', '. ').replace(',', ', ')
+    string = re.sub('[^A-Za-z\- ]+', ' ', string)
+    string = re.sub(r'[ ]+', ' ', string).strip()
+    return ' '.join(
+        [
+            word.title() if word.isupper() else word
+            for word in string.split()
+            if len(word)
+        ]
+    )
+
+
 def classification_textcleaning(string, no_stopwords = False):
     """
     use by our text classifiers, stemmer, summarization, topic-modelling
@@ -208,13 +278,13 @@ def classification_textcleaning(string, no_stopwords = False):
         ),
     )
     string = unidecode(string).replace('.', '. ').replace(',', ', ')
-    string = re.sub('[^A-Za-z\- ]+', ' ', string)
+    string = re.sub('[^A-Za-z ]+', ' ', string)
     if no_stopwords:
         return ' '.join(
             [
                 i
                 for i in re.findall('[\\w\']+|[;:\-\(\)&.,!?"]', string)
-                if len(i) > 1
+                if len(i)
             ]
         ).lower()
     else:
@@ -222,7 +292,7 @@ def classification_textcleaning(string, no_stopwords = False):
             [
                 i
                 for i in re.findall('[\\w\']+|[;:\-\(\)&.,!?"]', string)
-                if len(i) > 1 and i not in STOPWORDS
+                if len(i) and i not in STOPWORDS
             ]
         ).lower()
 
@@ -333,11 +403,11 @@ def pad_sentence_batch(sentence_batch, pad_int):
     return padded_seqs, seq_lens
 
 
-def add_ngram(sequences, token_indice):
+def add_ngram(sequences, token_indice, ngram = (2, 3)):
     new_sequences = []
     for input_list in sequences:
         new_list = input_list[:]
-        for ngram_value in range(2, 3):
+        for ngram_value in range(ngram[0], ngram[1]):
             for i in range(len(new_list) - ngram_value + 1):
                 ngram = tuple(new_list[i : i + ngram_value])
                 if ngram in token_indice:
@@ -361,6 +431,16 @@ def generate_ngram(
             or result_entities[no][1] in accept_entities
         ):
             words.append(result_pos[no][0])
+    for gram in range(ngram[0], ngram[1] + 1, 1):
+        gram_words = list(ngrams(words, gram))
+        for sentence in gram_words:
+            sentences.append(' '.join(sentence))
+    return list(set(sentences))
+
+
+def sentence_ngram(sentence, ngram = (1, 3)):
+    words = sentence.split()
+    sentences = []
     for gram in range(ngram[0], ngram[1] + 1, 1):
         gram_words = list(ngrams(words, gram))
         for sentence in gram_words:

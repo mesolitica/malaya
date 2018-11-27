@@ -1,13 +1,15 @@
+import sys
+import warnings
+
+if not sys.warnoptions:
+    warnings.simplefilter('ignore')
+
 from pathlib import Path
 import shutil
 import os
-import warnings
-import sys
-
-warnings.simplefilter('ignore', DeprecationWarning)
 
 home = str(Path.home()) + '/Malaya'
-version = '0.6'
+version = '0.7'
 version_path = home + '/version'
 
 
@@ -95,18 +97,34 @@ from .sentiment import (
 )
 from .spell import naive_speller
 from .stemmer import naive_stemmer, sastrawi_stemmer, deep_stemmer
-from .summarization import summarize_lsa, summarize_nmf, summarize_lda
+from .summarization import (
+    summarize_lsa,
+    summarize_nmf,
+    summarize_lda,
+    summarize_deep_learning,
+)
 from .topic_modelling import (
     lda_topic_modelling,
     nmf_topic_modelling,
     lsa_topic_modelling,
 )
-from .topics_influencers import get_influencers, get_topics
+from .topics_influencers import (
+    fuzzy_get_influencers,
+    fuzzy_get_topics,
+    fuzzy_get_location,
+    fast_get_topics,
+    fast_get_influencers,
+    deep_get_topics,
+    deep_get_influencers,
+)
 from .toxic import multinomial_detect_toxic, logistics_detect_toxic, deep_toxic
 from .word2vec import malaya_word2vec, Word2Vec
 
 
 def describe_pos_malaya():
+    print(
+        'This classes are deprecated, we prefer to use `malaya.describe_pos()`'
+    )
     print('KT - Kata Tanya')
     print('KJ - Kata Kerja')
     print('KP - Kata Perintah')
@@ -149,6 +167,9 @@ def describe_pos():
 
 
 def describe_entities_malaya():
+    print(
+        'This classes are deprecated, we prefer to use `malaya.describe_entities()`'
+    )
     print('PRN - person, group of people, believes, etc')
     print('LOC - location')
     print('NORP - Military, police, government, Parties, etc')

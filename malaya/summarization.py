@@ -1,3 +1,9 @@
+import sys
+import warnings
+
+if not sys.warnoptions:
+    warnings.simplefilter('ignore')
+
 import numpy as np
 from scipy.linalg import svd, inv
 import re, random
@@ -11,6 +17,11 @@ from .text_functions import (
     STOPWORDS,
 )
 from .stemmer import sastrawi_stemmer
+from .skip_thought import load_model
+
+
+def summarize_deep_learning():
+    return load_model()
 
 
 def summarize_lsa(

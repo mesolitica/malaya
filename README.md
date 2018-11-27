@@ -5,6 +5,22 @@
 # Malaya
 Natural-Language-Toolkit for bahasa Malaysia, powered by Deep Learning.
 
+## Features
+
+* Entities Recognition
+* Language Detection
+* Normalizer
+* Num2Word
+* Part-of-Speech Recognition
+* Sentiment Analysis
+* Spell Correction
+* Stemmer
+* Summarization
+* Topic Modelling
+* Topic and Influencers Analysis
+* Toxicity Analysis
+* Word2Vec
+
 ## How-to-Start
 
 All the documentations moved to [Malaya Wiki](https://github.com/DevconX/Malaya/wiki).

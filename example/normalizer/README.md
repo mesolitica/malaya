@@ -5,14 +5,12 @@ import malaya
 ```
 
     Using TensorFlow backend.
-    /usr/local/lib/python3.6/site-packages/sklearn/cross_validation.py:41: DeprecationWarning: This module was deprecated in version 0.18 in favor of the model_selection module into which all the refactored classes and functions are moved. Also note that the interface of the new CV iterators are different from that of this module. This module will be removed in 0.20.
-      "This module will be removed in 0.20.", DeprecationWarning)
 
 
 
 ```python
-string = 'y u xsuka makan kt situ'
-another = 'i mmg xska mknn kampng'
+string = 'y u xsuka makan HUSEIN kt situ tmpt'
+another = 'i mmg xska mknn HUSEIN kampng tempt'
 ```
 
 
@@ -23,7 +21,7 @@ malaya.basic_normalizer(string)
 
 
 
-    'kenapa awak xsuka makan kt situ'
+    'kenapa awak xsuka makan Husein kt situ tmpt'
 
 
 
@@ -33,6 +31,14 @@ malays = malaya.load_malay_dictionary()
 normalizer = malaya.fuzzy_normalizer(malays)
 ```
 
+      0%|          | 0.00/0.19 [00:00<?, ?MB/s]
+
+    downloading Malay texts
+
+
+    1.00MB [00:00, 10.2MB/s]                   
+
+
 
 ```python
 normalizer.normalize(string)
@@ -41,7 +47,7 @@ normalizer.normalize(string)
 
 
 
-    'kenapa awak tak suka makan kat situ'
+    'kenapa awak tak suka makan Husein kat situ tempat'
 
 
 
@@ -53,7 +59,7 @@ normalizer.normalize(another)
 
 
 
-    'saya memang tak saka makanan kampung'
+    'saya memang tak saka makanan Husein kampung tempat'
 
 
 
@@ -67,10 +73,14 @@ normalizer = malaya.spell_normalizer(malays)
 normalizer.normalize(string,debug=True)
 ```
 
+    [(('tat', False), 11), (('ampu', False), 15), (('tapa', False), 10), (('empat', True), 15), (('timpa', False), 20), (('temut', False), 15), (('impi', False), 15), (('tepu', False), 10), (('tumit', False), 20), (('tuit', False), 15), (('amit', False), 21), (('tampi', True), 15), (('tampa', False), 15), (('taut', False), 15), (('umut', False), 21), (('tepet', False), 15), (('tumpu', False), 20), (('mat', False), 16), (('tipu', False), 15), (('ampe', False), 15), (('ampit', False), 20), (('amput', False), 20), (('tempe', False), 15), (('empu', False), 10), (('top', False), 11), (('tut', False), 16), (('amat', False), 21), (('ampo', False), 15), (('taat', False), 15), (('tapi', False), 10), (('tepi', False), 10), (('emat', False), 15), (('tumpat', True), 24), (('umpat', True), 20), (('topi', False), 10), (('tempo', False), 15), (('tepat', False), 15), (('tampu', False), 15), (('tuat', False), 15), (('tempa', False), 15), (('tamat', False), 20), (('umat', False), 21), (('tempat', False), 20), (('tip', False), 16)]
 
 
 
-    'kenapa awak tak suka makan kat situ'
+
+
+
+    'kenapa awak tak suka makan Husein kat situ amat'
 
 
 
@@ -79,15 +89,20 @@ normalizer.normalize(string,debug=True)
 normalizer.normalize(another,debug=True)
 ```
 
-    [('saka', 86), ('spa', 67), ('sika', 86), ('sia', 67), ('seka', 86), ('sua', 67), ('ski', 67), ('suka', 86), ('soka', 86)]
-    [('mani', 50), ('akan', 50), ('makna', 67), ('mena', 50), ('menu', 50), ('ken', 57), ('mini', 50), ('kon', 57), ('ikan', 50), ('ikon', 50), ('min', 57), ('makanan', 73), ('maun', 50), ('makin', 67), ('main', 50), ('kun', 57), ('makan', 67), ('kan', 57), ('mana', 50)]
-    [('kampung', 92)]
+    [(('sika', False), 15), (('spa', False), 11), (('saka', False), 21), (('soka', False), 15), (('seka', False), 15), (('suka', False), 15), (('sua', False), 11), (('ski', False), 11), (('sia', False), 11)]
+
+    [(('makna', False), 25), (('makin', False), 20), (('mani', False), 15), (('ikon', False), 15), (('kan', False), 16), (('ikan', False), 21), (('menu', False), 10), (('mini', False), 10), (('mena', False), 15), (('min', False), 11), (('makanan', False), 29), (('maun', False), 15), (('akan', False), 21), (('main', False), 15), (('makan', False), 25), (('kun', False), 11), (('kon', False), 11), (('ken', False), 11), (('mana', False), 21)]
+
+    [(('kampung', True), 29)]
+
+    [(('temut', False), 20), (('tempa', False), 20), (('tempat', False), 24), (('tempo', False), 20), (('tempe', False), 20)]
 
 
 
 
 
-    'saya memang tak saka makanan kampung'
+
+    'saya memang tak saka makanan Husein kampung tempat'
 
 
 
@@ -95,6 +110,16 @@ normalizer.normalize(another,debug=True)
 ```python
 normalizer = malaya.deep_normalizer()
 ```
+
+    1.00MB [00:00, 2.66kMB/s]                  
+
+    downloading JSON normalizer
+    downloading normalizer graph
+
+
+
+    22.0MB [00:05, 4.51MB/s]                          
+
 
 
 ```python
@@ -104,4 +129,4 @@ normalizer.normalize(string)
 
 
 
-    'eye uau t sakuai makan kati situ'
+    'eye uau tak suka makan unsein kati situ tumpat'

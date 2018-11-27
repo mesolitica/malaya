@@ -1,3 +1,9 @@
+import sys
+import warnings
+
+if not sys.warnoptions:
+    warnings.simplefilter('ignore')
+
 from nltk.tokenize import word_tokenize
 import os
 import re
@@ -130,50 +136,57 @@ char_settings = home + '/pos-char-settings.json'
 word_settings = home + '/pos-word-settings.json'
 concat_settings = home + '/pos-concat-settings.json'
 
+char_frozen_location = 'v7/pos/char-bidirectional-pos.h5'
+char_settings_location = 'v7/pos/char-bidirectional-pos.json'
+
+word_frozen_location = 'v7/pos/crf-lstm-bidirectional-pos.h5'
+word_settings_location = 'v7/pos/crf-lstm-bidirectional-pos.json'
+
+concat_frozen_location = 'v7/pos/crf-lstm-concat-bidirectional-pos.h5'
+concat_settings_location = 'v7/pos/crf-lstm-concat-bidirectional-pos.json'
+
 
 def deep_pos(model = 'concat'):
     if model == 'char':
         if not os.path.isfile(char_settings):
             print('downloading POS char settings')
-            download_file('char-bidirectional-pos.json', char_settings)
+            download_file(char_settings_location, char_settings)
         with open(char_settings, 'r') as fopen:
             nodes = json.loads(fopen.read())
         if not os.path.isfile(char_frozen):
-            print('downloading POS frozen char model')
-            download_file('char-bidirectional-pos.h5', char_frozen)
+            print('downloading POS char frozen model')
+            download_file(char_frozen_location, char_frozen)
         model = get_char_bidirectional(nodes['char2idx'], nodes['tag2idx'])
         model.load_weights(char_frozen)
-        return CHAR_MODEL(model, nodes)
+        return CHAR_MODEL(model, nodes, is_lower = False)
     elif model == 'word':
         if not os.path.isfile(word_settings):
             print('downloading POS word settings')
-            download_file('crf-lstm-bidirectional-pos.json', word_settings)
+            download_file(word_settings_location, word_settings)
         with open(word_settings, 'r') as fopen:
             nodes = json.loads(fopen.read())
         if not os.path.isfile(word_frozen):
-            print('downloading POS frozen word model')
-            download_file('crf-lstm-bidirectional-pos.h5', word_frozen)
+            print('downloading POS word frozen model')
+            download_file(word_frozen_location, word_frozen)
         model = get_crf_lstm_bidirectional(nodes['word2idx'], nodes['tag2idx'])
         model.load_weights(word_frozen)
-        return WORD_MODEL(model, nodes)
+        return WORD_MODEL(model, nodes, is_lower = False)
     elif model == 'concat':
         if not os.path.isfile(concat_settings):
             print('downloading POS concat settings')
-            download_file(
-                'crf-lstm-concat-bidirectional-pos.json', concat_settings
-            )
+            download_file(concat_settings_location, concat_settings)
         with open(concat_settings, 'r') as fopen:
             nodes = json.loads(fopen.read())
             nodes['idx2word'] = {
                 int(k): v for k, v in nodes['idx2word'].items()
             }
         if not os.path.isfile(concat_frozen):
-            print('downloading POS frozen concat model')
-            download_file('crf-lstm-concat-bidirectional-pos.h5', concat_frozen)
+            print('downloading POS concat frozen model')
+            download_file(concat_frozen_location, concat_frozen)
         model = get_crf_lstm_concat_bidirectional(
             nodes['char2idx'], nodes['word2idx'], nodes['tag2idx']
         )
         model.load_weights(concat_frozen)
-        return CONCAT_MODEL(model, nodes)
+        return CONCAT_MODEL(model, nodes, is_lower = False)
     else:
         raise Exception('model not supported')

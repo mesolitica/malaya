@@ -1,18 +1,62 @@
+import sys
+import warnings
+
+if not sys.warnoptions:
+    warnings.simplefilter('ignore')
+
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.decomposition import TruncatedSVD, NMF, LatentDirichletAllocation
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import Normalizer
+from unidecode import unidecode
+from .stemmer import sastrawi_stemmer
+import itertools
+import numpy as np
+import re
 from .text_functions import (
     simple_textcleaning,
     STOPWORDS,
     classification_textcleaning,
     print_topics_modelling,
 )
-from .stemmer import sastrawi_stemmer
-from unidecode import unidecode
-import itertools
-import numpy as np
-import re
+from .lda2vec import process_data, generate_lda, train_lda2vec
+
+
+class DEEP_TOPIC:
+    def __init__(self, idx2word, similarity, corpus, doc_weights):
+        self.idx2word = idx2word
+        self.similarity = similarity
+        self.corpus = corpus
+        self.doc_weights = doc_weights
+
+    def print_topics(self, len_topic):
+        print_topics_modelling(
+            range(len_topic),
+            feature_names = np.array(self.idx2word),
+            sorting = np.argsort(self.similarity)[:, ::-1],
+            topics_per_chunk = 5,
+            n_words = 10,
+        )
+
+    def get_topics(self, len_topic):
+        results = []
+        for no, topic in enumerate(self.similarity):
+            results.append(
+                (
+                    no,
+                    ' '.join(
+                        [
+                            self.idx2word[i]
+                            for i in topic.argsort()[: -len_topic - 1 : -1]
+                        ]
+                    ),
+                )
+            )
+        return results
+
+    def get_sentences(self, len_sentence, k = 0):
+        reverse_sorted = np.argsort(self.doc_weights[:, k])[::-1]
+        return [self.corpus[i] for i in reverse_sorted[:len_sentence]]
 
 
 class TOPIC:
@@ -159,3 +203,45 @@ def lsa_topic_modelling(
         [classification_textcleaning(c) for c in corpus],
         lsa.transform(tfidf),
     )
+
+
+def lda2vec_topic_modelling(
+    corpus,
+    n_topics,
+    word_vectors,
+    word2idx,
+    idx2word,
+    max_df = 0.95,
+    min_df = 2,
+    stemming = True,
+    cleaning = simple_textcleaning,
+    min_words = 5,
+    epoch = 10,
+    batch_size = 32,
+):
+    assert isinstance(corpus, list) and isinstance(
+        corpus[0], str
+    ), 'input must be list of strings'
+    assert batch_size < len(corpus), 'batch size must smaller with corpus size'
+    if cleaning is not None:
+        for i in range(len(corpus)):
+            corpus[i] = cleaning(corpus[i])
+    if stemming:
+        for i in range(len(corpus)):
+            corpus[i] = sastrawi_stemmer(corpus[i])
+    encoded_data, unigram_distribution = process_data(
+        corpus, word2idx, min_words = min_words
+    )
+    doc_weights_init = generate_lda(
+        corpus, n_topics, max_df = max_df, min_df = min_df
+    )
+    doc_weights, similarity = train_lda2vec(
+        encoded_data,
+        unigram_distribution,
+        word_vectors,
+        doc_weights_init,
+        n_topics,
+        batch_size = batch_size,
+        epoch = epoch,
+    )
+    return DEEP_TOPIC(idx2word, similarity, corpus, doc_weights)

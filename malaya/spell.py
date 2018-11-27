@@ -1,7 +1,14 @@
+import sys
+import warnings
+
+if not sys.warnoptions:
+    warnings.simplefilter('ignore')
+
 from collections import Counter, defaultdict
 from fuzzywuzzy import fuzz
 import numpy as np
 from .text_functions import normalizer_textcleaning
+from .topics_influencers import is_location
 
 alphabet = 'abcdefghijklmnopqrstuvwxyz'
 consonants = 'bcdfghjklmnpqrstvwxyz'
@@ -76,7 +83,9 @@ class SPELL:
         ), 'input must be a single word'
         assert len(string) > 1, 'input must be long than 1 characters'
         string = normalizer_textcleaning(string)
-        if not string:
+        if string.istitle():
+            return string
+        if not len(string):
             return string
         if first_char:
             candidates = (
@@ -96,12 +105,18 @@ class SPELL:
                 or return_possible(string, self.corpus, edit_normalizer)
                 or [string]
             )
-        candidates = list(candidates)
-        if debug:
-            print([(k, fuzz.ratio(string, k)) for k in candidates])
-        return candidates[
-            np.argmax([fuzz.ratio(string, k) for k in candidates])
+        candidates = [
+            (candidate, is_location(candidate))
+            for candidate in list(candidates)
         ]
+        if debug:
+            print([(k, fuzz.ratio(string, k[0])) for k in candidates], '\n')
+        strings = [fuzz.ratio(string, k[0]) for k in candidates]
+        descending_sort = np.argsort(strings)[::-1]
+        for index in descending_sort:
+            if not candidates[index][1]:
+                return candidates[index][0]
+        return candidates[descending_sort[0]][0]
 
 
 def naive_speller(corpus):
