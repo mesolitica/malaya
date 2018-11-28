@@ -192,6 +192,10 @@ class DEEP_SIMILARITY:
 
     def get_similarity(self, string, anchor = 0.5):
         assert isinstance(string, str), 'input must be a string'
+        assert isinstance(anchor, float), 'anchor must be a float'
+        assert (
+            anchor > 0 and anchor < 1
+        ), 'anchor must be bigger than 0, less than 1'
         original_string = simple_textcleaning(string, decode = True)
         string = ' '.join(set(original_string.split()))
         encoded = self._sess.run(
@@ -234,6 +238,10 @@ class FAST_SIMILARITY:
 
     def get_similarity(self, string, anchor = 0.1):
         assert isinstance(string, str), 'input must be a string'
+        assert isinstance(anchor, float), 'anchor must be a float'
+        assert (
+            anchor > 0 and anchor < 1
+        ), 'anchor must be bigger than 0, less than 1'
         original_string = simple_textcleaning(string, decode = True)
         string = ' '.join(set(original_string.split()))
         where = np.where(
@@ -296,6 +304,12 @@ def deep_get_topics(
     maxlen = 100,
     ngrams = (1, 4),
 ):
+    assert isinstance(epoch, int), 'epoch must be an integer'
+    assert isinstance(batch_size, int), 'batch_size must be an integer'
+    assert isinstance(embedding_size, int), 'embedding_size must be an integer'
+    assert isinstance(output_size, int), 'output_size must be an integer'
+    assert isinstance(maxlen, int), 'maxlen must be an integer'
+    assert isinstance(ngrams, tuple), 'ngrams must be a tuple'
     output, keys = generate_topics()
     batch_x, batch_y = [], []
     for i in range(len(output)):
@@ -329,6 +343,12 @@ def deep_get_influencers(
     maxlen = 100,
     ngrams = (1, 4),
 ):
+    assert isinstance(epoch, int), 'epoch must be an integer'
+    assert isinstance(batch_size, int), 'batch_size must be an integer'
+    assert isinstance(embedding_size, int), 'embedding_size must be an integer'
+    assert isinstance(output_size, int), 'output_size must be an integer'
+    assert isinstance(maxlen, int), 'maxlen must be an integer'
+    assert isinstance(ngrams, tuple), 'ngrams must be a tuple'
     output, keys = generate_influencers()
     batch_x, batch_y = [], []
     for i in range(len(output)):
@@ -358,6 +378,8 @@ def deep_get_influencers(
 
 
 def fast_get_topics(vectorizer = 'tfidf', ngrams = (3, 10)):
+    assert isinstance(vectorizer, str), 'vectorizer must be a string'
+    assert isinstance(ngrams, tuple), 'ngrams must be a tuple'
     if 'tfidf' in vectorizer.lower():
         char_vectorizer = TfidfVectorizer(
             sublinear_tf = True,
@@ -378,6 +400,8 @@ def fast_get_topics(vectorizer = 'tfidf', ngrams = (3, 10)):
 
 
 def fast_get_influencers(vectorizer = 'tfidf', ngrams = (3, 10)):
+    assert isinstance(vectorizer, str), 'vectorizer must be a string'
+    assert isinstance(ngrams, tuple), 'ngrams must be a tuple'
     if 'tfidf' in vectorizer.lower():
         char_vectorizer = TfidfVectorizer(
             sublinear_tf = True,

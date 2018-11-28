@@ -128,6 +128,7 @@ def get_available_sentiment_models():
 
 
 def deep_sentiment(model = 'luong'):
+    assert isinstance(model, str), 'model must be a string'
     if model == 'stack':
         if not os.path.isfile(path_stack):
             print('downloading SENTIMENT frozen stack model')
@@ -250,6 +251,16 @@ def bayes_sentiment(
     split_size = 0.2,
     **kwargs
 ):
+    assert isinstance(corpus, list) and isinstance(
+        corpus[0], str
+    ), 'corpus must be a list of strings'
+    assert isinstance(cleaning, bool), 'cleaning must be a boolean'
+    assert isinstance(stemming, bool), 'stemming must be a boolean'
+    assert isinstance(vector, str), 'vector must be a string'
+    assert isinstance(split_size, float), 'split_size must be a float'
+    assert (
+        split_size > 0 and split_size < 1
+    ), 'split_size must bigger than 0, less than 1'
     multinomial, labels, vectorize = None, None, None
     if vector.lower().find('tfidf') < 0 and vector.lower().find('bow') < 0:
         raise Exception('Invalid vectorization technique')

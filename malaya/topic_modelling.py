@@ -30,6 +30,7 @@ class DEEP_TOPIC:
         self.doc_weights = doc_weights
 
     def print_topics(self, len_topic):
+        assert isinstance(len_topic, int), 'len_topic must be an integer'
         print_topics_modelling(
             range(len_topic),
             feature_names = np.array(self.idx2word),
@@ -39,6 +40,7 @@ class DEEP_TOPIC:
         )
 
     def get_topics(self, len_topic):
+        assert isinstance(len_topic, int), 'len_topic must be an integer'
         results = []
         for no, topic in enumerate(self.similarity):
             results.append(
@@ -55,6 +57,8 @@ class DEEP_TOPIC:
         return results
 
     def get_sentences(self, len_sentence, k = 0):
+        assert isinstance(len_sentence, int), 'len_sentence must be an integer'
+        assert isinstance(k, int), 'k must be an integer'
         reverse_sorted = np.argsort(self.doc_weights[:, k])[::-1]
         return [self.corpus[i] for i in reverse_sorted[:len_sentence]]
 
@@ -67,6 +71,7 @@ class TOPIC:
         self.transformed = transformed
 
     def print_topics(self, len_topic):
+        assert isinstance(len_topic, int), 'len_topic must be an integer'
         print_topics_modelling(
             range(len_topic),
             feature_names = np.array(self.features),
@@ -76,6 +81,7 @@ class TOPIC:
         )
 
     def get_topics(self, len_topic):
+        assert isinstance(len_topic, int), 'len_topic must be an integer'
         results = []
         for no, topic in enumerate(self.comp.components_):
             results.append(
@@ -92,6 +98,8 @@ class TOPIC:
         return results
 
     def get_sentences(self, len_sentence, k = 0):
+        assert isinstance(len_sentence, int), 'len_sentence must be an integer'
+        assert isinstance(k, int), 'k must be an integer'
         reverse_sorted = np.argsort(self.transformed[:, k])[::-1]
         return [self.corpus[i] for i in reverse_sorted[:len_sentence]]
 
@@ -108,6 +116,10 @@ def lda_topic_modelling(
     assert isinstance(corpus, list) and isinstance(
         corpus[0], str
     ), 'input must be list of strings'
+    assert isinstance(n_topics, int), 'n_topics must be an integer'
+    assert isinstance(max_df, float), 'max_df must be a float'
+    assert isinstance(min_df, int), 'min_df must be an integer'
+    assert isinstance(stemming, bool), 'bool must be a boolean'
     if cleaning is not None:
         for i in range(len(corpus)):
             corpus[i] = cleaning(corpus[i])
@@ -146,6 +158,10 @@ def nmf_topic_modelling(
     assert isinstance(corpus, list) and isinstance(
         corpus[0], str
     ), 'input must be list of strings'
+    assert isinstance(n_topics, int), 'n_topics must be an integer'
+    assert isinstance(max_df, float), 'max_df must be a float'
+    assert isinstance(min_df, int), 'min_df must be an integer'
+    assert isinstance(stemming, bool), 'bool must be a boolean'
     if cleaning is not None:
         for i in range(len(corpus)):
             corpus[i] = cleaning(corpus[i])
@@ -184,6 +200,10 @@ def lsa_topic_modelling(
     assert isinstance(corpus, list) and isinstance(
         corpus[0], str
     ), 'input must be list of strings'
+    assert isinstance(n_topics, int), 'n_topics must be an integer'
+    assert isinstance(max_df, float), 'max_df must be a float'
+    assert isinstance(min_df, int), 'min_df must be an integer'
+    assert isinstance(stemming, bool), 'bool must be a boolean'
     if cleaning is not None:
         for i in range(len(corpus)):
             corpus[i] = cleaning(corpus[i])

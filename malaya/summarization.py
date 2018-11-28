@@ -35,6 +35,14 @@ def summarize_lsa(
     assert isinstance(corpus, list) and isinstance(
         corpus[0], str
     ), 'input must be list of strings'
+    assert isinstance(
+        maintain_original, bool
+    ), 'maintain_original must be a boolean'
+    assert isinstance(top_k, int), 'top_k must be an integer'
+    assert isinstance(
+        important_words, int
+    ), 'important_words must be an integer'
+    assert isinstance(return_cluster, bool), 'return_cluster must be a boolean'
     corpus = [summary_textcleaning(i) for i in corpus]
     corpus = ' '.join(corpus)
     splitted_fullstop = re.findall('(?=\S)[^.\n]+(?<=\S)', corpus)
@@ -81,6 +89,14 @@ def summarize_nmf(
     assert isinstance(corpus, list) and isinstance(
         corpus[0], str
     ), 'input must be list of strings'
+    assert isinstance(
+        maintain_original, bool
+    ), 'maintain_original must be a boolean'
+    assert isinstance(top_k, int), 'top_k must be an integer'
+    assert isinstance(
+        important_words, int
+    ), 'important_words must be an integer'
+    assert isinstance(return_cluster, bool), 'return_cluster must be a boolean'
     corpus = [summary_textcleaning(i) for i in corpus]
     corpus = ' '.join(corpus)
     splitted_fullstop = re.findall('(?=\S)[^.\n]+(?<=\S)', corpus)
@@ -133,6 +149,14 @@ def summarize_lda(
     assert isinstance(corpus, list) and isinstance(
         corpus[0], str
     ), 'input must be list of strings'
+    assert isinstance(
+        maintain_original, bool
+    ), 'maintain_original must be a boolean'
+    assert isinstance(top_k, int), 'top_k must be an integer'
+    assert isinstance(
+        important_words, int
+    ), 'important_words must be an integer'
+    assert isinstance(return_cluster, bool), 'return_cluster must be a boolean'
     corpus = [summary_textcleaning(i) for i in corpus]
     corpus = ' '.join(corpus)
     splitted_fullstop = re.findall('(?=\S)[^.\n]+(?<=\S)', corpus)

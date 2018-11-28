@@ -104,6 +104,7 @@ concat_settings_location = 'crf-lstm-concat-bidirectional.json'
 
 
 def deep_entities(model = 'concat'):
+    assert isinstance(model, str), 'model must be a string'
     if model == 'char':
         if not os.path.isfile(char_settings):
             print('downloading ENTITIES char settings')

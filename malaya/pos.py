@@ -147,6 +147,7 @@ concat_settings_location = 'v7/pos/crf-lstm-concat-bidirectional-pos.json'
 
 
 def deep_pos(model = 'concat'):
+    assert isinstance(model, str), 'model must be a string'
     if model == 'char':
         if not os.path.isfile(char_settings):
             print('downloading POS char settings')

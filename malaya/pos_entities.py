@@ -91,6 +91,7 @@ def get_available_pos_entities_models():
 
 
 def deep_pos_entities(model = 'attention'):
+    assert isinstance(model, str), 'model must be a string'
     if model == 'char':
         if not os.path.isfile(char_settings):
             print('downloading POS-ENTITIES char settings')

@@ -95,6 +95,11 @@ class Word2Vec:
         return_similarity = True,
     ):
         assert isinstance(equation, str), 'input must be a string'
+        assert isinstance(num_closest, int), 'num_closest must be an integer'
+        assert isinstance(metric, str), 'metric must be a string'
+        assert isinstance(
+            return_similarity, bool
+        ), 'num_closest must be a boolean'
         tokens, temp = [], ''
         for char in equation:
             if char == ' ':
@@ -147,6 +152,12 @@ class Word2Vec:
     def n_closest(
         self, word, num_closest = 5, metric = 'cosine', return_similarity = True
     ):
+        assert isinstance(word, str), 'input must be a string'
+        assert isinstance(num_closest, int), 'num_closest must be an integer'
+        assert isinstance(metric, str), 'metric must be a string'
+        assert isinstance(
+            return_similarity, bool
+        ), 'num_closest must be a boolean'
         if return_similarity:
             nn = NearestNeighbors(num_closest + 1, metric = metric).fit(
                 self._embed_matrix
@@ -180,6 +191,15 @@ class Word2Vec:
         return sorted_indices[:num]
 
     def analogy(self, a, b, c, num = 1, metric = 'cosine'):
+        assert isinstance(a, str), 'a must be a string'
+        assert isinstance(b, str), 'b must be a string'
+        assert isinstance(c, str), 'c must be a string'
+        if a not in self._dictionary:
+            raise Exception('a not in dictinary')
+        if b not in self._dictionary:
+            raise Exception('b not in dictinary')
+        if c not in self._dictionary:
+            raise Exception('c not in dictinary')
         va = self.get_vector_by_name(a)
         vb = self.get_vector_by_name(b)
         vc = self.get_vector_by_name(c)
@@ -191,6 +211,8 @@ class Word2Vec:
         return d_word_list
 
     def project_2d(self, start, end):
+        assert isinstance(start, int), 'start must be an integer'
+        assert isinstance(end, int), 'end must be an integer'
         tsne = TSNE(n_components = 2)
         embed_2d = tsne.fit_transform(self._embed_matrix[start:end, :])
         word_list = []
