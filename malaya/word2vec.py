@@ -193,6 +193,7 @@ class Word2Vec:
     def analogy(self, a, b, c, num = 1, metric = 'cosine'):
         assert isinstance(a, str), 'a must be a string'
         assert isinstance(b, str), 'b must be a string'
+        assert isinstance(c, str), 'c must be a string'
         if a not in self._dictionary:
             raise Exception('a not in dictinary')
         if b not in self._dictionary:
