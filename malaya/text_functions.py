@@ -292,7 +292,13 @@ def classification_textcleaning(string, no_stopwords = False, lowering = True):
         if lowering:
             return string.lower()
         else:
-            return string
+            return ' '.join(
+                [
+                    word.title() if word.isupper() else word
+                    for word in string.split()
+                    if len(word)
+                ]
+            )
     else:
         string = ' '.join(
             [
@@ -304,7 +310,13 @@ def classification_textcleaning(string, no_stopwords = False, lowering = True):
         if lowering:
             return string.lower()
         else:
-            return string
+            return ' '.join(
+                [
+                    word.title() if word.isupper() else word
+                    for word in string.split()
+                    if len(word)
+                ]
+            )
 
 
 def process_word_pos_entities(word):
