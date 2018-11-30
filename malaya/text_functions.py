@@ -266,7 +266,7 @@ def pos_entities_textcleaning(string):
     )
 
 
-def classification_textcleaning(string, no_stopwords = False):
+def classification_textcleaning(string, no_stopwords = False, lowering = True):
     """
     use by our text classifiers, stemmer, summarization, topic-modelling
     remove links, hashtags, alias
@@ -280,22 +280,31 @@ def classification_textcleaning(string, no_stopwords = False):
     )
     string = unidecode(string).replace('.', '. ').replace(',', ', ')
     string = re.sub('[^A-Za-z ]+', ' ', string)
+    string = re.sub(r'[ ]+', ' ', string).strip()
     if no_stopwords:
-        return ' '.join(
+        string = ' '.join(
             [
                 i
                 for i in re.findall('[\\w\']+|[;:\-\(\)&.,!?"]', string)
                 if len(i)
             ]
-        ).lower()
+        )
+        if lowering:
+            return string.lower()
+        else:
+            return string
     else:
-        return ' '.join(
+        string = ' '.join(
             [
                 i
                 for i in re.findall('[\\w\']+|[;:\-\(\)&.,!?"]', string)
                 if len(i) and i not in STOPWORDS
             ]
-        ).lower()
+        )
+        if lowering:
+            return string.lower()
+        else:
+            return string
 
 
 def process_word_pos_entities(word):

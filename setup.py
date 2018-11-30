@@ -30,7 +30,7 @@ __packagename__ = 'malaya'
 setuptools.setup(
     name = __packagename__,
     packages = setuptools.find_packages(),
-    version = '0.7',
+    version = '0.7.5',
     description = 'Natural-Language-Toolkit for bahasa Malaysia, powered by Deep Learning.',
     author = 'huseinzol05',
     author_email = 'husein.zol05@gmail.com',

@@ -15,11 +15,7 @@ import collections
 import json
 import os
 from . import home
-from .text_functions import (
-    split_by_dot,
-    summary_textcleaning,
-    classification_textcleaning,
-)
+from .text_functions import split_by_dot, summary_textcleaning
 from .stemmer import sastrawi_stemmer
 from .utils import download_file, load_graph
 import uuid
