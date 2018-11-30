@@ -149,7 +149,8 @@ def simple_textcleaning(string, decode = False):
 
 def entities_textcleaning(string):
     """
-    use by xgb entities, multinomial entities, xgb pos, xgb entities, char model, word model, concat model
+    use by xgb entities, multinomial entities,
+    xgb pos, xgb entities, char model, word model, concat model
     """
     string = re.sub('[^A-Za-z0-9\-\/ ]+', ' ', string)
     string = re.sub(r'[ ]+', ' ', string).strip()
@@ -358,10 +359,8 @@ def str_idx(corpus, dic, maxlen, UNK = 0):
     X = np.zeros((len(corpus), maxlen))
     for i in range(len(corpus)):
         for no, k in enumerate(corpus[i].split()[:maxlen][::-1]):
-            try:
-                X[i, -1 - no] = dic[k]
-            except Exception as e:
-                X[i, -1 - no] = UNK
+            val = dic[k] if k in dic else UNK
+            X[i, -1 - no] = val
     return X
 
 
@@ -370,10 +369,7 @@ def stemmer_str_idx(corpus, dic, UNK = 3):
     for i in corpus:
         ints = []
         for k in i:
-            try:
-                ints.append(dic[k])
-            except Exception as e:
-                ints.append(UNK)
+            ints.append(dic[k] if k in dic else UNK)
         X.append(ints)
     return X
 
@@ -383,10 +379,8 @@ def fasttext_str_idx(texts, dictionary):
     for text in texts:
         idx = []
         for t in text.split():
-            try:
+            if t in dictionary:
                 idx.append(dictionary[t])
-            except:
-                pass
         idx_trainset.append(idx)
     return idx_trainset
 
@@ -453,10 +447,8 @@ def char_str_idx(corpus, dic, UNK = 0):
     X = np.zeros((len(corpus), maxlen))
     for i in range(len(corpus)):
         for no, k in enumerate(corpus[i][:maxlen][::-1]):
-            try:
-                X[i, -1 - no] = dic[k]
-            except Exception as e:
-                X[i, -1 - no] = UNK
+            val = dic[k] if k in dic else UNK
+            X[i, -1 - no] = val
     return X
 
 

@@ -14,10 +14,16 @@ from fuzzywuzzy import fuzz
 import zipfile
 import os
 import random
-from .text_functions import STOPWORDS, sentence_ngram, simple_textcleaning
+from .text_functions import (
+    STOPWORDS,
+    sentence_ngram,
+    simple_textcleaning,
+    str_idx,
+)
 from . import home
 from .utils import download_file
 from .skip_thought import train_model, batch_sequence
+from .siamese_lstm import train_model
 
 zip_location = home + '/rules-based.zip'
 
@@ -171,6 +177,52 @@ def fuzzy_get_location(string):
     return {'negeri': negeri_list, 'parlimen': parlimen_list, 'dun': dun_list}
 
 
+class DEEP_SIAMESE_SIMILARITY:
+    def __init__(
+        self, sess, model, keys, dictionary, maxlen, is_influencers = False
+    ):
+        self._sess = sess
+        self._model = model
+        self.keys = keys
+        self.dictionary = dictionary
+        self.maxlen = maxlen
+        self._is_influencers = is_influencers
+
+    def get_similarity(self, string, anchor = 0.5):
+        assert isinstance(string, str), 'input must be a string'
+        assert isinstance(anchor, float), 'anchor must be a float'
+        assert (
+            anchor > 0 and anchor < 1
+        ), 'anchor must be bigger than 0, less than 1'
+        original_string = simple_textcleaning(string, decode = True)
+        strings = [original_string] * len(self.keys)
+        left = str_idx(strings, self.dictionary, self.maxlen, UNK = 3)
+        right = str_idx(self.keys, self.dictionary, self.maxlen, UNK = 3)
+        distances = self._sess.run(
+            1 - self._model.distance,
+            feed_dict = {self._model.X_left: left, self._model.X_right: right},
+        )
+        where = np.where(distances > anchor)[0]
+        results = [self.keys[i].lower() for i in where]
+        for key, vals in short_dict.items():
+            for v in vals:
+                if v in original_string.split():
+                    results.append(key.lower())
+                    break
+        if self._is_influencers:
+            for index in np.where(
+                np.array(
+                    [
+                        fuzz.token_set_ratio(i, original_string)
+                        for i in namacalon
+                    ]
+                )
+                >= 80
+            )[0]:
+                results.append(namacalon[index].lower())
+        return list(set(results))
+
+
 class DEEP_SIMILARITY:
     def __init__(
         self,
@@ -294,6 +346,102 @@ def generate_influencers():
             ' '.join([word for word in text.split() if word not in STOPWORDS])
         )
     return output, keys
+
+
+def deep_siamese_get_topics(
+    epoch = 5,
+    batch_size = 32,
+    embedding_size = 256,
+    output_size = 300,
+    maxlen = 100,
+    ngrams = (1, 4),
+):
+    assert isinstance(epoch, int), 'epoch must be an integer'
+    assert isinstance(batch_size, int), 'batch_size must be an integer'
+    assert isinstance(embedding_size, int), 'embedding_size must be an integer'
+    assert isinstance(output_size, int), 'output_size must be an integer'
+    assert isinstance(maxlen, int), 'maxlen must be an integer'
+    assert isinstance(ngrams, tuple), 'ngrams must be a tuple'
+    output, keys = generate_topics()
+    batch_x_left, batch_x_right, batch_y = [], [], []
+    for i in range(len(output)):
+        augmentation = sentence_ngram(output[i])
+        batch_x_right.extend([keys[i]] * len(augmentation))
+        batch_x_left.extend(augmentation)
+        batch_y.extend([1] * len(augmentation))
+    neg_batch_x_left, neg_batch_x_right = [], []
+    for i in range(len(batch_x_left)):
+        random_num = random.randint(0, len(batch_x_left) - 1)
+        while random_num == i:
+            random_num = random.randint(0, len(batch_x_left) - 1)
+        neg_batch_x_right.append(batch_x_right[random_num])
+        neg_batch_x_left.append(batch_x_left[i])
+        batch_y.append(0)
+    batch_x_left.extend(neg_batch_x_left)
+    batch_x_right.extend(neg_batch_x_right)
+    batch_x_left, batch_x_right, batch_y = shuffle(
+        batch_x_left, batch_x_right, batch_y
+    )
+    sess, model, dictionary = train_model(
+        batch_x_left,
+        batch_x_right,
+        batch_y,
+        epoch = epoch,
+        batch_size = batch_size,
+        embedding_size = embedding_size,
+        output_size = output_size,
+        maxlen = maxlen,
+    )
+    return DEEP_SIAMESE_SIMILARITY(sess, model, keys, dictionary, maxlen)
+
+
+def deep_siamese_get_influencers(
+    epoch = 5,
+    batch_size = 32,
+    embedding_size = 256,
+    output_size = 300,
+    maxlen = 100,
+    ngrams = (1, 4),
+):
+    assert isinstance(epoch, int), 'epoch must be an integer'
+    assert isinstance(batch_size, int), 'batch_size must be an integer'
+    assert isinstance(embedding_size, int), 'embedding_size must be an integer'
+    assert isinstance(output_size, int), 'output_size must be an integer'
+    assert isinstance(maxlen, int), 'maxlen must be an integer'
+    assert isinstance(ngrams, tuple), 'ngrams must be a tuple'
+    output, keys = generate_influencers()
+    batch_x_left, batch_x_right, batch_y = [], [], []
+    for i in range(len(output)):
+        augmentation = sentence_ngram(output[i])
+        batch_x_right.extend([keys[i]] * len(augmentation))
+        batch_x_left.extend(augmentation)
+        batch_y.extend([1] * len(augmentation))
+    neg_batch_x_left, neg_batch_x_right = [], []
+    for i in range(len(batch_x_left)):
+        random_num = random.randint(0, len(batch_x_left) - 1)
+        while random_num == i:
+            random_num = random.randint(0, len(batch_x_left) - 1)
+        neg_batch_x_right.append(batch_x_right[random_num])
+        neg_batch_x_left.append(batch_x_left[i])
+        batch_y.append(0)
+    batch_x_left.extend(neg_batch_x_left)
+    batch_x_right.extend(neg_batch_x_right)
+    batch_x_left, batch_x_right, batch_y = shuffle(
+        batch_x_left, batch_x_right, batch_y
+    )
+    sess, model, dictionary = train_model(
+        batch_x_left,
+        batch_x_right,
+        batch_y,
+        epoch = epoch,
+        batch_size = batch_size,
+        embedding_size = embedding_size,
+        output_size = output_size,
+        maxlen = maxlen,
+    )
+    return DEEP_SIAMESE_SIMILARITY(
+        sess, model, keys, dictionary, maxlen, is_influencers = True
+    )
 
 
 def deep_get_topics(

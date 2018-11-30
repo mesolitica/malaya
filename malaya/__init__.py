@@ -116,6 +116,8 @@ from .topics_influencers import (
     fast_get_influencers,
     deep_get_topics,
     deep_get_influencers,
+    deep_siamese_get_topics,
+    deep_siamese_get_influencers,
 )
 from .toxic import multinomial_detect_toxic, logistics_detect_toxic, deep_toxic
 from .word2vec import malaya_word2vec, Word2Vec
