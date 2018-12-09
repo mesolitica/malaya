@@ -127,7 +127,7 @@ language = None
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', 'load-*.rst']
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = None
+pygments_style = 'sphinx'
 
 source_suffix = '.rst'
 # -- Options for HTML output -------------------------------------------------
