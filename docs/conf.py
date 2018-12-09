@@ -31,6 +31,7 @@ class Mock(MagicMock):
 
 
 MOCK_MODULES = [
+    'pathlib',
     'sklearn',
     'numpy',
     'scipy',
@@ -98,6 +99,7 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
     'sphinx.ext.mathjax',
+    'IPython.sphinxext.ipython_console_highlighting',
 ]
 numpydoc_show_class_members = False
 autodoc_member_order = 'bysource'
@@ -124,7 +126,13 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', 'load-*.rst']
+exclude_patterns = [
+    '_build',
+    '**.ipynb_checkpoints',
+    'Thumbs.db',
+    '.DS_Store',
+    'load-*.rst',
+]
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
