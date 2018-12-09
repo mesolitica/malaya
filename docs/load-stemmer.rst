@@ -1,12 +1,12 @@
 
-.. code:: ipython3
+.. code:: python
 
     import malaya
 
 Use Sastrawi stemmer
 --------------------
 
-.. code:: ipython3
+.. code:: python
 
     malaya.sastrawi_stemmer('saya tengah berjalan')
 
@@ -19,7 +19,7 @@ Use Sastrawi stemmer
 
 
 
-.. code:: ipython3
+.. code:: python
 
     malaya.sastrawi_stemmer('saya tengah berjalankan sangat-sangat')
 
@@ -32,7 +32,7 @@ Use Sastrawi stemmer
 
 
 
-.. code:: ipython3
+.. code:: python
 
     malaya.sastrawi_stemmer('menarik')
 
@@ -51,7 +51,7 @@ Load deep learning model
 I really not suggest you to use this model. Use Sastrawi instead. We are
 adding our own rules into Sastrawi stemmer
 
-.. code:: ipython3
+.. code:: python
 
     stemmer = malaya.deep_stemmer()
 
@@ -63,7 +63,7 @@ adding our own rules into Sastrawi stemmer
 
 .. parsed-literal::
 
-    1.00MB [00:00, 260MB/s]                    
+    1.00MB [00:00, 260MB/s]
       0%|          | 0.00/21.4 [00:00<?, ?MB/s]
 
 .. parsed-literal::
@@ -73,10 +73,10 @@ adding our own rules into Sastrawi stemmer
 
 .. parsed-literal::
 
-    22.0MB [00:06, 3.92MB/s]                          
+    22.0MB [00:06, 3.92MB/s]
 
 
-.. code:: ipython3
+.. code:: python
 
     stemmer.stem('saya tengah berjalankan sangat-sangat')
 
@@ -89,7 +89,7 @@ adding our own rules into Sastrawi stemmer
 
 
 
-.. code:: ipython3
+.. code:: python
 
     stemmer.stem('saya sangat sukakan awak')
 
@@ -102,7 +102,7 @@ adding our own rules into Sastrawi stemmer
 
 
 
-.. code:: ipython3
+.. code:: python
 
     stemmer.stem('saya sangat suakkan awak')
 
@@ -112,5 +112,3 @@ adding our own rules into Sastrawi stemmer
 .. parsed-literal::
 
     'saya sangat suak awak'
-
-

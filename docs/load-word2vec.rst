@@ -1,12 +1,12 @@
 
-.. code:: ipython3
+.. code:: python
 
     import malaya
 
 Load malaya news word2vec
 -------------------------
 
-.. code:: ipython3
+.. code:: python
 
     embedded = malaya.malaya_word2vec(256)
 
@@ -18,17 +18,17 @@ Load malaya news word2vec
 
 .. parsed-literal::
 
-    109MB [00:44, 2.82MB/s]                          
+    109MB [00:44, 2.82MB/s]
 
 
 Load word2vec model
 -------------------
 
-.. code:: ipython3
+.. code:: python
 
     word_vector = malaya.Word2Vec(embedded['nce_weights'], embedded['dictionary'])
 
-.. code:: ipython3
+.. code:: python
 
     word = 'anwar'
     print("Embedding layer: 8 closest words to: '%s'"%(word))
@@ -41,7 +41,7 @@ Load word2vec model
     [['mahathir', 0.44774019718170166], ['beliau', 0.44170427322387695], ['zaid', 0.43993180990219116], ['hishammuddin', 0.4343132972717285], ['kuok', 0.43307822942733765], ['husam', 0.43213725090026855], ['anifah', 0.4307258129119873], ['pesakit', 0.4262162446975708]]
 
 
-.. code:: ipython3
+.. code:: python
 
     print(word_vector.analogy('anwar', 'penjara', 'kerajaan', 5))
 
@@ -51,7 +51,7 @@ Load word2vec model
     ['penjara', 'kerajaan', 'kkm', 'kabinet', 'tuju']
 
 
-.. code:: ipython3
+.. code:: python
 
     word_vector.calculator('anwar + amerika + mahathir', num_closest=8, metric='cosine',
                           return_similarity=False)
@@ -73,7 +73,7 @@ Load word2vec model
 
 
 
-.. code:: ipython3
+.. code:: python
 
     word_vector.calculator('anwar * amerika', num_closest=8, metric='cosine',
                           return_similarity=False)
@@ -92,5 +92,3 @@ Load word2vec model
      'pengetahuan',
      'tujuan',
      'meter']
-
-

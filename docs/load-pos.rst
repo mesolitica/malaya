@@ -1,12 +1,12 @@
 
-.. code:: ipython3
+.. code:: python
 
     import malaya
 
 Describe supported POS
 ----------------------
 
-.. code:: ipython3
+.. code:: python
 
     malaya.describe_pos()
 
@@ -33,15 +33,15 @@ Describe supported POS
 Load CRF Model
 --------------
 
-.. code:: ipython3
+.. code:: python
 
     crf = malaya.crf_pos()
 
-.. code:: ipython3
+.. code:: python
 
     string = 'KUALA LUMPUR: Sempena sambutan Aidilfitri minggu depan, Perdana Menteri Tun Dr Mahathir Mohamad dan Menteri Pengangkutan Anthony Loke Siew Fook menitipkan pesanan khas kepada orang ramai yang mahu pulang ke kampung halaman masing-masing. Dalam video pendek terbitan Jabatan Keselamatan Jalan Raya (JKJR) itu, Dr Mahathir menasihati mereka supaya berhenti berehat dan tidur sebentar  sekiranya mengantuk ketika memandu.'
 
-.. code:: ipython3
+.. code:: python
 
     crf.predict(string)
 
@@ -113,7 +113,7 @@ Load CRF Model
 Print important features CRF model
 ----------------------------------
 
-.. code:: ipython3
+.. code:: python
 
     crf.print_features(10)
 
@@ -131,7 +131,7 @@ Print important features CRF model
     14.503045 PRON     word:kapan
     14.319357 DET      word:ini
     14.267956 ADV      word:pernah
-    
+
     Top-10 negative:
     -7.217718 PROPN    word:bunga
     -7.258999 VERB     word:memuaskan
@@ -148,7 +148,7 @@ Print important features CRF model
 Print important transitions CRF model
 -------------------------------------
 
-.. code:: ipython3
+.. code:: python
 
     crf.print_transitions(10)
 
@@ -166,7 +166,7 @@ Print important transitions CRF model
     SCONJ  -> CCONJ   1.598273
     NUM    -> NUM     1.475505
     ADV    -> VERB    1.442607
-    
+
     Top-10 unlikely transitions:
     SCONJ  -> AUX     -3.559017
     X      -> SCONJ   -3.566058
@@ -183,7 +183,7 @@ Print important transitions CRF model
 Load deep learning models
 -------------------------
 
-.. code:: ipython3
+.. code:: python
 
     for i in malaya.get_available_pos_models():
         print('Testing %s model'%(i))
@@ -196,11 +196,9 @@ Load deep learning models
 
     Testing concat model
     [('Kuala', 'NOUN'), ('Lumpur', 'PART'), ('Sempena', 'PART'), ('sambutan', 'NOUN'), ('Aidilfitri', 'ADJ'), ('minggu', 'NOUN'), ('depan', 'ADJ'), ('Perdana', 'NOUN'), ('Menteri', 'PART'), ('Tun', 'PART'), ('Dr', 'ADJ'), ('Mahathir', 'PROPN'), ('Mohamad', 'ADJ'), ('dan', 'CCONJ'), ('Menteri', 'NOUN'), ('Pengangkutan', 'PART'), ('Anthony', 'ADJ'), ('Loke', 'ADJ'), ('Siew', 'ADJ'), ('Fook', 'ADJ'), ('menitipkan', 'ADJ'), ('pesanan', 'NOUN'), ('khas', 'ADJ'), ('kepada', 'ADP'), ('orang', 'NOUN'), ('ramai', 'ADJ'), ('yang', 'PRON'), ('mahu', 'ADV'), ('pulang', 'VERB'), ('ke', 'ADP'), ('kampung', 'NOUN'), ('halaman', 'NOUN'), ('masing-masing', 'NOUN'), ('Dalam', 'NOUN'), ('video', 'NOUN'), ('pendek', 'ADJ'), ('terbitan', 'NOUN'), ('Jabatan', 'NOUN'), ('Keselamatan', 'PROPN'), ('Jalan', 'PROPN'), ('Raya', 'PRON'), ('Jkjr', 'X'), ('itu', 'DET'), ('Dr', 'PART'), ('Mahathir', 'ADJ'), ('menasihati', 'NOUN'), ('mereka', 'PRON'), ('supaya', 'SCONJ'), ('berhenti', 'VERB'), ('berehat', 'PROPN'), ('dan', 'CCONJ'), ('tidur', 'NOUN'), ('sebentar', 'ADV'), ('sekiranya', 'NOUN'), ('mengantuk', 'ADJ'), ('ketika', 'SCONJ'), ('memandu', 'VERB')]
-    
+
     Testing bahdanau model
     [('Kuala', 'PROPN'), ('Lumpur', 'PROPN'), ('Sempena', 'PROPN'), ('sambutan', 'NOUN'), ('Aidilfitri', 'PROPN'), ('minggu', 'PROPN'), ('depan', 'ADV'), ('Perdana', 'PROPN'), ('Menteri', 'PROPN'), ('Tun', 'PROPN'), ('Dr', 'PROPN'), ('Mahathir', 'PROPN'), ('Mohamad', 'PROPN'), ('dan', 'CCONJ'), ('Menteri', 'PROPN'), ('Pengangkutan', 'PROPN'), ('Anthony', 'PROPN'), ('Loke', 'PROPN'), ('Siew', 'PROPN'), ('Fook', 'PROPN'), ('menitipkan', 'PROPN'), ('pesanan', 'NOUN'), ('khas', 'ADJ'), ('kepada', 'ADP'), ('orang', 'NOUN'), ('ramai', 'ADJ'), ('yang', 'PRON'), ('mahu', 'ADV'), ('pulang', 'VERB'), ('ke', 'ADP'), ('kampung', 'NOUN'), ('halaman', 'NOUN'), ('masing-masing', 'NOUN'), ('Dalam', 'ADV'), ('video', 'NOUN'), ('pendek', 'ADJ'), ('terbitan', 'NOUN'), ('Jabatan', 'NOUN'), ('Keselamatan', 'PROPN'), ('Jalan', 'PROPN'), ('Raya', 'PROPN'), ('Jkjr', 'PROPN'), ('itu', 'DET'), ('Dr', 'PROPN'), ('Mahathir', 'PROPN'), ('menasihati', 'PROPN'), ('mereka', 'PRON'), ('supaya', 'PART'), ('berhenti', 'VERB'), ('berehat', 'ADJ'), ('dan', 'CCONJ'), ('tidur', 'VERB'), ('sebentar', 'ADV'), ('sekiranya', 'PROPN'), ('mengantuk', 'PROPN'), ('ketika', 'SCONJ'), ('memandu', 'VERB')]
-    
+
     Testing luong model
     [('Kuala', 'NOUN'), ('Lumpur', 'ADJ'), ('Sempena', 'NOUN'), ('sambutan', 'NOUN'), ('Aidilfitri', 'NOUN'), ('minggu', 'VERB'), ('depan', 'ADJ'), ('Perdana', 'NOUN'), ('Menteri', 'NOUN'), ('Tun', 'NOUN'), ('Dr', 'NOUN'), ('Mahathir', 'NOUN'), ('Mohamad', 'ADJ'), ('dan', 'CCONJ'), ('Menteri', 'NOUN'), ('Pengangkutan', 'ADJ'), ('Anthony', 'NOUN'), ('Loke', 'NOUN'), ('Siew', 'NOUN'), ('Fook', 'NOUN'), ('menitipkan', 'NOUN'), ('pesanan', 'NOUN'), ('khas', 'ADJ'), ('kepada', 'ADP'), ('orang', 'NOUN'), ('ramai', 'ADJ'), ('yang', 'PRON'), ('mahu', 'ADV'), ('pulang', 'VERB'), ('ke', 'ADP'), ('kampung', 'NOUN'), ('halaman', 'NOUN'), ('masing-masing', 'NOUN'), ('Dalam', 'NOUN'), ('video', 'NOUN'), ('pendek', 'ADJ'), ('terbitan', 'NOUN'), ('Jabatan', 'NOUN'), ('Keselamatan', 'NOUN'), ('Jalan', 'NOUN'), ('Raya', 'ADJ'), ('Jkjr', 'NOUN'), ('itu', 'DET'), ('Dr', 'ADJ'), ('Mahathir', 'NOUN'), ('menasihati', 'ADJ'), ('mereka', 'PRON'), ('supaya', 'CCONJ'), ('berhenti', 'VERB'), ('berehat', 'PROPN'), ('dan', 'CCONJ'), ('tidur', 'VERB'), ('sebentar', 'ADV'), ('sekiranya', 'NOUN'), ('mengantuk', 'NOUN'), ('ketika', 'SCONJ'), ('memandu', 'VERB')]
-    
-

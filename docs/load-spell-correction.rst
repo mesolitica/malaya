@@ -1,25 +1,25 @@
 
-.. code:: ipython3
+.. code:: python
 
     import malaya
 
 Load naive speller
 ------------------
 
-.. code:: ipython3
+.. code:: python
 
     malays = malaya.load_malay_dictionary()
     corrector = malaya.naive_speller(malays)
 
-.. code:: ipython3
+.. code:: python
 
     corrector.correct('mknn')
 
 
 .. parsed-literal::
 
-    [(('mini', False), 50), (('makan', False), 67), (('mana', False), 50), (('min', False), 57), (('makna', False), 67), (('makin', False), 67), (('menu', False), 50), (('maun', False), 50), (('mani', False), 50), (('main', False), 50), (('mena', False), 50), (('makanan', False), 73)] 
-    
+    [(('mini', False), 50), (('makan', False), 67), (('mana', False), 50), (('min', False), 57), (('makna', False), 67), (('makin', False), 67), (('menu', False), 50), (('maun', False), 50), (('mani', False), 50), (('main', False), 50), (('mena', False), 50), (('makanan', False), 73)]
+
 
 
 
@@ -33,15 +33,15 @@ Load naive speller
 List similar words
 ^^^^^^^^^^^^^^^^^^
 
-.. code:: ipython3
+.. code:: python
 
     corrector.correct('tmpat',debug=True)
 
 
 .. parsed-literal::
 
-    [(('tumpat', True), 91), (('tepat', False), 80), (('tempat', False), 91)] 
-    
+    [(('tumpat', True), 91), (('tepat', False), 80), (('tempat', False), 91)]
+
 
 
 
@@ -55,7 +55,7 @@ List similar words
 Only pool based on first character
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code:: ipython3
+.. code:: python
 
     %%time
     corrector.correct('mknn',first_char=True)
@@ -63,8 +63,8 @@ Only pool based on first character
 
 .. parsed-literal::
 
-    [(('mini', False), 50), (('makan', False), 67), (('mana', False), 50), (('min', False), 57), (('makna', False), 67), (('makin', False), 67), (('menu', False), 50), (('maun', False), 50), (('mani', False), 50), (('main', False), 50), (('mena', False), 50), (('makanan', False), 73)] 
-    
+    [(('mini', False), 50), (('makan', False), 67), (('mana', False), 50), (('min', False), 57), (('makna', False), 67), (('makin', False), 67), (('menu', False), 50), (('maun', False), 50), (('mani', False), 50), (('main', False), 50), (('mena', False), 50), (('makanan', False), 73)]
+
     CPU times: user 272 ms, sys: 2.83 ms, total: 274 ms
     Wall time: 292 ms
 
@@ -80,7 +80,7 @@ Only pool based on first character
 Pool on no condition
 ^^^^^^^^^^^^^^^^^^^^
 
-.. code:: ipython3
+.. code:: python
 
     %%time
     corrector.correct('mknn',first_char=False)
@@ -88,8 +88,8 @@ Pool on no condition
 
 .. parsed-literal::
 
-    [(('mini', False), 50), (('kon', False), 57), (('makan', False), 67), (('ikan', False), 50), (('mana', False), 50), (('min', False), 57), (('makna', False), 67), (('kun', False), 57), (('makin', False), 67), (('menu', False), 50), (('akan', False), 50), (('mani', False), 50), (('main', False), 50), (('mena', False), 50), (('ikon', False), 50), (('kan', False), 57), (('ken', False), 57), (('makanan', False), 73), (('maun', False), 50)] 
-    
+    [(('mini', False), 50), (('kon', False), 57), (('makan', False), 67), (('ikan', False), 50), (('mana', False), 50), (('min', False), 57), (('makna', False), 67), (('kun', False), 57), (('makin', False), 67), (('menu', False), 50), (('akan', False), 50), (('mani', False), 50), (('main', False), 50), (('mena', False), 50), (('ikon', False), 50), (('kan', False), 57), (('ken', False), 57), (('makanan', False), 73), (('maun', False), 50)]
+
     CPU times: user 407 ms, sys: 3.95 ms, total: 411 ms
     Wall time: 417 ms
 
@@ -102,15 +102,15 @@ Pool on no condition
 
 
 
-.. code:: ipython3
+.. code:: python
 
     corrector.correct('tempat')
 
 
 .. parsed-literal::
 
-    [(('tempat', False), 100)] 
-    
+    [(('tempat', False), 100)]
+
 
 
 
@@ -118,5 +118,3 @@ Pool on no condition
 .. parsed-literal::
 
     'tempat'
-
-

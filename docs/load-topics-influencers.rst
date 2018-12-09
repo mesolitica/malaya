@@ -1,9 +1,9 @@
 
-.. code:: ipython3
+.. code:: python
 
     import malaya
 
-.. code:: ipython3
+.. code:: python
 
     news = 'najib razak dan mahathir mengalami masalah air di kemamam terengganu'
     second_news = 'ikat penyedia perkhidmatan jalur lebar Telekom Malaysia (TM) perlu mencari jalan penyelesaian bagi meningkatkan akses capaian Internet ke seluruh negara, kata Menteri Komunikasi dan Multimedia, Gobind Singh Deo. Beliau berkata menjadi dasar kerajaan untuk membekalkan akses Internet jalur lebar kepada semua dan memberi penekanan kepada kualiti perkhidmatan yang terbaik. "Dasar kerajaan untuk bekalkan akses kepada semua bukan sekadar pembekalan sahaja tetapi beri penekanan kepada kualiti perkhidmatan yang baik dan dapat bersaing dengan negara lain pada tahap antarabangsa," kata Gobind Singh menerusi catatan di laman rasmi Twitter beliau, malam tadi. Beliau berkata demikian sebagai respons terhadap aduan beberapa pengguna Twitter berhubung akses Internet yang masih tidak stabil serta harga yang tidak berpatutan di beberapa lokasi di seluruh negara.'
@@ -11,7 +11,7 @@
 Using fuzzy for topics
 ----------------------
 
-.. code:: ipython3
+.. code:: python
 
     malaya.fuzzy_get_topics(news)
 
@@ -24,7 +24,7 @@ Using fuzzy for topics
 
 
 
-.. code:: ipython3
+.. code:: python
 
     malaya.fuzzy_get_topics(second_news)
 
@@ -49,7 +49,7 @@ Using fuzzy for topics
 Using fuzzy for influencers
 ---------------------------
 
-.. code:: ipython3
+.. code:: python
 
     malaya.fuzzy_get_influencers(news)
 
@@ -62,7 +62,7 @@ Using fuzzy for influencers
 
 
 
-.. code:: ipython3
+.. code:: python
 
     malaya.fuzzy_get_influencers(second_news)
 
@@ -78,11 +78,11 @@ Using fuzzy for influencers
 Train TF-IDF for topics analysis
 --------------------------------
 
-.. code:: ipython3
+.. code:: python
 
     topics_similarity = malaya.fast_get_topics()
 
-.. code:: ipython3
+.. code:: python
 
     topics_similarity.get_similarity(news)
 
@@ -98,11 +98,11 @@ Train TF-IDF for topics analysis
 Train TF-IDF for influencers analysis
 -------------------------------------
 
-.. code:: ipython3
+.. code:: python
 
     influencers_similarity = malaya.fast_get_influencers()
 
-.. code:: ipython3
+.. code:: python
 
     influencers_similarity.get_similarity(news)
 
@@ -115,7 +115,7 @@ Train TF-IDF for influencers analysis
 
 
 
-.. code:: ipython3
+.. code:: python
 
     influencers_similarity.get_similarity(second_news)
 
@@ -137,7 +137,7 @@ Train TF-IDF for influencers analysis
 Train skip-thought model for topics analysis
 --------------------------------------------
 
-.. code:: ipython3
+.. code:: python
 
     deep_topic = malaya.deep_get_topics()
 
@@ -151,7 +151,7 @@ Train skip-thought model for topics analysis
     minibatch loop: 100%|██████████| 168/168 [01:59<00:00,  1.51it/s, cost=0.00474]
 
 
-.. code:: ipython3
+.. code:: python
 
     deep_topic.get_similarity(news, anchor = 0.5)
 
@@ -177,7 +177,7 @@ Train skip-thought model for topics analysis
 
 
 
-.. code:: ipython3
+.. code:: python
 
     deep_topic.get_similarity(second_news, anchor = 0.5)
 
@@ -216,7 +216,7 @@ Train skip-thought model for topics analysis
 Train skip-thought model for influencers analysis
 -------------------------------------------------
 
-.. code:: ipython3
+.. code:: python
 
     deep_influencer = malaya.deep_get_influencers()
 
@@ -225,17 +225,17 @@ Train skip-thought model for influencers analysis
 
     minibatch loop: 100%|██████████| 24/24 [00:15<00:00,  1.55it/s, cost=3.64]
     minibatch loop: 100%|██████████| 24/24 [00:14<00:00,  1.68it/s, cost=1.45]
-    minibatch loop: 100%|██████████| 24/24 [00:15<00:00,  1.40it/s, cost=0.55] 
+    minibatch loop: 100%|██████████| 24/24 [00:15<00:00,  1.40it/s, cost=0.55]
     minibatch loop: 100%|██████████| 24/24 [00:14<00:00,  1.69it/s, cost=0.362]
     minibatch loop: 100%|██████████| 24/24 [00:15<00:00,  1.63it/s, cost=0.275]
     minibatch loop: 100%|██████████| 24/24 [00:14<00:00,  1.62it/s, cost=0.249]
-    minibatch loop: 100%|██████████| 24/24 [00:15<00:00,  1.63it/s, cost=0.237] 
-    minibatch loop: 100%|██████████| 24/24 [00:14<00:00,  1.64it/s, cost=0.207] 
+    minibatch loop: 100%|██████████| 24/24 [00:15<00:00,  1.63it/s, cost=0.237]
+    minibatch loop: 100%|██████████| 24/24 [00:14<00:00,  1.64it/s, cost=0.207]
     minibatch loop: 100%|██████████| 24/24 [00:16<00:00,  1.55it/s, cost=0.262]
-    minibatch loop: 100%|██████████| 24/24 [00:15<00:00,  1.44it/s, cost=0.229] 
+    minibatch loop: 100%|██████████| 24/24 [00:15<00:00,  1.44it/s, cost=0.229]
 
 
-.. code:: ipython3
+.. code:: python
 
     deep_influencer.get_similarity(news, anchor = 0.5)
 
@@ -248,7 +248,7 @@ Train skip-thought model for influencers analysis
 
 
 
-.. code:: ipython3
+.. code:: python
 
     deep_influencer.get_similarity(second_news, anchor = 0.5)
 
@@ -264,7 +264,7 @@ Train skip-thought model for influencers analysis
 Train siamese network for topics analysis
 -----------------------------------------
 
-.. code:: ipython3
+.. code:: python
 
     deep_topic = malaya.deep_siamese_get_topics()
     print(deep_topic.get_similarity(news, anchor = 0.5))
@@ -273,11 +273,11 @@ Train siamese network for topics analysis
 
 .. parsed-literal::
 
-    minibatch loop: 100%|██████████| 168/168 [02:03<00:00,  1.60it/s, accuracy=0.75, cost=0.113] 
-    minibatch loop: 100%|██████████| 168/168 [02:01<00:00,  1.64it/s, accuracy=1, cost=0.0975]   
-    minibatch loop: 100%|██████████| 168/168 [02:10<00:00,  1.65it/s, accuracy=1, cost=0.0539]   
-    minibatch loop: 100%|██████████| 168/168 [01:59<00:00,  1.64it/s, accuracy=1, cost=0.057]     
-    minibatch loop: 100%|██████████| 168/168 [01:58<00:00,  1.68it/s, accuracy=1, cost=0.0324]    
+    minibatch loop: 100%|██████████| 168/168 [02:03<00:00,  1.60it/s, accuracy=0.75, cost=0.113]
+    minibatch loop: 100%|██████████| 168/168 [02:01<00:00,  1.64it/s, accuracy=1, cost=0.0975]
+    minibatch loop: 100%|██████████| 168/168 [02:10<00:00,  1.65it/s, accuracy=1, cost=0.0539]
+    minibatch loop: 100%|██████████| 168/168 [01:59<00:00,  1.64it/s, accuracy=1, cost=0.057]
+    minibatch loop: 100%|██████████| 168/168 [01:58<00:00,  1.68it/s, accuracy=1, cost=0.0324]
 
 
 .. parsed-literal::
@@ -286,7 +286,7 @@ Train siamese network for topics analysis
     ['anwar ibrahim', 'makanan', 'recep tayyip erdogan', 'datuk seri abdul hadi awang', 'fc bayern munich', 'tsunami fitnah', 'jho low', 'syed saddiq', 'liverpool fc', 'tabung haji', 'tengku razaleigh hamzah', 'pengangkutan awam', 'wanita', 'euro 2020', 'ganja', 'fc barcelona', 'felda', 'bung mokhtar', 'bebas tahanan', 'gst', 'ekonomi', 'lee kuan yew', 'baling botol', 'ariff md yusof', 'chelsea fc', 'median salary', 'gaji minimum', 'kesihatan']
 
 
-.. code:: ipython3
+.. code:: python
 
     print(deep_topic.get_similarity(news, anchor = 0.7))
     print(deep_topic.get_similarity(second_news, anchor = 0.7))
@@ -296,4 +296,3 @@ Train siamese network for topics analysis
 
     ['tan sri mokhzani mahathir', 'ganja', 'syed saddiq', 'sosial', 'chelsea fc', 'makanan', 'liverpool fc', 'felda', 'datuk seri abdul hadi awang', 'gaji minimum', 'juventus fc', 'baling botol', 'datuk seri azmin ali', 'masyarakat', 'arsenal fc', 'pengangkutan awam', 'perkhidmatan awam', 'euro 2020', 'jho low']
     []
-

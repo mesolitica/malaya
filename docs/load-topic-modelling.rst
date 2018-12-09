@@ -1,10 +1,10 @@
 
-.. code:: ipython3
+.. code:: python
 
     import pandas as pd
     import malaya
 
-.. code:: ipython3
+.. code:: python
 
     df = pd.read_csv('tests/02032018.csv',sep=';')
     df = df.iloc[3:,1:]
@@ -14,7 +14,7 @@
 Train LDA model
 ---------------
 
-.. code:: ipython3
+.. code:: python
 
     lda = malaya.lda_topic_modelling(corpus,10,stemming=False)
 
@@ -22,33 +22,33 @@ Train LDA model
 Print topics
 ^^^^^^^^^^^^
 
-.. code:: ipython3
+.. code:: python
 
     lda.print_topics(5)
 
 
 .. parsed-literal::
 
-    topic 0       topic 1       topic 2       topic 3       topic 4       
-    --------      --------      --------      --------      --------      
-    masalah       parti         ia            perlu         kerajaan      
-    selesaikan    semua         hutang        pilihan       projek        
-    termasuk      sewa          mdb           raya          sebagai       
-    perniagaan    tanah         projek        masing        bahasa        
-    mempunyai     hati          ada           faktor        syarikat      
-    pencemaran    kelulusan     lebih         umum          menjadi       
-    rakyat        masa          masa          masa          jadi          
-    sebagai       nak           diselesaikan  membuat       dilakukan     
-    jppm          rumah         tahun         parti         swasta        
-    kerja         terus         kewangan      diri          indonesia     
-    
-    
+    topic 0       topic 1       topic 2       topic 3       topic 4
+    --------      --------      --------      --------      --------
+    masalah       parti         ia            perlu         kerajaan
+    selesaikan    semua         hutang        pilihan       projek
+    termasuk      sewa          mdb           raya          sebagai
+    perniagaan    tanah         projek        masing        bahasa
+    mempunyai     hati          ada           faktor        syarikat
+    pencemaran    kelulusan     lebih         umum          menjadi
+    rakyat        masa          masa          masa          jadi
+    sebagai       nak           diselesaikan  membuat       dilakukan
+    jppm          rumah         tahun         parti         swasta
+    kerja         terus         kewangan      diri          indonesia
+
+
 
 
 Important sentences based on topics
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code:: ipython3
+.. code:: python
 
     lda.get_sentences(5)
 
@@ -68,7 +68,7 @@ Important sentences based on topics
 Get topics
 ^^^^^^^^^^
 
-.. code:: ipython3
+.. code:: python
 
     lda.get_topics(10)
 
@@ -98,7 +98,7 @@ Get topics
 Train NMF model
 ---------------
 
-.. code:: ipython3
+.. code:: python
 
     nmf = malaya.nmf_topic_modelling(corpus,10)
     nmf.print_topics(5)
@@ -106,23 +106,23 @@ Train NMF model
 
 .. parsed-literal::
 
-    topic 0       topic 1       topic 2       topic 3       topic 4       
-    --------      --------      --------      --------      --------      
-    negara        ada           ia            ros           menteri       
-    malaysia      kalau         jalan         tangguh       perdana       
-    bangun        raja          lihat         pilih         jelas         
-    rakyat        pas           lancar        parti         datuk         
-    kongsi        parti         kembang       umno          seri          
-    alam          sama          jual          lembaga       terima        
-    penting       buat          gembira       dah           kena          
-    sedia         baiah         projek        putus         isu           
-    selatan       politik       baik          lebih         jemaah        
-    lebih         bn            beli          tempoh        nyata         
-    
-    
+    topic 0       topic 1       topic 2       topic 3       topic 4
+    --------      --------      --------      --------      --------
+    negara        ada           ia            ros           menteri
+    malaysia      kalau         jalan         tangguh       perdana
+    bangun        raja          lihat         pilih         jelas
+    rakyat        pas           lancar        parti         datuk
+    kongsi        parti         kembang       umno          seri
+    alam          sama          jual          lembaga       terima
+    penting       buat          gembira       dah           kena
+    sedia         baiah         projek        putus         isu
+    selatan       politik       baik          lebih         jemaah
+    lebih         bn            beli          tempoh        nyata
 
 
-.. code:: ipython3
+
+
+.. code:: python
 
     nmf.get_sentences(5)
 
@@ -139,7 +139,7 @@ Train NMF model
 
 
 
-.. code:: ipython3
+.. code:: python
 
     nmf.get_topics(10)
 
@@ -164,7 +164,7 @@ Train NMF model
 Train LSA model
 ---------------
 
-.. code:: ipython3
+.. code:: python
 
     lsa = malaya.lsa_topic_modelling(corpus,10)
     lsa.print_topics(5)
@@ -172,23 +172,23 @@ Train LSA model
 
 .. parsed-literal::
 
-    topic 0       topic 1       topic 2       topic 3       topic 4       
-    --------      --------      --------      --------      --------      
-    ada           negara        ia            pilih         menteri       
-    ia            malaysia      hutang        tangguh       jelas         
-    malaysia      bangun        mdb           ros           perdana       
-    baik          rakyat        projek        masa          rakyat        
-    negara        kongsi        masa          lebih         terima        
-    rakyat        alam          lihat         umno          datuk         
-    jadi          penting       wang          raya          kena          
-    raja          selatan       perlu         hutang        nyata         
-    masa          kawasan       selesai       parti         seri          
-    menteri       perlu         jual          lembaga       selesai       
-    
-    
+    topic 0       topic 1       topic 2       topic 3       topic 4
+    --------      --------      --------      --------      --------
+    ada           negara        ia            pilih         menteri
+    ia            malaysia      hutang        tangguh       jelas
+    malaysia      bangun        mdb           ros           perdana
+    baik          rakyat        projek        masa          rakyat
+    negara        kongsi        masa          lebih         terima
+    rakyat        alam          lihat         umno          datuk
+    jadi          penting       wang          raya          kena
+    raja          selatan       perlu         hutang        nyata
+    masa          kawasan       selesai       parti         seri
+    menteri       perlu         jual          lembaga       selesai
 
 
-.. code:: ipython3
+
+
+.. code:: python
 
     lsa.get_sentences(5)
 
@@ -205,7 +205,7 @@ Train LSA model
 
 
 
-.. code:: ipython3
+.. code:: python
 
     lsa.get_topics(10)
 
@@ -225,5 +225,3 @@ Train LSA model
      (7, 'undi ajar laku masa terus maju bidang bulan didik bagai'),
      (8, 'perlu orang tumbuh undi asli rana nyata dakwa keluar sumber'),
      (9, 'undi ambil pihak baik putus semua buat jalan bulan cara')]
-
-

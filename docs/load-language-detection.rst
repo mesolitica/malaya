@@ -1,12 +1,12 @@
 
-.. code:: ipython3
+.. code:: python
 
     import malaya
 
 List available language detected
 --------------------------------
 
-.. code:: ipython3
+.. code:: python
 
     malaya.get_language_labels()
 
@@ -19,7 +19,7 @@ List available language detected
 
 
 
-.. code:: ipython3
+.. code:: python
 
     chinese_text = '今天是６月１８号，也是Muiriel的生日！'
     english_text = 'i totally love it man'
@@ -29,7 +29,7 @@ List available language detected
 Load multinomial model
 ----------------------
 
-.. code:: ipython3
+.. code:: python
 
     multinomial = malaya.multinomial_detect_languages()
     multinomial.predict(chinese_text)
@@ -42,7 +42,7 @@ Load multinomial model
 
 .. parsed-literal::
 
-    46.0MB [00:16, 2.81MB/s]                          
+    46.0MB [00:16, 2.81MB/s]
 
 
 .. parsed-literal::
@@ -52,7 +52,7 @@ Load multinomial model
 
 .. parsed-literal::
 
-    58.0MB [00:26, 2.15MB/s]                          
+    58.0MB [00:26, 2.15MB/s]
 
 
 
@@ -63,7 +63,7 @@ Load multinomial model
 
 
 
-.. code:: ipython3
+.. code:: python
 
     multinomial.predict(english_text)
 
@@ -76,7 +76,7 @@ Load multinomial model
 
 
 
-.. code:: ipython3
+.. code:: python
 
     multinomial.predict(indon_text)
 
@@ -89,7 +89,7 @@ Load multinomial model
 
 
 
-.. code:: ipython3
+.. code:: python
 
     multinomial.predict(malay_text)
 
@@ -102,7 +102,7 @@ Load multinomial model
 
 
 
-.. code:: ipython3
+.. code:: python
 
     multinomial.predict(malay_text,get_proba=True)
 
@@ -118,7 +118,7 @@ Load multinomial model
 
 
 
-.. code:: ipython3
+.. code:: python
 
     multinomial.predict_batch([english_text,malay_text])
 
@@ -131,7 +131,7 @@ Load multinomial model
 
 
 
-.. code:: ipython3
+.. code:: python
 
     multinomial.predict_batch([english_text,malay_text],get_proba=True)
 
@@ -154,7 +154,7 @@ Load multinomial model
 Load XGB model
 --------------
 
-.. code:: ipython3
+.. code:: python
 
     xgb = malaya.xgb_detect_languages()
     xgb.predict(chinese_text)
@@ -171,7 +171,7 @@ Load XGB model
 
 .. parsed-literal::
 
-    38.0MB [00:16, 3.37MB/s]                          
+    38.0MB [00:16, 3.37MB/s]
 
 
 .. parsed-literal::
@@ -181,7 +181,7 @@ Load XGB model
 
 .. parsed-literal::
 
-    22.0MB [00:06, 3.81MB/s]                          
+    22.0MB [00:06, 3.81MB/s]
 
 
 
@@ -192,7 +192,7 @@ Load XGB model
 
 
 
-.. code:: ipython3
+.. code:: python
 
     xgb.predict(indon_text,get_proba=True)
 
@@ -208,7 +208,7 @@ Load XGB model
 
 
 
-.. code:: ipython3
+.. code:: python
 
     xgb.predict_batch([indon_text,malay_text],get_proba=True)
 
@@ -225,5 +225,3 @@ Load XGB model
       'ENGLISH': 1.4715874e-10,
       'INDONESIA': 0.001421933,
       'MALAY': 0.9985781}]
-
-

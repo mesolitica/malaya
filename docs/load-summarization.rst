@@ -1,9 +1,9 @@
 
-.. code:: ipython3
+.. code:: python
 
     import malaya
 
-.. code:: ipython3
+.. code:: python
 
     isu_kerajaan = ['Institusi raja khususnya Yang di-Pertuan Agong adalah kedaulatan negara dengan kedudukan dan peranannya termaktub dalam Perlembagaan Persekutuan yang perlu disokong dan didukung oleh kerajaan serta rakyat.',
                    'Pensyarah Kulliyah Undang-Undang Ahmad Ibrahim, Universiti Islam Antarabangsa Malaysia (UIAM) Prof Madya Dr Shamrahayu Ab Aziz berkata perubahan kerajaan, susulan kemenangan Pakatan Harapan pada Pilihan Raya Umum Ke-14 pada Mei lepas, tidak memberi kesan dari segi peranan, fungsi dan kedudukan Yang di-Pertuan Agong.',
@@ -16,7 +16,7 @@
 Train LSA model
 ---------------
 
-.. code:: ipython3
+.. code:: python
 
     malaya.summarize_lsa(isu_kerajaan,important_words=10)
 
@@ -51,7 +51,7 @@ Train LSA model
 Maintain original
 ^^^^^^^^^^^^^^^^^
 
-.. code:: ipython3
+.. code:: python
 
     malaya.summarize_lsa(isu_kerajaan, important_words=10,maintain_original=True)
 
@@ -86,7 +86,7 @@ Maintain original
 Train NMF model
 ---------------
 
-.. code:: ipython3
+.. code:: python
 
     malaya.summarize_nmf(isu_kerajaan,important_words=10)
 
@@ -121,7 +121,7 @@ Train NMF model
 Train LDA model
 ---------------
 
-.. code:: ipython3
+.. code:: python
 
     malaya.summarize_lda(isu_kerajaan,important_words=10)
 
@@ -156,7 +156,7 @@ Train LDA model
 Not clustering important words
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code:: ipython3
+.. code:: python
 
     malaya.summarize_lda(isu_kerajaan,important_words=10,return_cluster=False)
 
@@ -182,7 +182,7 @@ Not clustering important words
 Load deep learning model
 ------------------------
 
-.. code:: ipython3
+.. code:: python
 
     deep_summary = malaya.summarize_deep_learning()
 
@@ -194,7 +194,7 @@ Load deep learning model
 
 .. parsed-literal::
 
-    119MB [00:39, 3.88MB/s]                          
+    119MB [00:39, 3.88MB/s]
       0%|          | 0.00/0.98 [00:00<?, ?MB/s]
 
 .. parsed-literal::
@@ -204,10 +204,10 @@ Load deep learning model
 
 .. parsed-literal::
 
-    1.00MB [00:00, 2.39MB/s]                   
+    1.00MB [00:00, 2.39MB/s]
 
 
-.. code:: ipython3
+.. code:: python
 
     deep_summary.summarize(isu_kerajaan)
 
@@ -217,5 +217,3 @@ Load deep learning model
 .. parsed-literal::
 
     'peralihan kerajaan itu menyaksikan sultan muhammad v mencatat sejarah tersendiri dengan menjadi yang di-pertuan agong malaysia yang pertama memerintah dalam era dua kerajaan berbeza. semasa dilantik sebagai yang di-pertuan agong ke-15 pada 13 dis 2016, kerajaan ketika itu diterajui oleh barisan nasional dan pada 10 mei lepas, kepimpinan negara diambil alih oleh pakatan harapan yang memenangi pilihan raya umum ke-14. seri paduka turut menitahkan supaya majlis rumah terbuka aidilfitri tahun ini tidak diadakan di istana negara dengan peruntukan majlis itu digunakan bagi membantu golongan yang kurang bernasib baik'
-
-

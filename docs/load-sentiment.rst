@@ -1,9 +1,9 @@
 
-.. code:: ipython3
+.. code:: python
 
     import malaya
 
-.. code:: ipython3
+.. code:: python
 
     positive_text = 'Kerajaan negeri Kelantan mempersoalkan motif kenyataan Menteri Kewangan Lim Guan Eng yang hanya menyebut Kelantan penerima terbesar bantuan kewangan dari Kerajaan Persekutuan. Sedangkan menurut Timbalan Menteri Besarnya, Datuk Mohd Amar Nik Abdullah, negeri lain yang lebih maju dari Kelantan turut mendapat pembiayaan dan pinjaman.'
     negative_text = 'kerajaan sebenarnya sangat bencikan rakyatnya, minyak naik dan segalanya'
@@ -11,7 +11,7 @@
 Load multinomial model
 ----------------------
 
-.. code:: ipython3
+.. code:: python
 
     model = malaya.pretrained_bayes_sentiment()
     print(model.predict(positive_text,get_proba=True))
@@ -26,7 +26,7 @@ Load multinomial model
 
 .. parsed-literal::
 
-    2.00MB [00:00, 4.86MB/s]                          
+    2.00MB [00:00, 4.86MB/s]
       0%|          | 0.00/9.08 [00:00<?, ?MB/s]
 
 .. parsed-literal::
@@ -36,7 +36,7 @@ Load multinomial model
 
 .. parsed-literal::
 
-    10.0MB [00:03, 3.22MB/s]                          
+    10.0MB [00:03, 3.22MB/s]
 
 
 .. parsed-literal::
@@ -57,7 +57,7 @@ Load multinomial model
 Load xgb model
 --------------
 
-.. code:: ipython3
+.. code:: python
 
     model = malaya.pretrained_xgb_sentiment()
     print(model.predict(positive_text,get_proba=True))
@@ -76,7 +76,7 @@ Load xgb model
 
 .. parsed-literal::
 
-    2.00MB [00:00, 3.88MB/s]                          
+    2.00MB [00:00, 3.88MB/s]
       0%|          | 0.00/9.08 [00:00<?, ?MB/s]
 
 .. parsed-literal::
@@ -86,7 +86,7 @@ Load xgb model
 
 .. parsed-literal::
 
-    10.0MB [00:03, 3.28MB/s]                          
+    10.0MB [00:03, 3.28MB/s]
 
 
 .. parsed-literal::
@@ -107,7 +107,7 @@ Load xgb model
 List available deep learning models
 -----------------------------------
 
-.. code:: ipython3
+.. code:: python
 
     malaya.get_available_sentiment_models()
 
@@ -126,7 +126,7 @@ List available deep learning models
 
 
 
-.. code:: ipython3
+.. code:: python
 
     for i in malaya.get_available_sentiment_models():
         print('Testing %s model'%(i))
@@ -144,7 +144,7 @@ List available deep learning models
 
 .. parsed-literal::
 
-    127MB [00:43, 2.92MB/s]                          
+    127MB [00:43, 2.92MB/s]
       0%|          | 0.00/0.45 [00:00<?, ?MB/s]
 
 .. parsed-literal::
@@ -154,7 +154,7 @@ List available deep learning models
 
 .. parsed-literal::
 
-    1.00MB [00:00, 5.89MB/s]                   
+    1.00MB [00:00, 5.89MB/s]
       0%|          | 0.00/1.68 [00:00<?, ?MB/s]
 
 .. parsed-literal::
@@ -164,7 +164,7 @@ List available deep learning models
 
 .. parsed-literal::
 
-    2.00MB [00:00, 4.01MB/s]                          
+    2.00MB [00:00, 4.01MB/s]
 
 
 .. parsed-literal::
@@ -179,14 +179,14 @@ List available deep learning models
 .. parsed-literal::
 
     [{'negative': 0.8494132, 'positive': 0.15058675}, {'negative': 0.04582213, 'positive': 0.95417786}]
-    
+
     Testing hierarchical model
     downloading SENTIMENT frozen hierarchical model
 
 
 .. parsed-literal::
 
-    24.0MB [00:07, 3.14MB/s]                          
+    24.0MB [00:07, 3.14MB/s]
       0%|          | 0.00/0.45 [00:00<?, ?MB/s]
 
 .. parsed-literal::
@@ -196,21 +196,21 @@ List available deep learning models
 
 .. parsed-literal::
 
-    1.00MB [00:00, 5.45MB/s]                   
+    1.00MB [00:00, 5.45MB/s]
 
 
 .. parsed-literal::
 
     {'negative': 0.119958304, 'positive': 0.88004166, 'attention': [['kerajaan', 0.07279364], ['sebenarnya', 0.26620612], ['sangat', 0.39088085], ['bencikan', 0.18420841], ['rakyatnya', 0.077199794], ['minyak', 0.0068039955], ['naik', 0.0014752398], ['segalanya', 0.0004320148]]}
     [{'negative': 0.036293767, 'positive': 0.96370625}, {'negative': 0.0425552, 'positive': 0.95744485}]
-    
+
     Testing bahdanau model
     downloading SENTIMENT frozen bahdanau model
 
 
 .. parsed-literal::
 
-    20.0MB [00:09, 2.16MB/s]                          
+    20.0MB [00:09, 2.16MB/s]
       0%|          | 0.00/0.45 [00:00<?, ?MB/s]
 
 .. parsed-literal::
@@ -220,7 +220,7 @@ List available deep learning models
 
 .. parsed-literal::
 
-    1.00MB [00:00, 5.57MB/s]                   
+    1.00MB [00:00, 5.57MB/s]
 
 
 .. parsed-literal::
@@ -235,14 +235,14 @@ List available deep learning models
 .. parsed-literal::
 
     [{'negative': 0.6422382, 'positive': 0.35776183}, {'negative': 0.42549333, 'positive': 0.5745067}]
-    
+
     Testing luong model
     downloading SENTIMENT frozen luong model
 
 
 .. parsed-literal::
 
-    19.0MB [00:05, 4.02MB/s]                          
+    19.0MB [00:05, 4.02MB/s]
       0%|          | 0.00/0.45 [00:00<?, ?MB/s]
 
 .. parsed-literal::
@@ -252,7 +252,7 @@ List available deep learning models
 
 .. parsed-literal::
 
-    1.00MB [00:00, 5.64MB/s]                   
+    1.00MB [00:00, 5.64MB/s]
 
 
 .. parsed-literal::
@@ -267,14 +267,14 @@ List available deep learning models
 .. parsed-literal::
 
     [{'negative': 0.22811669, 'positive': 0.77188325}, {'negative': 0.9460423, 'positive': 0.053957727}]
-    
+
     Testing bidirectional model
     downloading SENTIMENT frozen bidirectional model
 
 
 .. parsed-literal::
 
-    24.0MB [00:06, 3.54MB/s]                          
+    24.0MB [00:06, 3.54MB/s]
       0%|          | 0.00/0.45 [00:00<?, ?MB/s]
 
 .. parsed-literal::
@@ -284,7 +284,7 @@ List available deep learning models
 
 .. parsed-literal::
 
-    1.00MB [00:00, 5.10MB/s]                   
+    1.00MB [00:00, 5.10MB/s]
 
 
 .. parsed-literal::
@@ -299,14 +299,14 @@ List available deep learning models
 .. parsed-literal::
 
     [{'negative': 0.20314497, 'positive': 0.7968551}, {'negative': 0.24708004, 'positive': 0.75292}]
-    
+
     Testing bert model
     downloading SENTIMENT frozen bert model
 
 
 .. parsed-literal::
 
-    18.0MB [00:05, 4.06MB/s]                          
+    18.0MB [00:05, 4.06MB/s]
       0%|          | 0.00/0.45 [00:00<?, ?MB/s]
 
 .. parsed-literal::
@@ -316,7 +316,7 @@ List available deep learning models
 
 .. parsed-literal::
 
-    1.00MB [00:00, 5.30MB/s]                   
+    1.00MB [00:00, 5.30MB/s]
 
 
 .. parsed-literal::
@@ -331,14 +331,14 @@ List available deep learning models
 .. parsed-literal::
 
     [{'negative': 0.992415, 'positive': 0.007585059}, {'negative': 0.9923813, 'positive': 0.0076187113}]
-    
+
     Testing entity-network model
     downloading SENTIMENT frozen entity-network model
 
 
 .. parsed-literal::
 
-    15.0MB [00:03, 3.83MB/s]                          
+    15.0MB [00:03, 3.83MB/s]
       0%|          | 0.00/0.45 [00:00<?, ?MB/s]
 
 .. parsed-literal::
@@ -348,24 +348,24 @@ List available deep learning models
 
 .. parsed-literal::
 
-    1.00MB [00:00, 3.59MB/s]                   
+    1.00MB [00:00, 3.59MB/s]
 
 
 .. parsed-literal::
 
     {'negative': 0.5229405, 'positive': 0.4770595}
     [{'negative': 0.5229405, 'positive': 0.4770595}, {'negative': 0.6998231, 'positive': 0.3001769}]
-    
+
 
 
 Train a multinomial model using custom dataset
 ----------------------------------------------
 
-.. code:: ipython3
+.. code:: python
 
     import pandas as pd
 
-.. code:: ipython3
+.. code:: python
 
     df = pd.read_csv('tests/02032018.csv',sep=';')
     df = df.iloc[3:,1:]
@@ -374,7 +374,7 @@ Train a multinomial model using custom dataset
 
 corpus should be [(text, label)]
 
-.. code:: ipython3
+.. code:: python
 
     dataset = [[df.iloc[i,0],df.iloc[i,1]] for i in range(df.shape[0])]
     bayes = malaya.bayes_sentiment(dataset)
@@ -383,13 +383,13 @@ corpus should be [(text, label)]
 .. parsed-literal::
 
                  precision    recall  f1-score   support
-    
+
        Negative       0.00      0.00      0.00        13
         Neutral       0.60      0.18      0.27        17
        Positive       0.54      0.97      0.69        31
-    
+
     avg / total       0.44      0.54      0.43        61
-    
+
 
 
 You also able to feed directory location
@@ -403,7 +403,7 @@ You also able to feed directory location
        |- apple
        |- hungry
 
-.. code:: ipython3
+.. code:: python
 
     bayes = malaya.bayes_sentiment('tests/local')
 
@@ -411,19 +411,19 @@ You also able to feed directory location
 .. parsed-literal::
 
                  precision    recall  f1-score   support
-    
+
          adidas       0.95      0.59      0.73       338
           apple       0.98      0.63      0.77       460
          hungry       0.77      0.92      0.84      1050
        kerajaan       0.83      0.82      0.82      1336
            nike       0.96      0.47      0.63       349
     pembangkang       0.72      0.85      0.78      1526
-    
+
     avg / total       0.81      0.79      0.79      5059
-    
 
 
-.. code:: ipython3
+
+.. code:: python
 
     bayes.predict('saya suka kerajaan dan anwar ibrahim', get_proba = True)
 
@@ -444,7 +444,7 @@ You also able to feed directory location
 Train a multinomial using skip-gram vectorization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code:: ipython3
+.. code:: python
 
     bayes = malaya.bayes_sentiment(
         'tests/local', vector = 'skip-gram', ngram_range = (1, 3), skip = 5
@@ -454,19 +454,19 @@ Train a multinomial using skip-gram vectorization
 .. parsed-literal::
 
                  precision    recall  f1-score   support
-    
+
          adidas       0.35      0.86      0.50       286
           apple       0.50      0.87      0.63       484
          hungry       0.81      0.91      0.86      1016
        kerajaan       0.89      0.58      0.70      1400
            nike       0.54      0.79      0.64       330
     pembangkang       0.87      0.55      0.67      1543
-    
+
     avg / total       0.78      0.69      0.70      5059
-    
 
 
-.. code:: ipython3
+
+.. code:: python
 
     bayes.predict('saya suka kerajaan dan anwar ibrahim', get_proba = True)
 
@@ -487,7 +487,7 @@ Train a multinomial using skip-gram vectorization
 Visualize malaya attention deep learning models
 -----------------------------------------------
 
-.. code:: ipython3
+.. code:: python
 
     import matplotlib.pyplot as plt
     import seaborn as sns
@@ -496,11 +496,11 @@ Visualize malaya attention deep learning models
 Visualizing bahdanau model
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code:: ipython3
+.. code:: python
 
     model = malaya.deep_sentiment('bahdanau')
     result = model.predict(positive_text)['attention']
-    
+
     plt.figure(figsize = (15, 7))
     labels = [r[0] for r in result]
     val = [r[1] for r in result]
@@ -517,11 +517,11 @@ Visualizing bahdanau model
 Visualizing luong model
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code:: ipython3
+.. code:: python
 
     model = malaya.deep_sentiment('luong')
     result = model.predict(positive_text)['attention']
-    
+
     plt.figure(figsize = (15, 7))
     labels = [r[0] for r in result]
     val = [r[1] for r in result]
@@ -538,11 +538,11 @@ Visualizing luong model
 Visualizing hierarchical model
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code:: ipython3
+.. code:: python
 
     model = malaya.deep_sentiment('hierarchical')
     result = model.predict(positive_text)['attention']
-    
+
     plt.figure(figsize = (15, 7))
     labels = [r[0] for r in result]
     val = [r[1] for r in result]
@@ -556,7 +556,7 @@ Visualizing hierarchical model
 .. image:: load-sentiment_files/load-sentiment_27_0.png
 
 
-.. code:: ipython3
+.. code:: python
 
     malaya.sentiment.deep_sentiment('hi')
 
@@ -570,15 +570,14 @@ Visualizing hierarchical model
 
     <ipython-input-23-02523991663a> in <module>
     ----> 1 malaya.sentiment.deep_sentiment('hi')
-    
+
 
     ~/Documents/Malaya/malaya/sentiment.py in deep_sentiment(model)
         251     else:
         252         raise Exception(
     --> 253             'model sentiment not supported, please check supported models from malaya.get_available_sentiment_models()'
         254         )
-        255 
+        255
 
 
     Exception: model sentiment not supported, please check supported models from malaya.get_available_sentiment_models()
-
