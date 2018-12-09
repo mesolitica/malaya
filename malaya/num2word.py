@@ -139,6 +139,17 @@ def join(word_blocks, float_part):
 
 
 def to_cardinal(number):
+    """
+    Translate from number input to cardinal text representation
+
+    Parameters
+    ----------
+    number: int
+
+    Returns
+    -------
+    string: cardinal representation
+    """
     if number >= max_num:
         raise OverflowError(errmsg_toobig % (number, max_num))
     minus = ''
@@ -152,6 +163,18 @@ def to_cardinal(number):
 
 
 def to_ordinal(number):
+    """
+    Translate from number input to ordinal text representation
+
+    Parameters
+    ----------
+    number: int
+
+    Returns
+    -------
+    string: ordinal representation
+    """
+
     verify_ordinal(number)
     out_word = to_cardinal(number)
     if out_word == 'satu':
@@ -160,13 +183,48 @@ def to_ordinal(number):
 
 
 def to_ordinal_num(number):
+    """
+    Translate from number input to ordinal numering text representation
+
+    Parameters
+    ----------
+    number: int
+
+    Returns
+    -------
+    string: ordinal numering representation
+    """
+
     verify_ordinal(number)
     return 'ke-' + str(number)
 
 
 def to_currency(value):
+    """
+    Translate from number input to cardinal currency text representation
+
+    Parameters
+    ----------
+    number: int
+
+    Returns
+    -------
+    string: cardinal currency representation
+    """
+
     return to_cardinal(value) + ' ringgit'
 
 
 def to_year(value):
+    """
+    Translate from number input to cardinal year text representation
+
+    Parameters
+    ----------
+    number: int
+
+    Returns
+    -------
+    string: cardinal year representation
+    """
     return to_cardinal(value)

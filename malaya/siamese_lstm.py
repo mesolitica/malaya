@@ -6,27 +6,8 @@ if not sys.warnoptions:
 
 import tensorflow as tf
 from tqdm import tqdm
-import collections
-from .text_functions import str_idx
 import uuid
-
-
-def build_dataset(words, n_words):
-    count = [['GO', 0], ['PAD', 1], ['EOS', 2], ['UNK', 3]]
-    count.extend(collections.Counter(words).most_common(n_words - 1))
-    dictionary = dict()
-    for word, _ in count:
-        dictionary[word] = len(dictionary)
-    data = list()
-    unk_count = 0
-    for word in words:
-        index = dictionary.get(word, 0)
-        if index == 0:
-            unk_count += 1
-        data.append(index)
-    count[0][1] = unk_count
-    reversed_dictionary = dict(zip(dictionary.values(), dictionary.keys()))
-    return data, count, dictionary, reversed_dictionary
+from .text_functions import str_idx, build_dataset
 
 
 class Model:

@@ -7,102 +7,226 @@ if not sys.warnoptions:
 import json
 import pickle
 import os
-from .utils import download_file
+import tensorflow as tf
+from .utils import download_file, load_graph
 from . import home
-from keras.models import load_model
-from scipy.sparse import hstack
-from .keras_model import CLASSIFIER
-from .text_functions import classification_textcleaning, str_idx
-
-path_stack = home + '/stack-toxic.hdf5'
-path_stack_setting = home + '/stack-toxic.json'
-path_logistics = home + '/logistics-toxic.pkl'
-path_multinomials = home + '/multinomials-toxic.pkl'
-path_vectorizer_setting = home + '/vectorizer-toxic.pkl'
-class_names = [
-    'toxic',
-    'severe_toxic',
-    'obscene',
-    'threat',
-    'insult',
-    'identity_hate',
-]
+from .paths import PATH_TOXIC, S3_PATH_TOXIC
+from .sklearn_model import TOXIC
+from .tensorflow_model import DEEP_TOXIC
 
 
-class TOXIC:
-    def __init__(self, models, vectors):
-        self._models = models
-        self._vectors = vectors
-
-    def _stack(self, strings):
-        char_features = self._vectors['char'].transform(strings)
-        word_features = self._vectors['word'].transform(strings)
-        return hstack([char_features, word_features])
-
-    def predict(self, string, get_proba = False):
-        assert isinstance(string, str), 'input must be a string'
-        stacked = self._stack([classification_textcleaning(string, True)])
-        result = {}
-        for no, label in enumerate(class_names):
-            if get_proba:
-                result[label] = self._models[no].predict_proba(stacked)[0, 1]
-            else:
-                result[label] = self._models[no].predict(stacked)[0]
-        return result
-
-    def predict_batch(self, strings, get_proba = False):
-        assert isinstance(strings, list) and isinstance(
-            strings[0], str
-        ), 'input must be list of strings'
-        stacked = self._stack(
-            [classification_textcleaning(i, True) for i in strings]
-        )
-        result = {}
-        for no, label in enumerate(class_names):
-            if get_proba:
-                result[label] = (
-                    self._models[no].predict_proba(stacked)[:, 1].tolist()
-                )
-            else:
-                result[label] = self._models[no].predict(stacked).tolist()
-        return result
+def get_available_toxic_models():
+    """
+    List available deep learning toxicity analysis models.
+    """
+    return ['bahdanau', 'hierarchical', 'luong', 'fast-text', 'entity-network']
 
 
 def multinomial_detect_toxic():
-    if not os.path.isfile(path_multinomials):
+    """
+    Load multinomial toxic model.
+
+    Returns
+    -------
+    TOXIC : malaya.sklearn_model.TOXIC class
+    """
+    if not os.path.isfile(PATH_TOXIC['multinomial']['model']):
         print('downloading TOXIC pickled multinomial model')
-        download_file('v6/multinomials-toxic.pkl', path_multinomials)
-    if not os.path.isfile(path_vectorizer_setting):
+        download_file(
+            S3_PATH_TOXIC['multinomial']['model'],
+            PATH_TOXIC['multinomial']['model'],
+        )
+    if not os.path.isfile(PATH_TOXIC['multinomial']['vector']):
         print('downloading TOXIC pickled tfidf vectorizations')
-        download_file('v6/vectorizer-toxic.pkl', path_vectorizer_setting)
-    with open(path_multinomials, 'rb') as fopen:
+        download_file(
+            S3_PATH_TOXIC['multinomial']['vector'],
+            PATH_TOXIC['multinomial']['vector'],
+        )
+    with open(PATH_TOXIC['multinomial']['model'], 'rb') as fopen:
         multinomial = pickle.load(fopen)
-    with open(path_vectorizer_setting, 'rb') as fopen:
+    with open(PATH_TOXIC['multinomial']['vector'], 'rb') as fopen:
         vectorize = pickle.load(fopen)
     return TOXIC(multinomial, vectorize)
 
 
 def logistics_detect_toxic():
-    if not os.path.isfile(path_logistics):
+    """
+    Load logistic toxic model.
+
+    Returns
+    -------
+    TOXIC : malaya.sklearn_model.TOXIC class
+    """
+    if not os.path.isfile(PATH_TOXIC['logistic']['model']):
         print('downloading TOXIC pickled logistics model')
-        download_file('v6/logistics-toxic.pkl', path_logistics)
-    if not os.path.isfile(path_vectorizer_setting):
+        download_file(
+            S3_PATH_TOXIC['logistic']['model'], PATH_TOXIC['logistic']['model']
+        )
+    if not os.path.isfile(PATH_TOXIC['logistic']['vector']):
         print('downloading TOXIC pickled tfidf vectorizations')
-        download_file('v6/vectorizer-toxic.pkl', path_vectorizer_setting)
-    with open(path_logistics, 'rb') as fopen:
+        download_file(
+            S3_PATH_TOXIC['logistic']['vector'],
+            PATH_TOXIC['logistic']['vector'],
+        )
+    with open(PATH_TOXIC['logistic']['model'], 'rb') as fopen:
         logistic = pickle.load(fopen)
-    with open(path_vectorizer_setting, 'rb') as fopen:
+    with open(PATH_TOXIC['logistic']['vector'], 'rb') as fopen:
         vectorize = pickle.load(fopen)
     return TOXIC(logistic, vectorize)
 
 
-def deep_toxic():
-    if not os.path.isfile(path_stack):
-        print('downloading TOXIC frozen stack model')
-        download_file('v6/stack-toxic.hdf5', path_stack)
-    if not os.path.isfile(path_stack_setting):
-        print('downloading TOXIC stack dictionary')
-        download_file('v6/stack-toxic.json', path_stack_setting)
-    with open(path_stack_setting, 'r') as fopen:
-        dictionary = json.load(fopen)['dictionary']
-    return CLASSIFIER(load_model(path_stack), dictionary, class_names)
+def deep_toxic(model = 'luong'):
+    """
+    Load deep learning sentiment analysis model.
+
+    Parameters
+    ----------
+    model : str, optional (default='luong')
+        Model architecture supported. Allowed values:
+
+        * ``'fast-text'`` - Fast-text architecture, embedded and logits layers only
+        * ``'hierarchical'`` - LSTM with hierarchical attention architecture
+        * ``'bahdanau'`` - LSTM with bahdanau attention architecture
+        * ``'luong'`` - LSTM with luong attention architecture
+        * ``'entity-network'`` - Recurrent Entity-Network architecture
+
+    Returns
+    -------
+    TOXIC: malaya.tensorflow_model.DEEP_TOXIC class
+    """
+    assert isinstance(model, str), 'model must be a string'
+    model = model.lower()
+    if model == 'fast-text':
+        if not os.path.isfile(PATH_TOXIC['fast-text']['model']):
+            print('downloading TOXIC frozen fast-text model')
+            download_file(
+                S3_PATH_TOXIC['fast-text']['model'],
+                PATH_TOXIC['fast-text']['model'],
+            )
+        if not os.path.isfile(PATH_TOXIC['fast-text']['setting']):
+            print('downloading TOXIC fast-text dictionary')
+            download_file(
+                S3_PATH_TOXIC['fast-text']['setting'],
+                PATH_TOXIC['fast-text']['setting'],
+            )
+        if not os.path.isfile(PATH_TOXIC['fast-text']['pickle']):
+            print('downloading TOXIC fast-text bigrams')
+            download_file(
+                S3_PATH_TOXIC['fast-text']['pickle'],
+                PATH_TOXIC['fast-text']['pickle'],
+            )
+        with open(PATH_TOXIC['fast-text']['setting'], 'r') as fopen:
+            dictionary = json.load(fopen)['dictionary']
+        with open(PATH_TOXIC['fast-text']['pickle'], 'rb') as fopen:
+            ngram = pickle.load(fopen)
+        g = load_graph(PATH_TOXIC['fast-text']['model'])
+        return DEEP_TOXIC(
+            g.get_tensor_by_name('import/Placeholder:0'),
+            g.get_tensor_by_name('import/logits:0'),
+            tf.InteractiveSession(graph = g),
+            model,
+            dictionary,
+            ngram = ngram,
+        )
+    elif model == 'hierarchical':
+        if not os.path.isfile(PATH_TOXIC['hierarchical']['model']):
+            print('downloading TOXIC frozen hierarchical model')
+            download_file(
+                S3_PATH_TOXIC['hierarchical']['model'],
+                PATH_TOXIC['hierarchical']['model'],
+            )
+        if not os.path.isfile(PATH_TOXIC['hierarchical']['setting']):
+            print('downloading TOXIC hierarchical dictionary')
+            download_file(
+                S3_PATH_TOXIC['hierarchical']['setting'],
+                PATH_TOXIC['hierarchical']['setting'],
+            )
+        with open(PATH_TOXIC['hierarchical']['setting'], 'r') as fopen:
+            dictionary = json.load(fopen)['dictionary']
+        g = load_graph(PATH_TOXIC['hierarchical']['model'])
+        return DEEP_TOXIC(
+            g.get_tensor_by_name('import/Placeholder:0'),
+            g.get_tensor_by_name('import/logits:0'),
+            tf.InteractiveSession(graph = g),
+            model,
+            dictionary,
+            alphas = g.get_tensor_by_name('import/alphas:0'),
+        )
+    elif model == 'bahdanau':
+        if not os.path.isfile(PATH_TOXIC['bahdanau']['model']):
+            print('downloading TOXIC frozen bahdanau model')
+            download_file(
+                S3_PATH_TOXIC['bahdanau']['model'],
+                PATH_TOXIC['bahdanau']['model'],
+            )
+        if not os.path.isfile(PATH_TOXIC['bahdanau']['setting']):
+            print('downloading TOXIC bahdanau dictionary')
+            download_file(
+                S3_PATH_TOXIC['bahdanau']['setting'],
+                PATH_TOXIC['bahdanau']['setting'],
+            )
+        with open(PATH_TOXIC['bahdanau']['setting'], 'r') as fopen:
+            dictionary = json.load(fopen)['dictionary']
+        g = load_graph(PATH_TOXIC['bahdanau']['model'])
+        return DEEP_TOXIC(
+            g.get_tensor_by_name('import/Placeholder:0'),
+            g.get_tensor_by_name('import/logits:0'),
+            tf.InteractiveSession(graph = g),
+            model,
+            dictionary,
+            alphas = g.get_tensor_by_name('import/alphas:0'),
+        )
+    elif model == 'luong':
+        if not os.path.isfile(PATH_TOXIC['luong']['model']):
+            print('downloading TOXIC frozen luong model')
+            download_file(
+                S3_PATH_TOXIC['luong']['model'], PATH_TOXIC['luong']['model']
+            )
+        if not os.path.isfile(PATH_TOXIC['luong']['setting']):
+            print('downloading TOXIC luong dictionary')
+            download_file(
+                S3_PATH_TOXIC['luong']['setting'],
+                PATH_TOXIC['luong']['setting'],
+            )
+        with open(PATH_TOXIC['luong']['setting'], 'r') as fopen:
+            dictionary = json.load(fopen)
+        g = load_graph(PATH_TOXIC['luong']['model'])
+        return DEEP_TOXIC(
+            g.get_tensor_by_name('import/Placeholder:0'),
+            g.get_tensor_by_name('import/logits:0'),
+            tf.InteractiveSession(graph = g),
+            model,
+            dictionary,
+            alphas = g.get_tensor_by_name('import/alphas:0'),
+        )
+    elif model == 'entity-network':
+        if not os.path.isfile(PATH_TOXIC['entity-network']['model']):
+            print('downloading TOXIC frozen entity-network model')
+            download_file(
+                S3_PATH_TOXIC['entity-network']['model'],
+                PATH_TOXIC['entity-network']['model'],
+            )
+        if not os.path.isfile(PATH_TOXIC['entity-network']['setting']):
+            print('downloading TOXIC entity-network dictionary')
+            download_file(
+                S3_PATH_TOXIC['entity-network']['setting'],
+                PATH_TOXIC['entity-network']['setting'],
+            )
+        with open(PATH_TOXIC['entity-network']['setting'], 'r') as fopen:
+            dictionary = json.load(fopen)
+        g = load_graph(PATH_TOXIC['entity-network']['model'])
+        return DEEP_TOXIC(
+            g.get_tensor_by_name('import/Placeholder_question:0'),
+            g.get_tensor_by_name('import/logits:0'),
+            tf.InteractiveSession(graph = g),
+            model,
+            dictionary,
+            dropout_keep_prob = g.get_tensor_by_name(
+                'import/Placeholder_dropout_keep_prob:0'
+            ),
+            story = g.get_tensor_by_name('import/Placeholder_story:0'),
+        )
+    else:
+        raise Exception(
+            'model sentiment not supported, please check supported models from malaya.get_available_toxic_models()'
+        )

@@ -5,4 +5,7 @@ malaya_gpu.egg-info
 .ipynb_checkpoints
 malaya/__pycache__
 *__pycache__
-*.json
+*.DS_Store
+docs/_build
+docs/_static
+docs/_templates

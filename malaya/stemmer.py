@@ -8,6 +8,7 @@ import re
 import os
 import json
 import tensorflow as tf
+from unidecode import unidecode
 from tensorflow.contrib.seq2seq.python.ops import beam_search_ops
 from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 from .tatabahasa import permulaan, hujung
@@ -29,6 +30,47 @@ EOS = 2
 UNK = 3
 
 
+def classification_textcleaning_stemmer_attention(string):
+    string = re.sub(
+        'http\S+|www.\S+',
+        '',
+        ' '.join(
+            [i for i in string.split() if i.find('#') < 0 and i.find('@') < 0]
+        ),
+    )
+    string = unidecode(string).replace('.', ' . ').replace(',', ' , ')
+    string = re.sub('[^A-Za-z ]+', ' ', string)
+    string = re.sub(r'[ ]+', ' ', string).strip()
+    string = ' '.join(
+        [i for i in re.findall('[\\w\']+|[;:\-\(\)&.,!?"]', string) if len(i)]
+    )
+    string = string.lower().split()
+    string = [(naive_stemmer(word), word) for word in string]
+    return (
+        ' '.join([word[0] for word in string if len(word[0]) > 1]),
+        ' '.join([word[1] for word in string if len(word[0]) > 1]),
+    )
+
+
+def classification_textcleaning_stemmer(string):
+    string = re.sub(
+        'http\S+|www.\S+',
+        '',
+        ' '.join(
+            [i for i in string.split() if i.find('#') < 0 and i.find('@') < 0]
+        ),
+    )
+    string = unidecode(string).replace('.', ' . ').replace(',', ' , ')
+    string = re.sub('[^A-Za-z ]+', ' ', string)
+    string = re.sub(r'[ ]+', ' ', string).strip()
+    string = ' '.join(
+        [i for i in re.findall('[\\w\']+|[;:\-\(\)&.,!?"]', string) if len(i)]
+    )
+    string = string.lower().split()
+    string = [(naive_stemmer(word), word) for word in string]
+    return ' '.join([word[0] for word in string if len(word[0]) > 1])
+
+
 class DEEP_STEMMER:
     def __init__(self, x, logits, sess, dicts):
         self._sess = sess
@@ -40,6 +82,17 @@ class DEEP_STEMMER:
         }
 
     def stem(self, string):
+        """
+        Stem a string.
+
+        Parameters
+        ----------
+        string : str
+
+        Returns
+        -------
+        string: stemmed string
+        """
         assert isinstance(string, str), 'input must be a string'
         token_strings = classification_textcleaning(string, True).split()
         idx = stemmer_str_idx(token_strings, self._dicts['dictionary_from'])
@@ -61,23 +114,56 @@ class DEEP_STEMMER:
 
 
 def naive_stemmer(word):
+    """
+    Stem a string using Regex.
+
+    Parameters
+    ----------
+    string : str
+
+    Returns
+    -------
+    string: stemmed string
+    """
     assert isinstance(word, str), 'input must be a string'
-    try:
-        word = re.findall(r'^(.*?)(%s)$' % ('|'.join(hujung)), word)[0][0]
-        mula = re.findall(r'^(.*?)(%s)' % ('|'.join(permulaan[::-1])), word)[0][
-            1
-        ]
-        return word.replace(mula, '')
-    except:
-        return word
+    hujung_result = re.findall(r'^(.*?)(%s)$' % ('|'.join(hujung)), word)
+    word = hujung_result[0][0] if len(hujung_result) else word
+    permulaan_result = re.findall(
+        r'^(.*?)(%s)' % ('|'.join(permulaan[::-1])), word
+    )
+    permulaan_result.extend(
+        re.findall(r'^(.*?)(%s)' % ('|'.join(permulaan)), word)
+    )
+    mula = permulaan_result if len(permulaan_result) else ''
+    if len(mula):
+        mula = mula[1][1] if len(mula[1][1]) > len(mula[0][1]) else mula[0][1]
+    return word.replace(mula, '')
 
 
 def sastrawi_stemmer(string):
+    """
+    Stem a string using Sastrawi.
+
+    Parameters
+    ----------
+    string : str
+
+    Returns
+    -------
+    string: stemmed string.
+    """
     assert isinstance(string, str), 'input must be a string'
     return sastrawi.stem(string)
 
 
 def deep_stemmer():
+    """
+    Load seq2seq stemmer deep learning model.
+
+    Returns
+    -------
+    DEEP_STEMMER: malaya.stemmer.DEEP_STEMMER class
+    """
     if not os.path.isfile(stemmer_json):
         print('downloading JSON stemmer')
         download_file('v5/stemmer-deep.json', stemmer_json)

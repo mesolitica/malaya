@@ -4,15 +4,13 @@ import warnings
 if not sys.warnoptions:
     warnings.simplefilter('ignore')
 
+import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.decomposition import TruncatedSVD, NMF, LatentDirichletAllocation
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import Normalizer
 from unidecode import unidecode
 from .stemmer import sastrawi_stemmer
-import itertools
-import numpy as np
-import re
 from .text_functions import (
     simple_textcleaning,
     STOPWORDS,
@@ -30,7 +28,15 @@ class DEEP_TOPIC:
         self.doc_weights = doc_weights
 
     def print_topics(self, len_topic):
+        """
+        Print important topics based on decomposition.
+
+        Parameters
+        ----------
+        len_topic: int
+        """
         assert isinstance(len_topic, int), 'len_topic must be an integer'
+        assert len_topic > 0, 'len_topic must be bigger than 0'
         print_topics_modelling(
             range(len_topic),
             feature_names = np.array(self.idx2word),
@@ -40,6 +46,17 @@ class DEEP_TOPIC:
         )
 
     def get_topics(self, len_topic):
+        """
+        Return important topics based on decomposition.
+
+        Parameters
+        ----------
+        len_topic: int
+
+        Returns
+        -------
+        results: list of strings
+        """
         assert isinstance(len_topic, int), 'len_topic must be an integer'
         results = []
         for no, topic in enumerate(self.similarity):
@@ -57,6 +74,19 @@ class DEEP_TOPIC:
         return results
 
     def get_sentences(self, len_sentence, k = 0):
+        """
+        Return important sentences related to selected column based on decomposition.
+
+        Parameters
+        ----------
+        len_sentence: int
+        k: int, (default=0)
+            index of decomposition matrix.
+
+        Returns
+        -------
+        results: list of strings
+        """
         assert isinstance(len_sentence, int), 'len_sentence must be an integer'
         assert isinstance(k, int), 'k must be an integer'
         reverse_sorted = np.argsort(self.doc_weights[:, k])[::-1]
@@ -71,6 +101,13 @@ class TOPIC:
         self.transformed = transformed
 
     def print_topics(self, len_topic):
+        """
+        Print important topics based on decomposition.
+
+        Parameters
+        ----------
+        len_topic: int
+        """
         assert isinstance(len_topic, int), 'len_topic must be an integer'
         print_topics_modelling(
             range(len_topic),
@@ -81,6 +118,17 @@ class TOPIC:
         )
 
     def get_topics(self, len_topic):
+        """
+        Return important topics based on decomposition.
+
+        Parameters
+        ----------
+        len_topic: int
+
+        Returns
+        -------
+        results: list of strings
+        """
         assert isinstance(len_topic, int), 'len_topic must be an integer'
         results = []
         for no, topic in enumerate(self.comp.components_):
@@ -98,6 +146,19 @@ class TOPIC:
         return results
 
     def get_sentences(self, len_sentence, k = 0):
+        """
+        Return important sentences related to selected column based on decomposition.
+
+        Parameters
+        ----------
+        len_sentence: int
+        k: int, (default=0)
+            index of decomposition matrix.
+
+        Returns
+        -------
+        results: list of strings
+        """
         assert isinstance(len_sentence, int), 'len_sentence must be an integer'
         assert isinstance(k, int), 'k must be an integer'
         reverse_sorted = np.argsort(self.transformed[:, k])[::-1]
@@ -112,13 +173,41 @@ def lda_topic_modelling(
     stemming = True,
     cleaning = simple_textcleaning,
     stop_words = STOPWORDS,
+    **kwargs
 ):
+    """
+    Train a LDA model to do topic modelling based on corpus / list of strings given.
+
+    Parameters
+    ----------
+    corpus: list
+    n_topics: int, (default=10)
+        size of decomposition column.
+    max_df: float, (default=0.95)
+        maximum of a word selected based on document frequency.
+    min_df: int, (default=2)
+        minimum of a word selected on based on document frequency.
+    stemming: bool, (default=True)
+        If True, sastrawi_stemmer will apply
+    cleaning: function, (default=simple_textcleaning)
+        function to clean the corpus
+    stop_words: list, (default=STOPWORDS)
+        list of stop words to remove
+
+    Returns
+    -------
+    TOPIC: malaya.topic_modelling.TOPIC class
+    """
     assert isinstance(corpus, list) and isinstance(
         corpus[0], str
     ), 'input must be list of strings'
     assert isinstance(n_topics, int), 'n_topics must be an integer'
     assert isinstance(max_df, float), 'max_df must be a float'
     assert isinstance(min_df, int), 'min_df must be an integer'
+    assert (
+        max_df < 1 and max_df > 0
+    ), 'max_df must be bigger than 0, less than 1'
+    assert min_df > 0, 'min_df must be bigger than 0'
     assert isinstance(stemming, bool), 'bool must be a boolean'
     if cleaning is not None:
         for i in range(len(corpus)):
@@ -127,7 +216,7 @@ def lda_topic_modelling(
         for i in range(len(corpus)):
             corpus[i] = sastrawi_stemmer(corpus[i])
     tf_vectorizer = CountVectorizer(
-        max_df = max_df, min_df = min_df, stop_words = stop_words
+        max_df = max_df, min_df = min_df, stop_words = stop_words, **kwargs
     )
     tf = tf_vectorizer.fit_transform(corpus)
     tf_features = tf_vectorizer.get_feature_names()
@@ -154,13 +243,41 @@ def nmf_topic_modelling(
     stemming = True,
     cleaning = simple_textcleaning,
     stop_words = STOPWORDS,
+    **kwargs
 ):
+    """
+    Train a NMF model to do topic modelling based on corpus / list of strings given.
+
+    Parameters
+    ----------
+    corpus: list
+    n_topics: int, (default=10)
+        size of decomposition column.
+    max_df: float, (default=0.95)
+        maximum of a word selected based on document frequency.
+    min_df: int, (default=2)
+        minimum of a word selected on based on document frequency.
+    stemming: bool, (default=True)
+        If True, sastrawi_stemmer will apply
+    cleaning: function, (default=simple_textcleaning)
+        function to clean the corpus
+    stop_words: list, (default=STOPWORDS)
+        list of stop words to remove
+
+    Returns
+    -------
+    TOPIC: malaya.topic_modelling.TOPIC class
+    """
     assert isinstance(corpus, list) and isinstance(
         corpus[0], str
     ), 'input must be list of strings'
     assert isinstance(n_topics, int), 'n_topics must be an integer'
     assert isinstance(max_df, float), 'max_df must be a float'
     assert isinstance(min_df, int), 'min_df must be an integer'
+    assert (
+        max_df < 1 and max_df > 0
+    ), 'max_df must be bigger than 0, less than 1'
+    assert min_df > 0, 'min_df must be bigger than 0'
     assert isinstance(stemming, bool), 'bool must be a boolean'
     if cleaning is not None:
         for i in range(len(corpus)):
@@ -169,7 +286,7 @@ def nmf_topic_modelling(
         for i in range(len(corpus)):
             corpus[i] = sastrawi_stemmer(corpus[i])
     tfidf_vectorizer = TfidfVectorizer(
-        max_df = max_df, min_df = min_df, stop_words = stop_words
+        max_df = max_df, min_df = min_df, stop_words = stop_words, **kwargs
     )
     tfidf = tfidf_vectorizer.fit_transform(corpus)
     tfidf_features = tfidf_vectorizer.get_feature_names()
@@ -196,13 +313,41 @@ def lsa_topic_modelling(
     stemming = True,
     cleaning = simple_textcleaning,
     stop_words = STOPWORDS,
+    **kwargs
 ):
+    """
+    Train a LSA model to do topic modelling based on corpus / list of strings given.
+
+    Parameters
+    ----------
+    corpus: list
+    n_topics: int, (default=10)
+        size of decomposition column.
+    max_df: float, (default=0.95)
+        maximum of a word selected based on document frequency.
+    min_df: int, (default=2)
+        minimum of a word selected on based on document frequency.
+    stemming: bool, (default=True)
+        If True, sastrawi_stemmer will apply
+    cleaning: function, (default=simple_textcleaning)
+        function to clean the corpus
+    stop_words: list, (default=STOPWORDS)
+        list of stop words to remove
+
+    Returns
+    -------
+    TOPIC: malaya.topic_modelling.TOPIC class
+    """
     assert isinstance(corpus, list) and isinstance(
         corpus[0], str
     ), 'input must be list of strings'
     assert isinstance(n_topics, int), 'n_topics must be an integer'
     assert isinstance(max_df, float), 'max_df must be a float'
     assert isinstance(min_df, int), 'min_df must be an integer'
+    assert (
+        max_df < 1 and max_df > 0
+    ), 'max_df must be bigger than 0, less than 1'
+    assert min_df > 0, 'min_df must be bigger than 0'
     assert isinstance(stemming, bool), 'bool must be a boolean'
     if cleaning is not None:
         for i in range(len(corpus)):
@@ -211,7 +356,7 @@ def lsa_topic_modelling(
         for i in range(len(corpus)):
             corpus[i] = sastrawi_stemmer(corpus[i])
     tfidf_vectorizer = TfidfVectorizer(
-        max_df = max_df, min_df = min_df, stop_words = stop_words
+        max_df = max_df, min_df = min_df, stop_words = stop_words, **kwargs
     )
     tfidf = tfidf_vectorizer.fit_transform(corpus)
     tfidf_features = tfidf_vectorizer.get_feature_names()

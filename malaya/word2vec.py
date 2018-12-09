@@ -4,23 +4,31 @@ import warnings
 if not sys.warnoptions:
     warnings.simplefilter('ignore')
 
+import pickle
+import os
+import numpy as np
+import tensorflow as tf
+from fuzzywuzzy import fuzz
 from sklearn.utils import shuffle
 from sklearn.manifold import TSNE
 from scipy.spatial.distance import cdist
 from sklearn.neighbors import NearestNeighbors
-from fuzzywuzzy import fuzz
-import pickle
-import os
-import sys
-import collections
-import re
-import numpy as np
-import tensorflow as tf
 from . import home
 from .utils import download_file
 
 
 def malaya_word2vec(size = 256):
+    """
+    Return malaya pretrained news word2vec
+
+    Parameters
+    ----------
+    size: int, (default=256)
+
+    Returns
+    -------
+    dictionary: dictionary of dictionary, reverse dictionary and vectors
+    """
     assert isinstance(size, int), 'input must be an integer'
     if size not in [32, 64, 128, 256, 512]:
         raise Exception('size word2vec not supported')
@@ -85,6 +93,17 @@ class Word2Vec:
         self.words = list(dictionary.keys())
 
     def get_vector_by_name(self, word):
+        """
+        get vector based on name
+
+        Parameters
+        ----------
+        word: str
+
+        Returns
+        -------
+        vector: numpy
+        """
         return np.ravel(self._embed_matrix[self._dictionary[word], :])
 
     def calculator(
@@ -94,6 +113,24 @@ class Word2Vec:
         metric = 'cosine',
         return_similarity = True,
     ):
+        """
+        calculator parser for word2vec
+
+        Parameters
+        ----------
+        equation: str
+            Eg, '(mahathir + najib) - rosmah'
+        num_closest: int, (default=5)
+            number of words closest to the result
+        metric: str, (default='cosine')
+            vector distance algorithm
+        return_similarity: bool, (default=True)
+            if True, will return between 0-1 represents the distance
+
+        Returns
+        -------
+        word_list: list of nearest words
+        """
         assert isinstance(equation, str), 'input must be a string'
         assert isinstance(num_closest, int), 'num_closest must be an integer'
         assert isinstance(metric, str), 'metric must be a string'
@@ -152,6 +189,24 @@ class Word2Vec:
     def n_closest(
         self, word, num_closest = 5, metric = 'cosine', return_similarity = True
     ):
+        """
+        find nearest words based on a word
+
+        Parameters
+        ----------
+        word: str
+            Eg, 'najib'
+        num_closest: int, (default=5)
+            number of words closest to the result
+        metric: str, (default='cosine')
+            vector distance algorithm
+        return_similarity: bool, (default=True)
+            if True, will return between 0-1 represents the distance
+
+        Returns
+        -------
+        word_list: list of nearest words
+        """
         assert isinstance(word, str), 'input must be a string'
         assert isinstance(num_closest, int), 'num_closest must be an integer'
         assert isinstance(metric, str), 'metric must be a string'
@@ -191,6 +246,22 @@ class Word2Vec:
         return sorted_indices[:num]
 
     def analogy(self, a, b, c, num = 1, metric = 'cosine'):
+        """
+        analogy calculation, vb - va + vc
+
+        Parameters
+        ----------
+        a: str
+        b: str
+        c: str
+        num: int, (default=1)
+        metric: str, (default='cosine')
+            vector distance algorithm
+
+        Returns
+        -------
+        word_list: list of nearest words
+        """
         assert isinstance(a, str), 'a must be a string'
         assert isinstance(b, str), 'b must be a string'
         assert isinstance(c, str), 'c must be a string'
@@ -211,6 +282,18 @@ class Word2Vec:
         return d_word_list
 
     def project_2d(self, start, end):
+        """
+        project word2vec into 2d dimension
+
+        Parameters
+        ----------
+        start: int
+        end: int
+
+        Returns
+        -------
+        tsne decomposition: numpy
+        """
         assert isinstance(start, int), 'start must be an integer'
         assert isinstance(end, int), 'end must be an integer'
         tsne = TSNE(n_components = 2)

@@ -1,7 +1,6 @@
 from tqdm import tqdm
 import tensorflow as tf
 import requests
-import numpy as np
 
 
 def download_file(url, filename):

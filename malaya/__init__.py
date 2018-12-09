@@ -5,11 +5,11 @@ if not sys.warnoptions:
     warnings.simplefilter('ignore')
 
 from pathlib import Path
-import shutil
 import os
 
 home = str(Path.home()) + '/Malaya'
-version = '0.7'
+version = '0.8'
+bump_version = '0.8.0.0'
 version_path = home + '/version'
 
 
@@ -42,6 +42,9 @@ else:
 
 
 def delete_cache():
+    """
+    Remove cached data, this is will delete entire cache folder. Selected items to delete will be implement soon.
+    """
     try:
         print('deleting cached models..')
         delete_folder(home)
@@ -55,12 +58,7 @@ def delete_cache():
         )
 
 
-from .entities import (
-    multinomial_entities,
-    xgb_entities,
-    deep_entities,
-    get_available_entities_models,
-)
+from .entities import crf_entities, deep_entities, get_available_entities_models
 from .language_detection import (
     multinomial_detect_languages,
     xgb_detect_languages,
@@ -81,13 +79,7 @@ from .num2word import (
     to_year,
 )
 from .pos_entities import deep_pos_entities, get_available_pos_entities_models
-from .pos import (
-    naive_pos,
-    multinomial_pos,
-    xgb_pos,
-    deep_pos,
-    get_available_pos_models,
-)
+from .pos import naive_pos, crf_pos, deep_pos, get_available_pos_models
 from .sentiment import (
     deep_sentiment,
     bayes_sentiment,
@@ -109,6 +101,7 @@ from .topic_modelling import (
     lsa_topic_modelling,
 )
 from .topics_influencers import (
+    load_internal_data,
     fuzzy_get_influencers,
     fuzzy_get_topics,
     fuzzy_get_location,
@@ -124,6 +117,9 @@ from .word2vec import malaya_word2vec, Word2Vec
 
 
 def describe_pos_malaya():
+    """
+    Describe Malaya Part-Of-Speech supported (deprecated, use describe_pos() instead).
+    """
     print(
         'This classes are deprecated, we prefer to use `malaya.describe_pos()`'
     )
@@ -151,6 +147,9 @@ def describe_pos_malaya():
 
 
 def describe_pos():
+    """
+    Describe Part-Of-Speech supported.
+    """
     print('ADJ - Adjective, kata sifat')
     print('ADP - Adposition')
     print('ADV - Adverb, kata keterangan')
@@ -169,6 +168,9 @@ def describe_pos():
 
 
 def describe_entities_malaya():
+    """
+    Describe Malaya Entities supported (deprecated, use describe_entities() instead).
+    """
     print(
         'This classes are deprecated, we prefer to use `malaya.describe_entities()`'
     )
@@ -185,10 +187,14 @@ def describe_entities_malaya():
 
 
 def describe_entities():
+    """
+    Describe Entities supported.
+    """
     print('OTHER - Other')
-    print('law - related law documents, documents, etc')
+    print('law - law, regulation, related law documents, documents, etc')
     print('location - location, place')
     print('organization - organization, company, government, facilities, etc')
     print('person - person, group of people, believes, etc')
     print('quantity - numbers, quantity')
     print('time - date, day, time, etc')
+    print('event - unique event happened, etc')

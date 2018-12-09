@@ -5,11 +5,12 @@ if not sys.warnoptions:
     warnings.simplefilter('ignore')
 
 import numpy as np
-from scipy.linalg import svd, inv
-import re, random
+import re
+import random
+from scipy.linalg import svd
+from operator import itemgetter
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import NMF, LatentDirichletAllocation
-from operator import itemgetter
 from .text_functions import (
     cluster_words,
     summary_textcleaning,
@@ -21,6 +22,13 @@ from .skip_thought import load_model
 
 
 def summarize_deep_learning():
+    """
+    Load skip-thought summarization deep learning model.
+
+    Returns
+    -------
+    DEEP_SUMMARIZER: malaya.skip_thought.DEEP_SUMMARIZER class
+    """
     return load_model()
 
 
@@ -32,6 +40,25 @@ def summarize_lsa(
     return_cluster = True,
     **kwargs
 ):
+    """
+    summarize a list of strings using LSA.
+
+    Parameters
+    ----------
+    corpus: list
+    maintain_original: bool, (default=False)
+        If False, will apply malaya.text_functions.classification_textcleaning
+    top_k: int, (default=3)
+        number of summarized strings
+    important_words: int, (default=3)
+        number of important words
+    return_cluster: bool, (default=True)
+        if True, will cluster important_words to similar texts
+
+    Returns
+    -------
+    dictionary: result
+    """
     assert isinstance(corpus, list) and isinstance(
         corpus[0], str
     ), 'input must be list of strings'
@@ -86,6 +113,25 @@ def summarize_nmf(
     return_cluster = True,
     **kwargs
 ):
+    """
+    summarize a list of strings using NMF.
+
+    Parameters
+    ----------
+    corpus: list
+    maintain_original: bool, (default=False)
+        If False, will apply malaya.text_functions.classification_textcleaning
+    top_k: int, (default=3)
+        number of summarized strings
+    important_words: int, (default=3)
+        number of important words
+    return_cluster: bool, (default=True)
+        if True, will cluster important_words to similar texts
+
+    Returns
+    -------
+    dictionary: result
+    """
     assert isinstance(corpus, list) and isinstance(
         corpus[0], str
     ), 'input must be list of strings'
@@ -146,6 +192,25 @@ def summarize_lda(
     return_cluster = True,
     **kwargs
 ):
+    """
+    summarize a list of strings using LDA.
+
+    Parameters
+    ----------
+    corpus: list
+    maintain_original: bool, (default=False)
+        If False, will apply malaya.text_functions.classification_textcleaning
+    top_k: int, (default=3)
+        number of summarized strings
+    important_words: int, (default=3)
+        number of important words
+    return_cluster: bool, (default=True)
+        if True, will cluster important_words to similar texts
+
+    Returns
+    -------
+    dictionary: result
+    """
     assert isinstance(corpus, list) and isinstance(
         corpus[0], str
     ), 'input must be list of strings'

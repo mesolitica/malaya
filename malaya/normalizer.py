@@ -11,7 +11,6 @@ import os
 import json
 import tensorflow as tf
 from collections import Counter
-from . import home
 from .utils import load_graph, download_file
 from .num2word import to_cardinal
 from .text_functions import (
@@ -19,32 +18,37 @@ from .text_functions import (
     stemmer_str_idx,
     pad_sentence_batch,
 )
-from .tatabahasa import rules_normalizer
+from .tatabahasa import (
+    rules_normalizer,
+    consonants,
+    vowels,
+    sounds,
+    GO,
+    PAD,
+    EOS,
+    UNK,
+)
 from .spell import return_possible, edit_normalizer, build_dicts, return_known
 from .topics_influencers import is_location
+from .paths import MALAY_TEXT, PATH_NORMALIZER, S3_PATH_NORMALIZER
 
-consonants = 'bcdfghjklmnpqrstvwxyz'
-vowels = 'aeiou'
-sounds = {
-    'x': 'tidak',
-    'y': 'kenapa',
-    'n': 'dan',
-    'g': 'pergi',
-    's': 'seperti',
-    'd': 'di',
-    'k': 'ok',
-    'u': 'awak',
-    't': 'nanti',
-    'p': 'pergi',
-    'wai': 'kenapa',
-}
-GO = 0
-PAD = 1
-EOS = 2
-UNK = 3
-malay_text = home + '/malay-text.txt'
-normalizer_json = home + '/normalizer-deep.json'
-normalizer_graph = home + '/normalizer-deep.pb'
+
+def load_malay_dictionary():
+    """
+    load Pustaka dictionary for Spelling Corrector or anything.
+
+    Returns
+    -------
+    list: list of strings
+    """
+    if not os.path.isfile(MALAY_TEXT):
+        print('downloading Malay texts')
+        download_file('v6/malay-text.txt', MALAY_TEXT)
+    with open(MALAY_TEXT, 'r') as fopen:
+        return [
+            text.lower()
+            for text in (list(filter(None, fopen.read().split('\n'))))
+        ]
 
 
 class DEEP_NORMALIZER:
@@ -58,6 +62,17 @@ class DEEP_NORMALIZER:
         }
 
     def normalize(self, string):
+        """
+        Normalize a string.
+
+        Parameters
+        ----------
+        string : str
+
+        Returns
+        -------
+        string: normalized string
+        """
         assert isinstance(string, str), 'input must be a string'
         token_strings = normalizer_textcleaning(string).split()
         idx = stemmer_str_idx(token_strings, self._dicts['dictionary_from'])
@@ -83,6 +98,20 @@ class SPELL_NORMALIZE:
         self.corpus = Counter(corpus)
 
     def normalize(self, string, debug = True):
+        """
+        Normalize a string
+
+        Parameters
+        ----------
+        string : str
+
+        debug : bool, optional (default=True)
+            If true, it will print character similarity distances.
+
+        Returns
+        -------
+        string: normalized string
+        """
         assert isinstance(string, str), 'input must be a string'
         result = []
         for word in normalizer_textcleaning(string).split():
@@ -146,6 +175,17 @@ class FUZZY_NORMALIZE:
         self.corpus = corpus
 
     def normalize(self, string):
+        """
+        Normalize a string.
+
+        Parameters
+        ----------
+        string : str
+
+        Returns
+        -------
+        string: normalized string
+        """
         assert isinstance(string, str), 'input must be a string'
         result = []
         for word in normalizer_textcleaning(string).split():
@@ -193,6 +233,17 @@ class FUZZY_NORMALIZE:
 
 
 def fuzzy_normalizer(corpus):
+    """
+    Train a fuzzy logic Normalizer
+
+    Parameters
+    ----------
+    corpus : list of strings. Prefer to feed with malaya.load_malay_dictionary()
+
+    Returns
+    -------
+    FUZZY_NORMALIZE: Trained malaya.normalizer.FUZZY_NORMALIZE class
+    """
     assert isinstance(corpus, list) and isinstance(
         corpus[0], str
     ), 'input must be list of strings'
@@ -221,24 +272,35 @@ def fuzzy_normalizer(corpus):
 
 
 def spell_normalizer(corpus):
+    """
+    Train a Spelling Normalizer
+
+    Parameters
+    ----------
+    corpus : list of strings. Prefer to feed with malaya.load_malay_dictionary()
+
+    Returns
+    -------
+    SPELL_NORMALIZE: Trained malaya.normalizer.SPELL_NORMALIZE class
+    """
     assert isinstance(corpus, list) and isinstance(
         corpus[0], str
     ), 'input must be list of strings'
     return SPELL_NORMALIZE(corpus)
 
 
-def load_malay_dictionary():
-    if not os.path.isfile(malay_text):
-        print('downloading Malay texts')
-        download_file('v6/malay-text.txt', malay_text)
-    with open(malay_text, 'r') as fopen:
-        return [
-            text.lower()
-            for text in (list(filter(None, fopen.read().split('\n'))))
-        ]
-
-
 def basic_normalizer(string):
+    """
+    Use basic rules-based to normalize a string.
+
+    Parameters
+    ----------
+    string: str
+
+    Returns
+    -------
+    string: normalized string
+    """
     assert isinstance(string, str), 'input must be a string'
     result = []
     for word in normalizer_textcleaning(string).split():
@@ -255,15 +317,29 @@ def basic_normalizer(string):
 
 
 def deep_normalizer():
-    if not os.path.isfile(normalizer_json):
+    """
+    Load deep-learning model to normalize a string. This model totally more sucks than fuzzy based, Husein still need to read more.
+
+    Returns
+    -------
+    DEEP_NORMALIZER: malaya.normalizer.DEEP_NORMALIZER class
+
+    """
+    if not os.path.isfile(PATH_NORMALIZER['deep']['setting']):
         print('downloading JSON normalizer')
-        download_file('v6/normalizer-deep.json', normalizer_json)
-    with open(normalizer_json, 'r') as fopen:
+        download_file(
+            S3_PATH_NORMALIZER['deep']['setting'],
+            PATH_NORMALIZER['deep']['setting'],
+        )
+    with open(PATH_NORMALIZER['deep']['setting'], 'r') as fopen:
         dic_normalizer = json.load(fopen)
-    if not os.path.isfile(normalizer_graph):
+    if not os.path.isfile(PATH_NORMALIZER['deep']['model']):
         print('downloading normalizer graph')
-        download_file('v6/normalizer-deep.pb', normalizer_graph)
-    g = load_graph(normalizer_graph)
+        download_file(
+            S3_PATH_NORMALIZER['deep']['model'],
+            PATH_NORMALIZER['deep']['model'],
+        )
+    g = load_graph(PATH_NORMALIZER['deep']['model'])
     return DEEP_NORMALIZER(
         g.get_tensor_by_name('import/Placeholder:0'),
         g.get_tensor_by_name('import/logits:0'),

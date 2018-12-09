@@ -7,10 +7,10 @@ if not sys.warnoptions:
 import re
 import os
 import numpy as np
-from nltk.tokenize import word_tokenize
-from nltk.util import ngrams
-from unidecode import unidecode
 import itertools
+import collections
+from unidecode import unidecode
+from nltk.util import ngrams
 from .utils import download_file
 from .tatabahasa import stopword_tatabahasa
 from . import home
@@ -86,7 +86,7 @@ def malaya_textcleaning(string):
     string = string.replace(',', ', ')
     string = re.sub('[^\'"A-Za-z\- ]+', ' ', string)
     string = re.sub(r'[ ]+', ' ', string.lower()).strip()
-    string = [word for word in word_tokenize(string.lower()) if isWord(word)]
+    string = [word for word in string.lower().split() if isWord(word)]
     string = [
         word
         for word in string
@@ -135,15 +135,13 @@ def normalizer_textcleaning(string):
     return ''.join(''.join(s)[:2] for _, s in itertools.groupby(string))
 
 
-def simple_textcleaning(string, decode = False):
+def simple_textcleaning(string):
     """
     use by topic modelling
     only accept A-Z, a-z
     """
-    if decode:
-        string = unidecode(string)
-    else:
-        string = re.sub('[^A-Za-z ]+', ' ', string)
+    string = unidecode(string)
+    string = re.sub('[^A-Za-z ]+', ' ', string)
     return re.sub(r'[ ]+', ' ', string.lower()).strip()
 
 
@@ -482,3 +480,64 @@ def generate_char_seq(batch, idx2word, char2idx):
             for no, c in enumerate(idx2word[batch[i, k]].lower()):
                 temp[i, k, -1 - no] = char2idx[c]
     return temp
+
+
+def build_dataset(words, n_words):
+    count = [['GO', 0], ['PAD', 1], ['EOS', 2], ['UNK', 3]]
+    count.extend(collections.Counter(words).most_common(n_words - 1))
+    dictionary = dict()
+    for word, _ in count:
+        dictionary[word] = len(dictionary)
+    data = list()
+    unk_count = 0
+    for word in words:
+        index = dictionary.get(word, 0)
+        if index == 0:
+            unk_count += 1
+        data.append(index)
+    count[0][1] = unk_count
+    reversed_dictionary = dict(zip(dictionary.values(), dictionary.keys()))
+    return data, count, dictionary, reversed_dictionary
+
+
+def features_crf(sentence, index):
+    """ sentence: [w1, w2, ...], index: the index of the word """
+    return {
+        'word': sentence[index],
+        'is_first': index == 0,
+        'is_last': index == len(sentence) - 1,
+        'prefix-1': sentence[index][0],
+        'prefix-2': sentence[index][:2],
+        'prefix-3': sentence[index][:3],
+        'suffix-1': sentence[index][-1],
+        'suffix-2': sentence[index][-2:],
+        'suffix-3': sentence[index][-3:],
+        'prev_word': '' if index == 0 else sentence[index - 1],
+        'prev_word-prefix-1': '' if index == 0 else sentence[index - 1][0],
+        'prev_word-prefix-2': '' if index == 0 else sentence[index - 1][:2],
+        'prev_word-prefix-3': '' if index == 0 else sentence[index - 1][:3],
+        'prev_word-suffix-1': '' if index == 0 else sentence[index - 1][-1],
+        'prev_word-suffix-2': '' if index == 0 else sentence[index - 1][-2:],
+        'prev_word-suffix-3': '' if index == 0 else sentence[index - 1][-3:],
+        'next_word-prefix-1': ''
+        if index == len(sentence) - 1
+        else sentence[index + 1][0],
+        'next_word-prefix-2': ''
+        if index == len(sentence) - 1
+        else sentence[index + 1][:2],
+        'next_word-prefix-3': ''
+        if index == len(sentence) - 1
+        else sentence[index + 1][:3],
+        'next_word-suffix-1': ''
+        if index == len(sentence) - 1
+        else sentence[index + 1][-1],
+        'next_word-suffix-2': ''
+        if index == len(sentence) - 1
+        else sentence[index + 1][-2:],
+        'next_word-suffix-3': ''
+        if index == len(sentence) - 1
+        else sentence[index + 1][-3:],
+        'next_word': '' if index == len(sentence) - 1 else sentence[index + 1],
+        'has_hyphen': '-' in sentence[index],
+        'is_numeric': sentence[index].isdigit(),
+    }

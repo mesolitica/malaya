@@ -9,10 +9,7 @@ from fuzzywuzzy import fuzz
 import numpy as np
 from .text_functions import normalizer_textcleaning
 from .topics_influencers import is_location
-
-alphabet = 'abcdefghijklmnopqrstuvwxyz'
-consonants = 'bcdfghjklmnpqrstvwxyz'
-vowels = 'aeiou'
+from .tatabahasa import alphabet, consonants, vowels
 
 
 def build_dicts(words):
@@ -78,6 +75,21 @@ class SPELL:
         self.corpus = Counter(corpus)
 
     def correct(self, string, first_char = True, debug = True):
+        """
+        Correct a word.
+
+        Parameters
+        ----------
+        string: str
+        first_char: bool, optional (default=True)
+            If True, it will only pulled nearest words based on first character, faster but less accurate.
+        debug : bool, optional (default=True)
+            If true, it will print character similarity distances.
+
+        Returns
+        -------
+        string: corrected string
+        """
         assert (isinstance(string, str)) and not string.count(
             ' '
         ), 'input must be a single word'
@@ -120,6 +132,17 @@ class SPELL:
 
 
 def naive_speller(corpus):
+    """
+    Train a fuzzy logic Spell Corrector
+
+    Parameters
+    ----------
+    corpus : list of strings. Prefer to feed with malaya.load_malay_dictionary()
+
+    Returns
+    -------
+    SPELL: Trained malaya.spell.SPELL class
+    """
     assert isinstance(corpus, list) and isinstance(
         corpus[0], str
     ), 'input must be list of strings'

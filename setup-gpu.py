@@ -30,7 +30,7 @@ __packagename__ = 'malaya-gpu'
 setuptools.setup(
     name = __packagename__,
     packages = setuptools.find_packages(),
-    version = '0.7.5.2',
+    version = '0.8',
     description = 'Natural-Language-Toolkit for bahasa Malaysia, powered by Deep Learning. GPU Version',
     author = 'huseinzol05',
     author_email = 'husein.zol05@gmail.com',
@@ -40,6 +40,7 @@ setuptools.setup(
     install_requires = [
         'xgboost==0.80',
         'sklearn',
+        'sklearn_crfsuite',
         'scikit-learn==0.19.1',
         'requests',
         'fuzzywuzzy',
@@ -51,8 +52,8 @@ setuptools.setup(
         'scipy',
         'python-levenshtein',
         'pandas',
-        'keras',
         'PySastrawi',
+        'toolz',
     ],
     cmdclass = {'install': new_install},
     classifiers = [
@@ -62,5 +63,5 @@ setuptools.setup(
         'Operating System :: OS Independent',
         'Topic :: Text Processing',
     ],
-    long_description = open('readme-pypi.rst').read(),
+    long_description = open('README.rst').read(),
 )

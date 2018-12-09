@@ -5,16 +5,16 @@ if not sys.warnoptions:
     warnings.simplefilter('ignore')
 
 import tensorflow as tf
-from tensorflow.contrib import seq2seq
 import numpy as np
-from sklearn.metrics import pairwise_distances_argmin_min
-from sklearn.cluster import KMeans
 from tqdm import tqdm
 import re
 import collections
 import json
 import os
-from . import home
+from tensorflow.contrib import seq2seq
+from sklearn.metrics import pairwise_distances_argmin_min
+from sklearn.cluster import KMeans
+from .paths import PATH_SUMMARIZE, S3_PATH_SUMMARIZE
 from .text_functions import split_by_dot, summary_textcleaning
 from .stemmer import sastrawi_stemmer
 from .utils import download_file, load_graph
@@ -56,7 +56,21 @@ class DEEP_SUMMARIZER:
         self._logits = logits
         self.w2v = w2v
 
-    def summarize(self, corpus, maintain_original = False, top_k = 3):
+    def summarize(self, corpus, top_k = 3):
+        """
+        Summarize list of strings / corpus
+
+        Parameters
+        ----------
+        corpus: str, list
+
+        top_k: int, (default=3)
+            number of summarized strings
+
+        Returns
+        -------
+        string: summarized string
+        """
         assert (
             isinstance(corpus, list) and isinstance(corpus[0], str)
         ) or isinstance(
@@ -195,23 +209,17 @@ def build_dict(word_counter, vocab_size = 50000):
 
 
 def load_model():
-    if not os.path.isfile(home + '/summary_frozen_model.pb'):
-        print('downloading skip-thought checkpoint')
-        download_file(
-            'v7/summary/summary_frozen_model.pb',
-            home + '/summary_frozen_model.pb',
-        )
-    if not os.path.isfile(home + '/dictionary-summary.json'):
-        print('downloading skip-thought dictionary')
-        download_file(
-            'v7/summary/dictionary-summary.json',
-            home + '/dictionary-summary.json',
-        )
-    g = load_graph(home + '/summary_frozen_model.pb')
+    if not os.path.isfile(PATH_SUMMARIZE['model']):
+        print('downloading SUMMARIZE skip-thought frozen model')
+        download_file(S3_PATH_SUMMARIZE['model'], PATH_SUMMARIZE['model'])
+    if not os.path.isfile(PATH_SUMMARIZE['setting']):
+        print('downloading SUMMARIZE skip-thought dictionary')
+        download_file(S3_PATH_SUMMARIZE['setting'], PATH_SUMMARIZE['setting'])
+    g = load_graph(PATH_SUMMARIZE['model'])
     x = g.get_tensor_by_name('import/Placeholder_1:0')
     logits = g.get_tensor_by_name('import/add_1:0')
     sess = tf.InteractiveSession(graph = g)
-    with open(home + '/dictionary-summary.json') as fopen:
+    with open(PATH_SUMMARIZE['setting']) as fopen:
         dictionary = json.load(fopen)
     return DEEP_SUMMARIZER(sess, x, logits, dictionary)
 

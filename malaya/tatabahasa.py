@@ -1,3 +1,8 @@
+GO = 0
+PAD = 1
+EOS = 2
+UNK = 3
+
 tanya_list = [
     'kenapa',
     'bila',
@@ -171,13 +176,13 @@ gantinama_list = [
     'rm',
 ]
 
-# pos permulaan[:-4]
 permulaan = [
     'bel',
-    'be',
     'se',
     'ter',
     'men',
+    'meng',
+    'mem',
     'memper',
     'di',
     'pe',
@@ -187,9 +192,25 @@ permulaan = [
     'pen',
     'per',
 ]
-# pos hujung [:1]
+
 hujung = ['kan', 'kah', 'lah', 'tah', 'nya', 'an', 'wan', 'wati', 'ita']
 alphabet = 'qwertyuiopasdfghjklzxcvbnm'
+consonants = 'bcdfghjklmnpqrstvwxyz'
+vowels = 'aeiou'
+
+sounds = {
+    'x': 'tidak',
+    'y': 'kenapa',
+    'n': 'dan',
+    'g': 'pergi',
+    's': 'seperti',
+    'd': 'di',
+    'k': 'ok',
+    'u': 'awak',
+    't': 'nanti',
+    'p': 'pergi',
+    'wai': 'kenapa',
+}
 
 tatabahasa_dict = {
     'KT': tanya_list,

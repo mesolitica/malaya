@@ -4,49 +4,24 @@ import warnings
 if not sys.warnoptions:
     warnings.simplefilter('ignore')
 
-from nltk.tokenize import word_tokenize
 import os
 import re
 import pickle
 import json
-import xgboost as xgb
-import numpy as np
-from . import home
+import tensorflow as tf
 from .tatabahasa import tatabahasa_dict, hujung, permulaan
-from .utils import download_file
+from .utils import download_file, load_graph
 from .text_functions import entities_textcleaning
-from .keras_model import (
-    get_char_bidirectional,
-    get_crf_lstm_bidirectional,
-    get_crf_lstm_concat_bidirectional,
-)
-from .keras_model import CONCAT_MODEL, WORD_MODEL, CHAR_MODEL
+from .sklearn_model import CRF
+from .tensorflow_model import TAGGING
+from .paths import PATH_POS, S3_PATH_POS
 
-bow_pkl = home + '/bow-pos.pkl'
-multinomial_pkl = home + '/multinomial-pos.pkl'
-xgb_bow_pkl = home + '/xgb-bow-pos.pkl'
-xgb_pkl = home + '/xgb-pos.pkl'
 
-MULTINOMIAL, BOW = None, None
-XGB, BOW_XGB = None, None
-
-pos_labels = {
-    0: 'ADJ',
-    1: 'ADP',
-    2: 'ADV',
-    3: 'AUX',
-    4: 'CCONJ',
-    5: 'DET',
-    6: 'NOUN',
-    7: 'NUM',
-    8: 'PART',
-    9: 'PRON',
-    10: 'PROPN',
-    11: 'SCONJ',
-    12: 'SYM',
-    13: 'VERB',
-    14: 'X',
-}
+def get_available_pos_models():
+    """
+    List available deep learning entities models, ['concat', 'bahdanau', 'luong']
+    """
+    return ['concat', 'bahdanau', 'luong']
 
 
 def naive_POS_word(word):
@@ -73,121 +48,82 @@ def naive_POS_word(word):
 
 
 def naive_pos(string):
+    """
+    Recognize POS in a string using Regex.
+
+    Parameters
+    ----------
+    string: str
+
+    Returns
+    -------
+    string : tokenized string with POS related
+    """
     assert isinstance(string, str), 'input must be a string'
     string = string.lower()
     results = []
-    for i in word_tokenize(string):
+    for i in string.split():
         results.append(naive_POS_word(i))
     return results
 
 
-def multinomial_pos(string):
-    assert isinstance(string, str), 'input must be a string'
-    global MULTINOMIAL, BOW
-    string = entities_textcleaning(string)
-    if MULTINOMIAL is None and BOW is None:
-        if not os.path.isfile(bow_pkl):
-            print('downloading pickled bag-of-word multinomial POS')
-            download_file('bow-entities.pkl', bow_pkl)
-        if not os.path.isfile(multinomial_pkl):
-            print('downloading pickled multinomial POS model')
-            download_file('multinomial-entities.pkl', multinomial_pkl)
-        with open(bow_pkl, 'rb') as fopen:
-            BOW = pickle.load(fopen)
-        with open(multinomial_pkl, 'rb') as fopen:
-            MULTINOMIAL = pickle.load(fopen)
-    return [
-        (string[no], pos_labels[i])
-        for no, i in enumerate(MULTINOMIAL.predict(BOW.transform(string)))
-    ]
+def crf_pos():
+    """
+    Load CRF POS Recognition model.
 
-
-def xgb_pos(string):
-    assert isinstance(string, str), 'input must be a string'
-    global XGB, BOW_XGB
-    string = entities_textcleaning(string)
-    if XGB is None and BOW_XGB is None:
-        if not os.path.isfile(xgb_bow_pkl):
-            print('downloading pickled bag-of-word XGB POS')
-            download_file('xgb-bow-pos.pkl', xgb_bow_pkl)
-        if not os.path.isfile(xgb_pkl):
-            print('downloading pickled xgb POS model')
-            download_file('xgb-pos.pkl', xgb_pkl)
-        with open(xgb_bow_pkl, 'rb') as fopen:
-            BOW_XGB = pickle.load(fopen)
-        with open(xgb_pkl, 'rb') as fopen:
-            XGB = pickle.load(fopen)
-    dmatrix = xgb.DMatrix(BOW_XGB.transform(string))
-    results = np.argmax(
-        XGB.predict(dmatrix, ntree_limit = XGB.best_ntree_limit), axis = 1
-    )
-    return [(string[no], pos_labels[i]) for no, i in enumerate(results)]
-
-
-def get_available_pos_models():
-    return ['char', 'word', 'concat']
-
-
-char_frozen = home + '/pos-char-frozen.h5'
-word_frozen = home + '/pos-word-frozen.h5'
-concat_frozen = home + '/pos-concat-frozen.h5'
-
-char_settings = home + '/pos-char-settings.json'
-word_settings = home + '/pos-word-settings.json'
-concat_settings = home + '/pos-concat-settings.json'
-
-char_frozen_location = 'v7/pos/char-bidirectional-pos.h5'
-char_settings_location = 'v7/pos/char-bidirectional-pos.json'
-
-word_frozen_location = 'v7/pos/crf-lstm-bidirectional-pos.h5'
-word_settings_location = 'v7/pos/crf-lstm-bidirectional-pos.json'
-
-concat_frozen_location = 'v7/pos/crf-lstm-concat-bidirectional-pos.h5'
-concat_settings_location = 'v7/pos/crf-lstm-concat-bidirectional-pos.json'
+    Returns
+    -------
+    CRF : malaya.sklearn_model.CRF class
+    """
+    if not os.path.isfile(PATH_POS['crf']['model']):
+        print('downloading POS frozen CRF model')
+        download_file(S3_PATH_POS['crf']['model'], PATH_POS['crf']['model'])
+    with open(PATH_POS['crf']['model'], 'rb') as fopen:
+        model = pickle.load(fopen)
+    return CRF(model, is_lower = False)
 
 
 def deep_pos(model = 'concat'):
+    """
+    Load deep learning POS Recognition model.
+
+    Parameters
+    ----------
+    model : str, optional (default='bahdanau')
+        Model architecture supported. Allowed values:
+
+        * ``'concat'`` - Concating character and word embedded for BiLSTM
+        * ``'bahdanau'`` - Concating character and word embedded including Bahdanau Attention for BiLSTM
+        * ``'luong'`` - Concating character and word embedded including Luong Attention for BiLSTM
+
+    Returns
+    -------
+    TAGGING: malaya.tensorflow_model.TAGGING class
+    """
     assert isinstance(model, str), 'model must be a string'
-    if model == 'char':
-        if not os.path.isfile(char_settings):
-            print('downloading POS char settings')
-            download_file(char_settings_location, char_settings)
-        with open(char_settings, 'r') as fopen:
+    model = model.lower()
+    if model in ['concat', 'bahdanau', 'luong']:
+        if not os.path.isfile(PATH_POS[model]['model']):
+            print('downloading POS frozen %s model' % (model))
+            download_file(S3_PATH_POS[model]['model'], PATH_POS[model]['model'])
+        if not os.path.isfile(PATH_POS[model]['setting']):
+            print('downloading POS %s dictionary' % (model))
+            download_file(
+                S3_PATH_POS[model]['setting'], PATH_POS[model]['setting']
+            )
+        with open(PATH_POS[model]['setting'], 'r') as fopen:
             nodes = json.loads(fopen.read())
-        if not os.path.isfile(char_frozen):
-            print('downloading POS char frozen model')
-            download_file(char_frozen_location, char_frozen)
-        model = get_char_bidirectional(nodes['char2idx'], nodes['tag2idx'])
-        model.load_weights(char_frozen)
-        return CHAR_MODEL(model, nodes, is_lower = False)
-    elif model == 'word':
-        if not os.path.isfile(word_settings):
-            print('downloading POS word settings')
-            download_file(word_settings_location, word_settings)
-        with open(word_settings, 'r') as fopen:
-            nodes = json.loads(fopen.read())
-        if not os.path.isfile(word_frozen):
-            print('downloading POS word frozen model')
-            download_file(word_frozen_location, word_frozen)
-        model = get_crf_lstm_bidirectional(nodes['word2idx'], nodes['tag2idx'])
-        model.load_weights(word_frozen)
-        return WORD_MODEL(model, nodes, is_lower = False)
-    elif model == 'concat':
-        if not os.path.isfile(concat_settings):
-            print('downloading POS concat settings')
-            download_file(concat_settings_location, concat_settings)
-        with open(concat_settings, 'r') as fopen:
-            nodes = json.loads(fopen.read())
-            nodes['idx2word'] = {
-                int(k): v for k, v in nodes['idx2word'].items()
-            }
-        if not os.path.isfile(concat_frozen):
-            print('downloading POS concat frozen model')
-            download_file(concat_frozen_location, concat_frozen)
-        model = get_crf_lstm_concat_bidirectional(
-            nodes['char2idx'], nodes['word2idx'], nodes['tag2idx']
+        g = load_graph(PATH_POS[model]['model'])
+        return TAGGING(
+            g.get_tensor_by_name('import/Placeholder:0'),
+            g.get_tensor_by_name('import/Placeholder_1:0'),
+            g.get_tensor_by_name('import/logits:0'),
+            nodes,
+            tf.InteractiveSession(graph = g),
+            is_lower = False,
         )
-        model.load_weights(concat_frozen)
-        return CONCAT_MODEL(model, nodes, is_lower = False)
+
     else:
-        raise Exception('model not supported')
+        raise Exception(
+            'model not supported, please check supported models from malaya.get_available_pos_models()'
+        )
