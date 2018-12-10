@@ -222,6 +222,7 @@ def cluster_entities(result):
         'person': [],
         'quantity': [],
         'time': [],
+        'event': [],
     }
     last_label, words = None, []
     for word, label in result:

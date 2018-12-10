@@ -9,7 +9,7 @@ import os
 
 home = str(Path.home()) + '/Malaya'
 version = '0.8'
-bump_version = '0.8.0.0'
+bump_version = '0.8.0.1'
 version_path = home + '/version'
 
 
