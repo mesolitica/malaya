@@ -4,3 +4,6 @@ python:
   - "3.5"
 
 install: ./build-dependencies.sh
+
+script:
+ - python3
