@@ -6,4 +6,4 @@ python:
 install: ./build-dependencies.sh
 
 script:
- - python3
+ - ls
