@@ -6,9 +6,9 @@
    :target: https://pypi.python.org/pypi/malaya
 .. |Latest Version| image:: https://badge.fury.io/py/malaya.svg
    :target: https://pypi.python.org/pypi/malaya
-.. |Build Status| image:: https://img.shields.io/badge/build-passing-green.svg
-   :target: https://pypi.python.org/pypi/malaya
-.. |Documentation Status| image:: https://img.shields.io/badge/docs-passing-green.svg
+.. |Build Status| image:: https://travis-ci.org/DevconX/Malaya.svg?branch=master
+   :target: https://travis-ci.org/DevconX/Malaya
+.. |Documentation Status| image:: https://readthedocs.org/projects/malaya/badge/?version=latest
    :target: https://malaya.readthedocs.io/
 
 Natural-Language-Toolkit for bahasa Malaysia, powered by Deep Learning
