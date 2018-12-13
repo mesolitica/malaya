@@ -35,11 +35,35 @@ PERSON_DICT = None
 TOPIC_DICT = None
 SHORT_DICT = None
 
+STOPWORD_CALON = [
+    'datuk',
+    'bin',
+    'hj',
+    'haji',
+    'bn',
+    'bnt',
+    'prof',
+    'binti',
+    'dr',
+    'ustaz',
+    'mejar',
+    'ir',
+    'md',
+    'tuan',
+    'puan',
+    'yb',
+    'ustazah',
+    'cikgu',
+    'dato',
+    'dsp',
+]
+
 
 def apply_stopwords_calon(string):
-    string = re.sub('[^A-Za-z ]+', '', string)
+    string = re.sub('[^A-Za-z ]+', ' ', string)
+    string = re.sub(r'[ ]+', ' ', string.lower()).strip()
     return ' '.join(
-        [i for i in string.split() if i not in STOPWORDS and len(i) > 1]
+        [i for i in string.split() if i not in STOPWORD_CALON and len(i) > 1]
     )
 
 
@@ -241,6 +265,7 @@ def load_internal_data():
     NAMACALON = df.NamaCalon.str.lower().unique().tolist()
     for i in range(len(NAMACALON)):
         NAMACALON[i] = apply_stopwords_calon(NAMACALON[i])
+    NAMACALON = list(set(NAMACALON))
 
     df = pd.read_csv(home + '/rules-based/negeri.csv')
     NEGERI = df.negeri.str.lower().unique().tolist()
