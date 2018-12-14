@@ -1,12 +1,12 @@
 
-.. code:: ipython3
+.. code:: python
 
     import malaya
 
 List available deep learning POS models
 ---------------------------------------
 
-.. code:: ipython3
+.. code:: python
 
     malaya.get_available_pos_models()
 
@@ -22,7 +22,7 @@ List available deep learning POS models
 Describe supported POS
 ----------------------
 
-.. code:: ipython3
+.. code:: python
 
     malaya.describe_pos()
 
@@ -49,15 +49,15 @@ Describe supported POS
 Load CRF Model
 --------------
 
-.. code:: ipython3
+.. code:: python
 
     crf = malaya.crf_pos()
 
-.. code:: ipython3
+.. code:: python
 
     string = 'KUALA LUMPUR: Sempena sambutan Aidilfitri minggu depan, Perdana Menteri Tun Dr Mahathir Mohamad dan Menteri Pengangkutan Anthony Loke Siew Fook menitipkan pesanan khas kepada orang ramai yang mahu pulang ke kampung halaman masing-masing. Dalam video pendek terbitan Jabatan Keselamatan Jalan Raya (JKJR) itu, Dr Mahathir menasihati mereka supaya berhenti berehat dan tidur sebentar  sekiranya mengantuk ketika memandu.'
 
-.. code:: ipython3
+.. code:: python
 
     crf.predict(string)
 
@@ -129,7 +129,7 @@ Load CRF Model
 Print important features CRF model
 ----------------------------------
 
-.. code:: ipython3
+.. code:: python
 
     crf.print_features(10)
 
@@ -147,7 +147,7 @@ Print important features CRF model
     14.503045 PRON     word:kapan
     14.319357 DET      word:ini
     14.267956 ADV      word:pernah
-    
+
     Top-10 negative:
     -7.217718 PROPN    word:bunga
     -7.258999 VERB     word:memuaskan
@@ -164,7 +164,7 @@ Print important features CRF model
 Print important transitions CRF model
 -------------------------------------
 
-.. code:: ipython3
+.. code:: python
 
     crf.print_transitions(10)
 
@@ -182,7 +182,7 @@ Print important transitions CRF model
     SCONJ  -> CCONJ   1.598273
     NUM    -> NUM     1.475505
     ADV    -> VERB    1.442607
-    
+
     Top-10 unlikely transitions:
     SCONJ  -> AUX     -3.559017
     X      -> SCONJ   -3.566058
@@ -199,7 +199,7 @@ Print important transitions CRF model
 Load deep learning models
 -------------------------
 
-.. code:: ipython3
+.. code:: python
 
     for i in malaya.get_available_pos_models():
         print('Testing %s model'%(i))
@@ -212,17 +212,17 @@ Load deep learning models
 
     Testing concat model
     [('Kuala', 'PROPN'), ('Lumpur', 'PROPN'), ('Sempena', 'VERB'), ('sambutan', 'NOUN'), ('Aidilfitri', 'NOUN'), ('minggu', 'NOUN'), ('depan', 'ADJ'), ('Perdana', 'NOUN'), ('Menteri', 'PROPN'), ('Tun', 'PROPN'), ('Dr', 'PROPN'), ('Mahathir', 'PROPN'), ('Mohamad', 'PROPN'), ('dan', 'CCONJ'), ('Menteri', 'NOUN'), ('Pengangkutan', 'PROPN'), ('Anthony', 'PROPN'), ('Loke', 'PROPN'), ('Siew', 'PROPN'), ('Fook', 'PROPN'), ('menitipkan', 'NOUN'), ('pesanan', 'VERB'), ('khas', 'ADJ'), ('kepada', 'ADP'), ('orang', 'NOUN'), ('ramai', 'ADJ'), ('yang', 'PRON'), ('mahu', 'ADV'), ('pulang', 'VERB'), ('ke', 'ADP'), ('kampung', 'NOUN'), ('halaman', 'NOUN'), ('masing-masing', 'PROPN'), ('Dalam', 'NOUN'), ('video', 'NOUN'), ('pendek', 'ADJ'), ('terbitan', 'NOUN'), ('Jabatan', 'PROPN'), ('Keselamatan', 'PROPN'), ('Jalan', 'PROPN'), ('Raya', 'PROPN'), ('Jkjr', 'NOUN'), ('itu', 'DET'), ('Dr', 'PROPN'), ('Mahathir', 'PROPN'), ('menasihati', 'VERB'), ('mereka', 'PRON'), ('supaya', 'SCONJ'), ('berhenti', 'VERB'), ('berehat', 'PROPN'), ('dan', 'CCONJ'), ('tidur', 'VERB'), ('sebentar', 'ADJ'), ('sekiranya', 'NOUN'), ('mengantuk', 'PROPN'), ('ketika', 'SCONJ'), ('memandu', 'VERB')]
-    
+
     Testing bahdanau model
     [('Kuala', 'PROPN'), ('Lumpur', 'PROPN'), ('Sempena', 'PRON'), ('sambutan', 'NOUN'), ('Aidilfitri', 'PROPN'), ('minggu', 'PROPN'), ('depan', 'ADJ'), ('Perdana', 'PROPN'), ('Menteri', 'PROPN'), ('Tun', 'PROPN'), ('Dr', 'PROPN'), ('Mahathir', 'PROPN'), ('Mohamad', 'PROPN'), ('dan', 'CCONJ'), ('Menteri', 'PROPN'), ('Pengangkutan', 'PROPN'), ('Anthony', 'PROPN'), ('Loke', 'PROPN'), ('Siew', 'PROPN'), ('Fook', 'PRON'), ('menitipkan', 'PROPN'), ('pesanan', 'ADP'), ('khas', 'ADJ'), ('kepada', 'ADP'), ('orang', 'NOUN'), ('ramai', 'ADJ'), ('yang', 'PRON'), ('mahu', 'ADV'), ('pulang', 'VERB'), ('ke', 'ADP'), ('kampung', 'NOUN'), ('halaman', 'NOUN'), ('masing-masing', 'PROPN'), ('Dalam', 'PROPN'), ('video', 'NOUN'), ('pendek', 'ADJ'), ('terbitan', 'NOUN'), ('Jabatan', 'NOUN'), ('Keselamatan', 'PROPN'), ('Jalan', 'PROPN'), ('Raya', 'PROPN'), ('Jkjr', 'PROPN'), ('itu', 'DET'), ('Dr', 'PROPN'), ('Mahathir', 'PROPN'), ('menasihati', 'VERB'), ('mereka', 'PRON'), ('supaya', 'PART'), ('berhenti', 'VERB'), ('berehat', 'PROPN'), ('dan', 'CCONJ'), ('tidur', 'VERB'), ('sebentar', 'ADV'), ('sekiranya', 'PROPN'), ('mengantuk', 'PROPN'), ('ketika', 'SCONJ'), ('memandu', 'VERB')]
-    
+
     Testing luong model
     downloading POS frozen luong model
 
 
 .. parsed-literal::
 
-    13.0MB [00:04, 2.92MB/s]                          
+    13.0MB [00:04, 2.92MB/s]
 
 
 .. parsed-literal::
@@ -232,20 +232,20 @@ Load deep learning models
 
 .. parsed-literal::
 
-    1.00MB [00:00, 3.15MB/s]                   
+    1.00MB [00:00, 3.15MB/s]
 
 
 .. parsed-literal::
 
     [('Kuala', 'PROPN'), ('Lumpur', 'PROPN'), ('Sempena', 'PROPN'), ('sambutan', 'PROPN'), ('Aidilfitri', 'PROPN'), ('minggu', 'PROPN'), ('depan', 'ADP'), ('Perdana', 'PROPN'), ('Menteri', 'PROPN'), ('Tun', 'PROPN'), ('Dr', 'PROPN'), ('Mahathir', 'PROPN'), ('Mohamad', 'PROPN'), ('dan', 'CCONJ'), ('Menteri', 'PROPN'), ('Pengangkutan', 'PROPN'), ('Anthony', 'PROPN'), ('Loke', 'PROPN'), ('Siew', 'PROPN'), ('Fook', 'PROPN'), ('menitipkan', 'PROPN'), ('pesanan', 'PROPN'), ('khas', 'ADJ'), ('kepada', 'ADP'), ('orang', 'NOUN'), ('ramai', 'NOUN'), ('yang', 'PRON'), ('mahu', 'ADV'), ('pulang', 'VERB'), ('ke', 'ADP'), ('kampung', 'NOUN'), ('halaman', 'NOUN'), ('masing-masing', 'NOUN'), ('Dalam', 'NOUN'), ('video', 'NOUN'), ('pendek', 'ADJ'), ('terbitan', 'NOUN'), ('Jabatan', 'PROPN'), ('Keselamatan', 'PROPN'), ('Jalan', 'PROPN'), ('Raya', 'PROPN'), ('Jkjr', 'PROPN'), ('itu', 'DET'), ('Dr', 'PROPN'), ('Mahathir', 'PROPN'), ('menasihati', 'PROPN'), ('mereka', 'PRON'), ('supaya', 'SCONJ'), ('berhenti', 'VERB'), ('berehat', 'NOUN'), ('dan', 'CCONJ'), ('tidur', 'NOUN'), ('sebentar', 'ADV'), ('sekiranya', 'PROPN'), ('mengantuk', 'NOUN'), ('ketika', 'SCONJ'), ('memandu', 'VERB')]
-    
+
     Testing entity-network model
     downloading POS frozen entity-network model
 
 
 .. parsed-literal::
 
-    11.0MB [00:03, 3.21MB/s]                          
+    11.0MB [00:03, 3.21MB/s]
       0%|          | 0.00/0.69 [00:00<?, ?MB/s]
 
 .. parsed-literal::
@@ -255,19 +255,19 @@ Load deep learning models
 
 .. parsed-literal::
 
-    1.00MB [00:00, 2.44MB/s]                   
+    1.00MB [00:00, 2.44MB/s]
 
 
 .. parsed-literal::
 
     [('Kuala', 'NOUN'), ('Lumpur', 'DET'), ('Sempena', 'NOUN'), ('sambutan', 'NOUN'), ('Aidilfitri', 'NOUN'), ('minggu', 'PROPN'), ('depan', 'SCONJ'), ('Perdana', 'VERB'), ('Menteri', 'PROPN'), ('Tun', 'VERB'), ('Dr', 'NOUN'), ('Mahathir', 'ADV'), ('Mohamad', 'VERB'), ('dan', 'CCONJ'), ('Menteri', 'ADV'), ('Pengangkutan', 'ADV'), ('Anthony', 'VERB'), ('Loke', 'X'), ('Siew', 'X'), ('Fook', 'DET'), ('menitipkan', 'VERB'), ('pesanan', 'DET'), ('khas', 'ADJ'), ('kepada', 'ADP'), ('orang', 'NOUN'), ('ramai', 'ADJ'), ('yang', 'PRON'), ('mahu', 'ADV'), ('pulang', 'VERB'), ('ke', 'ADP'), ('kampung', 'NOUN'), ('halaman', 'NOUN'), ('masing-masing', 'NOUN'), ('Dalam', 'ADV'), ('video', 'NOUN'), ('pendek', 'ADJ'), ('terbitan', 'ADP'), ('Jabatan', 'NOUN'), ('Keselamatan', 'PROPN'), ('Jalan', 'PROPN'), ('Raya', 'PROPN'), ('Jkjr', 'PROPN'), ('itu', 'DET'), ('Dr', 'VERB'), ('Mahathir', 'PROPN'), ('menasihati', 'PROPN'), ('mereka', 'PRON'), ('supaya', 'ADV'), ('berhenti', 'VERB'), ('berehat', 'NOUN'), ('dan', 'CCONJ'), ('tidur', 'NOUN'), ('sebentar', 'ADV'), ('sekiranya', 'VERB'), ('mengantuk', 'ADV'), ('ketika', 'SCONJ'), ('memandu', 'VERB')]
-    
+
 
 
 Voting stack model
 ------------------
 
-.. code:: ipython3
+.. code:: python
 
     entity_network = malaya.deep_pos('entity-network')
     bahdanau = malaya.deep_pos('bahdanau')
@@ -335,5 +335,3 @@ Voting stack model
      ('mengantuk', 'VERB'),
      ('ketika', 'SCONJ'),
      ('memandu', 'VERB')]
-
-
