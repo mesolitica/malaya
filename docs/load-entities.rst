@@ -1,12 +1,12 @@
 
-.. code:: python
+.. code:: ipython3
 
     import malaya
 
 List available deep learning NER models
 ---------------------------------------
 
-.. code:: python
+.. code:: ipython3
 
     malaya.get_available_entities_models()
 
@@ -15,14 +15,14 @@ List available deep learning NER models
 
 .. parsed-literal::
 
-    ['concat', 'bahdanau', 'luong']
+    ['concat', 'bahdanau', 'luong', 'entity-network']
 
 
 
 Describe supported entities
 ---------------------------
 
-.. code:: python
+.. code:: ipython3
 
     malaya.describe_entities()
 
@@ -39,27 +39,17 @@ Describe supported entities
     event - unique event happened, etc
 
 
-.. code:: python
+.. code:: ipython3
 
     string = 'KUALA LUMPUR: Sempena sambutan Aidilfitri minggu depan, Perdana Menteri Tun Dr Mahathir Mohamad dan Menteri Pengangkutan Anthony Loke Siew Fook menitipkan pesanan khas kepada orang ramai yang mahu pulang ke kampung halaman masing-masing. Dalam video pendek terbitan Jabatan Keselamatan Jalan Raya (JKJR) itu, Dr Mahathir menasihati mereka supaya berhenti berehat dan tidur sebentar  sekiranya mengantuk ketika memandu.'
 
 Load CRF model
 --------------
 
-.. code:: python
+.. code:: ipython3
 
     crf = malaya.crf_entities()
     crf.predict(string)
-
-
-.. parsed-literal::
-
-    downloading ENTITIES frozen CRF model
-
-
-.. parsed-literal::
-
-    3.00MB [00:00, 3.99MB/s]
 
 
 
@@ -129,7 +119,7 @@ Load CRF model
 Print important features from CRF model
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code:: python
+.. code:: ipython3
 
     crf.print_features(10)
 
@@ -147,7 +137,7 @@ Print important features from CRF model
     10.138113 person   word:terpantas
     9.938075 OTHER    word:sudah
     9.896239 location word:pakistan
-
+    
     Top-10 negative:
     -6.265843 OTHER    word:memintanya
     -6.318719 OTHER    prefix-3:pah
@@ -164,7 +154,7 @@ Print important features from CRF model
 Print important transitions from CRF Model
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code:: python
+.. code:: ipython3
 
     crf.print_transitions(10)
 
@@ -182,7 +172,7 @@ Print important transitions from CRF Model
     time   -> time    2.716374
     location -> OTHER   0.057188
     OTHER  -> location -0.033477
-
+    
     Top-10 unlikely transitions:
     event  -> person  -4.618084
     event  -> quantity -4.649371
@@ -199,7 +189,7 @@ Print important transitions from CRF Model
 Load deep learning models
 -------------------------
 
-.. code:: python
+.. code:: ipython3
 
     for i in malaya.get_available_entities_models():
         print('Testing %s model'%(i))
@@ -210,75 +200,90 @@ Load deep learning models
 
 .. parsed-literal::
 
-      0%|          | 0.00/7.94 [00:00<?, ?MB/s]
-
-.. parsed-literal::
-
     Testing concat model
-    downloading ENTITIES frozen concat model
-
-
-.. parsed-literal::
-
-    8.00MB [00:02, 3.52MB/s]
-      0%|          | 0.00/0.35 [00:00<?, ?MB/s]
-
-.. parsed-literal::
-
-    downloading ENTITIES concat dictionary
-
-
-.. parsed-literal::
-
-    1.00MB [00:00, 6.19MB/s]
-      0%|          | 0.00/7.94 [00:00<?, ?MB/s]
-
-.. parsed-literal::
-
-    [('kuala', 'location'), ('lumpur', 'location'), ('sempena', 'OTHER'), ('sambutan', 'event'), ('aidilfitri', 'event'), ('minggu', 'time'), ('depan', 'time'), ('perdana', 'person'), ('menteri', 'person'), ('tun', 'person'), ('dr', 'person'), ('mahathir', 'person'), ('mohamad', 'person'), ('dan', 'OTHER'), ('menteri', 'organization'), ('pengangkutan', 'organization'), ('anthony', 'person'), ('loke', 'person'), ('siew', 'person'), ('fook', 'person'), ('menitipkan', 'OTHER'), ('pesanan', 'OTHER'), ('khas', 'OTHER'), ('kepada', 'OTHER'), ('orang', 'OTHER'), ('ramai', 'OTHER'), ('yang', 'OTHER'), ('mahu', 'OTHER'), ('pulang', 'OTHER'), ('ke', 'OTHER'), ('kampung', 'OTHER'), ('halaman', 'location'), ('masing-masing', 'OTHER'), ('dalam', 'OTHER'), ('video', 'OTHER'), ('pendek', 'OTHER'), ('terbitan', 'OTHER'), ('jabatan', 'OTHER'), ('keselamatan', 'organization'), ('jalan', 'organization'), ('raya', 'organization'), ('jkjr', 'location'), ('itu', 'OTHER'), ('dr', 'person'), ('mahathir', 'person'), ('menasihati', 'OTHER'), ('mereka', 'OTHER'), ('supaya', 'OTHER'), ('berhenti', 'OTHER'), ('berehat', 'OTHER'), ('dan', 'OTHER'), ('tidur', 'OTHER'), ('sebentar', 'OTHER'), ('sekiranya', 'OTHER'), ('mengantuk', 'OTHER'), ('ketika', 'OTHER'), ('memandu', 'OTHER')]
-
+    [('kuala', 'location'), ('lumpur', 'location'), ('sempena', 'OTHER'), ('sambutan', 'event'), ('aidilfitri', 'event'), ('minggu', 'time'), ('depan', 'time'), ('perdana', 'person'), ('menteri', 'person'), ('tun', 'person'), ('dr', 'person'), ('mahathir', 'person'), ('mohamad', 'person'), ('dan', 'OTHER'), ('menteri', 'organization'), ('pengangkutan', 'organization'), ('anthony', 'person'), ('loke', 'person'), ('siew', 'person'), ('fook', 'person'), ('menitipkan', 'OTHER'), ('pesanan', 'OTHER'), ('khas', 'OTHER'), ('kepada', 'OTHER'), ('orang', 'OTHER'), ('ramai', 'OTHER'), ('yang', 'OTHER'), ('mahu', 'OTHER'), ('pulang', 'OTHER'), ('ke', 'OTHER'), ('kampung', 'OTHER'), ('halaman', 'location'), ('masing-masing', 'OTHER'), ('dalam', 'OTHER'), ('video', 'OTHER'), ('pendek', 'OTHER'), ('terbitan', 'OTHER'), ('jabatan', 'OTHER'), ('keselamatan', 'organization'), ('jalan', 'organization'), ('raya', 'organization'), ('jkjr', 'OTHER'), ('itu', 'OTHER'), ('dr', 'person'), ('mahathir', 'person'), ('menasihati', 'OTHER'), ('mereka', 'OTHER'), ('supaya', 'OTHER'), ('berhenti', 'OTHER'), ('berehat', 'OTHER'), ('dan', 'OTHER'), ('tidur', 'OTHER'), ('sebentar', 'OTHER'), ('sekiranya', 'OTHER'), ('mengantuk', 'OTHER'), ('ketika', 'OTHER'), ('memandu', 'OTHER')]
+    
     Testing bahdanau model
-    downloading ENTITIES frozen bahdanau model
-
-
-.. parsed-literal::
-
-    8.00MB [00:02, 3.78MB/s]
-      0%|          | 0.00/0.35 [00:00<?, ?MB/s]
-
-.. parsed-literal::
-
-    downloading ENTITIES bahdanau dictionary
-
-
-.. parsed-literal::
-
-    1.00MB [00:00, 5.44MB/s]
-      0%|          | 0.00/7.86 [00:00<?, ?MB/s]
-
-.. parsed-literal::
-
-    [('kuala', 'location'), ('lumpur', 'location'), ('sempena', 'OTHER'), ('sambutan', 'event'), ('aidilfitri', 'event'), ('minggu', 'time'), ('depan', 'time'), ('perdana', 'person'), ('menteri', 'person'), ('tun', 'person'), ('dr', 'person'), ('mahathir', 'person'), ('mohamad', 'person'), ('dan', 'OTHER'), ('menteri', 'person'), ('pengangkutan', 'person'), ('anthony', 'person'), ('loke', 'person'), ('siew', 'person'), ('fook', 'person'), ('menitipkan', 'OTHER'), ('pesanan', 'OTHER'), ('khas', 'organization'), ('kepada', 'OTHER'), ('orang', 'organization'), ('ramai', 'OTHER'), ('yang', 'OTHER'), ('mahu', 'OTHER'), ('pulang', 'OTHER'), ('ke', 'OTHER'), ('kampung', 'OTHER'), ('halaman', 'location'), ('masing-masing', 'OTHER'), ('dalam', 'OTHER'), ('video', 'OTHER'), ('pendek', 'OTHER'), ('terbitan', 'OTHER'), ('jabatan', 'organization'), ('keselamatan', 'organization'), ('jalan', 'organization'), ('raya', 'organization'), ('jkjr', 'organization'), ('itu', 'OTHER'), ('dr', 'person'), ('mahathir', 'person'), ('menasihati', 'OTHER'), ('mereka', 'OTHER'), ('supaya', 'OTHER'), ('berhenti', 'OTHER'), ('berehat', 'OTHER'), ('dan', 'OTHER'), ('tidur', 'OTHER'), ('sebentar', 'OTHER'), ('sekiranya', 'OTHER'), ('mengantuk', 'OTHER'), ('ketika', 'OTHER'), ('memandu', 'OTHER')]
-
+    [('kuala', 'location'), ('lumpur', 'location'), ('sempena', 'OTHER'), ('sambutan', 'event'), ('aidilfitri', 'event'), ('minggu', 'time'), ('depan', 'time'), ('perdana', 'person'), ('menteri', 'person'), ('tun', 'person'), ('dr', 'person'), ('mahathir', 'person'), ('mohamad', 'person'), ('dan', 'OTHER'), ('menteri', 'person'), ('pengangkutan', 'person'), ('anthony', 'person'), ('loke', 'person'), ('siew', 'person'), ('fook', 'person'), ('menitipkan', 'OTHER'), ('pesanan', 'OTHER'), ('khas', 'OTHER'), ('kepada', 'OTHER'), ('orang', 'organization'), ('ramai', 'OTHER'), ('yang', 'OTHER'), ('mahu', 'OTHER'), ('pulang', 'OTHER'), ('ke', 'OTHER'), ('kampung', 'OTHER'), ('halaman', 'location'), ('masing-masing', 'OTHER'), ('dalam', 'OTHER'), ('video', 'OTHER'), ('pendek', 'OTHER'), ('terbitan', 'OTHER'), ('jabatan', 'organization'), ('keselamatan', 'organization'), ('jalan', 'organization'), ('raya', 'organization'), ('jkjr', 'organization'), ('itu', 'OTHER'), ('dr', 'person'), ('mahathir', 'person'), ('menasihati', 'OTHER'), ('mereka', 'OTHER'), ('supaya', 'OTHER'), ('berhenti', 'OTHER'), ('berehat', 'OTHER'), ('dan', 'OTHER'), ('tidur', 'OTHER'), ('sebentar', 'OTHER'), ('sekiranya', 'OTHER'), ('mengantuk', 'OTHER'), ('ketika', 'OTHER'), ('memandu', 'OTHER')]
+    
     Testing luong model
-    downloading ENTITIES frozen luong model
+    [('kuala', 'location'), ('lumpur', 'location'), ('sempena', 'OTHER'), ('sambutan', 'event'), ('aidilfitri', 'event'), ('minggu', 'OTHER'), ('depan', 'OTHER'), ('perdana', 'person'), ('menteri', 'person'), ('tun', 'person'), ('dr', 'person'), ('mahathir', 'person'), ('mohamad', 'person'), ('dan', 'OTHER'), ('menteri', 'person'), ('pengangkutan', 'OTHER'), ('anthony', 'person'), ('loke', 'person'), ('siew', 'person'), ('fook', 'person'), ('menitipkan', 'OTHER'), ('pesanan', 'OTHER'), ('khas', 'OTHER'), ('kepada', 'OTHER'), ('orang', 'OTHER'), ('ramai', 'OTHER'), ('yang', 'OTHER'), ('mahu', 'OTHER'), ('pulang', 'OTHER'), ('ke', 'OTHER'), ('kampung', 'OTHER'), ('halaman', 'OTHER'), ('masing-masing', 'OTHER'), ('dalam', 'OTHER'), ('video', 'OTHER'), ('pendek', 'OTHER'), ('terbitan', 'OTHER'), ('jabatan', 'organization'), ('keselamatan', 'organization'), ('jalan', 'organization'), ('raya', 'person'), ('jkjr', 'OTHER'), ('itu', 'OTHER'), ('dr', 'person'), ('mahathir', 'person'), ('menasihati', 'OTHER'), ('mereka', 'OTHER'), ('supaya', 'OTHER'), ('berhenti', 'OTHER'), ('berehat', 'person'), ('dan', 'OTHER'), ('tidur', 'OTHER'), ('sebentar', 'OTHER'), ('sekiranya', 'OTHER'), ('mengantuk', 'OTHER'), ('ketika', 'OTHER'), ('memandu', 'OTHER')]
+    
+    Testing entity-network model
+    [('kuala', 'location'), ('lumpur', 'location'), ('sempena', 'OTHER'), ('sambutan', 'OTHER'), ('aidilfitri', 'event'), ('minggu', 'time'), ('depan', 'time'), ('perdana', 'person'), ('menteri', 'person'), ('tun', 'person'), ('dr', 'person'), ('mahathir', 'person'), ('mohamad', 'OTHER'), ('dan', 'OTHER'), ('menteri', 'OTHER'), ('pengangkutan', 'OTHER'), ('anthony', 'person'), ('loke', 'person'), ('siew', 'person'), ('fook', 'person'), ('menitipkan', 'OTHER'), ('pesanan', 'OTHER'), ('khas', 'OTHER'), ('kepada', 'OTHER'), ('orang', 'person'), ('ramai', 'OTHER'), ('yang', 'OTHER'), ('mahu', 'OTHER'), ('pulang', 'OTHER'), ('ke', 'OTHER'), ('kampung', 'OTHER'), ('halaman', 'OTHER'), ('masing-masing', 'OTHER'), ('dalam', 'OTHER'), ('video', 'OTHER'), ('pendek', 'OTHER'), ('terbitan', 'OTHER'), ('jabatan', 'organization'), ('keselamatan', 'organization'), ('jalan', 'organization'), ('raya', 'organization'), ('jkjr', 'organization'), ('itu', 'OTHER'), ('dr', 'person'), ('mahathir', 'person'), ('menasihati', 'OTHER'), ('mereka', 'OTHER'), ('supaya', 'OTHER'), ('berhenti', 'OTHER'), ('berehat', 'OTHER'), ('dan', 'OTHER'), ('tidur', 'OTHER'), ('sebentar', 'OTHER'), ('sekiranya', 'OTHER'), ('mengantuk', 'OTHER'), ('ketika', 'OTHER'), ('memandu', 'OTHER')]
+    
+
+
+Voting stack model
+------------------
+
+.. code:: ipython3
+
+    entity_network = malaya.deep_entities('entity-network')
+    bahdanau = malaya.deep_entities('bahdanau')
+    malaya.voting_stack([entity_network, bahdanau, crf], string)
+
+
 
 
 .. parsed-literal::
 
-    8.00MB [00:02, 3.29MB/s]
-      0%|          | 0.00/0.35 [00:00<?, ?MB/s]
+    [('kuala', 'location'),
+     ('lumpur', 'location'),
+     ('sempena', 'OTHER'),
+     ('sambutan', 'event'),
+     ('aidilfitri', 'event'),
+     ('minggu', 'time'),
+     ('depan', 'OTHER'),
+     ('perdana', 'person'),
+     ('menteri', 'person'),
+     ('tun', 'person'),
+     ('dr', 'person'),
+     ('mahathir', 'person'),
+     ('mohamad', 'person'),
+     ('dan', 'OTHER'),
+     ('menteri', 'OTHER'),
+     ('pengangkutan', 'OTHER'),
+     ('anthony', 'person'),
+     ('loke', 'person'),
+     ('siew', 'person'),
+     ('fook', 'person'),
+     ('menitipkan', 'OTHER'),
+     ('pesanan', 'OTHER'),
+     ('khas', 'OTHER'),
+     ('kepada', 'OTHER'),
+     ('orang', 'organization'),
+     ('ramai', 'OTHER'),
+     ('yang', 'OTHER'),
+     ('mahu', 'OTHER'),
+     ('pulang', 'OTHER'),
+     ('ke', 'OTHER'),
+     ('kampung', 'OTHER'),
+     ('halaman', 'location'),
+     ('masing-masing', 'OTHER'),
+     ('dalam', 'OTHER'),
+     ('video', 'OTHER'),
+     ('pendek', 'OTHER'),
+     ('terbitan', 'OTHER'),
+     ('jabatan', 'organization'),
+     ('keselamatan', 'organization'),
+     ('jalan', 'organization'),
+     ('raya', 'organization'),
+     ('jkjr', 'organization'),
+     ('itu', 'OTHER'),
+     ('dr', 'person'),
+     ('mahathir', 'person'),
+     ('menasihati', 'OTHER'),
+     ('mereka', 'OTHER'),
+     ('supaya', 'OTHER'),
+     ('berhenti', 'OTHER'),
+     ('berehat', 'OTHER'),
+     ('dan', 'OTHER'),
+     ('tidur', 'OTHER'),
+     ('sebentar', 'OTHER'),
+     ('sekiranya', 'OTHER'),
+     ('mengantuk', 'OTHER'),
+     ('ketika', 'OTHER'),
+     ('memandu', 'OTHER')]
 
-.. parsed-literal::
 
-    downloading ENTITIES luong dictionary
-
-
-.. parsed-literal::
-
-    1.00MB [00:00, 4.71MB/s]
-
-
-.. parsed-literal::
-
-    [('kuala', 'location'), ('lumpur', 'location'), ('sempena', 'OTHER'), ('sambutan', 'event'), ('aidilfitri', 'event'), ('minggu', 'time'), ('depan', 'OTHER'), ('perdana', 'person'), ('menteri', 'person'), ('tun', 'person'), ('dr', 'person'), ('mahathir', 'person'), ('mohamad', 'person'), ('dan', 'OTHER'), ('menteri', 'organization'), ('pengangkutan', 'organization'), ('anthony', 'person'), ('loke', 'person'), ('siew', 'person'), ('fook', 'person'), ('menitipkan', 'OTHER'), ('pesanan', 'OTHER'), ('khas', 'OTHER'), ('kepada', 'OTHER'), ('orang', 'OTHER'), ('ramai', 'OTHER'), ('yang', 'OTHER'), ('mahu', 'OTHER'), ('pulang', 'OTHER'), ('ke', 'OTHER'), ('kampung', 'OTHER'), ('halaman', 'OTHER'), ('masing-masing', 'OTHER'), ('dalam', 'OTHER'), ('video', 'OTHER'), ('pendek', 'OTHER'), ('terbitan', 'OTHER'), ('jabatan', 'organization'), ('keselamatan', 'organization'), ('jalan', 'organization'), ('raya', 'person'), ('jkjr', 'OTHER'), ('itu', 'OTHER'), ('dr', 'person'), ('mahathir', 'person'), ('menasihati', 'OTHER'), ('mereka', 'OTHER'), ('supaya', 'OTHER'), ('berhenti', 'OTHER'), ('berehat', 'person'), ('dan', 'OTHER'), ('tidur', 'OTHER'), ('sebentar', 'OTHER'), ('sekiranya', 'OTHER'), ('mengantuk', 'OTHER'), ('ketika', 'OTHER'), ('memandu', 'OTHER')]

@@ -17,9 +17,9 @@ from .sklearn_model import CRF
 
 def get_available_entities_models():
     """
-    List available deep learning entities models, ['concat', 'bahdanau', 'luong']
+    List available deep learning entities models, ['concat', 'bahdanau', 'luong','entity-network']
     """
-    return ['concat', 'bahdanau', 'luong']
+    return ['concat', 'bahdanau', 'luong', 'entity-network']
 
 
 def crf_entities():
@@ -59,7 +59,7 @@ def deep_entities(model = 'bahdanau'):
     """
     assert isinstance(model, str), 'model must be a string'
     model = model.lower()
-    if model in ['concat', 'bahdanau', 'luong']:
+    if model in ['concat', 'bahdanau', 'luong', 'entity-network']:
         if not os.path.isfile(PATH_ENTITIES[model]['model']):
             print('downloading ENTITIES frozen %s model' % (model))
             download_file(
@@ -74,13 +74,25 @@ def deep_entities(model = 'bahdanau'):
         with open(PATH_ENTITIES[model]['setting'], 'r') as fopen:
             nodes = json.loads(fopen.read())
         g = load_graph(PATH_ENTITIES[model]['model'])
-        return TAGGING(
-            g.get_tensor_by_name('import/Placeholder:0'),
-            g.get_tensor_by_name('import/Placeholder_1:0'),
-            g.get_tensor_by_name('import/logits:0'),
-            nodes,
-            tf.InteractiveSession(graph = g),
-        )
+        if model == 'entity-network':
+            return TAGGING(
+                g.get_tensor_by_name('import/question:0'),
+                g.get_tensor_by_name('import/char_ids:0'),
+                g.get_tensor_by_name('import/logits:0'),
+                nodes,
+                tf.InteractiveSession(graph = g),
+                model,
+                story = g.get_tensor_by_name('import/story:0'),
+            )
+        else:
+            return TAGGING(
+                g.get_tensor_by_name('import/Placeholder:0'),
+                g.get_tensor_by_name('import/Placeholder_1:0'),
+                g.get_tensor_by_name('import/logits:0'),
+                nodes,
+                tf.InteractiveSession(graph = g),
+                model,
+            )
 
     else:
         raise Exception(

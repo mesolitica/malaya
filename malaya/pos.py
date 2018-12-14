@@ -19,9 +19,9 @@ from .paths import PATH_POS, S3_PATH_POS
 
 def get_available_pos_models():
     """
-    List available deep learning entities models, ['concat', 'bahdanau', 'luong']
+    List available deep learning entities models, ['concat', 'bahdanau', 'luong','entity-network']
     """
-    return ['concat', 'bahdanau', 'luong']
+    return ['concat', 'bahdanau', 'luong', 'entity-network']
 
 
 def naive_POS_word(word):
@@ -102,7 +102,7 @@ def deep_pos(model = 'concat'):
     """
     assert isinstance(model, str), 'model must be a string'
     model = model.lower()
-    if model in ['concat', 'bahdanau', 'luong']:
+    if model in ['concat', 'bahdanau', 'luong', 'entity-network']:
         if not os.path.isfile(PATH_POS[model]['model']):
             print('downloading POS frozen %s model' % (model))
             download_file(S3_PATH_POS[model]['model'], PATH_POS[model]['model'])
@@ -114,15 +114,27 @@ def deep_pos(model = 'concat'):
         with open(PATH_POS[model]['setting'], 'r') as fopen:
             nodes = json.loads(fopen.read())
         g = load_graph(PATH_POS[model]['model'])
-        return TAGGING(
-            g.get_tensor_by_name('import/Placeholder:0'),
-            g.get_tensor_by_name('import/Placeholder_1:0'),
-            g.get_tensor_by_name('import/logits:0'),
-            nodes,
-            tf.InteractiveSession(graph = g),
-            is_lower = False,
-        )
-
+        if model == 'entity-network':
+            return TAGGING(
+                g.get_tensor_by_name('import/question:0'),
+                g.get_tensor_by_name('import/char_ids:0'),
+                g.get_tensor_by_name('import/logits:0'),
+                nodes,
+                tf.InteractiveSession(graph = g),
+                model,
+                is_lower = False,
+                story = g.get_tensor_by_name('import/story:0'),
+            )
+        else:
+            return TAGGING(
+                g.get_tensor_by_name('import/Placeholder:0'),
+                g.get_tensor_by_name('import/Placeholder_1:0'),
+                g.get_tensor_by_name('import/logits:0'),
+                nodes,
+                tf.InteractiveSession(graph = g),
+                model,
+                is_lower = False,
+            )
     else:
         raise Exception(
             'model not supported, please check supported models from malaya.get_available_pos_models()'

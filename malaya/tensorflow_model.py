@@ -18,13 +18,26 @@ from .stemmer import classification_textcleaning_stemmer_attention
 
 
 class TAGGING:
-    def __init__(self, X, X_char, logits, settings, sess, is_lower = True):
+    def __init__(
+        self,
+        X,
+        X_char,
+        logits,
+        settings,
+        sess,
+        model,
+        is_lower = True,
+        story = None,
+    ):
         self._X = X
         self._X_char = X_char
         self._logits = logits
         self._settings = settings
         self._sess = sess
+        self._model = model
         self._is_lower = is_lower
+        self._story = story
+
         self._settings['idx2word'] = {
             int(k): v for k, v in self._settings['idx2word'].items()
         }
@@ -51,11 +64,21 @@ class TAGGING:
         batch_x_char = generate_char_seq(
             batch_x, self._settings['idx2word'], self._settings['char2idx']
         )
-        predicted = self._sess.run(
-            self._logits,
-            feed_dict = {self._X: batch_x, self._X_char: batch_x_char},
-        )[0]
-
+        if self._model == 'entity-network':
+            batch_x_expand = np.expand_dims(batch_x, axis = 1)
+            predicted = self._sess.run(
+                self._logits,
+                feed_dict = {
+                    self._X: batch_x,
+                    self._X_char: batch_x_char,
+                    self._story: batch_x_expand,
+                },
+            )[0]
+        else:
+            predicted = self._sess.run(
+                self._logits,
+                feed_dict = {self._X: batch_x, self._X_char: batch_x_char},
+            )[0]
         return [
             (string[i], self._settings['idx2tag'][predicted[i]])
             for i in range(len(predicted))

@@ -542,3 +542,22 @@ def features_crf(sentence, index):
         'has_hyphen': '-' in sentence[index],
         'is_numeric': sentence[index].isdigit(),
     }
+
+
+def most_common(l):
+    return max(set(l), key = l.count)
+
+
+def voting_stack(models, text):
+    assert isinstance(models, list), 'models must be a list'
+    assert isinstance(text, str), 'vectorizer must be a string'
+    results, texts, votes = [], [], []
+    for i in range(len(models)):
+        assert 'predict' in dir(models[i]), 'all models must able to predict'
+        predicted = np.array(models[i].predict(text))
+        results.append(predicted[:, 1:2])
+        texts.append(predicted[:, 0])
+    concatenated = np.concatenate(results, axis = 1)
+    for row in concatenated:
+        votes.append(most_common(row.tolist()))
+    return list(map(lambda X: (X[0], X[1]), list(zip(texts[-1], votes))))

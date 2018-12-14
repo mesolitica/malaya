@@ -95,6 +95,7 @@ from .summarization import (
     summarize_lda,
     summarize_deep_learning,
 )
+from .text_functions import voting_stack
 from .topic_modelling import (
     lda_topic_modelling,
     nmf_topic_modelling,

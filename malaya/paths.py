@@ -94,6 +94,10 @@ PATH_POS = {
         'model': home + '/bahdanau-pos.pb',
         'setting': home + '/bahdanau-pos.json',
     },
+    'entity-network': {
+        'model': home + '/entity-pos.pb',
+        'setting': home + '/entity-pos.json',
+    },
 }
 
 S3_PATH_POS = {
@@ -109,6 +113,10 @@ S3_PATH_POS = {
     'bahdanau': {
         'model': 'v8/pos/bahdanau-pos.pb',
         'setting': 'v8/pos/bahdanau-pos.json',
+    },
+    'entity-network': {
+        'model': 'v8/pos/entity-pos.pb',
+        'setting': 'v8/pos/entity-pos.json',
     },
 }
 
@@ -162,6 +170,10 @@ PATH_ENTITIES = {
         'model': home + '/bahdanau-entities.pb',
         'setting': home + '/bahdanau-entities.json',
     },
+    'entity-network': {
+        'model': home + '/entity-entities.pb',
+        'setting': home + '/entity-entities.json',
+    },
 }
 
 S3_PATH_ENTITIES = {
@@ -177,6 +189,10 @@ S3_PATH_ENTITIES = {
     'bahdanau': {
         'model': 'v8/entities/bahdanau-entities.pb',
         'setting': 'v8/entities/bahdanau-entities.json',
+    },
+    'entity-network': {
+        'model': 'v8/entities/entity-entities.pb',
+        'setting': 'v8/entities/entity-entities.json',
     },
 }
 
