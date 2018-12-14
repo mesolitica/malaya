@@ -52,6 +52,7 @@ def deep_entities(model = 'bahdanau'):
         * ``'concat'`` - Concating character and word embedded for BiLSTM
         * ``'bahdanau'`` - Concating character and word embedded including Bahdanau Attention for BiLSTM
         * ``'luong'`` - Concating character and word embedded including Luong Attention for BiLSTM
+        * ``'entity-network'`` - Concating character and word embedded on hybrid Entity-Network and RNN
 
     Returns
     -------

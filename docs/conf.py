@@ -131,6 +131,8 @@ exclude_patterns = [
     'Thumbs.db',
     '.DS_Store',
     'load-*.rst',
+    '*.ipynb',
+    'references.rst',
 ]
 
 # The name of the Pygments (syntax highlighting) style to use.
