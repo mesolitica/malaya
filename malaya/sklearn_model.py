@@ -285,3 +285,95 @@ class TOXIC:
             else:
                 result[label] = self._models[no].predict(stacked).tolist()
         return result
+
+
+class LANGUAGE_DETECTION:
+    def __init__(self, model, label, vectorizer, mode = 'sklearn'):
+        self._model = model
+        self._label = label
+        self._vectorizer = vectorizer
+        self._mode = mode
+
+    def predict(self, string, get_proba = False):
+        """
+        Classify a string
+
+        Parameters
+        ----------
+        string : str
+        get_proba: bool, optional (default=False)
+            If True, it will return probability of classes.
+
+        Returns
+        -------
+        string: result
+        """
+        assert isinstance(string, str), 'input must be a string'
+        string = string.lower()
+        char_features = self._vectorizer['bow'].transform([string])
+        tfidf_features = self._vectorizer['tfidf'].transform([string])
+        vectors = hstack([char_features, tfidf_features])
+        if self._mode == 'xgb':
+            result = self._model.predict(
+                xgb.DMatrix(vectors), ntree_limit = self._model.best_ntree_limit
+            )[0]
+            if get_proba:
+                return {self._label[i]: result[i] for i in range(len(result))}
+            else:
+                return self._label[np.argmax(result)]
+        else:
+            if get_proba:
+                result = self._model.predict_proba(vectors)[0]
+                return {self._label[i]: result[i] for i in range(len(result))}
+            else:
+                return self._label[self._model.predict(vectors)[0]]
+
+    def predict_batch(self, strings, get_proba = False):
+        """
+        Classify a list of strings
+
+        Parameters
+        ----------
+        strings: list
+        get_proba: bool, optional (default=False)
+            If True, it will return probability of classes.
+
+        Returns
+        -------
+        string: list of results
+        """
+        assert isinstance(strings, list) and isinstance(
+            strings[0], str
+        ), 'input must be list of strings'
+        strings = [string.lower() for string in strings]
+        char_features = self._vectorizer['bow'].transform(strings)
+        tfidf_features = self._vectorizer['tfidf'].transform(strings)
+        vectors = hstack([char_features, tfidf_features])
+
+        if self._mode == 'xgb':
+            results = self._model.predict(
+                xgb.DMatrix(vectors), ntree_limit = self._model.best_ntree_limit
+            )
+            if get_proba:
+                outputs = []
+                for result in results:
+                    outputs.append(
+                        {self._label[i]: result[i] for i in range(len(result))}
+                    )
+                return outputs
+            else:
+                return [self._label[i] for i in np.argmax(results, axis = 1)]
+        else:
+            if get_proba:
+                results = self._model.predict_proba(vectors)
+                outputs = []
+                for result in results:
+                    outputs.append(
+                        {self._label[i]: result[i] for i in range(len(result))}
+                    )
+                return outputs
+            else:
+                return [
+                    self._label[result]
+                    for result in self._model.predict(vectors)
+                ]

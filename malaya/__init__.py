@@ -9,7 +9,7 @@ import os
 
 home = str(Path.home()) + '/Malaya'
 version = '0.8'
-bump_version = '0.8.0.1'
+bump_version = '0.8.6.0'
 version_path = home + '/version'
 
 
@@ -63,6 +63,7 @@ from .language_detection import (
     multinomial_detect_languages,
     xgb_detect_languages,
     get_language_labels,
+    sgd_detect_languages,
 )
 from .normalizer import (
     spell_normalizer,

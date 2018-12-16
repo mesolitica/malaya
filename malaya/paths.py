@@ -137,22 +137,30 @@ S3_PATH_NORMALIZER = {
 PATH_LANG_DETECTION = {
     'multinomial': {
         'model': home + '/multinomial-language-detection.pkl',
-        'vector': home + '/bow-language-detection.pkl',
+        'vector': home + '/vectorizer-language-detection.pkl',
     },
     'xgb': {
         'model': home + '/xgb-language-detection.pkl',
-        'vector': home + '/bow-xgb-language-detection.pkl',
+        'vector': home + '/vectorizer-language-detection.pkl',
+    },
+    'sgd': {
+        'model': home + '/sgd-language-detection.pkl',
+        'vector': home + '/vectorizer-language-detection.pkl',
     },
 }
 
 S3_PATH_LANG_DETECTION = {
     'multinomial': {
-        'model': 'multinomial-language-detection.pkl',
-        'vector': 'bow-language-detection.pkl',
+        'model': 'v8/language-detection/multinomial-language-detection.pkl',
+        'vector': 'v8/language-detection/language-detection-vectorizer.pkl',
     },
     'xgb': {
-        'model': 'xgboost-language-detection.pkl',
-        'vector': 'bow-xgboost-language-detection.pkl',
+        'model': 'v8/language-detection/xgboost-language-detection.pkl',
+        'vector': 'v8/language-detection/language-detection-vectorizer.pkl',
+    },
+    'sgd': {
+        'model': 'v8/language-detection/sgd-language-detection.pkl',
+        'vector': 'v8/language-detection/language-detection-vectorizer.pkl',
     },
 }
 

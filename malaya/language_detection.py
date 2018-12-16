@@ -6,11 +6,8 @@ if not sys.warnoptions:
 
 import pickle
 import os
-import xgboost as xgb
-import numpy as np
-from .text_functions import simple_textcleaning
 from .utils import download_file
-from .sklearn_model import USER_XGB, USER_BAYES
+from .sklearn_model import LANGUAGE_DETECTION
 from .paths import PATH_LANG_DETECTION, S3_PATH_LANG_DETECTION
 
 lang_labels = {0: 'OTHER', 1: 'ENGLISH', 2: 'INDONESIA', 3: 'MALAY'}
@@ -29,10 +26,10 @@ def multinomial_detect_languages():
 
     Returns
     -------
-    USER_BAYES : malaya.sklearn_model.USER_BAYES class
+    LANGUAGE_DETECTION : malaya.sklearn_model.LANGUAGE_DETECTION class
     """
     if not os.path.isfile(PATH_LANG_DETECTION['multinomial']['vector']):
-        print('downloading LANGUAGE-DETECTION pickled bag-of-word multinomial')
+        print('downloading LANGUAGE-DETECTION pickled vectorizer')
         download_file(
             S3_PATH_LANG_DETECTION['multinomial']['vector'],
             PATH_LANG_DETECTION['multinomial']['vector'],
@@ -44,10 +41,37 @@ def multinomial_detect_languages():
             PATH_LANG_DETECTION['multinomial']['model'],
         )
     with open(PATH_LANG_DETECTION['multinomial']['vector'], 'rb') as fopen:
-        BOW = pickle.load(fopen)
+        vector = pickle.load(fopen)
     with open(PATH_LANG_DETECTION['multinomial']['model'], 'rb') as fopen:
-        MULTINOMIAL = pickle.load(fopen)
-    return USER_BAYES(MULTINOMIAL, lang_labels, BOW)
+        model = pickle.load(fopen)
+    return LANGUAGE_DETECTION(model, lang_labels, vector)
+
+
+def sgd_detect_languages():
+    """
+    Load SGD language detection model.
+
+    Returns
+    -------
+    LANGUAGE_DETECTION : malaya.sklearn_model.LANGUAGE_DETECTION class
+    """
+    if not os.path.isfile(PATH_LANG_DETECTION['sgd']['vector']):
+        print('downloading LANGUAGE-DETECTION pickled vectorizer')
+        download_file(
+            S3_PATH_LANG_DETECTION['sgd']['vector'],
+            PATH_LANG_DETECTION['sgd']['vector'],
+        )
+    if not os.path.isfile(PATH_LANG_DETECTION['sgd']['model']):
+        print('downloading LANGUAGE-DETECTION pickled SGD model')
+        download_file(
+            S3_PATH_LANG_DETECTION['sgd']['model'],
+            PATH_LANG_DETECTION['sgd']['model'],
+        )
+    with open(PATH_LANG_DETECTION['sgd']['vector'], 'rb') as fopen:
+        vector = pickle.load(fopen)
+    with open(PATH_LANG_DETECTION['sgd']['model'], 'rb') as fopen:
+        model = pickle.load(fopen)
+    return LANGUAGE_DETECTION(model, lang_labels, vector)
 
 
 def xgb_detect_languages():
@@ -56,10 +80,10 @@ def xgb_detect_languages():
 
     Returns
     -------
-    USER_XGB : malaya.sklearn_model.USER_XGB class
+    LANGUAGE_DETECTION : malaya.sklearn_model.LANGUAGE_DETECTION class
     """
     if not os.path.isfile(PATH_LANG_DETECTION['xgb']['vector']):
-        print('downloading LANGUAGE-DETECTION pickled bag-of-word XGB')
+        print('downloading LANGUAGE-DETECTION pickled vectorizer')
         download_file(
             S3_PATH_LANG_DETECTION['xgb']['vector'],
             PATH_LANG_DETECTION['xgb']['vector'],
@@ -71,7 +95,7 @@ def xgb_detect_languages():
             PATH_LANG_DETECTION['xgb']['model'],
         )
     with open(PATH_LANG_DETECTION['xgb']['vector'], 'rb') as fopen:
-        BOW = pickle.load(fopen)
+        vector = pickle.load(fopen)
     with open(PATH_LANG_DETECTION['xgb']['model'], 'rb') as fopen:
-        XGB = pickle.load(fopen)
-    return USER_XGB(XGB, lang_labels, BOW)
+        model = pickle.load(fopen)
+    return LANGUAGE_DETECTION(model, lang_labels, vector, mode = 'xgb')

@@ -32,34 +32,17 @@ Load multinomial model
 .. code:: ipython3
 
     multinomial = malaya.multinomial_detect_languages()
-    multinomial.predict(chinese_text)
-
-
-.. parsed-literal::
-
-    downloading LANGUAGE-DETECTION pickled bag-of-word multinomial
-
-
-.. parsed-literal::
-
-    46.0MB [00:16, 2.81MB/s]                          
-
-
-.. parsed-literal::
-
-    downloading LANGUAGE-DETECTION pickled multinomial model
-
-
-.. parsed-literal::
-
-    58.0MB [00:26, 2.15MB/s]                          
+    multinomial.predict(chinese_text,get_proba=True)
 
 
 
 
 .. parsed-literal::
 
-    'ENGLISH'
+    {'OTHER': 1.0,
+     'ENGLISH': 2.157849898017918e-22,
+     'INDONESIA': 4.2440922283612186e-30,
+     'MALAY': 1.191161632678076e-41}
 
 
 
@@ -85,7 +68,7 @@ Load multinomial model
 
 .. parsed-literal::
 
-    'MALAY'
+    'INDONESIA'
 
 
 
@@ -113,7 +96,7 @@ Load multinomial model
 
     {'OTHER': 0.0,
      'ENGLISH': 0.0,
-     'INDONESIA': 1.485952831042105e-173,
+     'INDONESIA': 1.2874523558561307e-52,
      'MALAY': 1.0}
 
 
@@ -140,14 +123,110 @@ Load multinomial model
 
 .. parsed-literal::
 
-    [{'OTHER': 5.0953089622773946e-58,
+    [{'OTHER': 1.807742600646247e-74,
       'ENGLISH': 1.0,
-      'INDONESIA': 3.1682621618878156e-60,
-      'MALAY': 4.1605996684502836e-54},
+      'INDONESIA': 7.503596159299667e-77,
+      'MALAY': 1.4742530879417279e-58},
      {'OTHER': 0.0,
       'ENGLISH': 0.0,
-      'INDONESIA': 1.485952831042105e-173,
+      'INDONESIA': 1.2874523558561307e-52,
       'MALAY': 1.0}]
+
+
+
+Load SGD model
+--------------
+
+.. code:: ipython3
+
+    sgd = malaya.sgd_detect_languages()
+    sgd.predict(chinese_text,get_proba=True)
+
+
+
+
+.. parsed-literal::
+
+    {'OTHER': 1.0, 'ENGLISH': 0.0, 'INDONESIA': 0.0, 'MALAY': 0.0}
+
+
+
+.. code:: ipython3
+
+    sgd.predict(english_text)
+
+
+
+
+.. parsed-literal::
+
+    'ENGLISH'
+
+
+
+.. code:: ipython3
+
+    sgd.predict(indon_text)
+
+
+
+
+.. parsed-literal::
+
+    'INDONESIA'
+
+
+
+.. code:: ipython3
+
+    sgd.predict(malay_text)
+
+
+
+
+.. parsed-literal::
+
+    'MALAY'
+
+
+
+.. code:: ipython3
+
+    sgd.predict(malay_text,get_proba=True)
+
+
+
+
+.. parsed-literal::
+
+    {'OTHER': 0.0, 'ENGLISH': 0.0, 'INDONESIA': 0.0, 'MALAY': 1.0}
+
+
+
+.. code:: ipython3
+
+    sgd.predict_batch([english_text,malay_text])
+
+
+
+
+.. parsed-literal::
+
+    ['ENGLISH', 'MALAY']
+
+
+
+.. code:: ipython3
+
+    sgd.predict_batch([english_text,malay_text],get_proba=True)
+
+
+
+
+.. parsed-literal::
+
+    [{'OTHER': 0.0, 'ENGLISH': 1.0, 'INDONESIA': 0.0, 'MALAY': 0.0},
+     {'OTHER': 0.0, 'ENGLISH': 0.0, 'INDONESIA': 0.0, 'MALAY': 1.0}]
 
 
 
@@ -158,30 +237,6 @@ Load XGB model
 
     xgb = malaya.xgb_detect_languages()
     xgb.predict(chinese_text)
-
-
-.. parsed-literal::
-
-      0%|          | 0.00/37.8 [00:00<?, ?MB/s]
-
-.. parsed-literal::
-
-    downloading LANGUAGE-DETECTION pickled bag-of-word XGB
-
-
-.. parsed-literal::
-
-    38.0MB [00:16, 3.37MB/s]                          
-
-
-.. parsed-literal::
-
-    downloading LANGUAGE-DETECTION pickled XGB model
-
-
-.. parsed-literal::
-
-    22.0MB [00:06, 3.81MB/s]                          
 
 
 
@@ -201,10 +256,10 @@ Load XGB model
 
 .. parsed-literal::
 
-    {'OTHER': 6.92337e-10,
-     'ENGLISH': 3.507782e-11,
-     'INDONESIA': 0.9995041,
-     'MALAY': 0.0004959471}
+    {'OTHER': 1.980007e-07,
+     'ENGLISH': 8.863334e-08,
+     'INDONESIA': 0.8836274,
+     'MALAY': 0.116372354}
 
 
 
@@ -217,13 +272,13 @@ Load XGB model
 
 .. parsed-literal::
 
-    [{'OTHER': 6.92337e-10,
-      'ENGLISH': 3.507782e-11,
-      'INDONESIA': 0.9995041,
-      'MALAY': 0.0004959471},
-     {'OTHER': 1.174448e-09,
-      'ENGLISH': 1.4715874e-10,
-      'INDONESIA': 0.001421933,
-      'MALAY': 0.9985781}]
+    [{'OTHER': 1.980007e-07,
+      'ENGLISH': 8.863334e-08,
+      'INDONESIA': 0.8836274,
+      'MALAY': 0.116372354},
+     {'OTHER': 4.3554013e-10,
+      'ENGLISH': 3.5299177e-10,
+      'INDONESIA': 0.00014907354,
+      'MALAY': 0.99985087}]
 
 
