@@ -5,11 +5,9 @@ if not sys.warnoptions:
     warnings.simplefilter('ignore')
 
 import re
-import zipfile
 import os
 import random
 import numpy as np
-import pandas as pd
 from fuzzywuzzy import fuzz
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -252,6 +250,9 @@ class FAST_SIMILARITY:
 
 
 def load_internal_data():
+    import pandas as pd
+    import zipfile
+
     global NAMACALON, PARLIMEN, DUN, NEGERI, LOCATION, PERSON_DICT, TOPIC_DICT, SHORT_DICT
     if not os.path.isfile(zip_location):
         print('downloading Topics, Influencers, Location data')

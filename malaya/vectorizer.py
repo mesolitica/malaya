@@ -4,7 +4,6 @@ import warnings
 if not sys.warnoptions:
     warnings.simplefilter('ignore')
 
-from nltk import sent_tokenize
 from itertools import combinations
 from toolz import compose
 from sklearn.feature_extraction.text import CountVectorizer
@@ -32,7 +31,7 @@ class SkipGramVectorizer(CountVectorizer):
 
     def _sent_skip_grams(self, doc, sent_analyze):
         skip_grams = []
-        for sent in sent_tokenize(doc):
+        for sent in doc.split('\n'):
             skip_grams.extend(sent_analyze(sent))
         return skip_grams
 

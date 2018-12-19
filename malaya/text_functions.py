@@ -9,8 +9,8 @@ import os
 import numpy as np
 import itertools
 import collections
+import random
 from unidecode import unidecode
-from nltk.util import ngrams
 from .utils import download_file
 from .tatabahasa import stopword_tatabahasa
 from . import home
@@ -28,7 +28,7 @@ VOWELS = 'aeiou'
 PHONES = ['sh', 'ch', 'ph', 'sz', 'cz', 'sch', 'rz', 'dz']
 
 
-def isWord(word):
+def _isWord(word):
     if word:
         consecutiveVowels = 0
         consecutiveConsonents = 0
@@ -57,7 +57,7 @@ def isWord(word):
     return True
 
 
-list_laughing = [
+_list_laughing = [
     'huhu',
     'haha',
     'gaga',
@@ -71,6 +71,14 @@ list_laughing = [
 
 
 def malaya_textcleaning(string):
+    """
+    use by normalizer, spell
+    remove links, hashtags, alias
+    only accept A-Z, a-z
+    remove any laugh
+    remove any repeated char more than 2 times
+    remove most of nonsense words
+    """
     string = re.sub(
         'http\S+|www.\S+',
         '',
@@ -86,11 +94,11 @@ def malaya_textcleaning(string):
     string = string.replace(',', ', ')
     string = re.sub('[^\'"A-Za-z\- ]+', ' ', string)
     string = re.sub(r'[ ]+', ' ', string.lower()).strip()
-    string = [word for word in string.lower().split() if isWord(word)]
+    string = [word for word in string.lower().split() if _isWord(word)]
     string = [
         word
         for word in string
-        if not any([laugh in word for laugh in list_laughing])
+        if not any([laugh in word for laugh in _list_laughing])
         and word[: len(word) // 2] != word[len(word) // 2 :]
     ]
     string = ' '.join(string)
@@ -129,7 +137,7 @@ def normalizer_textcleaning(string):
     string = [
         word
         for word in string
-        if not any([laugh in word for laugh in list_laughing])
+        if not any([laugh in word for laugh in _list_laughing])
     ]
     string = ' '.join(string)
     return ''.join(''.join(s)[:2] for _, s in itertools.groupby(string))
@@ -379,8 +387,7 @@ def str_idx(corpus, dic, maxlen, UNK = 0):
     X = np.zeros((len(corpus), maxlen))
     for i in range(len(corpus)):
         for no, k in enumerate(corpus[i].split()[:maxlen][::-1]):
-            val = dic[k] if k in dic else UNK
-            X[i, -1 - no] = val
+            X[i, -1 - no] = dic.get(k, UNK)
     return X
 
 
@@ -389,7 +396,7 @@ def stemmer_str_idx(corpus, dic, UNK = 3):
     for i in corpus:
         ints = []
         for k in i:
-            ints.append(dic[k] if k in dic else UNK)
+            ints.append(dic.get(k, UNK))
         X.append(ints)
     return X
 
@@ -415,6 +422,48 @@ def pad_sentence_batch(sentence_batch, pad_int):
         )
         seq_lens.append(len(sentence))
     return padded_seqs, seq_lens
+
+
+def pad_sequence(
+    sequence,
+    n,
+    pad_left = False,
+    pad_right = False,
+    left_pad_symbol = None,
+    right_pad_symbol = None,
+):
+    sequence = iter(sequence)
+    if pad_left:
+        sequence = itertools.chain((left_pad_symbol,) * (n - 1), sequence)
+    if pad_right:
+        sequence = itertools.chain(sequence, (right_pad_symbol,) * (n - 1))
+    return sequence
+
+
+def ngrams(
+    sequence,
+    n,
+    pad_left = False,
+    pad_right = False,
+    left_pad_symbol = None,
+    right_pad_symbol = None,
+):
+    sequence = pad_sequence(
+        sequence, n, pad_left, pad_right, left_pad_symbol, right_pad_symbol
+    )
+
+    history = []
+    while n > 1:
+        try:
+            next_item = next(sequence)
+        except StopIteration:
+            return
+        history.append(next_item)
+        n -= 1
+    for item in sequence:
+        history.append(item)
+        yield tuple(history)
+        del history[0]
 
 
 def add_ngram(sequences, token_indice, ngram = (2, 3)):
@@ -467,8 +516,7 @@ def char_str_idx(corpus, dic, UNK = 0):
     X = np.zeros((len(corpus), maxlen))
     for i in range(len(corpus)):
         for no, k in enumerate(corpus[i][:maxlen][::-1]):
-            val = dic[k] if k in dic else UNK
-            X[i, -1 - no] = val
+            X[i, -1 - no] = dic.get(k, UNK)
     return X
 
 
@@ -483,26 +531,25 @@ def generate_char_seq(batch, idx2word, char2idx):
     return temp
 
 
-def build_dataset(words, n_words):
-    count = [['GO', 0], ['PAD', 1], ['EOS', 2], ['UNK', 3]]
-    count.extend(collections.Counter(words).most_common(n_words - 1))
+def build_dataset(words, n_words, included_prefix = True):
+    count = (
+        [['GO', 0], ['PAD', 1], ['EOS', 2], ['UNK', 3]]
+        if included_prefix
+        else []
+    )
+    count.extend(collections.Counter(words).most_common(n_words))
     dictionary = dict()
     for word, _ in count:
         dictionary[word] = len(dictionary)
     data = list()
-    unk_count = 0
     for word in words:
-        index = dictionary.get(word, 0)
-        if index == 0:
-            unk_count += 1
+        index = dictionary.get(word, 3)
         data.append(index)
-    count[0][1] = unk_count
     reversed_dictionary = dict(zip(dictionary.values(), dictionary.keys()))
     return data, count, dictionary, reversed_dictionary
 
 
 def features_crf(sentence, index):
-    """ sentence: [w1, w2, ...], index: the index of the word """
     return {
         'word': sentence[index],
         'is_first': index == 0,
@@ -561,3 +608,60 @@ def voting_stack(models, text):
     for row in concatenated:
         votes.append(most_common(row.tolist()))
     return list(map(lambda X: (X[0], X[1]), list(zip(texts[-1], votes))))
+
+
+def skipgrams(
+    sequence,
+    vocabulary_size,
+    window_size = 4,
+    negative_samples = 1.0,
+    shuffle = True,
+    categorical = False,
+    sampling_table = None,
+    seed = None,
+):
+    couples = []
+    labels = []
+    for i, wi in enumerate(sequence):
+        if not wi:
+            continue
+        if sampling_table is not None:
+            if sampling_table[wi] < random.random():
+                continue
+
+        window_start = max(0, i - window_size)
+        window_end = min(len(sequence), i + window_size + 1)
+        for j in range(window_start, window_end):
+            if j != i:
+                wj = sequence[j]
+                if not wj:
+                    continue
+                couples.append([wi, wj])
+                if categorical:
+                    labels.append([0, 1])
+                else:
+                    labels.append(1)
+
+    if negative_samples > 0:
+        num_negative_samples = int(len(labels) * negative_samples)
+        words = [c[0] for c in couples]
+        random.shuffle(words)
+
+        couples += [
+            [words[i % len(words)], random.randint(1, vocabulary_size - 1)]
+            for i in range(num_negative_samples)
+        ]
+        if categorical:
+            labels += [[1, 0]] * num_negative_samples
+        else:
+            labels += [0] * num_negative_samples
+
+    if shuffle:
+        if seed is None:
+            seed = random.randint(0, 10e6)
+        random.seed(seed)
+        random.shuffle(couples)
+        random.seed(seed)
+        random.shuffle(labels)
+
+    return couples, labels

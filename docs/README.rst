@@ -35,7 +35,7 @@ Features
 -  Stemmer
 -  **Summarization**, using skip-thought state-of-art to give precise
    summarization.
--  Topic Modelling
+-  **Topic Modelling**, provide LDA2Vec, LDA, NMF and LSA interface for easy topic modelling.
 -  **Topic and Influencers Analysis**, using deep and machine learning
    models to understand topics and Influencers similarity in sentences.
 -  **Toxicity Analysis**, from BERT, Fast-Text, Dynamic-Memory Network,

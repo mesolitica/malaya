@@ -17,9 +17,9 @@ from .sklearn_model import CRF
 
 def get_available_entities_models():
     """
-    List available deep learning entities models, ['concat', 'bahdanau', 'luong','entity-network']
+    List available deep learning entities models, ['concat', 'bahdanau', 'luong', 'entity-network', 'attention']
     """
-    return ['concat', 'bahdanau', 'luong', 'entity-network']
+    return ['concat', 'bahdanau', 'luong', 'entity-network', 'attention']
 
 
 def crf_entities():

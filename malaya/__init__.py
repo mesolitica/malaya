@@ -8,8 +8,8 @@ from pathlib import Path
 import os
 
 home = str(Path.home()) + '/Malaya'
-version = '0.8'
-bump_version = '0.8.6.0'
+version = '0.9'
+bump_version = '0.9.0.0'
 version_path = home + '/version'
 
 
@@ -101,6 +101,7 @@ from .topic_modelling import (
     lda_topic_modelling,
     nmf_topic_modelling,
     lsa_topic_modelling,
+    lda2vec_topic_modelling,
 )
 from .topics_influencers import (
     load_internal_data,

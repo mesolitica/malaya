@@ -32,5 +32,6 @@ Contents:
    Topics
    Toxic
    Word2vec
+   Cluster
    Api
    Reference
