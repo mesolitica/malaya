@@ -501,7 +501,7 @@ def lda_topic_modelling(
         stemming = stemming,
         cleaning = cleaning,
         stop_words = stop_words,
-        **kwargs,
+        **kwargs
     )
 
 
@@ -551,7 +551,7 @@ def nmf_topic_modelling(
         stemming = stemming,
         cleaning = cleaning,
         stop_words = stop_words,
-        **kwargs,
+        **kwargs
     )
 
 
@@ -601,7 +601,7 @@ def lsa_topic_modelling(
         stemming = stemming,
         cleaning = cleaning,
         stop_words = stop_words,
-        **kwargs,
+        **kwargs
     )
 
 
@@ -655,7 +655,7 @@ def lda2vec_topic_modelling(
         n_topics,
         freqs,
         embedding_size = embedding_size,
-        **kwargs,
+        **kwargs
     )
     model.train(
         pivot_words,
