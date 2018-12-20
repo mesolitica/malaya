@@ -17,7 +17,7 @@ class LDA2VEC:
         power = 0.75,
         batch_size = 32,
         clip_gradients = 5.0,
-        **kwargs,
+        **kwargs
     ):
         moving_avgs = tf.train.ExponentialMovingAverage(0.9)
         self.batch_size = batch_size
