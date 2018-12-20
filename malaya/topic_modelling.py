@@ -333,7 +333,7 @@ def _base_topic_modelling(
     stemming = True,
     cleaning = simple_textcleaning,
     stop_words = STOPWORDS,
-    **kwargs,
+    **kwargs
 ):
     assert isinstance(corpus, list) and isinstance(
         corpus[0], str
@@ -464,7 +464,7 @@ def lda_topic_modelling(
     vectorizer = 'bow',
     cleaning = simple_textcleaning,
     stop_words = STOPWORDS,
-    **kwargs,
+    **kwargs
 ):
     """
     Train a LDA model to do topic modelling based on corpus / list of strings given.
@@ -514,7 +514,7 @@ def nmf_topic_modelling(
     vectorizer = 'bow',
     cleaning = simple_textcleaning,
     stop_words = STOPWORDS,
-    **kwargs,
+    **kwargs
 ):
     """
     Train a NMF model to do topic modelling based on corpus / list of strings given.
@@ -564,7 +564,7 @@ def lsa_topic_modelling(
     stemming = True,
     cleaning = simple_textcleaning,
     stop_words = STOPWORDS,
-    **kwargs,
+    **kwargs
 ):
     """
     Train a LSA model to do topic modelling based on corpus / list of strings given.
@@ -615,7 +615,7 @@ def lda2vec_topic_modelling(
     embedding_size = 128,
     training_iteration = 10,
     switch_loss = 3,
-    **kwargs,
+    **kwargs
 ):
     """
     Train a LDA2Vec model to do topic modelling based on corpus / list of strings given.
