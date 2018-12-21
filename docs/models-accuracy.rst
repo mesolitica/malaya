@@ -6,10 +6,17 @@ Trained on 80% of dataset, tested on 20% of dataset. All training
 sessions stored in
 `session/entities <https://github.com/huseinzol05/Malaya/tree/master/session/entities>`__
 
-.. figure:: https://raw.githubusercontent.com/huseinzol05/Malaya/master/accuracy/ner-accuracy.png
-   :alt: alt text
+.. code:: python
 
-   alt text
+    from IPython.core.display import Image, display
+
+    display(Image('ner-accuracy.png', width=500))
+
+
+
+.. image:: models-accuracy_files/models-accuracy_1_0.png
+   :width: 500px
+
 
 Concat
 ^^^^^^
@@ -117,3 +124,471 @@ Attention
            time       0.99      1.00      1.00     12674
 
     avg / total       1.00      1.00      1.00    617700
+
+Language Detection
+------------------
+
+Trained on 80% of dataset, tested on 20% of dataset. All training
+sessions stored in
+`session/language-detection <https://github.com/huseinzol05/Malaya/tree/master/session/language-detection>`__
+
+.. code:: python
+
+    display(Image('language-detection-accuracy.png', width=500))
+
+
+
+.. image:: models-accuracy_files/models-accuracy_9_0.png
+   :width: 500px
+
+
+XGB
+^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+         OTHER       1.00      1.00      1.00     15913
+           eng       1.00      1.00      1.00     16014
+           ind       1.00      1.00      1.00     11163
+           zlm       1.00      0.99      1.00      8404
+
+   avg / total       1.00      1.00      1.00     51494
+
+Multinomial
+^^^^^^^^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+         OTHER       1.00      0.99      0.99     15913
+           eng       0.97      1.00      0.99     16014
+           ind       0.97      0.99      0.98     11163
+           zlm       0.99      0.93      0.96      8404
+
+   avg / total       0.98      0.98      0.98     51494
+
+SGD
+^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+         OTHER       0.99      1.00      1.00     15913
+           eng       1.00      1.00      1.00     16014
+           ind       0.99      0.99      0.99     11163
+           zlm       0.99      0.97      0.98      8404
+
+   avg / total       0.99      0.99      0.99     51494
+
+POS Recognition
+---------------
+
+Trained on 80% of dataset, tested on 20% of dataset. All training
+sessions stored in
+`session/pos <https://github.com/huseinzol05/Malaya/tree/master/session/pos>`__
+
+.. code:: python
+
+    display(Image('pos-accuracy.png', width=500))
+
+
+
+.. image:: models-accuracy_files/models-accuracy_14_0.png
+   :width: 500px
+
+
+Concat
+^^^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+           ADJ       0.99      1.00      1.00     22663
+           ADP       1.00      1.00      1.00     60199
+           ADV       1.00      1.00      1.00     23633
+           AUX       1.00      1.00      1.00      5249
+         CCONJ       1.00      1.00      1.00     18485
+           DET       1.00      1.00      1.00     19849
+          NOUN       1.00      1.00      1.00    135031
+           NUM       1.00      1.00      1.00     21842
+          PART       1.00      1.00      1.00      2900
+          PRON       1.00      1.00      1.00     23908
+         PROPN       1.00      1.00      1.00    113206
+         SCONJ       1.00      0.99      1.00      7304
+           SYM       1.00      1.00      1.00      1205
+          VERB       1.00      1.00      1.00     61222
+             X       0.97      0.99      0.98       154
+
+   avg / total       1.00      1.00      1.00    516850
+
+Bahdanau
+^^^^^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+           ADJ       0.99      0.99      0.99     22879
+           ADP       1.00      1.00      1.00     60063
+           ADV       1.00      0.99      1.00     23653
+           AUX       1.00      1.00      1.00      5295
+         CCONJ       1.00      1.00      1.00     18395
+           DET       1.00      1.00      1.00     20088
+          NOUN       1.00      1.00      1.00    134736
+           NUM       1.00      1.00      1.00     21938
+          PART       0.99      1.00      0.99      3093
+          PRON       1.00      1.00      1.00     24060
+         PROPN       1.00      1.00      1.00    112859
+         SCONJ       0.99      0.99      0.99      7445
+           SYM       0.99      0.99      0.99      1219
+          VERB       1.00      1.00      1.00     60937
+             X       0.98      0.97      0.98       190
+
+   avg / total       1.00      1.00      1.00    516850
+
+Luong
+^^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+           ADJ       0.99      0.99      0.99     22649
+           ADP       1.00      1.00      1.00     60088
+           ADV       0.99      1.00      0.99     24031
+           AUX       1.00      1.00      1.00      5279
+         CCONJ       1.00      1.00      1.00     18469
+           DET       1.00      1.00      1.00     20053
+          NOUN       1.00      1.00      1.00    134614
+           NUM       1.00      1.00      1.00     21703
+          PART       1.00      0.99      0.99      2956
+          PRON       1.00      1.00      1.00     23786
+         PROPN       1.00      1.00      1.00    113689
+         SCONJ       0.99      0.99      0.99      7315
+           SYM       1.00      1.00      1.00      1189
+          VERB       1.00      1.00      1.00     60827
+             X       0.97      0.99      0.98       202
+
+   avg / total       1.00      1.00      1.00    516850
+
+CRF
+^^^
+
+.. code:: text
+
+                 precision    recall  f1-score   support
+
+           PRON      0.998     0.997     0.998     47911
+            DET      0.990     0.993     0.991     39932
+           NOUN      0.988     0.988     0.988    270045
+           VERB      0.997     0.997     0.997    122015
+          PROPN      0.989     0.988     0.988    225893
+            ADP      0.997     0.998     0.997    120358
+            ADV      0.992     0.991     0.991     47753
+          CCONJ      0.997     0.998     0.997     36696
+            NUM      0.993     0.995     0.994     43748
+            ADJ      0.985     0.988     0.986     45244
+           PART      0.992     0.995     0.993      5975
+            AUX      1.000     1.000     1.000     10505
+          SCONJ      0.994     0.987     0.990     14798
+            SYM      0.998     0.997     0.998      2483
+
+      micro avg      0.992     0.992     0.992   1033356
+      macro avg      0.994     0.994     0.994   1033356
+   weighted avg      0.992     0.992     0.992   1033356
+
+Entity-network
+^^^^^^^^^^^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+           ADJ       0.98      0.98      0.98     22626
+           ADP       0.99      0.99      0.99     60045
+           ADV       0.97      0.98      0.98     23537
+           AUX       0.99      0.99      0.99      5195
+         CCONJ       0.99      0.99      0.99     18357
+           DET       0.99      0.99      0.99     19762
+          NOUN       0.99      0.99      0.99    134505
+           NUM       0.99      0.99      0.99     22083
+          PART       0.97      0.97      0.97      2924
+          PRON       0.99      0.99      0.99     23783
+         PROPN       0.99      0.99      0.99    114144
+         SCONJ       0.96      0.95      0.95      7534
+           SYM       0.97      0.98      0.97      1335
+          VERB       0.99      0.99      0.99     60834
+             X       0.93      0.68      0.79       186
+
+   avg / total       0.99      0.99      0.99    516850
+
+Sentiment Analysis
+------------------
+
+Trained on 80% of dataset, tested on 20% of dataset. All training
+sessions stored in
+`session/sentiment <https://github.com/huseinzol05/Malaya/tree/master/session/sentiment>`__
+
+**We found that, higher accuracy models are not a good predictive model
+on our social media streaming application. We had to stack multiple
+models to get the best shot. Again, most of Malaya models are
+deep-learning, really need a good infrastructure if want to stack
+multiple models**
+
+.. code:: python
+
+    display(Image('sentiment-accuracy.png', width=500))
+
+
+
+.. image:: models-accuracy_files/models-accuracy_21_0.png
+   :width: 500px
+
+
+Bahdanau
+^^^^^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+      negative       0.63      0.69      0.66      1326
+      positive       0.71      0.64      0.67      1530
+
+   avg / total       0.67      0.67      0.67      2856
+
+BERT
+^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+      negative       0.58      0.88      0.70      1366
+      positive       0.79      0.42      0.55      1490
+
+   avg / total       0.69      0.64      0.62      2856
+
+Bidirectional
+^^^^^^^^^^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+      negative       0.63      0.72      0.67      1356
+      positive       0.71      0.62      0.66      1500
+
+   avg / total       0.67      0.67      0.67      2856
+
+Entity-network
+^^^^^^^^^^^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+      negative       0.70      0.66      0.68      1324
+      positive       0.72      0.75      0.74      1532
+
+   avg / total       0.71      0.71      0.71      2856
+
+Fast-text
+^^^^^^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+      negative       0.69      0.71      0.70      1261
+      positive       0.77      0.74      0.75      1595
+
+   avg / total       0.73      0.73      0.73      2856
+
+Hierarchical
+^^^^^^^^^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+      negative       0.67      0.61      0.64      1347
+      positive       0.68      0.72      0.70      1509
+
+   avg / total       0.67      0.67      0.67      2856
+
+Luong
+^^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+      negative       0.62      0.73      0.67      1360
+      positive       0.71      0.59      0.64      1496
+
+   avg / total       0.66      0.66      0.66      2856
+
+Multinomial
+^^^^^^^^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+      negative       0.80      0.53      0.64      1379
+      positive       0.67      0.88      0.76      1477
+
+   avg / total       0.73      0.71      0.70      2856
+
+XGB
+^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+      negative       0.69      0.61      0.65      1332
+      positive       0.69      0.76      0.72      1524
+
+   avg / total       0.69      0.69      0.69      2856
+
+Toxicity Analysis
+-----------------
+
+Trained on 80% of dataset, tested on 20% of dataset. All training
+sessions stored in
+`session/toxic <https://github.com/huseinzol05/Malaya/tree/master/session/toxic>`__
+
+Labels are,
+
+.. code:: python
+
+   {0: 'toxic', 1: 'severe_toxic', 2: 'obscene', 3: 'threat', 4: 'insult', 5: 'identity_hate'}
+
+.. code:: python
+
+    display(Image('toxic-accuracy.png', width=500))
+
+
+
+.. image:: models-accuracy_files/models-accuracy_32_0.png
+   :width: 500px
+
+
+Bahdanau
+^^^^^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+             0       0.75      0.58      0.65       797
+             1       0.46      0.36      0.41        77
+             2       0.71      0.59      0.64       423
+             3       0.00      0.00      0.00        30
+             4       0.68      0.56      0.61       384
+             5       0.40      0.23      0.29        74
+
+   avg / total       0.69      0.54      0.60      1785
+
+Entity-network
+^^^^^^^^^^^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+             0       0.77      0.61      0.68       787
+             1       1.00      0.08      0.14        92
+             2       0.75      0.66      0.71       432
+             3       0.44      0.19      0.27        21
+             4       0.68      0.61      0.65       400
+             5       0.57      0.05      0.09        79
+
+   avg / total       0.75      0.57      0.62      1811
+
+Fast-text
+^^^^^^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+             0       0.80      0.47      0.59       815
+             1       0.58      0.19      0.29        94
+             2       0.90      0.38      0.54       425
+             3       0.40      0.06      0.11        31
+             4       0.85      0.35      0.49       410
+             5       0.35      0.08      0.13        74
+
+   avg / total       0.80      0.39      0.52      1849
+
+Hierarchical
+^^^^^^^^^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+             0       0.69      0.56      0.62       751
+             1       0.68      0.20      0.31        86
+             2       0.84      0.48      0.61       412
+             3       1.00      0.04      0.07        28
+             4       0.70      0.55      0.62       356
+             5       0.57      0.27      0.36        60
+
+   avg / total       0.73      0.50      0.58      1693
+
+Logistic Regression
+^^^^^^^^^^^^^^^^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+             0       0.98      0.27      0.43       805
+             1       0.50      0.02      0.04        88
+             2       0.99      0.30      0.46       460
+             3       0.00      0.00      0.00        32
+             4       0.87      0.22      0.35       420
+             5       0.00      0.00      0.00        68
+
+   avg / total       0.88      0.24      0.38      1873
+
+Multinomial
+^^^^^^^^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+             0       0.81      0.52      0.63       805
+             1       0.44      0.35      0.39        88
+             2       0.76      0.49      0.59       460
+             3       0.00      0.00      0.00        32
+             4       0.68      0.47      0.56       420
+             5       0.15      0.09      0.11        68
+
+   avg / total       0.71      0.47      0.56      1873
+
+Luong
+^^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+             0       0.68      0.64      0.66       799
+             1       0.43      0.22      0.29        81
+             2       0.77      0.59      0.67       423
+             3       0.57      0.16      0.25        25
+             4       0.70      0.53      0.61       404
+             5       0.33      0.01      0.02        81
+
+   avg / total       0.68      0.55      0.60      1813

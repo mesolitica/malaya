@@ -1,14 +1,11 @@
 option = {
-    title: {
-        text: 'Entities Recognition, tested on 20%'
-    },
     xAxis: {
         type: 'category',
         data: ['concat', 'bahdanau', 'luong', 'entity-network', 'crf','attention']
     },
     yAxis: {
         type: 'value',
-        min:0,
+        min:0.5,
         max:1.0
     },
     backgroundColor:'rgb(252,252,252)',
