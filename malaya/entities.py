@@ -53,6 +53,7 @@ def deep_entities(model = 'bahdanau'):
         * ``'bahdanau'`` - Concating character and word embedded including Bahdanau Attention for BiLSTM
         * ``'luong'`` - Concating character and word embedded including Luong Attention for BiLSTM
         * ``'entity-network'`` - Concating character and word embedded on hybrid Entity-Network and RNN
+        * ``'attention'`` - Concating character and word embedded with self-attention for BiLSTM
 
     Returns
     -------
@@ -60,7 +61,7 @@ def deep_entities(model = 'bahdanau'):
     """
     assert isinstance(model, str), 'model must be a string'
     model = model.lower()
-    if model in ['concat', 'bahdanau', 'luong', 'entity-network']:
+    if model in ['concat', 'bahdanau', 'luong', 'entity-network', 'attention']:
         if not os.path.isfile(PATH_ENTITIES[model]['model']):
             print('downloading ENTITIES frozen %s model' % (model))
             download_file(

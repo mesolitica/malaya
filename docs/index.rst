@@ -19,6 +19,7 @@ Contents:
    Dataset
    Contribution
    Crawler
+   Accuracy
    Entities
    Language
    Normalizer

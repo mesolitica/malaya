@@ -182,6 +182,10 @@ PATH_ENTITIES = {
         'model': home + '/entity-entities.pb',
         'setting': home + '/entity-entities.json',
     },
+    'attention': {
+        'model': home + '/attention-entities.pb',
+        'setting': home + '/attention-entities.json',
+    },
 }
 
 S3_PATH_ENTITIES = {
@@ -201,6 +205,10 @@ S3_PATH_ENTITIES = {
     'entity-network': {
         'model': 'v8/entities/entity-entities.pb',
         'setting': 'v8/entities/entity-entities.json',
+    },
+    'attention': {
+        'model': 'v8/entities/attention-entities.pb',
+        'setting': 'v8/entities/attention-entities.json',
     },
 }
 
