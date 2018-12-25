@@ -6,7 +6,7 @@ __packagename__ = 'malaya-gpu'
 setuptools.setup(
     name = __packagename__,
     packages = setuptools.find_packages(),
-    version = '0.9.1.0',
+    version = '1.0',
     description = 'Natural-Language-Toolkit for bahasa Malaysia, powered by Deep Learning. GPU Version',
     author = 'huseinzol05',
     author_email = 'husein.zol05@gmail.com',
@@ -30,6 +30,8 @@ setuptools.setup(
         'PySastrawi',
         'toolz',
         'pyldavis',
+        'matplotlib',
+        'seaborn',
     ],
     classifiers = [
         'Programming Language :: Python :: 3',

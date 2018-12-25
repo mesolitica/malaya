@@ -59,6 +59,7 @@ MOCK_MODULES = [
     'sklearn.metrics.pairwise',
     'sklearn.utils',
     'sklearn.cluster',
+    'sklearn.model_selection',
     'sklearn.naive_bayes',
     'sklearn.preprocessing',
     'sklearn.cross_validation',
@@ -68,6 +69,8 @@ MOCK_MODULES = [
     'sklearn.manifold',
     'scipy.spatial',
     'scipy.spatial.distance',
+    'scipy.stats',
+    'scipy.stats.mstats',
     'sklearn.neighbors',
 ]
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)

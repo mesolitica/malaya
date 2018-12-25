@@ -7,12 +7,12 @@ if not sys.warnoptions:
 from collections import Counter, defaultdict
 from fuzzywuzzy import fuzz
 import numpy as np
-from .text_functions import normalizer_textcleaning
-from .topics_influencers import is_location
-from .tatabahasa import alphabet, consonants, vowels
+from .texts._text_functions import normalizer_textcleaning
+from .topic_influencer import is_location
+from .texts._tatabahasa import alphabet, consonants, vowels
 
 
-def build_dicts(words):
+def _build_dicts(words):
     occurences = {}
     for l in alphabet:
         occurences[l] = defaultdict(lambda: 0)
@@ -21,7 +21,7 @@ def build_dicts(words):
     return occurences
 
 
-def edit_normalizer(word):
+def _edit_normalizer(word):
     splits = [(word[:i], word[i:]) for i in range(len(word) + 1)]
     deletes = [a + b[1:] for a, b in splits if b]
     transposes = [a + b[1] + b[0] + b[2:] for a, b in splits if len(b) > 1]
@@ -60,18 +60,18 @@ def edit_normalizer(word):
     return set(deletes + transposes + replaces + inserts + fuzziness + pseudo)
 
 
-def return_possible(word, dicts, edits):
+def _return_possible(word, dicts, edits):
     return set(e2 for e1 in edits(word) for e2 in edits(e1) if e2 in dicts)
 
 
-def return_known(word, dicts):
+def _return_known(word, dicts):
     return set(w for w in word if w in dicts)
 
 
-class SPELL:
+class _SPELL:
     def __init__(self, corpus):
         self.corpus = corpus
-        self.occurences = build_dicts(self.corpus)
+        self.occurences = _build_dicts(self.corpus)
         self.corpus = Counter(corpus)
 
     def correct(self, string, first_char = True, debug = True):
@@ -101,20 +101,20 @@ class SPELL:
             return string
         if first_char:
             candidates = (
-                return_known([string], self.occurences[string[0]])
-                or return_known(
-                    edit_normalizer(string), self.occurences[string[0]]
+                _return_known([string], self.occurences[string[0]])
+                or _return_known(
+                    _edit_normalizer(string), self.occurences[string[0]]
                 )
-                or return_possible(
-                    string, self.occurences[string[0]], edit_normalizer
+                or _return_possible(
+                    string, self.occurences[string[0]], _edit_normalizer
                 )
                 or [string]
             )
         else:
             candidates = (
-                return_known([string], self.corpus)
-                or return_known(edit_normalizer(string), self.corpus)
-                or return_possible(string, self.corpus, edit_normalizer)
+                _return_known([string], self.corpus)
+                or _return_known(_edit_normalizer(string), self.corpus)
+                or _return_possible(string, self.corpus, _edit_normalizer)
                 or [string]
             )
         candidates = [
@@ -131,7 +131,7 @@ class SPELL:
         return candidates[descending_sort[0]][0]
 
 
-def naive_speller(corpus):
+def naive(corpus):
     """
     Train a fuzzy logic Spell Corrector
 
@@ -141,9 +141,9 @@ def naive_speller(corpus):
 
     Returns
     -------
-    SPELL: Trained malaya.spell.SPELL class
+    SPELL: Trained malaya.spell._SPELL class
     """
     assert isinstance(corpus, list) and isinstance(
         corpus[0], str
     ), 'input must be list of strings'
-    return SPELL(corpus)
+    return _SPELL(corpus)

@@ -1,14 +1,22 @@
 
 .. code:: python
 
+    %%time
     import malaya
+
+
+.. parsed-literal::
+
+    CPU times: user 12.5 s, sys: 950 ms, total: 13.4 s
+    Wall time: 14 s
+
 
 List available language detected
 --------------------------------
 
 .. code:: python
 
-    malaya.get_language_labels()
+    malaya.language_detection.label()
 
 
 
@@ -31,7 +39,7 @@ Load multinomial model
 
 .. code:: python
 
-    multinomial = malaya.multinomial_detect_languages()
+    multinomial = malaya.language_detection.multinomial()
     multinomial.predict(chinese_text,get_proba=True)
 
 
@@ -139,7 +147,7 @@ Load SGD model
 
 .. code:: python
 
-    sgd = malaya.sgd_detect_languages()
+    sgd = malaya.language_detection.sgd()
     sgd.predict(chinese_text,get_proba=True)
 
 
@@ -235,7 +243,7 @@ Load XGB model
 
 .. code:: python
 
-    xgb = malaya.xgb_detect_languages()
+    xgb = malaya.language_detection.xgb()
     xgb.predict(chinese_text)
 
 

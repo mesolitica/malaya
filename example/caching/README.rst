@@ -1,0 +1,294 @@
+
+Cache location
+--------------
+
+You actually can know where is your Malaya caching folder.
+
+.. code:: ipython3
+
+    import malaya
+
+.. code:: ipython3
+
+    malaya.home
+
+
+
+
+.. parsed-literal::
+
+    '/Users/huseinzol/Malaya'
+
+
+
+Cache subdirectories
+--------------------
+
+Start from version 1.0, Malaya put models in subdirectories, you can
+print it by simply,
+
+.. code:: ipython3
+
+    malaya.print_cache()
+
+
+.. parsed-literal::
+
+    Malaya/
+    ├── dictionary/
+    │   └── malay-text.txt
+    ├── entity/
+    │   ├── attention/
+    │   │   ├── attention-entities.json
+    │   │   ├── attention-entities.pb
+    │   │   └── version
+    │   ├── bahdanau/
+    │   │   ├── bahdanau-entities.json
+    │   │   ├── bahdanau-entities.pb
+    │   │   └── version
+    │   ├── concat/
+    │   │   ├── concat-entities.json
+    │   │   ├── concat-entities.pb
+    │   │   └── version
+    │   ├── crf/
+    │   │   ├── crf-entities.pkl
+    │   │   └── version
+    │   ├── entity-network/
+    │   │   ├── entity-entities.json
+    │   │   ├── entity-entities.pb
+    │   │   └── version
+    │   └── luong/
+    │       ├── luong-entities.json
+    │       ├── luong-entities.pb
+    │       └── version
+    ├── language-detection/
+    │   ├── multinomial/
+    │   │   ├── multinomial-language-detection.pkl
+    │   │   ├── vectorizer-language-detection.pkl
+    │   │   └── version
+    │   ├── sgd/
+    │   │   ├── sgd-language-detection.pkl
+    │   │   └── version
+    │   └── xgb/
+    │       ├── version
+    │       └── xgb-language-detection.pkl
+    ├── normalizer/
+    │   ├── normalizer-deep.json
+    │   ├── normalizer-deep.pb
+    │   └── version
+    ├── pos/
+    │   ├── attention/
+    │   │   ├── attention-pos.json
+    │   │   ├── attention-pos.pb
+    │   │   └── version
+    │   ├── bahdanau/
+    │   │   ├── bahdanau-pos.json
+    │   │   ├── bahdanau-pos.pb
+    │   │   └── version
+    │   ├── concat/
+    │   │   ├── concat-pos.json
+    │   │   ├── concat-pos.pb
+    │   │   └── version
+    │   ├── crf/
+    │   │   ├── crf-pos.pkl
+    │   │   └── version
+    │   ├── entity-network/
+    │   │   ├── entity-pos.pb
+    │   │   └── version
+    │   └── luong/
+    │       ├── luong-pos.json
+    │       ├── luong-pos.pb
+    │       └── version
+    ├── rules-based/
+    │   ├── calon.csv
+    │   ├── negeri.csv
+    │   ├── person-normalized
+    │   ├── short-normalized
+    │   └── topic-normalized
+    ├── rules-based.zip
+    ├── sentiment/
+    │   ├── bahdanau/
+    │   │   ├── bahdanau-sentiment.json
+    │   │   ├── bahdanau-sentiment.pb
+    │   │   └── version
+    │   ├── bert/
+    │   │   ├── bert-sentiment.json
+    │   │   ├── bert-sentiment.pb
+    │   │   └── version
+    │   ├── bidirectional/
+    │   │   ├── bidirectional-sentiment.json
+    │   │   ├── bidirectional-sentiment.pb
+    │   │   └── version
+    │   ├── entity-network/
+    │   │   ├── entity-sentiment.json
+    │   │   ├── entity-sentiment.pb
+    │   │   └── version
+    │   ├── fast-text/
+    │   │   ├── fasttext-sentiment.json
+    │   │   ├── fasttext-sentiment.pb
+    │   │   ├── fasttext-sentiment.pkl
+    │   │   └── version
+    │   ├── hierarchical/
+    │   │   ├── hierarchical-sentiment.json
+    │   │   ├── hierarchical-sentiment.pb
+    │   │   └── version
+    │   ├── luong/
+    │   │   ├── luong-sentiment.json
+    │   │   ├── luong-sentiment.pb
+    │   │   └── version
+    │   ├── multinomial/
+    │   │   ├── multinomial-sentiment-tfidf.pkl
+    │   │   ├── multinomial-sentiment.pkl
+    │   │   └── version
+    │   └── xgb/
+    │       ├── version
+    │       ├── xgboost-sentiment-tfidf.pkl
+    │       └── xgboost-sentiment.pkl
+    ├── stem/
+    │   ├── stemmer-deep.json
+    │   ├── stemmer-deep.pb
+    │   └── version
+    ├── stop-word-kerulnet
+    ├── subjective/
+    │   ├── bahdanau/
+    │   │   ├── bahdanau-subjective.json
+    │   │   ├── bahdanau-subjective.pb
+    │   │   └── version
+    │   ├── bert/
+    │   │   ├── bert-subjective.json
+    │   │   ├── bert-subjective.pb
+    │   │   └── version
+    │   ├── bidirectional/
+    │   │   ├── bidirectional-subjective.json
+    │   │   ├── bidirectional-subjective.pb
+    │   │   └── version
+    │   ├── entity-network/
+    │   │   ├── entity-subjective.json
+    │   │   ├── entity-subjective.pb
+    │   │   └── version
+    │   ├── fast-text/
+    │   │   ├── fasttext-subjective.json
+    │   │   ├── fasttext-subjective.pb
+    │   │   ├── fasttext-subjective.pkl
+    │   │   └── version
+    │   ├── hierarchical/
+    │   │   ├── hierarchical-subjective.json
+    │   │   ├── hierarchical-subjective.pb
+    │   │   └── version
+    │   ├── luong/
+    │   │   ├── luong-subjective.json
+    │   │   ├── luong-subjective.pb
+    │   │   └── version
+    │   ├── multinomial/
+    │   │   ├── multinomial-subjective-tfidf.pkl
+    │   │   ├── multinomial-subjective.pkl
+    │   │   └── version
+    │   └── xgb/
+    │       ├── version
+    │       ├── xgboost-subjective-tfidf.pkl
+    │       └── xgboost-subjective.pkl
+    ├── summarize/
+    │   ├── dictionary-summary.json
+    │   └── summary_frozen_model.pb
+    ├── toxic/
+    │   ├── bahdanau/
+    │   │   ├── bahdanau-toxic.json
+    │   │   ├── bahdanau-toxic.pb
+    │   │   └── version
+    │   ├── entity-network/
+    │   │   ├── entity-toxic.json
+    │   │   ├── entity-toxic.pb
+    │   │   └── version
+    │   ├── fast-text/
+    │   │   ├── fasttext-toxic.json
+    │   │   ├── fasttext-toxic.pb
+    │   │   ├── fasttext-toxic.pkl
+    │   │   └── version
+    │   ├── hierarchical/
+    │   │   ├── hierarchical-toxic.json
+    │   │   ├── hierarchical-toxic.pb
+    │   │   └── version
+    │   ├── logistic/
+    │   │   ├── logistics-toxic.pkl
+    │   │   ├── vectorizer-toxic.pkl
+    │   │   └── version
+    │   ├── luong/
+    │   │   ├── luong-toxic.json
+    │   │   ├── luong-toxic.pb
+    │   │   └── version
+    │   └── multinomial/
+    │       ├── multinomials-toxic.pkl
+    │       ├── vectorizer-toxic.pkl
+    │       └── version
+    ├── version
+    ├── word2vec-128/
+    │   └── word2vec.p
+    ├── word2vec-256/
+    │   └── word2vec.p
+    └── word2vec-256.p
+
+
+Deleting specific model
+-----------------------
+
+Let say you want to clear some spaces, start from version 1.0, you can
+specifically choose which model you want to delete.
+
+.. code:: ipython3
+
+    malaya.clear_cache('word2vec-128')
+
+
+.. parsed-literal::
+
+    Done.
+
+
+What happen if a directory does not exist?
+
+.. code:: ipython3
+
+    malaya.clear_cache('word2vec-300')
+
+
+::
+
+
+    ---------------------------------------------------------------------------
+
+    Exception                                 Traceback (most recent call last)
+
+    <ipython-input-5-715b00624659> in <module>
+    ----> 1 malaya.clear_cache('word2vec-300')
+    
+
+    ~/Documents/Malaya/malaya/__init__.py in clear_cache(location)
+         96     if not os.path.exists(location):
+         97         raise Exception(
+    ---> 98             'folder not exist, please check path from malaya.print_cache()'
+         99         )
+        100     if not os.path.isdir(location):
+
+
+    Exception: folder not exist, please check path from malaya.print_cache()
+
+
+Purge cache
+-----------
+
+You can simply delete all models, totally purge it. By simply,
+
+.. code:: ipython3
+
+    malaya.clear_all_cache
+
+
+
+
+.. parsed-literal::
+
+    <function malaya.clear_all_cache()>
+
+
+
+I am not gonna to run it, because I prefer to keep it for now?

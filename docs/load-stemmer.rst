@@ -8,7 +8,7 @@ Use Sastrawi stemmer
 
 .. code:: python
 
-    malaya.sastrawi_stemmer('saya tengah berjalan')
+    malaya.stem.sastrawi('saya tengah berjalan')
 
 
 
@@ -21,7 +21,7 @@ Use Sastrawi stemmer
 
 .. code:: python
 
-    malaya.sastrawi_stemmer('saya tengah berjalankan sangat-sangat')
+    malaya.stem.sastrawi('saya tengah berjalankan sangat-sangat')
 
 
 
@@ -34,7 +34,7 @@ Use Sastrawi stemmer
 
 .. code:: python
 
-    malaya.sastrawi_stemmer('menarik')
+    malaya.stem.sastrawi('menarik')
 
 
 
@@ -53,28 +53,7 @@ adding our own rules into Sastrawi stemmer
 
 .. code:: python
 
-    stemmer = malaya.deep_stemmer()
-
-
-.. parsed-literal::
-
-    downloading JSON stemmer
-
-
-.. parsed-literal::
-
-    1.00MB [00:00, 260MB/s]
-      0%|          | 0.00/21.4 [00:00<?, ?MB/s]
-
-.. parsed-literal::
-
-    downloading stemmer graph
-
-
-.. parsed-literal::
-
-    22.0MB [00:06, 3.92MB/s]
-
+    stemmer = malaya.stem.deep_model()
 
 .. code:: python
 

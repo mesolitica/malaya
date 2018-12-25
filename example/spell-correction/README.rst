@@ -9,7 +9,7 @@ Load naive speller
 .. code:: ipython3
 
     malays = malaya.load_malay_dictionary()
-    corrector = malaya.naive_speller(malays)
+    corrector = malaya.spell.naive(malays)
 
 .. code:: ipython3
 
@@ -18,7 +18,7 @@ Load naive speller
 
 .. parsed-literal::
 
-    [(('mini', False), 50), (('makan', False), 67), (('mana', False), 50), (('min', False), 57), (('makna', False), 67), (('makin', False), 67), (('menu', False), 50), (('maun', False), 50), (('mani', False), 50), (('main', False), 50), (('mena', False), 50), (('makanan', False), 73)] 
+    [(('maun', False), 50), (('makan', False), 67), (('mana', False), 50), (('main', False), 50), (('makna', False), 67), (('menu', False), 50), (('mani', False), 50), (('makin', False), 67), (('min', False), 57), (('mini', False), 50), (('mena', False), 50), (('makanan', False), 73)] 
     
 
 
@@ -40,7 +40,7 @@ List similar words
 
 .. parsed-literal::
 
-    [(('tumpat', True), 91), (('tepat', False), 80), (('tempat', False), 91)] 
+    [(('tempat', False), 91), (('tumpat', True), 91), (('tepat', False), 80)] 
     
 
 
@@ -63,10 +63,10 @@ Only pool based on first character
 
 .. parsed-literal::
 
-    [(('mini', False), 50), (('makan', False), 67), (('mana', False), 50), (('min', False), 57), (('makna', False), 67), (('makin', False), 67), (('menu', False), 50), (('maun', False), 50), (('mani', False), 50), (('main', False), 50), (('mena', False), 50), (('makanan', False), 73)] 
+    [(('maun', False), 50), (('makan', False), 67), (('mana', False), 50), (('main', False), 50), (('makna', False), 67), (('menu', False), 50), (('mani', False), 50), (('makin', False), 67), (('min', False), 57), (('mini', False), 50), (('mena', False), 50), (('makanan', False), 73)] 
     
-    CPU times: user 272 ms, sys: 2.83 ms, total: 274 ms
-    Wall time: 292 ms
+    CPU times: user 276 ms, sys: 4.43 ms, total: 281 ms
+    Wall time: 281 ms
 
 
 
@@ -88,10 +88,10 @@ Pool on no condition
 
 .. parsed-literal::
 
-    [(('mini', False), 50), (('kon', False), 57), (('makan', False), 67), (('ikan', False), 50), (('mana', False), 50), (('min', False), 57), (('makna', False), 67), (('kun', False), 57), (('makin', False), 67), (('menu', False), 50), (('akan', False), 50), (('mani', False), 50), (('main', False), 50), (('mena', False), 50), (('ikon', False), 50), (('kan', False), 57), (('ken', False), 57), (('makanan', False), 73), (('maun', False), 50)] 
+    [(('maun', False), 50), (('kan', False), 57), (('makan', False), 67), (('main', False), 50), (('mana', False), 50), (('makna', False), 67), (('mena', False), 50), (('menu', False), 50), (('mani', False), 50), (('ikon', False), 50), (('makin', False), 67), (('min', False), 57), (('akan', False), 50), (('ken', False), 57), (('kun', False), 57), (('mini', False), 50), (('kon', False), 57), (('ikan', False), 50), (('makanan', False), 73)] 
     
-    CPU times: user 407 ms, sys: 3.95 ms, total: 411 ms
-    Wall time: 417 ms
+    CPU times: user 411 ms, sys: 4.14 ms, total: 415 ms
+    Wall time: 415 ms
 
 
 

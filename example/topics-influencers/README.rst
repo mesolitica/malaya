@@ -13,36 +13,36 @@ Using fuzzy for topics
 
 .. code:: ipython3
 
-    malaya.fuzzy_get_topics(news)
+    malaya.topic_influencer.fuzzy_topic(news)
 
 
 
 
 .. parsed-literal::
 
-    ['najib razak', 'masalah air', 'mahathir']
+    ['najib razak', 'mahathir', 'masalah air']
 
 
 
 .. code:: ipython3
 
-    malaya.fuzzy_get_topics(second_news)
+    malaya.topic_influencer.fuzzy_topic(second_news)
 
 
 
 
 .. parsed-literal::
 
-    ['teknologi',
-     'internet',
+    ['politik',
      'kkmm',
-     'perkhidmatan awam',
-     'twitter',
-     'pendidikan',
-     'politik',
-     'sosial media',
      'telekom malaysia',
-     'kerajaan']
+     'internet',
+     'pendidikan',
+     'perkhidmatan awam',
+     'teknologi',
+     'twitter',
+     'kerajaan',
+     'sosial media']
 
 
 
@@ -51,7 +51,7 @@ Using fuzzy for influencers
 
 .. code:: ipython3
 
-    malaya.fuzzy_get_influencers(news)
+    malaya.topic_influencer.fuzzy_influencer(news)
 
 
 
@@ -64,7 +64,7 @@ Using fuzzy for influencers
 
 .. code:: ipython3
 
-    malaya.fuzzy_get_influencers(second_news)
+    malaya.topic_influencer.fuzzy_influencer(second_news)
 
 
 
@@ -75,12 +75,44 @@ Using fuzzy for influencers
 
 
 
+Using fuzzy for location
+------------------------
+
+.. code:: ipython3
+
+    malaya.topic_influencer.fuzzy_location('saya suka makan sate di sungai petani')
+
+
+
+
+.. parsed-literal::
+
+    {'negeri': [], 'parlimen': ['sungai petani'], 'dun': []}
+
+
+
+Check location from a string
+----------------------------
+
+.. code:: ipython3
+
+    malaya.topic_influencer.is_location('sungai petani')
+
+
+
+
+.. parsed-literal::
+
+    True
+
+
+
 Train TF-IDF for topics analysis
 --------------------------------
 
 .. code:: ipython3
 
-    topics_similarity = malaya.fast_get_topics()
+    topics_similarity = malaya.topic_influencer.fast_topic()
 
 .. code:: ipython3
 
@@ -91,7 +123,10 @@ Train TF-IDF for topics analysis
 
 .. parsed-literal::
 
-    ['tan sri mokhzani mahathir', 'najib razak', 'masalah air', 'mahathir']
+    ['najib razak',
+     'mahathir',
+     'tan sri mokhzani mahathir',
+     'tengku razaleigh hamzah']
 
 
 
@@ -100,7 +135,7 @@ Train TF-IDF for influencers analysis
 
 .. code:: ipython3
 
-    influencers_similarity = malaya.fast_get_influencers()
+    influencers_similarity = malaya.topic_influencer.fast_influencer()
 
 .. code:: ipython3
 
@@ -111,7 +146,10 @@ Train TF-IDF for influencers analysis
 
 .. parsed-literal::
 
-    ['tan sri mokhzani mahathir', 'najib razak', 'zakir naik', 'mahathir']
+    ['najib razak',
+     'mahathir',
+     'tan sri mokhzani mahathir',
+     'tengku razaleigh hamzah']
 
 
 
@@ -124,13 +162,14 @@ Train TF-IDF for influencers analysis
 
 .. parsed-literal::
 
-    ['parti pribumi bersatu malaysia',
-     'majlis pakatan harapan',
+    ['mic',
      'jabatan perancangan bandar dan desa',
      'pakatan harapan',
+     'parti pribumi bersatu malaysia',
      'gobind singh deo',
+     'ppbm',
      'parti islam semalaysia',
-     'ppbm']
+     'perkasa']
 
 
 
@@ -139,16 +178,16 @@ Train skip-thought model for topics analysis
 
 .. code:: ipython3
 
-    deep_topic = malaya.deep_get_topics()
+    deep_topic = malaya.topic_influencer.skipthought_topic()
 
 
 .. parsed-literal::
 
-    minibatch loop: 100%|██████████| 168/168 [01:57<00:00,  1.62it/s, cost=3.04]
-    minibatch loop: 100%|██████████| 168/168 [02:01<00:00,  1.57it/s, cost=0.0263]
-    minibatch loop: 100%|██████████| 168/168 [02:00<00:00,  1.55it/s, cost=0.0103]
-    minibatch loop: 100%|██████████| 168/168 [02:01<00:00,  1.58it/s, cost=0.00615]
-    minibatch loop: 100%|██████████| 168/168 [01:59<00:00,  1.51it/s, cost=0.00474]
+    minibatch loop: 100%|██████████| 157/157 [01:47<00:00,  1.67it/s, cost=0.447]
+    minibatch loop: 100%|██████████| 157/157 [01:45<00:00,  1.71it/s, cost=0.00799]
+    minibatch loop: 100%|██████████| 157/157 [01:45<00:00,  1.68it/s, cost=0.00315]
+    minibatch loop: 100%|██████████| 157/157 [01:44<00:00,  1.60it/s, cost=0.00197]
+    minibatch loop: 100%|██████████| 157/157 [01:44<00:00,  1.70it/s, cost=0.00152]
 
 
 .. code:: ipython3
@@ -160,20 +199,15 @@ Train skip-thought model for topics analysis
 
 .. parsed-literal::
 
-    ['tan sri mokhzani mahathir',
-     'najib razak',
-     'pusat transformasi bandar',
-     'anthony loke siew fook',
-     '#fakenews',
-     'survei institut darul ehsan',
+    ['kkmm',
+     'k-pop',
+     'mikro-ekonomi',
+     'malaysia-indonesia',
      'makro-ekonomi',
      'pilihan raya umum ke-14',
-     'malaysia-indonesia',
-     'k-pop',
-     'lee kuan yew',
-     'tengku razaleigh hamzah',
-     'tan sri dr rais yatim',
-     'mikro-ekonomi']
+     'programming language',
+     '#fakenews',
+     'undi rosak']
 
 
 
@@ -186,30 +220,17 @@ Train skip-thought model for topics analysis
 
 .. parsed-literal::
 
-    ['tan sri mokhzani mahathir',
+    ['datuk seri abdul hadi awang',
      'kkmm',
-     'rais yatim',
-     'datuk seri abdul hadi awang',
-     'survei institut darul ehsan',
-     'pilihan raya umum ke-14',
-     'ahli dewan undangan negeri',
-     'malaysia-indonesia',
-     'datuk seri ti lian ker',
      'k-pop',
-     'datuk seri azmin ali',
-     'tengku razaleigh hamzah',
-     'pusat daerah mangundi',
-     'jabatan agama islam wilayah persekutuan',
-     'pusat transformasi bandar',
-     'inisiatif peduli rakyat',
+     'mikro-ekonomi',
+     'malaysia-indonesia',
      'makro-ekonomi',
-     'anthony loke siew fook',
-     'nga kor ming',
-     'lee kuan yew',
-     'tunku ismail idris',
-     'tan sri dr rais yatim',
+     'pilihan raya umum ke-14',
+     'programming language',
      '#fakenews',
-     'mikro-ekonomi']
+     'new straits times',
+     'undi rosak']
 
 
 
@@ -218,21 +239,21 @@ Train skip-thought model for influencers analysis
 
 .. code:: ipython3
 
-    deep_influencer = malaya.deep_get_influencers()
+    deep_influencer = malaya.topic_influencer.skipthought_influencer()
 
 
 .. parsed-literal::
 
-    minibatch loop: 100%|██████████| 24/24 [00:15<00:00,  1.55it/s, cost=3.64]
-    minibatch loop: 100%|██████████| 24/24 [00:14<00:00,  1.68it/s, cost=1.45]
-    minibatch loop: 100%|██████████| 24/24 [00:15<00:00,  1.40it/s, cost=0.55] 
-    minibatch loop: 100%|██████████| 24/24 [00:14<00:00,  1.69it/s, cost=0.362]
-    minibatch loop: 100%|██████████| 24/24 [00:15<00:00,  1.63it/s, cost=0.275]
-    minibatch loop: 100%|██████████| 24/24 [00:14<00:00,  1.62it/s, cost=0.249]
-    minibatch loop: 100%|██████████| 24/24 [00:15<00:00,  1.63it/s, cost=0.237] 
-    minibatch loop: 100%|██████████| 24/24 [00:14<00:00,  1.64it/s, cost=0.207] 
-    minibatch loop: 100%|██████████| 24/24 [00:16<00:00,  1.55it/s, cost=0.262]
-    minibatch loop: 100%|██████████| 24/24 [00:15<00:00,  1.44it/s, cost=0.229] 
+    minibatch loop: 100%|██████████| 20/20 [00:13<00:00,  1.70it/s, cost=3.46]
+    minibatch loop: 100%|██████████| 20/20 [00:13<00:00,  1.33it/s, cost=1.08]
+    minibatch loop: 100%|██████████| 20/20 [00:13<00:00,  1.66it/s, cost=0.547]
+    minibatch loop: 100%|██████████| 20/20 [00:12<00:00,  1.74it/s, cost=0.275]
+    minibatch loop: 100%|██████████| 20/20 [00:12<00:00,  1.59it/s, cost=0.253]
+    minibatch loop: 100%|██████████| 20/20 [00:12<00:00,  1.69it/s, cost=0.281]
+    minibatch loop: 100%|██████████| 20/20 [00:12<00:00,  1.71it/s, cost=0.209]
+    minibatch loop: 100%|██████████| 20/20 [00:12<00:00,  1.66it/s, cost=0.259]
+    minibatch loop: 100%|██████████| 20/20 [00:12<00:00,  1.67it/s, cost=0.232]
+    minibatch loop: 100%|██████████| 20/20 [00:12<00:00,  1.62it/s, cost=0.219]
 
 
 .. code:: ipython3
@@ -244,7 +265,7 @@ Train skip-thought model for influencers analysis
 
 .. parsed-literal::
 
-    ['najib razak', 'anthony loke siew fook', 'datuk seri azmin ali', 'mahathir']
+    ['najib razak', 'mahathir']
 
 
 
@@ -266,24 +287,24 @@ Train siamese network for topics analysis
 
 .. code:: ipython3
 
-    deep_topic = malaya.deep_siamese_get_topics()
+    deep_topic = malaya.topic_influencer.siamese_topic()
     print(deep_topic.get_similarity(news, anchor = 0.5))
     print(deep_topic.get_similarity(second_news, anchor = 0.5))
 
 
 .. parsed-literal::
 
-    minibatch loop: 100%|██████████| 168/168 [02:03<00:00,  1.60it/s, accuracy=0.75, cost=0.113] 
-    minibatch loop: 100%|██████████| 168/168 [02:01<00:00,  1.64it/s, accuracy=1, cost=0.0975]   
-    minibatch loop: 100%|██████████| 168/168 [02:10<00:00,  1.65it/s, accuracy=1, cost=0.0539]   
-    minibatch loop: 100%|██████████| 168/168 [01:59<00:00,  1.64it/s, accuracy=1, cost=0.057]     
-    minibatch loop: 100%|██████████| 168/168 [01:58<00:00,  1.68it/s, accuracy=1, cost=0.0324]    
+    minibatch loop: 100%|██████████| 157/157 [01:50<00:00,  1.67it/s, accuracy=1, cost=0.114]    
+    minibatch loop: 100%|██████████| 157/157 [01:49<00:00,  1.69it/s, accuracy=1, cost=0.0739]   
+    minibatch loop: 100%|██████████| 157/157 [01:49<00:00,  1.66it/s, accuracy=1, cost=0.0686]    
+    minibatch loop: 100%|██████████| 157/157 [01:50<00:00,  1.68it/s, accuracy=1, cost=0.0279]    
+    minibatch loop: 100%|██████████| 157/157 [01:49<00:00,  1.70it/s, accuracy=1, cost=0.0193]    
 
 
 .. parsed-literal::
 
-    ['tan sri mokhzani mahathir', 'najib razak', 'internet', 'rais yatim', 'anwar ibrahim', '1mdb', 'makanan', 'idealogi', 'recep tayyip erdogan', 'datuk seri abdul hadi awang', 'fc bayern munich', 'tsunami fitnah', 'thai cave', 'oppo smartphone', 'arsenal fc', 'jho low', 'datuk johari abdul', 'teknologi', 'syed saddiq', 'liverpool fc', 'isu bumiputera', 'startup companies', 'datuk seri ti lian ker', 'kadir jasin', 'datuk seri azmin ali', 'ptptn', 'tengku razaleigh hamzah', 'tabung haji', 'isu kemiskinan', 'pengangkutan awam', 'perkhidmatan awam', 'wanita', 'euro 2020', 'ganja', 'sosial', 'twitter', 'huawei smartphone', 'anthony loke siew fook', 'felda', 'fc barcelona', 'bebas tahanan', 'gst', 'ekonomi', 'lee kuan yew', 'tunku ismail idris', 'baling botol', 'masyarakat', 'sosial media', 'ariff md yusof', 'tan sri dr rais yatim', 'lenovo smartphone', 'chelsea fc', '#fakenews', 'umno', 'median salary', 'gaji minimum', 'juventus fc', 'kesihatan', 'mikro-ekonomi']
-    ['anwar ibrahim', 'makanan', 'recep tayyip erdogan', 'datuk seri abdul hadi awang', 'fc bayern munich', 'tsunami fitnah', 'jho low', 'syed saddiq', 'liverpool fc', 'tabung haji', 'tengku razaleigh hamzah', 'pengangkutan awam', 'wanita', 'euro 2020', 'ganja', 'fc barcelona', 'felda', 'bung mokhtar', 'bebas tahanan', 'gst', 'ekonomi', 'lee kuan yew', 'baling botol', 'ariff md yusof', 'chelsea fc', 'median salary', 'gaji minimum', 'kesihatan']
+    ['kesihatan', 'politik', 'wan azizah', 'kaum cina', 'tiga penjuru', 'pusat transformasi bandar', 'bumiputra', 'jabatan perancangan bandar dan desa', 'pusat daerah mangundi', 'menteri pertahanan', 'kewangan', 'gaza', 'kaum melayu', 'programming language', 'lgbt', 'infrastruktur', 'sinar harian', 'singapura', 'real madrid cf', 'anwar ibrahim']
+    ['politik', 'kkmm', 'bumiputra', 'malaysia-indonesia', 'menteri pertahanan', 'motogp', 'programming language', 'twitter', 'lgbt', 'gaji menteri', 'singapura']
 
 
 .. code:: ipython3
@@ -294,6 +315,49 @@ Train siamese network for topics analysis
 
 .. parsed-literal::
 
-    ['tan sri mokhzani mahathir', 'ganja', 'syed saddiq', 'sosial', 'chelsea fc', 'makanan', 'liverpool fc', 'felda', 'datuk seri abdul hadi awang', 'gaji minimum', 'juventus fc', 'baling botol', 'datuk seri azmin ali', 'masyarakat', 'arsenal fc', 'pengangkutan awam', 'perkhidmatan awam', 'euro 2020', 'jho low']
     []
+    []
+
+
+Train siamese network for influencers analysis
+----------------------------------------------
+
+.. code:: ipython3
+
+    deep_influencer = malaya.topic_influencer.siamese_influencer()
+
+
+.. parsed-literal::
+
+    minibatch loop: 100%|██████████| 20/20 [00:14<00:00,  1.46it/s, accuracy=0.583, cost=0.129]
+    minibatch loop: 100%|██████████| 20/20 [00:13<00:00,  1.48it/s, accuracy=0.542, cost=0.124]
+    minibatch loop: 100%|██████████| 20/20 [00:13<00:00,  1.49it/s, accuracy=0.542, cost=0.121]
+    minibatch loop: 100%|██████████| 20/20 [00:14<00:00,  1.49it/s, accuracy=0.833, cost=0.0885]
+    minibatch loop: 100%|██████████| 20/20 [00:14<00:00,  1.47it/s, accuracy=0.875, cost=0.0637]
+
+
+.. code:: ipython3
+
+    deep_influencer.get_similarity(news, anchor = 0.5)
+
+
+
+
+.. parsed-literal::
+
+    ['najib razak', 'mahathir']
+
+
+
+.. code:: ipython3
+
+    deep_influencer.get_similarity(second_news, anchor = 0.5)
+
+
+
+
+.. parsed-literal::
+
+    ['gobind singh deo']
+
 

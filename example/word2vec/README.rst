@@ -2,31 +2,24 @@
 .. code:: ipython3
 
     import malaya
+    %matplotlib inline
 
 Load malaya news word2vec
 -------------------------
 
 .. code:: ipython3
 
-    embedded = malaya.malaya_word2vec(256)
-
-
-.. parsed-literal::
-
-    downloading word2vec-256 embedded
-
-
-.. parsed-literal::
-
-    109MB [00:44, 2.82MB/s]                          
-
+    embedded = malaya.word2vec.load(256)
 
 Load word2vec model
 -------------------
 
 .. code:: ipython3
 
-    word_vector = malaya.Word2Vec(embedded['nce_weights'], embedded['dictionary'])
+    word_vector = malaya.word2vec.word2vec(embedded['nce_weights'], embedded['dictionary'])
+
+Check top-k similar semantics based on a word
+---------------------------------------------
 
 .. code:: ipython3
 
@@ -41,6 +34,9 @@ Load word2vec model
     [['mahathir', 0.44774019718170166], ['beliau', 0.44170427322387695], ['zaid', 0.43993180990219116], ['hishammuddin', 0.4343132972717285], ['kuok', 0.43307822942733765], ['husam', 0.43213725090026855], ['anifah', 0.4307258129119873], ['pesakit', 0.4262162446975708]]
 
 
+Calculate vb - va + vc
+----------------------
+
 .. code:: ipython3
 
     print(word_vector.analogy('anwar', 'penjara', 'kerajaan', 5))
@@ -50,6 +46,11 @@ Load word2vec model
 
     ['penjara', 'kerajaan', 'kkm', 'kabinet', 'tuju']
 
+
+Word2vec calculator
+-------------------
+
+You can put any equation you wanted.
 
 .. code:: ipython3
 
@@ -93,4 +94,82 @@ Load word2vec model
      'tujuan',
      'meter']
 
+
+
+Visualize scatter-plot
+----------------------
+
+.. code:: ipython3
+
+    word = 'anwar'
+    result = word_vector.n_closest(word=word, num_closest=8, metric='cosine')
+    word_vector.scatter_plot(result, centre = word, notebook_mode = True)
+
+
+
+.. image:: load-word2vec_files/load-word2vec_13_0.png
+
+
+.. code:: ipython3
+
+    result = word_vector.calculator('anwar * amerika', num_closest=8, metric='cosine',
+                          return_similarity=True)
+    word_vector.scatter_plot(result, notebook_mode = True)
+
+
+
+.. image:: load-word2vec_files/load-word2vec_14_0.png
+
+
+Visualize tree-plot
+-------------------
+
+.. code:: ipython3
+
+    word = 'anwar'
+    result = word_vector.n_closest(word=word, num_closest=8, metric='cosine')
+    word_vector.tree_plot(result, notebook_mode = True)
+
+
+
+.. parsed-literal::
+
+    <Figure size 504x504 with 0 Axes>
+
+
+
+.. image:: load-word2vec_files/load-word2vec_16_1.png
+
+
+Get embedding from a word
+-------------------------
+
+If a word not found in the vocabulary, it will throw an exception with
+top-5 nearest words
+
+.. code:: ipython3
+
+    word_vector.get_vector_by_name('husein-comel')
+
+
+::
+
+
+    ---------------------------------------------------------------------------
+
+    Exception                                 Traceback (most recent call last)
+
+    <ipython-input-11-a2cb3bf2a088> in <module>
+    ----> 1 word_vector.get_vector_by_name('husein-comel')
+    
+
+    ~/Documents/Malaya/malaya/word2vec.py in get_vector_by_name(self, word)
+        109             raise Exception(
+        110                 'input not found in dictionary, here top-5 nearest words [%s]'
+    --> 111                 % (strings)
+        112             )
+        113         return np.ravel(self._embed_matrix[self._dictionary[word], :])
+
+
+    Exception: input not found in dictionary, here top-5 nearest words [income, husein, incomes, hussein, husseiny]
 

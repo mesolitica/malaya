@@ -18,33 +18,32 @@ Train LSA model
 
 .. code:: ipython3
 
-    malaya.summarize_lsa(isu_kerajaan,important_words=10)
+    malaya.summarize.lsa(isu_kerajaan,important_words=10)
 
 
 
 
 .. parsed-literal::
 
-    {'summary': 'ketika merasmikan istiadat pembukaan penggal pertama parlimen julai lepas seri paduka bertitah mengalu alukan pendekatan kerajaan pakatan harapan menegakkan ketelusan terutamanya mendedahkan kedudukan kewangan negara sebenar mengkaji semula perbelanjaan kos projek mengurus kewangan secara berhemat menangani kos sara hidup. jun lepas sultan muhammad v memperkenankan peruntukan gaji emolumen pertuan agong dikurangkan sebanyak peratus sepanjang pemerintahan sehingga berikutan keprihatinan seri paduka tahap hutang keadaan ekonomi negara. seri paduka turut menitahkan majlis rumah terbuka aidilfitri tahun diadakan istana negara peruntukan majlis digunakan membantu golongan kurang bernasib baik',
-     'top-words': ['umum',
-      'pilih',
+    {'summary': 'merasmikan istiadat pembukaan penggal parlimen julai seri paduka bertitah mengalu alukan pendekatan kerajaan pakatan harapan menegakkan ketelusan terutamanya mendedahkan kedudukan kewangan negara sebenar mengkaji perbelanjaan kos projek mengurus kewangan berhemat menangani kos sara hidup. jun sultan muhammad v memperkenankan peruntukan gaji emolumen pertuan agong dikurangkan peratus pemerintahan berikutan keprihatinan seri paduka tahap hutang ekonomi negara. seri paduka menitahkan majlis rumah terbuka aidilfitri diadakan istana negara peruntukan majlis membantu golongan bernasib',
+     'top-words': ['titah',
+      'perintah',
       'alih',
       'buka',
-      'ketika',
-      'kurang',
       'malaysia',
       'mei',
-      'mei lepas',
-      'muhammad'],
-     'cluster-top-words': ['pilih',
-      'kurang',
-      'umum',
-      'malaysia',
-      'ketika',
-      'mei lepas',
-      'buka',
       'muhammad',
-      'alih']}
+      'paduka titah',
+      'sultan muhammad',
+      'peran'],
+     'cluster-top-words': ['alih',
+      'sultan muhammad',
+      'mei',
+      'malaysia',
+      'perintah',
+      'paduka titah',
+      'peran',
+      'buka']}
 
 
 
@@ -53,7 +52,7 @@ Maintain original
 
 .. code:: ipython3
 
-    malaya.summarize_lsa(isu_kerajaan, important_words=10,maintain_original=True)
+    malaya.summarize.lsa(isu_kerajaan, important_words=10,maintain_original=True)
 
 
 
@@ -61,25 +60,24 @@ Maintain original
 .. parsed-literal::
 
     {'summary': 'ketika merasmikan istiadat pembukaan penggal pertama, parlimen ke-14 pada 17 julai lepas, seri paduka bertitah mengalu-alukan pendekatan kerajaan pakatan harapan dalam menegakkan ketelusan terutamanya dengan mendedahkan kedudukan kewangan negara yang sebenar serta mengkaji semula perbelanjaan, kos projek dan mengurus kewangan secara berhemat bagi menangani kos sara hidup. pada jun lepas, sultan muhammad v memperkenankan supaya peruntukan gaji dan emolumen yang di-pertuan agong dikurangkan sebanyak 10 peratus sepanjang pemerintahan sehingga 2021 berikutan keprihatinan seri paduka terhadap tahap hutang dan keadaan ekonomi negara. seri paduka turut menitahkan supaya majlis rumah terbuka aidilfitri tahun ini tidak diadakan di istana negara dengan peruntukan majlis itu digunakan bagi membantu golongan yang kurang bernasib baik',
-     'top-words': ['umum 14',
-      'pertama',
-      'ada',
+     'top-words': ['titah',
+      'pilih',
       'alih',
       'buka',
-      'ketika',
-      'kurang',
       'malaysia',
       'mei',
-      'mei lepas'],
-     'cluster-top-words': ['kurang',
-      'pertama',
-      'ada',
-      'malaysia',
-      'ketika',
-      'umum 14',
-      'mei lepas',
+      'muhammad',
+      'paduka titah',
+      'peran',
+      'sultan muhammad'],
+     'cluster-top-words': ['alih',
+      'sultan muhammad',
+      'mei',
       'buka',
-      'alih']}
+      'malaysia',
+      'paduka titah',
+      'peran',
+      'pilih']}
 
 
 
@@ -88,33 +86,32 @@ Train NMF model
 
 .. code:: ipython3
 
-    malaya.summarize_nmf(isu_kerajaan,important_words=10)
+    malaya.summarize.nmf(isu_kerajaan,important_words=10)
 
 
 
 
 .. parsed-literal::
 
-    {'summary': 'ketika merasmikan istiadat pembukaan penggal pertama parlimen julai lepas seri paduka bertitah mengalu alukan pendekatan kerajaan pakatan harapan menegakkan ketelusan terutamanya mendedahkan kedudukan kewangan negara sebenar mengkaji semula perbelanjaan kos projek mengurus kewangan secara berhemat menangani kos sara hidup. jun lepas sultan muhammad v memperkenankan peruntukan gaji emolumen pertuan agong dikurangkan sebanyak peratus sepanjang pemerintahan sehingga berikutan keprihatinan seri paduka tahap hutang keadaan ekonomi negara. seri paduka turut menitahkan majlis rumah terbuka aidilfitri tahun diadakan istana negara peruntukan majlis digunakan membantu golongan kurang bernasib baik',
-     'top-words': ['umum',
-      'pilih',
+    {'summary': 'merasmikan istiadat pembukaan penggal parlimen julai seri paduka bertitah mengalu alukan pendekatan kerajaan pakatan harapan menegakkan ketelusan terutamanya mendedahkan kedudukan kewangan negara sebenar mengkaji perbelanjaan kos projek mengurus kewangan berhemat menangani kos sara hidup. jun sultan muhammad v memperkenankan peruntukan gaji emolumen pertuan agong dikurangkan peratus pemerintahan berikutan keprihatinan seri paduka tahap hutang ekonomi negara. seri paduka menitahkan majlis rumah terbuka aidilfitri diadakan istana negara peruntukan majlis membantu golongan bernasib',
+     'top-words': ['titah',
+      'perintah',
       'alih',
       'buka',
-      'ketika',
-      'kurang',
       'malaysia',
       'mei',
-      'mei lepas',
-      'muhammad'],
-     'cluster-top-words': ['pilih',
-      'kurang',
-      'umum',
-      'malaysia',
-      'ketika',
-      'mei lepas',
-      'buka',
       'muhammad',
-      'alih']}
+      'paduka titah',
+      'sultan muhammad',
+      'peran'],
+     'cluster-top-words': ['alih',
+      'sultan muhammad',
+      'mei',
+      'malaysia',
+      'perintah',
+      'paduka titah',
+      'peran',
+      'buka']}
 
 
 
@@ -123,33 +120,32 @@ Train LDA model
 
 .. code:: ipython3
 
-    malaya.summarize_lda(isu_kerajaan,important_words=10)
+    malaya.summarize.lda(isu_kerajaan,important_words=10)
 
 
 
 
 .. parsed-literal::
 
-    {'summary': 'ketika merasmikan istiadat pembukaan penggal pertama parlimen julai lepas seri paduka bertitah mengalu alukan pendekatan kerajaan pakatan harapan menegakkan ketelusan terutamanya mendedahkan kedudukan kewangan negara sebenar mengkaji semula perbelanjaan kos projek mengurus kewangan secara berhemat menangani kos sara hidup. jun lepas sultan muhammad v memperkenankan peruntukan gaji emolumen pertuan agong dikurangkan sebanyak peratus sepanjang pemerintahan sehingga berikutan keprihatinan seri paduka tahap hutang keadaan ekonomi negara. seri paduka turut menitahkan majlis rumah terbuka aidilfitri tahun diadakan istana negara peruntukan majlis digunakan membantu golongan kurang bernasib baik',
-     'top-words': ['umum',
-      'pilih',
+    {'summary': 'merasmikan istiadat pembukaan penggal parlimen julai seri paduka bertitah mengalu alukan pendekatan kerajaan pakatan harapan menegakkan ketelusan terutamanya mendedahkan kedudukan kewangan negara sebenar mengkaji perbelanjaan kos projek mengurus kewangan berhemat menangani kos sara hidup. jun sultan muhammad v memperkenankan peruntukan gaji emolumen pertuan agong dikurangkan peratus pemerintahan berikutan keprihatinan seri paduka tahap hutang ekonomi negara. seri paduka menitahkan majlis rumah terbuka aidilfitri diadakan istana negara peruntukan majlis membantu golongan bernasib',
+     'top-words': ['titah',
+      'perintah',
       'alih',
       'buka',
-      'ketika',
-      'kurang',
       'malaysia',
       'mei',
-      'mei lepas',
-      'muhammad'],
-     'cluster-top-words': ['pilih',
-      'kurang',
-      'umum',
-      'malaysia',
-      'ketika',
-      'mei lepas',
-      'buka',
       'muhammad',
-      'alih']}
+      'paduka titah',
+      'sultan muhammad',
+      'peran'],
+     'cluster-top-words': ['alih',
+      'sultan muhammad',
+      'mei',
+      'malaysia',
+      'perintah',
+      'paduka titah',
+      'peran',
+      'buka']}
 
 
 
@@ -158,24 +154,24 @@ Not clustering important words
 
 .. code:: ipython3
 
-    malaya.summarize_lda(isu_kerajaan,important_words=10,return_cluster=False)
+    malaya.summarize.lda(isu_kerajaan,important_words=10,return_cluster=False)
 
 
 
 
 .. parsed-literal::
 
-    {'summary': 'ketika merasmikan istiadat pembukaan penggal pertama parlimen julai lepas seri paduka bertitah mengalu alukan pendekatan kerajaan pakatan harapan menegakkan ketelusan terutamanya mendedahkan kedudukan kewangan negara sebenar mengkaji semula perbelanjaan kos projek mengurus kewangan secara berhemat menangani kos sara hidup. jun lepas sultan muhammad v memperkenankan peruntukan gaji emolumen pertuan agong dikurangkan sebanyak peratus sepanjang pemerintahan sehingga berikutan keprihatinan seri paduka tahap hutang keadaan ekonomi negara. seri paduka turut menitahkan majlis rumah terbuka aidilfitri tahun diadakan istana negara peruntukan majlis digunakan membantu golongan kurang bernasib baik',
-     'top-words': ['umum',
-      'pilih',
+    {'summary': 'merasmikan istiadat pembukaan penggal parlimen julai seri paduka bertitah mengalu alukan pendekatan kerajaan pakatan harapan menegakkan ketelusan terutamanya mendedahkan kedudukan kewangan negara sebenar mengkaji perbelanjaan kos projek mengurus kewangan berhemat menangani kos sara hidup. jun sultan muhammad v memperkenankan peruntukan gaji emolumen pertuan agong dikurangkan peratus pemerintahan berikutan keprihatinan seri paduka tahap hutang ekonomi negara. seri paduka menitahkan majlis rumah terbuka aidilfitri diadakan istana negara peruntukan majlis membantu golongan bernasib',
+     'top-words': ['titah',
+      'perintah',
       'alih',
       'buka',
-      'ketika',
-      'kurang',
       'malaysia',
       'mei',
-      'mei lepas',
-      'muhammad']}
+      'muhammad',
+      'paduka titah',
+      'sultan muhammad',
+      'peran']}
 
 
 
@@ -184,28 +180,7 @@ Load deep learning model
 
 .. code:: ipython3
 
-    deep_summary = malaya.summarize_deep_learning()
-
-
-.. parsed-literal::
-
-    downloading SUMMARIZE skip-thought frozen model
-
-
-.. parsed-literal::
-
-    119MB [00:39, 3.88MB/s]                          
-      0%|          | 0.00/0.98 [00:00<?, ?MB/s]
-
-.. parsed-literal::
-
-    downloading SUMMARIZE skip-thought dictionary
-
-
-.. parsed-literal::
-
-    1.00MB [00:00, 2.39MB/s]                   
-
+    deep_summary = malaya.summarize.deep_model()
 
 .. code:: ipython3
 

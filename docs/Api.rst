@@ -9,10 +9,10 @@ malaya
 .. automodule:: malaya
     :members:
 
-malaya.entities
+malaya.entity
 ---------------
 
-.. automodule:: malaya.entities
+.. automodule:: malaya.entity
     :members:
 
 malaya.language_detection
@@ -21,19 +21,19 @@ malaya.language_detection
 .. automodule:: malaya.language_detection
     :members:
 
-malaya.normalizer
+malaya.normalize
 -------------------------
 
-.. automodule:: malaya.normalizer
+.. automodule:: malaya.normalize
     :members:
 
-.. autoclass:: DEEP_NORMALIZER()
+.. autoclass:: malaya.normalize._DEEP_NORMALIZER()
     :members:
 
-.. autoclass:: SPELL_NORMALIZE()
+.. autoclass:: malaya.normalize._SPELL_NORMALIZE()
     :members:
 
-.. autoclass:: FUZZY_NORMALIZE()
+.. autoclass:: malaya.normalize._FUZZY_NORMALIZE()
     :members:
 
 malaya.num2word
@@ -54,90 +54,68 @@ malaya.sentiment
 .. automodule:: malaya.sentiment
     :members:
 
-malaya.skip_thought
---------------------
-.. automodule:: malaya.skip_thought
-    :members:
-
-.. autoclass:: DEEP_SUMMARIZER()
-    :members:
-
-malaya.sklearn_model
---------------------
-
-.. automodule:: malaya.sklearn_model
-    :members:
-
-.. autoclass:: USER_BAYES()
-    :members:
-
-.. autoclass:: USER_XGB()
-    :members:
-
-.. autoclass:: TOXIC()
-    :members:
-
 malaya.spell
 -----------------
 
 .. automodule:: malaya.spell
     :members:
 
-.. autoclass:: SPELL()
+.. autoclass:: malaya.spell._SPELL()
     :members:
 
-malaya.stemmer
+
+malaya.stack
 -----------------
 
-.. automodule:: malaya.stemmer
+.. automodule:: malaya.stack
     :members:
 
-.. autoclass:: DEEP_STEMMER()
+malaya.stem
+-----------------
+
+.. automodule:: malaya.stem
     :members:
 
-malaya.summarization
+.. autoclass:: malaya.stem._DEEP_STEMMER()
+    :members:
+
+malaya.subjective
+-----------------
+
+.. automodule:: malaya.subjective
+    :members:
+
+malaya.summarize
 ---------------------
 
-.. automodule:: malaya.summarization
+.. automodule:: malaya.summarize
     :members:
 
-malaya.tensorflow_model
------------------------
-
-.. automodule:: malaya.tensorflow_model
-    :members:
-
-.. autoclass:: TAGGING()
-    :members:
-
-.. autoclass:: SENTIMENT()
-    :members:
-
-.. autoclass:: DEEP_TOXIC()
-    :members:
-
-malaya.topic_modelling
------------------------
-
-.. automodule:: malaya.topic_modelling
-    :members:
-
-.. autoclass:: TOPIC()
-    :members:
-
-malaya.topics_influencers
+malaya.topics_influencer
 -------------------------
 
-.. automodule:: malaya.topics_influencers
+.. automodule:: malaya.topic_influencer
     :members:
 
-.. autoclass:: DEEP_SIAMESE_SIMILARITY()
+.. autoclass:: malaya.topic_influencer._DEEP_SIAMESE_SIMILARITY()
     :members:
 
-.. autoclass:: DEEP_SIMILARITY()
+.. autoclass:: malaya.topic_influencer._DEEP_SIMILARITY()
     :members:
 
-.. autoclass:: FAST_SIMILARITY()
+.. autoclass:: malaya.topic_influencer._FAST_SIMILARITY()
+    :members:
+
+malaya.topic_model
+-----------------------
+
+.. automodule:: malaya.topic_model
+    :members:
+
+.. autoclass:: malaya.topic_model._TOPIC()
+    :members:
+
+.. autoclass:: malaya.topic_model._DEEP_TOPIC()
     :members:
 
 malaya.toxic
@@ -152,5 +130,5 @@ malaya.word2vec
 .. automodule:: malaya.word2vec
     :members:
 
-.. autoclass:: Word2Vec()
+.. autoclass:: malaya.word2vec.word2vec()
     :members:

@@ -7,17 +7,15 @@ if not sys.warnoptions:
 import pickle
 import os
 import numpy as np
-import tensorflow as tf
 from fuzzywuzzy import fuzz
-from sklearn.utils import shuffle
 from sklearn.manifold import TSNE
 from scipy.spatial.distance import cdist
 from sklearn.neighbors import NearestNeighbors
 from . import home
-from .utils import download_file
+from ._utils._utils import download_file
 
 
-def malaya_word2vec(size = 256):
+def load(size = 256):
     """
     Return malaya pretrained news word2vec
 
@@ -32,17 +30,17 @@ def malaya_word2vec(size = 256):
     assert isinstance(size, int), 'input must be an integer'
     if size not in [32, 64, 128, 256, 512]:
         raise Exception('size word2vec not supported')
-    if not os.path.isfile('%s/word2vec-%d.p' % (home, size)):
+    if not os.path.isfile('%s/word2vec-%d/word2vec.p' % (home, size)):
         print('downloading word2vec-%d embedded' % (size))
         download_file(
             'v7/word2vec/word2vec-%d.p' % (size),
-            '%s/word2vec-%d.p' % (home, size),
+            '%s/word2vec-%d/word2vec.p' % (home, size),
         )
-    with open('%s/word2vec-%d.p' % (home, size), 'rb') as fopen:
+    with open('%s/word2vec-%d/word2vec.p' % (home, size), 'rb') as fopen:
         return pickle.load(fopen)
 
 
-class Calculator:
+class _Calculator:
     def __init__(self, tokens):
         self._tokens = tokens
         self._current = tokens[0]
@@ -85,7 +83,7 @@ class Calculator:
         return result
 
 
-class Word2Vec:
+class word2vec:
     def __init__(self, embed_matrix, dictionary):
         self._embed_matrix = embed_matrix
         self._dictionary = dictionary
@@ -104,7 +102,163 @@ class Word2Vec:
         -------
         vector: numpy
         """
+        if word not in self._dictionary:
+            arr = np.array([fuzz.ratio(word, k) for k in self.words])
+            idx = (-arr).argsort()[:5]
+            strings = ', '.join([self.words[i] for i in idx])
+            raise Exception(
+                'input not found in dictionary, here top-5 nearest words [%s]'
+                % (strings)
+            )
         return np.ravel(self._embed_matrix[self._dictionary[word], :])
+
+    def tree_plot(
+        self,
+        labels,
+        notebook_mode = False,
+        figsize = (7, 7),
+        annotate = True,
+        figname = 'fig.png',
+    ):
+        """
+        plot a tree plot based on output from calculator / n_closest / analogy
+
+        Parameters
+        ----------
+        labels : list
+            output from calculator / n_closest / analogy
+        notebook_mode : bool
+            if True, it will render plt.show, else plt.savefig
+        figsize : tuple, (default=(7, 7))
+            figure size for plot
+        figname : str, (default='fig.png')
+
+        Returns
+        -------
+        list_dictionaries: list of results
+        """
+        import matplotlib.pyplot as plt
+        import seaborn as sns
+
+        sns.set()
+        idx = [
+            self.words.index(e[0] if isinstance(e, list) else e) for e in labels
+        ]
+        embed = self._embed_matrix[idx]
+        embed = embed.dot(embed.T)
+        embed = (embed - embed.min()) / embed.max()
+        labelled = []
+        for label in labels:
+            label = (
+                '%s, %.3f' % (label[0], label[1])
+                if isinstance(label, list)
+                else label
+            )
+            labelled.append(label)
+        plt.figure(figsize = figsize)
+        g = sns.clustermap(
+            embed,
+            cmap = 'Blues',
+            xticklabels = labelled,
+            yticklabels = labelled,
+            annot = annotate,
+        )
+        if notebook_mode:
+            plt.show()
+        else:
+            plt.savefig(figname, bbox_inches = 'tight')
+
+    def scatter_plot(
+        self,
+        labels,
+        centre = None,
+        notebook_mode = False,
+        figsize = (7, 7),
+        figname = 'fig.png',
+        plus_minus = 25,
+        handoff = 5e-5,
+    ):
+        """
+        plot a scatter plot based on output from calculator / n_closest / analogy
+
+        Parameters
+        ----------
+        labels : list
+            output from calculator / n_closest / analogy
+        centre : str, (default=None)
+            centre label, if a str, it will annotate in a red color
+        notebook_mode : bool
+            if True, it will render plt.show, else plt.savefig
+        figsize : tuple, (default=(7, 7))
+            figure size for plot
+        figname : str, (default='fig.png')
+
+        Returns
+        -------
+        list_dictionaries: list of results
+        """
+        assert isinstance(labels, list), 'input must be a list'
+        assert isinstance(
+            notebook_mode, bool
+        ), 'notebook_mode must be a boolean'
+        assert isinstance(figsize, tuple), 'figsize must be a tuple'
+        assert isinstance(figname, str), 'figname must be a string'
+        assert isinstance(plus_minus, int), 'plus_minus must be an integer'
+        import matplotlib.pyplot as plt
+        import seaborn as sns
+
+        sns.set()
+        idx = [
+            self.words.index(e[0] if isinstance(e, list) else e) for e in labels
+        ]
+        if centre:
+            assert isinstance(centre, str), 'centre must be a string'
+            idx.append(self.words.index(centre))
+        cp_idx = idx[:]
+        for i in idx:
+            cp_idx.extend(np.arange(i - plus_minus, i).tolist())
+            cp_idx.extend(np.arange(i, i + plus_minus).tolist())
+        tsne = TSNE(n_components = 2, random_state = 0).fit_transform(
+            self._embed_matrix[cp_idx]
+        )
+        plt.figure(figsize = figsize)
+        plt.scatter(tsne[:, 0], tsne[:, 1])
+        for label, x, y in zip(
+            labels, tsne[: len(labels), 0], tsne[: len(labels), 1]
+        ):
+            label = (
+                '%s, %.3f' % (label[0], label[1])
+                if isinstance(label, list)
+                else label
+            )
+            plt.annotate(
+                label,
+                xy = (x, y),
+                xytext = (0, 0),
+                textcoords = 'offset points',
+            )
+        if centre:
+            plt.annotate(
+                centre,
+                xy = (tsne[len(labels), 0], tsne[len(labels), 1]),
+                xytext = (0, 0),
+                textcoords = 'offset points',
+                color = 'red',
+            )
+        plt.xlim(
+            tsne[: len(idx), 0].min() + handoff,
+            tsne[: len(idx), 0].max() + handoff,
+        )
+        plt.ylim(
+            tsne[: len(idx), 1].min() + handoff,
+            tsne[: len(idx), 1].max() + handoff,
+        )
+        plt.xticks([])
+        plt.yticks([])
+        if notebook_mode:
+            plt.show()
+        else:
+            plt.savefig(figname, bbox_inches = 'tight')
 
     def calculator(
         self,
@@ -169,7 +323,7 @@ class Word2Vec:
                 self._embed_matrix
             )
             distances, idx = nn.kneighbors(
-                Calculator(tokens).exp().reshape((1, -1))
+                _Calculator(tokens).exp().reshape((1, -1))
             )
             word_list = []
             for i in range(1, idx.shape[1]):
@@ -179,7 +333,7 @@ class Word2Vec:
             return word_list
         else:
             closest_indices = self.closest_row_indices(
-                Calculator(tokens).exp(), num_closest + 1, metric
+                _Calculator(tokens).exp(), num_closest + 1, metric
             )
             word_list = []
             for i in closest_indices:
@@ -218,7 +372,7 @@ class Word2Vec:
                 self._embed_matrix
             )
             distances, idx = nn.kneighbors(
-                self._embed_matrix[self._dictionary[word], :].reshape((1, -1))
+                self.get_vector_by_name(word).reshape((1, -1))
             )
             word_list = []
             for i in range(1, idx.shape[1]):

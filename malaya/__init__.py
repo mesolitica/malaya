@@ -4,50 +4,79 @@ import warnings
 if not sys.warnoptions:
     warnings.simplefilter('ignore')
 
-from pathlib import Path
 import os
+from shutil import rmtree
+from pathlib import Path
 
-home = str(Path.home()) + '/Malaya'
-version = '0.9'
-bump_version = '0.9.0.1'
-version_path = home + '/version'
+home = os.path.join(str(Path.home()), 'Malaya')
+version = '1.0'
+bump_version = '1.0.0.0'
+version_path = os.path.join(home, 'version')
 
 
-def delete_folder(home):
-    for root, dirs, files in os.walk(home):
+def _delete_folder(folder):
+    for root, dirs, files in os.walk(folder):
         for file in files:
             os.remove(os.path.join(root, file))
 
+
+def _delete_macos():
+    macos = os.path.join(home, '__MACOSX')
+    if os.path.exists(macos):
+        rmtree(macos)
+
+
+from ._utils._paths import MALAY_TEXT
+from ._utils._utils import DisplayablePath, download_file
 
 try:
     if not os.path.exists(home):
         os.makedirs(home)
 except:
-    print('cannot make directory for caching, exiting.')
-    sys.exit(1)
+    raise Exception(
+        'Malaya cannot make directory for caching. Please check your '
+        + str(Path.home())
+    )
+
+_delete_macos()
 
 if not os.path.isfile(version_path):
     print('not found any version, deleting previous version models..')
-    delete_folder(home)
+    _delete_folder(home)
     with open(version_path, 'w') as fopen:
         fopen.write(version)
 else:
     with open(version_path, 'r') as fopen:
         cached_version = fopen.read()
-    if version not in cached_version:
-        print('deleting previous version models..')
-        delete_folder(home)
+    try:
+        if float(cached_version) < 1:
+            print(
+                'Found old version of Malaya, deleting previous version models..'
+            )
+            _delete_folder(home)
+            with open(version_path, 'w') as fopen:
+                fopen.write(version)
+    except:
+        print('Found old version of Malaya, deleting previous version models..')
+        _delete_folder(home)
         with open(version_path, 'w') as fopen:
             fopen.write(version)
 
 
-def delete_cache():
+def print_cache():
+    paths = DisplayablePath.make_tree(Path(home))
+    for path in paths:
+        print(path.displayable())
+
+
+def clear_all_cache():
     """
-    Remove cached data, this is will delete entire cache folder. Selected items to delete will be implement soon.
+    Remove cached data, this will delete entire cache folder.
     """
+    _delete_macos()
     try:
-        print('deleting cached models..')
-        delete_folder(home)
+        print('clearing cached models..')
+        _delete_folder(home)
         with open(version_path, 'w') as fopen:
             fopen.write(version)
         print('Done.')
@@ -58,65 +87,50 @@ def delete_cache():
         )
 
 
-from .entities import crf_entities, deep_entities, get_available_entities_models
-from .language_detection import (
-    multinomial_detect_languages,
-    xgb_detect_languages,
-    get_language_labels,
-    sgd_detect_languages,
-)
-from .normalizer import (
-    spell_normalizer,
-    fuzzy_normalizer,
-    load_malay_dictionary,
-    basic_normalizer,
-    deep_normalizer,
-)
-from .num2word import (
-    to_cardinal,
-    to_ordinal,
-    to_ordinal_num,
-    to_currency,
-    to_year,
-)
-from .pos_entities import deep_pos_entities, get_available_pos_entities_models
-from .pos import naive_pos, crf_pos, deep_pos, get_available_pos_models
-from .sentiment import (
-    deep_sentiment,
-    bayes_sentiment,
-    pretrained_bayes_sentiment,
-    get_available_sentiment_models,
-    pretrained_xgb_sentiment,
-)
-from .spell import naive_speller
-from .stemmer import naive_stemmer, sastrawi_stemmer, deep_stemmer
-from .summarization import (
-    summarize_lsa,
-    summarize_nmf,
-    summarize_lda,
-    summarize_deep_learning,
-)
-from .text_functions import voting_stack
-from .topic_modelling import (
-    lda_topic_modelling,
-    nmf_topic_modelling,
-    lsa_topic_modelling,
-    lda2vec_topic_modelling,
-)
-from .topics_influencers import (
-    load_internal_data,
-    fuzzy_get_influencers,
-    fuzzy_get_topics,
-    fuzzy_get_location,
-    fast_get_topics,
-    fast_get_influencers,
-    deep_get_topics,
-    deep_get_influencers,
-    deep_siamese_get_topics,
-    deep_siamese_get_influencers,
-)
-from .toxic import multinomial_detect_toxic, logistics_detect_toxic, deep_toxic
-from .word2vec import malaya_word2vec, Word2Vec
+def clear_cache(location):
+    """
+    Remove selected cached data, please run malaya.print_cache() to get path.
+    """
+    assert isinstance(location, str), 'location must be a string'
+    location = os.path.join(home, location)
+    if not os.path.exists(location):
+        raise Exception(
+            'folder not exist, please check path from malaya.print_cache()'
+        )
+    if not os.path.isdir(location):
+        raise Exception(
+            'Please use parent directory, please check path from malaya.print_cache()'
+        )
+    _delete_folder(location)
+    print('Done.')
+
+
+def load_malay_dictionary():
+    """
+    load Pustaka dictionary for Spelling Corrector or anything.
+
+    Returns
+    -------
+    list: list of strings
+    """
+    if not os.path.isfile(MALAY_TEXT):
+        print('downloading Malay texts')
+        download_file('v6/malay-text.txt', MALAY_TEXT)
+    try:
+        with open(MALAY_TEXT, 'r') as fopen:
+            results = [
+                text.lower()
+                for text in (list(filter(None, fopen.read().split('\n'))))
+            ]
+            if len(results) < 20000:
+                raise Exception(
+                    "model corrupted due to some reasons, please run malaya.clear_cache('dictionary') and try again"
+                )
+            return results
+    except:
+        raise Exception(
+            "model corrupted due to some reasons, please run malaya.clear_cache('dictionary') and try again"
+        )
 
 
 def describe_pos_malaya():
@@ -201,3 +215,22 @@ def describe_entities():
     print('quantity - numbers, quantity')
     print('time - date, day, time, etc')
     print('event - unique event happened, etc')
+
+
+from . import cluster
+from . import entity
+from . import language_detection
+from . import normalize
+from . import num2word
+from . import pos
+from . import sentiment
+from . import spell
+from . import stack
+from . import stem
+from . import subjective
+from . import summarize
+from . import topic_influencer
+from . import topic_model
+from . import toxic
+from . import word2vec
+from .texts import vectorizer

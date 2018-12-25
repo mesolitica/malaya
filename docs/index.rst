@@ -20,6 +20,7 @@ Contents:
    Contribution
    Crawler
    Accuracy
+   Cache
    Entities
    Language
    Normalizer
@@ -27,7 +28,9 @@ Contents:
    Pos
    Sentiment
    Spell
+   Stack
    Stemmer
+   Subjective
    Summarization
    Topic
    Topics

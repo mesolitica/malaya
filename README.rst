@@ -33,6 +33,8 @@ Features
 -  **Spell Correction**, using local Malaysia NLP researches to
    auto-correct any bahasa words.
 -  Stemmer
+-  **Subjectivity Analysis**, from BERT, Fast-Text, Dynamic-Memory Network,
+   Attention to build deep subjectivity analysis models.
 -  **Summarization**, using skip-thought state-of-art to give precise
    summarization.
 -  **Topic Modelling**, provide LDA2Vec, LDA, NMF and LSA interface for easy topic modelling.
