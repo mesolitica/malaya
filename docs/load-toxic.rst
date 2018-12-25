@@ -1,5 +1,5 @@
 
-.. code:: ipython3
+.. code:: python
 
     import malaya
     print(malaya.version, malaya.bump_version)
@@ -10,7 +10,7 @@
     1.0 1.0.0.0
 
 
-.. code:: ipython3
+.. code:: python
 
     string = 'Benda yg SALAH ni, jgn lah didebatkan. Yg SALAH xkan jadi betul. Ingat tu. Mcm mana kesat sekalipun org sampaikan mesej, dan memang benda tu salah, diam je. Xyah nk tunjuk kau open sangat nk tegur cara org lain berdakwah. '
     another_string = 'bodoh, dah la gay, sokong lgbt lagi, memang tak guna'
@@ -18,7 +18,7 @@
 Load multinomial model
 ----------------------
 
-.. code:: ipython3
+.. code:: python
 
     model = malaya.toxic.multinomial()
 
@@ -30,7 +30,7 @@ Load multinomial model
 
 .. parsed-literal::
 
-    11.0MB [00:04, 1.98MB/s]                          
+    11.0MB [00:04, 1.98MB/s]
       0%|          | 0.00/19.3 [00:00<?, ?MB/s]
 
 .. parsed-literal::
@@ -40,10 +40,10 @@ Load multinomial model
 
 .. parsed-literal::
 
-    20.0MB [00:08, 3.55MB/s]                          
+    20.0MB [00:08, 3.55MB/s]
 
 
-.. code:: ipython3
+.. code:: python
 
     model.predict(string)
 
@@ -61,7 +61,7 @@ Load multinomial model
 
 
 
-.. code:: ipython3
+.. code:: python
 
     model.predict(string,get_proba=True)
 
@@ -79,7 +79,7 @@ Load multinomial model
 
 
 
-.. code:: ipython3
+.. code:: python
 
     model.predict(another_string)
 
@@ -97,7 +97,7 @@ Load multinomial model
 
 
 
-.. code:: ipython3
+.. code:: python
 
     model.predict(another_string,get_proba=True)
 
@@ -115,7 +115,7 @@ Load multinomial model
 
 
 
-.. code:: ipython3
+.. code:: python
 
     model.predict_batch([string,another_string])
 
@@ -133,7 +133,7 @@ Load multinomial model
 
 
 
-.. code:: ipython3
+.. code:: python
 
     model.predict_batch([string,another_string],get_proba=True)
 
@@ -154,7 +154,7 @@ Load multinomial model
 Load logistics model
 --------------------
 
-.. code:: ipython3
+.. code:: python
 
     model = malaya.toxic.logistic()
 
@@ -166,7 +166,7 @@ Load logistics model
 
 .. parsed-literal::
 
-    3.00MB [00:00, 2.99MB/s]                          
+    3.00MB [00:00, 2.99MB/s]
       0%|          | 0.00/19.3 [00:00<?, ?MB/s]
 
 .. parsed-literal::
@@ -176,10 +176,10 @@ Load logistics model
 
 .. parsed-literal::
 
-    20.0MB [00:06, 4.17MB/s]                          
+    20.0MB [00:06, 4.17MB/s]
 
 
-.. code:: ipython3
+.. code:: python
 
     model.predict(string)
 
@@ -197,7 +197,7 @@ Load logistics model
 
 
 
-.. code:: ipython3
+.. code:: python
 
     model.predict_batch([string,another_string],get_proba=True)
 
@@ -218,7 +218,7 @@ Load logistics model
 List available deep learning models
 -----------------------------------
 
-.. code:: ipython3
+.. code:: python
 
     malaya.toxic.available_deep_model()
 
@@ -234,13 +234,13 @@ List available deep learning models
 Load deep learning model
 ------------------------
 
-.. code:: ipython3
+.. code:: python
 
     for model in malaya.toxic.available_deep_model():
         deep_model = malaya.toxic.deep_model(model = model)
         print(deep_model.predict(string))
         print(deep_model.predict_batch([string, another_string]),'\n')
-        
+
 
 
 .. parsed-literal::
@@ -254,7 +254,7 @@ Load deep learning model
 
 .. parsed-literal::
 
-    61.0MB [00:40, 1.02s/MB]                          
+    61.0MB [00:40, 1.02s/MB]
 
 
 .. parsed-literal::
@@ -264,7 +264,7 @@ Load deep learning model
 
 .. parsed-literal::
 
-    2.00MB [00:01, 1.28MB/s]                          
+    2.00MB [00:01, 1.28MB/s]
 
 
 .. parsed-literal::
@@ -278,14 +278,14 @@ Load deep learning model
 
 .. parsed-literal::
 
-    {'toxic': [0.0016551929, 0.8803142], 'severe_toxic': [1.36922545e-05, 0.003729248], 'obscene': [0.00017486684, 0.06859021], 'threat': [1.4183259e-05, 0.00055752473], 'insult': [7.17542e-05, 0.1324517], 'identity_hate': [1.6397036e-05, 0.1142907]} 
-    
+    {'toxic': [0.0016551929, 0.8803142], 'severe_toxic': [1.36922545e-05, 0.003729248], 'obscene': [0.00017486684, 0.06859021], 'threat': [1.4183259e-05, 0.00055752473], 'insult': [7.17542e-05, 0.1324517], 'identity_hate': [1.6397036e-05, 0.1142907]}
+
     downloading frozen /Users/huseinzol/Malaya/toxic/hierarchical model
 
 
 .. parsed-literal::
 
-    66.0MB [00:28, 3.40MB/s]                          
+    66.0MB [00:28, 3.40MB/s]
       0%|          | 0.00/1.98 [00:00<?, ?MB/s]
 
 .. parsed-literal::
@@ -295,7 +295,7 @@ Load deep learning model
 
 .. parsed-literal::
 
-    2.00MB [00:00, 3.60MB/s]                          
+    2.00MB [00:00, 3.60MB/s]
 
 
 .. parsed-literal::
@@ -309,14 +309,14 @@ Load deep learning model
 
 .. parsed-literal::
 
-    {'toxic': [0.019022115, 0.7026508], 'severe_toxic': [0.00018498747, 0.002541811], 'obscene': [0.0040143826, 0.04182527], 'threat': [0.00040674658, 0.0038593104], 'insult': [0.0021619846, 0.23215641], 'identity_hate': [0.0008833514, 0.056888826]} 
-    
+    {'toxic': [0.019022115, 0.7026508], 'severe_toxic': [0.00018498747, 0.002541811], 'obscene': [0.0040143826, 0.04182527], 'threat': [0.00040674658, 0.0038593104], 'insult': [0.0021619846, 0.23215641], 'identity_hate': [0.0008833514, 0.056888826]}
+
     downloading frozen /Users/huseinzol/Malaya/toxic/luong model
 
 
 .. parsed-literal::
 
-    61.0MB [00:29, 2.90MB/s]                          
+    61.0MB [00:29, 2.90MB/s]
       0%|          | 0.00/1.98 [00:00<?, ?MB/s]
 
 .. parsed-literal::
@@ -326,20 +326,20 @@ Load deep learning model
 
 .. parsed-literal::
 
-    2.00MB [00:00, 3.72MB/s]                          
+    2.00MB [00:00, 3.72MB/s]
 
 
 .. parsed-literal::
 
     {'toxic': 0.0014804129, 'severe_toxic': 0.00017674293, 'obscene': 0.0008130327, 'threat': 0.00028337093, 'insult': 0.00023613627, 'identity_hate': 0.0007284258, 'attention': [['benda', 0.0014139642], ['yg', 0.0016312348], ['salah', 0.007912597], ['ni', 0.0016698316], ['jgn', 0.001369154], ['didebatkan', 0.0012927211], ['yg', 0.0016312348], ['salah', 0.007912597], ['jadi', 0.0013706309], ['betul', 0.0016492187], ['ingat', 0.0013966222], ['tu', 0.0013238997], ['mcm', 0.001623619], ['mana', 0.0014395164], ['kesat', 0.0076838294], ['sekalipun', 0.013703095], ['org', 0.0030888263], ['sampaikan', 0.0023580098], ['mesej', 0.0012328016], ['memang', 0.0013224662], ['benda', 0.0014139642], ['tu', 0.0013238997], ['salah', 0.007912597], ['diam', 0.0012353956], ['je', 0.0013446732], ['xyah', 0.001369154], ['nk', 0.0032641657], ['tunjuk', 0.0015030154], ['kau', 0.011394377], ['sangat', 0.0017340722], ['nk', 0.0032641657], ['tegur', 0.0034078276], ['cara', 0.8561393], ['org', 0.0030888263], ['lain', 0.0037536188], ['berdakwah', 0.034825023]]}
-    {'toxic': [0.0050339997, 0.97731346], 'severe_toxic': [0.0012615193, 0.015941802], 'obscene': [0.0023579854, 0.25056282], 'threat': [0.0025420662, 0.0076949443], 'insult': [0.00090396986, 0.36417997], 'identity_hate': [0.002062297, 0.11571509]} 
-    
+    {'toxic': [0.0050339997, 0.97731346], 'severe_toxic': [0.0012615193, 0.015941802], 'obscene': [0.0023579854, 0.25056282], 'threat': [0.0025420662, 0.0076949443], 'insult': [0.00090396986, 0.36417997], 'identity_hate': [0.002062297, 0.11571509]}
+
     downloading frozen /Users/huseinzol/Malaya/toxic/fast-text model
 
 
 .. parsed-literal::
 
-    258MB [01:52, 2.37MB/s]                          
+    258MB [01:52, 2.37MB/s]
 
 
 .. parsed-literal::
@@ -349,7 +349,7 @@ Load deep learning model
 
 .. parsed-literal::
 
-    2.00MB [00:00, 3.69MB/s]                          
+    2.00MB [00:00, 3.69MB/s]
 
 
 .. parsed-literal::
@@ -359,20 +359,20 @@ Load deep learning model
 
 .. parsed-literal::
 
-    8.00MB [00:02, 2.97MB/s]                          
+    8.00MB [00:02, 2.97MB/s]
 
 
 .. parsed-literal::
 
     {'toxic': 0.0020534173, 'severe_toxic': 0.0050337594, 'obscene': 3.7653503e-05, 'threat': 0.7628687, 'insult': 9.012385e-05, 'identity_hate': 0.22991635}
-    {'toxic': [4.6989637e-08, 0.07565687], 'severe_toxic': [2.8443527e-08, 0.005023106], 'obscene': [4.1618722e-10, 0.0053009894], 'threat': [3.280739e-06, 0.0040464187], 'insult': [7.941728e-10, 0.043121953], 'identity_hate': [8.946894e-07, 0.016103525]} 
-    
+    {'toxic': [4.6989637e-08, 0.07565687], 'severe_toxic': [2.8443527e-08, 0.005023106], 'obscene': [4.1618722e-10, 0.0053009894], 'threat': [3.280739e-06, 0.0040464187], 'insult': [7.941728e-10, 0.043121953], 'identity_hate': [8.946894e-07, 0.016103525]}
+
     downloading frozen /Users/huseinzol/Malaya/toxic/entity-network model
 
 
 .. parsed-literal::
 
-    56.0MB [00:22, 1.92MB/s]                          
+    56.0MB [00:22, 1.92MB/s]
       0%|          | 0.00/1.98 [00:00<?, ?MB/s]
 
 .. parsed-literal::
@@ -382,20 +382,20 @@ Load deep learning model
 
 .. parsed-literal::
 
-    2.00MB [00:00, 2.25MB/s]                          
+    2.00MB [00:00, 2.25MB/s]
 
 
 .. parsed-literal::
 
     {'toxic': 0.501814, 'severe_toxic': 0.03271238, 'obscene': 0.15100613, 'threat': 0.028492289, 'insult': 0.24221319, 'identity_hate': 0.043762065}
-    {'toxic': [0.7704032, 0.23564923], 'severe_toxic': [0.1794783, 0.009002773], 'obscene': [0.50242037, 0.14901799], 'threat': [0.16002978, 0.030735493], 'insult': [0.61826205, 0.12641545], 'identity_hate': [0.2263789, 0.019457512]} 
-    
+    {'toxic': [0.7704032, 0.23564923], 'severe_toxic': [0.1794783, 0.009002773], 'obscene': [0.50242037, 0.14901799], 'threat': [0.16002978, 0.030735493], 'insult': [0.61826205, 0.12641545], 'identity_hate': [0.2263789, 0.019457512]}
+
 
 
 Unsupervised important words learning
 -------------------------------------
 
-.. code:: ipython3
+.. code:: python
 
     import matplotlib.pyplot as plt
     import seaborn as sns
@@ -404,11 +404,11 @@ Unsupervised important words learning
 Visualizing bahdanau model
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code:: ipython3
+.. code:: python
 
     model = malaya.toxic.deep_model('bahdanau')
     result = model.predict(another_string)['attention']
-    
+
     plt.figure(figsize = (15, 7))
     labels = [r[0] for r in result]
     val = [r[1] for r in result]
@@ -425,11 +425,11 @@ Visualizing bahdanau model
 Visualizing luong model
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code:: ipython3
+.. code:: python
 
     model = malaya.toxic.deep_model('luong')
     result = model.predict(another_string)['attention']
-    
+
     plt.figure(figsize = (15, 7))
     labels = [r[0] for r in result]
     val = [r[1] for r in result]
@@ -446,11 +446,11 @@ Visualizing luong model
 Visualizing hierarchical model
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code:: ipython3
+.. code:: python
 
     model = malaya.toxic.deep_model('hierarchical')
     result = model.predict(another_string)['attention']
-    
+
     plt.figure(figsize = (15, 7))
     labels = [r[0] for r in result]
     val = [r[1] for r in result]
@@ -462,4 +462,3 @@ Visualizing hierarchical model
 
 
 .. image:: load-toxic_files/load-toxic_25_0.png
-

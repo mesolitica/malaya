@@ -1,5 +1,5 @@
 
-.. code:: ipython3
+.. code:: python
 
     import malaya
     %matplotlib inline
@@ -7,21 +7,21 @@
 Load malaya news word2vec
 -------------------------
 
-.. code:: ipython3
+.. code:: python
 
     embedded = malaya.word2vec.load(256)
 
 Load word2vec model
 -------------------
 
-.. code:: ipython3
+.. code:: python
 
     word_vector = malaya.word2vec.word2vec(embedded['nce_weights'], embedded['dictionary'])
 
 Check top-k similar semantics based on a word
 ---------------------------------------------
 
-.. code:: ipython3
+.. code:: python
 
     word = 'anwar'
     print("Embedding layer: 8 closest words to: '%s'"%(word))
@@ -37,7 +37,7 @@ Check top-k similar semantics based on a word
 Calculate vb - va + vc
 ----------------------
 
-.. code:: ipython3
+.. code:: python
 
     print(word_vector.analogy('anwar', 'penjara', 'kerajaan', 5))
 
@@ -52,7 +52,7 @@ Word2vec calculator
 
 You can put any equation you wanted.
 
-.. code:: ipython3
+.. code:: python
 
     word_vector.calculator('anwar + amerika + mahathir', num_closest=8, metric='cosine',
                           return_similarity=False)
@@ -74,7 +74,7 @@ You can put any equation you wanted.
 
 
 
-.. code:: ipython3
+.. code:: python
 
     word_vector.calculator('anwar * amerika', num_closest=8, metric='cosine',
                           return_similarity=False)
@@ -99,7 +99,7 @@ You can put any equation you wanted.
 Visualize scatter-plot
 ----------------------
 
-.. code:: ipython3
+.. code:: python
 
     word = 'anwar'
     result = word_vector.n_closest(word=word, num_closest=8, metric='cosine')
@@ -110,7 +110,7 @@ Visualize scatter-plot
 .. image:: load-word2vec_files/load-word2vec_13_0.png
 
 
-.. code:: ipython3
+.. code:: python
 
     result = word_vector.calculator('anwar * amerika', num_closest=8, metric='cosine',
                           return_similarity=True)
@@ -124,7 +124,7 @@ Visualize scatter-plot
 Visualize tree-plot
 -------------------
 
-.. code:: ipython3
+.. code:: python
 
     word = 'anwar'
     result = word_vector.n_closest(word=word, num_closest=8, metric='cosine')
@@ -147,7 +147,7 @@ Get embedding from a word
 If a word not found in the vocabulary, it will throw an exception with
 top-5 nearest words
 
-.. code:: ipython3
+.. code:: python
 
     word_vector.get_vector_by_name('husein-comel')
 
@@ -161,7 +161,7 @@ top-5 nearest words
 
     <ipython-input-11-a2cb3bf2a088> in <module>
     ----> 1 word_vector.get_vector_by_name('husein-comel')
-    
+
 
     ~/Documents/Malaya/malaya/word2vec.py in get_vector_by_name(self, word)
         109             raise Exception(
@@ -172,4 +172,3 @@ top-5 nearest words
 
 
     Exception: input not found in dictionary, here top-5 nearest words [income, husein, incomes, hussein, husseiny]
-

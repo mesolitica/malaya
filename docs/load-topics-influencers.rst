@@ -1,9 +1,9 @@
 
-.. code:: ipython3
+.. code:: python
 
     import malaya
 
-.. code:: ipython3
+.. code:: python
 
     news = 'najib razak dan mahathir mengalami masalah air di kemamam terengganu'
     second_news = 'ikat penyedia perkhidmatan jalur lebar Telekom Malaysia (TM) perlu mencari jalan penyelesaian bagi meningkatkan akses capaian Internet ke seluruh negara, kata Menteri Komunikasi dan Multimedia, Gobind Singh Deo. Beliau berkata menjadi dasar kerajaan untuk membekalkan akses Internet jalur lebar kepada semua dan memberi penekanan kepada kualiti perkhidmatan yang terbaik. "Dasar kerajaan untuk bekalkan akses kepada semua bukan sekadar pembekalan sahaja tetapi beri penekanan kepada kualiti perkhidmatan yang baik dan dapat bersaing dengan negara lain pada tahap antarabangsa," kata Gobind Singh menerusi catatan di laman rasmi Twitter beliau, malam tadi. Beliau berkata demikian sebagai respons terhadap aduan beberapa pengguna Twitter berhubung akses Internet yang masih tidak stabil serta harga yang tidak berpatutan di beberapa lokasi di seluruh negara.'
@@ -11,7 +11,7 @@
 Using fuzzy for topics
 ----------------------
 
-.. code:: ipython3
+.. code:: python
 
     malaya.topic_influencer.fuzzy_topic(news)
 
@@ -24,7 +24,7 @@ Using fuzzy for topics
 
 
 
-.. code:: ipython3
+.. code:: python
 
     malaya.topic_influencer.fuzzy_topic(second_news)
 
@@ -49,7 +49,7 @@ Using fuzzy for topics
 Using fuzzy for influencers
 ---------------------------
 
-.. code:: ipython3
+.. code:: python
 
     malaya.topic_influencer.fuzzy_influencer(news)
 
@@ -62,7 +62,7 @@ Using fuzzy for influencers
 
 
 
-.. code:: ipython3
+.. code:: python
 
     malaya.topic_influencer.fuzzy_influencer(second_news)
 
@@ -78,7 +78,7 @@ Using fuzzy for influencers
 Using fuzzy for location
 ------------------------
 
-.. code:: ipython3
+.. code:: python
 
     malaya.topic_influencer.fuzzy_location('saya suka makan sate di sungai petani')
 
@@ -94,7 +94,7 @@ Using fuzzy for location
 Check location from a string
 ----------------------------
 
-.. code:: ipython3
+.. code:: python
 
     malaya.topic_influencer.is_location('sungai petani')
 
@@ -110,11 +110,11 @@ Check location from a string
 Train TF-IDF for topics analysis
 --------------------------------
 
-.. code:: ipython3
+.. code:: python
 
     topics_similarity = malaya.topic_influencer.fast_topic()
 
-.. code:: ipython3
+.. code:: python
 
     topics_similarity.get_similarity(news)
 
@@ -133,11 +133,11 @@ Train TF-IDF for topics analysis
 Train TF-IDF for influencers analysis
 -------------------------------------
 
-.. code:: ipython3
+.. code:: python
 
     influencers_similarity = malaya.topic_influencer.fast_influencer()
 
-.. code:: ipython3
+.. code:: python
 
     influencers_similarity.get_similarity(news)
 
@@ -153,7 +153,7 @@ Train TF-IDF for influencers analysis
 
 
 
-.. code:: ipython3
+.. code:: python
 
     influencers_similarity.get_similarity(second_news)
 
@@ -176,7 +176,7 @@ Train TF-IDF for influencers analysis
 Train skip-thought model for topics analysis
 --------------------------------------------
 
-.. code:: ipython3
+.. code:: python
 
     deep_topic = malaya.topic_influencer.skipthought_topic()
 
@@ -190,7 +190,7 @@ Train skip-thought model for topics analysis
     minibatch loop: 100%|██████████| 157/157 [01:44<00:00,  1.70it/s, cost=0.00152]
 
 
-.. code:: ipython3
+.. code:: python
 
     deep_topic.get_similarity(news, anchor = 0.5)
 
@@ -211,7 +211,7 @@ Train skip-thought model for topics analysis
 
 
 
-.. code:: ipython3
+.. code:: python
 
     deep_topic.get_similarity(second_news, anchor = 0.5)
 
@@ -237,7 +237,7 @@ Train skip-thought model for topics analysis
 Train skip-thought model for influencers analysis
 -------------------------------------------------
 
-.. code:: ipython3
+.. code:: python
 
     deep_influencer = malaya.topic_influencer.skipthought_influencer()
 
@@ -256,7 +256,7 @@ Train skip-thought model for influencers analysis
     minibatch loop: 100%|██████████| 20/20 [00:12<00:00,  1.62it/s, cost=0.219]
 
 
-.. code:: ipython3
+.. code:: python
 
     deep_influencer.get_similarity(news, anchor = 0.5)
 
@@ -269,7 +269,7 @@ Train skip-thought model for influencers analysis
 
 
 
-.. code:: ipython3
+.. code:: python
 
     deep_influencer.get_similarity(second_news, anchor = 0.5)
 
@@ -285,7 +285,7 @@ Train skip-thought model for influencers analysis
 Train siamese network for topics analysis
 -----------------------------------------
 
-.. code:: ipython3
+.. code:: python
 
     deep_topic = malaya.topic_influencer.siamese_topic()
     print(deep_topic.get_similarity(news, anchor = 0.5))
@@ -294,11 +294,11 @@ Train siamese network for topics analysis
 
 .. parsed-literal::
 
-    minibatch loop: 100%|██████████| 157/157 [01:50<00:00,  1.67it/s, accuracy=1, cost=0.114]    
-    minibatch loop: 100%|██████████| 157/157 [01:49<00:00,  1.69it/s, accuracy=1, cost=0.0739]   
-    minibatch loop: 100%|██████████| 157/157 [01:49<00:00,  1.66it/s, accuracy=1, cost=0.0686]    
-    minibatch loop: 100%|██████████| 157/157 [01:50<00:00,  1.68it/s, accuracy=1, cost=0.0279]    
-    minibatch loop: 100%|██████████| 157/157 [01:49<00:00,  1.70it/s, accuracy=1, cost=0.0193]    
+    minibatch loop: 100%|██████████| 157/157 [01:50<00:00,  1.67it/s, accuracy=1, cost=0.114]
+    minibatch loop: 100%|██████████| 157/157 [01:49<00:00,  1.69it/s, accuracy=1, cost=0.0739]
+    minibatch loop: 100%|██████████| 157/157 [01:49<00:00,  1.66it/s, accuracy=1, cost=0.0686]
+    minibatch loop: 100%|██████████| 157/157 [01:50<00:00,  1.68it/s, accuracy=1, cost=0.0279]
+    minibatch loop: 100%|██████████| 157/157 [01:49<00:00,  1.70it/s, accuracy=1, cost=0.0193]
 
 
 .. parsed-literal::
@@ -307,7 +307,7 @@ Train siamese network for topics analysis
     ['politik', 'kkmm', 'bumiputra', 'malaysia-indonesia', 'menteri pertahanan', 'motogp', 'programming language', 'twitter', 'lgbt', 'gaji menteri', 'singapura']
 
 
-.. code:: ipython3
+.. code:: python
 
     print(deep_topic.get_similarity(news, anchor = 0.7))
     print(deep_topic.get_similarity(second_news, anchor = 0.7))
@@ -322,7 +322,7 @@ Train siamese network for topics analysis
 Train siamese network for influencers analysis
 ----------------------------------------------
 
-.. code:: ipython3
+.. code:: python
 
     deep_influencer = malaya.topic_influencer.siamese_influencer()
 
@@ -336,7 +336,7 @@ Train siamese network for influencers analysis
     minibatch loop: 100%|██████████| 20/20 [00:14<00:00,  1.47it/s, accuracy=0.875, cost=0.0637]
 
 
-.. code:: ipython3
+.. code:: python
 
     deep_influencer.get_similarity(news, anchor = 0.5)
 
@@ -349,7 +349,7 @@ Train siamese network for influencers analysis
 
 
 
-.. code:: ipython3
+.. code:: python
 
     deep_influencer.get_similarity(second_news, anchor = 0.5)
 
@@ -359,5 +359,3 @@ Train siamese network for influencers analysis
 .. parsed-literal::
 
     ['gobind singh deo']
-
-

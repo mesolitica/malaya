@@ -1,30 +1,30 @@
 
-.. code:: ipython3
+.. code:: python
 
     import malaya
 
-.. code:: ipython3
+.. code:: python
 
     string = 'KUALA LUMPUR: Sempena sambutan Aidilfitri minggu depan, Perdana Menteri Tun Dr Mahathir Mohamad dan Menteri Pengangkutan Anthony Loke Siew Fook menitipkan pesanan khas kepada orang ramai yang mahu pulang ke kampung halaman masing-masing. Dalam video pendek terbitan Jabatan Keselamatan Jalan Raya (JKJR) itu, Dr Mahathir menasihati mereka supaya berhenti berehat dan tidur sebentar  sekiranya mengantuk ketika memandu.'
 
 Cluster same word structure based on POS and Entities
 -----------------------------------------------------
 
-.. code:: ipython3
+.. code:: python
 
     bahdanau_entities = malaya.entity.deep_model('bahdanau')
     bahdanau_pos = malaya.pos.deep_model('bahdanau')
 
-.. code:: ipython3
+.. code:: python
 
     result_entities = bahdanau_entities.predict(string)
     result_pos = bahdanau_pos.predict(string)
 
-.. code:: ipython3
+.. code:: python
 
     from malaya.cluster import cluster_words, pos_entities_ngram
 
-.. code:: ipython3
+.. code:: python
 
     generated_grams = pos_entities_ngram(
         result_pos,
@@ -165,7 +165,7 @@ Cluster same word structure based on POS and Entities
 
 
 
-.. code:: ipython3
+.. code:: python
 
     cluster_words(generated_grams)
 
@@ -221,11 +221,11 @@ Cluster same word structure based on POS and Entities
 Cluster POS and Entities
 ------------------------
 
-.. code:: ipython3
+.. code:: python
 
     from malaya.cluster import cluster_pos, cluster_entities
 
-.. code:: ipython3
+.. code:: python
 
     cluster_pos(result_pos)
 
@@ -265,7 +265,7 @@ Cluster POS and Entities
 
 
 
-.. code:: ipython3
+.. code:: python
 
     cluster_entities(result_entities)
 
@@ -298,11 +298,11 @@ Cluster POS and Entities
 Generate ngrams
 ---------------
 
-.. code:: ipython3
+.. code:: python
 
     from malaya.cluster import sentence_ngram
 
-.. code:: ipython3
+.. code:: python
 
     sentence_ngram(string, ngram = (3, 5))
 
@@ -473,5 +473,3 @@ Generate ngrams
      'sambutan Aidilfitri minggu depan,',
      'masing-masing. Dalam video',
      'depan, Perdana Menteri Tun']
-
-
