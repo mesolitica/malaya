@@ -1,4 +1,10 @@
 
+Why Stacking?
+-------------
+
+Sometime a single model is not good enough. So, you need to use multiple
+models to get a better result! It called stacking.
+
 .. code:: python
 
     import malaya
@@ -13,6 +19,38 @@
 Stack multiple sentiment models
 -------------------------------
 
+``malaya.stack.predict_stack`` provide an easy stacking solution for
+Malaya models. Well, not just for sentiment models, any classification
+models can use ``malaya.stack.predict_stack``.
+
+.. code:: python
+
+   def predict_stack(models, text, mode = 'gmean'):
+       """
+       Stacking for predictive models.
+
+       Parameters
+       ----------
+       models: list
+           list of models
+       text: str
+           string to predict
+       mode : str, optional (default='gmean')
+           Model architecture supported. Allowed values:
+
+           * ``'gmean'`` - geometrical mean
+           * ``'hmean'`` - harmonic mean
+           * ``'mean'`` - mean
+           * ``'min'`` - min
+           * ``'max'`` - max
+           * ``'median'`` - Harrell-Davis median
+
+
+       Returns
+       -------
+       result: dict
+       """
+
 .. code:: python
 
     malaya.stack.predict_stack([bahdanau,
@@ -26,7 +64,7 @@ Stack multiple sentiment models
 
 .. parsed-literal::
 
-    {'negative': 0.5589608851409659, 'positive': 0.40215390241162385}
+    {'negative': 0.5549062374008705, 'positive': 0.4072814056650461}
 
 
 
@@ -48,17 +86,63 @@ Stack multiple toxic models
 
 .. parsed-literal::
 
-    {'toxic': 0.1940847,
-     'severe_toxic': 0.06477653,
-     'obscene': 0.15512805,
-     'threat': 0.13735601,
-     'insult': 0.14242107,
-     'identity_hate': 0.119892955}
+    {'toxic': 0.2057164,
+     'severe_toxic': 0.06787095,
+     'obscene': 0.15890868,
+     'threat': 0.15786164,
+     'insult': 0.15252964,
+     'identity_hate': 0.12279783}
+
+
+
+Stack language detection models
+-------------------------------
+
+.. code:: python
+
+    xgb = malaya.language_detection.xgb()
+    multinomial = malaya.language_detection.multinomial()
+    sgd = malaya.language_detection.sgd()
+    malaya.stack.predict_stack([xgb,
+                                multinomial,
+                                sgd],
+                              'didukungi secara natifnya')
+
+
+
+
+.. parsed-literal::
+
+    {'OTHER': 0.0, 'ENGLISH': 0.0, 'INDONESIA': 0.9305759540118518, 'MALAY': 0.0}
 
 
 
 Stack tagging models
 --------------------
+
+For tagging models, we use majority voting stacking. So you need to need
+have more than 2 models to make it perfect, or else, it will pick
+randomly from 2 models. ``malaya.stack.voting_stack`` provides easy
+interface for this kind of stacking. **But only can use for Entites and
+POS recognition.**
+
+.. code:: python
+
+   def voting_stack(models, text):
+       """
+       Stacking for POS and Entities Recognition models.
+
+       Parameters
+       ----------
+       models: list
+           list of models
+       text: str
+           string to predict
+
+       Returns
+       -------
+       result: list
+       """
 
 .. code:: python
 
