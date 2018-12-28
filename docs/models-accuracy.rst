@@ -147,42 +147,48 @@ XGB
 
 .. code:: text
 
-                precision    recall  f1-score   support
+                 precision    recall  f1-score   support
 
-         OTHER       1.00      1.00      1.00     15913
-           eng       1.00      1.00      1.00     16014
-           ind       1.00      1.00      1.00     11163
-           zlm       1.00      0.99      1.00      8404
+          OTHER       0.99      1.00      0.99     76551
+            eng       1.00      0.99      1.00     19952
+            ind       0.98      0.96      0.97     10972
+            zlm       0.98      0.99      0.98     25722
 
-   avg / total       1.00      1.00      1.00     51494
+      micro avg       0.99      0.99      0.99    133197
+      macro avg       0.99      0.98      0.98    133197
+   weighted avg       0.99      0.99      0.99    133197
 
 Multinomial
 ^^^^^^^^^^^
 
 .. code:: text
 
-                precision    recall  f1-score   support
+                 precision    recall  f1-score   support
 
-         OTHER       1.00      0.99      0.99     15913
-           eng       0.97      1.00      0.99     16014
-           ind       0.97      0.99      0.98     11163
-           zlm       0.99      0.93      0.96      8404
+          OTHER       1.00      0.99      0.99     76551
+            eng       0.97      1.00      0.98     19952
+            ind       0.75      0.97      0.85     10972
+            zlm       0.97      0.87      0.92     25722
 
-   avg / total       0.98      0.98      0.98     51494
+      micro avg       0.96      0.96      0.96    133197
+      macro avg       0.92      0.95      0.94    133197
+   weighted avg       0.97      0.96      0.96    133197
 
 SGD
 ^^^
 
 .. code:: text
 
-                precision    recall  f1-score   support
+                 precision    recall  f1-score   support
 
-         OTHER       0.99      1.00      1.00     15913
-           eng       1.00      1.00      1.00     16014
-           ind       0.99      0.99      0.99     11163
-           zlm       0.99      0.97      0.98      8404
+          OTHER       0.98      0.99      0.99     76551
+            eng       0.99      0.98      0.99     19952
+            ind       0.96      0.87      0.92     10972
+            zlm       0.95      0.96      0.96     25722
 
-   avg / total       0.99      0.99      0.99     51494
+      micro avg       0.97      0.97      0.97    133197
+      macro avg       0.97      0.95      0.96    133197
+   weighted avg       0.97      0.97      0.97    133197
 
 POS Recognition
 ---------------
@@ -592,3 +598,147 @@ Luong
              5       0.33      0.01      0.02        81
 
    avg / total       0.68      0.55      0.60      1813
+
+Subjectivity Analysis
+---------------------
+
+Trained on 80% of dataset, tested on 20% of dataset. All training
+sessions stored in
+`session/subjectivity <https://github.com/huseinzol05/Malaya/tree/master/session/subjectivity>`__
+
+.. code:: python
+
+    display(Image('subjectivity-accuracy.png', width=500))
+
+
+
+.. image:: models-accuracy_files/models-accuracy_41_0.png
+   :width: 500px
+
+
+Bahdanau
+^^^^^^^^
+
+.. code:: text
+
+                 precision    recall  f1-score   support
+
+       negative       0.82      0.83      0.82       983
+       positive       0.83      0.83      0.83      1010
+
+      micro avg       0.83      0.83      0.83      1993
+      macro avg       0.83      0.83      0.83      1993
+   weighted avg       0.83      0.83      0.83      1993
+
+BERT
+^^^^
+
+.. code:: text
+
+                 precision    recall  f1-score   support
+
+       negative       0.75      0.95      0.84      1024
+       positive       0.93      0.67      0.78       969
+
+      micro avg       0.82      0.82      0.82      1993
+      macro avg       0.84      0.81      0.81      1993
+   weighted avg       0.84      0.82      0.81      1993
+
+Bidirectional
+^^^^^^^^^^^^^
+
+.. code:: text
+
+                 precision    recall  f1-score   support
+
+       negative       0.82      0.89      0.85       989
+       positive       0.88      0.81      0.84      1004
+
+      micro avg       0.85      0.85      0.85      1993
+      macro avg       0.85      0.85      0.85      1993
+   weighted avg       0.85      0.85      0.85      1993
+
+Entity-network
+^^^^^^^^^^^^^^
+
+.. code:: text
+
+                 precision    recall  f1-score   support
+
+       negative       0.89      0.87      0.88       984
+       positive       0.87      0.89      0.88      1009
+
+      micro avg       0.88      0.88      0.88      1993
+      macro avg       0.88      0.88      0.88      1993
+   weighted avg       0.88      0.88      0.88      1993
+
+Fast-text
+^^^^^^^^^
+
+.. code:: text
+
+                 precision    recall  f1-score   support
+
+       negative       0.88      0.91      0.89      1003
+       positive       0.90      0.87      0.89       990
+
+      micro avg       0.89      0.89      0.89      1993
+      macro avg       0.89      0.89      0.89      1993
+   weighted avg       0.89      0.89      0.89      1993
+
+Hierarchical
+^^^^^^^^^^^^
+
+.. code:: text
+
+                 precision    recall  f1-score   support
+
+       negative       0.83      0.87      0.85      1017
+       positive       0.85      0.81      0.83       976
+
+      micro avg       0.84      0.84      0.84      1993
+      macro avg       0.84      0.84      0.84      1993
+   weighted avg       0.84      0.84      0.84      1993
+
+Luong
+^^^^^
+
+.. code:: text
+
+                 precision    recall  f1-score   support
+
+       negative       0.85      0.78      0.81       987
+       positive       0.80      0.86      0.83      1006
+
+      micro avg       0.82      0.82      0.82      1993
+      macro avg       0.82      0.82      0.82      1993
+   weighted avg       0.82      0.82      0.82      1993
+
+Multinomial
+^^^^^^^^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+       negative       0.91      0.85      0.88       999
+       positive       0.86      0.92      0.89       994
+
+      micro avg       0.89      0.89      0.89      1993
+      macro avg       0.89      0.89      0.89      1993
+   weighted avg       0.89      0.89      0.89      1993
+
+XGB
+^^^
+
+.. code:: text
+
+
+                 precision    recall  f1-score   support
+
+       negative       0.86      0.85      0.85      1003
+       positive       0.85      0.86      0.85       990
+
+      micro avg       0.85      0.85      0.85      1993
+      macro avg       0.85      0.85      0.85      1993
+   weighted avg       0.85      0.85      0.85      1993

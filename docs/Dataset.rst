@@ -47,6 +47,23 @@ Dictionary
 
 `/dataset/dictionary <https://github.com/DevconX/Malaya/tree/master/dataset/dictionary>`__
 
+Misc
+------
+
+`Bahasa NLP Dataset <https://github.com/keyreply/Malay-NLP-Dataset>`_
+
+`Melayu Sabah <https://github.com/matbahasa/Melayu_Sabah>`_
+
+`Melayu Standard Lisan <https://github.com/matbahasa/Melayu_Standard_Lisan>`_
+
+`Combination Bahasa and English NLP Dataset <https://github.com/huseinzol05/NLP-Dataset>`_
+
+`Indonesia NLP Dataset <https://github.com/keyreply/Bahasa-Indo-NLP-Dataset>`_
+
+`Indonesia vocabulary <https://github.com/geovedi/indonesian-wordlist>`_
+
+`Indonesia thesaurus <https://github.com/victoriasovereigne/tesaurus>`_
+
 Disclaimer
 ----------------------------------
 

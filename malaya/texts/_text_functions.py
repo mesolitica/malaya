@@ -207,6 +207,16 @@ def split_by_dot(string):
     return [re.sub(r'[ ]+', ' ', sentence).strip() for sentence in string]
 
 
+def language_detection_textcleaning(string):
+    string = re.sub(
+        u'[0-9!@#$%^&*()_\-+{}|\~`\'";:?/.>,<]',
+        ' ',
+        string.lower(),
+        flags = re.UNICODE,
+    )
+    return re.sub(r'[ ]+', ' ', string).strip()
+
+
 def pos_entities_textcleaning(string):
     """
     use by text entities and pos

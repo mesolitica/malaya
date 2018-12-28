@@ -6,6 +6,7 @@ from ..texts._text_functions import (
     simple_textcleaning,
     classification_textcleaning,
     entities_textcleaning,
+    language_detection_textcleaning,
 )
 from ..texts.vectorizer import features_crf
 
@@ -307,10 +308,8 @@ class LANGUAGE_DETECTION:
         string: result
         """
         assert isinstance(string, str), 'input must be a string'
-        string = string.lower()
-        char_features = self._vectorizer['bow'].transform([string])
-        tfidf_features = self._vectorizer['tfidf'].transform([string])
-        vectors = hstack([char_features, tfidf_features])
+        string = language_detection_textcleaning(string)
+        vectors = self._vectorizer.transform([string])
         if self._mode == 'xgb':
             result = self._model.predict(
                 xgb.DMatrix(vectors), ntree_limit = self._model.best_ntree_limit
@@ -343,10 +342,10 @@ class LANGUAGE_DETECTION:
         assert isinstance(strings, list) and isinstance(
             strings[0], str
         ), 'input must be list of strings'
-        strings = [string.lower() for string in strings]
-        char_features = self._vectorizer['bow'].transform(strings)
-        tfidf_features = self._vectorizer['tfidf'].transform(strings)
-        vectors = hstack([char_features, tfidf_features])
+        strings = [
+            language_detection_textcleaning(string) for string in strings
+        ]
+        vectors = self._vectorizer.transform(strings)
 
         if self._mode == 'xgb':
             results = self._model.predict(

@@ -146,7 +146,7 @@ class word2vec:
         ]
         embed = self._embed_matrix[idx]
         embed = embed.dot(embed.T)
-        embed = (embed - embed.min()) / embed.max()
+        embed = (embed - embed.min()) / (embed.max() - embed.min())
         labelled = []
         for label in labels:
             label = (
