@@ -22,7 +22,7 @@ Features
 
 -  **Entities Recognition**, using latest state-of-art CRF deep learning
    models to do Naming Entity Recognition.
--  **Language Detection**, using various machine learning models to distinguish Malay, English, and Indonesian.
+-  **Language Detection**, using Multinomial, SGD, XGB, Fast-text TFIDF deep learning to distinguish Malay, English, and Indonesian.
 -  **Normalizer**, using local Malaysia NLP researches to normalize any
    bahasa texts.
 -  Num2Word
