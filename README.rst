@@ -22,7 +22,7 @@ Features
 
 -  **Entities Recognition**, using latest state-of-art CRF deep learning
    models to do Naming Entity Recognition.
--  **Language Detection**, using Multinomial, SGD, XGB, Fast-text TFIDF deep learning to distinguish Malay, English, and Indonesian.
+-  **Language Detection**, using Multinomial, SGD, XGB, Fast-text N-grams deep learning to distinguish Malay, English, and Indonesian.
 -  **Normalizer**, using local Malaysia NLP researches to normalize any
    bahasa texts.
 -  Num2Word
@@ -47,10 +47,10 @@ Features
 Contributors
 ------------
 
--  **Husein Zolkepli** - *Initial work* - `huseinzol05`_
+-  **Husein Zolkepli** - *Maintainer* - `huseinzol05`_
 
 -  **Sani** - *build PIP package* - `khursani8`_
 
-.. _Malaya Wiki: https://github.com/DevconX/Malaya/wiki
+.. _Malaya Wiki: https://github.com/huseinzol05/Malaya/wiki
 .. _huseinzol05: https://github.com/huseinzol05
 .. _khursani8: https://github.com/khursani8
