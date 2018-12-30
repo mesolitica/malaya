@@ -1,5 +1,5 @@
 
-.. code:: ipython3
+.. code:: python
 
     %%time
     import malaya
@@ -7,14 +7,14 @@
 
 .. parsed-literal::
 
-    CPU times: user 13.3 s, sys: 1.62 s, total: 14.9 s
-    Wall time: 19.3 s
+    CPU times: user 15 s, sys: 1.61 s, total: 16.6 s
+    Wall time: 22.4 s
 
 
 List available language detected
 --------------------------------
 
-.. code:: ipython3
+.. code:: python
 
     malaya.language_detection.label()
 
@@ -27,17 +27,17 @@ List available language detected
 
 
 
-.. code:: ipython3
+.. code:: python
 
     chinese_text = '今天是６月１８号，也是Muiriel的生日！'
     english_text = 'i totally love it man'
-    indon_text = 'berbicara dalam bahasa Indonesia membutuhkan teknologi yang baik untuk bekerja dengan baik, tetapi teknologi yang sulit didapat'
+    indon_text = 'menjabat saleh perombakan menjabat periode komisi energi fraksi partai pengurus partai periode periode partai terpilih periode menjabat komisi perdagangan investasi persatuan periode'
     malay_text = 'beliau berkata program Inisitif Peduli Rakyat (IPR) yang diperkenalkan oleh kerajaan negeri Selangor lebih besar sumbangannya'
 
 Load multinomial model
 ----------------------
 
-.. code:: ipython3
+.. code:: python
 
     multinomial = malaya.language_detection.multinomial()
     multinomial.predict(chinese_text,get_proba=True)
@@ -47,14 +47,14 @@ Load multinomial model
 
 .. parsed-literal::
 
-    {'OTHER': 0.9999999999998863,
-     'ENGLISH': 1.0007472112772622e-13,
-     'INDONESIA': 6.841882467097028e-20,
-     'MALAY': 3.2100041975729288e-31}
+    {'OTHER': 0.9994579061567993,
+     'ENGLISH': 0.0005420938432138138,
+     'INDONESIA': 7.676027325117918e-23,
+     'MALAY': 8.781948877234918e-26}
 
 
 
-.. code:: ipython3
+.. code:: python
 
     multinomial.predict(english_text)
 
@@ -67,7 +67,7 @@ Load multinomial model
 
 
 
-.. code:: ipython3
+.. code:: python
 
     multinomial.predict(indon_text)
 
@@ -80,7 +80,7 @@ Load multinomial model
 
 
 
-.. code:: ipython3
+.. code:: python
 
     multinomial.predict(malay_text)
 
@@ -93,7 +93,7 @@ Load multinomial model
 
 
 
-.. code:: ipython3
+.. code:: python
 
     multinomial.predict(malay_text,get_proba=True)
 
@@ -102,14 +102,14 @@ Load multinomial model
 
 .. parsed-literal::
 
-    {'OTHER': 0.0,
+    {'OTHER': 2.0343169760514329e-209,
      'ENGLISH': 0.0,
-     'INDONESIA': 7.866819388410703e-125,
+     'INDONESIA': 2.5947121007026616e-193,
      'MALAY': 1.0}
 
 
 
-.. code:: ipython3
+.. code:: python
 
     multinomial.predict_batch([english_text,malay_text])
 
@@ -122,22 +122,19 @@ Load multinomial model
 
 
 
-.. code:: ipython3
+.. code:: python
 
-    multinomial.predict_batch([english_text,malay_text],get_proba=True)
+    multinomial.predict_batch([indon_text,malay_text],get_proba=True)
 
 
 
 
 .. parsed-literal::
 
-    [{'OTHER': 1.6169333516662691e-38,
-      'ENGLISH': 1.0,
-      'INDONESIA': 1.392662138457825e-49,
-      'MALAY': 5.0056770790612016e-36},
-     {'OTHER': 0.0,
+    [{'OTHER': 0.0, 'ENGLISH': 0.0, 'INDONESIA': 1.0, 'MALAY': 0.0},
+     {'OTHER': 2.0343169760514329e-209,
       'ENGLISH': 0.0,
-      'INDONESIA': 7.866819388410703e-125,
+      'INDONESIA': 2.5947121007026616e-193,
       'MALAY': 1.0}]
 
 
@@ -145,7 +142,7 @@ Load multinomial model
 Load SGD model
 --------------
 
-.. code:: ipython3
+.. code:: python
 
     sgd = malaya.language_detection.sgd()
     sgd.predict(chinese_text,get_proba=True)
@@ -155,14 +152,11 @@ Load SGD model
 
 .. parsed-literal::
 
-    {'OTHER': 0.971323012260486,
-     'ENGLISH': 0.0,
-     'INDONESIA': 0.0,
-     'MALAY': 0.028676987739513916}
+    {'OTHER': 1.0, 'ENGLISH': 0.0, 'INDONESIA': 0.0, 'MALAY': 0.0}
 
 
 
-.. code:: ipython3
+.. code:: python
 
     sgd.predict(english_text)
 
@@ -175,7 +169,7 @@ Load SGD model
 
 
 
-.. code:: ipython3
+.. code:: python
 
     sgd.predict(indon_text)
 
@@ -188,7 +182,7 @@ Load SGD model
 
 
 
-.. code:: ipython3
+.. code:: python
 
     sgd.predict(malay_text)
 
@@ -197,11 +191,11 @@ Load SGD model
 
 .. parsed-literal::
 
-    'MALAY'
+    'OTHER'
 
 
 
-.. code:: ipython3
+.. code:: python
 
     sgd.predict(malay_text,get_proba=True)
 
@@ -210,11 +204,11 @@ Load SGD model
 
 .. parsed-literal::
 
-    {'OTHER': 0.0, 'ENGLISH': 0.0, 'INDONESIA': 0.0, 'MALAY': 1.0}
+    {'OTHER': 0.25, 'ENGLISH': 0.25, 'INDONESIA': 0.25, 'MALAY': 0.25}
 
 
 
-.. code:: ipython3
+.. code:: python
 
     sgd.predict_batch([english_text,malay_text])
 
@@ -223,28 +217,28 @@ Load SGD model
 
 .. parsed-literal::
 
-    ['ENGLISH', 'MALAY']
+    ['ENGLISH', 'OTHER']
 
 
 
-.. code:: ipython3
+.. code:: python
 
-    sgd.predict_batch([english_text,malay_text],get_proba=True)
+    sgd.predict_batch([indon_text,malay_text],get_proba=True)
 
 
 
 
 .. parsed-literal::
 
-    [{'OTHER': 0.0, 'ENGLISH': 1.0, 'INDONESIA': 0.0, 'MALAY': 0.0},
-     {'OTHER': 0.0, 'ENGLISH': 0.0, 'INDONESIA': 0.0, 'MALAY': 1.0}]
+    [{'OTHER': 0.0, 'ENGLISH': 0.0, 'INDONESIA': 1.0, 'MALAY': 0.0},
+     {'OTHER': 0.25, 'ENGLISH': 0.25, 'INDONESIA': 0.25, 'MALAY': 0.25}]
 
 
 
 Load XGB model
 --------------
 
-.. code:: ipython3
+.. code:: python
 
     xgb = malaya.language_detection.xgb()
     xgb.predict(chinese_text)
@@ -258,7 +252,7 @@ Load XGB model
 
 
 
-.. code:: ipython3
+.. code:: python
 
     xgb.predict(indon_text,get_proba=True)
 
@@ -267,14 +261,14 @@ Load XGB model
 
 .. parsed-literal::
 
-    {'OTHER': 4.8431886e-08,
-     'ENGLISH': 4.20957e-15,
-     'INDONESIA': 0.9999635,
-     'MALAY': 3.639226e-05}
+    {'OTHER': 1.7766696e-09,
+     'ENGLISH': 4.3007767e-11,
+     'INDONESIA': 1.0,
+     'MALAY': 2.0483236e-08}
 
 
 
-.. code:: ipython3
+.. code:: python
 
     xgb.predict_batch([indon_text,malay_text],get_proba=True)
 
@@ -283,13 +277,88 @@ Load XGB model
 
 .. parsed-literal::
 
-    [{'OTHER': 4.8431886e-08,
-      'ENGLISH': 4.20957e-15,
-      'INDONESIA': 0.9999635,
-      'MALAY': 3.639226e-05},
-     {'OTHER': 4.8667624e-12,
-      'ENGLISH': 5.9805926e-16,
-      'INDONESIA': 4.418073e-06,
-      'MALAY': 0.9999956}]
+    [{'OTHER': 1.7766696e-09,
+      'ENGLISH': 4.3007767e-11,
+      'INDONESIA': 1.0,
+      'MALAY': 2.0483236e-08},
+     {'OTHER': 0.025863007,
+      'ENGLISH': 6.506632e-07,
+      'INDONESIA': 0.0044011325,
+      'MALAY': 0.9697352}]
 
 
+
+Load Deep learning model
+------------------------
+
+.. code:: python
+
+    deep = malaya.language_detection.deep_model()
+    deep.predict(chinese_text)
+
+
+.. parsed-literal::
+
+    INFO:tensorflow:Restoring parameters from /Users/huseinzol/Malaya/language-detection/deep/model.ckpt
+
+
+
+
+.. parsed-literal::
+
+    {'OTHER': 0.9316001,
+     'ENGLISH': 0.05633886,
+     'INDONESIA': 0.0013738789,
+     'MALAY': 0.010687195}
+
+
+
+.. code:: python
+
+    deep.predict(indon_text)
+
+
+
+
+.. parsed-literal::
+
+    {'OTHER': 7.841349e-06,
+     'ENGLISH': 6.141883e-07,
+     'INDONESIA': 0.99998856,
+     'MALAY': 2.9619976e-06}
+
+
+
+.. code:: python
+
+    deep.predict(malay_text)
+
+
+
+
+.. parsed-literal::
+
+    {'OTHER': 0.012453539,
+     'ENGLISH': 0.00014139,
+     'INDONESIA': 0.015118264,
+     'MALAY': 0.9722868}
+
+
+
+.. code:: python
+
+    deep.predict_batch([indon_text,malay_text])
+
+
+
+
+.. parsed-literal::
+
+    [{'OTHER': 7.841349e-06,
+      'ENGLISH': 6.141883e-07,
+      'INDONESIA': 0.99998856,
+      'MALAY': 2.9619976e-06},
+     {'OTHER': 0.012453539,
+      'ENGLISH': 0.00014139,
+      'INDONESIA': 0.015118264,
+      'MALAY': 0.9722868}]

@@ -33,7 +33,6 @@ def load_graph(frozen_graph_filename):
 
 
 def check_file(file, s3_file):
-    # _pickle.UnpicklingError: pickle data was truncated
     base_location = os.path.dirname(file['model'])
     version = base_location + '/version'
     download = False

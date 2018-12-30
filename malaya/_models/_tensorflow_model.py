@@ -13,8 +13,36 @@ from ..texts._text_functions import (
     entities_textcleaning,
     char_str_idx,
     generate_char_seq,
+    language_detection_textcleaning,
 )
 from ..stem import _classification_textcleaning_stemmer_attention
+
+
+def _convert_sparse_matrix_to_sparse_tensor(X, limit = 5):
+    coo = X.tocoo()
+    indices = np.mat([coo.row, coo.col]).transpose()
+    coo.data[coo.data > limit] = limit
+    return (
+        tf.SparseTensorValue(indices, coo.col, coo.shape),
+        tf.SparseTensorValue(indices, coo.data, coo.shape),
+    )
+
+
+class _LANG_MODEL:
+    def __init__(self, learning_rate):
+        self.X = tf.sparse_placeholder(tf.int32)
+        self.W = tf.sparse_placeholder(tf.int32)
+        self.Y = tf.placeholder(tf.int32, [None])
+        embeddings = tf.Variable(tf.truncated_normal([660726, 40]))
+        embed = tf.nn.embedding_lookup_sparse(
+            embeddings, self.X, self.W, combiner = 'mean'
+        )
+        self.logits = tf.layers.dense(embed, 4)
+        self.cost = tf.reduce_mean(
+            tf.nn.sparse_softmax_cross_entropy_with_logits(
+                logits = self.logits, labels = self.Y
+            )
+        )
 
 
 class TAGGING:
@@ -412,3 +440,65 @@ class DEEP_TOXIC:
             for k in range(probs.shape[0]):
                 dict_result[self._label[no]].append(probs[k, no])
         return dict_result
+
+
+class DEEP_LANG:
+    def __init__(self, path, vectorizer, label):
+        self._graph = tf.Graph()
+        with self._graph.as_default():
+            self._model = _LANG_MODEL(1e-4)
+            self._sess = tf.InteractiveSession()
+            self._sess.run(tf.global_variables_initializer())
+            saver = tf.train.Saver(tf.trainable_variables())
+            saver.restore(self._sess, path + '/model.ckpt')
+        self._vectorizer = vectorizer
+        self._label = label
+
+    def predict(self, string):
+        """
+        classify a string.
+
+        Parameters
+        ----------
+        string : str
+
+        Returns
+        -------
+        dictionary: results
+        """
+        assert isinstance(string, str), 'input must be a string'
+        string = language_detection_textcleaning(string)
+        transformed = self._vectorizer.transform([string])
+        batch_x = _convert_sparse_matrix_to_sparse_tensor(transformed)
+        probs = self._sess.run(
+            tf.nn.softmax(self._model.logits),
+            feed_dict = {self._model.X: batch_x[0], self._model.W: batch_x[1]},
+        )[0]
+        return {self._label[no]: i for no, i in enumerate(probs)}
+
+    def predict_batch(self, strings):
+        """
+        classify list of strings
+
+        Parameters
+        ----------
+        strings : list
+
+        Returns
+        -------
+        list_dictionaries: list of results
+        """
+        assert isinstance(strings, list) and isinstance(
+            strings[0], str
+        ), 'input must be list of strings'
+        strings = [language_detection_textcleaning(i) for i in strings]
+        transformed = self._vectorizer.transform(strings)
+        batch_x = _convert_sparse_matrix_to_sparse_tensor(transformed)
+        probs = self._sess.run(
+            tf.nn.softmax(self._model.logits),
+            feed_dict = {self._model.X: batch_x[0], self._model.W: batch_x[1]},
+        )
+        dicts = []
+        for i in range(probs.shape[0]):
+            dicts.append({self._label[no]: k for no, k in enumerate(probs[i])})
+        return dicts

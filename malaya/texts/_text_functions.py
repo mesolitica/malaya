@@ -44,7 +44,8 @@ if not os.path.isfile(stopwords_location):
 with open(stopwords_location, 'r') as fopen:
     STOPWORDS = list(filter(None, fopen.read().split('\n')))
 
-STOPWORDS = list(set(STOPWORDS + stopword_tatabahasa + STOPWORD_CALON))
+STOPWORDS = set(STOPWORDS + stopword_tatabahasa + STOPWORD_CALON)
+STOPWORD_CALON = set(STOPWORD_CALON)
 VOWELS = 'aeiou'
 PHONES = ['sh', 'ch', 'ph', 'sz', 'cz', 'sch', 'rz', 'dz']
 
@@ -78,7 +79,7 @@ def _isWord(word):
     return True
 
 
-_list_laughing = [
+_list_laughing = {
     'huhu',
     'haha',
     'gaga',
@@ -88,7 +89,7 @@ _list_laughing = [
     'kiki',
     'keke',
     'huehue',
-]
+}
 
 
 def malaya_textcleaning(string):

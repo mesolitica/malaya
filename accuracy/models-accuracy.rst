@@ -149,14 +149,14 @@ XGB
 
                  precision    recall  f1-score   support
 
-          OTHER       0.99      1.00      0.99     76551
-            eng       1.00      0.99      1.00     19952
-            ind       0.98      0.96      0.97     10972
-            zlm       0.98      0.99      0.98     25722
+          OTHER       0.98      0.99      0.99      9424
+            eng       1.00      0.99      0.99      9972
+            ind       1.00      0.99      0.99     11511
+            zlm       1.00      1.00      1.00     10679
 
-      micro avg       0.99      0.99      0.99    133197
-      macro avg       0.99      0.98      0.98    133197
-   weighted avg       0.99      0.99      0.99    133197
+      micro avg       0.99      0.99      0.99     41586
+      macro avg       0.99      0.99      0.99     41586
+   weighted avg       0.99      0.99      0.99     41586
 
 Multinomial
 ^^^^^^^^^^^
@@ -165,14 +165,14 @@ Multinomial
 
                  precision    recall  f1-score   support
 
-          OTHER       1.00      0.99      0.99     76551
-            eng       0.97      1.00      0.98     19952
-            ind       0.75      0.97      0.85     10972
-            zlm       0.97      0.87      0.92     25722
+          OTHER       1.00      0.97      0.99      9424
+            eng       0.99      1.00      0.99      9972
+            ind       1.00      1.00      1.00     11511
+            zlm       0.99      1.00      0.99     10679
 
-      micro avg       0.96      0.96      0.96    133197
-      macro avg       0.92      0.95      0.94    133197
-   weighted avg       0.97      0.96      0.96    133197
+      micro avg       0.99      0.99      0.99     41586
+      macro avg       0.99      0.99      0.99     41586
+   weighted avg       0.99      0.99      0.99     41586
 
 SGD
 ^^^
@@ -181,14 +181,30 @@ SGD
 
                  precision    recall  f1-score   support
 
-          OTHER       0.98      0.99      0.99     76551
-            eng       0.99      0.98      0.99     19952
-            ind       0.96      0.87      0.92     10972
-            zlm       0.95      0.96      0.96     25722
+          OTHER       0.97      0.99      0.98      9424
+            eng       0.99      0.99      0.99      9972
+            ind       1.00      0.99      0.99     11511
+            zlm       1.00      1.00      1.00     10679
 
-      micro avg       0.97      0.97      0.97    133197
-      macro avg       0.97      0.95      0.96    133197
-   weighted avg       0.97      0.97      0.97    133197
+      micro avg       0.99      0.99      0.99     41586
+      macro avg       0.99      0.99      0.99     41586
+   weighted avg       0.99      0.99      0.99     41586
+
+Deep learning
+^^^^^^^^^^^^^
+
+.. code:: text
+
+                 precision    recall  f1-score   support
+
+          other       1.00      0.99      0.99      9445
+        english       1.00      1.00      1.00      9987
+     indonesian       1.00      1.00      1.00     11518
+          malay       1.00      1.00      1.00     10636
+
+      micro avg       1.00      1.00      1.00     41586
+      macro avg       1.00      1.00      1.00     41586
+   weighted avg       1.00      1.00      1.00     41586
 
 POS Recognition
 ---------------
@@ -203,7 +219,7 @@ sessions stored in
 
 
 
-.. image:: models-accuracy_files/models-accuracy_14_0.png
+.. image:: models-accuracy_files/models-accuracy_15_0.png
    :width: 500px
 
 
@@ -352,7 +368,7 @@ multiple models**
 
 
 
-.. image:: models-accuracy_files/models-accuracy_21_0.png
+.. image:: models-accuracy_files/models-accuracy_22_0.png
    :width: 500px
 
 
@@ -483,7 +499,7 @@ Labels are,
 
 
 
-.. image:: models-accuracy_files/models-accuracy_32_0.png
+.. image:: models-accuracy_files/models-accuracy_33_0.png
    :width: 500px
 
 
@@ -612,7 +628,7 @@ sessions stored in
 
 
 
-.. image:: models-accuracy_files/models-accuracy_41_0.png
+.. image:: models-accuracy_files/models-accuracy_42_0.png
    :width: 500px
 
 

@@ -169,19 +169,28 @@ PATH_LANG_DETECTION = {
         + '/language-detection/multinomial/multinomial-language-detection.pkl',
         'vector': home
         + '/language-detection/multinomial/vectorizer-language-detection.pkl',
-        'version': 'v10',
+        'version': 'v10.2',
     },
     'xgb': {
         'model': home + '/language-detection/xgb/xgb-language-detection.pkl',
         'vector': home
         + '/language-detection/multinomial/vectorizer-language-detection.pkl',
-        'version': 'v10',
+        'version': 'v10.2',
     },
     'sgd': {
         'model': home + '/language-detection/sgd/sgd-language-detection.pkl',
         'vector': home
         + '/language-detection/multinomial/vectorizer-language-detection.pkl',
-        'version': 'v10',
+        'version': 'v10.2',
+    },
+    'deep': {
+        'model': home
+        + '/language-detection/deep/model.ckpt.data-00000-of-00001',
+        'index': home + '/language-detection/deep/model.ckpt.index',
+        'meta': home + '/language-detection/deep/model.ckpt.meta',
+        'vector': home
+        + '/language-detection/multinomial/vectorizer-language-detection.pkl',
+        'version': 'v10.2',
     },
 }
 
@@ -196,6 +205,12 @@ S3_PATH_LANG_DETECTION = {
     },
     'sgd': {
         'model': 'v10/language-detection/sgd-language-detection.pkl',
+        'vector': 'v10/language-detection/language-detection-vectorizer.pkl',
+    },
+    'deep': {
+        'model': 'v10/language-detection/model.ckpt.data-00000-of-00001',
+        'index': 'v10/language-detection/model.ckpt.index',
+        'meta': 'v10/language-detection/model.ckpt.meta',
         'vector': 'v10/language-detection/language-detection-vectorizer.pkl',
     },
 }
