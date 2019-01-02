@@ -17,6 +17,19 @@ Tensorflow.
 -  Free software: MIT license
 -  Documentation: https://malaya.readthedocs.io/
 
+Installing from the PyPI
+----------------------------------
+
+CPU version
+::
+
+    $ pip install malaya
+
+GPU version
+::
+
+    $ pip install malaya-gpu
+
 Features
 --------
 
