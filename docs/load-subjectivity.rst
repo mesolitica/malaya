@@ -1,16 +1,24 @@
 
 .. code:: python
 
+    %%time
     import malaya
+
+
+.. parsed-literal::
+
+    CPU times: user 13.2 s, sys: 1.4 s, total: 14.6 s
+    Wall time: 18.2 s
+
 
 Explanation
 -----------
 
 Positive subjectivity: based on or influenced by personal feelings,
-tastes, or opinions. Can be a positive or negative sentiments.
+tastes, or opinions. Can be a positive or negative sentiment.
 
 Negative subjectivity: based on a report or a fact. Can be a positive or
-negative sentiments.
+negative sentiment.
 
 .. code:: python
 
@@ -108,20 +116,20 @@ List available deep learning models
     [{'negative': 0.99998176, 'positive': 1.8284805e-05}, {'negative': 0.6197021, 'positive': 0.3802979}]
 
     Testing hierarchical model
-    {'negative': 0.99999106, 'positive': 8.908054e-06, 'attention': [['kerajaan', 0.0026431128], ['negeri', 0.0023254503], ['kelantan', 0.0020627102], ['mempersoalkan', 0.0030728227], ['motif', 0.008248507], ['kenyataan', 0.043281738], ['menteri', 0.013182686], ['kewangan', 0.09176193], ['lim', 0.04344287], ['guan', 0.03522484], ['eng', 0.0461848], ['yang', 0.09767821], ['hanya', 0.08986266], ['menyebut', 0.031121315], ['kelantan', 0.021764606], ['penerima', 0.015131315], ['terbesar', 0.08985191], ['bantuan', 0.006960401], ['kewangan', 0.031935796], ['dari', 0.010873584], ['kerajaan', 0.009254754], ['persekutuan', 0.009717415], ['sedangkan', 0.0040391926], ['menurut', 0.0066842665], ['timbalan', 0.011416538], ['menteri', 0.013341902], ['besarnya', 0.002481642], ['datuk', 0.042085297], ['mohd', 0.01442942], ['amar', 0.01908006], ['nik', 0.009496236], ['abdullah', 0.050433077], ['negeri', 0.059876796], ['lain', 0.037059795], ['yang', 0.011822811], ['lebih', 0.0034201501], ['maju', 0.0025036496], ['dari', 0.0022793075], ['kelantan', 0.0016129243], ['turut', 0.0008071765], ['mendapat', 0.00044486515], ['pembiayaan', 0.0006439999], ['pinjaman', 0.00045750322]]}
-    [{'negative': 0.9999914, 'positive': 8.570751e-06}, {'negative': 0.13745736, 'positive': 0.86254257}]
+    {'negative': 0.9999937, 'positive': 6.295898e-06, 'attention': [['kerajaan', 0.0012118855], ['negeri', 0.0020442759], ['kelantan', 0.0021679106], ['mempersoalkan', 0.0022253846], ['motif', 0.0033358238], ['kenyataan', 0.008720655], ['menteri', 0.04487104], ['kewangan', 0.10065087], ['lim', 0.059503824], ['guan', 0.15100963], ['eng', 0.04026543], ['yang', 0.043928813], ['hanya', 0.01824422], ['menyebut', 0.022727199], ['kelantan', 0.016984997], ['penerima', 0.024233121], ['terbesar', 0.011635249], ['bantuan', 0.001963468], ['kewangan', 0.0072085205], ['dari', 0.0021965506], ['kerajaan', 0.0027234056], ['persekutuan', 0.0014449719], ['sedangkan', 0.0021539854], ['menurut', 0.002655797], ['timbalan', 0.0115157785], ['menteri', 0.005335992], ['besarnya', 0.028362982], ['datuk', 0.009886651], ['mohd', 0.02055805], ['amar', 0.04487915], ['nik', 0.17517959], ['abdullah', 0.02919604], ['negeri', 0.041412108], ['lain', 0.030245796], ['yang', 0.0063164025], ['lebih', 0.006518348], ['maju', 0.001788858], ['dari', 0.008994939], ['kelantan', 0.0024882965], ['turut', 0.00038583783], ['mendapat', 0.0010022834], ['pembiayaan', 0.0012560145], ['pinjaman', 0.000569819]]}
+    [{'negative': 0.99999154, 'positive': 8.507095e-06}, {'negative': 0.3101697, 'positive': 0.6898303}]
 
     Testing bahdanau model
-    {'negative': 0.99980694, 'positive': 0.00019306253, 'attention': [['kerajaan', 0.0050749457], ['negeri', 0.009439934], ['kelantan', 0.0040419037], ['mempersoalkan', 0.0214517], ['motif', 0.005316791], ['kenyataan', 0.010294732], ['menteri', 0.03291764], ['kewangan', 0.0049661435], ['lim', 0.0040683458], ['guan', 0.0040419037], ['eng', 0.0040419037], ['yang', 0.004419986], ['hanya', 0.005385534], ['menyebut', 0.0076758233], ['kelantan', 0.0040419037], ['penerima', 0.006874847], ['terbesar', 0.013762572], ['bantuan', 0.009585191], ['kewangan', 0.0049661435], ['dari', 0.004591231], ['kerajaan', 0.0050749457], ['persekutuan', 0.022824157], ['sedangkan', 0.0034627551], ['menurut', 0.0051674796], ['timbalan', 0.0040419037], ['menteri', 0.03291764], ['besarnya', 0.013762572], ['datuk', 0.017903224], ['mohd', 0.0040419037], ['amar', 0.004367938], ['nik', 0.0037139847], ['abdullah', 0.0040419037], ['negeri', 0.009439934], ['lain', 0.0033763673], ['yang', 0.004419986], ['lebih', 0.006034435], ['maju', 0.0038030783], ['dari', 0.004591231], ['kelantan', 0.0040419037], ['turut', 0.6005219], ['mendapat', 0.01686728], ['pembiayaan', 0.013716733], ['pinjaman', 0.044907507]]}
-    [{'negative': 0.99991393, 'positive': 8.602566e-05}, {'negative': 0.56615204, 'positive': 0.43384793}]
+    {'negative': 0.9999198, 'positive': 8.020081e-05, 'attention': [['kerajaan', 0.0050431504], ['negeri', 0.009287076], ['kelantan', 0.0040232316], ['mempersoalkan', 0.021462629], ['motif', 0.0053027985], ['kenyataan', 0.010193134], ['menteri', 0.033055097], ['kewangan', 0.0049648904], ['lim', 0.0040454715], ['guan', 0.0040232316], ['eng', 0.0040232316], ['yang', 0.004409306], ['hanya', 0.0053563444], ['menyebut', 0.0076429546], ['kelantan', 0.0040232316], ['penerima', 0.0068015233], ['terbesar', 0.013676326], ['bantuan', 0.009508641], ['kewangan', 0.0049648904], ['dari', 0.00456691], ['kerajaan', 0.0050431504], ['persekutuan', 0.022685695], ['sedangkan', 0.0034438083], ['menurut', 0.0051381364], ['timbalan', 0.0040232316], ['menteri', 0.033055097], ['besarnya', 0.013676326], ['datuk', 0.017668026], ['mohd', 0.0040232316], ['amar', 0.0043330067], ['nik', 0.0036893887], ['abdullah', 0.0040232316], ['negeri', 0.009287076], ['lain', 0.003357054], ['yang', 0.004409306], ['lebih', 0.005977192], ['maju', 0.0037889858], ['dari', 0.00456691], ['kelantan', 0.0040232316], ['turut', 0.60284543], ['mendapat', 0.01692126], ['pembiayaan', 0.01374086], ['pinjaman', 0.043906275]]}
+    [{'negative': 0.9999558, 'positive': 4.4271066e-05}, {'negative': 0.64894015, 'positive': 0.35105988}]
 
     Testing luong model
-    {'negative': 0.05270607, 'positive': 0.94729394, 'attention': [['kerajaan', 0.024131631], ['negeri', 0.011953921], ['kelantan', 0.012911553], ['mempersoalkan', 0.00873569], ['motif', 0.008673658], ['kenyataan', 0.016589355], ['menteri', 0.0063872887], ['kewangan', 0.016722612], ['lim', 0.013983263], ['guan', 0.012911553], ['eng', 0.012911553], ['yang', 0.007033144], ['hanya', 0.005824854], ['menyebut', 0.03765733], ['kelantan', 0.012911553], ['penerima', 0.011384356], ['terbesar', 0.013326466], ['bantuan', 0.0054743947], ['kewangan', 0.016722612], ['dari', 0.0074779517], ['kerajaan', 0.024131631], ['persekutuan', 0.0063038715], ['sedangkan', 0.04904128], ['menurut', 0.006200655], ['timbalan', 0.012911553], ['menteri', 0.0063872887], ['besarnya', 0.013326466], ['datuk', 0.006796812], ['mohd', 0.012911553], ['amar', 0.00872326], ['nik', 0.011290737], ['abdullah', 0.012911553], ['negeri', 0.011953921], ['lain', 0.01890528], ['yang', 0.007033144], ['lebih', 0.0062040263], ['maju', 0.00676356], ['dari', 0.0074779517], ['kelantan', 0.012911553], ['turut', 0.0059344224], ['mendapat', 0.010373441], ['pembiayaan', 0.027220346], ['pinjaman', 0.45056102]]}
-    [{'negative': 0.075147994, 'positive': 0.92485195}, {'negative': 0.79208255, 'positive': 0.20791744}]
+    {'negative': 0.051370017, 'positive': 0.94863, 'attention': [['kerajaan', 0.032675084], ['negeri', 0.016353898], ['kelantan', 0.019432731], ['mempersoalkan', 0.0119247725], ['motif', 0.01284633], ['kenyataan', 0.01961166], ['menteri', 0.008495899], ['kewangan', 0.018757388], ['lim', 0.018171076], ['guan', 0.019432731], ['eng', 0.019432731], ['yang', 0.009098401], ['hanya', 0.0077451197], ['menyebut', 0.053905513], ['kelantan', 0.019432731], ['penerima', 0.0129601145], ['terbesar', 0.018512659], ['bantuan', 0.0077343024], ['kewangan', 0.018757388], ['dari', 0.009422931], ['kerajaan', 0.032675084], ['persekutuan', 0.008676352], ['sedangkan', 0.06508403], ['menurut', 0.0082393885], ['timbalan', 0.019432731], ['menteri', 0.008495899], ['besarnya', 0.018512659], ['datuk', 0.009194007], ['mohd', 0.019432731], ['amar', 0.014017649], ['nik', 0.014721154], ['abdullah', 0.019432731], ['negeri', 0.016353898], ['lain', 0.024851179], ['yang', 0.009098401], ['lebih', 0.008518517], ['maju', 0.00883592], ['dari', 0.009422931], ['kelantan', 0.019432731], ['turut', 0.008133899], ['mendapat', 0.016000977], ['pembiayaan', 0.028110703], ['pinjaman', 0.2586229]]}
+    [{'negative': 0.034302887, 'positive': 0.9656971}, {'negative': 0.7590918, 'positive': 0.24090825}]
 
     Testing bidirectional model
-    {'negative': 0.999992, 'positive': 8.023105e-06}
-    [{'negative': 0.99999034, 'positive': 9.699501e-06}, {'negative': 0.99284464, 'positive': 0.0071553625}]
+    {'negative': 0.9999918, 'positive': 8.242413e-06}
+    [{'negative': 0.99999166, 'positive': 8.287703e-06}, {'negative': 0.992438, 'positive': 0.007561967}]
 
     Testing bert model
     {'negative': 0.98487025, 'positive': 0.0151297115}
@@ -203,3 +211,97 @@ Visualizing hierarchical model
 
 
 .. image:: load-subjectivity_files/load-subjectivity_17_0.png
+
+
+Load Sparse deep learning models
+--------------------------------
+
+What happen if a word not included in the dictionary of the models? like
+``setan``, what if ``setan`` appeared in text we want to classify? We
+found this problem when classifying social media texts / posts. Words
+used not really a vocabulary-based contextual.
+
+Malaya will treat **unknown words** as ``<UNK>``, so, to solve this
+problem, we need to use N-grams character based. Malaya chose tri-grams
+until fifth-grams.
+
+.. code:: python
+
+   setan = ['set', 'eta', 'tan']
+
+Sklearn provided easy interface to use n-grams, problem is, it is very
+sparse, a lot of zeros and not memory efficient. Sklearn returned sparse
+matrix for the result, lucky Tensorflow already provided some sparse
+function.
+
+malaya.subjective.available_sparse_deep_model()
+
+Right now Malaya only provide 1 sparse model, ``fast-text-char``. We
+will try to evolve it.
+
+.. code:: python
+
+    sparse_model = malaya.subjective.sparse_deep_model()
+
+
+.. parsed-literal::
+
+    downloading frozen /Users/huseinzol/Malaya/subjective/fast-text-char model
+
+
+.. parsed-literal::
+
+    16.0MB [00:04, 3.16MB/s]
+    1.00MB [00:00, 536MB/s]
+      0%|          | 0.00/0.05 [00:00<?, ?MB/s]
+
+.. parsed-literal::
+
+    downloading frozen /Users/huseinzol/Malaya/subjective/fast-text-char index
+    downloading frozen /Users/huseinzol/Malaya/subjective/fast-text-char meta
+
+
+.. parsed-literal::
+
+    1.00MB [00:00, 15.9MB/s]
+      0%|          | 0.00/2.77 [00:00<?, ?MB/s]
+
+.. parsed-literal::
+
+    downloading frozen /Users/huseinzol/Malaya/subjective/fast-text-char vector
+
+
+.. parsed-literal::
+
+    3.00MB [00:00, 4.00MB/s]
+
+
+.. parsed-literal::
+
+    INFO:tensorflow:Restoring parameters from /Users/huseinzol/Malaya/subjective/fast-text-char/model.ckpt
+
+
+.. code:: python
+
+    sparse_model.predict(positive_text)
+
+
+
+
+.. parsed-literal::
+
+    {'negative': 0.06594214, 'positive': 0.93405783}
+
+
+
+.. code:: python
+
+    sparse_model.predict_batch([positive_text, negative_text])
+
+
+
+
+.. parsed-literal::
+
+    [{'negative': 0.06594214, 'positive': 0.93405783},
+     {'negative': 0.9535811, 'positive': 0.046418883}]

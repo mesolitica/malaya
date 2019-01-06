@@ -12,14 +12,21 @@ from ._utils._utils import check_file, load_graph
 from . import home
 from ._utils._paths import PATH_TOXIC, S3_PATH_TOXIC
 from ._models._sklearn_model import TOXIC
-from ._models._tensorflow_model import DEEP_TOXIC
+from ._models._tensorflow_model import SIGMOID
 
 
 def available_deep_model():
     """
     List available deep learning toxicity analysis models.
     """
-    return ['bahdanau', 'hierarchical', 'luong', 'fast-text', 'entity-network']
+    return [
+        'bahdanau',
+        'hierarchical',
+        'luong',
+        'fast-text',
+        'entity-network',
+        'recurrent-char',
+    ]
 
 
 def multinomial():
@@ -71,7 +78,7 @@ def deep_model(model = 'luong'):
 
     Returns
     -------
-    TOXIC: malaya._models._tensorflow_model.DEEP_TOXIC class
+    TOXIC: malaya._models._tensorflow_model.SIGMOID class
     """
     assert isinstance(model, str), 'model must be a string'
     model = model.lower()
@@ -82,7 +89,7 @@ def deep_model(model = 'luong'):
         with open(PATH_TOXIC['fast-text']['pickle'], 'rb') as fopen:
             ngram = pickle.load(fopen)
         g = load_graph(PATH_TOXIC['fast-text']['model'])
-        return DEEP_TOXIC(
+        return SIGMOID(
             g.get_tensor_by_name('import/Placeholder:0'),
             g.get_tensor_by_name('import/logits:0'),
             tf.InteractiveSession(graph = g),
@@ -95,7 +102,7 @@ def deep_model(model = 'luong'):
         with open(PATH_TOXIC['hierarchical']['setting'], 'r') as fopen:
             dictionary = json.load(fopen)['dictionary']
         g = load_graph(PATH_TOXIC['hierarchical']['model'])
-        return DEEP_TOXIC(
+        return SIGMOID(
             g.get_tensor_by_name('import/Placeholder:0'),
             g.get_tensor_by_name('import/logits:0'),
             tf.InteractiveSession(graph = g),
@@ -108,7 +115,7 @@ def deep_model(model = 'luong'):
         with open(PATH_TOXIC[model]['setting'], 'r') as fopen:
             dictionary = json.load(fopen)['dictionary']
         g = load_graph(PATH_TOXIC[model]['model'])
-        return DEEP_TOXIC(
+        return SIGMOID(
             g.get_tensor_by_name('import/Placeholder:0'),
             g.get_tensor_by_name('import/logits:0'),
             tf.InteractiveSession(graph = g),
@@ -123,7 +130,7 @@ def deep_model(model = 'luong'):
         with open(PATH_TOXIC['entity-network']['setting'], 'r') as fopen:
             dictionary = json.load(fopen)
         g = load_graph(PATH_TOXIC['entity-network']['model'])
-        return DEEP_TOXIC(
+        return SIGMOID(
             g.get_tensor_by_name('import/Placeholder_question:0'),
             g.get_tensor_by_name('import/logits:0'),
             tf.InteractiveSession(graph = g),

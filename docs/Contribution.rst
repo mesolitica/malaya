@@ -4,9 +4,13 @@ Contribution
 Rules
 -----
 
-Malaya has some standard code like PEP8 if want to add, we use Black Mamba to prettify our code.
+1. Malaya has some standard code like PEP8 if want to add, we use Black Mamba to prettify our code.
 
 You can install it from here, https://github.com/mohtar/blackmamba.
+
+2. 100% Tensorflow, no Keras.
+
+3.  3.3 > Python < 3.7
 
 New code
 --------

@@ -33,6 +33,8 @@ GPU version
 Features
 --------
 
+-  **Emotion Analysis**, from BERT, Fast-Text, Dynamic-Memory Network, Sparse-Chars,
+   Attention to build deep emotion analysis models.
 -  **Entities Recognition**, using latest state-of-art CRF deep learning
    models to do Naming Entity Recognition.
 -  **Language Detection**, using Multinomial, SGD, XGB, Fast-text N-grams deep learning to distinguish Malay, English, and Indonesian.
@@ -41,12 +43,12 @@ Features
 -  Num2Word
 -  **Part-of-Speech Recognition**, using latest state-of-art CRF deep
    learning models to do POS Recognition.
--  **Sentiment Analysis**, from BERT, Fast-Text, Dynamic-Memory Network,
+-  **Sentiment Analysis**, from BERT, Fast-Text, Dynamic-Memory Network, Sparse-Chars,
    Attention to build deep sentiment analysis models.
 -  **Spell Correction**, using local Malaysia NLP researches to
    auto-correct any bahasa words.
 -  Stemmer
--  **Subjectivity Analysis**, from BERT, Fast-Text, Dynamic-Memory Network,
+-  **Subjectivity Analysis**, from BERT, Fast-Text, Dynamic-Memory Network, Sparse-Chars,
    Attention to build deep subjectivity analysis models.
 -  **Summarization**, using skip-thought state-of-art to give precise
    summarization.

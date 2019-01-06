@@ -29,7 +29,7 @@ def _convert_sparse_matrix_to_sparse_tensor(X, limit = 5):
 
 
 class _LANG_MODEL:
-    def __init__(self, learning_rate):
+    def __init__(self):
         self.X = tf.sparse_placeholder(tf.int32)
         self.W = tf.sparse_placeholder(tf.int32)
         self.Y = tf.placeholder(tf.int32, [None])
@@ -38,11 +38,20 @@ class _LANG_MODEL:
             embeddings, self.X, self.W, combiner = 'mean'
         )
         self.logits = tf.layers.dense(embed, 4)
-        self.cost = tf.reduce_mean(
-            tf.nn.sparse_softmax_cross_entropy_with_logits(
-                logits = self.logits, labels = self.Y
-            )
+
+
+class _SPARSE_SOFTMAX_MODEL:
+    def __init__(self, output_size, embedded_size, vocab_size):
+        self.X = tf.sparse_placeholder(tf.int32)
+        self.W = tf.sparse_placeholder(tf.int32)
+        self.Y = tf.placeholder(tf.int32, [None])
+        embeddings = tf.Variable(
+            tf.truncated_normal([vocab_size, embedded_size])
         )
+        embed = tf.nn.embedding_lookup_sparse(
+            embeddings, self.X, self.W, combiner = 'mean'
+        )
+        self.logits = tf.layers.dense(embed, output_size)
 
 
 class TAGGING:
@@ -113,7 +122,7 @@ class TAGGING:
         ]
 
 
-class SENTIMENT:
+class SOFTMAX:
     def __init__(
         self,
         X,
@@ -129,6 +138,7 @@ class SENTIMENT:
         dropout_keep_prob = None,
         story = None,
         maxlen = 80,
+        label = ['negative', 'positive'],
     ):
         self._X = X
         self._logits = logits
@@ -143,6 +153,7 @@ class SENTIMENT:
         self._dropout_keep_prob = dropout_keep_prob
         self._story = story
         self._maxlen = maxlen
+        self._label = label
 
     def predict(self, string):
         """
@@ -181,16 +192,10 @@ class SENTIMENT:
             words = []
             for i in range(alphas.shape[0]):
                 words.append([splitted[i], alphas[i]])
-            return {
-                'negative': probs[0, 0],
-                'positive': probs[0, 1],
-                'attention': words,
-            }
         if self._mode in ['bidirectional', 'fast-text']:
             probs = self._sess.run(
                 tf.nn.softmax(self._logits), feed_dict = {self._X: batch_x}
             )
-            return {'negative': probs[0, 0], 'positive': probs[0, 1]}
         if self._mode == 'bert':
             np_mask = np.ones((1, self._maxlen), dtype = np.int32)
             np_segment = np.ones((1, self._maxlen), dtype = np.int32)
@@ -203,7 +208,6 @@ class SENTIMENT:
                     self._is_training: False,
                 },
             )
-            return {'negative': probs[0, 0], 'positive': probs[0, 1]}
         if self._mode == 'entity-network':
             batch_x_expand = np.expand_dims(batch_x, axis = 1)
             probs = self._sess.run(
@@ -214,7 +218,14 @@ class SENTIMENT:
                     self._dropout_keep_prob: 1.0,
                 },
             )
-            return {'negative': probs[0, 0], 'positive': probs[0, 1]}
+
+        result = {}
+        for no, label in enumerate(self._label):
+            result[label] = probs[0, no]
+
+        if self._mode in ['luong', 'bahdanau', 'hierarchical']:
+            result['attention'] = words
+        return result
 
     def predict_batch(self, strings):
         """
@@ -278,11 +289,14 @@ class SENTIMENT:
 
         dicts = []
         for i in range(probs.shape[0]):
-            dicts.append({'negative': probs[i, 0], 'positive': probs[i, 1]})
+            result = {}
+            for no, label in enumerate(self._label):
+                result[label] = probs[i, no]
+            dicts.append(result)
         return dicts
 
 
-class DEEP_TOXIC:
+class SIGMOID:
     def __init__(
         self,
         X,
@@ -446,7 +460,7 @@ class DEEP_LANG:
     def __init__(self, path, vectorizer, label):
         self._graph = tf.Graph()
         with self._graph.as_default():
-            self._model = _LANG_MODEL(1e-4)
+            self._model = _LANG_MODEL()
             self._sess = tf.InteractiveSession()
             self._sess.run(tf.global_variables_initializer())
             saver = tf.train.Saver(tf.trainable_variables())
@@ -492,6 +506,75 @@ class DEEP_LANG:
             strings[0], str
         ), 'input must be list of strings'
         strings = [language_detection_textcleaning(i) for i in strings]
+        transformed = self._vectorizer.transform(strings)
+        batch_x = _convert_sparse_matrix_to_sparse_tensor(transformed)
+        probs = self._sess.run(
+            tf.nn.softmax(self._model.logits),
+            feed_dict = {self._model.X: batch_x[0], self._model.W: batch_x[1]},
+        )
+        dicts = []
+        for i in range(probs.shape[0]):
+            dicts.append({self._label[no]: k for no, k in enumerate(probs[i])})
+        return dicts
+
+
+class SPARSE_SOFTMAX:
+    def __init__(
+        self, path, vectorizer, label, output_size, embedded_size, vocab_size
+    ):
+        self._graph = tf.Graph()
+        with self._graph.as_default():
+            self._model = _SPARSE_SOFTMAX_MODEL(
+                output_size, embedded_size, vocab_size
+            )
+            self._sess = tf.InteractiveSession()
+            self._sess.run(tf.global_variables_initializer())
+            saver = tf.train.Saver(tf.trainable_variables())
+            saver.restore(self._sess, path + '/model.ckpt')
+        self._vectorizer = vectorizer
+        self._label = label
+
+    def predict(self, string):
+        """
+        classify a string.
+
+        Parameters
+        ----------
+        string : str
+
+        Returns
+        -------
+        dictionary: results
+        """
+        assert isinstance(string, str), 'input must be a string'
+        string = _classification_textcleaning_stemmer_attention(string)[0]
+        transformed = self._vectorizer.transform([string])
+        batch_x = _convert_sparse_matrix_to_sparse_tensor(transformed)
+        probs = self._sess.run(
+            tf.nn.softmax(self._model.logits),
+            feed_dict = {self._model.X: batch_x[0], self._model.W: batch_x[1]},
+        )[0]
+        return {self._label[no]: i for no, i in enumerate(probs)}
+
+    def predict_batch(self, strings):
+        """
+        classify list of strings
+
+        Parameters
+        ----------
+        strings : list
+
+        Returns
+        -------
+        list_dictionaries: list of results
+        """
+        assert isinstance(strings, list) and isinstance(
+            strings[0], str
+        ), 'input must be list of strings'
+        strings = [
+            _classification_textcleaning_stemmer_attention(i)[0]
+            for i in strings
+        ]
         transformed = self._vectorizer.transform(strings)
         batch_x = _convert_sparse_matrix_to_sparse_tensor(transformed)
         probs = self._sess.run(

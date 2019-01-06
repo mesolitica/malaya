@@ -138,6 +138,7 @@ exclude_patterns = [
     'references.rst',
     'text-clustering-generator.rst',
     'models-accuracy.rst',
+    'translator.rst',
 ]
 
 # The name of the Pygments (syntax highlighting) style to use.

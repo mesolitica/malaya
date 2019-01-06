@@ -317,6 +317,15 @@ PATH_SENTIMENTS = {
         'vector': home + '/sentiment/xgb/xgboost-sentiment-tfidf.pkl',
         'version': 'v8',
     },
+    'fast-text-char': {
+        'model': home
+        + '/sentiment/fast-text-char/model.ckpt.data-00000-of-00001',
+        'index': home + '/sentiment/fast-text-char/model.ckpt.index',
+        'meta': home + '/sentiment/fast-text-char/model.ckpt.meta',
+        'vector': home
+        + '/sentiment/fast-text-char/vectorizer-sparse-sentiment.pkl',
+        'version': 'v12',
+    },
 }
 
 S3_PATH_SENTIMENTS = {
@@ -356,6 +365,12 @@ S3_PATH_SENTIMENTS = {
     'xgb': {
         'model': 'v8/sentiment/xgboost-sentiment.pkl',
         'vector': 'v8/sentiment/xgboost-sentiment-tfidf.pkl',
+    },
+    'fast-text-char': {
+        'model': 'v12/sentiment/model.ckpt.data-00000-of-00001',
+        'index': 'v12/sentiment/model.ckpt.index',
+        'meta': 'v12/sentiment/model.ckpt.meta',
+        'vector': 'v12/sentiment/vectorizer-sparse-sentiment.pkl',
     },
 }
 
@@ -409,6 +424,15 @@ PATH_SUBJECTIVE = {
         'vector': home + '/subjective/xgb/xgboost-subjective-tfidf.pkl',
         'version': 'v10',
     },
+    'fast-text-char': {
+        'model': home
+        + '/subjective/fast-text-char/model.ckpt.data-00000-of-00001',
+        'index': home + '/subjective/fast-text-char/model.ckpt.index',
+        'meta': home + '/subjective/fast-text-char/model.ckpt.meta',
+        'vector': home
+        + '/subjective/fast-text-char/vectorizer-sparse-subjective.pkl',
+        'version': 'v12',
+    },
 }
 
 S3_PATH_SUBJECTIVE = {
@@ -448,5 +472,115 @@ S3_PATH_SUBJECTIVE = {
     'xgb': {
         'model': 'v10/subjective/xgboost-subjective.pkl',
         'vector': 'v10/subjective/xgboost-subjective-tfidf.pkl',
+    },
+    'fast-text-char': {
+        'model': 'v12/subjective/model.ckpt.data-00000-of-00001',
+        'index': 'v12/subjective/model.ckpt.index',
+        'meta': 'v12/subjective/model.ckpt.meta',
+        'vector': 'v12/subjective/vectorizer-sparse-subjective.pkl',
+    },
+}
+
+PATH_EMOTION = {
+    'bert': {
+        'model': home + '/emotion/bert/bert-emotion.pb',
+        'setting': home + '/emotion/bert/bert-emotion.json',
+        'version': 'v12',
+    },
+    'entity-network': {
+        'model': home + '/emotion/entity-network/entity-emotion.pb',
+        'setting': home + '/emotion/entity-network/entity-emotion.json',
+        'version': 'v12',
+    },
+    'hierarchical': {
+        'model': home + '/emotion/hierarchical/hierarchical-emotion.pb',
+        'setting': home + '/emotion/hierarchical/hierarchical-emotion.json',
+        'version': 'v12',
+    },
+    'bahdanau': {
+        'model': home + '/emotion/bahdanau/bahdanau-emotion.pb',
+        'setting': home + '/emotion/bahdanau/bahdanau-emotion.json',
+        'version': 'v12',
+    },
+    'luong': {
+        'model': home + '/emotion/luong/luong-emotion.pb',
+        'setting': home + '/emotion/luong/luong-emotion.json',
+        'version': 'v12',
+    },
+    'bidirectional': {
+        'model': home + '/emotion/bidirectional/bidirectional-emotion.pb',
+        'setting': home + '/emotion/bidirectional/bidirectional-emotion.json',
+        'version': 'v12',
+    },
+    'fast-text': {
+        'model': home + '/emotion/fast-text/fasttext-emotion.pb',
+        'setting': home + '/emotion/fast-text/fasttext-emotion.json',
+        'pickle': home + '/emotion/fast-text/fasttext-emotion.pkl',
+        'version': 'v12',
+    },
+    'multinomial': {
+        'model': home + '/emotion/multinomial/multinomial-emotion.pkl',
+        'vector': home + '/emotion/multinomial/multinomial-emotion-tfidf.pkl',
+        'version': 'v12',
+    },
+    'xgb': {
+        'model': home + '/emotion/xgb/xgboost-emotion.pkl',
+        'vector': home + '/emotion/xgb/xgboost-emotion-tfidf.pkl',
+        'version': 'v12',
+    },
+    'fast-text-char': {
+        'model': home
+        + '/emotion/fast-text-char/model.ckpt.data-00000-of-00001',
+        'index': home + '/emotion/fast-text-char/model.ckpt.index',
+        'meta': home + '/emotion/fast-text-char/model.ckpt.meta',
+        'vector': home
+        + '/emotion/fast-text-char/vectorizer-sparse-emotion.pkl',
+        'version': 'v12',
+    },
+}
+
+S3_PATH_EMOTION = {
+    'bert': {
+        'model': 'v12/emotion/bert-emotion.pb',
+        'setting': 'v12/emotion/bert-emotion.json',
+    },
+    'entity-network': {
+        'model': 'v12/emotion/entity-emotion.pb',
+        'setting': 'v12/emotion/entity-emotion.json',
+    },
+    'hierarchical': {
+        'model': 'v12/emotion/hierarchical-emotion.pb',
+        'setting': 'v12/emotion/hierarchical-emotion.json',
+    },
+    'bahdanau': {
+        'model': 'v12/emotion/bahdanau-emotion.pb',
+        'setting': 'v12/emotion/bahdanau-emotion.json',
+    },
+    'luong': {
+        'model': 'v12/emotion/luong-emotion.pb',
+        'setting': 'v12/emotion/luong-emotion.json',
+    },
+    'bidirectional': {
+        'model': 'v12/emotion/bidirectional-emotion.pb',
+        'setting': 'v12/emotion/bidirectional-emotion.json',
+    },
+    'fast-text': {
+        'model': 'v12/emotion/fasttext-emotion.pb',
+        'setting': 'v12/emotion/fasttext-emotion.json',
+        'pickle': 'v12/emotion/fasttext-emotion.pkl',
+    },
+    'multinomial': {
+        'model': 'v12/emotion/multinomial-emotion.pkl',
+        'vector': 'v12/emotion/multinomial-emotion-tfidf.pkl',
+    },
+    'xgb': {
+        'model': 'v12/emotion/xgboost-emotion.pkl',
+        'vector': 'v12/emotion/xgboost-emotion-tfidf.pkl',
+    },
+    'fast-text-char': {
+        'model': 'v12/emotion/model.ckpt.data-00000-of-00001',
+        'index': 'v12/emotion/model.ckpt.index',
+        'meta': 'v12/emotion/model.ckpt.meta',
+        'vector': 'v12/emotion/vectorizer-sparse-emotion.pkl',
     },
 }

@@ -4,8 +4,15 @@ import warnings
 if not sys.warnoptions:
     warnings.simplefilter('ignore')
 
-from ._utils import _binary_class
+from ._utils import _softmax_class
 from ._utils._paths import PATH_SUBJECTIVE, S3_PATH_SUBJECTIVE
+
+
+def available_sparse_deep_model():
+    """
+    List available sparse deep learning subjectivity analysis models.
+    """
+    return ['fast-text-char']
 
 
 def available_deep_model():
@@ -21,6 +28,31 @@ def available_deep_model():
         'bert',
         'entity-network',
     ]
+
+
+def sparse_deep_model(model = 'fast-text-char'):
+    """
+    Load deep learning sentiment analysis model.
+
+    Parameters
+    ----------
+    model : str, optional (default='luong')
+        Model architecture supported. Allowed values:
+
+        * ``'fast-text-char'`` - Fast-text architecture for character based n-grams, embedded and logits layers only
+
+    Returns
+    -------
+    SPARSE_SOFTMAX: malaya._models._tensorflow_model.SPARSE_SOFTMAX class
+    """
+    return _softmax_class.sparse_deep_model(
+        PATH_SUBJECTIVE,
+        S3_PATH_SUBJECTIVE,
+        'subjective',
+        ['negative', 'positive'],
+        2,
+        model = model,
+    )
 
 
 def deep_model(model = 'luong'):
@@ -44,8 +76,12 @@ def deep_model(model = 'luong'):
     -------
     SENTIMENT: malaya._models._tensorflow_model.SENTIMENT class
     """
-    return _binary_class.deep_model(
-        PATH_SUBJECTIVE, S3_PATH_SUBJECTIVE, 'subjective', model = model
+    return _softmax_class.deep_model(
+        PATH_SUBJECTIVE,
+        S3_PATH_SUBJECTIVE,
+        'subjective',
+        ['negative', 'positive'],
+        model = model,
     )
 
 
@@ -57,8 +93,11 @@ def multinomial():
     -------
     USER_BAYES : malaya._models._sklearn_model.USER_BAYES class
     """
-    return _binary_class.multinomial(
-        PATH_SUBJECTIVE, S3_PATH_SUBJECTIVE, 'subjective'
+    return _softmax_class.multinomial(
+        PATH_SUBJECTIVE,
+        S3_PATH_SUBJECTIVE,
+        'subjective',
+        ['negative', 'positive'],
     )
 
 
@@ -70,4 +109,9 @@ def xgb():
     -------
     USER_XGB : malaya._models._sklearn_model.USER_XGB class
     """
-    return _binary_class.xgb(PATH_SUBJECTIVE, S3_PATH_SUBJECTIVE, 'subjective')
+    return _softmax_class.xgb(
+        PATH_SUBJECTIVE,
+        S3_PATH_SUBJECTIVE,
+        'subjective',
+        ['negative', 'positive'],
+    )

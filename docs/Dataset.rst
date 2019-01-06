@@ -10,6 +10,11 @@ Sentiment Analysis
 
 `/dataset/sentiment <https://github.com/DevconX/Malaya/tree/master/dataset/sentiment>`__
 
+Emotion Analysis
+----------------------------------
+
+`/dataset/emotion <https://github.com/DevconX/Malaya/tree/master/dataset/emotion>`__
+
 Entities Recognition
 ----------------------------------
 
@@ -46,6 +51,11 @@ Dictionary
 ----------------------------------
 
 `/dataset/dictionary <https://github.com/DevconX/Malaya/tree/master/dataset/dictionary>`__
+
+Matbahasa
+-----------
+
+He is legit, he open-sourced a lot of bahasa malaysia corpus, check out his github, `matbahasa <https://github.com/matbahasa>`_
 
 Misc
 ------

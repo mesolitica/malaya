@@ -386,7 +386,6 @@ def _lda2vec_preprocessing(
     cleaning = simple_textcleaning,
     stop_words = STOPWORDS,
 ):
-    import pandas as pd
 
     assert isinstance(corpus, list) and isinstance(
         corpus[0], str

@@ -9,8 +9,8 @@ from shutil import rmtree
 from pathlib import Path
 
 home = os.path.join(str(Path.home()), 'Malaya')
-version = '1.0'
-bump_version = '1.0.1.0'
+version = '1.2'
+bump_version = '1.2.0.0'
 version_path = os.path.join(home, 'version')
 
 
@@ -218,6 +218,7 @@ def describe_entities():
 
 
 from . import cluster
+from . import emotion
 from . import entity
 from . import language_detection
 from . import normalize

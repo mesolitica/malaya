@@ -1,7 +1,15 @@
 
 .. code:: python
 
+    %%time
     import malaya
+
+
+.. parsed-literal::
+
+    CPU times: user 12.9 s, sys: 1.45 s, total: 14.4 s
+    Wall time: 18 s
+
 
 .. code:: python
 
@@ -82,6 +90,9 @@ List available deep learning models
 
 
 
+Load deep learning models
+-------------------------
+
 .. code:: python
 
     for i in malaya.sentiment.available_deep_model():
@@ -99,20 +110,20 @@ List available deep learning models
     [{'negative': 0.8494132, 'positive': 0.15058675}, {'negative': 0.04582213, 'positive': 0.95417786}]
 
     Testing hierarchical model
-    {'negative': 0.16548774, 'positive': 0.83451223, 'attention': [['kerajaan', 0.109089434], ['sebenarnya', 0.3137235], ['sangat', 0.2670205], ['bencikan', 0.24073339], ['rakyatnya', 0.05572654], ['minyak', 0.008767789], ['naik', 0.0037751873], ['segalanya', 0.0011636332]]}
-    [{'negative': 0.08488519, 'positive': 0.9151148}, {'negative': 0.09536239, 'positive': 0.90463763}]
+    {'negative': 0.110631816, 'positive': 0.8893682, 'attention': [['kerajaan', 0.10388958], ['sebenarnya', 0.4929846], ['sangat', 0.29071146], ['bencikan', 0.07854219], ['rakyatnya', 0.019831425], ['minyak', 0.010329048], ['naik', 0.002903083], ['segalanya', 0.0008086153]]}
+    [{'negative': 0.096144125, 'positive': 0.9038559}, {'negative': 0.12305506, 'positive': 0.87694496}]
 
     Testing bahdanau model
-    {'negative': 0.27857047, 'positive': 0.7214295, 'attention': [['kerajaan', 0.1346821], ['sebenarnya', 0.023742322], ['sangat', 0.03039956], ['bencikan', 0.6389645], ['rakyatnya', 0.048371714], ['minyak', 0.035900667], ['naik', 0.05980329], ['segalanya', 0.02813588]]}
-    [{'negative': 0.48411715, 'positive': 0.5158828}, {'negative': 0.31343234, 'positive': 0.6865676}]
+    {'negative': 0.27703816, 'positive': 0.72296184, 'attention': [['kerajaan', 0.13535759], ['sebenarnya', 0.023817956], ['sangat', 0.030500164], ['bencikan', 0.637391], ['rakyatnya', 0.04856573], ['minyak', 0.036034647], ['naik', 0.060078725], ['segalanya', 0.028254228]]}
+    [{'negative': 0.60924244, 'positive': 0.3907576}, {'negative': 0.2196782, 'positive': 0.78032184}]
 
     Testing luong model
-    {'negative': 0.7480302, 'positive': 0.2519698, 'attention': [['kerajaan', 0.13574807], ['sebenarnya', 0.09609673], ['sangat', 0.06295505], ['bencikan', 0.09375848], ['rakyatnya', 0.093516305], ['minyak', 0.098614186], ['naik', 0.16901104], ['segalanya', 0.25030014]]}
-    [{'negative': 0.9892952, 'positive': 0.010704841}, {'negative': 0.10066059, 'positive': 0.8993394}]
+    {'negative': 0.60044205, 'positive': 0.3995579, 'attention': [['kerajaan', 0.15034309], ['sebenarnya', 0.08993225], ['sangat', 0.068059266], ['bencikan', 0.122634426], ['rakyatnya', 0.096616365], ['minyak', 0.102913655], ['naik', 0.18173374], ['segalanya', 0.18776724]]}
+    [{'negative': 0.98223615, 'positive': 0.017763875}, {'negative': 0.114074536, 'positive': 0.88592553}]
 
     Testing bidirectional model
-    {'negative': 0.1094934, 'positive': 0.8905066}
-    [{'negative': 0.2103564, 'positive': 0.7896436}, {'negative': 0.2552409, 'positive': 0.74475914}]
+    {'negative': 0.11350883, 'positive': 0.8864912}
+    [{'negative': 0.24156873, 'positive': 0.7584313}, {'negative': 0.337586, 'positive': 0.66241395}]
 
     Testing bert model
     {'negative': 0.992415, 'positive': 0.007585052}
@@ -121,132 +132,6 @@ List available deep learning models
     Testing entity-network model
     {'negative': 0.5229405, 'positive': 0.4770595}
     [{'negative': 0.5229405, 'positive': 0.4770595}, {'negative': 0.6998231, 'positive': 0.3001769}]
-
-
-
-Train a multinomial model using custom dataset
-----------------------------------------------
-
-.. code:: python
-
-    import pandas as pd
-
-.. code:: python
-
-    df = pd.read_csv('tests/02032018.csv',sep=';')
-    df = df.iloc[3:,1:]
-    df.columns = ['text','label']
-    corpus = df.text.tolist()
-
-corpus should be [(text, label)]
-
-.. code:: python
-
-    dataset = [[df.iloc[i,0],df.iloc[i,1]] for i in range(df.shape[0])]
-    bayes = malaya.sentiment.train_multinomial(dataset)
-
-
-.. parsed-literal::
-
-                 precision    recall  f1-score   support
-
-       Negative       0.00      0.00      0.00        13
-        Neutral       0.67      0.12      0.21        16
-       Positive       0.55      1.00      0.71        32
-
-    avg / total       0.46      0.56      0.43        61
-
-
-
-You also able to feed directory location
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-::
-
-   directory
-       |
-       |- adidas
-       |- apple
-       |- hungry
-
-.. code:: python
-
-    bayes = malaya.sentiment.train_multinomial('tests/local')
-
-
-.. parsed-literal::
-
-                 precision    recall  f1-score   support
-
-         adidas       0.96      0.61      0.74       319
-          apple       0.97      0.59      0.73       448
-         hungry       0.78      0.92      0.84      1081
-       kerajaan       0.85      0.83      0.84      1379
-           nike       0.95      0.48      0.64       335
-    pembangkang       0.71      0.85      0.78      1497
-
-    avg / total       0.82      0.80      0.79      5059
-
-
-
-.. code:: python
-
-    bayes.predict('saya suka kerajaan dan anwar ibrahim', get_proba = True)
-
-
-
-
-.. parsed-literal::
-
-    {'adidas': 0.0005316133415573243,
-     'apple': 0.0006248454476189618,
-     'hungry': 0.009494739464502444,
-     'kerajaan': 0.0773079001887801,
-     'nike': 0.0005656482161409733,
-     'pembangkang': 0.9114752533414014}
-
-
-
-Train a multinomial using skip-gram vectorization
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. code:: python
-
-    bayes = malaya.sentiment.train_multinomial(
-        'tests/local', vector = 'skip-gram', ngram_range = (1, 3), skip = 5
-    )
-
-
-.. parsed-literal::
-
-                 precision    recall  f1-score   support
-
-         adidas       0.37      0.82      0.51       330
-          apple       0.50      0.90      0.64       484
-         hungry       0.82      0.94      0.88      1028
-       kerajaan       0.90      0.60      0.72      1404
-           nike       0.59      0.80      0.68       312
-    pembangkang       0.88      0.53      0.66      1501
-
-    avg / total       0.78      0.71      0.71      5059
-
-
-
-.. code:: python
-
-    bayes.predict('saya suka kerajaan dan anwar ibrahim', get_proba = True)
-
-
-
-
-.. parsed-literal::
-
-    {'adidas': 9.851832247652223e-14,
-     'apple': 3.1811421800860636e-14,
-     'hungry': 4.87301131586436e-10,
-     'kerajaan': 5.936421621648095e-07,
-     'nike': 9.654000712770611e-14,
-     'pembangkang': 0.9999994058703183}
 
 
 
@@ -277,7 +162,7 @@ Visualizing bahdanau model
 
 
 
-.. image:: load-sentiment_files/load-sentiment_23_0.png
+.. image:: load-sentiment_files/load-sentiment_13_0.png
 
 
 Visualizing luong model
@@ -298,7 +183,7 @@ Visualizing luong model
 
 
 
-.. image:: load-sentiment_files/load-sentiment_25_0.png
+.. image:: load-sentiment_files/load-sentiment_15_0.png
 
 
 Visualizing hierarchical model
@@ -319,4 +204,203 @@ Visualizing hierarchical model
 
 
 
-.. image:: load-sentiment_files/load-sentiment_27_0.png
+.. image:: load-sentiment_files/load-sentiment_17_0.png
+
+
+Load Sparse deep learning models
+--------------------------------
+
+What happen if a word not included in the dictionary of the models? like
+``setan``, what if ``setan`` appeared in text we want to classify? We
+found this problem when classifying social media texts / posts. Words
+used not really a vocabulary-based contextual.
+
+Malaya will treat **unknown words** as ``<UNK>``, so, to solve this
+problem, we need to use N-grams character based. Malaya chose tri-grams
+until fifth-grams.
+
+.. code:: python
+
+   setan = ['set', 'eta', 'tan']
+
+Sklearn provided easy interface to use n-grams, problem is, it is very
+sparse, a lot of zeros and not memory efficient. Sklearn returned sparse
+matrix for the result, lucky Tensorflow already provided some sparse
+function.
+
+.. code:: python
+
+    malaya.sentiment.available_sparse_deep_model()
+
+
+
+
+.. parsed-literal::
+
+    ['fast-text-char']
+
+
+
+Right now Malaya only provide 1 sparse model, ``fast-text-char``. We
+will try to evolve it.
+
+.. code:: python
+
+    sparse_model = malaya.sentiment.sparse_deep_model()
+
+
+.. parsed-literal::
+
+    INFO:tensorflow:Restoring parameters from /Users/huseinzol/Malaya/sentiment/fast-text-char/model.ckpt
+
+
+.. code:: python
+
+    sparse_model.predict(positive_text)
+
+
+
+
+.. parsed-literal::
+
+    {'negative': 0.38546535, 'positive': 0.6145346}
+
+
+
+.. code:: python
+
+    sparse_model.predict_batch([positive_text, negative_text])
+
+
+
+
+.. parsed-literal::
+
+    [{'negative': 0.38546535, 'positive': 0.6145346},
+     {'negative': 0.50480145, 'positive': 0.49519858}]
+
+
+
+**Not bad huh, but the polarity is not really high as word-based models.
+Word-based models can get negative / positive value really near to 1.0**
+
+Train a multinomial model using custom dataset
+----------------------------------------------
+
+.. code:: python
+
+    import pandas as pd
+    df = pd.read_csv('tests/02032018.csv',sep=';')
+    df = df.iloc[3:,1:]
+    df.columns = ['text','label']
+    corpus = df.text.tolist()
+
+corpus should be [(text, label)]
+
+.. code:: python
+
+    dataset = [[df.iloc[i,0],df.iloc[i,1]] for i in range(df.shape[0])]
+    bayes = malaya.sentiment.train_multinomial(dataset)
+
+
+.. parsed-literal::
+
+                 precision    recall  f1-score   support
+
+       Negative       0.00      0.00      0.00        15
+        Neutral       0.50      0.06      0.11        17
+       Positive       0.49      1.00      0.66        29
+
+    avg / total       0.37      0.49      0.34        61
+
+
+
+You also able to feed directory location
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+::
+
+   directory
+       |
+       |- adidas
+       |- apple
+       |- hungry
+
+.. code:: python
+
+    bayes = malaya.sentiment.train_multinomial('tests/local')
+
+
+.. parsed-literal::
+
+                 precision    recall  f1-score   support
+
+         adidas       0.95      0.59      0.73       311
+          apple       0.97      0.61      0.75       458
+         hungry       0.79      0.92      0.85      1079
+       kerajaan       0.84      0.82      0.83      1388
+           nike       0.96      0.50      0.66       325
+    pembangkang       0.71      0.86      0.78      1498
+
+    avg / total       0.82      0.80      0.79      5059
+
+
+
+.. code:: python
+
+    bayes.predict('saya suka kerajaan dan anwar ibrahim', get_proba = True)
+
+
+
+
+.. parsed-literal::
+
+    {'adidas': 0.0005687282506828817,
+     'apple': 0.000662907603798319,
+     'hungry': 0.009170662067707083,
+     'kerajaan': 0.06985529223854361,
+     'nike': 0.0006071193644321936,
+     'pembangkang': 0.9191352904748373}
+
+
+
+Train a multinomial using skip-gram vectorization
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: python
+
+    bayes = malaya.sentiment.train_multinomial(
+        'tests/local', vector = 'skip-gram', ngram_range = (1, 3), skip = 5
+    )
+
+
+.. parsed-literal::
+
+                 precision    recall  f1-score   support
+
+         adidas       0.38      0.84      0.52       328
+          apple       0.50      0.89      0.64       499
+         hungry       0.84      0.93      0.88      1083
+       kerajaan       0.89      0.61      0.72      1332
+           nike       0.57      0.78      0.66       323
+    pembangkang       0.89      0.53      0.66      1494
+
+    avg / total       0.79      0.71      0.71      5059
+
+
+
+.. code:: python
+
+    bayes.predict('saya suka kerajaan dan anwar ibrahim', get_proba = True)
+
+
+
+
+.. parsed-literal::
+
+    {'adidas': 7.916087875403519e-14,
+     'apple': 3.823879121188251e-14,
+     'hungry': 2.319120520022076e-10,
+     'kerajaan': 8.978991657701227e-07,
+     'nike': 1.1627344175225e-13,
+     'pembangkang': 0.999999101868701}

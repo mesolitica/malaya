@@ -19,8 +19,10 @@ Contents:
    Dataset
    Contribution
    Crawler
+   Translator-malaya
    Accuracy
    Cache
+   Emotion
    Entities
    Language
    Normalizer

@@ -432,6 +432,18 @@ Fast-text
 
    avg / total       0.73      0.73      0.73      2856
 
+Fast-text-char
+^^^^^^^^^^^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+      negative       0.71      0.64      0.67      1303
+      positive       0.72      0.78      0.75      1553
+
+   avg / total       0.71      0.71      0.71      2856
+
 Hierarchical
 ^^^^^^^^^^^^
 
@@ -499,7 +511,7 @@ Labels are,
 
 
 
-.. image:: models-accuracy_files/models-accuracy_33_0.png
+.. image:: models-accuracy_files/models-accuracy_34_0.png
    :width: 500px
 
 
@@ -628,7 +640,7 @@ sessions stored in
 
 
 
-.. image:: models-accuracy_files/models-accuracy_42_0.png
+.. image:: models-accuracy_files/models-accuracy_43_0.png
    :width: 500px
 
 
@@ -702,6 +714,18 @@ Fast-text
       macro avg       0.89      0.89      0.89      1993
    weighted avg       0.89      0.89      0.89      1993
 
+Fast-text-char
+^^^^^^^^^^^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+      negative       0.88      0.88      0.88      1002
+      positive       0.88      0.87      0.88       991
+
+   avg / total       0.88      0.88      0.88      1993
+
 Hierarchical
 ^^^^^^^^^^^^
 
@@ -758,3 +782,180 @@ XGB
       micro avg       0.85      0.85      0.85      1993
       macro avg       0.85      0.85      0.85      1993
    weighted avg       0.85      0.85      0.85      1993
+
+Emotion Analysis
+----------------
+
+Trained on 80% of dataset, tested on 20% of dataset. All training
+sessions stored in
+`session/emotion <https://github.com/huseinzol05/Malaya/tree/master/session/emotion>`__
+
+.. code:: python
+
+    display(Image('emotion-accuracy.png', width=500))
+
+
+
+.. image:: models-accuracy_files/models-accuracy_55_0.png
+   :width: 500px
+
+
+Bahdanau
+^^^^^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+         anger       0.80      0.80      0.80      3827
+          fear       0.77      0.78      0.78      3760
+           joy       0.81      0.78      0.80      3958
+          love       0.82      0.86      0.84      3099
+       sadness       0.73      0.76      0.74      3119
+      surprise       0.79      0.74      0.77      1940
+
+   avg / total       0.79      0.79      0.79     19703
+
+BERT
+^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+         anger       0.73      0.83      0.78      3747
+          fear       0.70      0.84      0.77      3789
+           joy       0.74      0.80      0.77      3929
+          love       0.82      0.76      0.79      3081
+       sadness       0.82      0.60      0.69      3168
+      surprise       0.85      0.63      0.72      1989
+
+   avg / total       0.77      0.76      0.76     19703
+
+Bidirectional
+^^^^^^^^^^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+         anger       0.81      0.80      0.81      3726
+          fear       0.77      0.78      0.77      3806
+           joy       0.83      0.81      0.82      3975
+          love       0.86      0.83      0.85      2992
+       sadness       0.75      0.78      0.77      3293
+      surprise       0.77      0.79      0.78      1911
+
+   avg / total       0.80      0.80      0.80     19703
+
+Entity-network
+^^^^^^^^^^^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+         anger       0.82      0.72      0.77      3717
+          fear       0.72      0.77      0.75      3743
+           joy       0.77      0.74      0.76      4050
+          love       0.81      0.81      0.81      2992
+       sadness       0.71      0.74      0.72      3274
+      surprise       0.72      0.80      0.76      1927
+
+   avg / total       0.76      0.76      0.76     19703
+
+Fast-text
+^^^^^^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+         anger       0.82      0.75      0.78      3754
+          fear       0.71      0.81      0.75      3837
+           joy       0.76      0.79      0.78      3844
+          love       0.83      0.83      0.83      3065
+       sadness       0.75      0.75      0.75      3241
+      surprise       0.79      0.64      0.71      1962
+
+   avg / total       0.77      0.77      0.77     19703
+
+Fast-text-char
+^^^^^^^^^^^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+         anger       0.79      0.75      0.77      3803
+          fear       0.73      0.73      0.73      3784
+           joy       0.71      0.77      0.74      3872
+          love       0.81      0.80      0.80      3052
+       sadness       0.72      0.70      0.71      3205
+      surprise       0.73      0.70      0.72      1987
+
+   avg / total       0.75      0.74      0.75     19703
+
+Hierarchical
+^^^^^^^^^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+         anger       0.81      0.79      0.80      3786
+          fear       0.78      0.79      0.78      3754
+           joy       0.81      0.82      0.82      3886
+          love       0.85      0.84      0.85      3022
+       sadness       0.76      0.80      0.78      3300
+      surprise       0.81      0.75      0.78      1955
+
+   avg / total       0.80      0.80      0.80     19703
+
+Luong
+^^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+         anger       0.80      0.79      0.80      3774
+          fear       0.78      0.75      0.77      3759
+           joy       0.79      0.80      0.79      3944
+          love       0.83      0.84      0.84      3033
+       sadness       0.75      0.75      0.75      3272
+      surprise       0.76      0.80      0.78      1921
+
+   avg / total       0.79      0.79      0.79     19703
+
+Multinomial
+^^^^^^^^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+         anger       0.72      0.82      0.77      3833
+          fear       0.68      0.80      0.74      3802
+           joy       0.68      0.84      0.75      3924
+          love       0.85      0.71      0.78      2981
+       sadness       0.81      0.67      0.73      3189
+      surprise       0.80      0.36      0.50      1974
+
+   avg / total       0.75      0.73      0.73     19703
+
+XGB
+^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+         anger       0.80      0.80      0.80      3769
+          fear       0.79      0.76      0.78      3808
+           joy       0.79      0.81      0.80      3913
+          love       0.84      0.85      0.84      2998
+       sadness       0.76      0.75      0.76      3250
+      surprise       0.77      0.77      0.77      1965
+
+   avg / total       0.79      0.79      0.79     19703

@@ -1,4 +1,4 @@
-Models accuracy
-====================
+Models Accuracy
+============================
 
 .. include:: models-accuracy.rst
