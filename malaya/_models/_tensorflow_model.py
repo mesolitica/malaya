@@ -155,7 +155,7 @@ class SOFTMAX:
         self._maxlen = maxlen
         self._label = label
 
-    def predict(self, string):
+    def predict(self, string, get_proba = False):
         """
         classify a string.
 
@@ -219,15 +219,17 @@ class SOFTMAX:
                 },
             )
 
-        result = {}
-        for no, label in enumerate(self._label):
-            result[label] = probs[0, no]
+        if get_proba:
+            dict_result = {}
+            for no, label in enumerate(self._label):
+                dict_result[label] = probs[0, no]
+            if self._mode in ['luong', 'bahdanau', 'hierarchical']:
+                dict_result['attention'] = words
+            return dict_result
+        else:
+            return self._label[np.argmax(probs[0])]
 
-        if self._mode in ['luong', 'bahdanau', 'hierarchical']:
-            result['attention'] = words
-        return result
-
-    def predict_batch(self, strings):
+    def predict_batch(self, strings, get_proba = False):
         """
         classify list of strings
 
@@ -287,13 +289,18 @@ class SOFTMAX:
                 },
             )
 
-        dicts = []
-        for i in range(probs.shape[0]):
-            result = {}
-            for no, label in enumerate(self._label):
-                result[label] = probs[i, no]
-            dicts.append(result)
-        return dicts
+        results = []
+        if get_proba:
+            for prob in probs:
+                dict_result = {}
+                for no, label in enumerate(self._label):
+                    dict_result[label] = prob[no]
+                results.append(dict_result)
+        else:
+            probs = np.argmax(probs, 1)
+            for prob in probs:
+                results.append(self._label[prob])
+        return results
 
 
 class SIGMOID:
@@ -335,7 +342,7 @@ class SIGMOID:
             'identity_hate',
         ]
 
-    def predict(self, string):
+    def predict(self, string, get_proba = False):
         """
         classify a string.
 
@@ -372,19 +379,10 @@ class SIGMOID:
             words = []
             for i in range(alphas.shape[0]):
                 words.append([splitted[i], alphas[i]])
-            dict_result = {}
-            for no in range(len(self._label)):
-                dict_result[self._label[no]] = probs[0, no]
-            dict_result['attention'] = words
-            return dict_result
         if self._mode in ['fast-text']:
             probs = self._sess.run(
                 tf.nn.softmax(self._logits), feed_dict = {self._X: batch_x}
             )
-            dict_result = {}
-            for no in range(len(self._label)):
-                dict_result[self._label[no]] = probs[0, no]
-            return dict_result
         if self._mode == 'entity-network':
             batch_x_expand = np.expand_dims(batch_x, axis = 1)
             probs = self._sess.run(
@@ -395,12 +393,22 @@ class SIGMOID:
                     self._dropout_keep_prob: 1.0,
                 },
             )
+        if get_proba:
             dict_result = {}
-            for no in range(len(self._label)):
-                dict_result[self._label[no]] = probs[0, no]
+            for no, label in enumerate(self._label):
+                dict_result[label] = probs[0, no]
+            if self._mode in ['luong', 'bahdanau', 'hierarchical']:
+                dict_result['attention'] = words
             return dict_result
+        else:
+            result = []
+            probs = np.around(probs[0])
+            for no, label in enumerate(self._label):
+                if probs[no]:
+                    result.append(label)
+            return result
 
-    def predict_batch(self, strings):
+    def predict_batch(self, strings, get_proba = False):
         """
         classify list of strings
 
@@ -447,13 +455,23 @@ class SIGMOID:
                     self._dropout_keep_prob: 1.0,
                 },
             )
+        results = []
+        if get_proba:
+            for prob in probs:
+                dict_result = {}
+                for no, label in enumerate(self._label):
+                    dict_result[label] = prob[no]
+                results.append(dict_result)
+        else:
+            probs = np.around(probs)
+            for prob in probs:
+                list_result = []
+                for no, label in enumerate(self._label):
+                    if prob[no]:
+                        list_result.append(label)
+                results.append(list_result)
 
-        dict_result = {}
-        for no in range(len(self._label)):
-            dict_result[self._label[no]] = []
-            for k in range(probs.shape[0]):
-                dict_result[self._label[no]].append(probs[k, no])
-        return dict_result
+        return results
 
 
 class DEEP_LANG:
@@ -468,7 +486,7 @@ class DEEP_LANG:
         self._vectorizer = vectorizer
         self._label = label
 
-    def predict(self, string):
+    def predict(self, string, get_proba = False):
         """
         classify a string.
 
@@ -488,7 +506,10 @@ class DEEP_LANG:
             tf.nn.softmax(self._model.logits),
             feed_dict = {self._model.X: batch_x[0], self._model.W: batch_x[1]},
         )[0]
-        return {self._label[no]: i for no, i in enumerate(probs)}
+        if get_proba:
+            return {self._label[no]: i for no, i in enumerate(probs)}
+        else:
+            return self._label[np.argmax(probs)]
 
     def predict_batch(self, strings):
         """
@@ -513,8 +534,15 @@ class DEEP_LANG:
             feed_dict = {self._model.X: batch_x[0], self._model.W: batch_x[1]},
         )
         dicts = []
-        for i in range(probs.shape[0]):
-            dicts.append({self._label[no]: k for no, k in enumerate(probs[i])})
+        if get_proba:
+            for i in range(probs.shape[0]):
+                dicts.append(
+                    {self._label[no]: k for no, k in enumerate(probs[i])}
+                )
+        else:
+            probs = np.argmax(probs, 1)
+            for prob in probs:
+                dicts.append(self._label[prob])
         return dicts
 
 
@@ -534,7 +562,7 @@ class SPARSE_SOFTMAX:
         self._vectorizer = vectorizer
         self._label = label
 
-    def predict(self, string):
+    def predict(self, string, get_proba = False):
         """
         classify a string.
 
@@ -554,9 +582,12 @@ class SPARSE_SOFTMAX:
             tf.nn.softmax(self._model.logits),
             feed_dict = {self._model.X: batch_x[0], self._model.W: batch_x[1]},
         )[0]
-        return {self._label[no]: i for no, i in enumerate(probs)}
+        if get_proba:
+            return {self._label[no]: i for no, i in enumerate(probs)}
+        else:
+            return self._label[np.argmax(probs)]
 
-    def predict_batch(self, strings):
+    def predict_batch(self, strings, get_proba = False):
         """
         classify list of strings
 
@@ -582,6 +613,13 @@ class SPARSE_SOFTMAX:
             feed_dict = {self._model.X: batch_x[0], self._model.W: batch_x[1]},
         )
         dicts = []
-        for i in range(probs.shape[0]):
-            dicts.append({self._label[no]: k for no, k in enumerate(probs[i])})
+        if get_proba:
+            for i in range(probs.shape[0]):
+                dicts.append(
+                    {self._label[no]: k for no, k in enumerate(probs[i])}
+                )
+        else:
+            probs = np.argmax(probs, 1)
+            for prob in probs:
+                dicts.append(self._label[prob])
         return dicts

@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 12.8 s, sys: 1.44 s, total: 14.2 s
-    Wall time: 17.9 s
+    CPU times: user 10.4 s, sys: 640 ms, total: 11 s
+    Wall time: 11 s
 
 
 .. code:: ipython3
@@ -20,25 +20,29 @@
     sadness_text = 'kawan rapat aku putuskan hubungan'
     surprise_text = 'terharu aku harini, semua orang cakap selamat hari jadi'
 
+All models got ``get_proba`` parameters. If True, it will returned
+probability every classes. Else, it will return highest probability
+class. **Default is True.**
+
 Load multinomial model
 ----------------------
 
 .. code:: ipython3
 
     model = malaya.emotion.multinomial()
-    print(model.predict(anger_text,get_proba=True))
+    print(model.predict(anger_text))
     print(model.predict(anger_text,get_proba=True))
     model.predict_batch([anger_text,
                         fear_text,
                         joy_text,
                         love_text,
                         sadness_text,
-                        surprise_text],get_proba=True)
+                        surprise_text])
 
 
 .. parsed-literal::
 
-    {'anger': 0.27993946463423486, 'fear': 0.1482931513658756, 'joy': 0.1880009584798728, 'love': 0.21711876657658918, 'sadness': 0.1296730712078804, 'surprise': 0.03697458773554805}
+    anger
     {'anger': 0.27993946463423486, 'fear': 0.1482931513658756, 'joy': 0.1880009584798728, 'love': 0.21711876657658918, 'sadness': 0.1296730712078804, 'surprise': 0.03697458773554805}
 
 
@@ -46,42 +50,7 @@ Load multinomial model
 
 .. parsed-literal::
 
-    [{'anger': 0.27993946463423486,
-      'fear': 0.1482931513658756,
-      'joy': 0.1880009584798728,
-      'love': 0.21711876657658918,
-      'sadness': 0.1296730712078804,
-      'surprise': 0.03697458773554805},
-     {'anger': 0.021771118261238547,
-      'fear': 0.8872341260634127,
-      'joy': 0.03047156512889429,
-      'love': 0.014657222836008465,
-      'sadness': 0.031140846706145215,
-      'surprise': 0.014725121004301253},
-     {'anger': 0.0396561464598951,
-      'fear': 0.035597422143487406,
-      'joy': 0.8005688936302132,
-      'love': 0.07202283399889338,
-      'sadness': 0.038207026719665686,
-      'surprise': 0.013947677047845667},
-     {'anger': 0.13066816251128913,
-      'fear': 0.13412252332273905,
-      'joy': 0.310998514493142,
-      'love': 0.2331246309240758,
-      'sadness': 0.14322815141407566,
-      'surprise': 0.047858017334676865},
-     {'anger': 0.1527725857957935,
-      'fear': 0.1365898809847078,
-      'joy': 0.1754707153173015,
-      'love': 0.06602453529124905,
-      'sadness': 0.447275616555693,
-      'surprise': 0.021866666055256587},
-     {'anger': 0.13493174968699168,
-      'fear': 0.47761628067734224,
-      'joy': 0.18298570800638353,
-      'love': 0.0732126431050908,
-      'sadness': 0.06633124837003398,
-      'surprise': 0.06492237015415897}]
+    ['anger', 'fear', 'joy', 'joy', 'sadness', 'fear']
 
 
 
@@ -91,7 +60,7 @@ Load xgb model
 .. code:: ipython3
 
     model = malaya.emotion.xgb()
-    print(model.predict(anger_text,get_proba=True))
+    print(model.predict(anger_text))
     print(model.predict(anger_text,get_proba=True))
     model.predict_batch([anger_text,
                         fear_text,
@@ -103,7 +72,7 @@ Load xgb model
 
 .. parsed-literal::
 
-    {'anger': 0.21755809, 'fear': 0.090371706, 'joy': 0.13347618, 'love': 0.47302967, 'sadness': 0.0770047, 'surprise': 0.008559667}
+    love
     {'anger': 0.21755809, 'fear': 0.090371706, 'joy': 0.13347618, 'love': 0.47302967, 'sadness': 0.0770047, 'surprise': 0.008559667}
 
 
@@ -184,37 +153,50 @@ List available deep learning models
                         love_text,
                         sadness_text,
                         surprise_text]))
+        print(model.predict_batch([anger_text,
+                        fear_text,
+                        joy_text,
+                        love_text,
+                        sadness_text,
+                        surprise_text], get_proba = True))
         print()
 
 
 .. parsed-literal::
 
     Testing fast-text model
-    {'anger': 7.548095e-08, 'fear': 2.7052243e-13, 'joy': 2.273731e-12, 'love': 0.9999999, 'sadness': 3.0124282e-12, 'surprise': 1.9232537e-11}
+    love
+    ['love', 'fear', 'joy', 'love', 'sadness', 'surprise']
     [{'anger': 2.978304e-06, 'fear': 1.8461518e-10, 'joy': 1.0204276e-09, 'love': 0.999997, 'sadness': 1.3693535e-09, 'surprise': 2.6386826e-09}, {'anger': 1.2210384e-18, 'fear': 1.0, 'joy': 1.0015556e-19, 'love': 1.8750202e-24, 'sadness': 6.976661e-21, 'surprise': 3.2600536e-15}, {'anger': 2.47199e-19, 'fear': 2.3032567e-22, 'joy': 1.0, 'love': 5.1478095e-14, 'sadness': 4.464682e-20, 'surprise': 1.588908e-15}, {'anger': 4.1249185e-11, 'fear': 1.7474476e-10, 'joy': 0.00022258118, 'love': 0.9997774, 'sadness': 1.6592432e-11, 'surprise': 4.1854236e-09}, {'anger': 4.3972154e-08, 'fear': 2.1118221e-06, 'joy': 3.4898858e-07, 'love': 4.5489975e-12, 'sadness': 0.9999975, 'surprise': 4.8414757e-09}, {'anger': 1.1130476e-23, 'fear': 0.0003273876, 'joy': 5.694222e-17, 'love': 1.9363045e-25, 'sadness': 1.4252974e-26, 'surprise': 0.99967265}]
     
     Testing hierarchical model
-    {'anger': 0.21870466, 'fear': 0.0723397, 'joy': 0.25246364, 'love': 0.23216271, 'sadness': 0.11244629, 'surprise': 0.11188304, 'attention': [['aku', 0.19288461], ['cukup', 0.25843868], ['tak', 0.108033694], ['suka', 0.07043509], ['budak', 0.080554284], ['gemuk', 0.11672647], ['tu', 0.17292716]]}
-    [{'anger': 0.41256806, 'fear': 0.13891418, 'joy': 0.13064316, 'love': 0.02137984, 'sadness': 0.28263724, 'surprise': 0.013857505}, {'anger': 0.006116035, 'fear': 0.9831093, 'joy': 0.0070863734, 'love': 0.00031651792, 'sadness': 0.0019696557, 'surprise': 0.0014021696}, {'anger': 0.0034238265, 'fear': 0.0028603936, 'joy': 0.9739377, 'love': 0.0059432993, 'sadness': 0.005335002, 'surprise': 0.008499798}, {'anger': 0.037748642, 'fear': 0.09834084, 'joy': 0.47098926, 'love': 0.25399926, 'sadness': 0.109694675, 'surprise': 0.029227324}, {'anger': 0.012461308, 'fear': 0.012679063, 'joy': 0.005910567, 'love': 0.0016031803, 'sadness': 0.96547556, 'surprise': 0.0018702189}, {'anger': 0.018574355, 'fear': 0.11572055, 'joy': 0.46149588, 'love': 0.21992558, 'sadness': 0.014294567, 'surprise': 0.16998905}]
+    joy
+    ['anger', 'fear', 'joy', 'joy', 'sadness', 'joy']
+    [{'anger': 0.39431405, 'fear': 0.13933083, 'joy': 0.17727984, 'love': 0.042310942, 'sadness': 0.22523886, 'surprise': 0.021525377}, {'anger': 0.004958992, 'fear': 0.9853917, 'joy': 0.006676573, 'love': 0.00023657709, 'sadness': 0.0017484307, 'surprise': 0.0009877522}, {'anger': 0.0013627211, 'fear': 0.0017271177, 'joy': 0.986464, 'love': 0.0039458317, 'sadness': 0.0021411367, 'surprise': 0.0043591294}, {'anger': 0.028909639, 'fear': 0.09853578, 'joy': 0.50412154, 'love': 0.26376858, 'sadness': 0.084195614, 'surprise': 0.02046885}, {'anger': 0.022849305, 'fear': 0.011993612, 'joy': 0.008679014, 'love': 0.002472554, 'sadness': 0.9502534, 'surprise': 0.003752149}, {'anger': 0.015510161, 'fear': 0.0571924, 'joy': 0.5819401, 'love': 0.21683867, 'sadness': 0.006425157, 'surprise': 0.12209346}]
     
     Testing bahdanau model
-    {'anger': 0.2166525, 'fear': 0.025524562, 'joy': 0.0151598565, 'love': 0.71086437, 'sadness': 0.024761798, 'surprise': 0.007036926, 'attention': [['aku', 0.078082114], ['cukup', 0.06909147], ['tak', 0.047952086], ['suka', 0.24055175], ['budak', 0.13882484], ['gemuk', 0.38366398], ['tu', 0.041833848]]}
-    [{'anger': 0.4382134, 'fear': 0.08935531, 'joy': 0.01401889, 'love': 0.41449428, 'sadness': 0.041711926, 'surprise': 0.002206273}, {'anger': 0.001070517, 'fear': 0.9847227, 'joy': 0.004814546, 'love': 0.00042387607, 'sadness': 0.0027839406, 'surprise': 0.006184482}, {'anger': 0.020542638, 'fear': 0.0024991473, 'joy': 0.83662474, 'love': 0.131418, 'sadness': 0.0009067217, 'surprise': 0.00800883}, {'anger': 0.0022841198, 'fear': 0.0043074405, 'joy': 0.06361495, 'love': 0.9130883, 'sadness': 0.006188171, 'surprise': 0.010517066}, {'anger': 0.03213852, 'fear': 0.049160797, 'joy': 0.0064736363, 'love': 0.0005698313, 'sadness': 0.9094809, 'surprise': 0.002176242}, {'anger': 0.0014524, 'fear': 0.30045557, 'joy': 0.030223431, 'love': 0.0032396903, 'sadness': 0.0008275905, 'surprise': 0.66380125}]
+    love
+    ['love', 'fear', 'joy', 'love', 'sadness', 'surprise']
+    [{'anger': 0.44805261, 'fear': 0.18378404, 'joy': 0.02516251, 'love': 0.30925235, 'sadness': 0.027497768, 'surprise': 0.0062507084}, {'anger': 0.0010828926, 'fear': 0.9789995, 'joy': 0.0027138714, 'love': 0.00061593985, 'sadness': 0.0048968275, 'surprise': 0.011690898}, {'anger': 0.012288661, 'fear': 0.0025563037, 'joy': 0.85003525, 'love': 0.12451392, 'sadness': 0.0008497203, 'surprise': 0.009756153}, {'anger': 0.02319879, 'fear': 0.031080244, 'joy': 0.14820175, 'love': 0.7294624, 'sadness': 0.021997027, 'surprise': 0.046059813}, {'anger': 0.031083692, 'fear': 0.035790402, 'joy': 0.01741525, 'love': 0.00062268815, 'sadness': 0.9130492, 'surprise': 0.0020387478}, {'anger': 0.00159852, 'fear': 0.34762463, 'joy': 0.04318491, 'love': 0.0028805388, 'sadness': 0.00093575486, 'surprise': 0.6037757}]
     
     Testing luong model
-    {'anger': 0.0016777685, 'fear': 0.029341456, 'joy': 0.15955624, 'love': 0.7718347, 'sadness': 0.0005396353, 'surprise': 0.037050243, 'attention': [['aku', 0.22837706], ['cukup', 0.08437486], ['tak', 0.098626174], ['suka', 0.09288791], ['budak', 0.183754], ['gemuk', 0.15856884], ['tu', 0.15341121]]}
-    [{'anger': 0.06511979, 'fear': 0.0786746, 'joy': 0.34283832, 'love': 0.47801033, 'sadness': 0.013086433, 'surprise': 0.022270598}, {'anger': 0.010881466, 'fear': 0.95245326, 'joy': 0.011857338, 'love': 0.001075954, 'sadness': 0.00922352, 'surprise': 0.0145085305}, {'anger': 0.0044609196, 'fear': 0.0004858748, 'joy': 0.9796047, 'love': 0.010732659, 'sadness': 0.0011361868, 'surprise': 0.0035795663}, {'anger': 0.018199386, 'fear': 0.01024426, 'joy': 0.06503831, 'love': 0.28378096, 'sadness': 0.60309285, 'surprise': 0.019644177}, {'anger': 0.0012908528, 'fear': 0.0015431962, 'joy': 0.00025829085, 'love': 0.0001731802, 'sadness': 0.99648786, 'surprise': 0.00024661073}, {'anger': 0.00016957898, 'fear': 0.28888798, 'joy': 0.00024510975, 'love': 0.00014600258, 'sadness': 0.00012586307, 'surprise': 0.7104255}]
+    love
+    ['love', 'fear', 'joy', 'love', 'sadness', 'fear']
+    [{'anger': 0.044591118, 'fear': 0.063305356, 'joy': 0.33247164, 'love': 0.5347649, 'sadness': 0.0068765697, 'surprise': 0.017990304}, {'anger': 0.0064159264, 'fear': 0.9606779, 'joy': 0.012426791, 'love': 0.0013584964, 'sadness': 0.008015306, 'surprise': 0.011105636}, {'anger': 0.0036163705, 'fear': 5.7273093e-05, 'joy': 0.98739016, 'love': 0.0076421387, 'sadness': 0.00028883366, 'surprise': 0.0010052109}, {'anger': 0.017377134, 'fear': 0.0073309895, 'joy': 0.07374035, 'love': 0.3433876, 'sadness': 0.5455663, 'surprise': 0.012597541}, {'anger': 0.0007876828, 'fear': 0.0009606754, 'joy': 9.633098e-05, 'love': 0.00014691186, 'sadness': 0.9978861, 'surprise': 0.00012229013}, {'anger': 0.00045764598, 'fear': 0.37070635, 'joy': 0.0005788357, 'love': 0.00027592952, 'sadness': 0.00033797708, 'surprise': 0.6276433}]
     
     Testing bidirectional model
-    {'anger': 0.2834959, 'fear': 0.25807646, 'joy': 0.0024420407, 'love': 0.04385324, 'sadness': 0.113708116, 'surprise': 0.29842427}
-    [{'anger': 0.6034175, 'fear': 0.29230013, 'joy': 0.00010138063, 'love': 0.00661169, 'sadness': 0.0017976413, 'surprise': 0.09577158}, {'anger': 0.81299293, 'fear': 0.13775633, 'joy': 0.00064284174, 'love': 0.0014932072, 'sadness': 0.012328662, 'surprise': 0.03478606}, {'anger': 0.76455575, 'fear': 0.15335076, 'joy': 0.00013497456, 'love': 0.0037875765, 'sadness': 0.002890406, 'surprise': 0.07528054}, {'anger': 0.79790246, 'fear': 0.11822995, 'joy': 0.0012087246, 'love': 0.0027527318, 'sadness': 0.030970545, 'surprise': 0.048935644}, {'anger': 0.8012364, 'fear': 0.13785931, 'joy': 0.00030905145, 'love': 0.0021522753, 'sadness': 0.007178641, 'surprise': 0.051264346}, {'anger': 0.29625162, 'fear': 0.29746345, 'joy': 0.0005198121, 'love': 0.028240409, 'sadness': 0.028906224, 'surprise': 0.34861845}]
+    surprise
+    ['anger', 'anger', 'anger', 'anger', 'anger', 'fear']
+    [{'anger': 0.613231, 'fear': 0.21215951, 'joy': 0.00012107872, 'love': 0.007714424, 'sadness': 0.0029091935, 'surprise': 0.16386479}, {'anger': 0.7650685, 'fear': 0.12844206, 'joy': 0.00046135965, 'love': 0.0025065169, 'sadness': 0.012999088, 'surprise': 0.09052232}, {'anger': 0.7017255, 'fear': 0.12622964, 'joy': 0.00019186054, 'love': 0.0041279723, 'sadness': 0.0051922314, 'surprise': 0.16253278}, {'anger': 0.83330584, 'fear': 0.099247426, 'joy': 0.0007255099, 'love': 0.0023077168, 'sadness': 0.016625375, 'surprise': 0.047788195}, {'anger': 0.77445495, 'fear': 0.11811776, 'joy': 0.00019311535, 'love': 0.002333317, 'sadness': 0.004926041, 'surprise': 0.09997472}, {'anger': 0.28467438, 'fear': 0.3107746, 'joy': 0.0009574863, 'love': 0.039786864, 'sadness': 0.0549624, 'surprise': 0.3088443}]
     
     Testing bert model
-    {'anger': 0.7953001, 'fear': 0.043149337, 'joy': 0.050191533, 'love': 0.0028053573, 'sadness': 0.108355165, 'surprise': 0.00019839591}
+    anger
+    ['anger', 'anger', 'anger', 'anger', 'anger', 'anger']
     [{'anger': 0.79530007, 'fear': 0.043149363, 'joy': 0.050191555, 'love': 0.0028053583, 'sadness': 0.1083552, 'surprise': 0.0001983959}, {'anger': 0.7761929, 'fear': 0.02267685, 'joy': 0.08533038, 'love': 0.019361326, 'sadness': 0.09622978, 'surprise': 0.00020885638}, {'anger': 0.724599, 'fear': 0.021534633, 'joy': 0.14938025, 'love': 0.009412263, 'sadness': 0.09488238, 'surprise': 0.0001914676}, {'anger': 0.8217926, 'fear': 0.009756618, 'joy': 0.061514165, 'love': 0.03527268, 'sadness': 0.07142815, 'surprise': 0.00023569519}, {'anger': 0.9093987, 'fear': 0.00811897, 'joy': 0.024754424, 'love': 0.003218321, 'sadness': 0.054415427, 'surprise': 9.422473e-05}, {'anger': 0.9215124, 'fear': 0.009484482, 'joy': 0.023237498, 'love': 0.0027847919, 'sadness': 0.042906344, 'surprise': 7.447611e-05}]
     
     Testing entity-network model
-    {'anger': 0.11245816, 'fear': 0.09678849, 'joy': 0.29964545, 'love': 0.07372402, 'sadness': 0.26239866, 'surprise': 0.1549853}
+    joy
+    ['joy', 'sadness', 'joy', 'sadness', 'sadness', 'joy']
     [{'anger': 0.11245817, 'fear': 0.09678851, 'joy': 0.29964533, 'love': 0.07372399, 'sadness': 0.26239878, 'surprise': 0.15498528}, {'anger': 0.12070423, 'fear': 0.13202831, 'joy': 0.22073878, 'love': 0.031163175, 'sadness': 0.3202514, 'surprise': 0.175114}, {'anger': 0.11448454, 'fear': 0.10408847, 'joy': 0.2848294, 'love': 0.059466686, 'sadness': 0.27815202, 'surprise': 0.1589789}, {'anger': 0.12346853, 'fear': 0.15664044, 'joy': 0.17575133, 'love': 0.019622162, 'sadness': 0.33732292, 'surprise': 0.18719462}, {'anger': 0.117459856, 'fear': 0.115517266, 'joy': 0.25831792, 'love': 0.044844825, 'sadness': 0.2980614, 'surprise': 0.16579871}, {'anger': 0.11082334, 'fear': 0.09062623, 'joy': 0.30381778, 'love': 0.097978726, 'sadness': 0.24158238, 'surprise': 0.15517157}]
     
 
@@ -228,34 +210,15 @@ Unsupervised important words learning
     import seaborn as sns
     sns.set() # i just really like seaborn colors
 
+We need to set ``get_proba`` become True to get the ‘attention’.
+
 Visualizing bahdanau model
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code:: ipython3
 
     model = malaya.emotion.deep_model('bahdanau')
-    result = model.predict(surprise_text)['attention']
-    
-    plt.figure(figsize = (15, 7))
-    labels = [r[0] for r in result]
-    val = [r[1] for r in result]
-    aranged = [i for i in range(len(labels))]
-    plt.bar(aranged, val)
-    plt.xticks(aranged, labels, rotation = 'vertical')
-    plt.show()
-
-
-
-.. image:: load-emotion_files/load-emotion_12_0.png
-
-
-Visualizing luong model
-^^^^^^^^^^^^^^^^^^^^^^^
-
-.. code:: ipython3
-
-    model = malaya.emotion.deep_model('luong')
-    result = model.predict(surprise_text)['attention']
+    result = model.predict(surprise_text, get_proba = True)['attention']
     
     plt.figure(figsize = (15, 7))
     labels = [r[0] for r in result]
@@ -270,13 +233,13 @@ Visualizing luong model
 .. image:: load-emotion_files/load-emotion_14_0.png
 
 
-Visualizing hierarchical model
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Visualizing luong model
+^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code:: ipython3
 
-    model = malaya.emotion.deep_model('hierarchical')
-    result = model.predict(surprise_text)['attention']
+    model = malaya.emotion.deep_model('luong')
+    result = model.predict(surprise_text, get_proba = True)['attention']
     
     plt.figure(figsize = (15, 7))
     labels = [r[0] for r in result]
@@ -289,6 +252,27 @@ Visualizing hierarchical model
 
 
 .. image:: load-emotion_files/load-emotion_16_0.png
+
+
+Visualizing hierarchical model
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    model = malaya.emotion.deep_model('hierarchical')
+    result = model.predict(surprise_text, get_proba=True)['attention']
+    
+    plt.figure(figsize = (15, 7))
+    labels = [r[0] for r in result]
+    val = [r[1] for r in result]
+    aranged = [i for i in range(len(labels))]
+    plt.bar(aranged, val)
+    plt.xticks(aranged, labels, rotation = 'vertical')
+    plt.show()
+
+
+
+.. image:: load-emotion_files/load-emotion_18_0.png
 
 
 Load Sparse deep learning models
@@ -335,38 +319,6 @@ will try to evolve it.
 
 .. parsed-literal::
 
-    downloading frozen /Users/huseinzol/Malaya/emotion/fast-text-char model
-
-
-.. parsed-literal::
-
-    17.0MB [00:06, 3.33MB/s]                          
-    1.00MB [00:00, 1.10kMB/s]                  
-
-
-.. parsed-literal::
-
-    downloading frozen /Users/huseinzol/Malaya/emotion/fast-text-char index
-    downloading frozen /Users/huseinzol/Malaya/emotion/fast-text-char meta
-
-
-.. parsed-literal::
-
-    1.00MB [00:00, 16.5MB/s]                   
-      0%|          | 0.00/2.93 [00:00<?, ?MB/s]
-
-.. parsed-literal::
-
-    downloading frozen /Users/huseinzol/Malaya/emotion/fast-text-char vector
-
-
-.. parsed-literal::
-
-    3.00MB [00:00, 3.95MB/s]                          
-
-
-.. parsed-literal::
-
     INFO:tensorflow:Restoring parameters from /Users/huseinzol/Malaya/emotion/fast-text-char/model.ckpt
 
 
@@ -379,12 +331,7 @@ will try to evolve it.
 
 .. parsed-literal::
 
-    {'anger': 0.0077239843,
-     'fear': 0.014800851,
-     'joy': 0.008525367,
-     'love': 0.0013007817,
-     'sadness': 0.9655128,
-     'surprise': 0.0021361646}
+    'sadness'
 
 
 
@@ -396,6 +343,24 @@ will try to evolve it.
                         love_text,
                         sadness_text,
                         surprise_text])
+
+
+
+
+.. parsed-literal::
+
+    ['love', 'fear', 'joy', 'love', 'sadness', 'fear']
+
+
+
+.. code:: ipython3
+
+    sparse_model.predict_batch([anger_text,
+                        fear_text,
+                        joy_text,
+                        love_text,
+                        sadness_text,
+                        surprise_text], get_proba = True)
 
 
 

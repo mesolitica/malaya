@@ -247,12 +247,14 @@ class TOXIC:
         """
         assert isinstance(string, str), 'input must be a string'
         stacked = self._stack([classification_textcleaning(string, True)])
-        result = {}
+        result = {} if get_proba else []
         for no, label in enumerate(self._class_names):
             if get_proba:
                 result[label] = self._models[no].predict_proba(stacked)[0, 1]
             else:
-                result[label] = self._models[no].predict(stacked)[0]
+                prob = self._models[no].predict(stacked)[0]
+                if prob:
+                    result.append(label)
         return result
 
     def predict_batch(self, strings, get_proba = False):
@@ -275,15 +277,25 @@ class TOXIC:
         stacked = self._stack(
             [classification_textcleaning(i, True) for i in strings]
         )
-        result = {}
-        for no, label in enumerate(self._class_names):
+        result = []
+        for no in range(len(self._class_names)):
             if get_proba:
-                result[label] = (
-                    self._models[no].predict_proba(stacked)[:, 1].tolist()
-                )
+                probs = self._models[no].predict_proba(stacked)[:, 1]
             else:
-                result[label] = self._models[no].predict(stacked).tolist()
-        return result
+                probs = self._models[no].predict(stacked)
+            result.append(probs)
+        result = np.array(result).T
+        dicts = []
+        for row in result:
+            nested = {} if get_proba else []
+            for no, label in enumerate(self._class_names):
+                if get_proba:
+                    nested[label] = row[no]
+                else:
+                    if row[no]:
+                        nested.append(label)
+            dicts.append(nested)
+        return dicts
 
 
 class LANGUAGE_DETECTION:

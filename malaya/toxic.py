@@ -19,14 +19,7 @@ def available_deep_model():
     """
     List available deep learning toxicity analysis models.
     """
-    return [
-        'bahdanau',
-        'hierarchical',
-        'luong',
-        'fast-text',
-        'entity-network',
-        'recurrent-char',
-    ]
+    return ['bahdanau', 'hierarchical', 'luong', 'fast-text', 'entity-network']
 
 
 def multinomial():

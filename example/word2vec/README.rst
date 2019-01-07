@@ -1,8 +1,16 @@
 
 .. code:: ipython3
 
+    %%time
     import malaya
     %matplotlib inline
+
+
+.. parsed-literal::
+
+    CPU times: user 12.2 s, sys: 1.39 s, total: 13.6 s
+    Wall time: 17.2 s
+
 
 Load malaya news word2vec
 -------------------------
