@@ -1,9 +1,11 @@
 .. figure:: https://raw.githubusercontent.com/DevconX/Malaya/master/session/towns-of-malaya.jpg
 
-|Downloads| |Latest Version| |Build Status| |Documentation Status|
+|Latest Version| |Build Status| |Documentation Status|
 
 .. |Downloads| image:: https://img.shields.io/pypi/dm/malaya.svg
    :target: https://pypi.python.org/pypi/malaya
+.. |Downloads GPU| image:: https://img.shields.io/pypi/dm/malaya-gpu.svg
+   :target: https://pypi.python.org/pypi/malaya-gpu
 .. |Latest Version| image:: https://badge.fury.io/py/malaya.svg
    :target: https://pypi.python.org/pypi/malaya
 .. |Build Status| image:: https://travis-ci.org/huseinzol05/Malaya.svg?branch=master
@@ -14,6 +16,8 @@
 Natural-Language-Toolkit for bahasa Malaysia, powered by Deep Learning
 Tensorflow.
 
+-  CPU package installed: |Downloads|
+-  GPU package installed: |Downloads GPU|
 -  Free software: MIT license
 -  Documentation: https://malaya.readthedocs.io/
 
