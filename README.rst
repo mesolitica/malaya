@@ -1,3 +1,5 @@
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fhuseinzol05%2FMalaya.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fhuseinzol05%2FMalaya?ref=badge_shield)
+
 .. figure:: https://raw.githubusercontent.com/DevconX/Malaya/master/session/towns-of-malaya.jpg
 
 |Latest Version| |Build Status| |Documentation Status|
@@ -73,3 +75,7 @@ Contributors
 .. _Malaya Wiki: https://github.com/huseinzol05/Malaya/wiki
 .. _huseinzol05: https://github.com/huseinzol05
 .. _khursani8: https://github.com/khursani8
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fhuseinzol05%2FMalaya.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fhuseinzol05%2FMalaya?ref=badge_large)
