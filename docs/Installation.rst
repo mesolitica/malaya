@@ -43,9 +43,9 @@ with:
 Python
 ~~~~~~
 
-Malaya trained on Python 3.6, supposedly able to support Python 3.X but below than Python 3.7. There is no released version Tensorflow for Python 3.7.
+Malaya only supported Python 3.6. There is no released version Tensorflow for Python 3.7.
 
 GPU Environment
 ~~~~~~~~~~~~~~~
 
-Deep learning Malaya trained on CUDA 8.0 and Tensorflow 1.5, supposedly any new version of CUDA and Tensorflow able to support Tensorflow 1.5 features.
+Deep learning Malaya trained on CUDA 9.0 and Tensorflow 1.12, supposedly any new version of CUDA and Tensorflow able to support Tensorflow 1.5 features.

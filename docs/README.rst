@@ -1,6 +1,6 @@
 .. figure:: https://raw.githubusercontent.com/DevconX/Malaya/master/session/towns-of-malaya.jpg
 
-|Latest Version| |Build Status| |Documentation Status|
+|Downloads| |Downloads GPU| |Latest Version| |Build Status| |Documentation Status|
 
 .. |Downloads| image:: https://img.shields.io/pypi/dm/malaya.svg
    :target: https://pypi.python.org/pypi/malaya
@@ -16,10 +16,10 @@
 Natural-Language-Toolkit for bahasa Malaysia, powered by Deep Learning
 Tensorflow.
 
--  CPU package installed: |Downloads|
--  GPU package installed: |Downloads GPU|
--  Free software: MIT license
--  Documentation: https://malaya.readthedocs.io/
+Documentation
+--------------
+
+Proper documentation is available at https://malaya.readthedocs.io/
 
 Installing from the PyPI
 ----------------------------------
@@ -34,42 +34,61 @@ GPU version
 
     $ pip install malaya-gpu
 
+Only **Python 3.6.x** is supported.
+
 Features
 --------
 
--  **Emotion Analysis**, from BERT, Fast-Text, Dynamic-Memory Network, Sparse-Chars,
-   Attention to build deep emotion analysis models.
--  **Entities Recognition**, using latest state-of-art CRF deep learning
-   models to do Naming Entity Recognition.
--  **Language Detection**, using Multinomial, SGD, XGB, Fast-text N-grams deep learning to distinguish Malay, English, and Indonesian.
--  **Normalizer**, using local Malaysia NLP researches to normalize any
+-  **Emotion Analysis**
+
+   From BERT, Fast-Text, Dynamic-Memory Network, Sparse Tensorflow, Attention Neural Network to build deep emotion analysis models.
+-  **Entities Recognition**
+
+   Latest state-of-art CRF deep learning models to do Naming Entity Recognition.
+
+-  **Language Detection**
+
+   using Multinomial, SGD, XGB, Fast-text N-grams deep learning to distinguish Malay, English, and Indonesian.
+-  **Normalizer**
+
+   using local Malaysia NLP researches to normalize any
    bahasa texts.
--  Num2Word
--  **Part-of-Speech Recognition**, using latest state-of-art CRF deep
-   learning models to do POS Recognition.
--  **Sentiment Analysis**, from BERT, Fast-Text, Dynamic-Memory Network, Sparse-Chars,
-   Attention to build deep sentiment analysis models.
--  **Spell Correction**, using local Malaysia NLP researches to
-   auto-correct any bahasa words.
+-  **Num2Word**
+
+   Convert from numbers to cardinal or ordinal representation.
+-  **Part-of-Speech Recognition**
+
+   Latest state-of-art CRF deep learning models to do Naming Entity Recognition.
+-  **Sentiment Analysis**
+
+   From BERT, Fast-Text, Dynamic-Memory Network, Sparse Tensorflow, Attention Neural Network to build deep sentiment analysis models.
+-  **Spell Correction**
+
+   Using local Malaysia NLP researches to auto-correct any bahasa words.
 -  Stemmer
--  **Subjectivity Analysis**, from BERT, Fast-Text, Dynamic-Memory Network, Sparse-Chars,
-   Attention to build deep subjectivity analysis models.
--  **Summarization**, using skip-thought state-of-art to give precise
-   summarization.
--  **Topic Modelling**, provide LDA2Vec, LDA, NMF and LSA interface for easy topic modelling.
--  **Topic and Influencers Analysis**, using deep and machine learning
-   models to understand topics and Influencers similarity in sentences.
--  **Toxicity Analysis**, from BERT, Fast-Text, Dynamic-Memory Network,
-   Attention to build deep Toxic Multi-label analysis models.
--  Word2Vec
+-  **Subjectivity Analysis**
 
-Contributors
-------------
+   From BERT, Fast-Text, Dynamic-Memory Network, Sparse Tensorflow, Attention Neural Network to build deep subjectivity analysis models.
+-  **Summarization**
 
--  **Husein Zolkepli** - *Maintainer* - `huseinzol05`_
+   Using skip-thought with attention state-of-art to give precise unsupervised summarization.
+-  **Topic Modelling**
 
--  **Sani** - *build PIP package* - `khursani8`_
+   Provide LDA2Vec, LDA, NMF and LSA interface for easy topic modelling with topics visualization.
+-  **Topic and Influencers Analysis**
 
-.. _Malaya Wiki: https://github.com/huseinzol05/Malaya/wiki
-.. _huseinzol05: https://github.com/huseinzol05
-.. _khursani8: https://github.com/khursani8
+   Using deep and machine learning models to understand topics and Influencers similarity in sentences.
+-  **Toxicity Analysis**
+
+   From BERT, Fast-Text, Dynamic-Memory Network, Attention Neural Network to build deep toxicity analysis models.
+-  **Word2Vec**
+
+   Provide pretrained bahasa wikipedia and bahasa news Word2Vec, with easy interface and visualization.
+
+License
+--------
+
+.. |License| image:: https://app.fossa.io/api/projects/git%2Bgithub.com%2Fhuseinzol05%2FMalaya.svg?type=large
+   :target: https://app.fossa.io/projects/git%2Bgithub.com%2Fhuseinzol05%2FMalaya?ref=badge_large
+
+|License|
