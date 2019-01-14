@@ -1,20 +1,22 @@
-.. figure:: https://raw.githubusercontent.com/DevconX/Malaya/master/session/towns-of-malaya.jpg
+.. raw:: html
 
-|Downloads| |Downloads GPU| |Latest Version| |Build Status| |Documentation Status|
+    <p align="center">
+        <a href="#readme">
+            <img alt="logo" width="70%" src="https://raw.githubusercontent.com/DevconX/Malaya/master/session/towns-of-malaya.jpg">
+        </a>
+    </p>
+    <p align="center">
+        <a href="https://pypi.python.org/pypi/malaya"><img alt="cpu downloaded" src="https://img.shields.io/pypi/dm/malaya.svg"></a>
+        <a href="https://pypi.python.org/pypi/malaya-gpu"><img alt="gpu downloaded" src="https://img.shields.io/pypi/dm/malaya-gpu.svg"></a>
+        <a href="https://pypi.python.org/pypi/malaya"><img alt="Pypi version" src="https://badge.fury.io/py/malaya.svg"></a>
+        <a href="https://malaya.readthedocs.io/"><img alt="Documentation" src="https://readthedocs.org/projects/malaya/badge/?version=latest"></a>
+        <a href="https://travis-ci.org/huseinzol05/Malaya"><img alt="Build status" src="https://travis-ci.org/huseinzol05/Malaya.svg?branch=master"></a>
 
-.. |Downloads| image:: https://img.shields.io/pypi/dm/malaya.svg
-   :target: https://pypi.python.org/pypi/malaya
-.. |Downloads GPU| image:: https://img.shields.io/pypi/dm/malaya-gpu.svg
-   :target: https://pypi.python.org/pypi/malaya-gpu
-.. |Latest Version| image:: https://badge.fury.io/py/malaya.svg
-   :target: https://pypi.python.org/pypi/malaya
-.. |Build Status| image:: https://travis-ci.org/huseinzol05/Malaya.svg?branch=master
-   :target: https://travis-ci.org/huseinzol05/Malaya
-.. |Documentation Status| image:: https://readthedocs.org/projects/malaya/badge/?version=latest
-   :target: https://malaya.readthedocs.io/
+    </p>
 
-Natural-Language-Toolkit for bahasa Malaysia, powered by Deep Learning
-Tensorflow.
+=========
+
+**Malaya** is a Natural-Language-Toolkit library for bahasa Malaysia, powered by Deep Learning Tensorflow.
 
 Documentation
 --------------
