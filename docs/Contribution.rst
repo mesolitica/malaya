@@ -10,7 +10,7 @@ You can install it from here, https://github.com/mohtar/blackmamba.
 
 2. 100% Tensorflow, no Keras.
 
-3.  3.3 > Python < 3.7
+3.  Python 3.6.X, Tensorflow still have issues with Python 3.7
 
 New code
 --------

@@ -119,18 +119,21 @@ def train_model(
     _, _, dictionary, reversed_dictionary = build_dataset(
         concat, vocabulary_size
     )
-    sess = tf.InteractiveSession()
-    model = Model(
-        size_layer = embedding_size,
-        num_layers = 1,
-        embedded_size = embedding_size,
-        dict_size = len(dictionary),
-        output_size = output_size,
-        dropout = dropout,
-    )
+    _graph = tf.Graph()
+    with _graph.as_default():
+        sess = tf.InteractiveSession()
+        model = Model(
+            size_layer = embedding_size,
+            num_layers = 1,
+            embedded_size = embedding_size,
+            dict_size = len(dictionary),
+            output_size = output_size,
+            dropout = dropout,
+        )
+        sess.run(tf.global_variables_initializer())
+
     vectors_left = str_idx(train_X_left, dictionary, maxlen, UNK = 3)
     vectors_right = str_idx(train_X_right, dictionary, maxlen, UNK = 3)
-    sess.run(tf.global_variables_initializer())
     for e in range(epoch):
         pbar = tqdm(
             range(0, len(vectors_left), batch_size), desc = 'minibatch loop'

@@ -14,14 +14,27 @@ S3_PATH_STEM = {
 }
 
 PATH_SUMMARIZE = {
-    'model': home + '/summarize/summary_frozen_model.pb',
-    'setting': home + '/summarize/dictionary-summary.json',
-    'version': 'v9',
+    'news': {
+        'model': home + '/summarize/summary-news.pb',
+        'setting': home + '/summarize/summary-news.json',
+        'version': 'v13',
+    },
+    'wiki': {
+        'model': home + '/summarize/summary-wiki.pb',
+        'setting': home + '/summarize/summary-wiki.json',
+        'version': 'v13',
+    },
 }
 
 S3_PATH_SUMMARIZE = {
-    'model': 'v7/summary/summary_frozen_model.pb',
-    'setting': 'v7/summary/dictionary-summary.json',
+    'news': {
+        'model': 'v13/summarize/summary-news.pb',
+        'setting': 'v13/summarize/summary-news.json',
+    },
+    'wiki': {
+        'model': 'v13/summarize/summary-wiki.pb',
+        'setting': 'v13/summarize/summary-wiki.json',
+    },
 }
 
 PATH_TOXIC = {

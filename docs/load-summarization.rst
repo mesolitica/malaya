@@ -13,6 +13,106 @@
                    'Pada Jun lepas, Sultan Muhammad V memperkenankan supaya peruntukan gaji dan emolumen Yang di-Pertuan Agong dikurangkan sebanyak 10 peratus sepanjang pemerintahan sehingga 2021 berikutan keprihatinan Seri Paduka terhadap tahap hutang dan keadaan ekonomi negara.',
                    'Seri Paduka turut menitahkan supaya Majlis Rumah Terbuka Aidilfitri tahun ini tidak diadakan di Istana Negara dengan peruntukan majlis itu digunakan bagi membantu golongan yang kurang bernasib baik.']
 
+Load Pretrained News summarization deep learning
+------------------------------------------------
+
+.. code:: python
+
+    deep_summary = malaya.summarize.deep_model_news()
+
+.. code:: python
+
+    deep_summary.summarize(isu_kerajaan,important_words=10)
+
+
+
+
+.. parsed-literal::
+
+    {'summary': 'pensyarah kulliyah undang-undang ahmad ibrahim, universiti islam antarabangsa malaysia uiam prof madya dr shamrahayu ab aziz berkata perubahan kerajaan, susulan kemenangan pakatan harapan pada pilihan raya umum ke-14 pada mei lepas, tidak memberi kesan dari segi peranan, fungsi dan kedudukan yang di-pertuan agong. semasa dilantik sebagai yang di-pertuan agong ke-15 pada 13 dis 2016, kerajaan ketika itu diterajui oleh barisan nasional dan pada 10 mei lepas, kepimpinan negara diambil alih oleh pakatan harapan yang memenangi pilihan raya umum ke-14. ketika merasmikan istiadat pembukaan penggal pertama, parlimen ke-14 pada 17 julai lepas, seri paduka bertitah mengalu-alukan pendekatan kerajaan pakatan harapan dalam menegakkan ketelusan terutamanya dengan mendedahkan kedudukan kewangan negara yang sebenar serta mengkaji semula perbelanjaan, kos projek dan mengurus kewangan secara berhemat bagi menangani kos sara hidup',
+     'top-words': ['sharmini',
+      'bielefeld',
+      'taksi',
+      'diharap',
+      'unchallenged',
+      'bkkm',
+      'chusus',
+      'menjebaknya',
+      'diiringi',
+      'ibubapanya']}
+
+
+
+Load Pretrained Wikipedia summarization deep learning
+-----------------------------------------------------
+
+.. code:: python
+
+    deep_summary = malaya.summarize.deep_model_wiki()
+
+.. code:: python
+
+    deep_summary.summarize(isu_kerajaan,important_words=10)
+
+
+
+
+.. parsed-literal::
+
+    {'summary': 'pensyarah kulliyah undang-undang ahmad ibrahim, universiti islam antarabangsa malaysia uiam prof madya dr shamrahayu ab aziz berkata perubahan kerajaan, susulan kemenangan pakatan harapan pada pilihan raya umum ke-14 pada mei lepas, tidak memberi kesan dari segi peranan, fungsi dan kedudukan yang di-pertuan agong. institusi raja khususnya yang di-pertuan agong adalah kedaulatan negara dengan kedudukan dan peranannya termaktub dalam perlembagaan persekutuan yang perlu disokong dan didukung oleh kerajaan serta rakyat. ketika merasmikan istiadat pembukaan penggal pertama, parlimen ke-14 pada 17 julai lepas, seri paduka bertitah mengalu-alukan pendekatan kerajaan pakatan harapan dalam menegakkan ketelusan terutamanya dengan mendedahkan kedudukan kewangan negara yang sebenar serta mengkaji semula perbelanjaan, kos projek dan mengurus kewangan secara berhemat bagi menangani kos sara hidup',
+     'top-words': ['jagaannya',
+      'ferdy',
+      'sharidake',
+      'televisyen',
+      'zulkifli',
+      'hoe',
+      'luteum',
+      'diimbau',
+      'kawan',
+      'brunei']}
+
+
+
+Train skip-thought summarization deep learning model
+----------------------------------------------------
+
+.. code:: python
+
+    deep_summary = malaya.summarize.train_skip_thought(isu_kerajaan, batch_size = 2)
+
+
+.. parsed-literal::
+
+    minibatch loop: 100%|██████████| 3/3 [00:00<00:00,  2.79it/s, cost=9.4]
+    minibatch loop: 100%|██████████| 3/3 [00:00<00:00,  3.83it/s, cost=6.9]
+    minibatch loop: 100%|██████████| 3/3 [00:01<00:00,  2.80it/s, cost=5.64]
+    minibatch loop: 100%|██████████| 3/3 [00:00<00:00,  3.01it/s, cost=4.43]
+    minibatch loop: 100%|██████████| 3/3 [00:00<00:00,  3.38it/s, cost=3.54]
+
+
+.. code:: python
+
+    deep_summary.summarize(isu_kerajaan,important_words=10)
+
+
+
+
+.. parsed-literal::
+
+    {'summary': 'seri paduka turut menitahkan supaya majlis rumah terbuka aidilfitri tahun ini tidak diadakan di istana negara dengan peruntukan majlis itu digunakan bagi membantu golongan yang kurang bernasib baik. peralihan kerajaan itu menyaksikan sultan muhammad v mencatat sejarah tersendiri dengan menjadi yang di-pertuan agong malaysia yang pertama memerintah dalam era dua kerajaan berbeza. pada jun lepas, sultan muhammad v memperkenankan supaya peruntukan gaji dan emolumen yang di-pertuan agong dikurangkan sebanyak 10 peratus sepanjang pemerintahan sehingga 2021 berikutan keprihatinan seri paduka terhadap tahap hutang dan keadaan ekonomi negara',
+     'top-words': ['oleh',
+      'mencatat',
+      ',',
+      'tahap',
+      'berikutan',
+      'harapan',
+      'projek',
+      'ke',
+      'madya',
+      'alukan']}
+
+
+
 Train LSA model
 ---------------
 
@@ -36,14 +136,14 @@ Train LSA model
       'paduka titah',
       'sultan muhammad',
       'peran'],
-     'cluster-top-words': ['alih',
-      'sultan muhammad',
-      'mei',
+     'cluster-top-words': ['buka',
       'malaysia',
       'perintah',
+      'alih',
+      'sultan muhammad',
       'paduka titah',
-      'peran',
-      'buka']}
+      'mei',
+      'peran']}
 
 
 
@@ -70,14 +170,14 @@ Maintain original
       'paduka titah',
       'peran',
       'sultan muhammad'],
-     'cluster-top-words': ['alih',
-      'sultan muhammad',
-      'mei',
-      'buka',
+     'cluster-top-words': ['buka',
       'malaysia',
+      'pilih',
+      'alih',
+      'sultan muhammad',
       'paduka titah',
-      'peran',
-      'pilih']}
+      'mei',
+      'peran']}
 
 
 
@@ -104,14 +204,14 @@ Train NMF model
       'paduka titah',
       'sultan muhammad',
       'peran'],
-     'cluster-top-words': ['alih',
-      'sultan muhammad',
-      'mei',
+     'cluster-top-words': ['buka',
       'malaysia',
       'perintah',
+      'alih',
+      'sultan muhammad',
       'paduka titah',
-      'peran',
-      'buka']}
+      'mei',
+      'peran']}
 
 
 
@@ -138,14 +238,14 @@ Train LDA model
       'paduka titah',
       'sultan muhammad',
       'peran'],
-     'cluster-top-words': ['alih',
-      'sultan muhammad',
-      'mei',
+     'cluster-top-words': ['buka',
       'malaysia',
       'perintah',
+      'alih',
+      'sultan muhammad',
       'paduka titah',
-      'peran',
-      'buka']}
+      'mei',
+      'peran']}
 
 
 
@@ -172,23 +272,3 @@ Not clustering important words
       'paduka titah',
       'sultan muhammad',
       'peran']}
-
-
-
-Load deep learning model
-------------------------
-
-.. code:: python
-
-    deep_summary = malaya.summarize.deep_model()
-
-.. code:: python
-
-    deep_summary.summarize(isu_kerajaan)
-
-
-
-
-.. parsed-literal::
-
-    'peralihan kerajaan itu menyaksikan sultan muhammad v mencatat sejarah tersendiri dengan menjadi yang di-pertuan agong malaysia yang pertama memerintah dalam era dua kerajaan berbeza. semasa dilantik sebagai yang di-pertuan agong ke-15 pada 13 dis 2016, kerajaan ketika itu diterajui oleh barisan nasional dan pada 10 mei lepas, kepimpinan negara diambil alih oleh pakatan harapan yang memenangi pilihan raya umum ke-14. seri paduka turut menitahkan supaya majlis rumah terbuka aidilfitri tahun ini tidak diadakan di istana negara dengan peruntukan majlis itu digunakan bagi membantu golongan yang kurang bernasib baik'

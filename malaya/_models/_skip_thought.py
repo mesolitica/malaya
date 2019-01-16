@@ -11,29 +11,11 @@ import re
 import collections
 import json
 import os
-from tensorflow.contrib import seq2seq
 from sklearn.metrics import pairwise_distances_argmin_min
 from sklearn.cluster import KMeans
 from .._utils._paths import PATH_SUMMARIZE, S3_PATH_SUMMARIZE
 from ..texts._text_functions import split_by_dot, summary_textcleaning
 from .._utils._utils import download_file, load_graph
-import uuid
-
-
-def sequence(s, w2v_model, maxlen = 50, vocabulary_size = 50000):
-    words = s.split()
-    np_array = np.zeros((maxlen), dtype = np.int32)
-    current_no = 0
-    for no, word in enumerate(words[: maxlen - 2]):
-        id_to_append = 1
-        if word in w2v_model:
-            word_id = w2v_model[word]
-            if word_id < vocabulary_size:
-                id_to_append = word_id
-        np_array[no] = id_to_append
-        current_no = no
-    np_array[current_no + 1] = 3
-    return np_array
 
 
 def batch_sequence(sentences, dictionary, maxlen = 50):
@@ -41,21 +23,26 @@ def batch_sequence(sentences, dictionary, maxlen = 50):
     for no_sentence, sentence in enumerate(sentences):
         current_no = 0
         for no, word in enumerate(sentence.split()[: maxlen - 2]):
-            val = dictionary[word] if word in dictionary else 1
-            np_array[no_sentence, no] = val
+            np_array[no_sentence, no] = dictionary.get(word, 1)
             current_no = no
         np_array[no_sentence, current_no + 1] = 3
     return np_array
 
 
 class DEEP_SUMMARIZER:
-    def __init__(self, sess, x, logits, w2v):
+    def __init__(
+        self, sess, x, logits, attention, dictionary, maxlen, model = None
+    ):
         self._sess = sess
         self._X = x
         self._logits = logits
-        self.w2v = w2v
+        self._attention = attention
+        self.dictionary = dictionary
+        self._maxlen = maxlen
+        self._rev_dictionary = {v: k for k, v in self.dictionary.items()}
+        self._model = model
 
-    def summarize(self, corpus, top_k = 3):
+    def summarize(self, corpus, top_k = 3, important_words = 3):
         """
         Summarize list of strings / corpus
 
@@ -65,6 +52,8 @@ class DEEP_SUMMARIZER:
 
         top_k: int, (default=3)
             number of summarized strings
+        important_words: int, (default=3)
+            number of important words
 
         Returns
         -------
@@ -82,13 +71,14 @@ class DEEP_SUMMARIZER:
             corpus = re.findall('(?=\S)[^.\n]+(?<=\S)', corpus)
 
         corpus = [summary_textcleaning(i) for i in corpus]
-
-        sequences = np.array(
-            [sequence(sentence, self.w2v) for sentence in corpus]
+        sequences = batch_sequence(
+            corpus, self.dictionary, maxlen = self._maxlen
         )
-        encoded = self._sess.run(
-            self._logits, feed_dict = {self._X: np.array(sequences)}
+        encoded, attention = self._sess.run(
+            [self._logits, self._attention],
+            feed_dict = {self._X: np.array(sequences)},
         )
+        attention = attention.sum(axis = 0)
         kmeans = KMeans(n_clusters = top_k, random_state = 0)
         kmeans = kmeans.fit(encoded)
         avg = []
@@ -98,8 +88,13 @@ class DEEP_SUMMARIZER:
         closest, _ = pairwise_distances_argmin_min(
             kmeans.cluster_centers_, encoded
         )
+        indices = np.argsort(attention)[::-1]
+        top_words = [self._rev_dictionary[i] for i in indices[:important_words]]
         ordering = sorted(range(top_k), key = lambda k: avg[k])
-        return '. '.join([corpus[closest[idx]] for idx in ordering])
+        return {
+            'summary': '. '.join([corpus[closest[idx]] for idx in ordering]),
+            'top-words': top_words,
+        }
 
 
 class Model:
@@ -107,26 +102,20 @@ class Model:
         self,
         vocabulary_size,
         maxlen = 50,
-        output_size = 512,
         learning_rate = 1e-3,
         embedding_size = 256,
-        batch_size = 16,
-        max_grad_norm = 10,
-        **kwargs
+        **kwargs,
     ):
-        special_embeddings = tf.Variable(
-            tf.random_uniform([4, embedding_size], -np.sqrt(3), np.sqrt(3))
-        )
         word_embeddings = tf.Variable(
             tf.random_uniform(
                 [vocabulary_size, embedding_size], -np.sqrt(3), np.sqrt(3)
             )
         )
-        self.output_size = output_size
+        self.output_size = embedding_size
         self.maxlen = maxlen
-        self.embeddings = tf.concat([special_embeddings, word_embeddings], 0)
+        self.embeddings = word_embeddings
         self.output_layer = tf.layers.Dense(vocabulary_size)
-        self.output_layer.build(output_size)
+        self.output_layer.build(self.output_size)
 
         self.BEFORE = tf.placeholder(tf.int32, [None, maxlen])
         self.INPUT = tf.placeholder(tf.int32, [None, maxlen])
@@ -134,17 +123,16 @@ class Model:
         self.batch_size = tf.shape(self.INPUT)[0]
 
         self.get_thought = self.thought(self.INPUT)
+        self.attention = tf.matmul(
+            self.get_thought, tf.transpose(self.embeddings), name = 'attention'
+        )
         self.fw_logits = self.decoder(self.get_thought, self.AFTER)
         self.bw_logits = self.decoder(self.get_thought, self.BEFORE)
         self.loss = self.calculate_loss(
             self.fw_logits, self.AFTER
         ) + self.calculate_loss(self.bw_logits, self.BEFORE)
-        tvars = tf.trainable_variables()
-        grads, _ = tf.clip_by_global_norm(
-            tf.gradients(self.loss, tvars), max_grad_norm
-        )
-        self.optimizer = tf.train.AdamOptimizer(learning_rate).apply_gradients(
-            zip(grads, tvars)
+        self.optimizer = tf.train.AdamOptimizer(learning_rate).minimize(
+            self.loss
         )
 
     def get_embedding(self, inputs):
@@ -155,9 +143,7 @@ class Model:
         fw_cell = tf.nn.rnn_cell.GRUCell(self.output_size)
         bw_cell = tf.nn.rnn_cell.GRUCell(self.output_size)
         sequence_length = tf.reduce_sum(tf.sign(inputs), axis = 1)
-        with tf.variable_scope(
-            'thought_scope_' + str(uuid.uuid4()), reuse = False
-        ):
+        with tf.variable_scope('thought_scope', reuse = False):
             rnn_output = tf.nn.bidirectional_dynamic_rnn(
                 fw_cell,
                 bw_cell,
@@ -173,17 +159,17 @@ class Model:
         decoder_in = self.get_embedding(shifted_labels)
         cell = tf.nn.rnn_cell.GRUCell(self.output_size)
         max_seq_lengths = tf.fill([self.batch_size], self.maxlen)
-        helper = seq2seq.TrainingHelper(
+        helper = tf.contrib.seq2seq.TrainingHelper(
             decoder_in, max_seq_lengths, time_major = False
         )
-        decoder = seq2seq.BasicDecoder(cell, helper, thought)
-        decoder_out = seq2seq.dynamic_decode(decoder)[0].rnn_output
+        decoder = tf.contrib.seq2seq.BasicDecoder(cell, helper, thought)
+        decoder_out = tf.contrib.seq2seq.dynamic_decode(decoder)[0].rnn_output
         return decoder_out
 
     def calculate_loss(self, outputs, labels):
         mask = tf.cast(tf.sign(labels), tf.float32)
         logits = self.output_layer(outputs)
-        return seq2seq.sequence_loss(logits, labels, mask)
+        return tf.contrib.seq2seq.sequence_loss(logits, labels, mask)
 
 
 def counter_words(sentences):
@@ -208,44 +194,77 @@ def build_dict(word_counter, vocab_size = 50000):
     return dictionary, {word: idx for idx, word in dictionary.items()}
 
 
-def load_model():
-    if not os.path.isfile(PATH_SUMMARIZE['model']):
-        print('downloading SUMMARIZE skip-thought frozen model')
-        download_file(S3_PATH_SUMMARIZE['model'], PATH_SUMMARIZE['model'])
-    if not os.path.isfile(PATH_SUMMARIZE['setting']):
-        print('downloading SUMMARIZE skip-thought dictionary')
-        download_file(S3_PATH_SUMMARIZE['setting'], PATH_SUMMARIZE['setting'])
-    g = load_graph(PATH_SUMMARIZE['model'])
+def news_load_model():
+    if not os.path.isfile(PATH_SUMMARIZE['news']['model']):
+        print('downloading SUMMARIZE news frozen model')
+        download_file(
+            S3_PATH_SUMMARIZE['news']['model'], PATH_SUMMARIZE['news']['model']
+        )
+    if not os.path.isfile(PATH_SUMMARIZE['news']['setting']):
+        print('downloading SUMMARIZE news dictionary')
+        download_file(
+            S3_PATH_SUMMARIZE['news']['setting'],
+            PATH_SUMMARIZE['news']['setting'],
+        )
+    g = load_graph(PATH_SUMMARIZE['news']['model'])
     x = g.get_tensor_by_name('import/Placeholder_1:0')
-    logits = g.get_tensor_by_name('import/add_1:0')
+    logits = g.get_tensor_by_name('import/thought_scope/add_1:0')
+    attention = g.get_tensor_by_name('import/attention:0')
     sess = tf.InteractiveSession(graph = g)
-    with open(PATH_SUMMARIZE['setting']) as fopen:
+    with open(PATH_SUMMARIZE['news']['setting']) as fopen:
         dictionary = json.load(fopen)
-    return DEEP_SUMMARIZER(sess, x, logits, dictionary)
+    return DEEP_SUMMARIZER(sess, x, logits, attention, dictionary, 100)
+
+
+def wiki_load_model():
+    if not os.path.isfile(PATH_SUMMARIZE['wiki']['model']):
+        print('downloading SUMMARIZE wikipedia frozen model')
+        download_file(
+            S3_PATH_SUMMARIZE['wiki']['model'], PATH_SUMMARIZE['wiki']['model']
+        )
+    if not os.path.isfile(PATH_SUMMARIZE['wiki']['setting']):
+        print('downloading SUMMARIZE wikipedia dictionary')
+        download_file(
+            S3_PATH_SUMMARIZE['wiki']['setting'],
+            PATH_SUMMARIZE['wiki']['setting'],
+        )
+    g = load_graph(PATH_SUMMARIZE['wiki']['model'])
+    x = g.get_tensor_by_name('import/Placeholder_1:0')
+    logits = g.get_tensor_by_name('import/logits:0')
+    attention = g.get_tensor_by_name('import/attention:0')
+    sess = tf.InteractiveSession(graph = g)
+    with open(PATH_SUMMARIZE['wiki']['setting']) as fopen:
+        dictionary = json.load(fopen)
+    return DEEP_SUMMARIZER(sess, x, logits, attention, dictionary, 50)
 
 
 def train_model(
     train_X,
-    train_Y,
+    train_Y_before,
+    train_Y_after,
     epoch = 10,
     batch_size = 16,
     embedding_size = 256,
-    output_size = 300,
     maxlen = 100,
-    **kwargs
+    vocab_size = 50000,
+    **kwargs,
 ):
+    if not vocab_size:
+        vocab_size = len(set(filter(None, (' '.join(train_X)).split()))) + 1
     word_counter, _, _, _ = counter_words(train_X)
-    dictionary, _ = build_dict(word_counter)
-    sess = tf.InteractiveSession()
-    model = Model(
-        len(dictionary),
-        embedding_size = embedding_size,
-        output_size = output_size,
-        batch_size = batch_size,
-        maxlen = maxlen,
-        **kwargs
-    )
-    sess.run(tf.global_variables_initializer())
+    dictionary, _ = build_dict(word_counter, vocab_size = vocab_size)
+    _graph = tf.Graph()
+    with _graph.as_default():
+        model = Model(
+            len(dictionary),
+            embedding_size = embedding_size,
+            batch_size = batch_size,
+            maxlen = maxlen,
+            **kwargs,
+        )
+        sess = tf.InteractiveSession()
+        sess.run(tf.global_variables_initializer())
+
     for e in range(epoch):
         pbar = tqdm(range(0, len(train_X), batch_size), desc = 'minibatch loop')
         for i in pbar:
@@ -254,17 +273,22 @@ def train_model(
                 dictionary,
                 maxlen = maxlen,
             )
-            batch_y = batch_sequence(
-                train_Y[i : min(i + batch_size, len(train_X))],
+            batch_y_before = batch_sequence(
+                train_Y_before[i : min(i + batch_size, len(train_X))],
+                dictionary,
+                maxlen = maxlen,
+            )
+            batch_y_after = batch_sequence(
+                train_Y_after[i : min(i + batch_size, len(train_X))],
                 dictionary,
                 maxlen = maxlen,
             )
             loss, _ = sess.run(
                 [model.loss, model.optimizer],
                 feed_dict = {
-                    model.BEFORE: batch_y,
+                    model.BEFORE: batch_y_before,
                     model.INPUT: batch_x,
-                    model.AFTER: batch_y,
+                    model.AFTER: batch_y_after,
                 },
             )
             pbar.set_postfix(cost = loss)

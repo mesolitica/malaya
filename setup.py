@@ -6,11 +6,12 @@ __packagename__ = 'malaya'
 setuptools.setup(
     name = __packagename__,
     packages = setuptools.find_packages(),
-    version = '1.2.5',
+    version = '1.3.0.1',
+    python_requires = '==3.6.*',
     description = 'Natural-Language-Toolkit for bahasa Malaysia, powered by Deep Learning.',
     author = 'huseinzol05',
     author_email = 'husein.zol05@gmail.com',
-    url = 'https://github.com/DevconX/Malaya',
+    url = 'https://github.com/huseinzol05/Malaya',
     download_url = 'https://github.com/DevconX/Malaya/archive/master.zip',
     keywords = ['nlp', 'bm'],
     install_requires = [
@@ -33,12 +34,13 @@ setuptools.setup(
         'matplotlib',
         'seaborn',
     ],
+    license = 'MIT',
     classifiers = [
-        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.6',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
         'Topic :: Text Processing',
     ],
-    long_description = open('README.rst').read(),
+    long_description = open('readme-pypi.rst').read(),
 )

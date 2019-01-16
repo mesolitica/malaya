@@ -13,9 +13,29 @@ from scipy.spatial.distance import cdist
 from sklearn.neighbors import NearestNeighbors
 from . import home
 from ._utils._utils import download_file
+from ._models import _word2vec
+from .texts._text_functions import simple_textcleaning
 
 
-def load(size = 256):
+def load_wiki():
+    """
+    Return malaya pretrained wikipedia word2vec size 256
+
+    Returns
+    -------
+    dictionary: dictionary of dictionary, reverse dictionary and vectors
+    """
+    if not os.path.isfile('%s/word2vec-wiki/word2vec.p' % (home)):
+        print('downloading word2vec-wiki embedded')
+        download_file(
+            'v13/word2vec/word2vec-wiki-nce-256.p',
+            '%s/word2vec-wiki/word2vec.p' % (home),
+        )
+    with open('%s/word2vec-wiki/word2vec.p' % (home), 'rb') as fopen:
+        return pickle.load(fopen)
+
+
+def load_news(size = 256):
     """
     Return malaya pretrained news word2vec
 
@@ -29,7 +49,9 @@ def load(size = 256):
     """
     assert isinstance(size, int), 'input must be an integer'
     if size not in [32, 64, 128, 256, 512]:
-        raise Exception('size word2vec not supported')
+        raise Exception(
+            'size word2vec not supported, only supports [32, 64, 128, 256, 512]'
+        )
     if not os.path.isfile('%s/word2vec-%d/word2vec.p' % (home, size)):
         print('downloading word2vec-%d embedded' % (size))
         download_file(
@@ -38,6 +60,134 @@ def load(size = 256):
         )
     with open('%s/word2vec-%d/word2vec.p' % (home, size), 'rb') as fopen:
         return pickle.load(fopen)
+
+
+def train(
+    corpus,
+    vocab_size = None,
+    batch_size = 32,
+    embedding_size = 256,
+    hidden_size = 256,
+    negative_samples_ratio = 0.5,
+    learning_rate = 0.01,
+    embedding_noise = 0.1,
+    hidden_noise = 0.3,
+    momentum = 0.9,
+    epoch = 10,
+    optimizer = 'momentum',
+    text_cleaning = simple_textcleaning,
+):
+    """
+    Train a word2vec for custom corpus
+
+    Parameters
+    ----------
+    corpus: list
+        list of strings
+    batch_size: int, (default=32)
+        batch size for every feed, batch size must <= size of corpus
+    embedding_size: int, (default=256)
+        vector size representation for a word
+    hidden_size: int, (default=256)
+        vector size representation for hidden layer
+    negative_samples_ratio: float, (default=0.5)
+        negative samples ratio proportional to batch_size
+    learning_rate: float, (default=0.01)
+        learning rate for word2vec
+    momentum: float, (default=0.9)
+        momentum rate for optimizer=momentum
+    epoch: int, (default=5)
+        iteration numbers
+    optimizer: str, (default='momentum')
+        optimizer supported, ['gradientdescent', 'rmsprop', 'momentum', 'adagrad', 'adam']
+    text_cleaning: function, (default=simple_textcleaning)
+        function to clean the corpus
+
+    Returns
+    -------
+    dictionary: dictionary of dictionary, reverse dictionary and vectors
+    """
+    assert isinstance(corpus, str) or isinstance(
+        corpus, list
+    ), 'corpus must be a string or a list of string'
+    assert vocab_size is None or isinstance(
+        vocab_size, int
+    ), 'vocab_size must be a None or an integer'
+    assert isinstance(batch_size, int), 'batch_size must be an integer'
+    assert isinstance(embedding_size, int), 'embedding_size must be an integer'
+    assert isinstance(hidden_size, int), 'hidden_size must be an integer'
+    assert isinstance(epoch, int), 'epoch must be an integer'
+    assert isinstance(
+        negative_samples_ratio, float
+    ), 'negative_samples_ratio must be a float'
+    assert isinstance(momentum, float), 'momentum must be a float'
+    assert isinstance(embedding_noise, float), 'embedding_noise must be a float'
+    assert isinstance(hidden_noise, float), 'hidden_noise must be a float'
+    assert isinstance(learning_rate, float) or isinstance(
+        learning_rate, int
+    ), 'learning_rate must be a float or an integer'
+    assert isinstance(optimizer, str), 'optimizer must be a string'
+    assert batch_size > 0, 'batch_size must bigger than 0'
+    assert epoch > 0, 'epoch must bigger than 0'
+    assert embedding_size > 0, 'embedding_size must bigger than 0'
+    assert hidden_size > 0, 'hidden_size must bigger than 0'
+    assert (
+        negative_samples_ratio > 0 and negative_samples_ratio <= 1
+    ), 'negative_samples_ratio must bigger than 0 and less than or equal 1'
+    assert (
+        embedding_noise > 0 and embedding_noise <= 1
+    ), 'embedding_noise must bigger than 0 and less than or equal 1'
+    assert (
+        hidden_noise > 0 and hidden_noise <= 1
+    ), 'hidden_noise must bigger than 0 and less than or equal 1'
+    optimizer = optimizer.lower()
+    if optimizer not in [
+        'gradientdescent',
+        'adam',
+        'adagrad',
+        'momentum',
+        'rmsprop',
+    ]:
+        raise Exception(
+            "Optimizer not supported, only supports ['gradientdescent', 'rmsprop', 'momentum', 'adagrad', 'adam']"
+        )
+    from sklearn.model_selection import train_test_split
+
+    if isinstance(corpus, list):
+        corpus = ' '.join(corpus)
+    if text_cleaning:
+        corpus = text_cleaning(corpus)
+    corpus = ' '.join(corpus.split('\n'))
+    corpus = list(filter(None, corpus.split()))
+    if vocab_size is None:
+        vocab_size = len(set(corpus)) + 5
+    word_array, dictionary, rev_dictionary, num_lines, num_words = _word2vec.build_word_array(
+        corpus, vocab_size
+    )
+    X, Y = _word2vec.build_training_set(word_array)
+    graph_params = {
+        'batch_size': batch_size,
+        'vocab_size': np.max(X) + 1,
+        'embed_size': embedding_size,
+        'hid_size': hidden_size,
+        'neg_samples': int(batch_size * negative_samples_ratio),
+        'learn_rate': learning_rate,
+        'momentum': momentum,
+        'embed_noise': embedding_noise,
+        'hid_noise': hidden_noise,
+        'epoch': epoch,
+        'optimizer': optimizer,
+    }
+    _, test_X, _, test_Y = train_test_split(X, Y, test_size = 0.1)
+    model = _word2vec.Model(graph_params)
+    print(
+        'model built, vocab size %d, document length %d'
+        % (np.max(X) + 1, len(word_array))
+    )
+    embed_weights, nce_weights = model.train(
+        X, Y, test_X, test_Y, graph_params['epoch'], graph_params['batch_size']
+    )
+    return embed_weights, nce_weights, dictionary
 
 
 class _Calculator:

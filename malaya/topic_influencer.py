@@ -464,7 +464,7 @@ def siamese_topic(
     epoch = 5,
     batch_size = 32,
     embedding_size = 256,
-    output_size = 300,
+    output_size = 100,
     maxlen = 100,
     ngram = (1, 4),
 ):
@@ -536,7 +536,7 @@ def siamese_influencer(
     epoch = 5,
     batch_size = 32,
     embedding_size = 256,
-    output_size = 300,
+    output_size = 100,
     maxlen = 100,
     ngram = (1, 4),
 ):
@@ -610,7 +610,6 @@ def skipthought_topic(
     epoch = 5,
     batch_size = 16,
     embedding_size = 256,
-    output_size = 300,
     maxlen = 100,
     ngram = (1, 4),
 ):
@@ -625,8 +624,6 @@ def skipthought_topic(
         batch size for every feed, batch size must <= size of corpus
     embedding_size: int, (default=256)
         vector size representation for a word
-    output_size: int, (default=100)
-        encoder output size, bigger means more vector definition
     maxlen: int, (default=100)
         max length of a string to be train
     ngram: tuple, (default=(1,4))
@@ -641,7 +638,6 @@ def skipthought_topic(
     assert isinstance(epoch, int), 'epoch must be an integer'
     assert isinstance(batch_size, int), 'batch_size must be an integer'
     assert isinstance(embedding_size, int), 'embedding_size must be an integer'
-    assert isinstance(output_size, int), 'output_size must be an integer'
     assert isinstance(maxlen, int), 'maxlen must be an integer'
     assert isinstance(ngram, tuple), 'ngram must be a tuple'
     assert len(ngram) == 2, 'ngram size must equal to 2'
@@ -655,10 +651,10 @@ def skipthought_topic(
     sess, model, dictionary = skip_train(
         batch_x,
         batch_y,
+        batch_y,
         epoch = epoch,
         batch_size = batch_size,
         embedding_size = embedding_size,
-        output_size = output_size,
         maxlen = maxlen,
     )
     encoded = sess.run(
@@ -674,7 +670,6 @@ def skipthought_influencer(
     epoch = 10,
     batch_size = 16,
     embedding_size = 256,
-    output_size = 300,
     maxlen = 100,
     ngram = (1, 4),
 ):
@@ -689,8 +684,6 @@ def skipthought_influencer(
         batch size for every feed, batch size must <= size of corpus
     embedding_size: int, (default=256)
         vector size representation for a word
-    output_size: int, (default=100)
-        encoder output size, bigger means more vector definition
     maxlen: int, (default=100)
         max length of a string to be train
     ngram: tuple, (default=(1,4))
@@ -705,7 +698,6 @@ def skipthought_influencer(
     assert isinstance(epoch, int), 'epoch must be an integer'
     assert isinstance(batch_size, int), 'batch_size must be an integer'
     assert isinstance(embedding_size, int), 'embedding_size must be an integer'
-    assert isinstance(output_size, int), 'output_size must be an integer'
     assert isinstance(maxlen, int), 'maxlen must be an integer'
     assert isinstance(ngram, tuple), 'ngram must be a tuple'
     assert len(ngram) == 2, 'ngram size must equal to 2'
@@ -720,10 +712,10 @@ def skipthought_influencer(
     sess, model, dictionary = skip_train(
         batch_x,
         batch_y,
+        batch_y,
         epoch = epoch,
         batch_size = batch_size,
         embedding_size = embedding_size,
-        output_size = output_size,
         maxlen = maxlen,
     )
     encoded = sess.run(
