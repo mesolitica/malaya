@@ -13,7 +13,7 @@ from .._models._tensorflow_model import TAGGING
 from .._models._sklearn_model import CRF
 
 
-def crf(path, s3_path, class_name):
+def crf(path, s3_path, class_name, is_lower = True):
     check_file(path['crf'], s3_path['crf'])
     try:
         with open(path['crf']['model'], 'rb') as fopen:
@@ -23,10 +23,10 @@ def crf(path, s3_path, class_name):
             "model corrupted due to some reasons, please run malaya.clear_cache('%s/crf') and try again"
             % (class_name)
         )
-    return CRF(model)
+    return CRF(model, is_lower = is_lower)
 
 
-def deep_model(path, s3_path, class_name, model = 'bahdanau'):
+def deep_model(path, s3_path, class_name, model = 'bahdanau', is_lower = True):
     """
     Load deep learning NER model.
 
@@ -66,6 +66,9 @@ def deep_model(path, s3_path, class_name, model = 'bahdanau'):
                 nodes,
                 tf.InteractiveSession(graph = g),
                 model,
+                g.get_tensor_by_name('import/transitions:0'),
+                g.get_tensor_by_name('import/Variable:0'),
+                is_lower = is_lower,
                 story = g.get_tensor_by_name('import/story:0'),
             )
         else:
@@ -76,6 +79,9 @@ def deep_model(path, s3_path, class_name, model = 'bahdanau'):
                 nodes,
                 tf.InteractiveSession(graph = g),
                 model,
+                g.get_tensor_by_name('import/transitions:0'),
+                g.get_tensor_by_name('import/Variable:0'),
+                is_lower = is_lower,
             )
 
     else:

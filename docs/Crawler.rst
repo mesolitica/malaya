@@ -7,13 +7,13 @@ From Source
 -----------
 
 The crawler is actively developed on
-`Github <https://github.com/DevconX/Malaya/tree/master/crawl>`__.
+`Github <https://github.com/huseinzol05/Malaya/tree/master/crawl>`__.
 
 You need to clone the public repo:
 
 .. code:: bash
 
-    git clone https://github.com/devconx/malaya
+    git clone https://github.com/huseinzol05/malaya
 
 You need to install dependencies before able to use the crawler.
 

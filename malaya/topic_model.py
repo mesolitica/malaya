@@ -121,8 +121,13 @@ class _DEEP_TOPIC:
         assert isinstance(
             notebook_mode, bool
         ), 'notebook_mode must be a boolean'
-        import pyLDAvis
-        import pyLDAvis.sklearn
+        try:
+            import pyLDAvis
+            import pyLDAvis.sklearn
+        except:
+            raise Exception(
+                'pyldavis not installed. Please install it and try again.'
+            )
 
         if notebook_mode:
             pyLDAvis.enable_notebook()

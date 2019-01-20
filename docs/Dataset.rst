@@ -3,54 +3,54 @@ Dataset
 
 We want to make sure not just the code we open-sourced, but also goes to dataset, so everyone can validate.
 
-You can check in `/dataset <https://github.com/DevconX/Malaya/tree/master/dataset>`__ for most of our open dataset.
+You can check in `/dataset <https://github.com/huseinzol05/Malaya/tree/master/dataset>`__ for most of our open dataset.
 
 Sentiment Analysis
 ----------------------------------
 
-`/dataset/sentiment <https://github.com/DevconX/Malaya/tree/master/dataset/sentiment>`__
+`/dataset/sentiment <https://github.com/huseinzol05/Malaya/tree/master/dataset/sentiment>`__
 
 Emotion Analysis
 ----------------------------------
 
-`/dataset/emotion <https://github.com/DevconX/Malaya/tree/master/dataset/emotion>`__
+`/dataset/emotion <https://github.com/huseinzol05/Malaya/tree/master/dataset/emotion>`__
 
 Entities Recognition
 ----------------------------------
 
-`/dataset/entities <https://github.com/DevconX/Malaya/tree/master/dataset/entities>`__
+`/dataset/entities <https://github.com/huseinzol05/Malaya/tree/master/dataset/entities>`__
 
 Part-Of-Speech Recognition
 ----------------------------------
 
-`/dataset/pos <https://github.com/DevconX/Malaya/tree/master/dataset/pos>`__
+`/dataset/pos <https://github.com/huseinzol05/Malaya/tree/master/dataset/pos>`__
 
 Polarity
 ----------------------------------
 
-`/dataset/polarity <https://github.com/DevconX/Malaya/tree/master/dataset/polarity>`__
+`/dataset/polarity <https://github.com/huseinzol05/Malaya/tree/master/dataset/polarity>`__
 
 We combined with sentiment analysis models.
 
 Subjectivity
 ----------------------------------
 
-`/dataset/subjectivity <https://github.com/DevconX/Malaya/tree/master/dataset/subjectivity>`__
+`/dataset/subjectivity <https://github.com/huseinzol05/Malaya/tree/master/dataset/subjectivity>`__
 
 Stemmer
 ----------------------------------
 
-`/dataset/stemmer <https://github.com/DevconX/Malaya/tree/master/dataset/stemmer>`__
+`/dataset/stemmer <https://github.com/huseinzol05/Malaya/tree/master/dataset/stemmer>`__
 
 Language Detection
 ----------------------------------
 
-`/dataset/language-detection <https://github.com/DevconX/Malaya/tree/master/dataset/language-detection>`__
+`/dataset/language-detection <https://github.com/huseinzol05/Malaya/tree/master/dataset/language-detection>`__
 
 Dictionary
 ----------------------------------
 
-`/dataset/dictionary <https://github.com/DevconX/Malaya/tree/master/dataset/dictionary>`__
+`/dataset/dictionary <https://github.com/huseinzol05/Malaya/tree/master/dataset/dictionary>`__
 
 Matbahasa
 -----------

@@ -9,6 +9,12 @@ malaya
 .. automodule:: malaya
     :members:
 
+malaya.dependency
+------------------
+
+.. automodule:: malaya.dependency
+    :members:
+
 malaya.emotion
 -----------------
 

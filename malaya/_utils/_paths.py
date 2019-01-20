@@ -109,55 +109,55 @@ S3_PATH_TOXIC = {
 }
 
 PATH_POS = {
-    'crf': {'model': home + '/pos/crf/crf-pos.pkl', 'version': 'v8'},
+    'crf': {'model': home + '/pos/crf/crf-pos.pkl', 'version': 'v14'},
     'concat': {
         'model': home + '/pos/concat/concat-pos.pb',
         'setting': home + '/pos/concat/concat-pos.json',
-        'version': 'v8',
+        'version': 'v14',
     },
     'luong': {
         'model': home + '/pos/luong/luong-pos.pb',
         'setting': home + '/pos/luong/luong-pos.json',
-        'version': 'v8',
+        'version': 'v14',
     },
     'bahdanau': {
         'model': home + '/pos/bahdanau/bahdanau-pos.pb',
         'setting': home + '/pos/bahdanau/bahdanau-pos.json',
-        'version': 'v8',
+        'version': 'v14',
     },
     'entity-network': {
         'model': home + '/pos/entity-network/entity-pos.pb',
         'setting': home + 'pos/entity-network/entity-pos.json',
-        'version': 'v8',
+        'version': 'v14',
     },
     'attention': {
         'model': home + '/pos/attention/attention-pos.pb',
         'setting': home + '/pos/attention/attention-pos.json',
-        'version': 'v8',
+        'version': 'v14',
     },
 }
 
 S3_PATH_POS = {
-    'crf': {'model': 'v8/pos/crf-pos.pkl'},
+    'crf': {'model': 'v14/pos/crf-pos.pkl'},
     'concat': {
-        'model': 'v8/pos/concat-pos.pb',
-        'setting': 'v8/pos/concat-pos.json',
+        'model': 'v14/pos/concat-pos.pb',
+        'setting': 'v14/pos/concat-pos.json',
     },
     'luong': {
-        'model': 'v8/pos/luong-pos.pb',
-        'setting': 'v8/pos/luong-pos.json',
+        'model': 'v14/pos/luong-pos.pb',
+        'setting': 'v14/pos/luong-pos.json',
     },
     'bahdanau': {
-        'model': 'v8/pos/bahdanau-pos.pb',
-        'setting': 'v8/pos/bahdanau-pos.json',
+        'model': 'v14/pos/bahdanau-pos.pb',
+        'setting': 'v14/pos/bahdanau-pos.json',
     },
     'entity-network': {
-        'model': 'v8/pos/entity-pos.pb',
-        'setting': 'v8/pos/entity-pos.json',
+        'model': 'v14/pos/entity-pos.pb',
+        'setting': 'v14/pos/entity-pos.json',
     },
     'attention': {
-        'model': 'v8/pos/attention-pos.pb',
-        'setting': 'v8/pos/attention-pos.json',
+        'model': 'v14/pos/attention-pos.pb',
+        'setting': 'v14/pos/attention-pos.json',
     },
 }
 
@@ -233,51 +233,51 @@ PATH_ENTITIES = {
     'concat': {
         'model': home + '/entity/concat/concat-entities.pb',
         'setting': home + '/entity/concat/concat-entities.json',
-        'version': 'v8',
+        'version': 'v14',
     },
     'luong': {
         'model': home + '/entity/luong/luong-entities.pb',
         'setting': home + '/entity/luong/luong-entities.json',
-        'version': 'v8',
+        'version': 'v14',
     },
     'bahdanau': {
         'model': home + '/entity/bahdanau/bahdanau-entities.pb',
         'setting': home + '/entity/bahdanau/bahdanau-entities.json',
-        'version': 'v8',
+        'version': 'v14',
     },
     'entity-network': {
         'model': home + '/entity/entity-network/entity-entities.pb',
         'setting': home + '/entity/entity-network/entity-entities.json',
-        'version': 'v8',
+        'version': 'v14',
     },
     'attention': {
         'model': home + '/entity/attention/attention-entities.pb',
         'setting': home + '/entity/attention/attention-entities.json',
-        'version': 'v8',
+        'version': 'v14',
     },
 }
 
 S3_PATH_ENTITIES = {
     'crf': {'model': 'v8/entities/crf-entities.pkl'},
     'concat': {
-        'model': 'v8/entities/concat-entities.pb',
-        'setting': 'v8/entities/concat-entities.json',
+        'model': 'v14/entities/concat-entities.pb',
+        'setting': 'v14/entities/concat-entities.json',
     },
     'luong': {
-        'model': 'v8/entities/luong-entities.pb',
-        'setting': 'v8/entities/luong-entities.json',
+        'model': 'v14/entities/luong-entities.pb',
+        'setting': 'v14/entities/luong-entities.json',
     },
     'bahdanau': {
-        'model': 'v8/entities/bahdanau-entities.pb',
-        'setting': 'v8/entities/bahdanau-entities.json',
+        'model': 'v14/entities/bahdanau-entities.pb',
+        'setting': 'v14/entities/bahdanau-entities.json',
     },
     'entity-network': {
-        'model': 'v8/entities/entity-entities.pb',
-        'setting': 'v8/entities/entity-entities.json',
+        'model': 'v14/entities/entity-entities.pb',
+        'setting': 'v14/entities/entity-entities.json',
     },
     'attention': {
-        'model': 'v8/entities/attention-entities.pb',
-        'setting': 'v8/entities/attention-entities.json',
+        'model': 'v14/entities/attention-entities.pb',
+        'setting': 'v14/entities/attention-entities.json',
     },
 }
 
@@ -595,5 +595,47 @@ S3_PATH_EMOTION = {
         'index': 'v12/emotion/model.ckpt.index',
         'meta': 'v12/emotion/model.ckpt.meta',
         'vector': 'v12/emotion/vectorizer-sparse-emotion.pkl',
+    },
+}
+
+PATH_DEPEND = {
+    'crf': {
+        'model': home + '/dependency/crf/crf-label.pkl',
+        'depend': home + '/dependency/crf/crf-depend.pkl',
+        'version': 'v14',
+    },
+    'concat': {
+        'model': home + '/dependency/concat/concat-dependency.pb',
+        'setting': home + '/dependency/concat/concat-dependency.json',
+        'version': 'v14',
+    },
+    'luong': {
+        'model': home + '/dependency/luong/luong-dependency.pb',
+        'setting': home + '/dependency/luong/luong-dependency.json',
+        'version': 'v14',
+    },
+    'bahdanau': {
+        'model': home + '/dependency/bahdanau/bahdanau-dependency.pb',
+        'setting': home + '/dependency/bahdanau/bahdanau-dependency.json',
+        'version': 'v14',
+    },
+}
+
+S3_PATH_DEPEND = {
+    'crf': {
+        'model': 'v14/dependency/crf-label.pkl',
+        'depend': 'v14/dependency/crf-depend.pkl',
+    },
+    'concat': {
+        'model': 'v14/dependency/concat-dependency.pb',
+        'setting': 'v14/dependency/concat-dependency.json',
+    },
+    'luong': {
+        'model': 'v14/dependency/luong-dependency.pb',
+        'setting': 'v14/dependency/luong-dependency.json',
+    },
+    'bahdanau': {
+        'model': 'v14/dependency/bahdanau-dependency.pb',
+        'setting': 'v14/dependency/bahdanau-dependency.json',
     },
 }

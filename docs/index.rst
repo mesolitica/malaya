@@ -22,6 +22,7 @@ Contents:
    Translator-malaya
    Accuracy
    Cache
+   Dependency
    Emotion
    Entities
    Language

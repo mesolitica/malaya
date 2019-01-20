@@ -42,6 +42,9 @@ def deep_model_wiki():
     -------
     DEEP_SUMMARIZER: malaya.skip_thought.DEEP_SUMMARIZER class
     """
+    print(
+        'WARNING: this model is using convolutional based, Tensorflow-GPU above 1.10 may got a problem. Please downgrade to Tensorflow-GPU v1.8 if got any cuDNN error.'
+    )
     return _skip_thought.wiki_load_model()
 
 

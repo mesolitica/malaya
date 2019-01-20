@@ -1,7 +1,15 @@
 
 .. code:: ipython3
 
+    %%time
     import malaya
+
+
+.. parsed-literal::
+
+    CPU times: user 14.5 s, sys: 1.57 s, total: 16.1 s
+    Wall time: 21.3 s
+
 
 List available deep learning POS models
 ---------------------------------------
@@ -66,26 +74,26 @@ Load CRF Model
 
 .. parsed-literal::
 
-    [('kuala', 'PROPN'),
-     ('lumpur', 'PROPN'),
-     ('sempena', 'PROPN'),
+    [('Kuala', 'PROPN'),
+     ('Lumpur', 'PROPN'),
+     ('Sempena', 'SCONJ'),
      ('sambutan', 'NOUN'),
-     ('aidilfitri', 'NOUN'),
+     ('Aidilfitri', 'PROPN'),
      ('minggu', 'NOUN'),
-     ('depan', 'ADJ'),
-     ('perdana', 'PROPN'),
-     ('menteri', 'PROPN'),
-     ('tun', 'PROPN'),
-     ('dr', 'PROPN'),
-     ('mahathir', 'PROPN'),
-     ('mohamad', 'PROPN'),
+     ('depan', 'ADP'),
+     ('Perdana', 'PROPN'),
+     ('Menteri', 'PROPN'),
+     ('Tun', 'PROPN'),
+     ('Dr', 'PROPN'),
+     ('Mahathir', 'PROPN'),
+     ('Mohamad', 'PROPN'),
      ('dan', 'CCONJ'),
-     ('menteri', 'VERB'),
-     ('pengangkutan', 'PROPN'),
-     ('anthony', 'PROPN'),
-     ('loke', 'PROPN'),
-     ('siew', 'PROPN'),
-     ('fook', 'PROPN'),
+     ('Menteri', 'PROPN'),
+     ('Pengangkutan', 'PROPN'),
+     ('Anthony', 'PROPN'),
+     ('Loke', 'PROPN'),
+     ('Siew', 'PROPN'),
+     ('Fook', 'PROPN'),
      ('menitipkan', 'VERB'),
      ('pesanan', 'NOUN'),
      ('khas', 'ADJ'),
@@ -99,18 +107,18 @@ Load CRF Model
      ('kampung', 'NOUN'),
      ('halaman', 'NOUN'),
      ('masing-masing', 'NOUN'),
-     ('dalam', 'ADP'),
+     ('Dalam', 'ADP'),
      ('video', 'NOUN'),
      ('pendek', 'ADJ'),
      ('terbitan', 'NOUN'),
-     ('jabatan', 'NOUN'),
-     ('keselamatan', 'PROPN'),
-     ('jalan', 'PROPN'),
-     ('raya', 'PROPN'),
-     ('jkjr', 'PROPN'),
+     ('Jabatan', 'PROPN'),
+     ('Keselamatan', 'PROPN'),
+     ('Jalan', 'PROPN'),
+     ('Raya', 'PROPN'),
+     ('Jkjr', 'PROPN'),
      ('itu', 'DET'),
-     ('dr', 'PROPN'),
-     ('mahathir', 'PROPN'),
+     ('Dr', 'PROPN'),
+     ('Mahathir', 'PROPN'),
      ('menasihati', 'VERB'),
      ('mereka', 'PRON'),
      ('supaya', 'SCONJ'),
@@ -121,7 +129,7 @@ Load CRF Model
      ('sebentar', 'ADP'),
      ('sekiranya', 'NOUN'),
      ('mengantuk', 'VERB'),
-     ('ketika', 'SCONJ'),
+     ('ketika', 'ADV'),
      ('memandu', 'VERB')]
 
 
@@ -137,28 +145,28 @@ Print important features CRF model
 .. parsed-literal::
 
     Top-10 positive:
-    16.307872 DET      word:tersebut
-    15.868179 DET      word:para
-    15.590679 VERB     word:percaya
-    15.520492 ADP      word:dari
-    15.296975 DET      word:berbagai
-    14.691924 ADJ      word:menakjubkan
-    14.609917 ADJ      word:menyejukkan
-    14.503045 PRON     word:kapan
-    14.319357 DET      word:ini
-    14.267956 ADV      word:pernah
+    16.443463 DET      word:para
+    15.494273 DET      word:berbagai
+    14.856205 DET      word:tersebut
+    14.426293 ADJ      word:menakjubkan
+    14.319714 ADV      word:memang
+    14.158206 ADP      word:tentang
+    13.907366 VERB     word:percaya
+    13.635634 VERB     word:integrasi
+    13.630582 ADP      word:dengan
+    13.562358 ADV      word:menurutnya
     
     Top-10 negative:
-    -7.217718 PROPN    word:bunga
-    -7.258999 VERB     word:memuaskan
-    -7.498110 ADP      prev_word:pernah
-    -7.523901 ADV      next_word-suffix-3:nai
-    -7.874955 NOUN     prev_word-prefix-3:arw
-    -7.921689 NOUN     suffix-2:ke
-    -8.049832 ADJ      prev_word:sunda
-    -8.210202 PROPN    prefix-3:ora
-    -8.524420 NUM      prev_word:perang
-    -10.346546 CCONJ    prev_word-suffix-3:rja
+    -6.663068 PROPN    prefix-2:be
+    -6.714450 ADV      next_word:menyatakan
+    -6.862083 PROPN    next_word:Jepang
+    -7.183600 PROPN    suffix-3:pun
+    -7.264241 ADV      next_word-suffix-3:nai
+    -7.676069 VERB     word:memuaskan
+    -7.961231 ADP      prev_word:pernah
+    -8.006671 NOUN     suffix-2:ke
+    -8.135974 ADP      prev_word-prefix-3:pal
+    -8.173493 PROPN    suffix-3:nya
 
 
 Print important transitions CRF model
@@ -172,28 +180,28 @@ Print important transitions CRF model
 .. parsed-literal::
 
     Top-10 likely transitions:
-    PROPN  -> PROPN   5.529614
-    DET    -> DET     4.492123
-    NOUN   -> NOUN    2.600533
-    ADJ    -> ADJ     2.276762
-    CCONJ  -> CCONJ   1.888801
-    CCONJ  -> SCONJ   1.855106
-    NOUN   -> ADJ     1.729610
-    SCONJ  -> CCONJ   1.598273
-    NUM    -> NUM     1.475505
-    ADV    -> VERB    1.442607
+    PROPN  -> PROPN   5.767666
+    NOUN   -> NOUN    4.291842
+    DET    -> DET     3.723729
+    NOUN   -> PROPN   3.035784
+    CCONJ  -> CCONJ   2.545162
+    X      -> X       2.476296
+    ADP    -> NOUN    2.324735
+    ADJ    -> ADJ     2.285807
+    NOUN   -> ADJ     2.258407
+    ADP    -> PROPN   2.181474
     
     Top-10 unlikely transitions:
-    SCONJ  -> AUX     -3.559017
-    X      -> SCONJ   -3.566058
-    SYM    -> ADJ     -3.720358
-    PART   -> ADP     -3.744172
-    X      -> CCONJ   -4.270577
-    PART   -> PART    -4.543812
-    ADV    -> X       -4.809254
-    ADP    -> SCONJ   -5.157816
-    ADP    -> CCONJ   -5.455725
-    ADP    -> SYM     -6.841944
+    SCONJ  -> AUX     -3.341014
+    PART   -> NUM     -3.406289
+    SCONJ  -> ADJ     -3.447362
+    SYM    -> ADV     -3.468094
+    SYM    -> ADJ     -3.597291
+    AUX    -> NUM     -3.657861
+    PART   -> PART    -4.059430
+    X      -> CCONJ   -4.929272
+    ADP    -> SCONJ   -4.960199
+    ADP    -> CCONJ   -6.236844
 
 
 Load deep learning models
@@ -211,20 +219,91 @@ Load deep learning models
 .. parsed-literal::
 
     Testing concat model
-    [('kuala', 'PROPN'), ('lumpur', 'PROPN'), ('sempena', 'PROPN'), ('sambutan', 'NOUN'), ('aidilfitri', 'PROPN'), ('minggu', 'NOUN'), ('depan', 'ADJ'), ('perdana', 'ADJ'), ('menteri', 'NOUN'), ('tun', 'PROPN'), ('dr', 'PROPN'), ('mahathir', 'PROPN'), ('mohamad', 'PROPN'), ('dan', 'CCONJ'), ('menteri', 'NOUN'), ('pengangkutan', 'PROPN'), ('anthony', 'NOUN'), ('loke', 'NOUN'), ('siew', 'PROPN'), ('fook', 'PROPN'), ('menitipkan', 'PROPN'), ('pesanan', 'ADV'), ('khas', 'ADJ'), ('kepada', 'ADP'), ('orang', 'NOUN'), ('ramai', 'ADJ'), ('yang', 'PRON'), ('mahu', 'ADV'), ('pulang', 'VERB'), ('ke', 'ADP'), ('kampung', 'NOUN'), ('halaman', 'NOUN'), ('masing-masing', 'NOUN'), ('dalam', 'ADP'), ('video', 'NOUN'), ('pendek', 'ADJ'), ('terbitan', 'NOUN'), ('jabatan', 'NOUN'), ('keselamatan', 'NOUN'), ('jalan', 'PROPN'), ('raya', 'PROPN'), ('jkjr', 'PROPN'), ('itu', 'DET'), ('dr', 'PROPN'), ('mahathir', 'PROPN'), ('menasihati', 'NOUN'), ('mereka', 'PRON'), ('supaya', 'SCONJ'), ('berhenti', 'VERB'), ('berehat', 'PROPN'), ('dan', 'CCONJ'), ('tidur', 'NOUN'), ('sebentar', 'ADJ'), ('sekiranya', 'NOUN'), ('mengantuk', 'PROPN'), ('ketika', 'SCONJ'), ('memandu', 'VERB')]
+    [('Kuala', 'PROPN'), ('Lumpur', 'PROPN'), ('Sempena', 'PROPN'), ('sambutan', 'NOUN'), ('Aidilfitri', 'NOUN'), ('minggu', 'NOUN'), ('depan', 'ADJ'), ('Perdana', 'PROPN'), ('Menteri', 'PROPN'), ('Tun', 'PROPN'), ('Dr', 'PROPN'), ('Mahathir', 'PROPN'), ('Mohamad', 'PROPN'), ('dan', 'CCONJ'), ('Menteri', 'PROPN'), ('Pengangkutan', 'NOUN'), ('Anthony', 'PROPN'), ('Loke', 'PROPN'), ('Siew', 'PROPN'), ('Fook', 'PROPN'), ('menitipkan', 'VERB'), ('pesanan', 'NOUN'), ('khas', 'ADJ'), ('kepada', 'ADP'), ('orang', 'NOUN'), ('ramai', 'ADJ'), ('yang', 'PRON'), ('mahu', 'ADV'), ('pulang', 'VERB'), ('ke', 'NUM'), ('kampung', 'NOUN'), ('halaman', 'NOUN'), ('masing-masing', 'NOUN'), ('Dalam', 'ADP'), ('video', 'NOUN'), ('pendek', 'ADJ'), ('terbitan', 'NOUN'), ('Jabatan', 'NOUN'), ('Keselamatan', 'NOUN'), ('Jalan', 'PROPN'), ('Raya', 'PROPN'), ('Jkjr', 'NOUN'), ('itu', 'DET'), ('Dr', 'PROPN'), ('Mahathir', 'PROPN'), ('menasihati', 'VERB'), ('mereka', 'PRON'), ('supaya', 'SCONJ'), ('berhenti', 'VERB'), ('berehat', 'NOUN'), ('dan', 'CCONJ'), ('tidur', 'NOUN'), ('sebentar', 'ADV'), ('sekiranya', 'NOUN'), ('mengantuk', 'VERB'), ('ketika', 'SCONJ'), ('memandu', 'VERB')]
     
     Testing bahdanau model
-    [('kuala', 'PROPN'), ('lumpur', 'PROPN'), ('sempena', 'PROPN'), ('sambutan', 'NOUN'), ('aidilfitri', 'PROPN'), ('minggu', 'PROPN'), ('depan', 'ADJ'), ('perdana', 'ADJ'), ('menteri', 'NOUN'), ('tun', 'PROPN'), ('dr', 'PROPN'), ('mahathir', 'PROPN'), ('mohamad', 'PROPN'), ('dan', 'CCONJ'), ('menteri', 'PROPN'), ('pengangkutan', 'PROPN'), ('anthony', 'PROPN'), ('loke', 'PROPN'), ('siew', 'PROPN'), ('fook', 'PROPN'), ('menitipkan', 'VERB'), ('pesanan', 'ADV'), ('khas', 'ADJ'), ('kepada', 'ADP'), ('orang', 'NOUN'), ('ramai', 'ADJ'), ('yang', 'PRON'), ('mahu', 'ADV'), ('pulang', 'VERB'), ('ke', 'ADP'), ('kampung', 'NOUN'), ('halaman', 'NOUN'), ('masing-masing', 'PROPN'), ('dalam', 'ADP'), ('video', 'NOUN'), ('pendek', 'ADJ'), ('terbitan', 'NOUN'), ('jabatan', 'NOUN'), ('keselamatan', 'NOUN'), ('jalan', 'PROPN'), ('raya', 'PROPN'), ('jkjr', 'PROPN'), ('itu', 'DET'), ('dr', 'PROPN'), ('mahathir', 'PROPN'), ('menasihati', 'VERB'), ('mereka', 'PRON'), ('supaya', 'SCONJ'), ('berhenti', 'VERB'), ('berehat', 'PROPN'), ('dan', 'CCONJ'), ('tidur', 'VERB'), ('sebentar', 'ADV'), ('sekiranya', 'PROPN'), ('mengantuk', 'PROPN'), ('ketika', 'SCONJ'), ('memandu', 'VERB')]
+    [('Kuala', 'PROPN'), ('Lumpur', 'PROPN'), ('Sempena', 'PROPN'), ('sambutan', 'NOUN'), ('Aidilfitri', 'PROPN'), ('minggu', 'VERB'), ('depan', 'CCONJ'), ('Perdana', 'PROPN'), ('Menteri', 'PROPN'), ('Tun', 'PROPN'), ('Dr', 'PROPN'), ('Mahathir', 'PROPN'), ('Mohamad', 'PROPN'), ('dan', 'CCONJ'), ('Menteri', 'PROPN'), ('Pengangkutan', 'PROPN'), ('Anthony', 'PROPN'), ('Loke', 'PROPN'), ('Siew', 'PROPN'), ('Fook', 'PROPN'), ('menitipkan', 'VERB'), ('pesanan', 'NOUN'), ('khas', 'ADJ'), ('kepada', 'ADP'), ('orang', 'NOUN'), ('ramai', 'NOUN'), ('yang', 'PRON'), ('mahu', 'ADV'), ('pulang', 'VERB'), ('ke', 'ADP'), ('kampung', 'NOUN'), ('halaman', 'NOUN'), ('masing-masing', 'NOUN'), ('Dalam', 'ADP'), ('video', 'NOUN'), ('pendek', 'ADJ'), ('terbitan', 'NOUN'), ('Jabatan', 'NOUN'), ('Keselamatan', 'NOUN'), ('Jalan', 'PROPN'), ('Raya', 'PROPN'), ('Jkjr', 'NOUN'), ('itu', 'DET'), ('Dr', 'PROPN'), ('Mahathir', 'PROPN'), ('menasihati', 'VERB'), ('mereka', 'PRON'), ('supaya', 'SCONJ'), ('berhenti', 'VERB'), ('berehat', 'NOUN'), ('dan', 'CCONJ'), ('tidur', 'VERB'), ('sebentar', 'ADV'), ('sekiranya', 'NOUN'), ('mengantuk', 'VERB'), ('ketika', 'SCONJ'), ('memandu', 'VERB')]
     
     Testing luong model
-    [('kuala', 'PROPN'), ('lumpur', 'PROPN'), ('sempena', 'PROPN'), ('sambutan', 'PROPN'), ('aidilfitri', 'PROPN'), ('minggu', 'PROPN'), ('depan', 'ADJ'), ('perdana', 'PROPN'), ('menteri', 'PROPN'), ('tun', 'PROPN'), ('dr', 'PROPN'), ('mahathir', 'PROPN'), ('mohamad', 'PROPN'), ('dan', 'CCONJ'), ('menteri', 'NOUN'), ('pengangkutan', 'NOUN'), ('anthony', 'PROPN'), ('loke', 'PROPN'), ('siew', 'PROPN'), ('fook', 'PROPN'), ('menitipkan', 'PROPN'), ('pesanan', 'NOUN'), ('khas', 'ADJ'), ('kepada', 'ADP'), ('orang', 'NOUN'), ('ramai', 'NOUN'), ('yang', 'PRON'), ('mahu', 'ADV'), ('pulang', 'VERB'), ('ke', 'ADP'), ('kampung', 'NOUN'), ('halaman', 'NOUN'), ('masing-masing', 'NOUN'), ('dalam', 'ADP'), ('video', 'NOUN'), ('pendek', 'ADJ'), ('terbitan', 'NOUN'), ('jabatan', 'NOUN'), ('keselamatan', 'NOUN'), ('jalan', 'NOUN'), ('raya', 'PROPN'), ('jkjr', 'PROPN'), ('itu', 'DET'), ('dr', 'PROPN'), ('mahathir', 'PROPN'), ('menasihati', 'PROPN'), ('mereka', 'PRON'), ('supaya', 'ADV'), ('berhenti', 'VERB'), ('berehat', 'NOUN'), ('dan', 'CCONJ'), ('tidur', 'VERB'), ('sebentar', 'ADV'), ('sekiranya', 'NOUN'), ('mengantuk', 'NOUN'), ('ketika', 'SCONJ'), ('memandu', 'VERB')]
+    [('Kuala', 'PROPN'), ('Lumpur', 'PROPN'), ('Sempena', 'PROPN'), ('sambutan', 'NOUN'), ('Aidilfitri', 'PROPN'), ('minggu', 'NOUN'), ('depan', 'ADJ'), ('Perdana', 'PROPN'), ('Menteri', 'PROPN'), ('Tun', 'PROPN'), ('Dr', 'PROPN'), ('Mahathir', 'PROPN'), ('Mohamad', 'PROPN'), ('dan', 'CCONJ'), ('Menteri', 'PROPN'), ('Pengangkutan', 'PROPN'), ('Anthony', 'PROPN'), ('Loke', 'PROPN'), ('Siew', 'PROPN'), ('Fook', 'PROPN'), ('menitipkan', 'VERB'), ('pesanan', 'NOUN'), ('khas', 'ADJ'), ('kepada', 'ADP'), ('orang', 'NOUN'), ('ramai', 'ADJ'), ('yang', 'PRON'), ('mahu', 'ADV'), ('pulang', 'VERB'), ('ke', 'ADP'), ('kampung', 'NOUN'), ('halaman', 'NOUN'), ('masing-masing', 'VERB'), ('Dalam', 'ADP'), ('video', 'NOUN'), ('pendek', 'ADJ'), ('terbitan', 'NOUN'), ('Jabatan', 'PROPN'), ('Keselamatan', 'PROPN'), ('Jalan', 'PROPN'), ('Raya', 'PROPN'), ('Jkjr', 'PROPN'), ('itu', 'DET'), ('Dr', 'PROPN'), ('Mahathir', 'PROPN'), ('menasihati', 'VERB'), ('mereka', 'PRON'), ('supaya', 'SCONJ'), ('berhenti', 'VERB'), ('berehat', 'NOUN'), ('dan', 'CCONJ'), ('tidur', 'VERB'), ('sebentar', 'ADV'), ('sekiranya', 'NOUN'), ('mengantuk', 'VERB'), ('ketika', 'SCONJ'), ('memandu', 'VERB')]
     
     Testing entity-network model
-    [('kuala', 'PROPN'), ('lumpur', 'PROPN'), ('sempena', 'PROPN'), ('sambutan', 'PROPN'), ('aidilfitri', 'PROPN'), ('minggu', 'PROPN'), ('depan', 'PROPN'), ('perdana', 'PROPN'), ('menteri', 'PROPN'), ('tun', 'PROPN'), ('dr', 'PROPN'), ('mahathir', 'PROPN'), ('mohamad', 'PROPN'), ('dan', 'CCONJ'), ('menteri', 'PROPN'), ('pengangkutan', 'NOUN'), ('anthony', 'NOUN'), ('loke', 'NOUN'), ('siew', 'VERB'), ('fook', 'NOUN'), ('menitipkan', 'NOUN'), ('pesanan', 'VERB'), ('khas', 'ADJ'), ('kepada', 'ADP'), ('orang', 'NOUN'), ('ramai', 'ADJ'), ('yang', 'PRON'), ('mahu', 'ADV'), ('pulang', 'VERB'), ('ke', 'ADP'), ('kampung', 'NOUN'), ('halaman', 'NOUN'), ('masing-masing', 'NOUN'), ('dalam', 'ADP'), ('video', 'NOUN'), ('pendek', 'ADJ'), ('terbitan', 'NOUN'), ('jabatan', 'NOUN'), ('keselamatan', 'PROPN'), ('jalan', 'PROPN'), ('raya', 'PROPN'), ('jkjr', 'PROPN'), ('itu', 'DET'), ('dr', 'PROPN'), ('mahathir', 'VERB'), ('menasihati', 'PROPN'), ('mereka', 'PRON'), ('supaya', 'ADV'), ('berhenti', 'VERB'), ('berehat', 'NOUN'), ('dan', 'CCONJ'), ('tidur', 'NOUN'), ('sebentar', 'ADV'), ('sekiranya', 'NOUN'), ('mengantuk', 'ADJ'), ('ketika', 'SCONJ'), ('memandu', 'VERB')]
+    [('Kuala', 'NUM'), ('Lumpur', 'NUM'), ('Sempena', 'NUM'), ('sambutan', 'NUM'), ('Aidilfitri', 'SYM'), ('minggu', 'NOUN'), ('depan', 'NOUN'), ('Perdana', 'NUM'), ('Menteri', 'NUM'), ('Tun', 'PROPN'), ('Dr', 'PROPN'), ('Mahathir', 'PROPN'), ('Mohamad', 'NUM'), ('dan', 'CCONJ'), ('Menteri', 'NUM'), ('Pengangkutan', 'NUM'), ('Anthony', 'NUM'), ('Loke', 'NUM'), ('Siew', 'NUM'), ('Fook', 'NUM'), ('menitipkan', 'NUM'), ('pesanan', 'SYM'), ('khas', 'PROPN'), ('kepada', 'PROPN'), ('orang', 'PROPN'), ('ramai', 'NOUN'), ('yang', 'PRON'), ('mahu', 'VERB'), ('pulang', 'PROPN'), ('ke', 'PROPN'), ('kampung', 'VERB'), ('halaman', 'NUM'), ('masing-masing', 'PROPN'), ('Dalam', 'PROPN'), ('video', 'PROPN'), ('pendek', 'PROPN'), ('terbitan', 'NUM'), ('Jabatan', 'NOUN'), ('Keselamatan', 'NUM'), ('Jalan', 'NUM'), ('Raya', 'NUM'), ('Jkjr', 'NUM'), ('itu', 'NUM'), ('Dr', 'NUM'), ('Mahathir', 'NUM'), ('menasihati', 'NUM'), ('mereka', 'NOUN'), ('supaya', 'NOUN'), ('berhenti', 'ADJ'), ('berehat', 'ADJ'), ('dan', 'CCONJ'), ('tidur', 'NOUN'), ('sebentar', 'NOUN'), ('sekiranya', 'PROPN'), ('mengantuk', 'PROPN'), ('ketika', 'PROPN'), ('memandu', 'PROPN')]
     
     Testing attention model
-    [('kuala', 'X'), ('lumpur', 'DET'), ('sempena', 'X'), ('sambutan', 'DET'), ('aidilfitri', 'X'), ('minggu', 'DET'), ('depan', 'X'), ('perdana', 'DET'), ('menteri', 'X'), ('tun', 'DET'), ('dr', 'X'), ('mahathir', 'DET'), ('mohamad', 'X'), ('dan', 'DET'), ('menteri', 'X'), ('pengangkutan', 'DET'), ('anthony', 'X'), ('loke', 'DET'), ('siew', 'X'), ('fook', 'DET'), ('menitipkan', 'X'), ('pesanan', 'DET'), ('khas', 'X'), ('kepada', 'DET'), ('orang', 'X'), ('ramai', 'DET'), ('yang', 'X'), ('mahu', 'DET'), ('pulang', 'X'), ('ke', 'DET'), ('kampung', 'X'), ('halaman', 'DET'), ('masing-masing', 'X'), ('dalam', 'DET'), ('video', 'X'), ('pendek', 'DET'), ('terbitan', 'X'), ('jabatan', 'DET'), ('keselamatan', 'X'), ('jalan', 'DET'), ('raya', 'X'), ('jkjr', 'DET'), ('itu', 'X'), ('dr', 'DET'), ('mahathir', 'X'), ('menasihati', 'DET'), ('mereka', 'X'), ('supaya', 'DET'), ('berhenti', 'X'), ('berehat', 'DET'), ('dan', 'X'), ('tidur', 'DET'), ('sebentar', 'X'), ('sekiranya', 'DET'), ('mengantuk', 'X'), ('ketika', 'DET'), ('memandu', 'VERB')]
+    [('Kuala', 'PROPN'), ('Lumpur', 'PROPN'), ('Sempena', 'PROPN'), ('sambutan', 'NOUN'), ('Aidilfitri', 'PROPN'), ('minggu', 'NOUN'), ('depan', 'ADJ'), ('Perdana', 'PROPN'), ('Menteri', 'PROPN'), ('Tun', 'PROPN'), ('Dr', 'PROPN'), ('Mahathir', 'PROPN'), ('Mohamad', 'PROPN'), ('dan', 'CCONJ'), ('Menteri', 'PROPN'), ('Pengangkutan', 'PROPN'), ('Anthony', 'PROPN'), ('Loke', 'PROPN'), ('Siew', 'PROPN'), ('Fook', 'PROPN'), ('menitipkan', 'VERB'), ('pesanan', 'NOUN'), ('khas', 'ADJ'), ('kepada', 'ADP'), ('orang', 'NOUN'), ('ramai', 'ADJ'), ('yang', 'PRON'), ('mahu', 'ADV'), ('pulang', 'VERB'), ('ke', 'ADP'), ('kampung', 'NOUN'), ('halaman', 'NOUN'), ('masing-masing', 'VERB'), ('Dalam', 'ADP'), ('video', 'NOUN'), ('pendek', 'ADJ'), ('terbitan', 'NOUN'), ('Jabatan', 'NOUN'), ('Keselamatan', 'PROPN'), ('Jalan', 'PROPN'), ('Raya', 'PROPN'), ('Jkjr', 'PROPN'), ('itu', 'DET'), ('Dr', 'PROPN'), ('Mahathir', 'PROPN'), ('menasihati', 'VERB'), ('mereka', 'PRON'), ('supaya', 'SCONJ'), ('berhenti', 'VERB'), ('berehat', 'NOUN'), ('dan', 'CCONJ'), ('tidur', 'VERB'), ('sebentar', 'ADV'), ('sekiranya', 'NOUN'), ('mengantuk', 'VERB'), ('ketika', 'CCONJ'), ('memandu', 'VERB')]
     
+
+
+Print important features from deep learning model
+-------------------------------------------------
+
+.. code:: ipython3
+
+    bahdanau = malaya.pos.deep_model('bahdanau')
+    bahdanau.print_features(10)
+
+
+.. parsed-literal::
+
+    Top-10 positive:
+    1971: 4.942553
+    Puisi: 4.754801
+    27: 4.659504
+    buahan: 4.551769
+    kaisarnya: 4.503439
+    Kedua: 4.459490
+    Times: 4.378673
+    perlengkapan: 4.342615
+    kelautan: 4.273527
+    Persija: 4.260429
+    
+    Top-10 negative:
+    Sakova: -5.102705
+    engkau: -5.000618
+    Cin: -4.962496
+    bermesin: -4.823804
+    Husm: -4.719638
+    saatnya: -4.693280
+    Vireta: -4.615777
+    menjamu: -4.589007
+    Aff: -4.437630
+    dilahirkan: -4.422080
+
+
+Print important transitions from deep learning model
+----------------------------------------------------
+
+.. code:: ipython3
+
+    bahdanau.print_transitions(10)
+
+
+.. parsed-literal::
+
+    Top-10 likely transitions:
+    SCONJ -> CCONJ: 0.688627
+    SCONJ -> PRON: 0.539603
+    ADV -> NUM: 0.517046
+    PROPN -> PART: 0.479875
+    ADP -> DET: 0.470052
+    AUX -> ADV: 0.424240
+    PRON -> NUM: 0.420834
+    PAD -> AUX: 0.415958
+    NUM -> ADV: 0.401860
+    PART -> SYM: 0.395167
+    
+    Top-10 unlikely transitions:
+    ADP -> CCONJ: -0.791846
+    DET -> X: -0.675577
+    SCONJ -> SCONJ: -0.665004
+    VERB -> VERB: -0.646812
+    PART -> NUM: -0.644018
+    CCONJ -> CCONJ: -0.590792
+    AUX -> NUM: -0.579523
+    ADV -> SCONJ: -0.569171
+    NUM -> VERB: -0.568291
+    PRON -> SYM: -0.563159
 
 
 Voting stack model
@@ -242,27 +321,27 @@ Voting stack model
 
 .. parsed-literal::
 
-    [('kuala', 'PROPN'),
-     ('lumpur', 'PROPN'),
-     ('sempena', 'PROPN'),
+    [('Kuala', 'PROPN'),
+     ('Lumpur', 'PROPN'),
+     ('Sempena', 'NUM'),
      ('sambutan', 'NOUN'),
-     ('aidilfitri', 'PROPN'),
-     ('minggu', 'PROPN'),
-     ('depan', 'ADJ'),
-     ('perdana', 'PROPN'),
-     ('menteri', 'PROPN'),
-     ('tun', 'PROPN'),
-     ('dr', 'PROPN'),
-     ('mahathir', 'PROPN'),
-     ('mohamad', 'PROPN'),
+     ('Aidilfitri', 'PROPN'),
+     ('minggu', 'NOUN'),
+     ('depan', 'ADP'),
+     ('Perdana', 'PROPN'),
+     ('Menteri', 'PROPN'),
+     ('Tun', 'PROPN'),
+     ('Dr', 'PROPN'),
+     ('Mahathir', 'PROPN'),
+     ('Mohamad', 'PROPN'),
      ('dan', 'CCONJ'),
-     ('menteri', 'NOUN'),
-     ('pengangkutan', 'PROPN'),
-     ('anthony', 'PROPN'),
-     ('loke', 'PROPN'),
-     ('siew', 'PROPN'),
-     ('fook', 'NOUN'),
-     ('menitipkan', 'PROPN'),
+     ('Menteri', 'PROPN'),
+     ('Pengangkutan', 'PROPN'),
+     ('Anthony', 'PROPN'),
+     ('Loke', 'PROPN'),
+     ('Siew', 'PROPN'),
+     ('Fook', 'PROPN'),
+     ('menitipkan', 'VERB'),
      ('pesanan', 'NOUN'),
      ('khas', 'ADJ'),
      ('kepada', 'ADP'),
@@ -275,18 +354,18 @@ Voting stack model
      ('kampung', 'NOUN'),
      ('halaman', 'NOUN'),
      ('masing-masing', 'NOUN'),
-     ('dalam', 'ADP'),
+     ('Dalam', 'ADP'),
      ('video', 'NOUN'),
      ('pendek', 'ADJ'),
      ('terbitan', 'NOUN'),
-     ('jabatan', 'NOUN'),
-     ('keselamatan', 'PROPN'),
-     ('jalan', 'PROPN'),
-     ('raya', 'PROPN'),
-     ('jkjr', 'PROPN'),
+     ('Jabatan', 'NOUN'),
+     ('Keselamatan', 'NUM'),
+     ('Jalan', 'PROPN'),
+     ('Raya', 'PROPN'),
+     ('Jkjr', 'NUM'),
      ('itu', 'DET'),
-     ('dr', 'PROPN'),
-     ('mahathir', 'PROPN'),
+     ('Dr', 'PROPN'),
+     ('Mahathir', 'PROPN'),
      ('menasihati', 'VERB'),
      ('mereka', 'PRON'),
      ('supaya', 'SCONJ'),
@@ -294,10 +373,10 @@ Voting stack model
      ('berehat', 'VERB'),
      ('dan', 'CCONJ'),
      ('tidur', 'VERB'),
-     ('sebentar', 'ADV'),
+     ('sebentar', 'ADP'),
      ('sekiranya', 'NOUN'),
-     ('mengantuk', 'PROPN'),
-     ('ketika', 'SCONJ'),
+     ('mengantuk', 'NUM'),
+     ('ketika', 'NUM'),
      ('memandu', 'VERB')]
 
 

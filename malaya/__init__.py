@@ -225,7 +225,42 @@ def describe_entities():
     print('event - unique event happened, etc')
 
 
+def describe_dependency():
+    """
+    Describe Dependency supported.
+    """
+    print('acl - clausal modifier of noun')
+    print('advcl - adverbial clause modifier')
+    print('advmod - adverbial modifier')
+    print('amod - adjectival modifier')
+    print('appos - appositional modifier')
+    print('aux - auxiliary')
+    print('case - case marking')
+    print('ccomp - clausal complement')
+    print('compound - compound')
+    print('compound:plur - plural compound')
+    print('conj - conjunct')
+    print('cop - cop')
+    print('csubj - clausal subject')
+    print('dep - dependent')
+    print('det - determiner')
+    print('fixed - multi-word expression')
+    print('flat - name')
+    print('iobj - indirect object')
+    print('mark - marker')
+    print('nmod - nominal modifier')
+    print('nsubj - nominal subject')
+    print('obj - direct object')
+    print('parataxis - parataxis')
+    print('root - root')
+    print('xcomp - open clausal complement')
+    print(
+        'you can read more from https://universaldependencies.org/en/dep/xcomp.html'
+    )
+
+
 from . import cluster
+from . import dependency
 from . import emotion
 from . import entity
 from . import language_detection

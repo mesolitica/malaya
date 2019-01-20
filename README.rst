@@ -63,6 +63,9 @@ Features
 -  **Part-of-Speech Recognition**
 
    Latest state-of-art CRF deep learning models to do Naming Entity Recognition.
+-  **Dependency Parsing**
+
+   Latest state-of-art CRF deep learning models to do analyzes the grammatical structure of a sentence, establishing relationships between words.
 -  **Sentiment Analysis**
 
    From BERT, Fast-Text, Dynamic-Memory Network, Sparse Tensorflow, Attention Neural Network to build deep sentiment analysis models.

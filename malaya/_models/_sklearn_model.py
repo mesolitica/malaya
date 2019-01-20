@@ -8,7 +8,7 @@ from ..texts._text_functions import (
     entities_textcleaning,
     language_detection_textcleaning,
 )
-from ..texts.vectorizer import features_crf
+from ..texts.vectorizer import features_crf, features_crf_dependency
 
 
 def transitions(trans_features):
@@ -81,6 +81,102 @@ class CRF:
         print('\nTop-%d negative:' % (top_k))
         state_features(
             Counter(self._model.state_features_).most_common()[-top_k:]
+        )
+
+
+class DEPENDENCY:
+    def __init__(self, tag, depend):
+        self._tag = tag
+        self._depend = depend
+
+    def predict(self, string):
+        """
+        Tag a string
+
+        Parameters
+        ----------
+        string : str
+
+        Returns
+        -------
+        string: tagged string
+        """
+        assert isinstance(string, str), 'input must be a string'
+        string = entities_textcleaning(string)
+        if len(string) > 120:
+            raise Exception(
+                'Dependency parsing only able to accept string less than 120 words'
+            )
+        batch_x = [features_crf(string, index) for index in range(len(string))]
+        tagging = self._tag.predict_single(batch_x)
+        batch_x = [
+            features_crf_dependency(string, tagging, index)
+            for index in range(len(string))
+        ]
+        depend = [int(i) for i in self._depend.predict_single(batch_x)]
+        for i in range(len(depend)):
+            if depend[i] == 0 and tagging[i] != 'root':
+                tagging[i] = 'UNK'
+            elif depend[i] != 0 and tagging[i] == 'root':
+                tagging[i] = 'UNK'
+            elif depend[i] > len(tagging):
+                depend[i] = len(tagging)
+        return (
+            [(string[i], tagging[i]) for i in range(len(depend))],
+            [(string[i], depend[i]) for i in range(len(depend))],
+        )
+
+    def print_features(self, top_k = 10):
+        """
+        Print important top-k features for tagging dependency
+
+        Parameters
+        ----------
+        top_k : int
+        """
+        assert isinstance(top_k, int), 'input must be an integer'
+        print('Top-%d tagging positive:' % (top_k))
+        state_features(Counter(self._tag.state_features_).most_common(top_k))
+
+        print('\nTop-%d tagging negative:' % (top_k))
+        state_features(
+            Counter(self._tag.state_features_).most_common()[-top_k:]
+        )
+
+    def print_transitions_tag(self, top_k = 10):
+        """
+        Print important top-k transitions for tagging dependency
+
+        Parameters
+        ----------
+        top_k : int
+        """
+        assert isinstance(top_k, int), 'input must be an integer'
+        print('Top-%d likely tagging transitions:' % (top_k))
+        transitions(Counter(self._tag.transition_features_).most_common(top_k))
+
+        print('\nTop-%d unlikely tagging transitions:' % (top_k))
+        transitions(
+            Counter(self._tag.transition_features_).most_common()[-top_k:]
+        )
+
+    def print_transitions_index(self, top_k = 10):
+        """
+        Print important top-k transitions for indexing dependency
+
+        Parameters
+        ----------
+        top_k : int
+        """
+        assert isinstance(top_k, int), 'input must be an integer'
+        print('Top-%d likely indexing transitions:' % (top_k))
+        transitions(
+            Counter(self._depend.transition_features_).most_common(top_k)
+        )
+
+        print('\nTop-%d unlikely indexing transitions:' % (top_k))
+        transitions(
+            Counter(self._depend.transition_features_).most_common()[-top_k:]
         )
 
 

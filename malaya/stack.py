@@ -8,7 +8,7 @@ def _most_common(l):
 
 def voting_stack(models, text):
     """
-    Stacking for POS and Entities Recognition models.
+    Stacking for POS, Entities and Dependency models.
 
     Parameters
     ----------
@@ -23,16 +23,37 @@ def voting_stack(models, text):
     """
     assert isinstance(models, list), 'models must be a list'
     assert isinstance(text, str), 'text must be a string'
-    results, texts, votes = [], [], []
+    results, texts, votes, votes_indices, indices = [], [], [], [], []
+    is_dependency = False
     for i in range(len(models)):
         assert 'predict' in dir(models[i]), 'all models must able to predict'
-        predicted = np.array(models[i].predict(text))
+        predicted = models[i].predict(text)
+        if isinstance(predicted, tuple):
+            is_dependency = True
+            predicted, indexing = predicted
+            indexing = np.array(indexing)
+            indices.append(indexing[:, 1:2])
+
+        predicted = np.array(predicted)
         results.append(predicted[:, 1:2])
         texts.append(predicted[:, 0])
     concatenated = np.concatenate(results, axis = 1)
     for row in concatenated:
         votes.append(_most_common(row.tolist()))
-    return list(map(lambda X: (X[0], X[1]), list(zip(texts[-1], votes))))
+    if is_dependency:
+        concatenated = np.concatenate(indices, axis = 1)
+        for row in concatenated:
+            votes_indices.append(_most_common(row.tolist()))
+    output = list(map(lambda X: (X[0], X[1]), list(zip(texts[-1], votes))))
+    if is_dependency:
+        return (
+            output,
+            list(
+                map(lambda X: (X[0], X[1]), list(zip(texts[-1], votes_indices)))
+            ),
+        )
+    else:
+        return output
 
 
 def predict_stack(models, text, mode = 'gmean'):

@@ -386,23 +386,24 @@ def add_ngram(sequences, token_indice, ngram = (2, 3)):
     return new_sequences
 
 
-def char_str_idx(corpus, dic, UNK = 0):
+def char_str_idx(corpus, dic, UNK = 2):
     maxlen = max([len(i) for i in corpus])
     X = np.zeros((len(corpus), maxlen))
     for i in range(len(corpus)):
-        for no, k in enumerate(corpus[i][:maxlen][::-1]):
-            X[i, -1 - no] = dic.get(k, UNK)
+        for no, k in enumerate(corpus[i][:maxlen]):
+            X[i, no] = dic.get(k, UNK)
     return X
 
 
-def generate_char_seq(batch, idx2word, char2idx):
-    x = [[len(idx2word[i]) for i in k] for k in batch]
+def generate_char_seq(batch, dic, UNK = 2):
+    maxlen_c = max([len(k) for k in batch])
+    x = [[len(i) for i in k] for k in batch]
     maxlen = max([j for i in x for j in i])
-    temp = np.zeros((batch.shape[0], batch.shape[1], maxlen), dtype = np.int32)
-    for i in range(batch.shape[0]):
-        for k in range(batch.shape[1]):
-            for no, c in enumerate(idx2word[batch[i, k]].lower()):
-                temp[i, k, -1 - no] = char2idx[c]
+    temp = np.zeros((len(batch), maxlen_c, maxlen), dtype = np.int32)
+    for i in range(len(batch)):
+        for k in range(len(batch[i])):
+            for no, c in enumerate(batch[i][k][::-1]):
+                temp[i, k, -1 - no] = dic.get(c, UNK)
     return temp
 
 

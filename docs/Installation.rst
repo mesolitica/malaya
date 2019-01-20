@@ -25,13 +25,13 @@ From Source
 -----------
 
 Malaya is actively developed on
-`Github <https://github.com/devconx/malaya>`__.
+`Github <https://github.com/huseinzol05/malaya>`__.
 
 You can clone the public repo:
 
 .. code:: python
 
-    git clone https://github.com/devconx/malaya
+    git clone https://github.com/huseinzol05/malaya
 
 Once you have the source, you can install it into your site-packages
 with:

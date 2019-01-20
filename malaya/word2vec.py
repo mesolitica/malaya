@@ -287,10 +287,15 @@ class word2vec:
         -------
         list_dictionaries: list of results
         """
-        import matplotlib.pyplot as plt
-        import seaborn as sns
+        try:
+            import matplotlib.pyplot as plt
+            import seaborn as sns
 
-        sns.set()
+            sns.set()
+        except:
+            raise Exception(
+                'matplotlib and seaborn not installed. Please install it and try again.'
+            )
         idx = [
             self.words.index(e[0] if isinstance(e, list) else e) for e in labels
         ]

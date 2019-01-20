@@ -15,6 +15,7 @@ from ..texts._text_functions import (
     generate_char_seq,
     language_detection_textcleaning,
 )
+from .._utils._parse_dependency import DependencyGraph
 from ..stem import _classification_textcleaning_stemmer_attention
 
 
@@ -54,6 +55,186 @@ class _SPARSE_SOFTMAX_MODEL:
         self.logits = tf.layers.dense(embed, output_size)
 
 
+class DEPENDENCY:
+    def __init__(
+        self,
+        X,
+        X_char,
+        logits,
+        logits_depends,
+        settings,
+        sess,
+        model,
+        transitions,
+        transitions_depends,
+        features,
+    ):
+        self._X = X
+        self._X_char = X_char
+        self._logits = logits
+        self._logits_depends = logits_depends
+        self._settings = settings
+        self._sess = sess
+        self._model = model
+        self._settings['idx2tag'] = {
+            int(k): v for k, v in self._settings['idx2tag'].items()
+        }
+        self.transitions, self.transitions_depends, self.features = self._sess.run(
+            [transitions, transitions_depends, features]
+        )
+
+    def print_transitions_tag(self, top_k = 10):
+        """
+        Print important top-k transitions for tagging dependency
+
+        Parameters
+        ----------
+        top_k : int
+        """
+        assert isinstance(top_k, int), 'input must be an integer'
+        print('Top-%d likely transitions:' % (top_k))
+        indices = np.argsort(self.transitions.flatten())[::-1]
+        top_trans = [
+            np.unravel_index(i, self.transitions.shape) for i in indices[:top_k]
+        ]
+        for i in range(top_k):
+            print(
+                '%s -> %s: %f'
+                % (
+                    self._settings['idx2tag'][top_trans[i][0]],
+                    self._settings['idx2tag'][top_trans[i][1]],
+                    self.transitions[top_trans[i]],
+                )
+            )
+
+        bottom_trans = [
+            np.unravel_index(i, self.transitions.shape)
+            for i in indices[::-1][:top_k]
+        ]
+        print('\nTop-%d unlikely transitions:' % (top_k))
+        for i in range(top_k):
+            print(
+                '%s -> %s: %f'
+                % (
+                    self._settings['idx2tag'][bottom_trans[i][0]],
+                    self._settings['idx2tag'][bottom_trans[i][1]],
+                    self.transitions[bottom_trans[i]],
+                )
+            )
+
+    def print_transitions_index(self, top_k = 10):
+        """
+        Print important top-k transitions for indexing dependency
+
+        Parameters
+        ----------
+        top_k : int
+        """
+        assert isinstance(top_k, int), 'input must be an integer'
+        print('Top-%d likely transitions:' % (top_k))
+        indices = np.argsort(self.transitions_depends.flatten())[::-1]
+        top_trans = [
+            np.unravel_index(i, self.transitions_depends.shape)
+            for i in indices[:top_k]
+        ]
+        for i in range(top_k):
+            print(
+                '%d -> %d: %f'
+                % (
+                    top_trans[i][0],
+                    top_trans[i][1],
+                    self.transitions_depends[top_trans[i]],
+                )
+            )
+
+        bottom_trans = [
+            np.unravel_index(i, self.transitions_depends.shape)
+            for i in indices[::-1][:top_k]
+        ]
+        print('\nTop-%d unlikely transitions:' % (top_k))
+        for i in range(top_k):
+            print(
+                '%d -> %d: %f'
+                % (
+                    bottom_trans[i][0],
+                    bottom_trans[i][1],
+                    self.transitions_depends[bottom_trans[i]],
+                )
+            )
+
+    def print_features(self, top_k = 10):
+        """
+        Print important top-k features
+
+        Parameters
+        ----------
+        top_k : int
+        """
+        assert isinstance(top_k, int), 'input must be an integer'
+        _features = self.features.sum(axis = 1)
+        indices = np.argsort(_features)[::-1]
+        rev_indices = indices[::-1]
+        print('Top-%d positive:' % (top_k))
+        for i in range(top_k):
+            print(
+                '%s: %f'
+                % (
+                    self._settings['idx2word'][str(indices[i])],
+                    _features[indices[i]],
+                )
+            )
+
+        print('\nTop-%d negative:' % (top_k))
+        for i in range(top_k):
+            print(
+                '%s: %f'
+                % (
+                    self._settings['idx2word'][str(rev_indices[i])],
+                    _features[rev_indices[i]],
+                )
+            )
+
+    def predict(self, string):
+        """
+        Tagging a string.
+
+        Parameters
+        ----------
+        string : str
+
+        Returns
+        -------
+        string: tagged string
+        """
+        assert isinstance(string, str), 'input must be a string'
+        string = entities_textcleaning(string)
+        if len(string) > 120:
+            raise Exception(
+                'Dependency parsing only able to accept string less than 120 words'
+            )
+        batch_x = char_str_idx([string], self._settings['word2idx'], 2)
+        batch_x_char = generate_char_seq(
+            [string], self._settings['char2idx'], 2
+        )
+        tagging, depend = self._sess.run(
+            [self._logits, self._logits_depends],
+            feed_dict = {self._X: batch_x, self._X_char: batch_x_char},
+        )
+        tagging = [self._settings['idx2tag'][i] for i in tagging[0]]
+        depend = depend[0] - 1
+        for i in range(len(depend)):
+            if depend[i] == 0 and tagging[i] != 'root':
+                tagging[i] = 'UNK'
+            elif depend[i] != 0 and tagging[i] == 'root':
+                tagging[i] = 'UNK'
+            elif depend[i] > len(tagging):
+                depend[i] = len(tagging)
+        return (
+            [(string[i], tagging[i]) for i in range(len(depend))],
+            [(string[i], depend[i]) for i in range(len(depend))],
+        )
+
+
 class TAGGING:
     def __init__(
         self,
@@ -63,6 +244,8 @@ class TAGGING:
         settings,
         sess,
         model,
+        transitions,
+        features,
         is_lower = True,
         story = None,
     ):
@@ -74,13 +257,83 @@ class TAGGING:
         self._model = model
         self._is_lower = is_lower
         self._story = story
-
-        self._settings['idx2word'] = {
-            int(k): v for k, v in self._settings['idx2word'].items()
-        }
         self._settings['idx2tag'] = {
             int(k): v for k, v in self._settings['idx2tag'].items()
         }
+        self.transitions, self.features = self._sess.run(
+            [transitions, features]
+        )
+
+    def print_transitions(self, top_k = 10):
+        """
+        Print important top-k transitions
+
+        Parameters
+        ----------
+        top_k : int
+        """
+        assert isinstance(top_k, int), 'input must be an integer'
+        print('Top-%d likely transitions:' % (top_k))
+        indices = np.argsort(self.transitions.flatten())[::-1]
+        top_trans = [
+            np.unravel_index(i, self.transitions.shape) for i in indices[:top_k]
+        ]
+        for i in range(top_k):
+            print(
+                '%s -> %s: %f'
+                % (
+                    self._settings['idx2tag'][top_trans[i][0]],
+                    self._settings['idx2tag'][top_trans[i][1]],
+                    self.transitions[top_trans[i]],
+                )
+            )
+
+        bottom_trans = [
+            np.unravel_index(i, self.transitions.shape)
+            for i in indices[::-1][:top_k]
+        ]
+        print('\nTop-%d unlikely transitions:' % (top_k))
+        for i in range(top_k):
+            print(
+                '%s -> %s: %f'
+                % (
+                    self._settings['idx2tag'][bottom_trans[i][0]],
+                    self._settings['idx2tag'][bottom_trans[i][1]],
+                    self.transitions[bottom_trans[i]],
+                )
+            )
+
+    def print_features(self, top_k = 10):
+        """
+        Print important top-k features
+
+        Parameters
+        ----------
+        top_k : int
+        """
+        assert isinstance(top_k, int), 'input must be an integer'
+        _features = self.features.sum(axis = 1)
+        indices = np.argsort(_features)[::-1]
+        rev_indices = indices[::-1]
+        print('Top-%d positive:' % (top_k))
+        for i in range(top_k):
+            print(
+                '%s: %f'
+                % (
+                    self._settings['idx2word'][str(indices[i])],
+                    _features[indices[i]],
+                )
+            )
+
+        print('\nTop-%d negative:' % (top_k))
+        for i in range(top_k):
+            print(
+                '%s: %f'
+                % (
+                    self._settings['idx2word'][str(rev_indices[i])],
+                    _features[rev_indices[i]],
+                )
+            )
 
     def predict(self, string):
         """
@@ -99,7 +352,7 @@ class TAGGING:
         string = entities_textcleaning(string)
         batch_x = char_str_idx([string], self._settings['word2idx'], 2)
         batch_x_char = generate_char_seq(
-            batch_x, self._settings['idx2word'], self._settings['char2idx']
+            [string], self._settings['char2idx'], 2
         )
         if self._model == 'entity-network':
             batch_x_expand = np.expand_dims(batch_x, axis = 1)

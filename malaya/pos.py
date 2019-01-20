@@ -68,7 +68,7 @@ def crf():
     -------
     CRF : malaya.sklearn_model.CRF class
     """
-    return _tag_class.crf(PATH_POS, S3_PATH_POS, 'pos')
+    return _tag_class.crf(PATH_POS, S3_PATH_POS, 'pos', is_lower = False)
 
 
 def deep_model(model = 'concat'):
@@ -90,4 +90,6 @@ def deep_model(model = 'concat'):
     -------
     TAGGING: malaya.tensorflow_model.TAGGING class
     """
-    return _tag_class.deep_model(PATH_POS, S3_PATH_POS, 'pos', model = model)
+    return _tag_class.deep_model(
+        PATH_POS, S3_PATH_POS, 'pos', model = model, is_lower = False
+    )
