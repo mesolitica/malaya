@@ -119,7 +119,7 @@ class _DEEP_STEMMER:
 
 def naive(word):
     """
-    Stem a string using Regex.
+    Stem a string using startswith and endswith.
 
     Parameters
     ----------
@@ -130,18 +130,17 @@ def naive(word):
     string: stemmed string
     """
     assert isinstance(word, str), 'input must be a string'
-    hujung_result = re.findall(r'^(.*?)(%s)$' % ('|'.join(hujung)), word)
-    word = hujung_result[0][0] if len(hujung_result) else word
-    permulaan_result = re.findall(
-        r'^(.*?)(%s)' % ('|'.join(permulaan[::-1])), word
-    )
-    permulaan_result.extend(
-        re.findall(r'^(.*?)(%s)' % ('|'.join(permulaan)), word)
-    )
-    mula = permulaan_result if len(permulaan_result) else ''
-    if len(mula):
-        mula = mula[1][1] if len(mula[1][1]) > len(mula[0][1]) else mula[0][1]
-    return word.replace(mula, '')
+    hujung_result = [e for e in hujung if word.endswith(e)]
+    if len(hujung_result):
+        hujung_result = max(hujung_result, key = len)
+        if len(hujung_result):
+            word = hujung_result[: -len(hujung_result)]
+    permulaan_result = [e for e in permulaan if word.startswith(e)]
+    if len(permulaan_result):
+        permulaan_result = max(permulaan_result, key = len)
+        if len(permulaan_result):
+            word = word[len(permulaan_result) :]
+    return word
 
 
 def sastrawi(string):

@@ -15,6 +15,9 @@ from ._utils._paths import PATH_DEPEND, S3_PATH_DEPEND
 
 
 def dependency_graph(tagging, indexing):
+    """
+    Return helper object for dependency parser results. Only accept coNNl structure
+    """
     result = []
     for i in range(len(tagging)):
         result.append(

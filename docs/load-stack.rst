@@ -7,7 +7,15 @@ models to get a better result! It called stacking.
 
 .. code:: python
 
+    %%time
     import malaya
+
+
+.. parsed-literal::
+
+    CPU times: user 12.9 s, sys: 2.02 s, total: 14.9 s
+    Wall time: 19.8 s
+
 
 .. code:: python
 
@@ -64,7 +72,7 @@ models can use ``malaya.stack.predict_stack``.
 
 .. parsed-literal::
 
-    {'negative': 0.5549062374008705, 'positive': 0.4072814056650461}
+    {'negative': 0.5531448211644178, 'positive': 0.4149916393260348}
 
 
 
@@ -86,12 +94,12 @@ Stack multiple toxic models
 
 .. parsed-literal::
 
-    {'toxic': 0.2057164,
-     'severe_toxic': 0.06787095,
-     'obscene': 0.15890868,
-     'threat': 0.15786164,
-     'insult': 0.15252964,
-     'identity_hate': 0.12279783}
+    {'toxic': 0.18301888,
+     'severe_toxic': 0.055985555,
+     'obscene': 0.14974992,
+     'threat': 0.13208856,
+     'insult': 0.1333515,
+     'identity_hate': 0.112043}
 
 
 
@@ -113,7 +121,37 @@ Stack language detection models
 
 .. parsed-literal::
 
-    {'OTHER': 0.0, 'ENGLISH': 0.0, 'INDONESIA': 0.9305759540118518, 'MALAY': 0.0}
+    {'OTHER': 1.5017138319820553e-05,
+     'ENGLISH': 0.0,
+     'INDONESIA': 0.0,
+     'MALAY': 0.0}
+
+
+
+Stack emotion detection models
+------------------------------
+
+.. code:: python
+
+    xgb = malaya.emotion.xgb()
+    multinomial = malaya.emotion.multinomial()
+    bahdanau = malaya.emotion.deep_model('bahdanau')
+    malaya.stack.predict_stack([xgb,
+                                multinomial,
+                                bahdanau],
+                              'aku benci betul dekat budak gemuk tu')
+
+
+
+
+.. parsed-literal::
+
+    {'anger': 0.6171353854200861,
+     'fear': 0.07710169858027326,
+     'joy': 0.010214449242988227,
+     'love': 0.014409898193053619,
+     'sadness': 0.05711692958171048,
+     'surprise': 0.0049174458080987575}
 
 
 
@@ -123,8 +161,8 @@ Stack tagging models
 For tagging models, we use majority voting stacking. So you need to need
 have more than 2 models to make it perfect, or else, it will pick
 randomly from 2 models. ``malaya.stack.voting_stack`` provides easy
-interface for this kind of stacking. **But only can use for Entites and
-POS recognition.**
+interface for this kind of stacking. **But only can use for Entites, POS
+and Dependency Parsing recognition.**
 
 .. code:: python
 
@@ -172,7 +210,7 @@ POS recognition.**
      ('mohamad', 'person'),
      ('dan', 'OTHER'),
      ('menteri', 'person'),
-     ('pengangkutan', 'OTHER'),
+     ('pengangkutan', 'organization'),
      ('anthony', 'person'),
      ('loke', 'person'),
      ('siew', 'person'),
@@ -198,7 +236,7 @@ POS recognition.**
      ('keselamatan', 'organization'),
      ('jalan', 'organization'),
      ('raya', 'organization'),
-     ('jkjr', 'organization'),
+     ('jkjr', 'law'),
      ('itu', 'OTHER'),
      ('dr', 'person'),
      ('mahathir', 'person'),
@@ -214,3 +252,21 @@ POS recognition.**
      ('mengantuk', 'OTHER'),
      ('ketika', 'OTHER'),
      ('memandu', 'OTHER')]
+
+
+
+.. code:: python
+
+    bahdanau = malaya.dependency.deep_model('bahdanau')
+    luong = malaya.dependency.deep_model('luong')
+    concat = malaya.dependency.deep_model('concat')
+    tagging, indexing = malaya.stack.voting_stack([concat, bahdanau, luong], string)
+
+.. code:: python
+
+    malaya.dependency.dependency_graph(tagging, indexing).to_graphvis()
+
+
+
+
+.. image:: load-stack_files/load-stack_16_0.svg
