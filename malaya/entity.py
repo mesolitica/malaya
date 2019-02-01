@@ -15,18 +15,25 @@ def available_deep_model():
     return ['concat', 'bahdanau', 'luong', 'entity-network', 'attention']
 
 
-def crf():
+def crf(validate = True):
     """
     Load CRF Entities Recognition model.
+
+    Parameters
+    ----------
+    validate: bool, optional (default=True)
+        if True, malaya will check model availability and download if not available.
 
     Returns
     -------
     CRF : malaya._models._sklearn_model.CRF class
     """
-    return _tag_class.crf(PATH_ENTITIES, S3_PATH_ENTITIES, 'entity')
+    return _tag_class.crf(
+        PATH_ENTITIES, S3_PATH_ENTITIES, 'entity', validate = validate
+    )
 
 
-def deep_model(model = 'bahdanau'):
+def deep_model(model = 'bahdanau', validate = True):
     """
     Load deep learning NER model.
 
@@ -40,11 +47,17 @@ def deep_model(model = 'bahdanau'):
         * ``'luong'`` - Concating character and word embedded including Luong Attention for BiLSTM
         * ``'entity-network'`` - Concating character and word embedded on hybrid Entity-Network and RNN
         * ``'attention'`` - Concating character and word embedded with self-attention for BiLSTM
+    validate: bool, optional (default=True)
+        if True, malaya will check model availability and download if not available.
 
     Returns
     -------
     TAGGING: malaya._models._tensorflow_model.TAGGING class
     """
     return _tag_class.deep_model(
-        PATH_ENTITIES, S3_PATH_ENTITIES, 'entity', model = model
+        PATH_ENTITIES,
+        S3_PATH_ENTITIES,
+        'entity',
+        model = model,
+        validate = validate,
     )

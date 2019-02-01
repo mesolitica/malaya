@@ -7,14 +7,21 @@ if not sys.warnoptions:
 import pickle
 import json
 import tensorflow as tf
-from ._utils import check_file, load_graph
+from ._utils import check_file, load_graph, check_available
 from ..texts._text_functions import entities_textcleaning
 from .._models._tensorflow_model import TAGGING
 from .._models._sklearn_model import CRF
 
 
-def crf(path, s3_path, class_name, is_lower = True):
-    check_file(path['crf'], s3_path['crf'])
+def crf(path, s3_path, class_name, is_lower = True, validate = True):
+    if validate:
+        check_file(path['crf'], s3_path['crf'])
+    else:
+        if not check_available(path['crf']):
+            raise Exception(
+                '%s/crf is not available, please `validate = True`'
+                % (class_name)
+            )
     try:
         with open(path['crf']['model'], 'rb') as fopen:
             model = pickle.load(fopen)
@@ -26,7 +33,14 @@ def crf(path, s3_path, class_name, is_lower = True):
     return CRF(model, is_lower = is_lower)
 
 
-def deep_model(path, s3_path, class_name, model = 'bahdanau', is_lower = True):
+def deep_model(
+    path,
+    s3_path,
+    class_name,
+    model = 'bahdanau',
+    is_lower = True,
+    validate = True,
+):
     """
     Load deep learning NER model.
 
@@ -48,7 +62,14 @@ def deep_model(path, s3_path, class_name, model = 'bahdanau', is_lower = True):
     assert isinstance(model, str), 'model must be a string'
     model = model.lower()
     if model in ['concat', 'bahdanau', 'luong', 'entity-network', 'attention']:
-        check_file(path[model], s3_path[model])
+        if validate:
+            check_file(path[model], s3_path[model])
+        else:
+            if not check_available(path[model]):
+                raise Exception(
+                    '%s/%s is not available, please `validate = True`'
+                    % (class_name, model)
+                )
         try:
             with open(path[model]['setting'], 'r') as fopen:
                 nodes = json.loads(fopen.read())

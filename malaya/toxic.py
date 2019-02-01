@@ -8,7 +8,7 @@ import json
 import pickle
 import os
 import tensorflow as tf
-from ._utils._utils import check_file, load_graph
+from ._utils._utils import check_file, load_graph, check_available
 from . import home
 from ._utils._paths import PATH_TOXIC, S3_PATH_TOXIC
 from ._models._sklearn_model import TOXIC
@@ -22,39 +22,71 @@ def available_deep_model():
     return ['bahdanau', 'hierarchical', 'luong', 'fast-text', 'entity-network']
 
 
-def multinomial():
+def multinomial(validate = True):
     """
     Load multinomial toxic model.
 
+    Parameters
+    ----------
+    validate: bool, optional (default=True)
+        if True, malaya will check model availability and download if not available.
+
     Returns
     -------
     TOXIC : malaya._models._sklearn_model.TOXIC class
     """
-    check_file(PATH_TOXIC['multinomial'], S3_PATH_TOXIC['multinomial'])
-    with open(PATH_TOXIC['multinomial']['model'], 'rb') as fopen:
-        multinomial = pickle.load(fopen)
-    with open(PATH_TOXIC['multinomial']['vector'], 'rb') as fopen:
-        vectorize = pickle.load(fopen)
+    if validate:
+        check_file(PATH_TOXIC['multinomial'], S3_PATH_TOXIC['multinomial'])
+    else:
+        if not check_available(PATH_TOXIC['multinomial']):
+            raise Exception(
+                'toxic/multinomial is not available, please `validate = True`'
+            )
+    try:
+        with open(PATH_TOXIC['multinomial']['model'], 'rb') as fopen:
+            multinomial = pickle.load(fopen)
+        with open(PATH_TOXIC['multinomial']['vector'], 'rb') as fopen:
+            vectorize = pickle.load(fopen)
+    except:
+        raise Exception(
+            "model corrupted due to some reasons, please run malaya.clear_cache('toxic/multinomial') and try again"
+        )
     return TOXIC(multinomial, vectorize)
 
 
-def logistic():
+def logistic(validate = True):
     """
     Load logistic toxic model.
+
+    Parameters
+    ----------
+    validate: bool, optional (default=True)
+        if True, malaya will check model availability and download if not available.
 
     Returns
     -------
     TOXIC : malaya._models._sklearn_model.TOXIC class
     """
-    check_file(PATH_TOXIC['logistic'], S3_PATH_TOXIC['logistic'])
-    with open(PATH_TOXIC['logistic']['model'], 'rb') as fopen:
-        logistic = pickle.load(fopen)
-    with open(PATH_TOXIC['logistic']['vector'], 'rb') as fopen:
-        vectorize = pickle.load(fopen)
+    if validate:
+        check_file(PATH_TOXIC['logistic'], S3_PATH_TOXIC['logistic'])
+    else:
+        if not check_available(PATH_TOXIC['logistic']):
+            raise Exception(
+                'toxic/logistic is not available, please `validate = True`'
+            )
+    try:
+        with open(PATH_TOXIC['logistic']['model'], 'rb') as fopen:
+            logistic = pickle.load(fopen)
+        with open(PATH_TOXIC['logistic']['vector'], 'rb') as fopen:
+            vectorize = pickle.load(fopen)
+    except:
+        raise Exception(
+            "model corrupted due to some reasons, please run malaya.clear_cache('toxic/logistic') and try again"
+        )
     return TOXIC(logistic, vectorize)
 
 
-def deep_model(model = 'luong'):
+def deep_model(model = 'luong', validate = True):
     """
     Load deep learning sentiment analysis model.
 
@@ -68,6 +100,8 @@ def deep_model(model = 'luong'):
         * ``'bahdanau'`` - LSTM with bahdanau attention architecture
         * ``'luong'`` - LSTM with luong attention architecture
         * ``'entity-network'`` - Recurrent Entity-Network architecture
+    validate: bool, optional (default=True)
+        if True, malaya will check model availability and download if not available.
 
     Returns
     -------
@@ -76,12 +110,23 @@ def deep_model(model = 'luong'):
     assert isinstance(model, str), 'model must be a string'
     model = model.lower()
     if model == 'fast-text':
-        check_file(PATH_TOXIC['fast-text'], S3_PATH_TOXIC['fast-text'])
-        with open(PATH_TOXIC['fast-text']['setting'], 'r') as fopen:
-            dictionary = json.load(fopen)['dictionary']
-        with open(PATH_TOXIC['fast-text']['pickle'], 'rb') as fopen:
-            ngram = pickle.load(fopen)
-        g = load_graph(PATH_TOXIC['fast-text']['model'])
+        if validate:
+            check_file(PATH_TOXIC['fast-text'], S3_PATH_TOXIC['fast-text'])
+        else:
+            if not check_available(PATH_TOXIC['fast-text']):
+                raise Exception(
+                    'toxic/fast-text is not available, please `validate = True`'
+                )
+        try:
+            with open(PATH_TOXIC['fast-text']['setting'], 'r') as fopen:
+                dictionary = json.load(fopen)['dictionary']
+            with open(PATH_TOXIC['fast-text']['pickle'], 'rb') as fopen:
+                ngram = pickle.load(fopen)
+            g = load_graph(PATH_TOXIC['fast-text']['model'])
+        except:
+            raise Exception(
+                "model corrupted due to some reasons, please run malaya.clear_cache('toxic/fast-text') and try again"
+            )
         return SIGMOID(
             g.get_tensor_by_name('import/Placeholder:0'),
             g.get_tensor_by_name('import/logits:0'),
@@ -91,10 +136,23 @@ def deep_model(model = 'luong'):
             ngram = ngram,
         )
     elif model == 'hierarchical':
-        check_file(PATH_TOXIC['hierarchical'], S3_PATH_TOXIC['hierarchical'])
-        with open(PATH_TOXIC['hierarchical']['setting'], 'r') as fopen:
-            dictionary = json.load(fopen)['dictionary']
-        g = load_graph(PATH_TOXIC['hierarchical']['model'])
+        if validate:
+            check_file(
+                PATH_TOXIC['hierarchical'], S3_PATH_TOXIC['hierarchical']
+            )
+        else:
+            if not check_available(PATH_TOXIC['logistic']):
+                raise Exception(
+                    'toxic/hierarchical is not available, please `validate = True`'
+                )
+        try:
+            with open(PATH_TOXIC['hierarchical']['setting'], 'r') as fopen:
+                dictionary = json.load(fopen)['dictionary']
+            g = load_graph(PATH_TOXIC['hierarchical']['model'])
+        except:
+            raise Exception(
+                "model corrupted due to some reasons, please run malaya.clear_cache('toxic/hierarchical') and try again"
+            )
         return SIGMOID(
             g.get_tensor_by_name('import/Placeholder:0'),
             g.get_tensor_by_name('import/logits:0'),
@@ -104,10 +162,23 @@ def deep_model(model = 'luong'):
             alphas = g.get_tensor_by_name('import/alphas:0'),
         )
     elif model in ['bahdanau', 'luong']:
-        check_file(PATH_TOXIC[model], S3_PATH_TOXIC[model])
-        with open(PATH_TOXIC[model]['setting'], 'r') as fopen:
-            dictionary = json.load(fopen)['dictionary']
-        g = load_graph(PATH_TOXIC[model]['model'])
+        if validate:
+            check_file(PATH_TOXIC[model], S3_PATH_TOXIC[model])
+        else:
+            if not check_available(PATH_TOXIC[model]):
+                raise Exception(
+                    'toxic/%s is not available, please `validate = True`'
+                    % (model)
+                )
+        try:
+            with open(PATH_TOXIC[model]['setting'], 'r') as fopen:
+                dictionary = json.load(fopen)['dictionary']
+            g = load_graph(PATH_TOXIC[model]['model'])
+        except:
+            raise Exception(
+                "model corrupted due to some reasons, please run malaya.clear_cache('toxic/%s') and try again"
+                % (model)
+            )
         return SIGMOID(
             g.get_tensor_by_name('import/Placeholder:0'),
             g.get_tensor_by_name('import/logits:0'),
@@ -117,12 +188,23 @@ def deep_model(model = 'luong'):
             alphas = g.get_tensor_by_name('import/alphas:0'),
         )
     elif model == 'entity-network':
-        check_file(
-            PATH_TOXIC['entity-network'], S3_PATH_TOXIC['entity-network']
-        )
-        with open(PATH_TOXIC['entity-network']['setting'], 'r') as fopen:
-            dictionary = json.load(fopen)
-        g = load_graph(PATH_TOXIC['entity-network']['model'])
+        if validate:
+            check_file(
+                PATH_TOXIC['entity-network'], S3_PATH_TOXIC['entity-network']
+            )
+        else:
+            if not check_available(PATH_TOXIC['entity-network']):
+                raise Exception(
+                    'toxic/entity-network is not available, please `validate = True`'
+                )
+        try:
+            with open(PATH_TOXIC['entity-network']['setting'], 'r') as fopen:
+                dictionary = json.load(fopen)
+            g = load_graph(PATH_TOXIC['entity-network']['model'])
+        except:
+            raise Exception(
+                "model corrupted due to some reasons, please run malaya.clear_cache('toxic/entity-network') and try again"
+            )
         return SIGMOID(
             g.get_tensor_by_name('import/Placeholder_question:0'),
             g.get_tensor_by_name('import/logits:0'),

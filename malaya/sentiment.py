@@ -41,7 +41,7 @@ def available_deep_model():
     ]
 
 
-def sparse_deep_model(model = 'fast-text-char'):
+def sparse_deep_model(model = 'fast-text-char', validate = True):
     """
     Load deep learning sentiment analysis model.
 
@@ -51,6 +51,8 @@ def sparse_deep_model(model = 'fast-text-char'):
         Model architecture supported. Allowed values:
 
         * ``'fast-text-char'`` - Fast-text architecture for character based n-grams, embedded and logits layers only
+    validate: bool, optional (default=True)
+        if True, malaya will check model availability and download if not available.
 
     Returns
     -------
@@ -63,10 +65,11 @@ def sparse_deep_model(model = 'fast-text-char'):
         ['negative', 'positive'],
         2,
         model = model,
+        validate = validate,
     )
 
 
-def deep_model(model = 'luong'):
+def deep_model(model = 'luong', validate = True):
     """
     Load deep learning sentiment analysis model.
 
@@ -82,6 +85,8 @@ def deep_model(model = 'luong'):
         * ``'luong'`` - LSTM with luong attention architecture
         * ``'bert'`` - Deep Bidirectional transformers architecture
         * ``'entity-network'`` - Recurrent Entity-Network architecture
+    validate: bool, optional (default=True)
+        if True, malaya will check model availability and download if not available.
 
     Returns
     -------
@@ -93,12 +98,18 @@ def deep_model(model = 'luong'):
         'sentiment',
         ['negative', 'positive'],
         model = model,
+        validate = validate,
     )
 
 
-def multinomial():
+def multinomial(validate = True):
     """
     Load multinomial sentiment model.
+
+    Parameters
+    ----------
+    validate: bool, optional (default=True)
+        if True, malaya will check model availability and download if not available.
 
     Returns
     -------
@@ -109,12 +120,18 @@ def multinomial():
         S3_PATH_SENTIMENTS,
         'sentiment',
         ['negative', 'positive'],
+        validate = validate,
     )
 
 
-def xgb():
+def xgb(validate = True):
     """
     Load XGB sentiment model.
+
+    Parameters
+    ----------
+    validate: bool, optional (default=True)
+        if True, malaya will check model availability and download if not available.
 
     Returns
     -------
@@ -125,6 +142,7 @@ def xgb():
         S3_PATH_SENTIMENTS,
         'sentiment',
         ['negative', 'positive'],
+        validate = validate,
     )
 
 

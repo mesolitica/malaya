@@ -1,7 +1,15 @@
 
 .. code:: python
 
+    %%time
     import malaya
+
+
+.. parsed-literal::
+
+    CPU times: user 12.3 s, sys: 1.43 s, total: 13.7 s
+    Wall time: 17.4 s
+
 
 Use Sastrawi stemmer
 --------------------
@@ -45,49 +53,74 @@ Use Sastrawi stemmer
 
 
 
+List available deep learning stemming models
+--------------------------------------------
+
+.. code:: python
+
+    malaya.stem.available_deep_model()
+
+
+
+
+.. parsed-literal::
+
+    ['lstm', 'bahdanau', 'luong']
+
+
+
 Load deep learning model
 ------------------------
 
-I really not suggest you to use this model. Use Sastrawi instead. We are
-adding our own rules into Sastrawi stemmer
-
 .. code:: python
 
-    stemmer = malaya.stem.deep_model()
-
-.. code:: python
-
-    stemmer.stem('saya tengah berjalankan sangat-sangat')
+    stemmer = malaya.stem.deep_model('bahdanau')
+    stemmer.stem('saya sangat sukakan awak tetapi awak sangatlah sakai')
 
 
 
 
 .. parsed-literal::
 
-    'saya tengah jalan sangat sangat'
+    'saya sangat suka awak tetap awak sangat saka'
 
 
 
 .. code:: python
 
-    stemmer.stem('saya sangat sukakan awak')
+    stemmer = malaya.stem.deep_model('luong')
+    stemmer.stem('saya sangat sukakan awak tetapi awak sangatlah sakai')
 
 
 
 
 .. parsed-literal::
 
-    'saya sangat suka awak'
+    'saya sangat suka awak tetap awak sangat saka'
 
 
 
 .. code:: python
 
-    stemmer.stem('saya sangat suakkan awak')
+    stemmer = malaya.stem.deep_model('lstm')
+    stemmer.stem('saya sangat sukakan awak tetapi awak sangatlah sakai')
 
 
 
 
 .. parsed-literal::
 
-    'saya sangat suak awak'
+    'saya sangat suka awak tetapi awak sangat sakai'
+
+
+
+.. code:: python
+
+    malaya.stem.sastrawi('saya sangat sukakan awak tetapi awak sangatlah sakai')
+
+
+
+
+.. parsed-literal::
+
+    'saya sangat suka awak tetapi awak sangat sakai'

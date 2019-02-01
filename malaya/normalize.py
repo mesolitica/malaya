@@ -9,7 +9,7 @@ from fuzzywuzzy import fuzz
 import json
 import tensorflow as tf
 from collections import Counter
-from ._utils._utils import load_graph, check_file
+from ._utils._utils import load_graph, check_file, check_available
 from .num2word import to_cardinal
 from .texts._text_functions import (
     normalizer_textcleaning,
@@ -296,16 +296,27 @@ def basic(string):
     return ' '.join(result)
 
 
-def deep_model():
+def deep_model(validate = True):
     """
     Load deep-learning model to normalize a string. This model totally more sucks than fuzzy based, Husein still need to read more.
+
+    Parameters
+    ----------
+    validate: bool, optional (default=True)
+        if True, malaya will check model availability and download if not available.
 
     Returns
     -------
     DEEP_NORMALIZER: malaya.normalizer._DEEP_NORMALIZER class
 
     """
-    check_file(PATH_NORMALIZER['deep'], S3_PATH_NORMALIZER['deep'])
+    if validate:
+        check_file(PATH_NORMALIZER['deep'], S3_PATH_NORMALIZER['deep'])
+    else:
+        if not check_available(PATH_NORMALIZER['deep']):
+            raise Exception(
+                'normalizer is not available, please `validate = True`'
+            )
     try:
         with open(PATH_NORMALIZER['deep']['setting'], 'r') as fopen:
             dic_normalizer = json.load(fopen)

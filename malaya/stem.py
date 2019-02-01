@@ -11,7 +11,7 @@ from unidecode import unidecode
 from tensorflow.contrib.seq2seq.python.ops import beam_search_ops
 from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 from .texts._tatabahasa import permulaan, hujung
-from ._utils._utils import load_graph, check_file
+from ._utils._utils import load_graph, check_file, check_available
 from .texts._text_functions import (
     pad_sentence_batch,
     stemmer_str_idx,
@@ -22,8 +22,8 @@ from . import home
 
 factory = None
 sastrawi_stemmer = None
-GO = 0
-PAD = 1
+PAD = 0
+GO = 1
 EOS = 2
 UNK = 3
 
@@ -143,6 +143,13 @@ def naive(word):
     return word
 
 
+def available_deep_model():
+    """
+    List available deep learning stemming models.
+    """
+    return ['lstm', 'bahdanau', 'luong']
+
+
 def sastrawi(string):
     """
     Stem a string using Sastrawi.
@@ -161,7 +168,7 @@ def sastrawi(string):
     return sastrawi_stemmer.stem(string)
 
 
-def deep_model():
+def deep_model(model = 'bahdanau', validate = True):
     """
     Load seq2seq stemmer deep learning model.
 
@@ -169,10 +176,22 @@ def deep_model():
     -------
     DEEP_STEMMER: malaya.stemmer._DEEP_STEMMER class
     """
-    check_file(PATH_STEM, S3_PATH_STEM)
-    with open(PATH_STEM['setting'], 'r') as fopen:
-        dic_stemmer = json.load(fopen)
-    g = load_graph(PATH_STEM['model'])
+    if validate:
+        check_file(PATH_STEM[model], S3_PATH_STEM[model])
+    else:
+        if not check_available(PATH_STEM[model]):
+            raise Exception(
+                'stem/%s is not available, please `validate = True`' % (model)
+            )
+    try:
+        with open(PATH_STEM[model]['setting'], 'r') as fopen:
+            dic_stemmer = json.load(fopen)
+        g = load_graph(PATH_STEM[model]['model'])
+    except:
+        raise Exception(
+            "model corrupted due to some reasons, please run malaya.clear_cache('stem/%s') and try again"
+            % (model)
+        )
     return _DEEP_STEMMER(
         g.get_tensor_by_name('import/Placeholder:0'),
         g.get_tensor_by_name('import/logits:0'),

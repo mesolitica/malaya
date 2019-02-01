@@ -60,18 +60,25 @@ def naive(string):
     return results
 
 
-def crf():
+def crf(validate = True):
     """
     Load CRF POS Recognition model.
+
+    Parameters
+    ----------
+    validate: bool, optional (default=True)
+        if True, malaya will check model availability and download if not available.
 
     Returns
     -------
     CRF : malaya.sklearn_model.CRF class
     """
-    return _tag_class.crf(PATH_POS, S3_PATH_POS, 'pos', is_lower = False)
+    return _tag_class.crf(
+        PATH_POS, S3_PATH_POS, 'pos', is_lower = False, validate = validate
+    )
 
 
-def deep_model(model = 'concat'):
+def deep_model(model = 'concat', validate = True):
     """
     Load deep learning POS Recognition model.
 
@@ -85,11 +92,18 @@ def deep_model(model = 'concat'):
         * ``'luong'`` - Concating character and word embedded including Luong Attention for BiLSTM
         * ``'entity-network'`` - Concating character and word embedded on hybrid Entity-Network and RNN
         * ``'attention'`` - Concating character and word embedded with self-attention for BiLSTM
+    validate: bool, optional (default=True)
+        if True, malaya will check model availability and download if not available.
 
     Returns
     -------
     TAGGING: malaya.tensorflow_model.TAGGING class
     """
     return _tag_class.deep_model(
-        PATH_POS, S3_PATH_POS, 'pos', model = model, is_lower = False
+        PATH_POS,
+        S3_PATH_POS,
+        'pos',
+        model = model,
+        is_lower = False,
+        validate = validate,
     )

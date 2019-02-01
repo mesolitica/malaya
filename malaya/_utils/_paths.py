@@ -3,14 +3,36 @@ from .. import home
 MALAY_TEXT = home + '/dictionary/malay-text.txt'
 
 PATH_STEM = {
-    'model': home + '/stem/stemmer-deep.pb',
-    'setting': home + '/stem/stemmer-deep.json',
-    'version': 'v5',
+    'lstm': {
+        'model': home + '/stem/lstm/lstm-stem.pb',
+        'setting': home + '/stem/lstm/lstm-stem.json',
+        'version': 'v15',
+    },
+    'bahdanau': {
+        'model': home + '/stem/bahdanau/bahdanau-stem.pb',
+        'setting': home + '/stem/bahdanau/bahdanau-stem.json',
+        'version': 'v15',
+    },
+    'luong': {
+        'model': home + '/stem/luong/luong-stem.pb',
+        'setting': home + '/stem/luong/luong-stem.json',
+        'version': 'v15',
+    },
 }
 
 S3_PATH_STEM = {
-    'model': 'v5/stemmer-frozen-model.pb',
-    'setting': 'v5/stemmer-deep.json',
+    'lstm': {
+        'model': 'v15/stem/lstm-stem.pb',
+        'setting': 'v15/stem/lstm-stem.json',
+    },
+    'bahdanau': {
+        'model': 'v15/stem/bahdanau-stem.pb',
+        'setting': 'v15/stem/bahdanau-stem.json',
+    },
+    'luong': {
+        'model': 'v15/stem/luong-stem.pb',
+        'setting': 'v15/stem/luong-stem.json',
+    },
 }
 
 PATH_SUMMARIZE = {

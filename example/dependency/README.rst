@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 13 s, sys: 1.5 s, total: 14.5 s
-    Wall time: 18.3 s
+    CPU times: user 14.5 s, sys: 1.63 s, total: 16.2 s
+    Wall time: 21.5 s
 
 
 List available deep learning Dependency models
@@ -251,13 +251,13 @@ Load deep learning models
 .. parsed-literal::
 
     Testing concat model
-    ([('Dr', 'nsubj'), ('Mahathir', 'flat'), ('menasihati', 'root'), ('mereka', 'obj'), ('supaya', 'mark'), ('berhenti', 'advcl'), ('berehat', 'obj'), ('dan', 'cc'), ('tidur', 'conj'), ('sebentar', 'advmod'), ('sekiranya', 'obj'), ('mengantuk', 'advcl'), ('ketika', 'mark'), ('memandu', 'advcl')], [('Dr', 3), ('Mahathir', 1), ('menasihati', 0), ('mereka', 3), ('supaya', 4), ('berhenti', 4), ('berehat', 6), ('dan', 9), ('tidur', 7), ('sebentar', 11), ('sekiranya', 9), ('mengantuk', 9), ('ketika', 13), ('memandu', 12)])
+    ([('Dr', 'nsubj'), ('Mahathir', 'flat'), ('menasihati', 'root'), ('mereka', 'obj'), ('supaya', 'mark'), ('berhenti', 'advcl'), ('berehat', 'obj'), ('dan', 'cc'), ('tidur', 'conj'), ('sebentar', 'advmod'), ('sekiranya', 'nsubj'), ('mengantuk', 'advcl'), ('ketika', 'mark'), ('memandu', 'advcl')], [('Dr', 3), ('Mahathir', 1), ('menasihati', 0), ('mereka', 3), ('supaya', 6), ('berhenti', 3), ('berehat', 6), ('dan', 9), ('tidur', 7), ('sebentar', 11), ('sekiranya', 9), ('mengantuk', 9), ('ketika', 13), ('memandu', 12)])
     
     Testing bahdanau model
-    ([('Dr', 'nsubj'), ('Mahathir', 'flat'), ('menasihati', 'root'), ('mereka', 'det'), ('supaya', 'mark'), ('berhenti', 'advcl'), ('berehat', 'compound'), ('dan', 'cc'), ('tidur', 'conj'), ('sebentar', 'advmod'), ('sekiranya', 'nsubj'), ('mengantuk', 'advcl'), ('ketika', 'mark'), ('memandu', 'advcl')], [('Dr', 3), ('Mahathir', 1), ('menasihati', 0), ('mereka', 3), ('supaya', 6), ('berhenti', 9), ('berehat', 6), ('dan', 9), ('tidur', 6), ('sebentar', 9), ('sekiranya', 12), ('mengantuk', 9), ('ketika', 13), ('memandu', 3)])
+    ([('Dr', 'nsubj'), ('Mahathir', 'flat'), ('menasihati', 'root'), ('mereka', 'det'), ('supaya', 'mark'), ('berhenti', 'advcl'), ('berehat', 'amod'), ('dan', 'cc'), ('tidur', 'conj'), ('sebentar', 'advmod'), ('sekiranya', 'nsubj'), ('mengantuk', 'advcl'), ('ketika', 'mark'), ('memandu', 'advcl')], [('Dr', 3), ('Mahathir', 3), ('menasihati', 0), ('mereka', 3), ('supaya', 6), ('berhenti', 3), ('berehat', 6), ('dan', 9), ('tidur', 7), ('sebentar', 9), ('sekiranya', 12), ('mengantuk', 6), ('ketika', 13), ('memandu', 11)])
     
     Testing luong model
-    ([('Dr', 'nsubj'), ('Mahathir', 'flat'), ('menasihati', 'amod'), ('mereka', 'det'), ('supaya', 'mark'), ('berhenti', 'advcl'), ('berehat', 'obj'), ('dan', 'cc'), ('tidur', 'conj'), ('sebentar', 'advmod'), ('sekiranya', 'nsubj'), ('mengantuk', 'compound'), ('ketika', 'mark'), ('memandu', 'advcl')], [('Dr', 3), ('Mahathir', 1), ('menasihati', 1), ('mereka', 3), ('supaya', 3), ('berhenti', 3), ('berehat', 6), ('dan', 10), ('tidur', 7), ('sebentar', 10), ('sekiranya', 10), ('mengantuk', 11), ('ketika', 11), ('memandu', 12)])
+    ([('Dr', 'nsubj'), ('Mahathir', 'flat'), ('menasihati', 'root'), ('mereka', 'det'), ('supaya', 'mark'), ('berhenti', 'advcl'), ('berehat', 'obj'), ('dan', 'cc'), ('tidur', 'conj'), ('sebentar', 'advmod'), ('sekiranya', 'nsubj'), ('mengantuk', 'compound'), ('ketika', 'mark'), ('memandu', 'advcl')], [('Dr', 3), ('Mahathir', 1), ('menasihati', 0), ('mereka', 3), ('supaya', 3), ('berhenti', 3), ('berehat', 6), ('dan', 9), ('tidur', 7), ('sebentar', 10), ('sekiranya', 10), ('mengantuk', 10), ('ketika', 6), ('memandu', 12)])
     
 
 
@@ -395,4 +395,325 @@ Voting stack model
 
 .. image:: load-dependency_files/load-dependency_27_0.svg
 
+
+
+Dependency graph object
+-----------------------
+
+To initiate a dependency graph from dependency models, you need to call
+``malaya.dependency.dependency_graph``.
+
+.. code:: ipython3
+
+    graph = malaya.dependency.dependency_graph(tagging, indexing)
+    graph
+
+
+
+
+.. parsed-literal::
+
+    <malaya._utils._parse_dependency.DependencyGraph at 0x13a2b74e0>
+
+
+
+generate graphvis
+^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    graph.to_graphvis()
+
+
+
+
+.. image:: load-dependency_files/load-dependency_31_0.svg
+
+
+
+Get nodes
+^^^^^^^^^
+
+.. code:: ipython3
+
+    graph.nodes
+
+
+
+
+.. parsed-literal::
+
+    defaultdict(<function malaya._utils._parse_dependency.DependencyGraph.__init__.<locals>.<lambda>()>,
+                {0: {'address': 0,
+                  'word': None,
+                  'lemma': None,
+                  'ctag': 'TOP',
+                  'tag': 'TOP',
+                  'feats': None,
+                  'head': None,
+                  'deps': defaultdict(list, {'root': [3]}),
+                  'rel': None},
+                 1: {'address': 1,
+                  'word': 'Dr',
+                  'lemma': '_',
+                  'ctag': '_',
+                  'tag': '_',
+                  'feats': '_',
+                  'head': 3,
+                  'deps': defaultdict(list, {'flat': [2]}),
+                  'rel': 'nsubj'},
+                 3: {'address': 3,
+                  'word': 'menasihati',
+                  'lemma': '_',
+                  'ctag': '_',
+                  'tag': '_',
+                  'feats': '_',
+                  'head': 0,
+                  'deps': defaultdict(list,
+                              {'nsubj': [1], 'det': [4], 'advcl': [6]}),
+                  'rel': 'root'},
+                 2: {'address': 2,
+                  'word': 'Mahathir',
+                  'lemma': '_',
+                  'ctag': '_',
+                  'tag': '_',
+                  'feats': '_',
+                  'head': 1,
+                  'deps': defaultdict(list, {}),
+                  'rel': 'flat'},
+                 4: {'address': 4,
+                  'word': 'mereka',
+                  'lemma': '_',
+                  'ctag': '_',
+                  'tag': '_',
+                  'feats': '_',
+                  'head': 3,
+                  'deps': defaultdict(list, {}),
+                  'rel': 'det'},
+                 5: {'address': 5,
+                  'word': 'supaya',
+                  'lemma': '_',
+                  'ctag': '_',
+                  'tag': '_',
+                  'feats': '_',
+                  'head': 6,
+                  'deps': defaultdict(list, {}),
+                  'rel': 'mark'},
+                 6: {'address': 6,
+                  'word': 'berhenti',
+                  'lemma': '_',
+                  'ctag': '_',
+                  'tag': '_',
+                  'feats': '_',
+                  'head': 3,
+                  'deps': defaultdict(list, {'mark': [5], 'obj': [7]}),
+                  'rel': 'advcl'},
+                 7: {'address': 7,
+                  'word': 'berehat',
+                  'lemma': '_',
+                  'ctag': '_',
+                  'tag': '_',
+                  'feats': '_',
+                  'head': 6,
+                  'deps': defaultdict(list, {'conj': [9]}),
+                  'rel': 'obj'},
+                 8: {'address': 8,
+                  'word': 'dan',
+                  'lemma': '_',
+                  'ctag': '_',
+                  'tag': '_',
+                  'feats': '_',
+                  'head': 9,
+                  'deps': defaultdict(list, {}),
+                  'rel': 'cc'},
+                 9: {'address': 9,
+                  'word': 'tidur',
+                  'lemma': '_',
+                  'ctag': '_',
+                  'tag': '_',
+                  'feats': '_',
+                  'head': 7,
+                  'deps': defaultdict(list, {'cc': [8]}),
+                  'rel': 'conj'},
+                 10: {'address': 10,
+                  'word': 'sebentar',
+                  'lemma': '_',
+                  'ctag': '_',
+                  'tag': '_',
+                  'feats': '_',
+                  'head': 11,
+                  'deps': defaultdict(list, {}),
+                  'rel': 'advmod'},
+                 11: {'address': 11,
+                  'word': 'sekiranya',
+                  'lemma': '_',
+                  'ctag': '_',
+                  'tag': '_',
+                  'feats': '_',
+                  'head': 11,
+                  'deps': defaultdict(list,
+                              {'advmod': [10], 'nsubj': [11], 'advcl': [12]}),
+                  'rel': 'nsubj'},
+                 12: {'address': 12,
+                  'word': 'mengantuk',
+                  'lemma': '_',
+                  'ctag': '_',
+                  'tag': '_',
+                  'feats': '_',
+                  'head': 11,
+                  'deps': defaultdict(list, {'advcl': [14]}),
+                  'rel': 'advcl'},
+                 13: {'address': 13,
+                  'word': 'ketika',
+                  'lemma': '_',
+                  'ctag': '_',
+                  'tag': '_',
+                  'feats': '_',
+                  'head': 13,
+                  'deps': defaultdict(list, {'mark': [13]}),
+                  'rel': 'mark'},
+                 14: {'address': 14,
+                  'word': 'memandu',
+                  'lemma': '_',
+                  'ctag': '_',
+                  'tag': '_',
+                  'feats': '_',
+                  'head': 12,
+                  'deps': defaultdict(list, {}),
+                  'rel': 'advcl'}})
+
+
+
+Flat the graph
+^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    list(graph.triples())
+
+
+
+
+.. parsed-literal::
+
+    [(('menasihati', '_'), 'nsubj', ('Dr', '_')),
+     (('Dr', '_'), 'flat', ('Mahathir', '_')),
+     (('menasihati', '_'), 'det', ('mereka', '_')),
+     (('menasihati', '_'), 'advcl', ('berhenti', '_')),
+     (('berhenti', '_'), 'mark', ('supaya', '_')),
+     (('berhenti', '_'), 'obj', ('berehat', '_')),
+     (('berehat', '_'), 'conj', ('tidur', '_')),
+     (('tidur', '_'), 'cc', ('dan', '_'))]
+
+
+
+Check the graph contains cycles
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    graph.contains_cycle()
+
+
+
+
+.. parsed-literal::
+
+    False
+
+
+
+Generate networkx
+^^^^^^^^^^^^^^^^^
+
+Make sure you already installed networkx, ``pip install networkx``
+
+.. code:: ipython3
+
+    digraph = graph.to_networkx()
+    digraph
+
+
+
+
+.. parsed-literal::
+
+    <networkx.classes.multidigraph.MultiDiGraph at 0x102384c88>
+
+
+
+.. code:: ipython3
+
+    import networkx as nx
+    import matplotlib.pyplot as plt
+    nx.draw_networkx(digraph)
+    plt.show()
+
+
+
+.. image:: load-dependency_files/load-dependency_40_0.png
+
+
+.. code:: ipython3
+
+    digraph.edges()
+
+
+
+
+.. parsed-literal::
+
+    OutMultiEdgeDataView([(1, 3), (2, 1), (4, 3), (5, 6), (6, 3), (7, 6), (8, 9), (9, 7), (10, 11), (11, 11), (12, 11), (13, 13), (14, 12)])
+
+
+
+.. code:: ipython3
+
+    digraph.nodes()
+
+
+
+
+.. parsed-literal::
+
+    NodeView((1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14))
+
+
+
+.. code:: ipython3
+
+    labels = {i:graph.get_by_address(i)['word'] for i in digraph.nodes()}
+    labels
+
+
+
+
+.. parsed-literal::
+
+    {1: 'Dr',
+     2: 'Mahathir',
+     3: 'menasihati',
+     4: 'mereka',
+     5: 'supaya',
+     6: 'berhenti',
+     7: 'berehat',
+     8: 'dan',
+     9: 'tidur',
+     10: 'sebentar',
+     11: 'sekiranya',
+     12: 'mengantuk',
+     13: 'ketika',
+     14: 'memandu'}
+
+
+
+.. code:: ipython3
+
+    plt.figure(figsize=(15,5))
+    nx.draw_networkx(digraph,labels=labels)
+    plt.show()
+
+
+
+.. image:: load-dependency_files/load-dependency_44_0.png
 

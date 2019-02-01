@@ -16,7 +16,7 @@ from ._utils._paths import PATH_DEPEND, S3_PATH_DEPEND
 
 def dependency_graph(tagging, indexing):
     """
-    Return helper object for dependency parser results. Only accept coNNl structure
+    Return helper object for dependency parser results. Only accept tagging and indexing outputs from dependency models
     """
     result = []
     for i in range(len(tagging)):
@@ -34,15 +34,26 @@ def available_deep_model():
     return ['concat', 'bahdanau', 'luong']
 
 
-def crf():
+def crf(validate = True):
     """
     Load CRF dependency model.
+
+    Parameters
+    ----------
+    validate: bool, optional (default=True)
+        if True, malaya will check model availability and download if not available.
 
     Returns
     -------
     DEPENDENCY : malaya._models._sklearn_model.DEPENDENCY class
     """
-    check_file(PATH_DEPEND['crf'], S3_PATH_DEPEND['crf'])
+    if validate:
+        check_file(PATH_DEPEND['crf'], S3_PATH_DEPEND['crf'])
+    else:
+        if not check_available(PATH_DEPEND['crf']):
+            raise Exception(
+                'dependency/crf is not available, please `validate = True`'
+            )
     try:
         with open(PATH_DEPEND['crf']['model'], 'rb') as fopen:
             model = pickle.load(fopen)
@@ -55,7 +66,7 @@ def crf():
     return DEPENDENCY(model, depend)
 
 
-def deep_model(model = 'bahdanau'):
+def deep_model(model = 'bahdanau', validate = True):
     """
     Load deep learning dependency model.
 
@@ -67,6 +78,8 @@ def deep_model(model = 'bahdanau'):
         * ``'concat'`` - Concating character and word embedded for BiLSTM
         * ``'bahdanau'`` - Concating character and word embedded including Bahdanau Attention for BiLSTM
         * ``'luong'`` - Concating character and word embedded including Luong Attention for BiLSTM
+    validate: bool, optional (default=True)
+        if True, malaya will check model availability and download if not available.
 
     Returns
     -------
@@ -75,7 +88,14 @@ def deep_model(model = 'bahdanau'):
     assert isinstance(model, str), 'model must be a string'
     model = model.lower()
     if model in ['concat', 'bahdanau', 'luong']:
-        check_file(PATH_DEPEND[model], S3_PATH_DEPEND[model])
+        if validate:
+            check_file(PATH_DEPEND[model], S3_PATH_DEPEND[model])
+        else:
+            if not check_available(PATH_DEPEND[model]):
+                raise Exception(
+                    'dependency/%s is not available, please `validate = True`'
+                    % (model)
+                )
         try:
             with open(PATH_DEPEND[model]['setting'], 'r') as fopen:
                 nodes = json.loads(fopen.read())

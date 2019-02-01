@@ -7,7 +7,7 @@ if not sys.warnoptions:
 import tensorflow as tf
 import json
 import pickle
-from ._utils import check_file, load_graph
+from ._utils import check_file, load_graph, check_available
 from ..stem import _classification_textcleaning_stemmer
 from .._models._sklearn_model import USER_XGB, USER_BAYES
 from .._models._tensorflow_model import SOFTMAX, SPARSE_SOFTMAX
@@ -21,13 +21,21 @@ def sparse_deep_model(
     output_size,
     embedded_size = 64,
     model = 'fast-text-char',
+    validate = True,
 ):
     import os
 
     assert isinstance(model, str), 'model must be a string'
     model = model.lower()
     if model == 'fast-text-char':
-        check_file(path[model], s3_path[model])
+        if validate:
+            check_file(path[model], s3_path[model])
+        else:
+            if not check_available(path[model]):
+                raise Exception(
+                    '%s/%s is not available, please `validate = True`'
+                    % (class_name, model)
+                )
         try:
             with open(path[model]['vector'], 'rb') as fopen:
                 vector = pickle.load(fopen)
@@ -52,11 +60,20 @@ def sparse_deep_model(
         )
 
 
-def deep_model(path, s3_path, class_name, label, model = 'luong'):
+def deep_model(
+    path, s3_path, class_name, label, model = 'luong', validate = True
+):
     assert isinstance(model, str), 'model must be a string'
     model = model.lower()
     if model == 'fast-text':
-        check_file(path['fast-text'], s3_path['fast-text'])
+        if validate:
+            check_file(path['fast-text'], s3_path['fast-text'])
+        else:
+            if not check_available(path['fast-text']):
+                raise Exception(
+                    '%s/%s is not available, please `validate = True`'
+                    % (class_name, model)
+                )
         try:
             with open(path['fast-text']['setting'], 'r') as fopen:
                 dictionary = json.load(fopen)['dictionary']
@@ -78,7 +95,14 @@ def deep_model(path, s3_path, class_name, label, model = 'luong'):
             label = label,
         )
     elif model == 'hierarchical':
-        check_file(path['hierarchical'], s3_path['hierarchical'])
+        if validate:
+            check_file(path['hierarchical'], s3_path['hierarchical'])
+        else:
+            if not check_available(path['hierarchical']):
+                raise Exception(
+                    '%s/%s is not available, please `validate = True`'
+                    % (class_name, model)
+                )
         try:
             with open(path['hierarchical']['setting'], 'r') as fopen:
                 dictionary = json.load(fopen)['dictionary']
@@ -98,7 +122,14 @@ def deep_model(path, s3_path, class_name, label, model = 'luong'):
             label = label,
         )
     elif model in ['bahdanau', 'luong']:
-        check_file(path[model], s3_path[model])
+        if validate:
+            check_file(path[model], s3_path[model])
+        else:
+            if not check_available(path[model]):
+                raise Exception(
+                    '%s/%s is not available, please `validate = True`'
+                    % (class_name, model)
+                )
         try:
             with open(path[model]['setting'], 'r') as fopen:
                 dictionary = json.load(fopen)['dictionary']
@@ -118,7 +149,14 @@ def deep_model(path, s3_path, class_name, label, model = 'luong'):
             label = label,
         )
     elif model == 'bidirectional':
-        check_file(path['bidirectional'], s3_path['bidirectional'])
+        if validate:
+            check_file(path['bidirectional'], s3_path['bidirectional'])
+        else:
+            if not check_available(path['bidirectional']):
+                raise Exception(
+                    '%s/%s is not available, please `validate = True`'
+                    % (class_name, model)
+                )
         try:
             with open(path['bidirectional']['setting'], 'r') as fopen:
                 dictionary = json.load(fopen)
@@ -137,7 +175,14 @@ def deep_model(path, s3_path, class_name, label, model = 'luong'):
             label = label,
         )
     elif model == 'bert':
-        check_file(path['bert'], s3_path['bert'])
+        if validate:
+            check_file(path['bert'], s3_path['bert'])
+        else:
+            if not check_available(path['bert']):
+                raise Exception(
+                    '%s/%s is not available, please `validate = True`'
+                    % (class_name, model)
+                )
         try:
             with open(path['bert']['setting'], 'r') as fopen:
                 dictionary = json.load(fopen)
@@ -165,7 +210,14 @@ def deep_model(path, s3_path, class_name, label, model = 'luong'):
             label = label,
         )
     elif model == 'entity-network':
-        check_file(path['entity-network'], s3_path['entity-network'])
+        if validate:
+            check_file(path['entity-network'], s3_path['entity-network'])
+        else:
+            if not check_available(path['entity-network']):
+                raise Exception(
+                    '%s/%s is not available, please `validate = True`'
+                    % (class_name, model)
+                )
         try:
             with open(path['entity-network']['setting'], 'r') as fopen:
                 dictionary = json.load(fopen)
@@ -194,8 +246,15 @@ def deep_model(path, s3_path, class_name, label, model = 'luong'):
         )
 
 
-def multinomial(path, s3_path, class_name, label):
-    check_file(path['multinomial'], s3_path['multinomial'])
+def multinomial(path, s3_path, class_name, label, validate = True):
+    if validate:
+        check_file(path['multinomial'], s3_path['multinomial'])
+    else:
+        if not check_available(path['multinomial']):
+            raise Exception(
+                '%s/multinomial is not available, please `validate = True`'
+                % (class_name)
+            )
     try:
         with open(path['multinomial']['model'], 'rb') as fopen:
             multinomial = pickle.load(fopen)
@@ -214,8 +273,15 @@ def multinomial(path, s3_path, class_name, label):
     )
 
 
-def xgb(path, s3_path, class_name, label):
-    check_file(path['xgb'], s3_path['xgb'])
+def xgb(path, s3_path, class_name, label, validate = True):
+    if validate:
+        check_file(path['xgb'], s3_path['xgb'])
+    else:
+        if not check_available(path['xgb']):
+            raise Exception(
+                '%s/xgb is not available, please `validate = True`'
+                % (class_name)
+            )
     try:
         with open(path['xgb']['model'], 'rb') as fopen:
             xgb = pickle.load(fopen)

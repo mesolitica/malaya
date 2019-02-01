@@ -32,6 +32,13 @@ def load_graph(frozen_graph_filename):
     return graph
 
 
+def check_available(file):
+    for key, item in file.items():
+        if not os.path.isfile(item):
+            return False
+    return True
+
+
 def check_file(file, s3_file):
     base_location = os.path.dirname(file['model'])
     version = base_location + '/version'

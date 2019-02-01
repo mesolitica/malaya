@@ -359,7 +359,7 @@ class DependencyGraph(object):
             )
         return Source(self.to_dot())
 
-    def to_nx_graph(self):
+    def to_networkx(self):
         try:
             import networkx
         except:
