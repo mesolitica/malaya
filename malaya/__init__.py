@@ -87,7 +87,7 @@ def clear_all_cache():
         _delete_folder(home)
         with open(version_path, 'w') as fopen:
             fopen.write(version)
-        print('Done.')
+        return True
     except:
         print(
             'failed to clear cached models. Please make sure %s is able to overwrite from Malaya'
@@ -110,7 +110,7 @@ def clear_cache(location):
             'Please use parent directory, please check path from malaya.print_cache()'
         )
     _delete_folder(location)
-    print('Done.')
+    return True
 
 
 def load_malay_dictionary():

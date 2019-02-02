@@ -34,6 +34,8 @@ def load_graph(frozen_graph_filename):
 
 def check_available(file):
     for key, item in file.items():
+        if 'version' in key:
+            continue
         if not os.path.isfile(item):
             return False
     return True
