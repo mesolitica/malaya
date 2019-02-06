@@ -1,84 +1,219 @@
 Dataset
 =======
 
-We want to make sure not just the code we open-sourced, but also goes to dataset, so everyone can validate.
+We want to make sure not just the code we open-sourced, but also goes to
+dataset, so everyone can validate.
 
-You can check in `/dataset <https://github.com/huseinzol05/Malaya/tree/master/dataset>`__ for most of our open dataset.
+You can check in
+`Malaya-Dataset <https://github.com/huseinzol05/Malaya-Dataset>`__ for
+our open dataset.
 
-Sentiment Analysis
-----------------------------------
+`Article <https://github.com/huseinzol05/Malaya-Dataset/blob/master/articles>`__
+--------------------------------------------------------------------------------
 
-`/dataset/sentiment <https://github.com/huseinzol05/Malaya/tree/master/dataset/sentiment>`__
+Total size: 3.1 MB
 
-Emotion Analysis
-----------------------------------
+1. Filem
+2. Kerajaan
+3. Pembelajaran
+4. Pendidikan
+5. Sekolah
 
-`/dataset/emotion <https://github.com/huseinzol05/Malaya/tree/master/dataset/emotion>`__
+`Dependency <https://github.com/huseinzol05/Malaya-Dataset/blob/master/dependency>`__
+-------------------------------------------------------------------------------------
 
-Entities Recognition
-----------------------------------
+`Dictionary, 24550 unique words <https://github.com/huseinzol05/Malaya-Dataset/blob/master/dictionary>`__
+---------------------------------------------------------------------------------------------------------
 
-`/dataset/entities <https://github.com/huseinzol05/Malaya/tree/master/dataset/entities>`__
+`Emotion <https://github.com/huseinzol05/Malaya-Dataset/blob/master/emotion>`__
+-------------------------------------------------------------------------------
 
-Part-Of-Speech Recognition
-----------------------------------
+Total size: 8.5 MB
 
-`/dataset/pos <https://github.com/huseinzol05/Malaya/tree/master/dataset/pos>`__
+1. Anger
+2. Fear
+3. Joy
+4. Love
+5. Sadness
+6. Surprise
 
-Polarity
-----------------------------------
+`Entities, JSON <https://github.com/huseinzol05/Malaya-Dataset/blob/master/entities>`__
+---------------------------------------------------------------------------------------
 
-`/dataset/polarity <https://github.com/huseinzol05/Malaya/tree/master/dataset/polarity>`__
+Total size: 1.1 MB
 
-We combined with sentiment analysis models.
+1. OTHER - Other
+2. law - law, regulation, related law documents, documents, etc
+3. location - location, place
+4. organization - organization, company, government, facilities, etc
+5. person - person, group of people, believes, etc
+6. quantity - numbers, quantity
+7. time - date, day, time, etc
+8. event - unique event happened, etc
 
-Subjectivity
-----------------------------------
+`Karangan sekolah <https://github.com/huseinzol05/Malaya-Dataset/blob/master/karangan-sekolah>`__
+-------------------------------------------------------------------------------------------------
 
-`/dataset/subjectivity <https://github.com/huseinzol05/Malaya/tree/master/dataset/subjectivity>`__
+Total size: 221 KB
 
-Stemmer
-----------------------------------
+`Language-detection, Wikipedia <https://github.com/huseinzol05/Malaya-Dataset/blob/master/language-detection>`__
+----------------------------------------------------------------------------------------------------------------
 
-`/dataset/stemmer <https://github.com/huseinzol05/Malaya/tree/master/dataset/stemmer>`__
+`News, crawled <https://github.com/huseinzol05/Malaya-Dataset/blob/master/news>`__
+----------------------------------------------------------------------------------
 
-Language Detection
-----------------------------------
+Total size: 28.9 MB
 
-`/dataset/language-detection <https://github.com/huseinzol05/Malaya/tree/master/dataset/language-detection>`__
+.. raw:: html
 
-Dictionary
-----------------------------------
+   <details>
 
-`/dataset/dictionary <https://github.com/huseinzol05/Malaya/tree/master/dataset/dictionary>`__
+Complete list (51 news)
 
-Matbahasa
------------
+1.  Cuti sekolah
+2.  isu 1MDB
+3.  isu agama
+4.  isu agong
+5.  isu agrikultur
+6.  isu air
+7.  isu anwar ibrahim
+8.  isu artis
+9.  isu astro
+10. isu bahasa melayu
+11. isu barisan nasional
+12. isu cikgu
+13. isu cukai
+14. isu cyberjaya
+15. isu dunia
+16. isu ekonomi
+17. isu gst
+18. isu harakah
+19. isu harga
+20. isu icerd
+21. isu imigren
+22. isu kapitalis
+23. isu kerajaan
+24. isu kesihatan
+25. isu kuala lumpur
+26. isu lgbt
+27. isu mahathir
+28. isu makanan
+29. isu malaysia airlines
+30. isu malaysia
+31. isu minyak
+32. isu isu najib razak
+33. isu pelajar
+34. isu pelakon
+35. isu pembangkang
+36. isu perkauman
+37. isu permainan
+38. isu pertanian
+39. isu politik
+40. isu rosmah
+41. isu sabah
+42. isu sarawak
+43. isu sosial media
+44. isu sultan melayu
+45. isu teknologi
+46. isu TM
+47. isu ubat
+48. isu universiti
+49. isu wan azizah
+50. peluang pekerjaan
+51. perkahwinan
 
-He is legit, he open-sourced a lot of bahasa malaysia corpus, check out his github, `matbahasa <https://github.com/matbahasa>`_
+.. raw:: html
 
-Misc
-------
+   </details>
 
-`Bahasa NLP Dataset <https://github.com/keyreply/Malay-NLP-Dataset>`_
+`Sentiment News <https://github.com/huseinzol05/Malaya-Dataset/blob/master/news-sentiment>`__
+---------------------------------------------------------------------------------------------
 
-`Melayu Sabah <https://github.com/matbahasa/Melayu_Sabah>`_
+Total size: 496 KB
 
-`Melayu Standard Lisan <https://github.com/matbahasa/Melayu_Standard_Lisan>`_
+1. Positive
+2. Negative
 
-`Combination Bahasa and English NLP Dataset <https://github.com/huseinzol05/NLP-Dataset>`_
+`Sentiment Twitter <https://github.com/huseinzol05/Malaya-Dataset/blob/master/twitter-sentiment>`__
+---------------------------------------------------------------------------------------------------
 
-`Indonesia NLP Dataset <https://github.com/keyreply/Bahasa-Indo-NLP-Dataset>`_
+Total size: 21 MB
 
-`Indonesia vocabulary <https://github.com/geovedi/indonesian-wordlist>`_
+1. Positive
+2. Negative
 
-`Indonesia thesaurus <https://github.com/victoriasovereigne/tesaurus>`_
+`Part-of-Speech <https://github.com/huseinzol05/Malaya-Dataset/blob/master/part-of-speech>`__
+---------------------------------------------------------------------------------------------
 
-Disclaimer
-----------------------------------
+Total size: 3.1 MB
 
-Please at least email us first before distributing these data. Remember all these hard workings we want to give it for free.
+1.  ADJ - Adjective, kata sifat
+2.  ADP - Adposition
+3.  ADV - Adverb, kata keterangan
+4.  ADX - Auxiliary verb, kata kerja tambahan
+5.  CCONJ - Coordinating conjuction, kata hubung
+6.  DET - Determiner, kata penentu
+7.  NOUN - Noun, kata nama
+8.  NUM - Number, nombor
+9.  PART - Particle
+10. PRON - Pronoun, kata ganti
+11. PROPN - Proper noun, kata ganti nama khas
+12. SCONJ - Subordinating conjunction
+13. SYM - Symbol
+14. VERB - Verb, kata kerja
+15. X - Other
 
-What do you see just the data, but nobody can see how much we spent our cost to make it public.
+`Polarity <https://github.com/huseinzol05/Malaya-Dataset/blob/master/polarity>`__
+---------------------------------------------------------------------------------
 
-.. figure:: https://camo.githubusercontent.com/50597c9b650593a8dc9a82536244df5df6eb91d2/68747470733a2f2f63646e2e75706c6f616476722e636f6d2f77702d636f6e74656e742f75706c6f6164732f6266695f7468756d622f67616d696e672d69636562757267312d6d7635666b6e3336366a73636c39327679356d78366b79786833613874307837626f6f6c3735647a34342e6a7067
+Total size: 1.3 MB
+
+1. Positive
+2. Negative
+
+`Stemmer <https://github.com/huseinzol05/Malaya-Dataset/blob/master/stemmer>`__
+-------------------------------------------------------------------------------
+
+Total size: 6.5 MB
+
+1. News stemming
+2. Wikipedia stemming
+
+`Subjectivity <https://github.com/huseinzol05/Malaya-Dataset/blob/master/subjectivity>`__
+-----------------------------------------------------------------------------------------
+
+Total size: 1.4 MB
+
+1. Positive
+2. Negative
+
+`Subtitle <https://github.com/huseinzol05/Malaya-Dataset/blob/master/subtitle>`__
+---------------------------------------------------------------------------------
+
+Total size: 1.5 MB
+
+Suggestion
+----------
+
+1. Do not use these corpus for production purpose, Google Translate is
+   not a perfect, yet. Some semantics and structures might seem off, but
+   this is good for **Semisupervised purpose**. Trained using these
+   corpus, label new texts and ask human turks to make corrections.
+
+Citation
+--------
+
+1. Please citate the repository if use these corpus.
+2. Please at least email us first before distributing these data.
+   Remember all these hard workings we want to give it for free.
+3. What do you see just the data, but nobody can see how much we spent
+   our cost to make it public.
+
+Donation
+--------
+
+1. We want to make sure downloaders got the best bandwidth and top
+   speed, we host everything on S3, **please consider a donation** to
+   prevent top-speed shutdown or broken link!
+2. **Husein** really need money to stay survive, he is still a human.
+   **7053174643, CIMB Click, Husein Zolkepli**
