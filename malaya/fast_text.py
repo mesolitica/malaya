@@ -13,61 +13,37 @@ from scipy.spatial.distance import cdist
 from sklearn.neighbors import NearestNeighbors
 from . import home
 from ._utils._utils import download_file
-from ._models import _word2vec
+from ._models import _fasttext
 from .texts._text_functions import simple_textcleaning
+
+_generator = _fasttext.generator
+_doc2num = _fasttext.doc2num
 
 
 def load_wiki():
     """
-    Return malaya pretrained wikipedia word2vec size 256
+    Return malaya pretrained wikipedia fast-text size 1024
 
     Returns
     -------
     dictionary: dictionary of dictionary, reverse dictionary and vectors
     """
-    if not os.path.isfile('%s/word2vec-wiki/word2vec.p' % (home)):
-        print('downloading word2vec-wiki embedded')
+    if not os.path.isfile('%s/fasttext-wiki/word2vec.p' % (home)):
+        print('downloading fasttext-wiki embedded')
         download_file(
-            'v13/word2vec/word2vec-wiki-nce-256.p',
-            '%s/word2vec-wiki/word2vec.p' % (home),
+            'v16/fasttext/fasttext-wiki-1024.p',
+            '%s/fasttext-wiki/word2vec.p' % (home),
         )
-    with open('%s/word2vec-wiki/word2vec.p' % (home), 'rb') as fopen:
-        return pickle.load(fopen)
-
-
-def load_news(size = 256):
-    """
-    Return malaya pretrained news word2vec
-
-    Parameters
-    ----------
-    size: int, (default=256)
-
-    Returns
-    -------
-    dictionary: dictionary of dictionary, reverse dictionary and vectors
-    """
-    assert isinstance(size, int), 'input must be an integer'
-    if size not in [32, 64, 128, 256, 512]:
-        raise Exception(
-            'size word2vec not supported, only supports [32, 64, 128, 256, 512]'
-        )
-    if not os.path.isfile('%s/word2vec-%d/word2vec.p' % (home, size)):
-        print('downloading word2vec-%d embedded' % (size))
-        download_file(
-            'v7/word2vec/word2vec-%d.p' % (size),
-            '%s/word2vec-%d/word2vec.p' % (home, size),
-        )
-    with open('%s/word2vec-%d/word2vec.p' % (home, size), 'rb') as fopen:
-        return pickle.load(fopen)
+    with open('%s/fasttext-wiki/word2vec.p' % (home), 'rb') as fopen:
+        return pickle.load(fopen), (2, 3)
 
 
 def train(
     corpus,
     vocab_size = None,
     batch_size = 32,
-    embedding_size = 256,
-    hidden_size = 256,
+    embedding_size = 512,
+    hidden_size = 512,
     negative_samples_ratio = 0.5,
     learning_rate = 0.01,
     embedding_noise = 0.1,
@@ -75,10 +51,11 @@ def train(
     momentum = 0.9,
     epoch = 10,
     optimizer = 'momentum',
+    ngrams = (2, 3),
     text_cleaning = simple_textcleaning,
 ):
     """
-    Train a word2vec for custom corpus
+    Train a fast-text for custom corpus
 
     Parameters
     ----------
@@ -100,6 +77,8 @@ def train(
         iteration numbers
     optimizer: str, (default='momentum')
         optimizer supported, ['gradientdescent', 'rmsprop', 'momentum', 'adagrad', 'adam']
+    ngrams: tuple, (default=(2,3))
+        size of ngrams during training session
     text_cleaning: function, (default=simple_textcleaning)
         function to clean the corpus
 
@@ -127,6 +106,7 @@ def train(
         learning_rate, int
     ), 'learning_rate must be a float or an integer'
     assert isinstance(optimizer, str), 'optimizer must be a string'
+    assert isinstance(ngrams, tuple), 'ngrams must be a tuple'
     assert batch_size > 0, 'batch_size must bigger than 0'
     assert epoch > 0, 'epoch must bigger than 0'
     assert embedding_size > 0, 'embedding_size must bigger than 0'
@@ -140,6 +120,7 @@ def train(
     assert (
         hidden_noise > 0 and hidden_noise <= 1
     ), 'hidden_noise must bigger than 0 and less than or equal 1'
+    assert isinstance(ngrams[0], int), 'elements in ngrams must be an integer'
     optimizer = optimizer.lower()
     if optimizer not in [
         'gradientdescent',
@@ -159,12 +140,13 @@ def train(
         corpus = text_cleaning(corpus)
     corpus = ' '.join(corpus.split('\n'))
     corpus = list(filter(None, corpus.split()))
+    corpus = ['<%s>' % (s) for s in corpus]
     if vocab_size is None:
         vocab_size = len(set(corpus)) + 5
-    word_array, dictionary, rev_dictionary, num_lines, num_words = _word2vec.build_word_array(
-        corpus, vocab_size
+    word_array, dictionary, rev_dictionary, num_lines, num_words = _fasttext.build_word_array(
+        corpus, vocab_size, ngrams = ngrams
     )
-    X, Y = _word2vec.build_training_set(word_array)
+    X, Y = _fasttext.build_training_set(word_array)
     graph_params = {
         'batch_size': batch_size,
         'vocab_size': np.max(X) + 1,
@@ -179,7 +161,7 @@ def train(
         'optimizer': optimizer,
     }
     _, test_X, _, test_Y = train_test_split(X, Y, test_size = 0.1)
-    model = _word2vec.Model(graph_params)
+    model = _fasttext.Model(graph_params)
     print(
         'model built, vocab size %d, document length %d'
         % (np.max(X) + 1, len(word_array))
@@ -187,7 +169,7 @@ def train(
     embed_weights, nce_weights = model.train(
         X, Y, test_X, test_Y, graph_params['epoch'], graph_params['batch_size']
     )
-    return embed_weights, nce_weights, dictionary
+    return embed_weights, nce_weights, dictionary, ngrams
 
 
 class _Calculator:
@@ -233,34 +215,34 @@ class _Calculator:
         return result
 
 
-class word2vec:
-    def __init__(self, embed_matrix, dictionary):
+class fast_text:
+    def __init__(self, embed_matrix, dictionary, ngrams):
         self._embed_matrix = embed_matrix
         self._dictionary = dictionary
         self._reverse_dictionary = {v: k for k, v in dictionary.items()}
         self.words = list(dictionary.keys())
+        self.ngrams = ngrams
+
+    def to_vector(self, word_list):
+        pools = []
+        for word in word_list:
+            word = filter(None, word.split())
+            pools.append(''.join(['<%s>' % (w) for w in word]))
+        word_array = _doc2num(pools, self._dictionary, ngrams = self.ngrams)
+        outside_array = []
+        for arr in word_array:
+            outside_array.append(
+                np.array([self._embed_matrix[i] for i in arr]).sum(axis = 0)
+            )
+        return np.array(outside_array)
 
     def get_vector_by_name(self, word):
-        """
-        get vector based on name
-
-        Parameters
-        ----------
-        word: str
-
-        Returns
-        -------
-        vector: numpy
-        """
-        if word not in self._dictionary:
-            arr = np.array([fuzz.ratio(word, k) for k in self.words])
-            idx = (-arr).argsort()[:5]
-            strings = ', '.join([self.words[i] for i in idx])
-            raise Exception(
-                'input not found in dictionary, here top-5 nearest words [%s]'
-                % (strings)
-            )
-        return np.ravel(self._embed_matrix[self._dictionary[word], :])
+        word = filter(None, word.split())
+        word = ''.join(['<%s>' % (w) for w in word])
+        word_array = _doc2num([word], self._dictionary, ngrams = self.ngrams)[0]
+        return np.array([self._embed_matrix[i] for i in word_array]).sum(
+            axis = 0
+        )
 
     def tree_plot(
         self,
@@ -296,10 +278,8 @@ class word2vec:
             raise Exception(
                 'matplotlib and seaborn not installed. Please install it and try again.'
             )
-        idx = [
-            self.words.index(e[0] if isinstance(e, list) else e) for e in labels
-        ]
-        embed = self._embed_matrix[idx]
+        idx = [e[0] if isinstance(e, list) else e for e in labels]
+        embed = self.to_vector(idx)
         embed = embed.dot(embed.T)
         embed = (embed - embed.min()) / (embed.max() - embed.min())
         labelled = []
@@ -330,7 +310,6 @@ class word2vec:
         notebook_mode = False,
         figsize = (7, 7),
         figname = 'fig.png',
-        plus_minus = 25,
         handoff = 5e-5,
     ):
         """
@@ -358,7 +337,6 @@ class word2vec:
         ), 'notebook_mode must be a boolean'
         assert isinstance(figsize, tuple), 'figsize must be a tuple'
         assert isinstance(figname, str), 'figname must be a string'
-        assert isinstance(plus_minus, int), 'plus_minus must be an integer'
         try:
             import matplotlib.pyplot as plt
             import seaborn as sns
@@ -368,24 +346,17 @@ class word2vec:
             raise Exception(
                 'matplotlib and seaborn not installed. Please install it and try again.'
             )
-        idx = [
-            self.words.index(e[0] if isinstance(e, list) else e) for e in labels
-        ]
+        idx = [e[0] if isinstance(e, list) else e for e in labels]
         if centre:
             assert isinstance(centre, str), 'centre must be a string'
-            idx.append(self.words.index(centre))
-        cp_idx = idx[:]
-        for i in idx:
-            cp_idx.extend(np.arange(i - plus_minus, i).tolist())
-            cp_idx.extend(np.arange(i, i + plus_minus).tolist())
+            idx.append(centre)
+        embed_matrix = self.to_vector(idx)
         tsne = TSNE(n_components = 2, random_state = 0).fit_transform(
-            self._embed_matrix[cp_idx]
+            embed_matrix
         )
         plt.figure(figsize = figsize)
         plt.scatter(tsne[:, 0], tsne[:, 1])
-        for label, x, y in zip(
-            labels, tsne[: len(labels), 0], tsne[: len(labels), 1]
-        ):
+        for label, x, y in zip(labels, tsne[:, 0], tsne[:, 1]):
             label = (
                 '%s, %.3f' % (label[0], label[1])
                 if isinstance(label, list)
@@ -400,7 +371,7 @@ class word2vec:
         if centre:
             plt.annotate(
                 centre,
-                xy = (tsne[len(labels), 0], tsne[len(labels), 1]),
+                xy = (tsne[-1, 0], tsne[-1, 1]),
                 xytext = (0, 0),
                 textcoords = 'offset points',
                 color = 'red',
@@ -423,6 +394,7 @@ class word2vec:
     def calculator(
         self,
         equation,
+        words_pool,
         num_closest = 5,
         metric = 'cosine',
         return_similarity = True,
@@ -434,6 +406,8 @@ class word2vec:
         ----------
         equation: str
             Eg, '(mahathir + najib) - rosmah'
+        words_pool: list
+            Eg, ['makan','najib','minum','mahathir pm']
         num_closest: int, (default=5)
             number of words closest to the result
         metric: str, (default='cosine')
@@ -451,6 +425,12 @@ class word2vec:
         assert isinstance(
             return_similarity, bool
         ), 'num_closest must be a boolean'
+        assert isinstance(
+            words_pool[0], str
+        ), 'elements of words_pool must be a string'
+        assert (
+            len(words_pool) >= num_closest
+        ), 'length of words_pool must bigger or equal than num_closest'
         tokens, temp = [], ''
         for char in equation:
             if char == ' ':
@@ -459,49 +439,46 @@ class word2vec:
                 temp += char
             else:
                 if len(temp):
-                    row = self._dictionary[
-                        self.words[
-                            np.argmax([fuzz.ratio(temp, k) for k in self.words])
-                        ]
-                    ]
                     tokens.append(
                         ','.join(
-                            self._embed_matrix[row, :].astype('str').tolist()
+                            self.to_vector([temp])[0].astype('str').tolist()
                         )
                     )
                     temp = ''
                 tokens.append(char)
         if len(temp):
-            row = self._dictionary[
-                self.words[np.argmax([fuzz.ratio(temp, k) for k in self.words])]
-            ]
             tokens.append(
-                ','.join(self._embed_matrix[row, :].astype('str').tolist())
+                ','.join(self.to_vector([temp])[0].astype('str').tolist())
             )
+
+        embed_matrix = self.to_vector(words_pool)
         if return_similarity:
-            nn = NearestNeighbors(num_closest + 1, metric = metric).fit(
-                self._embed_matrix
+            nn = NearestNeighbors(num_closest, metric = metric).fit(
+                embed_matrix
             )
             distances, idx = nn.kneighbors(
                 _Calculator(tokens).exp().reshape((1, -1))
             )
             word_list = []
-            for i in range(1, idx.shape[1]):
-                word_list.append(
-                    [self._reverse_dictionary[idx[0, i]], 1 - distances[0, i]]
-                )
+            for i in range(idx.shape[1]):
+                word_list.append([words_pool[idx[0, i]], 1 - distances[0, i]])
             return word_list
         else:
             closest_indices = self.closest_row_indices(
-                _Calculator(tokens).exp(), num_closest + 1, metric
+                _Calculator(tokens).exp(), num_closest + 1, metric, embed_matrix
             )
             word_list = []
             for i in closest_indices:
-                word_list.append(self._reverse_dictionary[i])
+                word_list.append(words_pool[i])
             return word_list
 
     def n_closest(
-        self, word, num_closest = 5, metric = 'cosine', return_similarity = True
+        self,
+        word,
+        words_pool,
+        num_closest = 5,
+        metric = 'cosine',
+        return_similarity = True,
     ):
         """
         find nearest words based on a word
@@ -510,6 +487,8 @@ class word2vec:
         ----------
         word: str
             Eg, 'najib'
+        words_pool: list
+            Eg, ['makan','najib','minum','mahathir pm']
         num_closest: int, (default=5)
             number of words closest to the result
         metric: str, (default='cosine')
@@ -524,42 +503,48 @@ class word2vec:
         assert isinstance(word, str), 'input must be a string'
         assert isinstance(num_closest, int), 'num_closest must be an integer'
         assert isinstance(metric, str), 'metric must be a string'
+        assert isinstance(words_pool, list), 'words_pool must be a list'
+        assert isinstance(
+            words_pool[0], str
+        ), 'elements of words_pool must be a string'
+        assert (
+            len(words_pool) >= num_closest
+        ), 'length of words_pool must bigger or equal than num_closest'
         assert isinstance(
             return_similarity, bool
         ), 'num_closest must be a boolean'
+        words_pool.append(word)
+        embed_matrix = self.to_vector(words_pool)
+
         if return_similarity:
             nn = NearestNeighbors(num_closest + 1, metric = metric).fit(
-                self._embed_matrix
+                embed_matrix
             )
-            distances, idx = nn.kneighbors(
-                self.get_vector_by_name(word).reshape((1, -1))
-            )
+            distances, idx = nn.kneighbors(embed_matrix[-1].reshape((1, -1)))
             word_list = []
             for i in range(1, idx.shape[1]):
-                word_list.append(
-                    [self._reverse_dictionary[idx[0, i]], 1 - distances[0, i]]
-                )
+                word_list.append([words_pool[idx[0, i]], 1 - distances[0, i]])
             return word_list
         else:
-            wv = self.get_vector_by_name(word)
+            wv = embed_matrix[-1].reshape((1, -1))
             closest_indices = self.closest_row_indices(
-                wv, num_closest + 1, metric
+                wv, num_closest + 1, metric, embed_matrix
             )
             word_list = []
             for i in closest_indices:
-                word_list.append(self._reverse_dictionary[i])
+                word_list.append(words_pool[i])
             if word in word_list:
                 word_list.remove(word)
             return word_list
 
-    def closest_row_indices(self, wv, num, metric):
+    def closest_row_indices(self, wv, num, metric, embed_matrix):
         dist_array = np.ravel(
-            cdist(self._embed_matrix, wv.reshape((1, -1)), metric = metric)
+            cdist(embed_matrix, wv.reshape((1, -1)), metric = metric)
         )
         sorted_indices = np.argsort(dist_array)
         return sorted_indices[:num]
 
-    def analogy(self, a, b, c, num = 1, metric = 'cosine'):
+    def analogy(self, a, b, c, words_pool, num = 1, metric = 'cosine'):
         """
         analogy calculation, vb - va + vc
 
@@ -568,6 +553,8 @@ class word2vec:
         a: str
         b: str
         c: str
+        words_pool: list
+            Eg, ['makan','najib','minum','mahathir pm']
         num: int, (default=1)
         metric: str, (default='cosine')
             vector distance algorithm
@@ -579,40 +566,39 @@ class word2vec:
         assert isinstance(a, str), 'a must be a string'
         assert isinstance(b, str), 'b must be a string'
         assert isinstance(c, str), 'c must be a string'
-        if a not in self._dictionary:
-            raise Exception('a not in dictinary')
-        if b not in self._dictionary:
-            raise Exception('b not in dictinary')
-        if c not in self._dictionary:
-            raise Exception('c not in dictinary')
-        va = self.get_vector_by_name(a)
-        vb = self.get_vector_by_name(b)
-        vc = self.get_vector_by_name(c)
+        assert isinstance(
+            words_pool[0], str
+        ), 'elements of words_pool must be a string'
+        assert (
+            len(words_pool) >= num
+        ), 'length of words_pool must bigger or equal than num_closest'
+        words_pool.extend([a, b, c])
+        embed_matrix = self.to_vector(words_pool)
+        va = embed_matrix[-3]
+        vb = embed_matrix[-2]
+        vc = embed_matrix[-1]
         vd = vb - va + vc
-        closest_indices = self.closest_row_indices(vd, num, metric)
+        closest_indices = self.closest_row_indices(
+            vd, num, metric, embed_matrix
+        )
         d_word_list = []
         for i in closest_indices:
-            d_word_list.append(self._reverse_dictionary[i])
+            d_word_list.append(words_pool[i])
         return d_word_list
 
-    def project_2d(self, start, end):
+    def project_2d(self, words_pool):
         """
-        project word2vec into 2d dimension
+        project fast-text into 2d dimension
 
         Parameters
         ----------
-        start: int
-        end: int
+        words_pool: list
+            Eg, ['makan','najib','minum','mahathir pm']
 
         Returns
         -------
         tsne decomposition: numpy
         """
-        assert isinstance(start, int), 'start must be an integer'
-        assert isinstance(end, int), 'end must be an integer'
         tsne = TSNE(n_components = 2)
-        embed_2d = tsne.fit_transform(self._embed_matrix[start:end, :])
-        word_list = []
-        for i in range(start, end):
-            word_list.append(self._reverse_dictionary[i])
-        return embed_2d, word_list
+        embed_2d = tsne.fit_transform(embed_matrix = self.to_vector(words_pool))
+        return embed_2d, words_pool

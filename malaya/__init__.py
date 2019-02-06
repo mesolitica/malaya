@@ -263,6 +263,7 @@ from . import cluster
 from . import dependency
 from . import emotion
 from . import entity
+from . import fast_text
 from . import language_detection
 from . import normalize
 from . import num2word
@@ -276,5 +277,6 @@ from . import summarize
 from . import topic_influencer
 from . import topic_model
 from . import toxic
+from . import word_mover
 from . import word2vec
 from .texts import vectorizer

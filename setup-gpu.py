@@ -6,13 +6,13 @@ __packagename__ = 'malaya-gpu'
 setuptools.setup(
     name = __packagename__,
     packages = setuptools.find_packages(),
-    version = '1.5.1',
+    version = '1.6',
     python_requires = '==3.6.*',
     description = 'Natural-Language-Toolkit for bahasa Malaysia, powered by Deep Learning. GPU Version',
     author = 'huseinzol05',
     author_email = 'husein.zol05@gmail.com',
     url = 'https://github.com/huseinzol05/Malaya',
-    download_url = 'https://github.com/DevconX/Malaya/archive/master.zip',
+    download_url = 'https://github.com/huseinzol05/Malaya/archive/master.zip',
     keywords = ['nlp', 'bm'],
     install_requires = [
         'xgboost==0.80',
@@ -30,6 +30,7 @@ setuptools.setup(
         'pandas',
         'PySastrawi',
         'toolz',
+        'PuLP-py3',
     ],
     license = 'MIT',
     classifiers = [

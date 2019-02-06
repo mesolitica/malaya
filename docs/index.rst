@@ -25,6 +25,7 @@ Contents:
    Dependency
    Emotion
    Entities
+   Fasttext
    Language
    Normalizer
    Num2word

@@ -11,6 +11,7 @@ import tensorflow as tf
 from collections import Counter
 from ._utils._utils import load_graph, check_file, check_available
 from .num2word import to_cardinal
+from .word_mover import distance as word_mover_distance
 from .texts._text_functions import (
     normalizer_textcleaning,
     stemmer_str_idx,
@@ -149,6 +150,102 @@ class _SPELL_NORMALIZE:
         return ' '.join(result)
 
 
+class _DEEP_CONTRACTION:
+    def __init__(self, corpus, vectorizer):
+        self.corpus = Counter(corpus)
+        self.vectorizer = vectorizer
+
+    def _suggest(self, string):
+        """
+        Normalize a string
+
+        Parameters
+        ----------
+        string : str
+
+        debug : bool, optional (default=True)
+            If true, it will print character similarity distances.
+
+        Returns
+        -------
+        string: normalized string
+        """
+        assert isinstance(string, str), 'input must be a string'
+        result, outer_candidates = [], []
+        for word in normalizer_textcleaning(string).split():
+            if word.istitle():
+                result.append(word)
+                continue
+            if word[0] == 'x' and len(word) > 1:
+                result_string = 'tak '
+                word = word[1:]
+            else:
+                result_string = ''
+            if word[-2:] == 'la':
+                end_result_string = ' lah'
+                word = word[:-2]
+            elif word[-3:] == 'lah':
+                end_result_string = ' lah'
+                word = word[:-3]
+            else:
+                end_result_string = ''
+            if word in sounds:
+                result.append(result_string + sounds[word] + end_result_string)
+                continue
+            if word in rules_normalizer:
+                result.append(
+                    result_string + rules_normalizer[word] + end_result_string
+                )
+                continue
+            if word in self.corpus:
+                result.append(result_string + word + end_result_string)
+                continue
+            candidates = (
+                _return_known([word], self.corpus)
+                or _return_known(_edit_normalizer(word), self.corpus)
+                or _return_possible(word, self.corpus, _edit_normalizer)
+                or [word]
+            )
+            candidates = list(candidates)
+            candidates = [
+                (candidate, is_location(candidate))
+                for candidate in list(candidates)
+            ]
+            strings = [fuzz.ratio(string, k[0]) for k in candidates]
+            descending_sort = np.argsort(strings)[::-1]
+            selected = None
+            for index in descending_sort:
+                if not candidates[index][1]:
+                    selected = candidates[index][0]
+                    break
+            selected = (
+                candidates[descending_sort[0]][0] if not selected else selected
+            )
+            result.append(result_string + word + end_result_string)
+            outer_candidates.append([(word, k[0]) for k in candidates])
+        return ' '.join(result), outer_candidates
+
+    def normalize(self, string):
+        result, candidates = self._suggest(string)
+        intermediates = []
+        for candidate in candidates:
+            inner = []
+            for c in candidate:
+                text = [c[1] if w in c[0] else w for w in result.split()]
+                inner.append(
+                    (
+                        c[0],
+                        ' '.join(text),
+                        word_mover_distance(
+                            text, result.split(), self.vectorizer
+                        ),
+                    )
+                )
+            inner.sort(key = lambda x: x[2])
+            intermediates.append(inner)
+        return intermediates
+
+
 class _FUZZY_NORMALIZE:
     def __init__(self, normalized, corpus):
         self.normalized = normalized
@@ -267,6 +364,16 @@ def spell(corpus):
         corpus[0], str
     ), 'input must be list of strings'
     return _SPELL_NORMALIZE(corpus)
+
+
+def deep_expander(corpus, vectorizer):
+    assert isinstance(corpus, list) and isinstance(
+        corpus[0], str
+    ), 'input must be list of strings'
+    assert hasattr(
+        vectorizer, 'get_vector_by_name'
+    ), 'vectorizer must has `get_vector_by_name` method'
+    return _DEEP_CONTRACTION(corpus, vectorizer)
 
 
 def basic(string):

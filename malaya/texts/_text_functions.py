@@ -165,14 +165,14 @@ def normalizer_textcleaning(string):
     return ''.join(''.join(s)[:2] for _, s in itertools.groupby(string))
 
 
-def simple_textcleaning(string):
+def simple_textcleaning(string, lowering = True):
     """
     use by topic modelling
     only accept A-Z, a-z
     """
     string = unidecode(string)
     string = re.sub('[^A-Za-z ]+', ' ', string)
-    return re.sub(r'[ ]+', ' ', string.lower()).strip()
+    return re.sub(r'[ ]+', ' ', string.lower() if lowering else string).strip()
 
 
 def entities_textcleaning(string):
