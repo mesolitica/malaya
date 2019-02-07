@@ -93,7 +93,7 @@ Features
    Provide pretrained bahasa wikipedia and bahasa news Word2Vec, with easy interface and visualization.
 -  **Fast-text**
 
-  Provide pretrained bahasa wikipedia Fast-text, with easy interface and visualization.
+   Provide pretrained bahasa wikipedia Fast-text, with easy interface and visualization.
 
 License
 --------
