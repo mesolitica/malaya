@@ -764,7 +764,7 @@ class DEEP_LANG:
         else:
             return self._label[np.argmax(probs)]
 
-    def predict_batch(self, strings):
+    def predict_batch(self, strings, get_proba = False):
         """
         classify list of strings
 

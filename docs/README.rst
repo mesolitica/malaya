@@ -2,7 +2,7 @@
 
     <p align="center">
         <a href="#readme">
-            <img alt="logo" width="70%" src="https://raw.githubusercontent.com/huseinzol05/Malaya/master/session/towns-of-malaya.jpg">
+            <img alt="logo" width="70%" src="https://raw.githubusercontent.com/DevconX/Malaya/master/session/towns-of-malaya.jpg">
         </a>
     </p>
     <p align="center">
@@ -91,6 +91,9 @@ Features
 -  **Word2Vec**
 
    Provide pretrained bahasa wikipedia and bahasa news Word2Vec, with easy interface and visualization.
+-  **Fast-text**
+
+  Provide pretrained bahasa wikipedia Fast-text, with easy interface and visualization.
 
 License
 --------
