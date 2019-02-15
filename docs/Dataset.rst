@@ -40,6 +40,8 @@ Total size: 8.5 MB
 `Gender <https://github.com/huseinzol05/Malaya-Dataset/blob/master/gender>`__
 -----------------------------------------------------------------------------
 
+Total size: 2.2 MB
+
 1. Unknown
 2. Male
 3. Female
@@ -153,7 +155,7 @@ Total size: 496 KB
 `Sentiment Twitter <https://github.com/huseinzol05/Malaya-Dataset/blob/master/twitter-sentiment>`__
 ---------------------------------------------------------------------------------------------------
 
-Total size: 27.4 MB
+Total size: 50.6 MB
 
 1. Positive
 2. Negative
@@ -225,6 +227,20 @@ Total size: 1.4 MB
 
 1. Positive
 2. Negative
+
+`Toxicity <https://github.com/huseinzol05/Malaya-Dataset/blob/master/toxicity>`__
+-----------------------------------------------------------------------------------------
+
+Total size: 70 MB
+
+Toxicity is multilabel, prefer to use sigmoid based.
+
+1. toxic
+2. severe toxic
+3. obscene
+4. threat
+5. insult
+6. identity hate
 
 `Subtitle <https://github.com/huseinzol05/Malaya-Dataset/blob/master/subtitle>`__
 ---------------------------------------------------------------------------------

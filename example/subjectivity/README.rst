@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 10.4 s, sys: 630 ms, total: 11 s
-    Wall time: 11 s
+    CPU times: user 12.4 s, sys: 1.4 s, total: 13.8 s
+    Wall time: 17.2 s
 
 
 Explanation
@@ -43,15 +43,15 @@ Load multinomial model
 .. parsed-literal::
 
     {'negative': 0.46203835811002486, 'positive': 0.5379616418899767}
-    {'negative': 0.8698758314042119, 'positive': 0.13012416859579023}
+    {'negative': 0.8607294776614423, 'positive': 0.13927052233855727}
 
 
 
 
 .. parsed-literal::
 
-    [{'negative': 0.8698758314042119, 'positive': 0.13012416859579023},
-     {'negative': 0.8698758314042119, 'positive': 0.13012416859579023}]
+    [{'negative': 0.8607294776614423, 'positive': 0.13927052233855727},
+     {'negative': 0.8607294776614423, 'positive': 0.13927052233855727}]
 
 
 
@@ -118,28 +118,28 @@ List available deep learning models
 
     Testing fast-text model
     negative
-    ['negative', 'negative']
-    [{'negative': 0.99998176, 'positive': 1.8284805e-05}, {'negative': 0.6197021, 'positive': 0.3802979}]
+    ['negative', 'positive']
+    [{'negative': 1.0, 'positive': 5.600171e-08}, {'negative': 0.25236478, 'positive': 0.74763525}]
     
     Testing hierarchical model
     negative
     ['negative', 'positive']
-    [{'negative': 0.9999926, 'positive': 7.3815904e-06}, {'negative': 0.17152506, 'positive': 0.82847494}]
+    [{'negative': 0.99999225, 'positive': 7.692454e-06}, {'negative': 0.29224393, 'positive': 0.70775604}]
     
     Testing bahdanau model
     negative
-    ['negative', 'negative']
-    [{'negative': 0.99988747, 'positive': 0.000112509806}, {'negative': 0.41513687, 'positive': 0.5848631}]
+    ['negative', 'positive']
+    [{'negative': 0.99998605, 'positive': 1.3971644e-05}, {'negative': 0.41739935, 'positive': 0.5826007}]
     
     Testing luong model
     positive
     ['positive', 'negative']
-    [{'negative': 0.03757865, 'positive': 0.96242136}, {'negative': 0.3540184, 'positive': 0.64598167}]
+    [{'negative': 0.07556655, 'positive': 0.92443347}, {'negative': 0.96075815, 'positive': 0.039241895}]
     
     Testing bidirectional model
     negative
-    ['negative', 'negative']
-    [{'negative': 0.99999166, 'positive': 8.3508085e-06}, {'negative': 0.9939621, 'positive': 0.0060379254}]
+    ['negative', 'positive']
+    [{'negative': 0.9999918, 'positive': 8.21179e-06}, {'negative': 0.046924926, 'positive': 0.95307505}]
     
     Testing bert model
     negative
@@ -309,7 +309,7 @@ will try to evolve it.
 
 .. parsed-literal::
 
-    [{'negative': 0.06594214, 'positive': 0.93405783},
-     {'negative': 0.9535811, 'positive': 0.046418883}]
+    [{'negative': 0.054842573, 'positive': 0.94515747},
+     {'negative': 0.95071983, 'positive': 0.04928014}]
 
 

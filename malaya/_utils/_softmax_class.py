@@ -19,7 +19,7 @@ def sparse_deep_model(
     class_name,
     label,
     output_size,
-    embedded_size = 64,
+    embedded_size = 128,
     model = 'fast-text-char',
     validate = True,
 ):
@@ -65,63 +65,7 @@ def deep_model(
 ):
     assert isinstance(model, str), 'model must be a string'
     model = model.lower()
-    if model == 'fast-text':
-        if validate:
-            check_file(path['fast-text'], s3_path['fast-text'])
-        else:
-            if not check_available(path['fast-text']):
-                raise Exception(
-                    '%s/%s is not available, please `validate = True`'
-                    % (class_name, model)
-                )
-        try:
-            with open(path['fast-text']['setting'], 'r') as fopen:
-                dictionary = json.load(fopen)['dictionary']
-            with open(path['fast-text']['pickle'], 'rb') as fopen:
-                ngram = pickle.load(fopen)
-            g = load_graph(path['fast-text']['model'])
-        except:
-            raise Exception(
-                "model corrupted due to some reasons, please run malaya.clear_cache('%s/%s') and try again"
-                % (class_name, model)
-            )
-        return SOFTMAX(
-            g.get_tensor_by_name('import/Placeholder:0'),
-            g.get_tensor_by_name('import/logits:0'),
-            tf.InteractiveSession(graph = g),
-            model,
-            dictionary,
-            ngram = ngram,
-            label = label,
-        )
-    elif model == 'hierarchical':
-        if validate:
-            check_file(path['hierarchical'], s3_path['hierarchical'])
-        else:
-            if not check_available(path['hierarchical']):
-                raise Exception(
-                    '%s/%s is not available, please `validate = True`'
-                    % (class_name, model)
-                )
-        try:
-            with open(path['hierarchical']['setting'], 'r') as fopen:
-                dictionary = json.load(fopen)['dictionary']
-            g = load_graph(path['hierarchical']['model'])
-        except:
-            raise Exception(
-                "model corrupted due to some reasons, please run malaya.clear_cache('%s/%s') and try again"
-                % (class_name, model)
-            )
-        return SOFTMAX(
-            g.get_tensor_by_name('import/Placeholder:0'),
-            g.get_tensor_by_name('import/logits:0'),
-            tf.InteractiveSession(graph = g),
-            model,
-            dictionary,
-            alphas = g.get_tensor_by_name('import/alphas:0'),
-            label = label,
-        )
-    elif model in ['bahdanau', 'luong']:
+    if model in ['bahdanau', 'luong', 'hierarchical']:
         if validate:
             check_file(path[model], s3_path[model])
         else:
@@ -148,19 +92,19 @@ def deep_model(
             alphas = g.get_tensor_by_name('import/alphas:0'),
             label = label,
         )
-    elif model == 'bidirectional':
+    elif model in ['bidirectional', 'fast-text']:
         if validate:
-            check_file(path['bidirectional'], s3_path['bidirectional'])
+            check_file(path[model], s3_path[model])
         else:
-            if not check_available(path['bidirectional']):
+            if not check_available(path[model]):
                 raise Exception(
                     '%s/%s is not available, please `validate = True`'
                     % (class_name, model)
                 )
         try:
-            with open(path['bidirectional']['setting'], 'r') as fopen:
-                dictionary = json.load(fopen)
-            g = load_graph(path['bidirectional']['model'])
+            with open(path[model]['setting'], 'r') as fopen:
+                dictionary = json.load(fopen)['dictionary']
+            g = load_graph(path[model]['model'])
         except:
             raise Exception(
                 "model corrupted due to some reasons, please run malaya.clear_cache('%s/%s') and try again"
@@ -227,6 +171,7 @@ def deep_model(
                 "model corrupted due to some reasons, please run malaya.clear_cache('%s/%s') and try again"
                 % (class_name, model)
             )
+        maxlen = 100 if 'sentiment' in class_name else 80
         return SOFTMAX(
             g.get_tensor_by_name('import/Placeholder_question:0'),
             g.get_tensor_by_name('import/logits:0'),
@@ -238,6 +183,7 @@ def deep_model(
             ),
             story = g.get_tensor_by_name('import/Placeholder_story:0'),
             label = label,
+            maxlen = maxlen,
         )
     else:
         raise Exception(

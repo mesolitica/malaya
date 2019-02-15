@@ -264,6 +264,7 @@ def train_model(
         )
         sess = tf.InteractiveSession()
         sess.run(tf.global_variables_initializer())
+        saver = tf.train.Saver(tf.trainable_variables())
 
     for e in range(epoch):
         pbar = tqdm(range(0, len(train_X), batch_size), desc = 'minibatch loop')
@@ -292,4 +293,19 @@ def train_model(
                 },
             )
             pbar.set_postfix(cost = loss)
-    return sess, model, dictionary
+    return sess, model, dictionary, saver
+
+
+def load_skipthought(location, json):
+    graph = tf.Graph()
+    with graph.as_default():
+        model = Model(
+            len(json['dictionary']),
+            embedding_size = json['embedding_size'],
+            maxlen = json['maxlen'],
+        )
+        sess = tf.InteractiveSession()
+        sess.run(tf.global_variables_initializer())
+        saver = tf.train.Saver(tf.trainable_variables())
+        saver.restore(sess, location + '/model.ckpt')
+    return sess, model, saver

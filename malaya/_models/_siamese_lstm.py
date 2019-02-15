@@ -6,7 +6,6 @@ if not sys.warnoptions:
 
 import tensorflow as tf
 from tqdm import tqdm
-import uuid
 from ..texts._text_functions import str_idx, build_dataset
 
 
@@ -30,7 +29,7 @@ class Model:
             )
 
         def birnn(inputs, scope):
-            with tf.variable_scope(scope + str(uuid.uuid4())):
+            with tf.variable_scope(scope):
                 for n in range(num_layers):
                     (out_fw, out_bw), (
                         state_fw,
@@ -113,6 +112,8 @@ def train_model(
     output_size = 300,
     maxlen = 100,
     dropout = 0.8,
+    num_layers = 1,
+    **kwargs
 ):
     concat = (' '.join(train_X_left + train_X_right)).split()
     vocabulary_size = len(list(set(concat)))
@@ -124,13 +125,14 @@ def train_model(
         sess = tf.InteractiveSession()
         model = Model(
             size_layer = embedding_size,
-            num_layers = 1,
+            num_layers = num_layers,
             embedded_size = embedding_size,
             dict_size = len(dictionary),
             output_size = output_size,
             dropout = dropout,
         )
         sess.run(tf.global_variables_initializer())
+        saver = tf.train.Saver(tf.trainable_variables())
 
     vectors_left = str_idx(train_X_left, dictionary, maxlen, UNK = 3)
     vectors_right = str_idx(train_X_right, dictionary, maxlen, UNK = 3)
@@ -155,4 +157,22 @@ def train_model(
                 },
             )
             pbar.set_postfix(cost = loss, accuracy = acc)
-    return sess, model, dictionary
+    return sess, model, dictionary, saver, dropout
+
+
+def load_siamese(location, json):
+    graph = tf.Graph()
+    with graph.as_default():
+        model = Model(
+            size_layer = json['embedding_size'],
+            num_layers = json['num_layers'],
+            embedded_size = json['embedding_size'],
+            dict_size = len(json['dictionary']),
+            output_size = json['output_size'],
+            dropout = json['dropout'],
+        )
+        sess = tf.InteractiveSession()
+        sess.run(tf.global_variables_initializer())
+        saver = tf.train.Saver(tf.trainable_variables())
+        saver.restore(sess, location + '/model.ckpt')
+    return sess, model, saver

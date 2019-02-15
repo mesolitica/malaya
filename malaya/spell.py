@@ -8,7 +8,7 @@ from collections import Counter, defaultdict
 from fuzzywuzzy import fuzz
 import numpy as np
 from .texts._text_functions import normalizer_textcleaning
-from .topic_influencer import is_location
+from .similarity import is_location
 from .texts._tatabahasa import alphabet, consonants, vowels
 
 
@@ -21,15 +21,20 @@ def _build_dicts(words):
     return occurences
 
 
+def _augment_vowel(string, selected = ['a', 'i']):
+    pseudo = []
+    for c in selected:
+        pseudo.append(''.join([w + c for w in string]))
+    return pseudo
+
+
 def _edit_normalizer(word):
     splits = [(word[:i], word[i:]) for i in range(len(word) + 1)]
     deletes = [a + b[1:] for a, b in splits if b]
     transposes = [a + b[1] + b[0] + b[2:] for a, b in splits if len(b) > 1]
     replaces = [a + c + b[1:] for a, b in splits for c in alphabet if b]
     inserts = [a + c + b for a, b in splits for c in alphabet]
-    pseudo = []
-    for c in vowels:
-        pseudo.append(''.join([w + c for w in word]))
+    pseudo = _augment_vowel(word, vowels)
     fuzziness = []
     if len(word):
         if word[-1] == 'e':
@@ -43,20 +48,25 @@ def _edit_normalizer(word):
             and word[1] in consonants
             and word[2] in vowels
         ):
-            fuzziness.append(word[0] + word[2] + word[1:])
+            inner = word[0] + word[2] + word[1:]
+            fuzziness.append(inner)
     if len(word) > 2:
         if (
             word[0] in vowels
             and word[-1] in consonants
             and word[2] in consonants
         ):
-            fuzziness.append(word[:-2] + word[0] + word[-1])
+            inner = word[:-2] + word[0] + word[-1]
+            fuzziness.append(inner)
     if len(word) > 2:
         if word[-1] == 'o' and word[-3] in vowels and word[-2] in consonants:
-            fuzziness.append(word[:-1] + 'ar')
+            inner = word[:-1] + 'ar'
+            fuzziness.append(inner)
     if len(word):
         if word[0] == 'a' and word[1] in consonants:
-            fuzziness.append('h' + word)
+            inner = 'h' + word
+            fuzziness.append(inner)
+            pseudo.extend(inner)
     return set(deletes + transposes + replaces + inserts + fuzziness + pseudo)
 
 
@@ -100,23 +110,18 @@ class _SPELL:
         if not len(string):
             return string
         if first_char:
-            candidates = (
-                _return_known([string], self.occurences[string[0]])
-                or _return_known(
-                    _edit_normalizer(string), self.occurences[string[0]]
-                )
-                or _return_possible(
-                    string, self.occurences[string[0]], _edit_normalizer
-                )
-                or [string]
-            )
+            selected = self.occurences[string[0]]
         else:
-            candidates = (
-                _return_known([string], self.corpus)
-                or _return_known(_edit_normalizer(string), self.corpus)
-                or _return_possible(string, self.corpus, _edit_normalizer)
-                or [string]
-            )
+            selected = self.corpus
+        if len(string) > 2:
+            if string[-2] in consonants and string[-1] == 'e':
+                string = string[:-1] + 'a'
+        candidates = (
+            _return_known([string], selected)
+            or _return_known(_edit_normalizer(string), selected)
+            or _return_possible(string, selected, _edit_normalizer)
+            or [string]
+        )
         candidates = [
             (candidate, is_location(candidate))
             for candidate in list(candidates)

@@ -103,19 +103,19 @@ malaya.summarize
 .. automodule:: malaya.summarize
     :members:
 
-malaya.topics_influencer
+malaya.similarity
 -------------------------
 
-.. automodule:: malaya.topic_influencer
+.. automodule:: malaya.similarity
     :members:
 
-.. autoclass:: malaya.topic_influencer._DEEP_SIAMESE_SIMILARITY()
+.. autoclass:: malaya.similarity._DEEP_SIAMESE_SIMILARITY()
     :members:
 
-.. autoclass:: malaya.topic_influencer._DEEP_SIMILARITY()
+.. autoclass:: malaya.similarity._DEEP_SIMILARITY()
     :members:
 
-.. autoclass:: malaya.topic_influencer._FAST_SIMILARITY()
+.. autoclass:: malaya.similarity._FAST_SIMILARITY()
     :members:
 
 malaya.topic_model

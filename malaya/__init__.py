@@ -17,8 +17,8 @@ from shutil import rmtree
 from pathlib import Path
 
 home = os.path.join(str(Path.home()), 'Malaya')
-version = '1.6'
-bump_version = '1.6.1.1'
+version = '1.7'
+bump_version = '1.7.0.0'
 version_path = os.path.join(home, 'version')
 
 
@@ -71,8 +71,12 @@ else:
             fopen.write(version)
 
 
-def print_cache():
-    paths = DisplayablePath.make_tree(Path(home))
+def print_cache(location = None):
+    """
+    Print cached data, this will print entire cache folder if let location = None
+    """
+    path = os.path.join(home, location) if location else home
+    paths = DisplayablePath.make_tree(Path(path))
     for path in paths:
         print(path.displayable())
 
@@ -269,12 +273,12 @@ from . import normalize
 from . import num2word
 from . import pos
 from . import sentiment
+from . import similarity
 from . import spell
 from . import stack
 from . import stem
 from . import subjective
 from . import summarize
-from . import topic_influencer
 from . import topic_model
 from . import toxic
 from . import word_mover

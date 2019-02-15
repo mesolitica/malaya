@@ -120,8 +120,6 @@ def deep_model(model = 'luong', validate = True):
         try:
             with open(PATH_TOXIC['fast-text']['setting'], 'r') as fopen:
                 dictionary = json.load(fopen)['dictionary']
-            with open(PATH_TOXIC['fast-text']['pickle'], 'rb') as fopen:
-                ngram = pickle.load(fopen)
             g = load_graph(PATH_TOXIC['fast-text']['model'])
         except:
             raise Exception(
@@ -133,35 +131,8 @@ def deep_model(model = 'luong', validate = True):
             tf.InteractiveSession(graph = g),
             model,
             dictionary,
-            ngram = ngram,
         )
-    elif model == 'hierarchical':
-        if validate:
-            check_file(
-                PATH_TOXIC['hierarchical'], S3_PATH_TOXIC['hierarchical']
-            )
-        else:
-            if not check_available(PATH_TOXIC['logistic']):
-                raise Exception(
-                    'toxic/hierarchical is not available, please `validate = True`'
-                )
-        try:
-            with open(PATH_TOXIC['hierarchical']['setting'], 'r') as fopen:
-                dictionary = json.load(fopen)['dictionary']
-            g = load_graph(PATH_TOXIC['hierarchical']['model'])
-        except:
-            raise Exception(
-                "model corrupted due to some reasons, please run malaya.clear_cache('toxic/hierarchical') and try again"
-            )
-        return SIGMOID(
-            g.get_tensor_by_name('import/Placeholder:0'),
-            g.get_tensor_by_name('import/logits:0'),
-            tf.InteractiveSession(graph = g),
-            model,
-            dictionary,
-            alphas = g.get_tensor_by_name('import/alphas:0'),
-        )
-    elif model in ['bahdanau', 'luong']:
+    elif model in ['bahdanau', 'luong', 'hierarchical']:
         if validate:
             check_file(PATH_TOXIC[model], S3_PATH_TOXIC[model])
         else:

@@ -10,7 +10,7 @@ import tensorflow as tf
 from unidecode import unidecode
 from tensorflow.contrib.seq2seq.python.ops import beam_search_ops
 from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
-from .texts._tatabahasa import permulaan, hujung
+from .texts._tatabahasa import permulaan, hujung, rules_normalizer
 from ._utils._utils import load_graph, check_file, check_available
 from .texts._text_functions import (
     pad_sentence_batch,
@@ -34,7 +34,7 @@ def _load_sastrawi():
     sastrawi_stemmer = factory.create_stemmer()
 
 
-def _classification_textcleaning_stemmer_attention(string):
+def _classification_textcleaning_stemmer(string, attention = False):
     string = re.sub(
         'http\S+|www.\S+',
         '',
@@ -44,35 +44,16 @@ def _classification_textcleaning_stemmer_attention(string):
     )
     string = unidecode(string).replace('.', ' . ').replace(',', ' , ')
     string = re.sub('[^A-Za-z ]+', ' ', string)
-    string = re.sub(r'[ ]+', ' ', string).strip()
-    string = ' '.join(
-        [i for i in re.findall('[\\w\']+|[;:\-\(\)&.,!?"]', string) if len(i)]
-    )
-    string = string.lower().split()
+    string = re.sub(r'[ ]+', ' ', string.lower()).strip()
+    string = [rules_normalizer.get(w, w) for w in string.split()]
     string = [(naive(word), word) for word in string]
-    return (
-        ' '.join([word[0] for word in string if len(word[0]) > 1]),
-        ' '.join([word[1] for word in string if len(word[0]) > 1]),
-    )
-
-
-def _classification_textcleaning_stemmer(string):
-    string = re.sub(
-        'http\S+|www.\S+',
-        '',
-        ' '.join(
-            [i for i in string.split() if i.find('#') < 0 and i.find('@') < 0]
-        ),
-    )
-    string = unidecode(string).replace('.', ' . ').replace(',', ' , ')
-    string = re.sub('[^A-Za-z ]+', ' ', string)
-    string = re.sub(r'[ ]+', ' ', string).strip()
-    string = ' '.join(
-        [i for i in re.findall('[\\w\']+|[;:\-\(\)&.,!?"]', string) if len(i)]
-    )
-    string = string.lower().split()
-    string = [(naive(word), word) for word in string]
-    return ' '.join([word[0] for word in string if len(word[0]) > 1])
+    if attention:
+        return (
+            ' '.join([word[0] for word in string if len(word[0]) > 1]),
+            ' '.join([word[1] for word in string if len(word[0]) > 1]),
+        )
+    else:
+        return ' '.join([word[0] for word in string if len(word[0]) > 1])
 
 
 class _DEEP_STEMMER:
@@ -134,7 +115,7 @@ def naive(word):
     if len(hujung_result):
         hujung_result = max(hujung_result, key = len)
         if len(hujung_result):
-            word = hujung_result[: -len(hujung_result)]
+            word = word[: -len(hujung_result)]
     permulaan_result = [e for e in permulaan if word.startswith(e)]
     if len(permulaan_result):
         permulaan_result = max(permulaan_result, key = len)

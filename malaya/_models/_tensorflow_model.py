@@ -8,21 +8,19 @@ import tensorflow as tf
 import numpy as np
 from ..texts._text_functions import (
     str_idx,
-    add_ngram,
-    fasttext_str_idx,
     entities_textcleaning,
     char_str_idx,
     generate_char_seq,
     language_detection_textcleaning,
 )
-from .._utils._parse_dependency import DependencyGraph
-from ..stem import _classification_textcleaning_stemmer_attention
+from ..stem import _classification_textcleaning_stemmer
 
 
-def _convert_sparse_matrix_to_sparse_tensor(X, limit = 5):
+def _convert_sparse_matrix_to_sparse_tensor(X, got_limit = True, limit = 5):
     coo = X.tocoo()
     indices = np.mat([coo.row, coo.col]).transpose()
-    coo.data[coo.data > limit] = limit
+    if got_limit:
+        coo.data[coo.data > limit] = limit
     return (
         tf.SparseTensorValue(indices, coo.col, coo.shape),
         tf.SparseTensorValue(indices, coo.data, coo.shape),
@@ -383,7 +381,6 @@ class SOFTMAX:
         sess,
         mode,
         dictionary,
-        ngram = None,
         alphas = None,
         input_mask = None,
         segment_ids = None,
@@ -398,7 +395,6 @@ class SOFTMAX:
         self._sess = sess
         self._mode = mode
         self._dictionary = dictionary
-        self._ngram = ngram
         self._alphas = alphas
         self._input_mask = input_mask
         self._segment_ids = segment_ids
@@ -407,6 +403,9 @@ class SOFTMAX:
         self._story = story
         self._maxlen = maxlen
         self._label = label
+
+    def get_dictionary(self):
+        return self._dictionary
 
     def predict(self, string, get_proba = False):
         """
@@ -421,20 +420,16 @@ class SOFTMAX:
         dictionary: results
         """
         assert isinstance(string, str), 'input must be a string'
-        string = _classification_textcleaning_stemmer_attention(string)
+        string = _classification_textcleaning_stemmer(string, attention = True)
         splitted = string[1].split()
-        if self._mode == 'fast-text':
-            batch_x = fasttext_str_idx([string[0]], self._dictionary)
-            batch_x = add_ngram(batch_x, self._ngram)
+        if self._mode in ['entity-network', 'bert']:
+            batch_x = str_idx(
+                [string[0]], self._dictionary, self._maxlen, UNK = 3
+            )
         else:
-            if self._mode in ['entity-network', 'bert']:
-                batch_x = str_idx(
-                    [string[0]], self._dictionary, self._maxlen, UNK = 3
-                )
-            else:
-                batch_x = str_idx(
-                    [string[0]], self._dictionary, len(splitted), UNK = 3
-                )
+            batch_x = str_idx(
+                [string[0]], self._dictionary, len(splitted), UNK = 3
+            )
         if self._mode in ['luong', 'bahdanau', 'hierarchical']:
             probs, alphas = self._sess.run(
                 [tf.nn.softmax(self._logits), self._alphas],
@@ -497,24 +492,13 @@ class SOFTMAX:
         assert isinstance(strings, list) and isinstance(
             strings[0], str
         ), 'input must be list of strings'
-        strings = [
-            _classification_textcleaning_stemmer_attention(i)[0]
-            for i in strings
-        ]
+        strings = [_classification_textcleaning_stemmer(i) for i in strings]
         maxlen = max([len(i.split()) for i in strings])
-        if self._mode == 'fast-text':
-            batch_x = fasttext_str_idx(strings, self._dictionary)
-            batch_x = add_ngram(batch_x, self._ngram)
-            batch_x = tf.keras.preprocessing.sequence.pad_sequences(
-                batch_x, maxlen
-            )
+        if self._mode in ['entity-network', 'bert']:
+            batch_x = str_idx(strings, self._dictionary, self._maxlen, UNK = 3)
         else:
-            if self._mode in ['entity-network', 'bert']:
-                batch_x = str_idx(
-                    strings, self._dictionary, self._maxlen, UNK = 3
-                )
-            else:
-                batch_x = str_idx(strings, self._dictionary, maxlen, UNK = 3)
+            batch_x = str_idx(strings, self._dictionary, maxlen, UNK = 3)
+
         if self._mode not in ['bert', 'entity-network']:
             probs = self._sess.run(
                 tf.nn.softmax(self._logits), feed_dict = {self._X: batch_x}
@@ -564,7 +548,6 @@ class SIGMOID:
         sess,
         mode,
         dictionary,
-        ngram = None,
         alphas = None,
         input_mask = None,
         segment_ids = None,
@@ -578,7 +561,6 @@ class SIGMOID:
         self._sess = sess
         self._mode = mode
         self._dictionary = dictionary
-        self._ngram = ngram
         self._alphas = alphas
         self._input_mask = input_mask
         self._segment_ids = segment_ids
@@ -595,6 +577,9 @@ class SIGMOID:
             'identity_hate',
         ]
 
+    def get_dictionary(self):
+        return self._dictionary
+
     def predict(self, string, get_proba = False):
         """
         classify a string.
@@ -608,20 +593,16 @@ class SIGMOID:
         dictionary: results
         """
         assert isinstance(string, str), 'input must be a string'
-        string = _classification_textcleaning_stemmer_attention(string)
+        string = _classification_textcleaning_stemmer(string, attention = True)
         splitted = string[1].split()
-        if self._mode == 'fast-text':
-            batch_x = fasttext_str_idx([string[0]], self._dictionary)
-            batch_x = add_ngram(batch_x, self._ngram)
+        if self._mode in ['entity-network', 'bert']:
+            batch_x = str_idx(
+                [string[0]], self._dictionary, self._maxlen, UNK = 3
+            )
         else:
-            if self._mode in ['entity-network', 'bert']:
-                batch_x = str_idx(
-                    [string[0]], self._dictionary, self._maxlen, UNK = 3
-                )
-            else:
-                batch_x = str_idx(
-                    [string[0]], self._dictionary, len(splitted), UNK = 3
-                )
+            batch_x = str_idx(
+                [string[0]], self._dictionary, len(splitted), UNK = 3
+            )
         if self._mode in ['luong', 'bahdanau', 'hierarchical']:
             probs, alphas = self._sess.run(
                 [tf.nn.sigmoid(self._logits), self._alphas],
@@ -677,23 +658,14 @@ class SIGMOID:
             strings[0], str
         ), 'input must be list of strings'
         strings = [
-            _classification_textcleaning_stemmer_attention(i)[0]
+            _classification_textcleaning_stemmer(i, attention = True)[0]
             for i in strings
         ]
         maxlen = max([len(i.split()) for i in strings])
-        if self._mode == 'fast-text':
-            batch_x = fasttext_str_idx(strings, self._dictionary)
-            batch_x = add_ngram(batch_x, self._ngram)
-            batch_x = tf.keras.preprocessing.sequence.pad_sequences(
-                batch_x, maxlen
-            )
+        if self._mode in ['entity-network']:
+            batch_x = str_idx(strings, self._dictionary, self._maxlen, UNK = 3)
         else:
-            if self._mode in ['entity-network']:
-                batch_x = str_idx(
-                    strings, self._dictionary, self._maxlen, UNK = 3
-                )
-            else:
-                batch_x = str_idx(strings, self._dictionary, maxlen, UNK = 3)
+            batch_x = str_idx(strings, self._dictionary, maxlen, UNK = 3)
         if self._mode not in ['entity-network']:
             probs = self._sess.run(
                 tf.nn.sigmoid(self._logits), feed_dict = {self._X: batch_x}
@@ -828,9 +800,13 @@ class SPARSE_SOFTMAX:
         dictionary: results
         """
         assert isinstance(string, str), 'input must be a string'
-        string = _classification_textcleaning_stemmer_attention(string)[0]
+        string = _classification_textcleaning_stemmer(string, attention = True)[
+            0
+        ]
         transformed = self._vectorizer.transform([string])
-        batch_x = _convert_sparse_matrix_to_sparse_tensor(transformed)
+        batch_x = _convert_sparse_matrix_to_sparse_tensor(
+            transformed, got_limit = False
+        )
         probs = self._sess.run(
             tf.nn.softmax(self._model.logits),
             feed_dict = {self._model.X: batch_x[0], self._model.W: batch_x[1]},
@@ -856,11 +832,13 @@ class SPARSE_SOFTMAX:
             strings[0], str
         ), 'input must be list of strings'
         strings = [
-            _classification_textcleaning_stemmer_attention(i)[0]
+            _classification_textcleaning_stemmer(i, attention = True)[0]
             for i in strings
         ]
         transformed = self._vectorizer.transform(strings)
-        batch_x = _convert_sparse_matrix_to_sparse_tensor(transformed)
+        batch_x = _convert_sparse_matrix_to_sparse_tensor(
+            transformed, got_limit = False
+        )
         probs = self._sess.run(
             tf.nn.softmax(self._model.logits),
             feed_dict = {self._model.X: batch_x[0], self._model.W: batch_x[1]},

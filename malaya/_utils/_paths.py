@@ -88,8 +88,7 @@ PATH_TOXIC = {
     'fast-text': {
         'model': home + '/toxic/fast-text/fasttext-toxic.pb',
         'setting': home + '/toxic/fast-text/fasttext-toxic.json',
-        'pickle': home + '/toxic/fast-text/fasttext-toxic.pkl',
-        'version': 'v8',
+        'version': 'v17',
     },
     'entity-network': {
         'model': home + '/toxic/entity-network/entity-toxic.pb',
@@ -120,9 +119,8 @@ S3_PATH_TOXIC = {
         'setting': 'v8/toxic/hierarchical-toxic.json',
     },
     'fast-text': {
-        'model': 'v8/toxic/fasttext-toxic.pb',
-        'setting': 'v8/toxic/fasttext-toxic.json',
-        'pickle': 'v8/toxic/fasttext-toxic.pkl',
+        'model': 'v17/toxic/fasttext-toxic.pb',
+        'setting': 'v17/toxic/fasttext-toxic.json',
     },
     'entity-network': {
         'model': 'v8/toxic/entity-toxic.pb',
@@ -307,50 +305,49 @@ PATH_SENTIMENTS = {
     'bert': {
         'model': home + '/sentiment/bert/bert-sentiment.pb',
         'setting': home + '/sentiment/bert/bert-sentiment.json',
-        'version': 'v8',
+        'version': 'v17',
     },
     'entity-network': {
         'model': home + '/sentiment/entity-network/entity-sentiment.pb',
         'setting': home + '/sentiment/entity-network/entity-sentiment.json',
-        'version': 'v8',
+        'version': 'v17',
     },
     'hierarchical': {
         'model': home + '/sentiment/hierarchical/hierarchical-sentiment.pb',
         'setting': home + '/sentiment/hierarchical/hierarchical-sentiment.json',
-        'version': 'v8',
+        'version': 'v17',
     },
     'bahdanau': {
         'model': home + '/sentiment/bahdanau/bahdanau-sentiment.pb',
         'setting': home + '/sentiment/bahdanau/bahdanau-sentiment.json',
-        'version': 'v8',
+        'version': 'v17',
     },
     'luong': {
         'model': home + '/sentiment/luong/luong-sentiment.pb',
         'setting': home + '/sentiment/luong/luong-sentiment.json',
-        'version': 'v8',
+        'version': 'v17',
     },
     'bidirectional': {
         'model': home + '/sentiment/bidirectional/bidirectional-sentiment.pb',
         'setting': home
         + '/sentiment/bidirectional/bidirectional-sentiment.json',
-        'version': 'v8',
+        'version': 'v17',
     },
     'fast-text': {
         'model': home + '/sentiment/fast-text/fasttext-sentiment.pb',
         'setting': home + '/sentiment/fast-text/fasttext-sentiment.json',
-        'pickle': home + '/sentiment/fast-text/fasttext-sentiment.pkl',
-        'version': 'v8',
+        'version': 'v17',
     },
     'multinomial': {
         'model': home + '/sentiment/multinomial/multinomial-sentiment.pkl',
         'vector': home
         + '/sentiment/multinomial/multinomial-sentiment-tfidf.pkl',
-        'version': 'v8',
+        'version': 'v17',
     },
     'xgb': {
         'model': home + '/sentiment/xgb/xgboost-sentiment.pkl',
         'vector': home + '/sentiment/xgb/xgboost-sentiment-tfidf.pkl',
-        'version': 'v8',
+        'version': 'v17',
     },
     'fast-text-char': {
         'model': home
@@ -359,53 +356,52 @@ PATH_SENTIMENTS = {
         'meta': home + '/sentiment/fast-text-char/model.ckpt.meta',
         'vector': home
         + '/sentiment/fast-text-char/vectorizer-sparse-sentiment.pkl',
-        'version': 'v12',
+        'version': 'v17',
     },
 }
 
 S3_PATH_SENTIMENTS = {
     'bert': {
-        'model': 'v8/sentiment/bert-sentiment.pb',
-        'setting': 'v8/sentiment/bert-sentiment.json',
+        'model': 'v17/sentiment/bert-sentiment.pb',
+        'setting': 'v17/sentiment/bert-sentiment.json',
     },
     'entity-network': {
-        'model': 'v8/sentiment/entity-sentiment.pb',
-        'setting': 'v8/sentiment/entity-sentiment.json',
+        'model': 'v17/sentiment/entity-sentiment.pb',
+        'setting': 'v17/sentiment/entity-sentiment.json',
     },
     'hierarchical': {
-        'model': 'v8/sentiment/hierarchical-sentiment.pb',
-        'setting': 'v8/sentiment/hierarchical-sentiment.json',
+        'model': 'v17/sentiment/hierarchical-sentiment.pb',
+        'setting': 'v17/sentiment/hierarchical-sentiment.json',
     },
     'bahdanau': {
-        'model': 'v8/sentiment/bahdanau-sentiment.pb',
-        'setting': 'v8/sentiment/bahdanau-sentiment.json',
+        'model': 'v17/sentiment/bahdanau-sentiment.pb',
+        'setting': 'v17/sentiment/bahdanau-sentiment.json',
     },
     'luong': {
-        'model': 'v8/sentiment/luong-sentiment.pb',
-        'setting': 'v8/sentiment/luong-sentiment.json',
+        'model': 'v17/sentiment/luong-sentiment.pb',
+        'setting': 'v17/sentiment/luong-sentiment.json',
     },
     'bidirectional': {
-        'model': 'v8/sentiment/bidirectional-sentiment.pb',
-        'setting': 'v8/sentiment/bidirectional-sentiment.json',
+        'model': 'v17/sentiment/bidirectional-sentiment.pb',
+        'setting': 'v17/sentiment/bidirectional-sentiment.json',
     },
     'fast-text': {
-        'model': 'v8/sentiment/fasttext-sentiment.pb',
-        'setting': 'v8/sentiment/fasttext-sentiment.json',
-        'pickle': 'v8/sentiment/fasttext-sentiment.pkl',
+        'model': 'v17/sentiment/fasttext-sentiment.pb',
+        'setting': 'v17/sentiment/fasttext-sentiment.json',
     },
     'multinomial': {
-        'model': 'v8/sentiment/multinomial-sentiment.pkl',
-        'vector': 'v8/sentiment/multinomial-sentiment-tfidf.pkl',
+        'model': 'v17/sentiment/multinomial-sentiment.pkl',
+        'vector': 'v17/sentiment/multinomial-sentiment-tfidf.pkl',
     },
     'xgb': {
-        'model': 'v8/sentiment/xgboost-sentiment.pkl',
-        'vector': 'v8/sentiment/xgboost-sentiment-tfidf.pkl',
+        'model': 'v17/sentiment/xgboost-sentiment.pkl',
+        'vector': 'v17/sentiment/xgboost-sentiment-tfidf.pkl',
     },
     'fast-text-char': {
-        'model': 'v12/sentiment/model.ckpt.data-00000-of-00001',
-        'index': 'v12/sentiment/model.ckpt.index',
-        'meta': 'v12/sentiment/model.ckpt.meta',
-        'vector': 'v12/sentiment/vectorizer-sparse-sentiment.pkl',
+        'model': 'v17/sentiment/model.ckpt.data-00000-of-00001',
+        'index': 'v17/sentiment/model.ckpt.index',
+        'meta': 'v17/sentiment/model.ckpt.meta',
+        'vector': 'v17/sentiment/vectorizer-sparse-sentiment.pkl',
     },
 }
 
@@ -445,8 +441,7 @@ PATH_SUBJECTIVE = {
     'fast-text': {
         'model': home + '/subjective/fast-text/fasttext-subjective.pb',
         'setting': home + '/subjective/fast-text/fasttext-subjective.json',
-        'pickle': home + '/subjective/fast-text/fasttext-subjective.pkl',
-        'version': 'v10',
+        'version': 'v17',
     },
     'multinomial': {
         'model': home + '/subjective/multinomial/multinomial-subjective.pkl',
@@ -466,7 +461,7 @@ PATH_SUBJECTIVE = {
         'meta': home + '/subjective/fast-text-char/model.ckpt.meta',
         'vector': home
         + '/subjective/fast-text-char/vectorizer-sparse-subjective.pkl',
-        'version': 'v12',
+        'version': 'v17',
     },
 }
 
@@ -496,9 +491,8 @@ S3_PATH_SUBJECTIVE = {
         'setting': 'v10/subjective/bidirectional-subjective.json',
     },
     'fast-text': {
-        'model': 'v10/subjective/fasttext-subjective.pb',
-        'setting': 'v10/subjective/fasttext-subjective.json',
-        'pickle': 'v10/subjective/fasttext-subjective.pkl',
+        'model': 'v17/subjective/fasttext-subjective.pb',
+        'setting': 'v17/subjective/fasttext-subjective.json',
     },
     'multinomial': {
         'model': 'v10/subjective/multinomial-subjective.pkl',
@@ -509,10 +503,10 @@ S3_PATH_SUBJECTIVE = {
         'vector': 'v10/subjective/xgboost-subjective-tfidf.pkl',
     },
     'fast-text-char': {
-        'model': 'v12/subjective/model.ckpt.data-00000-of-00001',
-        'index': 'v12/subjective/model.ckpt.index',
-        'meta': 'v12/subjective/model.ckpt.meta',
-        'vector': 'v12/subjective/vectorizer-sparse-subjective.pkl',
+        'model': 'v17/subjective/model.ckpt.data-00000-of-00001',
+        'index': 'v17/subjective/model.ckpt.index',
+        'meta': 'v17/subjective/model.ckpt.meta',
+        'vector': 'v17/subjective/vectorizer-sparse-subjective.pkl',
     },
 }
 
@@ -550,8 +544,7 @@ PATH_EMOTION = {
     'fast-text': {
         'model': home + '/emotion/fast-text/fasttext-emotion.pb',
         'setting': home + '/emotion/fast-text/fasttext-emotion.json',
-        'pickle': home + '/emotion/fast-text/fasttext-emotion.pkl',
-        'version': 'v12',
+        'version': 'v17',
     },
     'multinomial': {
         'model': home + '/emotion/multinomial/multinomial-emotion.pkl',
@@ -570,7 +563,7 @@ PATH_EMOTION = {
         'meta': home + '/emotion/fast-text-char/model.ckpt.meta',
         'vector': home
         + '/emotion/fast-text-char/vectorizer-sparse-emotion.pkl',
-        'version': 'v12',
+        'version': 'v17',
     },
 }
 
@@ -600,9 +593,8 @@ S3_PATH_EMOTION = {
         'setting': 'v12/emotion/bidirectional-emotion.json',
     },
     'fast-text': {
-        'model': 'v12/emotion/fasttext-emotion.pb',
-        'setting': 'v12/emotion/fasttext-emotion.json',
-        'pickle': 'v12/emotion/fasttext-emotion.pkl',
+        'model': 'v17/emotion/fasttext-emotion.pb',
+        'setting': 'v17/emotion/fasttext-emotion.json',
     },
     'multinomial': {
         'model': 'v12/emotion/multinomial-emotion.pkl',
@@ -613,10 +605,10 @@ S3_PATH_EMOTION = {
         'vector': 'v12/emotion/xgboost-emotion-tfidf.pkl',
     },
     'fast-text-char': {
-        'model': 'v12/emotion/model.ckpt.data-00000-of-00001',
-        'index': 'v12/emotion/model.ckpt.index',
-        'meta': 'v12/emotion/model.ckpt.meta',
-        'vector': 'v12/emotion/vectorizer-sparse-emotion.pkl',
+        'model': 'v17/emotion/model.ckpt.data-00000-of-00001',
+        'index': 'v17/emotion/model.ckpt.index',
+        'meta': 'v17/emotion/model.ckpt.meta',
+        'vector': 'v17/emotion/vectorizer-sparse-emotion.pkl',
     },
 }
 

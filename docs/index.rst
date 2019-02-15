@@ -31,15 +31,16 @@ Contents:
    Num2word
    Pos
    Sentiment
+   Similarity
    Spell
    Stack
    Stemmer
    Subjective
    Summarization
    Topic
-   Topics
    Toxic
    Word2vec
+   Mover
    Cluster
    Api
    Reference

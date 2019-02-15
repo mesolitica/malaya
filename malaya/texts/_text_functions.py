@@ -112,8 +112,7 @@ def malaya_textcleaning(string):
             ]
         ),
     )
-    string = unidecode(string).replace('.', '. ')
-    string = string.replace(',', ', ')
+    string = unidecode(string).replace('.', '. ').replace(',', ' , ')
     string = re.sub('[^\'"A-Za-z\- ]+', ' ', string)
     string = re.sub(r'[ ]+', ' ', string.lower()).strip()
     string = [word for word in string.lower().split() if _isWord(word)]
@@ -230,7 +229,7 @@ def pos_entities_textcleaning(string):
             [i for i in string.split() if i.find('#') < 0 and i.find('@') < 0]
         ),
     )
-    string = unidecode(string).replace('.', '. ').replace(',', ', ')
+    string = unidecode(string).replace('.', ' . ').replace(',', ' , ')
     string = re.sub('[^A-Za-z\- ]+', ' ', string)
     string = re.sub(r'[ ]+', ' ', string).strip()
     return ' '.join(
@@ -244,7 +243,7 @@ def pos_entities_textcleaning(string):
 
 def classification_textcleaning(string, no_stopwords = False, lowering = True):
     """
-    use by our text classifiers, stemmer, summarization, topic-modelling
+    stemmer, summarization, topic-modelling
     remove links, hashtags, alias
     """
     string = re.sub(
@@ -254,7 +253,7 @@ def classification_textcleaning(string, no_stopwords = False, lowering = True):
             [i for i in string.split() if i.find('#') < 0 and i.find('@') < 0]
         ),
     )
-    string = unidecode(string).replace('.', '. ').replace(',', ', ')
+    string = unidecode(string).replace('.', ' . ').replace(',', ' , ')
     string = re.sub('[^A-Za-z ]+', ' ', string)
     string = re.sub(r'[ ]+', ' ', string).strip()
     if no_stopwords:
@@ -283,14 +282,6 @@ def classification_textcleaning(string, no_stopwords = False, lowering = True):
                 if len(word)
             ]
         )
-
-
-def process_word_pos_entities(word):
-    word = word.lower()
-    word = re.sub('[^A-Za-z0-9\- ]+', '', word)
-    if word.isdigit():
-        word = 'NUM'
-    return word
 
 
 def separate_dataset(trainset):
@@ -340,17 +331,6 @@ def stemmer_str_idx(corpus, dic, UNK = 3):
     return X
 
 
-def fasttext_str_idx(texts, dictionary):
-    idx_trainset = []
-    for text in texts:
-        idx = []
-        for t in text.split():
-            if t in dictionary:
-                idx.append(dictionary[t])
-        idx_trainset.append(idx)
-    return idx_trainset
-
-
 def pad_sentence_batch(sentence_batch, pad_int):
     padded_seqs = []
     seq_lens = []
@@ -361,19 +341,6 @@ def pad_sentence_batch(sentence_batch, pad_int):
         )
         seq_lens.append(len(sentence))
     return padded_seqs, seq_lens
-
-
-def add_ngram(sequences, token_indice, ngram = (2, 3)):
-    new_sequences = []
-    for input_list in sequences:
-        new_list = input_list[:]
-        for ngram_value in range(ngram[0], ngram[1]):
-            for i in range(len(new_list) - ngram_value + 1):
-                ngram = tuple(new_list[i : i + ngram_value])
-                if ngram in token_indice:
-                    new_list.append(token_indice[ngram])
-        new_sequences.append(new_list)
-    return new_sequences
 
 
 def char_str_idx(corpus, dic, UNK = 2):
