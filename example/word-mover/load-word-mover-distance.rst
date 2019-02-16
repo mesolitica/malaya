@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 12.6 s, sys: 1.43 s, total: 14 s
-    Wall time: 17.6 s
+    CPU times: user 13 s, sys: 1.79 s, total: 14.8 s
+    Wall time: 19.3 s
 
 
 What is word mover distance?
@@ -99,6 +99,85 @@ Using fast-text
     0.0
 
 
+
+Why word mover distance?
+------------------------
+
+Maybe you heard about skipthought or siamese network to train sentences
+similarity, but both required a good corpus plus really slow to train.
+Malaya provided both models to train your own text similarity, can check
+here, `Malaya
+text-similarity <https://malaya.readthedocs.io/en/latest/Similarity.html>`__
+
+``word2vec`` or ``fast-text`` are really good to know semantic
+definitions between 2 words, like below,
+
+.. code:: ipython3
+
+    w2v_wiki.n_closest(word = 'anwar', num_closest=8, metric='cosine')
+
+
+
+
+.. parsed-literal::
+
+    [['zaid', 0.7285637855529785],
+     ['khairy', 0.6839416027069092],
+     ['zabidi', 0.6709405183792114],
+     ['nizar', 0.6695379018783569],
+     ['harussani', 0.6595045328140259],
+     ['shahidan', 0.6565827131271362],
+     ['azalina', 0.6541041135787964],
+     ['shahrizat', 0.6538639068603516]]
+
+
+
+So we got some suggestion from the interface included distance between
+0-1, closest to 1 is better.
+
+Now let say I want to compare similarity between 2 sentences, and using
+vectors representation from our word2vec and fast-text.
+
+I got, ``rakyat sebenarnya sukakan mahathir``, and
+``rakyat sebenarnya sukakan najib``
+
+.. code:: ipython3
+
+    mahathir = 'rakyat sebenarnya sukakan mahathir'
+    najib = 'rakyat sebenarnya sukakan najib'
+    malaya.word_mover.distance(mahathir.split(), najib.split(), w2v_wiki)
+
+
+
+
+.. parsed-literal::
+
+    0.9017602205276489
+
+
+
+0.9, quite good. What happen if we make our sentence quite polarity
+ambigious for najib? (Again, this is just example)
+
+.. code:: ipython3
+
+    mahathir = 'rakyat sebenarnya sukakan mahathir'
+    najib = 'rakyat sebenarnya gilakan najib'
+    malaya.word_mover.distance(mahathir.split(), najib.split(), w2v_wiki)
+
+
+
+
+.. parsed-literal::
+
+    1.7690724730491638
+
+
+
+We just changed ``sukakan`` with ``gilakan``, but our word2vec
+representation based on ``rakyat sebenarnya <word> <person>`` not able
+to correlate same polarity, real definition of ``gilakan`` is positive
+polarity, but word2vec learnt ``gilakan`` is negative or negate.
 
 Load expander
 -------------
