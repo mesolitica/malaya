@@ -44,8 +44,8 @@ some useful functions for you!
 
 .. parsed-literal::
 
-    CPU times: user 12.4 s, sys: 1.3 s, total: 13.7 s
-    Wall time: 17.1 s
+    CPU times: user 12.3 s, sys: 1.4 s, total: 13.7 s
+    Wall time: 17.4 s
 
 
 Load malaya news word2vec
@@ -171,6 +171,44 @@ You can put any equation you wanted.
 
 
 
+Word2vec batch calculator
+-------------------------
+
+We can use Tensorflow computational graph to do distributed
+nearest-neighbors for us for fast suggestion!
+
+.. code:: ipython3
+
+    equations = ['mahathir + najib'] * 10 # assumed we have 10 different equations
+
+.. code:: ipython3
+
+    %%time
+    for eq in equations:
+        word_vector_wiki.calculator(eq, num_closest=8, metric='cosine',return_similarity=False)
+
+
+.. parsed-literal::
+
+    CPU times: user 1min 33s, sys: 7.94 s, total: 1min 41s
+    Wall time: 1min 45s
+
+
+.. code:: ipython3
+
+    %%time
+    results = word_vector_wiki.batch_calculator(equations,num_closest=8)
+
+
+.. parsed-literal::
+
+    CPU times: user 1min 37s, sys: 3.97 s, total: 1min 41s
+    Wall time: 1min 33s
+
+
+If you are using GPU, or many cores, this will definitely speed up this
+process.
+
 Visualize scatter-plot
 ----------------------
 
@@ -182,7 +220,7 @@ Visualize scatter-plot
 
 
 
-.. image:: load-word2vec_files/load-word2vec_19_0.png
+.. image:: load-word2vec_files/load-word2vec_24_0.png
 
 
 .. code:: ipython3
@@ -193,7 +231,7 @@ Visualize scatter-plot
 
 
 
-.. image:: load-word2vec_files/load-word2vec_20_0.png
+.. image:: load-word2vec_files/load-word2vec_25_0.png
 
 
 Visualize tree-plot
@@ -213,7 +251,7 @@ Visualize tree-plot
 
 
 
-.. image:: load-word2vec_files/load-word2vec_22_1.png
+.. image:: load-word2vec_files/load-word2vec_27_1.png
 
 
 .. code:: ipython3
@@ -230,7 +268,7 @@ Visualize tree-plot
 
 
 
-.. image:: load-word2vec_files/load-word2vec_23_1.png
+.. image:: load-word2vec_files/load-word2vec_28_1.png
 
 
 Get embedding from a word
@@ -251,16 +289,16 @@ top-5 nearest words
 
     Exception                                 Traceback (most recent call last)
 
-    <ipython-input-15-b4f84915c530> in <module>
+    <ipython-input-18-b4f84915c530> in <module>
     ----> 1 word_vector_news.get_vector_by_name('husein-comel')
     
 
     ~/Documents/Malaya/malaya/word2vec.py in get_vector_by_name(self, word)
-        259             raise Exception(
-        260                 'input not found in dictionary, here top-5 nearest words [%s]'
-    --> 261                 % (strings)
-        262             )
-        263         return np.ravel(self._embed_matrix[self._dictionary[word], :])
+        274             raise Exception(
+        275                 'input not found in dictionary, here top-5 nearest words [%s]'
+    --> 276                 % (strings)
+        277             )
+        278         return np.ravel(self._embed_matrix[self._dictionary[word], :])
 
 
     Exception: input not found in dictionary, here top-5 nearest words [income, husein, incomes, hussein, husseiny]
@@ -293,9 +331,9 @@ Train on custom corpus
 
 .. parsed-literal::
 
-    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 70.86it/s, cost=32.1]
-    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 31.61it/s, cost=29.1]
-    train minibatch loop:   0%|          | 0/8 [00:00<?, ?it/s, cost=27.9]
+    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 50.52it/s, cost=34.2]
+    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 32.09it/s, cost=32.2]
+    train minibatch loop:   0%|          | 0/8 [00:00<?, ?it/s]
 
 .. parsed-literal::
 
@@ -304,24 +342,24 @@ Train on custom corpus
 
 .. parsed-literal::
 
-    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 110.32it/s, cost=23.5]
-    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 105.95it/s, cost=29.7]
-    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 136.31it/s, cost=32.3]
-    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 158.56it/s, cost=32.2]
-    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 88.86it/s, cost=14.9]
-    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 105.29it/s, cost=23.8]
-    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 97.94it/s, cost=21.7]
-    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 112.82it/s, cost=13.2]
-    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 97.43it/s, cost=17.1]
-    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 89.99it/s, cost=7.05]
-    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 98.69it/s, cost=15.3]
-    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 164.83it/s, cost=13.2]
-    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 113.04it/s, cost=15.1]
-    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 120.88it/s, cost=8.18]
-    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 120.55it/s, cost=7.06]
-    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 123.27it/s, cost=10]
-    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 114.26it/s, cost=7.71]
-    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 165.34it/s, cost=6.47]
+    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 94.68it/s, cost=24.4]
+    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 73.38it/s, cost=32.6]
+    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 134.42it/s, cost=20.9]
+    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 182.89it/s, cost=27.3]
+    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 127.46it/s, cost=17.3]
+    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 150.10it/s, cost=18.2]
+    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 121.68it/s, cost=12.8]
+    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 206.28it/s, cost=18.1]
+    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 117.78it/s, cost=10.6]
+    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 166.86it/s, cost=14.5]
+    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 122.66it/s, cost=16.4]
+    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 187.30it/s, cost=10.4]
+    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 127.19it/s, cost=7.13]
+    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 149.36it/s, cost=8.71]
+    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 122.17it/s, cost=10.3]
+    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 137.93it/s, cost=9.22]
+    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 129.00it/s, cost=3.6]
+    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 178.41it/s, cost=3.66]
 
 
 .. code:: ipython3
@@ -338,5 +376,5 @@ Train on custom corpus
 .. parsed-literal::
 
     Embedding layer: 8 closest words to: 'paduka'
-    [['pakatan', 0.6065390110015869], ['bagi', 0.5856462121009827], ['majlis', 0.5783143043518066], ['mei', 0.569650411605835], ['START', 0.5642930269241333], ['memberi', 0.5552166700363159], ['ke', 0.5527567267417908], ['malaysia', 0.5336258411407471]]
+    [['END', 0.5256875157356262], ['pertama', 0.5140138864517212], ['seri', 0.5062881708145142], ['UNK', 0.5018792748451233], ['ketika', 0.4974247217178345], ['itu', 0.48950374126434326], ['berbeza', 0.4858505129814148], ['START', 0.4850046634674072]]
 

@@ -11,6 +11,7 @@ from fuzzywuzzy import fuzz
 from sklearn.manifold import TSNE
 from scipy.spatial.distance import cdist
 from sklearn.neighbors import NearestNeighbors
+import tensorflow as tf
 from . import home
 from ._utils._utils import download_file
 from ._models import _word2vec
@@ -239,6 +240,20 @@ class word2vec:
         self._dictionary = dictionary
         self._reverse_dictionary = {v: k for k, v in dictionary.items()}
         self.words = list(dictionary.keys())
+        _graph = tf.Graph()
+        with _graph.as_default():
+            self._embedding = tf.placeholder(
+                tf.float32, self._embed_matrix.shape
+            )
+            self._x = tf.placeholder(
+                tf.float32, [None, self._embed_matrix.shape[1]]
+            )
+            normed_embedding = tf.nn.l2_normalize(self._embedding, axis = 1)
+            normed_array = tf.nn.l2_normalize(self._x, axis = 1)
+            self._cosine_similarity = tf.matmul(
+                normed_array, tf.transpose(normed_embedding, [1, 0])
+            )
+            self._sess = tf.InteractiveSession()
 
     def get_vector_by_name(self, word):
         """
@@ -420,6 +435,64 @@ class word2vec:
         else:
             plt.savefig(figname, bbox_inches = 'tight')
 
+    def _calculate(self, equation):
+        tokens, temp = [], ''
+        for char in equation:
+            if char == ' ':
+                continue
+            if char not in '()*+-':
+                temp += char
+            else:
+                if len(temp):
+                    row = self._dictionary[
+                        self.words[
+                            np.argmax([fuzz.ratio(temp, k) for k in self.words])
+                        ]
+                    ]
+                    tokens.append(
+                        ','.join(
+                            self._embed_matrix[row, :].astype('str').tolist()
+                        )
+                    )
+                    temp = ''
+                tokens.append(char)
+        if len(temp):
+            row = self._dictionary[
+                self.words[np.argmax([fuzz.ratio(temp, k) for k in self.words])]
+            ]
+            tokens.append(
+                ','.join(self._embed_matrix[row, :].astype('str').tolist())
+            )
+        return _Calculator(tokens).exp()
+
+    def batch_calculator(self, equations, num_closest = 5):
+        """
+        batch calculator parser for word2vec using tensorflow
+
+        Parameters
+        ----------
+        equations: list of str
+            Eg, '[(mahathir + najib) - rosmah]'
+        num_closest: int, (default=5)
+            number of words closest to the result
+
+        Returns
+        -------
+        word_list: list of nearest words
+        """
+        assert isinstance(equations, list), 'equations must be a list of string'
+        assert isinstance(num_closest, int), 'num_closest must be an integer'
+        batches = np.array([self._calculate(eq) for eq in equations])
+        top_k = tf.nn.top_k(self._cosine_similarity, k = num_closest)
+        results = self._sess.run(
+            top_k,
+            feed_dict = {self._x: batches, self._embedding: self._embed_matrix},
+        ).indices
+        words = []
+        for result in results:
+            words.append([self._reverse_dictionary[i] for i in result])
+        return words
+
     def calculator(
         self,
         equation,
@@ -451,40 +524,12 @@ class word2vec:
         assert isinstance(
             return_similarity, bool
         ), 'num_closest must be a boolean'
-        tokens, temp = [], ''
-        for char in equation:
-            if char == ' ':
-                continue
-            if char not in '()*+-':
-                temp += char
-            else:
-                if len(temp):
-                    row = self._dictionary[
-                        self.words[
-                            np.argmax([fuzz.ratio(temp, k) for k in self.words])
-                        ]
-                    ]
-                    tokens.append(
-                        ','.join(
-                            self._embed_matrix[row, :].astype('str').tolist()
-                        )
-                    )
-                    temp = ''
-                tokens.append(char)
-        if len(temp):
-            row = self._dictionary[
-                self.words[np.argmax([fuzz.ratio(temp, k) for k in self.words])]
-            ]
-            tokens.append(
-                ','.join(self._embed_matrix[row, :].astype('str').tolist())
-            )
+        calculated = self._calculate(equation)
         if return_similarity:
             nn = NearestNeighbors(num_closest + 1, metric = metric).fit(
                 self._embed_matrix
             )
-            distances, idx = nn.kneighbors(
-                _Calculator(tokens).exp().reshape((1, -1))
-            )
+            distances, idx = nn.kneighbors(calculated.reshape((1, -1)))
             word_list = []
             for i in range(1, idx.shape[1]):
                 word_list.append(
@@ -493,7 +538,7 @@ class word2vec:
             return word_list
         else:
             closest_indices = self.closest_row_indices(
-                _Calculator(tokens).exp(), num_closest + 1, metric
+                calculated, num_closest + 1, metric
             )
             word_list = []
             for i in closest_indices:
