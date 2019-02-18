@@ -235,7 +235,7 @@ class _Calculator:
 
 
 class word2vec:
-    def __init__(self, embed_matrix, dictionary):
+    def __init__(self, embed_matrix, dictionary, no_cores = None):
         self._embed_matrix = embed_matrix
         self._dictionary = dictionary
         self._reverse_dictionary = {v: k for k, v in dictionary.items()}
@@ -253,7 +253,13 @@ class word2vec:
             self._cosine_similarity = tf.matmul(
                 normed_array, tf.transpose(normed_embedding, [1, 0])
             )
-            self._sess = tf.InteractiveSession()
+            if no_cores:
+                config = tf.ConfigProto()
+                config.intra_op_parallelism_threads = no_cores
+                config.intra_op_parallelism_threads = no_cores
+                self._sess = tf.InteractiveSession(config = config)
+            else:
+                self._sess = tf.InteractiveSession()
 
     def get_vector_by_name(self, word):
         """
