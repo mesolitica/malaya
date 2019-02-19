@@ -2,10 +2,6 @@
 
 |Downloads| |Downloads GPU| |Latest Version| |Python Version| |MIT| |Build Status| |Documentation Status|
 
-.. |Downloads| image:: https://img.shields.io/pypi/dm/malaya.svg
-   :target: https://pypi.python.org/pypi/malaya
-.. |Downloads GPU| image:: https://img.shields.io/pypi/dm/malaya-gpu.svg
-   :target: https://pypi.python.org/pypi/malaya-gpu
 .. |Latest Version| image:: https://badge.fury.io/py/malaya.svg
    :target: https://pypi.python.org/pypi/malaya
 .. |MIT| image:: https://img.shields.io/badge/License-MIT-yellow.svg

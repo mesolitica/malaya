@@ -6,8 +6,6 @@
         </a>
     </p>
     <p align="center">
-        <a href="https://pypi.python.org/pypi/malaya"><img alt="cpu downloaded" src="https://img.shields.io/pypi/dm/malaya.svg"></a>
-        <a href="https://pypi.python.org/pypi/malaya"><img alt="gpu downloaded" src="https://img.shields.io/pypi/dm/malaya-gpu.svg"></a>
         <a href="https://pypi.python.org/pypi/malaya"><img alt="Pypi version" src="https://badge.fury.io/py/malaya.svg"></a>
         <a href="https://pypi.python.org/pypi/malaya"><img alt="Python3 version" src="https://img.shields.io/pypi/pyversions/malaya.svg"></a>
         <a href="https://github.com/huseinzol05/Malaya/blob/master/LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/License-MIT-yellow.svg"></a>

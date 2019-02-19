@@ -367,6 +367,7 @@ rules_normalizer = {
     'cite': 'cerita',
     'citer': 'cerita',
     'ckit': 'sikit',
+    'cikit': 'sikit',
     'ckp': 'cakap',
     'class': 'kelas',
     'cm': 'macam',
