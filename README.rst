@@ -100,3 +100,8 @@ License
    :target: https://app.fossa.io/projects/git%2Bgithub.com%2Fhuseinzol05%2FMalaya?ref=badge_large
 
 |License|
+
+
+.. image:: https://api.codacy.com/project/badge/Grade/9ad09f0b51ad49c5923f8e748994147c
+   :alt: Codacy Badge
+   :target: https://app.codacy.com/app/huseinzol05/Malaya?utm_source=github.com&utm_medium=referral&utm_content=huseinzol05/Malaya&utm_campaign=Badge_Grade_Dashboard
