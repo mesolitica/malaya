@@ -11,7 +11,6 @@
         <a href="https://github.com/huseinzol05/Malaya/blob/master/LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/License-MIT-yellow.svg"></a>
         <a href="https://malaya.readthedocs.io/"><img alt="Documentation" src="https://readthedocs.org/projects/malaya/badge/?version=latest"></a>
         <a href="https://travis-ci.org/huseinzol05/Malaya"><img alt="Build status" src="https://travis-ci.org/huseinzol05/Malaya.svg?branch=master"></a>
-        <a href="https://app.codacy.com/project/huseinzol05/Malaya/dashboard"><img alt="grade code" src="https://api.codacy.com/project/badge/Grade/a83e291e6bd04d1a8f881a22182d5cf9?isInternal=true"></a>
     </p>
 
 =========

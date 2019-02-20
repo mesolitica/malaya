@@ -72,6 +72,7 @@ MOCK_MODULES = [
     'scipy.stats',
     'scipy.stats.mstats',
     'sklearn.neighbors',
+    'pulp',
 ]
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
