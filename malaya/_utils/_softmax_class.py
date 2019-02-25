@@ -4,10 +4,10 @@ import warnings
 if not sys.warnoptions:
     warnings.simplefilter('ignore')
 
-import tensorflow as tf
 import json
+import os
 import pickle
-from ._utils import check_file, load_graph, check_available
+from ._utils import check_file, load_graph, check_available, generate_session
 from ..stem import _classification_textcleaning_stemmer
 from .._models._sklearn_model import USER_XGB, USER_BAYES
 from .._models._tensorflow_model import SOFTMAX, SPARSE_SOFTMAX
@@ -23,9 +23,10 @@ def sparse_deep_model(
     model = 'fast-text-char',
     validate = True,
 ):
-    import os
 
-    assert isinstance(model, str), 'model must be a string'
+    if not isinstance(model, str):
+        raise ValueError('model must be a string')
+
     model = model.lower()
     if model == 'fast-text-char':
         if validate:
@@ -63,7 +64,9 @@ def sparse_deep_model(
 def deep_model(
     path, s3_path, class_name, label, model = 'luong', validate = True
 ):
-    assert isinstance(model, str), 'model must be a string'
+    if not isinstance(model, str):
+        raise ValueError('model must be a string')
+
     model = model.lower()
     if model in ['bahdanau', 'luong', 'hierarchical']:
         if validate:
@@ -86,7 +89,7 @@ def deep_model(
         return SOFTMAX(
             g.get_tensor_by_name('import/Placeholder:0'),
             g.get_tensor_by_name('import/logits:0'),
-            tf.InteractiveSession(graph = g),
+            generate_session(graph = g),
             model,
             dictionary,
             alphas = g.get_tensor_by_name('import/alphas:0'),
@@ -113,7 +116,7 @@ def deep_model(
         return SOFTMAX(
             g.get_tensor_by_name('import/Placeholder:0'),
             g.get_tensor_by_name('import/logits:0'),
-            tf.InteractiveSession(graph = g),
+            generate_session(graph = g),
             model,
             dictionary,
             label = label,
@@ -139,7 +142,7 @@ def deep_model(
         return SOFTMAX(
             g.get_tensor_by_name('import/Placeholder_input_ids:0'),
             g.get_tensor_by_name('import/loss/logits:0'),
-            tf.InteractiveSession(graph = g),
+            generate_session(graph = g),
             model,
             dictionary,
             input_mask = g.get_tensor_by_name(
@@ -175,7 +178,7 @@ def deep_model(
         return SOFTMAX(
             g.get_tensor_by_name('import/Placeholder_question:0'),
             g.get_tensor_by_name('import/logits:0'),
-            tf.InteractiveSession(graph = g),
+            generate_session(graph = g),
             model,
             dictionary,
             dropout_keep_prob = g.get_tensor_by_name(

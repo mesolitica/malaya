@@ -38,7 +38,8 @@ class CRF:
         -------
         string: tagged string
         """
-        assert isinstance(string, str), 'input must be a string'
+        if not isinstance(string, str):
+            raise ValueError('input must be a string')
         string = string.lower() if self._is_lower else string
         string = entities_textcleaning(string)
         batch_x = [features_crf(string, index) for index in range(len(string))]
@@ -55,7 +56,8 @@ class CRF:
         ----------
         top_k : int
         """
-        assert isinstance(top_k, int), 'input must be an integer'
+        if not isinstance(top_k, int):
+            raise ValueError('input must be an integer')
         print('Top-%d likely transitions:' % (top_k))
         transitions(
             Counter(self._model.transition_features_).most_common(top_k)
@@ -74,7 +76,8 @@ class CRF:
         ----------
         top_k : int
         """
-        assert isinstance(top_k, int), 'input must be an integer'
+        if not isinstance(top_k, int):
+            raise ValueError('input must be an integer')
         print('Top-%d positive:' % (top_k))
         state_features(Counter(self._model.state_features_).most_common(top_k))
 
@@ -101,7 +104,8 @@ class DEPENDENCY:
         -------
         string: tagged string
         """
-        assert isinstance(string, str), 'input must be a string'
+        if not isinstance(string, str):
+            raise ValueError('input must be a string')
         string = entities_textcleaning(string)
         if len(string) > 120:
             raise Exception(
@@ -134,7 +138,8 @@ class DEPENDENCY:
         ----------
         top_k : int
         """
-        assert isinstance(top_k, int), 'input must be an integer'
+        if not isinstance(top_k, int):
+            raise ValueError('input must be an integer')
         print('Top-%d tagging positive:' % (top_k))
         state_features(Counter(self._tag.state_features_).most_common(top_k))
 
@@ -151,7 +156,8 @@ class DEPENDENCY:
         ----------
         top_k : int
         """
-        assert isinstance(top_k, int), 'input must be an integer'
+        if not isinstance(top_k, int):
+            raise ValueError('input must be an integer')
         print('Top-%d likely tagging transitions:' % (top_k))
         transitions(Counter(self._tag.transition_features_).most_common(top_k))
 
@@ -168,7 +174,8 @@ class DEPENDENCY:
         ----------
         top_k : int
         """
-        assert isinstance(top_k, int), 'input must be an integer'
+        if not isinstance(top_k, int):
+            raise ValueError('input must be an integer')
         print('Top-%d likely indexing transitions:' % (top_k))
         transitions(
             Counter(self._depend.transition_features_).most_common(top_k)
@@ -201,7 +208,8 @@ class USER_XGB:
         -------
         string: result
         """
-        assert isinstance(string, str), 'input must be a string'
+        if not isinstance(string, str):
+            raise ValueError('input must be a string')
         vectors = self.vectorize.transform([self._cleaning(string)])
         result = self.xgb.predict(
             xgb.DMatrix(vectors), ntree_limit = self.xgb.best_ntree_limit
@@ -225,9 +233,10 @@ class USER_XGB:
         -------
         string: list of results
         """
-        assert isinstance(strings, list) and isinstance(
-            strings[0], str
-        ), 'input must be list of strings'
+        if not isinstance(strings, list):
+            raise ValueError('input must be a list')
+        if not isinstance(strings[0], str):
+            raise ValueError('input must be list of strings')
         strings = [self._cleaning(string) for string in strings]
         vectors = self.vectorize.transform(strings)
         results = self.xgb.predict(
@@ -267,7 +276,8 @@ class USER_BAYES:
         -------
         string: result
         """
-        assert isinstance(string, str), 'input must be a string'
+        if not isinstance(string, str):
+            raise ValueError('input must be a string')
         vectors = self.vectorize.transform([self._cleaning(string)])
         if get_proba:
             result = self.multinomial.predict_proba(vectors)[0]
@@ -289,9 +299,10 @@ class USER_BAYES:
         -------
         string: list of results
         """
-        assert isinstance(strings, list) and isinstance(
-            strings[0], str
-        ), 'input must be list of strings'
+        if not isinstance(strings, list):
+            raise ValueError('input must be a list')
+        if not isinstance(strings[0], str):
+            raise ValueError('input must be list of strings')
         strings = [self._cleaning(string) for string in strings]
         vectors = self.vectorize.transform(strings)
         if get_proba:
@@ -341,7 +352,8 @@ class TOXIC:
         -------
         string: result
         """
-        assert isinstance(string, str), 'input must be a string'
+        if not isinstance(string, str):
+            raise ValueError('input must be a string')
         stacked = self._stack([classification_textcleaning(string, True)])
         result = {} if get_proba else []
         for no, label in enumerate(self._class_names):
@@ -367,9 +379,10 @@ class TOXIC:
         -------
         string: list of results
         """
-        assert isinstance(strings, list) and isinstance(
-            strings[0], str
-        ), 'input must be list of strings'
+        if not isinstance(strings, list):
+            raise ValueError('input must be a list')
+        if not isinstance(strings[0], str):
+            raise ValueError('input must be list of strings')
         stacked = self._stack(
             [classification_textcleaning(i, True) for i in strings]
         )
@@ -415,7 +428,8 @@ class LANGUAGE_DETECTION:
         -------
         string: result
         """
-        assert isinstance(string, str), 'input must be a string'
+        if not isinstance(string, str):
+            raise ValueError('input must be a string')
         string = language_detection_textcleaning(string)
         vectors = self._vectorizer.transform([string])
         if self._mode == 'xgb':
@@ -447,9 +461,10 @@ class LANGUAGE_DETECTION:
         -------
         string: list of results
         """
-        assert isinstance(strings, list) and isinstance(
-            strings[0], str
-        ), 'input must be list of strings'
+        if not isinstance(strings, list):
+            raise ValueError('input must be a list')
+        if not isinstance(strings[0], str):
+            raise ValueError('input must be list of strings')
         strings = [
             language_detection_textcleaning(string) for string in strings
         ]

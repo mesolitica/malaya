@@ -42,9 +42,11 @@ def cluster_words(list_words):
     -------
     string: list of clustered words
     """
-    assert isinstance(list_words, list) and isinstance(
-        list_words[0], str
-    ), 'input must be list of strings'
+    if not isinstance(list_words, list):
+        raise ValueError('list_words must be a list')
+    if not isinstance(list_words[0], str):
+        raise ValueError('list_words must be a list of strings')
+
     dict_words = {}
     for word in list_words:
         found = False
@@ -147,22 +149,26 @@ def pos_entities_ngram(
     -------
     result: list
     """
-    assert isinstance(result_pos, list) and isinstance(
-        result_pos[0], tuple
-    ), 'result_pos must be list of tuple'
-    assert isinstance(result_entities, list) and isinstance(
-        result_entities[0], tuple
-    ), 'result_entities must be list of tuple'
-    assert isinstance(ngram, tuple), 'ngram must be a tuple'
-    assert len(ngram) == 2, 'ngram size must equal to 2'
-    assert isinstance(accept_pos, list), 'accept_pos must be a list'
-    assert isinstance(accept_entities, list), 'accept_entites must be a list'
-    assert all(
-        [i in _accepted_pos for i in accept_pos]
-    ), 'accept_pos must be a subset or equal of supported POS, please run malaya.describe_pos() to get supported POS'
-    assert all(
-        [i in _accepted_entities for i in accept_entities]
-    ), 'accept_entites must be a subset or equal of supported entities, please run malaya.describe_entities() to get supported entities'
+    if not isinstance(result_pos, list):
+        raise ValueError('result_pos must be a list')
+    if not isinstance(result_pos[0], tuple):
+        raise ValueError('result_pos must be a list of tuple')
+    if not isinstance(ngram, tuple):
+        raise ValueError('ngram must be a tuple')
+    if not len(ngram) == 2:
+        raise ValueError('ngram size must equal to 2')
+    if not isinstance(accept_pos, list):
+        raise ValueError('accept_pos must be a list')
+    if not isinstance(accept_entities, list):
+        raise ValueError('accept_entites must be a list')
+    if not all([i in _accepted_pos for i in accept_pos]):
+        raise ValueError(
+            'accept_pos must be a subset or equal of supported POS, please run malaya.describe_pos() to get supported POS'
+        )
+    if not all([i in _accepted_entities for i in accept_entities]):
+        raise ValueError(
+            'accept_entites must be a subset or equal of supported entities, please run malaya.describe_entities() to get supported entities'
+        )
 
     words = []
     sentences = []
@@ -193,9 +199,13 @@ def sentence_ngram(sentence, ngram = (1, 3)):
     -------
     result: list
     """
-    assert (sentence, str), 'sentence must be a string'
-    assert isinstance(ngram, tuple), 'ngram must be a tuple'
-    assert len(ngram) == 2, 'ngram size must equal to 2'
+    if not (sentence, str):
+        raise ValueError('sentence must be a string')
+    if not isinstance(ngram, tuple):
+        raise ValueError('ngram must be a tuple')
+    if not len(ngram) == 2:
+        raise ValueError('ngram size must equal to 2')
+
     words = sentence.split()
     sentences = []
     for gram in range(ngram[0], ngram[1] + 1, 1):
@@ -217,6 +227,15 @@ def cluster_pos(result):
     -------
     result: list
     """
+    if not isinstance(result, list):
+        raise ValueError('result must be a list')
+    if not isinstance(result[0], tuple):
+        raise ValueError('result must be a list of tuple')
+    if not all([i[1] in _accepted_pos for i in result]):
+        raise ValueError(
+            'elements of result must be a subset or equal of supported POS, please run malaya.describe_pos() to get supported POS'
+        )
+
     output = {
         'ADJ': [],
         'ADP': [],
@@ -263,6 +282,15 @@ def cluster_entities(result):
     -------
     result: list
     """
+    if not isinstance(result, list):
+        raise ValueError('result must be a list')
+    if not isinstance(result[0], tuple):
+        raise ValueError('result must be a list of tuple')
+    if not all([i[1] in _accepted_entities for i in result]):
+        raise ValueError(
+            'elements of result must be a subset or equal of supported POS, please run malaya.describe_pos() to get supported POS'
+        )
+
     output = {
         'OTHER': [],
         'law': [],

@@ -182,18 +182,36 @@ S3_PATH_POS = {
 }
 
 PATH_NORMALIZER = {
-    'deep': {
-        'model': home + '/normalizer/normalizer-deep.pb',
-        'setting': home + '/normalizer/normalizer-deep.json',
-        'version': 'v6',
-    }
+    'lstm': {
+        'model': home + '/normalizer/lstm/lstm-normalizer.pb',
+        'setting': home + '/normalizer/lstm/lstm-normalizer.json',
+        'version': 'v18',
+    },
+    'bahdanau': {
+        'model': home + '/normalizer/bahdanau/bahdanau-normalizer.pb',
+        'setting': home + '/normalizer/bahdanau/bahdanau-normalizer.json',
+        'version': 'v18',
+    },
+    'luong': {
+        'model': home + '/normalizer/luong/luong-normalizer.pb',
+        'setting': home + '/normalizer/luong/luong-normalizer.json',
+        'version': 'v18',
+    },
 }
 
 S3_PATH_NORMALIZER = {
-    'deep': {
-        'model': 'v6/normalizer-deep.pb',
-        'setting': 'v6/normalizer-deep.json',
-    }
+    'lstm': {
+        'model': 'v18/normalizer/lstm-normalizer.pb',
+        'setting': 'v18/normalizer/lstm-normalizer.json',
+    },
+    'bahdanau': {
+        'model': 'v18/normalizer/bahdanau-normalizer.pb',
+        'setting': 'v18/normalizer/bahdanau-normalizer.json',
+    },
+    'luong': {
+        'model': 'v18/normalizer/luong-normalizer.pb',
+        'setting': 'v18/normalizer/luong-normalizer.json',
+    },
 }
 
 PATH_LANG_DETECTION = {

@@ -11,6 +11,24 @@ from .texts._text_functions import normalizer_textcleaning
 from .similarity import is_location
 from .texts._tatabahasa import alphabet, consonants, vowels
 
+ENGLISH_WORDS = None
+
+
+def _load_english():
+    global ENGLISH_WORDS
+
+    if not ENGLISH_WORDS:
+        from . import home
+        import json
+        import os
+
+        english_location = os.path.join(home, 'english.json')
+        if not os.path.isfile(english_location):
+            print('downloading english words')
+            download_file('english.json', english_location)
+        with open(english_location, 'r') as fopen:
+            ENGLISH_WORDS = set([w for w in json.load(fopen) if len(w) > 1])
+
 
 def _build_dicts(words):
     occurences = {}
@@ -100,14 +118,18 @@ class _SPELL:
         -------
         string: corrected string
         """
-        assert (isinstance(string, str)) and not string.count(
-            ' '
-        ), 'input must be a single word'
-        assert len(string) > 1, 'input must be long than 1 characters'
+        if not (isinstance(string, str)) and not string.count(' '):
+            raise ValueError('input must be a single word')
+        if not len(string) > 1:
+            raise ValueError('input must be long than 1 characters')
+        if not isinstance(debug, bool):
+            raise ValueError('debug must be a boolean')
         string = normalizer_textcleaning(string)
         if string.istitle():
             return string
         if not len(string):
+            return string
+        if string in ENGLISH_WORDS:
             return string
         if first_char:
             selected = self.occurences[string[0]]
@@ -148,7 +170,9 @@ def naive(corpus):
     -------
     SPELL: Trained malaya.spell._SPELL class
     """
-    assert isinstance(corpus, list) and isinstance(
-        corpus[0], str
-    ), 'input must be list of strings'
+    if not isinstance(corpus, list):
+        raise ValueError('corpus must be a list')
+    if not isinstance(corpus[0], str):
+        raise ValueError('corpus must be list of strings')
+    _load_english()
     return _SPELL(corpus)

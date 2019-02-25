@@ -17,8 +17,8 @@ from shutil import rmtree
 from pathlib import Path
 
 home = os.path.join(str(Path.home()), 'Malaya')
-version = '1.7'
-bump_version = '1.7.1.1'
+version = '1.8'
+bump_version = '1.8.0.0'
 version_path = os.path.join(home, 'version')
 
 
@@ -103,7 +103,8 @@ def clear_cache(location):
     """
     Remove selected cached data, please run malaya.print_cache() to get path.
     """
-    assert isinstance(location, str), 'location must be a string'
+    if not isinstance(location, str):
+        raise ValueError('location must be a string')
     location = os.path.join(home, location)
     if not os.path.exists(location):
         raise Exception(

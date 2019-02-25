@@ -35,8 +35,69 @@ print it by simply,
 .. parsed-literal::
 
     Malaya/
+    ├── dependency/
+    │   ├── bahdanau/
+    │   │   ├── bahdanau-dependency.json
+    │   │   ├── bahdanau-dependency.pb
+    │   │   └── version
+    │   ├── concat/
+    │   │   ├── concat-dependency.json
+    │   │   ├── concat-dependency.pb
+    │   │   └── version
+    │   ├── crf/
+    │   │   ├── crf-depend.pkl
+    │   │   ├── crf-label.pkl
+    │   │   └── version
+    │   └── luong/
+    │       ├── luong-dependency.json
+    │       ├── luong-dependency.pb
+    │       └── version
     ├── dictionary/
     │   └── malay-text.txt
+    ├── emotion/
+    │   ├── bahdanau/
+    │   │   ├── bahdanau-emotion.json
+    │   │   ├── bahdanau-emotion.pb
+    │   │   └── version
+    │   ├── bert/
+    │   │   ├── bert-emotion.json
+    │   │   ├── bert-emotion.pb
+    │   │   └── version
+    │   ├── bidirectional/
+    │   │   ├── bidirectional-emotion.json
+    │   │   ├── bidirectional-emotion.pb
+    │   │   └── version
+    │   ├── entity-network/
+    │   │   ├── entity-emotion.json
+    │   │   ├── entity-emotion.pb
+    │   │   └── version
+    │   ├── fast-text/
+    │   │   ├── fasttext-emotion.json
+    │   │   ├── fasttext-emotion.pb
+    │   │   └── version
+    │   ├── fast-text-char/
+    │   │   ├── model.ckpt.data-00000-of-00001
+    │   │   ├── model.ckpt.index
+    │   │   ├── model.ckpt.meta
+    │   │   ├── vectorizer-sparse-emotion.pkl
+    │   │   └── version
+    │   ├── hierarchical/
+    │   │   ├── hierarchical-emotion.json
+    │   │   ├── hierarchical-emotion.pb
+    │   │   └── version
+    │   ├── luong/
+    │   │   ├── luong-emotion.json
+    │   │   ├── luong-emotion.pb
+    │   │   └── version
+    │   ├── multinomial/
+    │   │   ├── multinomial-emotion-tfidf.pkl
+    │   │   ├── multinomial-emotion.pkl
+    │   │   └── version
+    │   └── xgb/
+    │       ├── version
+    │       ├── xgboost-emotion-tfidf.pkl
+    │       └── xgboost-emotion.pkl
+    ├── english.json
     ├── entity/
     │   ├── attention/
     │   │   ├── attention-entities.json
@@ -47,9 +108,6 @@ print it by simply,
     │   │   ├── bahdanau-entities.pb
     │   │   └── version
     │   ├── concat/
-    │   │   ├── concat-entities.json
-    │   │   ├── concat-entities.pb
-    │   │   └── version
     │   ├── crf/
     │   │   ├── crf-entities.pkl
     │   │   └── version
@@ -61,7 +119,14 @@ print it by simply,
     │       ├── luong-entities.json
     │       ├── luong-entities.pb
     │       └── version
+    ├── fasttext-wiki/
+    │   └── word2vec.p
     ├── language-detection/
+    │   ├── deep/
+    │   │   ├── model.ckpt.data-00000-of-00001
+    │   │   ├── model.ckpt.index
+    │   │   ├── model.ckpt.meta
+    │   │   └── version
     │   ├── multinomial/
     │   │   ├── multinomial-language-detection.pkl
     │   │   ├── vectorizer-language-detection.pkl
@@ -126,7 +191,12 @@ print it by simply,
     │   ├── fast-text/
     │   │   ├── fasttext-sentiment.json
     │   │   ├── fasttext-sentiment.pb
-    │   │   ├── fasttext-sentiment.pkl
+    │   │   └── version
+    │   ├── fast-text-char/
+    │   │   ├── model.ckpt.data-00000-of-00001
+    │   │   ├── model.ckpt.index
+    │   │   ├── model.ckpt.meta
+    │   │   ├── vectorizer-sparse-sentiment.pkl
     │   │   └── version
     │   ├── hierarchical/
     │   │   ├── hierarchical-sentiment.json
@@ -145,6 +215,18 @@ print it by simply,
     │       ├── xgboost-sentiment-tfidf.pkl
     │       └── xgboost-sentiment.pkl
     ├── stem/
+    │   ├── bahdanau/
+    │   │   ├── bahdanau-stem.json
+    │   │   ├── bahdanau-stem.pb
+    │   │   └── version
+    │   ├── lstm/
+    │   │   ├── lstm-stem.json
+    │   │   ├── lstm-stem.pb
+    │   │   └── version
+    │   ├── luong/
+    │   │   ├── luong-stem.json
+    │   │   ├── luong-stem.pb
+    │   │   └── version
     │   ├── stemmer-deep.json
     │   ├── stemmer-deep.pb
     │   └── version
@@ -169,7 +251,12 @@ print it by simply,
     │   ├── fast-text/
     │   │   ├── fasttext-subjective.json
     │   │   ├── fasttext-subjective.pb
-    │   │   ├── fasttext-subjective.pkl
+    │   │   └── version
+    │   ├── fast-text-char/
+    │   │   ├── model.ckpt.data-00000-of-00001
+    │   │   ├── model.ckpt.index
+    │   │   ├── model.ckpt.meta
+    │   │   ├── vectorizer-sparse-subjective.pkl
     │   │   └── version
     │   ├── hierarchical/
     │   │   ├── hierarchical-subjective.json
@@ -189,6 +276,10 @@ print it by simply,
     │       └── xgboost-subjective.pkl
     ├── summarize/
     │   ├── dictionary-summary.json
+    │   ├── summary-news.json
+    │   ├── summary-news.pb
+    │   ├── summary-wiki.json
+    │   ├── summary-wiki.pb
     │   └── summary_frozen_model.pb
     ├── toxic/
     │   ├── bahdanau/
@@ -222,10 +313,11 @@ print it by simply,
     │       └── version
     ├── version
     ├── word2vec-128/
-    │   └── word2vec.p
     ├── word2vec-256/
     │   └── word2vec.p
-    └── word2vec-256.p
+    ├── word2vec-256.p
+    └── word2vec-wiki/
+        └── word2vec.p
 
 
 Deleting specific model
@@ -239,9 +331,12 @@ specifically choose which model you want to delete.
     malaya.clear_cache('word2vec-128')
 
 
+
+
 .. parsed-literal::
 
-    Done.
+    True
+
 
 
 What happen if a directory does not exist?
@@ -263,11 +358,11 @@ What happen if a directory does not exist?
 
 
     ~/Documents/Malaya/malaya/__init__.py in clear_cache(location)
-         96     if not os.path.exists(location):
-         97         raise Exception(
-    ---> 98             'folder not exist, please check path from malaya.print_cache()'
-         99         )
-        100     if not os.path.isdir(location):
+        109     if not os.path.exists(location):
+        110         raise Exception(
+    --> 111             'folder not exist, please check path from malaya.print_cache()'
+        112         )
+        113     if not os.path.isdir(location):
 
 
     Exception: folder not exist, please check path from malaya.print_cache()

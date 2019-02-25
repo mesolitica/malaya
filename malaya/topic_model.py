@@ -6,7 +6,6 @@ if not sys.warnoptions:
 
 import numpy as np
 import collections
-import pandas as pd
 from sklearn.utils import shuffle
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.decomposition import TruncatedSVD, NMF, LatentDirichletAllocation
@@ -19,7 +18,7 @@ from .texts._text_functions import (
     print_topics_modelling,
     build_dataset,
 )
-from .texts.vectorizer import skipgrams
+from .texts.vectorizer import skipgrams, SkipGramVectorizer
 
 
 def _softmax(x):
@@ -56,7 +55,8 @@ def _prepare_topics(
 ):
     topic_to_word = []
     msg = 'Vocabulary size did not match size of word vectors'
-    assert len(vocab) == word_vectors.shape[0], msg
+    if not len(vocab) == word_vectors.shape[0]:
+        raise ValueError(msg)
     if normalize:
         word_vectors /= np.linalg.norm(word_vectors, axis = 1)[:, None]
     for factor_vector in factors:
@@ -66,10 +66,12 @@ def _prepare_topics(
         topic_to_word.append(np.ravel(factor_to_word))
     topic_to_word = np.array(topic_to_word)
     msg = 'Not all rows in topic_to_word sum to 1'
-    assert np.allclose(np.sum(topic_to_word, axis = 1), 1), msg
+    if not np.allclose(np.sum(topic_to_word, axis = 1), 1):
+        raise ValueError(msg)
     doc_to_topic = _softmax_2d(weights)
     msg = 'Not all rows in doc_to_topic sum to 1'
-    assert np.allclose(np.sum(doc_to_topic, axis = 1), 1), msg
+    if not np.allclose(np.sum(doc_to_topic, axis = 1), 1):
+        raise ValueError(msg)
     data = {
         'topic_term_dists': topic_to_word,
         'doc_topic_dists': doc_to_topic,
@@ -117,10 +119,10 @@ class _DEEP_TOPIC:
             * ``'mmds'`` - Dimension reduction via Multidimensional scaling
             * ``'tsne'`` - Dimension reduction via t-distributed stochastic neighbor embedding
         """
-        assert isinstance(mds, str), 'mds must be a string'
-        assert isinstance(
-            notebook_mode, bool
-        ), 'notebook_mode must be a boolean'
+        if not isinstance(mds, str):
+            raise ValueError('mds must be a string')
+        if not isinstance(notebook_mode, bool):
+            raise ValueError('notebook_mode must be a boolean')
         try:
             import pyLDAvis
             import pyLDAvis.sklearn
@@ -147,7 +149,7 @@ class _DEEP_TOPIC:
         else:
             pyLDAvis.show(prepared_vis_data)
 
-    def print_topics(self, len_topic):
+    def top_topics(self, len_topic, top_n = 10, return_df = True):
         """
         Print important topics based on decomposition.
 
@@ -155,13 +157,18 @@ class _DEEP_TOPIC:
         ----------
         len_topic: int
         """
-        assert isinstance(len_topic, int), 'len_topic must be an integer'
-        print_topics_modelling(
-            range(len_topic),
+        if not isinstance(len_topic, int):
+            raise ValueError('len_topic must be an integer')
+        if not isinstance(top_n, int):
+            raise ValueError('top_n must be an integer')
+        if not isinstance(return_df, bool):
+            raise ValueError('return_df must be a boolean')
+        return print_topics_modelling(
+            len_topic,
             feature_names = np.array(self._features),
             sorting = np.argsort(self._components)[:, ::-1],
-            topics_per_chunk = 5,
-            n_words = 10,
+            n_words = top_n,
+            return_df = return_df,
         )
 
     def get_topics(self, len_topic):
@@ -176,7 +183,8 @@ class _DEEP_TOPIC:
         -------
         results: list of strings
         """
-        assert isinstance(len_topic, int), 'len_topic must be an integer'
+        if not isinstance(len_topic, int):
+            raise ValueError('len_topic must be an integer')
         results = []
         for no, topic in enumerate(self._components):
             results.append(
@@ -206,11 +214,12 @@ class _DEEP_TOPIC:
         -------
         results: list of strings
         """
-        assert isinstance(len_sentence, int), 'len_sentence must be an integer'
-        assert isinstance(k, int), 'k must be an integer'
-        assert (
-            k < self._doc_embed.shape[1] and k >= 0
-        ), 'k should be between 0 and n_topics'
+        if not isinstance(len_sentence, int):
+            raise ValueError('len_sentence must be an integer')
+        if not isinstance(k, int):
+            raise ValueError('k must be an integer')
+        if not (k < self._doc_embed.shape[1] and k >= 0):
+            raise ValueError('k should be between 0 and n_topics')
         reverse_sorted = np.argsort(self._doc_embed[:, k])[::-1]
         return [self._corpus[i] for i in reverse_sorted[:len_sentence]]
 
@@ -239,13 +248,13 @@ class _TOPIC:
             * ``'mmds'`` - Dimension reduction via Multidimensional scaling
             * ``'tsne'`` - Dimension reduction via t-distributed stochastic neighbor embedding
         """
-        assert isinstance(mds, str), 'mds must be a string'
-        assert isinstance(
-            notebook_mode, bool
-        ), 'notebook_mode must be a boolean'
-        assert isinstance(
-            self.comp, LatentDirichletAllocation
-        ), 'only support lda_topic_modelling()'
+        if not isinstance(mds, str):
+            raise ValueError('mds must be a string')
+        if not isinstance(notebook_mode, bool):
+            raise ValueError('notebook_mode must be a boolean')
+        if not isinstance(self.comp, LatentDirichletAllocation):
+            raise ValueError('only support lda_topic_modelling()')
+
         import pyLDAvis
         import pyLDAvis.sklearn
 
@@ -260,7 +269,7 @@ class _TOPIC:
         else:
             pyLDAvis.show(prepared_vis_data)
 
-    def print_topics(self, len_topic):
+    def top_topics(self, len_topic, top_n = 10, return_df = True):
         """
         Print important topics based on decomposition.
 
@@ -268,13 +277,16 @@ class _TOPIC:
         ----------
         len_topic: int
         """
-        assert isinstance(len_topic, int), 'len_topic must be an integer'
-        print_topics_modelling(
-            range(len_topic),
+        if not isinstance(len_topic, int):
+            raise ValueError('len_topic must be an integer')
+        if not isinstance(return_df, bool):
+            raise ValueError('return_df must be a boolean')
+        return print_topics_modelling(
+            len_topic,
             feature_names = np.array(self.features),
             sorting = np.argsort(self.comp.components_)[:, ::-1],
-            topics_per_chunk = 5,
-            n_words = 10,
+            n_words = top_n,
+            return_df = return_df,
         )
 
     def get_topics(self, len_topic):
@@ -289,7 +301,8 @@ class _TOPIC:
         -------
         results: list of strings
         """
-        assert isinstance(len_topic, int), 'len_topic must be an integer'
+        if not isinstance(len_topic, int):
+            raise ValueError('len_topic must be an integer')
         results = []
         for no, topic in enumerate(self.comp.components_):
             results.append(
@@ -319,11 +332,12 @@ class _TOPIC:
         -------
         results: list of strings
         """
-        assert isinstance(len_sentence, int), 'len_sentence must be an integer'
-        assert isinstance(k, int), 'k must be an integer'
-        assert (
-            k < self.transformed.shape[1] and k >= 0
-        ), 'k should be between 0 and n_topics'
+        if not isinstance(len_sentence, int):
+            raise ValueError('len_sentence must be an integer')
+        if not isinstance(k, int):
+            raise ValueError('k must be an integer')
+        if not (k < self.transformed.shape[1] and k >= 0):
+            raise ValueError('k should be between 0 and n_topics')
         reverse_sorted = np.argsort(self.transformed[:, k])[::-1]
         return [self.corpus[i] for i in reverse_sorted[:len_sentence]]
 
@@ -334,26 +348,39 @@ def _base_topic_modelling(
     decomposition,
     max_df = 0.95,
     min_df = 2,
+    ngram = (1, 3),
     vectorizer = 'bow',
     stemming = True,
     cleaning = simple_textcleaning,
     stop_words = STOPWORDS,
-    **kwargs
+    **kwargs,
 ):
-    assert isinstance(corpus, list) and isinstance(
-        corpus[0], str
-    ), 'input must be list of strings'
-    assert isinstance(n_topics, int), 'n_topics must be an integer'
-    assert isinstance(max_df, float), 'max_df must be a float'
-    assert isinstance(min_df, int), 'min_df must be an integer'
-    assert isinstance(vectorizer, str), 'vectorizer must be a string'
+    if not isinstance(corpus, list):
+        raise ValueError('corpus must be a list')
+    if not isinstance(corpus[0], str):
+        raise ValueError('corpus must be list of strings')
+    if not isinstance(n_topics, int):
+        raise ValueError('n_topics must be an integer')
+    if not isinstance(vectorizer, str):
+        raise ValueError('vectorizer must be a string')
+    if not isinstance(stemming, bool):
+        raise ValueError('bool must be a boolean')
     vectorizer = vectorizer.lower()
-    assert vectorizer in ['tfidf', 'bow'], "vectorizer must be 'tfidf' or 'bow'"
-    assert (
-        max_df < 1 and max_df > 0
-    ), 'max_df must be bigger than 0, less than 1'
-    assert min_df > 0, 'min_df must be bigger than 0'
-    assert isinstance(stemming, bool), 'bool must be a boolean'
+    if not vectorizer in ['tfidf', 'bow', 'skip-gram']:
+        raise ValueError("vectorizer must be in  ['tfidf', 'bow', 'skip-gram']")
+    if not isinstance(ngram, tuple):
+        raise ValueError('ngram must be a tuple')
+    if not len(ngram) == 2:
+        raise ValueError('ngram size must equal to 2')
+    if not isinstance(min_df, int):
+        raise ValueError('min_df must be an integer')
+    if not (isinstance(max_df, int) or isinstance(max_df, float)):
+        raise ValueError('max_df must be an integer or a float')
+    if min_df < 1:
+        raise ValueError('min_df must be bigger than 0')
+    if not (max_df < 1 and max_df > 0):
+        raise ValueError('max_df must be bigger than 0, less than 1')
+
     if cleaning is not None:
         for i in range(len(corpus)):
             corpus[i] = cleaning(corpus[i])
@@ -364,12 +391,16 @@ def _base_topic_modelling(
         Vectorizer = TfidfVectorizer
     elif vectorizer == 'bow':
         Vectorizer = CountVectorizer
+    elif vectorizer == 'skip-gram':
+        Vectorizer = SkipGramVectorizer
     else:
-        raise Exception(
-            "vectorizer not support, vectorizer must be 'tfidf' or 'bow'"
-        )
+        raise Exception("vectorizer must be in  ['tfidf', 'bow', 'skip-gram']")
     tf_vectorizer = Vectorizer(
-        max_df = max_df, min_df = min_df, stop_words = stop_words, **kwargs
+        max_df = max_df,
+        min_df = min_df,
+        ngram_range = ngram,
+        stop_words = stop_words,
+        **kwargs,
     )
     tf = tf_vectorizer.fit_transform(corpus)
     tf_features = tf_vectorizer.get_feature_names()
@@ -384,91 +415,17 @@ def _base_topic_modelling(
     )
 
 
-def _lda2vec_preprocessing(
-    corpus,
-    window_size = 2,
-    stemming = True,
-    cleaning = simple_textcleaning,
-    stop_words = STOPWORDS,
-):
-
-    assert isinstance(corpus, list) and isinstance(
-        corpus[0], str
-    ), 'input must be list of strings'
-    assert isinstance(stemming, bool), 'bool must be a boolean'
-    assert isinstance(window_size, int), 'window_size must be an integer'
-    if cleaning is not None:
-        for i in range(len(corpus)):
-            corpus[i] = cleaning(corpus[i])
-    if stemming:
-        for i in range(len(corpus)):
-            corpus[i] = sastrawi(corpus[i])
-    text_clean = []
-    for text in corpus:
-        text_clean.append(
-            ' '.join([word for word in text.split() if word not in stop_words])
-        )
-    concat = (' '.join(text_clean)).split()
-    unique_count = len(list(set(concat)))
-    _, count, dictionary, reversed_dictionary = build_dataset(
-        concat, unique_count, included_prefix = False
-    )
-    idx_text_clean, len_idx_text_clean = [], []
-    for text in text_clean:
-        splitted = [dictionary[word] for word in text.split()]
-        idx_text_clean.append(splitted)
-        len_idx_text_clean.append(len(splitted))
-    word_counts = collections.Counter(concat)
-    df_freqs = pd.DataFrame.from_records(word_counts, index = ['Freqs'])
-    df_freqs = df_freqs.T
-    df_freqs = df_freqs.sort_values(['Freqs'], ascending = False)
-    freqs = df_freqs.values.flatten().tolist()[:unique_count]
-    doc_ids = np.arange(len(idx_text_clean))
-    num_unique_documents = doc_ids.max()
-    skipgrams_data = []
-    for i, t in enumerate(idx_text_clean):
-        pairs, _ = skipgrams(
-            t,
-            vocabulary_size = unique_count,
-            window_size = window_size,
-            shuffle = True,
-            negative_samples = 0,
-        )
-        for pair in pairs:
-            temp_data = pair
-            temp_data.append(doc_ids[i])
-            skipgrams_data.append(temp_data)
-    skipgrams_data_df = pd.DataFrame(skipgrams_data)
-    pivot_words = skipgrams_data_df[0].values
-    target_words = skipgrams_data_df[1].values
-    doc_ids = skipgrams_data_df[2].values
-    pivot_words, target_words, doc_ids = shuffle(
-        pivot_words, target_words, doc_ids, random_state = 10
-    )
-    num_unique_documents = doc_ids.max() + 1
-    return (
-        pivot_words,
-        target_words,
-        doc_ids,
-        dictionary,
-        reversed_dictionary,
-        num_unique_documents,
-        freqs,
-        len_idx_text_clean,
-        corpus,
-    )
-
-
 def lda(
     corpus,
     n_topics = 10,
     max_df = 0.95,
     min_df = 2,
+    ngram = (1, 3),
     stemming = True,
     vectorizer = 'bow',
     cleaning = simple_textcleaning,
     stop_words = STOPWORDS,
-    **kwargs
+    **kwargs,
 ):
     """
     Train a LDA model to do topic modelling based on corpus / list of strings given.
@@ -482,6 +439,8 @@ def lda(
         maximum of a word selected based on document frequency.
     min_df: int, (default=2)
         minimum of a word selected on based on document frequency.
+    ngram: tuple, (default=(1,3))
+        n-grams size to train a corpus
     stemming: bool, (default=True)
         If True, sastrawi_stemmer will apply
     vectorizer: str, (default='bow')
@@ -501,11 +460,12 @@ def lda(
         LatentDirichletAllocation,
         max_df = max_df,
         min_df = min_df,
+        ngram = ngram,
         vectorizer = vectorizer,
         stemming = stemming,
         cleaning = cleaning,
         stop_words = stop_words,
-        **kwargs
+        **kwargs,
     )
 
 
@@ -514,11 +474,12 @@ def nmf(
     n_topics = 10,
     max_df = 0.95,
     min_df = 2,
+    ngram = (1, 3),
     stemming = True,
     vectorizer = 'bow',
     cleaning = simple_textcleaning,
     stop_words = STOPWORDS,
-    **kwargs
+    **kwargs,
 ):
     """
     Train a NMF model to do topic modelling based on corpus / list of strings given.
@@ -532,6 +493,8 @@ def nmf(
         maximum of a word selected based on document frequency.
     min_df: int, (default=2)
         minimum of a word selected on based on document frequency.
+    ngram: tuple, (default=(1,3))
+        n-grams size to train a corpus
     stemming: bool, (default=True)
         If True, sastrawi_stemmer will apply.
     vectorizer: str, (default='bow')
@@ -551,11 +514,12 @@ def nmf(
         NMF,
         max_df = max_df,
         min_df = min_df,
+        ngram = ngram,
         vectorizer = vectorizer,
         stemming = stemming,
         cleaning = cleaning,
         stop_words = stop_words,
-        **kwargs
+        **kwargs,
     )
 
 
@@ -564,11 +528,12 @@ def lsa(
     n_topics,
     max_df = 0.95,
     min_df = 2,
+    ngram = (1, 3),
     vectorizer = 'bow',
     stemming = True,
     cleaning = simple_textcleaning,
     stop_words = STOPWORDS,
-    **kwargs
+    **kwargs,
 ):
     """
     Train a LSA model to do topic modelling based on corpus / list of strings given.
@@ -582,6 +547,8 @@ def lsa(
         maximum of a word selected based on document frequency.
     min_df: int, (default=2)
         minimum of a word selected on based on document frequency.
+    ngram: tuple, (default=(1,3))
+        n-grams size to train a corpus
     vectorizer: str, (default='bow')
         vectorization technique for corpus, only support 'bow' and 'tfidf'.
     stemming: bool, (default=True)
@@ -601,11 +568,12 @@ def lsa(
         TruncatedSVD,
         max_df = max_df,
         min_df = min_df,
+        ngram = ngram,
         vectorizer = vectorizer,
         stemming = stemming,
         cleaning = cleaning,
         stop_words = stop_words,
-        **kwargs
+        **kwargs,
     )
 
 
@@ -613,13 +581,18 @@ def lda2vec(
     corpus,
     n_topics,
     stemming = True,
+    max_df = 0.95,
+    min_df = 2,
+    ngram = (1, 3),
     cleaning = simple_textcleaning,
+    vectorizer = 'bow',
     stop_words = STOPWORDS,
     window_size = 2,
     embedding_size = 128,
-    training_iteration = 10,
+    epoch = 10,
     switch_loss = 3,
-    **kwargs
+    skip = 5,
+    **kwargs,
 ):
     """
     Train a LDA2Vec model to do topic modelling based on corpus / list of strings given.
@@ -631,6 +604,12 @@ def lda2vec(
         size of decomposition column.
     stemming: bool, (default=True)
         If True, sastrawi_stemmer will apply
+    max_df: float, (default=0.95)
+        maximum of a word selected based on document frequency.
+    min_df: int, (default=2)
+        minimum of a word selected on based on document frequency.
+    ngram: tuple, (default=(1,3))
+        n-grams size to train a corpus
     cleaning: function, (default=simple_textcleaning)
         function to clean the corpus
     stop_words: list, (default=STOPWORDS)
@@ -641,32 +620,120 @@ def lda2vec(
         training iteration, how many loop need to train
     switch_loss: int, (default=3)
         baseline to switch from document based loss to document + word based loss
+    skip: int, (default=5)
+        skip value if vectorizer = 'skip-gram'
 
     Returns
     -------
     _DEEP_TOPIC: malaya.topic_modelling._DEEP_TOPIC class
     """
-    pivot_words, target_words, doc_ids, dictionary, reversed_dictionary, num_unique_documents, freqs, len_idx_text_clean, cleaned_corpus = _lda2vec_preprocessing(
-        corpus,
-        window_size = window_size,
-        stemming = stemming,
-        cleaning = cleaning,
+    if not isinstance(corpus, list):
+        raise ValueError('corpus must be a list')
+    if not isinstance(corpus[0], str):
+        raise ValueError('corpus must be list of strings')
+    if not isinstance(n_topics, int):
+        raise ValueError('n_topics must be an integer')
+    if not isinstance(vectorizer, str):
+        raise ValueError('vectorizer must be a string')
+    if not isinstance(stemming, bool):
+        raise ValueError('bool must be a boolean')
+    vectorizer = vectorizer.lower()
+    if not vectorizer in ['tfidf', 'bow', 'skip-gram']:
+        raise ValueError("vectorizer must be in  ['tfidf', 'bow', 'skip-gram']")
+    if not isinstance(ngram, tuple):
+        raise ValueError('ngram must be a tuple')
+    if not len(ngram) == 2:
+        raise ValueError('ngram size must equal to 2')
+    if not isinstance(min_df, int):
+        raise ValueError('min_df must be an integer')
+    if not (isinstance(max_df, int) or isinstance(max_df, float)):
+        raise ValueError('max_df must be an integer or a float')
+    if min_df < 1:
+        raise ValueError('min_df must be bigger than 0')
+    if not (max_df < 1 and max_df > 0):
+        raise ValueError('max_df must be bigger than 0, less than 1')
+    if not isinstance(embedding_size, int):
+        raise ValueError('embedding_size must be an integer')
+    if not isinstance(window_size, int):
+        raise ValueError('window_size must be an integer')
+    if not isinstance(epoch, int):
+        raise ValueError('epoch must be an integer')
+    if not isinstance(switch_loss, int):
+        raise ValueError('switch_loss must be an integer')
+    if not isinstance(skip, int):
+        raise ValueError('skip must be an integer')
+
+    if vectorizer == 'tfidf':
+        Vectorizer = TfidfVectorizer
+    elif vectorizer == 'bow':
+        Vectorizer = CountVectorizer
+    elif vectorizer == 'skip-gram':
+        Vectorizer = SkipGramVectorizer
+    else:
+        raise Exception("vectorizer must be in  ['tfidf', 'bow', 'skip-gram']")
+    tf_vectorizer = Vectorizer(
+        ngram_range = ngram,
+        min_df = min_df,
+        max_df = max_df,
         stop_words = stop_words,
     )
+
+    if cleaning is not None:
+        for i in range(len(corpus)):
+            corpus[i] = cleaning(corpus[i])
+    if stemming:
+        for i in range(len(corpus)):
+            corpus[i] = sastrawi(corpus[i])
+    text_clean = []
+    for text in corpus:
+        text_clean.append(
+            ' '.join([word for word in text.split() if word not in stop_words])
+        )
+    tf_vectorizer.fit(text_clean)
+    idx_text_clean, len_idx_text_clean = [], []
+    transformed_text_clean = tf_vectorizer.transform(text_clean)
+    for text in transformed_text_clean:
+        splitted = text.nonzero()[1]
+        idx_text_clean.append(splitted)
+        len_idx_text_clean.append(len(splitted))
+    dictionary = {
+        i: no for no, i in enumerate(tf_vectorizer.get_feature_names())
+    }
+    reversed_dictionary = {
+        no: i for no, i in enumerate(tf_vectorizer.get_feature_names())
+    }
+    freqs = transformed_text_clean.toarray().sum(axis = 0).tolist()
+    doc_ids = np.arange(len(idx_text_clean))
+    num_unique_documents = doc_ids.max()
+    pivot_words, target_words, doc_ids = [], [], []
+    for i, t in enumerate(idx_text_clean):
+        pairs, _ = skipgrams(
+            t,
+            vocabulary_size = len(dictionary),
+            window_size = window_size,
+            shuffle = True,
+            negative_samples = 0,
+        )
+        for pair in pairs:
+            temp_data = pair
+            pivot_words.append(temp_data[0])
+            target_words.append(temp_data[1])
+            doc_ids.append(i)
+    pivot_words, target_words, doc_ids = shuffle(
+        pivot_words, target_words, doc_ids, random_state = 10
+    )
+    num_unique_documents = len(idx_text_clean)
+
     model = LDA2VEC(
         num_unique_documents,
         len(dictionary),
         n_topics,
         freqs,
         embedding_size = embedding_size,
-        **kwargs
+        **kwargs,
     )
     model.train(
-        pivot_words,
-        target_words,
-        doc_ids,
-        training_iteration,
-        switch_loss = switch_loss,
+        pivot_words, target_words, doc_ids, epoch, switch_loss = switch_loss
     )
     return _DEEP_TOPIC(
         model,
@@ -674,5 +741,5 @@ def lda2vec(
         reversed_dictionary,
         freqs,
         len_idx_text_clean,
-        cleaned_corpus,
+        text_clean,
     )

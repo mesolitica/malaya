@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 12.3 s, sys: 1.43 s, total: 13.7 s
-    Wall time: 17.4 s
+    CPU times: user 12.1 s, sys: 1.36 s, total: 13.4 s
+    Wall time: 17 s
 
 
 Use Sastrawi stemmer

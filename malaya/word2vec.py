@@ -48,9 +48,10 @@ def load_news(size = 256):
     -------
     dictionary: dictionary of dictionary, reverse dictionary and vectors
     """
-    assert isinstance(size, int), 'input must be an integer'
+    if not isinstance(size, int):
+        raise ValueError('input must be an integer')
     if size not in [32, 64, 128, 256, 512]:
-        raise Exception(
+        raise ValueError(
             'size word2vec not supported, only supports [32, 64, 128, 256, 512]'
         )
     if not os.path.isfile('%s/word2vec-%d/word2vec.p' % (home, size)):
@@ -108,39 +109,50 @@ def train(
     -------
     dictionary: dictionary of dictionary, reverse dictionary and vectors
     """
-    assert isinstance(corpus, str) or isinstance(
-        corpus, list
-    ), 'corpus must be a string or a list of string'
-    assert vocab_size is None or isinstance(
-        vocab_size, int
-    ), 'vocab_size must be a None or an integer'
-    assert isinstance(batch_size, int), 'batch_size must be an integer'
-    assert isinstance(embedding_size, int), 'embedding_size must be an integer'
-    assert isinstance(hidden_size, int), 'hidden_size must be an integer'
-    assert isinstance(epoch, int), 'epoch must be an integer'
-    assert isinstance(
-        negative_samples_ratio, float
-    ), 'negative_samples_ratio must be a float'
-    assert isinstance(momentum, float), 'momentum must be a float'
-    assert isinstance(embedding_noise, float), 'embedding_noise must be a float'
-    assert isinstance(hidden_noise, float), 'hidden_noise must be a float'
-    assert isinstance(learning_rate, float) or isinstance(
-        learning_rate, int
-    ), 'learning_rate must be a float or an integer'
-    assert isinstance(optimizer, str), 'optimizer must be a string'
-    assert batch_size > 0, 'batch_size must bigger than 0'
-    assert epoch > 0, 'epoch must bigger than 0'
-    assert embedding_size > 0, 'embedding_size must bigger than 0'
-    assert hidden_size > 0, 'hidden_size must bigger than 0'
-    assert (
-        negative_samples_ratio > 0 and negative_samples_ratio <= 1
-    ), 'negative_samples_ratio must bigger than 0 and less than or equal 1'
-    assert (
-        embedding_noise > 0 and embedding_noise <= 1
-    ), 'embedding_noise must bigger than 0 and less than or equal 1'
-    assert (
-        hidden_noise > 0 and hidden_noise <= 1
-    ), 'hidden_noise must bigger than 0 and less than or equal 1'
+    if not isinstance(corpus, str) and not isinstance(corpus, list):
+        raise ValueError('corpus must be a string or a list of string')
+    if not vocab_size is None and not isinstance(vocab_size, int):
+        raise ValueError('vocab_size must be a None or an integer')
+    if not isinstance(batch_size, int):
+        raise ValueError('batch_size must be an integer')
+    if not isinstance(embedding_size, int):
+        raise ValueError('embedding_size must be an integer')
+    if not isinstance(hidden_size, int):
+        raise ValueError('hidden_size must be an integer')
+    if not isinstance(epoch, int):
+        raise ValueError('epoch must be an integer')
+    if not isinstance(negative_samples_ratio, float):
+        raise ValueError('negative_samples_ratio must be a float')
+    if not isinstance(momentum, float):
+        raise ValueError('momentum must be a float')
+    if not isinstance(embedding_noise, float):
+        raise ValueError('embedding_noise must be a float')
+    if not isinstance(hidden_noise, float):
+        raise ValueError('hidden_noise must be a float')
+    if not isinstance(learning_rate, float) or isinstance(learning_rate, int):
+        raise ValueError('learning_rate must be a float or an integer')
+    if not isinstance(optimizer, str):
+        raise ValueError('optimizer must be a string')
+    if not batch_size > 0:
+        raise ValueError('batch_size must bigger than 0')
+    if not epoch > 0:
+        raise ValueError('epoch must bigger than 0')
+    if not embedding_size > 0:
+        raise ValueError('embedding_size must bigger than 0')
+    if not hidden_size > 0:
+        raise ValueError('hidden_size must bigger than 0')
+    if not (negative_samples_ratio > 0 and negative_samples_ratio <= 1):
+        raise ValueError(
+            'negative_samples_ratio must bigger than 0 and less than or equal 1'
+        )
+    if not (embedding_noise > 0 and embedding_noise <= 1):
+        raise ValueError(
+            'embedding_noise must bigger than 0 and less than or equal 1'
+        )
+    if not (hidden_noise > 0 and hidden_noise <= 1):
+        raise ValueError(
+            'hidden_noise must bigger than 0 and less than or equal 1'
+        )
     optimizer = optimizer.lower()
     if optimizer not in [
         'gradientdescent',
@@ -373,13 +385,16 @@ class word2vec:
         -------
         list_dictionaries: list of results
         """
-        assert isinstance(labels, list), 'input must be a list'
-        assert isinstance(
-            notebook_mode, bool
-        ), 'notebook_mode must be a boolean'
-        assert isinstance(figsize, tuple), 'figsize must be a tuple'
-        assert isinstance(figname, str), 'figname must be a string'
-        assert isinstance(plus_minus, int), 'plus_minus must be an integer'
+        if not isinstance(labels, list):
+            raise ValueError('input must be a list')
+        if not isinstance(notebook_mode, bool):
+            raise ValueError('notebook_mode must be a boolean')
+        if not isinstance(figsize, tuple):
+            raise ValueError('figsize must be a tuple')
+        if not isinstance(figname, str):
+            raise ValueError('figname must be a string')
+        if not isinstance(plus_minus, int):
+            raise ValueError('plus_minus must be an integer')
         try:
             import matplotlib.pyplot as plt
             import seaborn as sns
@@ -393,7 +408,8 @@ class word2vec:
             self.words.index(e[0] if isinstance(e, list) else e) for e in labels
         ]
         if centre:
-            assert isinstance(centre, str), 'centre must be a string'
+            if not isinstance(centre, str):
+                raise ValueError('centre must be a string')
             idx.append(self.words.index(centre))
         cp_idx = idx[:]
         for i in idx:
@@ -471,7 +487,34 @@ class word2vec:
             )
         return _Calculator(tokens).exp()
 
-    def batch_calculator(self, equations, num_closest = 5):
+    def _batch_process(self, batch, num_closest = 5, return_similarity = True):
+        top_k = tf.nn.top_k(self._cosine_similarity, k = num_closest)
+        results = self._sess.run(
+            top_k,
+            feed_dict = {self._x: batch, self._embedding: self._embed_matrix},
+        )
+        indices = results.indices
+        values = results.values
+        words = []
+        if not return_similarity:
+            for result in indices:
+                words.append([self._reverse_dictionary[i] for i in result])
+        else:
+            for no in range(len(results)):
+                words.append(
+                    [
+                        (
+                            self._reverse_dictionary[indices[no, i]],
+                            values[no, i],
+                        )
+                        for i in range(len(indices[no]))
+                    ]
+                )
+        return words
+
+    def batch_calculator(
+        self, equations, num_closest = 5, return_similarity = False
+    ):
         """
         batch calculator parser for word2vec using tensorflow
 
@@ -486,18 +529,16 @@ class word2vec:
         -------
         word_list: list of nearest words
         """
-        assert isinstance(equations, list), 'equations must be a list of string'
-        assert isinstance(num_closest, int), 'num_closest must be an integer'
+        if not isinstance(equations, list):
+            raise ValueError('equations must be a list of string')
+        if not isinstance(num_closest, int):
+            raise ValueError('num_closest must be an integer')
         batches = np.array([self._calculate(eq) for eq in equations])
-        top_k = tf.nn.top_k(self._cosine_similarity, k = num_closest)
-        results = self._sess.run(
-            top_k,
-            feed_dict = {self._x: batches, self._embedding: self._embed_matrix},
-        ).indices
-        words = []
-        for result in results:
-            words.append([self._reverse_dictionary[i] for i in result])
-        return words
+        return self._batch_process(
+            batches,
+            num_closest = num_closest,
+            return_similarity = return_similarity,
+        )
 
     def calculator(
         self,
@@ -524,12 +565,14 @@ class word2vec:
         -------
         word_list: list of nearest words
         """
-        assert isinstance(equation, str), 'input must be a string'
-        assert isinstance(num_closest, int), 'num_closest must be an integer'
-        assert isinstance(metric, str), 'metric must be a string'
-        assert isinstance(
-            return_similarity, bool
-        ), 'num_closest must be a boolean'
+        if not isinstance(equation, str):
+            raise ValueError('input must be a string')
+        if not isinstance(num_closest, int):
+            raise ValueError('num_closest must be an integer')
+        if not isinstance(metric, str):
+            raise ValueError('metric must be a string')
+        if not isinstance(return_similarity, bool):
+            raise ValueError('num_closest must be a boolean')
         calculated = self._calculate(equation)
         if return_similarity:
             nn = NearestNeighbors(num_closest + 1, metric = metric).fit(
@@ -550,6 +593,48 @@ class word2vec:
             for i in closest_indices:
                 word_list.append(self._reverse_dictionary[i])
             return word_list
+
+    def batch_n_closest(
+        self, words, num_closest = 5, return_similarity = False, soft = True
+    ):
+        """
+        find nearest words based on a batch of words using Tensorflow
+
+        Parameters
+        ----------
+        words: list
+            Eg, ['najib','anwar']
+        num_closest: int, (default=5)
+            number of words closest to the result
+        return_similarity: bool, (default=True)
+            if True, will return between 0-1 represents the distance
+        soft: bool, (default=True)
+            if True, a word not in the dictionary will be replaced with nearest fuzzywuzzy ratio.
+            if False, it will throw an exception if a word not in the dictionary
+
+        Returns
+        -------
+        word_list: list of nearest words
+        """
+        if soft:
+            for i in range(len(words)):
+                if words[i] not in self.words:
+                    words[i] = self.words[
+                        np.argmax([fuzz.ratio(words[i], k) for k in self.words])
+                    ]
+        else:
+            for i in range(len(words)):
+                if words[i] not in self.words:
+                    raise Exception(
+                        '%s not in dictionary, please use another word or set `soft` = True'
+                        % (words[i])
+                    )
+        batches = np.array([self.get_vector_by_name(w) for w in words])
+        return self._batch_process(
+            batches,
+            num_closest = num_closest,
+            return_similarity = return_similarity,
+        )
 
     def n_closest(
         self, word, num_closest = 5, metric = 'cosine', return_similarity = True
@@ -572,12 +657,14 @@ class word2vec:
         -------
         word_list: list of nearest words
         """
-        assert isinstance(word, str), 'input must be a string'
-        assert isinstance(num_closest, int), 'num_closest must be an integer'
-        assert isinstance(metric, str), 'metric must be a string'
-        assert isinstance(
-            return_similarity, bool
-        ), 'num_closest must be a boolean'
+        if not isinstance(word, str):
+            raise ValueError('input must be a string')
+        if not isinstance(num_closest, int):
+            raise ValueError('num_closest must be an integer')
+        if not isinstance(metric, str):
+            raise ValueError('metric must be a string')
+        if not isinstance(return_similarity, bool):
+            raise ValueError('num_closest must be a boolean')
         if return_similarity:
             nn = NearestNeighbors(num_closest + 1, metric = metric).fit(
                 self._embed_matrix
@@ -627,9 +714,12 @@ class word2vec:
         -------
         word_list: list of nearest words
         """
-        assert isinstance(a, str), 'a must be a string'
-        assert isinstance(b, str), 'b must be a string'
-        assert isinstance(c, str), 'c must be a string'
+        if not isinstance(a, str):
+            raise ValueError('a must be a string')
+        if not isinstance(b, str):
+            raise ValueError('b must be a string')
+        if not isinstance(c, str):
+            raise ValueError('c must be a string')
         if a not in self._dictionary:
             raise Exception('a not in dictinary')
         if b not in self._dictionary:
@@ -659,8 +749,10 @@ class word2vec:
         -------
         tsne decomposition: numpy
         """
-        assert isinstance(start, int), 'start must be an integer'
-        assert isinstance(end, int), 'end must be an integer'
+        if not isinstance(start, int):
+            raise ValueError('start must be an integer')
+        if not isinstance(end, int):
+            raise ValueError('end must be an integer')
         tsne = TSNE(n_components = 2)
         embed_2d = tsne.fit_transform(self._embed_matrix[start:end, :])
         word_list = []

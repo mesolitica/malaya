@@ -44,8 +44,8 @@ some useful functions for you!
 
 .. parsed-literal::
 
-    CPU times: user 12.3 s, sys: 1.4 s, total: 13.7 s
-    Wall time: 17.4 s
+    CPU times: user 12.1 s, sys: 1.52 s, total: 13.6 s
+    Wall time: 17.3 s
 
 
 Load malaya news word2vec
@@ -97,6 +97,119 @@ Check top-k similar semantics based on a word
 
     Embedding layer: 8 closest words to: 'anwar'
     [['zaid', 0.7285637855529785], ['khairy', 0.6839416027069092], ['zabidi', 0.6709405183792114], ['nizar', 0.6695379018783569], ['harussani', 0.6595045328140259], ['shahidan', 0.6565827131271362], ['azalina', 0.6541041135787964], ['shahrizat', 0.6538639068603516]]
+
+
+Check batch top-k similar semantics based on a word
+---------------------------------------------------
+
+.. code:: python
+
+    words = ['anwar', 'mahathir']
+    word_vector_news.batch_n_closest(words, num_closest=8,
+                                     return_similarity=False)
+
+
+
+
+.. parsed-literal::
+
+    [['anwar',
+      'mahathir',
+      'beliau',
+      'zaid',
+      'hishammuddin',
+      'kuok',
+      'husam',
+      'anifah'],
+     ['mahathir',
+      'najib',
+      'obama',
+      'subramaniam',
+      'anwar',
+      'zamihan',
+      'mujahid',
+      'dzulkefly']]
+
+
+
+What happen if a word not in the dictionary?
+
+You can set parameter ``soft`` to ``True`` or ``False``. Default is
+``True``.
+
+if ``True``, a word not in the dictionary will be replaced with nearest
+fuzzywuzzy ratio.
+
+if ``False``, it will throw an exception if a word not in the
+dictionary.
+
+.. code:: python
+
+    words = ['anwar', 'mahathir','husein-comel']
+    word_vector_news.batch_n_closest(words, num_closest=8,
+                                     return_similarity=False,soft=False)
+
+
+::
+
+
+    ---------------------------------------------------------------------------
+
+    Exception                                 Traceback (most recent call last)
+
+    <ipython-input-8-4be8160131f5> in <module>
+          1 words = ['anwar', 'mahathir','husein-comel']
+          2 word_vector_news.batch_n_closest(words, num_closest=8,
+    ----> 3                                  return_similarity=False,soft=False)
+
+
+    ~/Documents/Malaya/malaya/word2vec.py in batch_n_closest(self, words, num_closest, return_similarity, soft)
+        628                     raise Exception(
+        629                         '%s not in dictionary, please use another word or set `soft` = True'
+    --> 630                         % (words[i])
+        631                     )
+        632         batches = np.array([self.get_vector_by_name(w) for w in words])
+
+
+    Exception: husein-comel not in dictionary, please use another word or set `soft` = True
+
+
+.. code:: python
+
+    words = ['anwar', 'mahathir','husein-comel']
+    word_vector_news.batch_n_closest(words, num_closest=8,
+                                     return_similarity=False,soft=True)
+
+
+
+
+.. parsed-literal::
+
+    [['anwar',
+      'mahathir',
+      'beliau',
+      'zaid',
+      'hishammuddin',
+      'kuok',
+      'husam',
+      'anifah'],
+     ['mahathir',
+      'najib',
+      'obama',
+      'subramaniam',
+      'anwar',
+      'zamihan',
+      'mujahid',
+      'dzulkefly'],
+     ['income',
+      'wishes',
+      'styles',
+      'devices',
+      'holographic',
+      'proper',
+      'refined',
+      'moves']]
+
 
 
 Calculate vb - va + vc
@@ -190,8 +303,8 @@ nearest-neighbors for us for fast suggestion!
 
 .. parsed-literal::
 
-    CPU times: user 1min 33s, sys: 7.94 s, total: 1min 41s
-    Wall time: 1min 45s
+    CPU times: user 1min 29s, sys: 7.02 s, total: 1min 36s
+    Wall time: 1min 37s
 
 
 .. code:: python
@@ -202,8 +315,8 @@ nearest-neighbors for us for fast suggestion!
 
 .. parsed-literal::
 
-    CPU times: user 1min 37s, sys: 3.97 s, total: 1min 41s
-    Wall time: 1min 33s
+    CPU times: user 1min 33s, sys: 3.24 s, total: 1min 36s
+    Wall time: 1min 26s
 
 
 If you are using GPU, or many cores, this will definitely speed up this
@@ -220,7 +333,7 @@ Visualize scatter-plot
 
 
 
-.. image:: load-word2vec_files/load-word2vec_24_0.png
+.. image:: load-word2vec_files/load-word2vec_29_0.png
 
 
 .. code:: python
@@ -231,7 +344,7 @@ Visualize scatter-plot
 
 
 
-.. image:: load-word2vec_files/load-word2vec_25_0.png
+.. image:: load-word2vec_files/load-word2vec_30_0.png
 
 
 Visualize tree-plot
@@ -251,7 +364,7 @@ Visualize tree-plot
 
 
 
-.. image:: load-word2vec_files/load-word2vec_27_1.png
+.. image:: load-word2vec_files/load-word2vec_32_1.png
 
 
 .. code:: python
@@ -268,7 +381,7 @@ Visualize tree-plot
 
 
 
-.. image:: load-word2vec_files/load-word2vec_28_1.png
+.. image:: load-word2vec_files/load-word2vec_33_1.png
 
 
 Get embedding from a word
@@ -289,16 +402,16 @@ top-5 nearest words
 
     Exception                                 Traceback (most recent call last)
 
-    <ipython-input-18-b4f84915c530> in <module>
+    <ipython-input-21-b4f84915c530> in <module>
     ----> 1 word_vector_news.get_vector_by_name('husein-comel')
 
 
     ~/Documents/Malaya/malaya/word2vec.py in get_vector_by_name(self, word)
-        274             raise Exception(
-        275                 'input not found in dictionary, here top-5 nearest words [%s]'
-    --> 276                 % (strings)
-        277             )
-        278         return np.ravel(self._embed_matrix[self._dictionary[word], :])
+        292             raise Exception(
+        293                 'input not found in dictionary, here top-5 nearest words [%s]'
+    --> 294                 % (strings)
+        295             )
+        296         return np.ravel(self._embed_matrix[self._dictionary[word], :])
 
 
     Exception: input not found in dictionary, here top-5 nearest words [income, husein, incomes, hussein, husseiny]
@@ -331,9 +444,9 @@ Train on custom corpus
 
 .. parsed-literal::
 
-    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 50.52it/s, cost=34.2]
-    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 32.09it/s, cost=32.2]
-    train minibatch loop:   0%|          | 0/8 [00:00<?, ?it/s]
+    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 53.59it/s, cost=37]
+    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 37.88it/s, cost=32.5]
+    train minibatch loop:   0%|          | 0/8 [00:00<?, ?it/s, cost=30.8]
 
 .. parsed-literal::
 
@@ -342,24 +455,24 @@ Train on custom corpus
 
 .. parsed-literal::
 
-    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 94.68it/s, cost=24.4]
-    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 73.38it/s, cost=32.6]
-    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 134.42it/s, cost=20.9]
-    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 182.89it/s, cost=27.3]
-    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 127.46it/s, cost=17.3]
-    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 150.10it/s, cost=18.2]
-    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 121.68it/s, cost=12.8]
-    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 206.28it/s, cost=18.1]
-    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 117.78it/s, cost=10.6]
-    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 166.86it/s, cost=14.5]
-    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 122.66it/s, cost=16.4]
-    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 187.30it/s, cost=10.4]
-    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 127.19it/s, cost=7.13]
-    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 149.36it/s, cost=8.71]
-    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 122.17it/s, cost=10.3]
-    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 137.93it/s, cost=9.22]
-    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 129.00it/s, cost=3.6]
-    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 178.41it/s, cost=3.66]
+    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 114.23it/s, cost=33]
+    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 104.38it/s, cost=29.7]
+    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 110.13it/s, cost=26.7]
+    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 172.65it/s, cost=22.3]
+    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 117.81it/s, cost=21.6]
+    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 159.72it/s, cost=14.8]
+    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 131.81it/s, cost=13.9]
+    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 181.36it/s, cost=16.8]
+    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 136.84it/s, cost=13.1]
+    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 164.23it/s, cost=14.8]
+    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 144.23it/s, cost=11.3]
+    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 171.15it/s, cost=7.84]
+    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 128.12it/s, cost=10.6]
+    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 175.80it/s, cost=8.91]
+    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 133.73it/s, cost=10.7]
+    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 185.70it/s, cost=15.2]
+    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 147.33it/s, cost=7.85]
+    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 186.12it/s, cost=5.2]
 
 
 .. code:: python
@@ -376,4 +489,4 @@ Train on custom corpus
 .. parsed-literal::
 
     Embedding layer: 8 closest words to: 'paduka'
-    [['END', 0.5256875157356262], ['pertama', 0.5140138864517212], ['seri', 0.5062881708145142], ['UNK', 0.5018792748451233], ['ketika', 0.4974247217178345], ['itu', 0.48950374126434326], ['berbeza', 0.4858505129814148], ['START', 0.4850046634674072]]
+    [['itu', 0.5166147947311401], ['END', 0.5115543007850647], ['nasional', 0.5072782039642334], ['sebagai', 0.5061907768249512], ['kos', 0.504166841506958], ['UNK', 0.49253714084625244], ['antarabangsa', 0.4919373393058777], ['ketika', 0.48901939392089844]]

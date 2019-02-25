@@ -50,6 +50,12 @@ Load Pretrained Wikipedia summarization deep learning
 
     deep_summary = malaya.summarize.deep_model_wiki()
 
+
+.. parsed-literal::
+
+    WARNING: this model is using convolutional based, Tensorflow-GPU above 1.10 may got a problem. Please downgrade to Tensorflow-GPU v1.8 if got any cuDNN error.
+
+
 .. code:: python
 
     deep_summary.summarize(isu_kerajaan,important_words=10)
@@ -59,17 +65,17 @@ Load Pretrained Wikipedia summarization deep learning
 
 .. parsed-literal::
 
-    {'summary': 'pensyarah kulliyah undang-undang ahmad ibrahim, universiti islam antarabangsa malaysia uiam prof madya dr shamrahayu ab aziz berkata perubahan kerajaan, susulan kemenangan pakatan harapan pada pilihan raya umum ke-14 pada mei lepas, tidak memberi kesan dari segi peranan, fungsi dan kedudukan yang di-pertuan agong. institusi raja khususnya yang di-pertuan agong adalah kedaulatan negara dengan kedudukan dan peranannya termaktub dalam perlembagaan persekutuan yang perlu disokong dan didukung oleh kerajaan serta rakyat. ketika merasmikan istiadat pembukaan penggal pertama, parlimen ke-14 pada 17 julai lepas, seri paduka bertitah mengalu-alukan pendekatan kerajaan pakatan harapan dalam menegakkan ketelusan terutamanya dengan mendedahkan kedudukan kewangan negara yang sebenar serta mengkaji semula perbelanjaan, kos projek dan mengurus kewangan secara berhemat bagi menangani kos sara hidup',
+    {'summary': 'pensyarah kulliyah undang-undang ahmad ibrahim, universiti islam antarabangsa malaysia uiam prof madya dr shamrahayu ab aziz berkata perubahan kerajaan, susulan kemenangan pakatan harapan pada pilihan raya umum ke-14 pada mei lepas, tidak memberi kesan dari segi peranan, fungsi dan kedudukan yang di-pertuan agong. peralihan kerajaan itu menyaksikan sultan muhammad v mencatat sejarah tersendiri dengan menjadi yang di-pertuan agong malaysia yang pertama memerintah dalam era dua kerajaan berbeza. semasa dilantik sebagai yang di-pertuan agong ke-15 pada 13 dis 2016, kerajaan ketika itu diterajui oleh barisan nasional dan pada 10 mei lepas, kepimpinan negara diambil alih oleh pakatan harapan yang memenangi pilihan raya umum ke-14',
      'top-words': ['jagaannya',
       'ferdy',
-      'sharidake',
       'televisyen',
       'zulkifli',
       'hoe',
-      'luteum',
-      'diimbau',
+      'sharidake',
       'kawan',
-      'brunei']}
+      'brunei',
+      'luteum',
+      'diimbau']}
 
 
 
@@ -83,11 +89,11 @@ Train skip-thought summarization deep learning model
 
 .. parsed-literal::
 
-    minibatch loop: 100%|██████████| 3/3 [00:00<00:00,  2.79it/s, cost=9.4]
-    minibatch loop: 100%|██████████| 3/3 [00:00<00:00,  3.83it/s, cost=6.9]
-    minibatch loop: 100%|██████████| 3/3 [00:01<00:00,  2.80it/s, cost=5.64]
-    minibatch loop: 100%|██████████| 3/3 [00:00<00:00,  3.01it/s, cost=4.43]
-    minibatch loop: 100%|██████████| 3/3 [00:00<00:00,  3.38it/s, cost=3.54]
+    minibatch loop: 100%|██████████| 3/3 [00:01<00:00,  2.46it/s, cost=9.59]
+    minibatch loop: 100%|██████████| 3/3 [00:00<00:00,  3.54it/s, cost=8.34]
+    minibatch loop: 100%|██████████| 3/3 [00:00<00:00,  4.22it/s, cost=7.26]
+    minibatch loop: 100%|██████████| 3/3 [00:00<00:00,  4.20it/s, cost=6.21]
+    minibatch loop: 100%|██████████| 3/3 [00:00<00:00,  4.28it/s, cost=5.25]
 
 
 .. code:: python
@@ -99,17 +105,17 @@ Train skip-thought summarization deep learning model
 
 .. parsed-literal::
 
-    {'summary': 'seri paduka turut menitahkan supaya majlis rumah terbuka aidilfitri tahun ini tidak diadakan di istana negara dengan peruntukan majlis itu digunakan bagi membantu golongan yang kurang bernasib baik. peralihan kerajaan itu menyaksikan sultan muhammad v mencatat sejarah tersendiri dengan menjadi yang di-pertuan agong malaysia yang pertama memerintah dalam era dua kerajaan berbeza. pada jun lepas, sultan muhammad v memperkenankan supaya peruntukan gaji dan emolumen yang di-pertuan agong dikurangkan sebanyak 10 peratus sepanjang pemerintahan sehingga 2021 berikutan keprihatinan seri paduka terhadap tahap hutang dan keadaan ekonomi negara',
-     'top-words': ['oleh',
+    {'summary': 'seri paduka turut menitahkan supaya majlis rumah terbuka aidilfitri tahun ini tidak diadakan di istana negara dengan peruntukan majlis itu digunakan bagi membantu golongan yang kurang bernasib baik. peralihan kerajaan itu menyaksikan sultan muhammad v mencatat sejarah tersendiri dengan menjadi yang di-pertuan agong malaysia yang pertama memerintah dalam era dua kerajaan berbeza. ketika merasmikan istiadat pembukaan penggal pertama, parlimen ke-14 pada 17 julai lepas, seri paduka bertitah mengalu-alukan pendekatan kerajaan pakatan harapan dalam menegakkan ketelusan terutamanya dengan mendedahkan kedudukan kewangan negara yang sebenar serta mengkaji semula perbelanjaan, kos projek dan mengurus kewangan secara berhemat bagi menangani kos sara hidup',
+     'top-words': ['muhammad',
+      'fungsi',
+      'secara',
       'mencatat',
-      ',',
-      'tahap',
-      'berikutan',
-      'harapan',
-      'projek',
-      'ke',
-      'madya',
-      'alukan']}
+      'paduka',
+      'sepanjang',
+      'perubahan',
+      '2016',
+      'barisan',
+      'uiam']}
 
 
 
@@ -136,13 +142,13 @@ Train LSA model
       'paduka titah',
       'sultan muhammad',
       'peran'],
-     'cluster-top-words': ['buka',
-      'malaysia',
+     'cluster-top-words': ['paduka titah',
+      'buka',
+      'mei',
+      'sultan muhammad',
       'perintah',
       'alih',
-      'sultan muhammad',
-      'paduka titah',
-      'mei',
+      'malaysia',
       'peran']}
 
 
@@ -170,13 +176,13 @@ Maintain original
       'paduka titah',
       'peran',
       'sultan muhammad'],
-     'cluster-top-words': ['buka',
+     'cluster-top-words': ['paduka titah',
+      'buka',
+      'mei',
+      'sultan muhammad',
+      'alih',
       'malaysia',
       'pilih',
-      'alih',
-      'sultan muhammad',
-      'paduka titah',
-      'mei',
       'peran']}
 
 
@@ -204,13 +210,13 @@ Train NMF model
       'paduka titah',
       'sultan muhammad',
       'peran'],
-     'cluster-top-words': ['buka',
-      'malaysia',
+     'cluster-top-words': ['paduka titah',
+      'buka',
+      'mei',
+      'sultan muhammad',
       'perintah',
       'alih',
-      'sultan muhammad',
-      'paduka titah',
-      'mei',
+      'malaysia',
       'peran']}
 
 
@@ -238,13 +244,13 @@ Train LDA model
       'paduka titah',
       'sultan muhammad',
       'peran'],
-     'cluster-top-words': ['buka',
-      'malaysia',
+     'cluster-top-words': ['paduka titah',
+      'buka',
+      'mei',
+      'sultan muhammad',
       'perintah',
       'alih',
-      'sultan muhammad',
-      'paduka titah',
-      'mei',
+      'malaysia',
       'peran']}
 
 

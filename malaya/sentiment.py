@@ -5,7 +5,6 @@ if not sys.warnoptions:
     warnings.simplefilter('ignore')
 
 import numpy as np
-import random
 from ._utils import _softmax_class
 from sklearn import metrics, datasets
 from sklearn.naive_bayes import MultinomialNB
@@ -169,16 +168,20 @@ def train_multinomial(corpus, vector = 'tfidf', split_size = 0.2, **kwargs):
     -------
     USER_BAYES: malaya.sklearn_model.USER_BAYES class
     """
-    assert (
+    if not (
         isinstance(corpus, str)
         or isinstance(corpus, list)
         or isinstance(corpus, tuple)
-    ), 'corpus must be a string location or list of strings or tuple of strings'
-    assert isinstance(vector, str), 'vector must be a string'
-    assert isinstance(split_size, float), 'split_size must be a float'
-    assert (
-        split_size > 0 and split_size < 1
-    ), 'split_size must bigger than 0, less than 1'
+    ):
+        raise ValueError(
+            'corpus must be a string location or list of strings or tuple of strings'
+        )
+    if not isinstance(vector, str):
+        raise ValueError('vector must be a string')
+    if not isinstance(split_size, float):
+        raise ValueError('split_size must be a float')
+    if not (split_size > 0 and split_size < 1):
+        raise ValueError('split_size must bigger than 0, less than 1')
     multinomial, labels, vectorize = None, None, None
     if isinstance(corpus, str):
         trainset = datasets.load_files(
@@ -188,20 +191,21 @@ def train_multinomial(corpus, vector = 'tfidf', split_size = 0.2, **kwargs):
         data, target = trainset.data, trainset.target
         labels = trainset.target_names
     if isinstance(corpus, list) or isinstance(corpus, tuple):
-        assert (
-            len(corpus[0]) == 2
-        ), 'element of corpus must be list or tuple of (string, label)'
-        assert isinstance(
-            corpus[0][0], str
-        ), 'left hand side of element must be a string'
+        if not len(corpus[0]) == 2:
+            raise ValueError(
+                'element of corpus must be list or tuple of (string, label)'
+            )
+        if not isinstance(corpus[0][0], str):
+            raise ValueError('left hand side of element must be a string')
         corpus = np.array(corpus)
         data, target = corpus[:, 0].tolist(), corpus[:, 1].tolist()
         labels = np.unique(target).tolist()
         target = LabelEncoder().fit_transform(target)
-    c = list(zip(data, target))
-    random.shuffle(c)
-    data, target = zip(*c)
-    data, target = list(data), list(target)
+
+    from sklearn.utils import shuffle
+
+    data, target = shuffle(data, target)
+
     for i in range(len(data)):
         data[i] = _classification_textcleaning_stemmer(data[i])
     if 'tfidf' in vector.lower():

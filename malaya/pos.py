@@ -52,7 +52,8 @@ def naive(string):
     -------
     string : tokenized string with POS related
     """
-    assert isinstance(string, str), 'input must be a string'
+    if not isinstance(string, str):
+        raise ValueError('input must be a string')
     string = string.lower()
     results = []
     for i in string.split():

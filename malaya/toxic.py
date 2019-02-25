@@ -7,8 +7,12 @@ if not sys.warnoptions:
 import json
 import pickle
 import os
-import tensorflow as tf
-from ._utils._utils import check_file, load_graph, check_available
+from ._utils._utils import (
+    check_file,
+    load_graph,
+    check_available,
+    generate_session,
+)
 from . import home
 from ._utils._paths import PATH_TOXIC, S3_PATH_TOXIC
 from ._models._sklearn_model import TOXIC
@@ -107,7 +111,8 @@ def deep_model(model = 'luong', validate = True):
     -------
     TOXIC: malaya._models._tensorflow_model.SIGMOID class
     """
-    assert isinstance(model, str), 'model must be a string'
+    if not isinstance(model, str):
+        raise ValueError('model must be a string')
     model = model.lower()
     if model == 'fast-text':
         if validate:
@@ -128,7 +133,7 @@ def deep_model(model = 'luong', validate = True):
         return SIGMOID(
             g.get_tensor_by_name('import/Placeholder:0'),
             g.get_tensor_by_name('import/logits:0'),
-            tf.InteractiveSession(graph = g),
+            generate_session(graph = g),
             model,
             dictionary,
         )
@@ -153,7 +158,7 @@ def deep_model(model = 'luong', validate = True):
         return SIGMOID(
             g.get_tensor_by_name('import/Placeholder:0'),
             g.get_tensor_by_name('import/logits:0'),
-            tf.InteractiveSession(graph = g),
+            generate_session(graph = g),
             model,
             dictionary,
             alphas = g.get_tensor_by_name('import/alphas:0'),
@@ -179,7 +184,7 @@ def deep_model(model = 'luong', validate = True):
         return SIGMOID(
             g.get_tensor_by_name('import/Placeholder_question:0'),
             g.get_tensor_by_name('import/logits:0'),
-            tf.InteractiveSession(graph = g),
+            generate_session(graph = g),
             model,
             dictionary,
             dropout_keep_prob = g.get_tensor_by_name(

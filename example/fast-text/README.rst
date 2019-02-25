@@ -47,8 +47,8 @@ some useful functions for you!
 
 .. parsed-literal::
 
-    CPU times: user 12 s, sys: 1.32 s, total: 13.4 s
-    Wall time: 16.6 s
+    CPU times: user 11.5 s, sys: 1.44 s, total: 13 s
+    Wall time: 16.5 s
 
 
 Load malaya wikipedia fast-text
@@ -207,7 +207,9 @@ Visualize scatter-plot
 
 
 
-.. image:: load-fast-text_files/load-fast-text_20_0.png
+.. parsed-literal::
+
+    <Figure size 700x700 with 1 Axes>
 
 
 Visualize tree-plot
@@ -255,7 +257,7 @@ Train on custom corpus
 
 .. parsed-literal::
 
-    train minibatch loop:  25%|██▌       | 2/8 [00:00<00:00, 18.50it/s, cost=29.6]
+    train minibatch loop:  25%|██▌       | 2/8 [00:00<00:00, 17.00it/s, cost=31.4]
 
 .. parsed-literal::
 
@@ -264,26 +266,26 @@ Train on custom corpus
 
 .. parsed-literal::
 
-    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 28.76it/s, cost=34.5]
-    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 27.24it/s, cost=30.2]
-    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 31.91it/s, cost=25.4]
-    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 82.09it/s, cost=27.8]
-    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 28.65it/s, cost=19.8]
-    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 88.25it/s, cost=14.8]
-    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 33.34it/s, cost=19.7]
-    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 86.77it/s, cost=11.9]
-    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 33.01it/s, cost=13.4]
-    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 108.38it/s, cost=7.07]
-    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 32.10it/s, cost=9.6]
-    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 88.64it/s, cost=12.4]
-    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 29.76it/s, cost=7.22]
-    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 114.69it/s, cost=11.1]
-    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 33.66it/s, cost=9.11]
-    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 109.45it/s, cost=6.26]
-    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 34.90it/s, cost=3.53]
-    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 109.55it/s, cost=4.43]
-    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 33.16it/s, cost=9.26]
-    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 99.80it/s, cost=13.7]
+    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 28.86it/s, cost=33.2]
+    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 26.27it/s, cost=28.8]
+    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 30.99it/s, cost=30.2]
+    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 72.80it/s, cost=21.5]
+    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 34.06it/s, cost=18]  
+    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 99.32it/s, cost=16.6]
+    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 31.45it/s, cost=4.56]
+    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 52.21it/s, cost=10.6]
+    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 34.21it/s, cost=8.77]
+    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 72.56it/s, cost=11.3]
+    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 33.21it/s, cost=8.4] 
+    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 77.31it/s, cost=14.4]
+    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 32.58it/s, cost=7.85]
+    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 83.67it/s, cost=6.94]
+    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 35.13it/s, cost=13.1]
+    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 104.69it/s, cost=4.54]
+    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 34.91it/s, cost=4.55]
+    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 123.10it/s, cost=9.08]
+    train minibatch loop: 100%|██████████| 8/8 [00:00<00:00, 34.58it/s, cost=6.03]
+    test minibatch loop: 100%|██████████| 1/1 [00:00<00:00, 86.25it/s, cost=7.39]
 
 
 .. code:: ipython3
@@ -300,4 +302,5 @@ Train on custom corpus
 
 .. parsed-literal::
 
-    [['pertama', 0.9139029383659363], ['raja', 0.8856638669967651], ['sultan', 0.8645539283752441], ['malaysia', 0.7939320206642151], ['mahathir', 0.7685380578041077], ['universiti', 0.7584933638572693], ['husein', 0.7584933042526245], ['najib', 0.7584932446479797]]
+    [['raja', 0.8651032447814941], ['pertama', 0.8305785655975342], ['sultan', 0.7715829610824585], ['malaysia', 0.7260801792144775], ['mahathir', 0.7086304426193237], ['husein', 0.6739279627799988], ['universiti', 0.673927903175354], ['najib', 0.673927903175354]]
+

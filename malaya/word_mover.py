@@ -82,11 +82,12 @@ def distance(left_token, right_token, vectorizer):
     -------
     distance: float
     """
-    assert isinstance(left_token, list), 'left_token must be a list'
-    assert isinstance(right_token, list), 'right_token must be a list'
-    assert hasattr(
-        vectorizer, 'get_vector_by_name'
-    ), 'vectorizer must has `get_vector_by_name` method'
+    if not isinstance(left_token, list):
+        raise ValueError('left_token must be a list')
+    if not isinstance(right_token, list):
+        raise ValueError('right_token must be a list')
+    if not hasattr(vectorizer, 'get_vector_by_name'):
+        raise ValueError('vectorizer must has `get_vector_by_name` method')
     prob = _word_mover(left_token, right_token, vectorizer)
     return pulp.value(prob.objective)
 
@@ -111,7 +112,8 @@ class _DEEP_CONTRACTION:
         -------
         string: normalized string
         """
-        assert isinstance(string, str), 'input must be a string'
+        if not isinstance(string, str):
+            raise ValueError('input must be a string')
         result, outer_candidates = [], []
         for word in normalizer_textcleaning(string).split():
             if word.istitle():
@@ -189,10 +191,10 @@ class _DEEP_CONTRACTION:
 
 
 def expander(corpus, vectorizer):
-    assert isinstance(corpus, list) and isinstance(
-        corpus[0], str
-    ), 'input must be list of strings'
-    assert hasattr(
-        vectorizer, 'get_vector_by_name'
-    ), 'vectorizer must has `get_vector_by_name` method'
+    if not isinstance(corpus, list):
+        raise ValueError('corpus must be a list')
+    if not isinstance(corpus[0], str):
+        raise ValueError('corpus must be list of strings')
+    if not hasattr(vectorizer, 'get_vector_by_name'):
+        raise ValueError('vectorizer must has `get_vector_by_name` method')
     return _DEEP_CONTRACTION(corpus, vectorizer)

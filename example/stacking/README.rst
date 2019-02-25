@@ -13,8 +13,8 @@ models to get a better result! It called stacking.
 
 .. parsed-literal::
 
-    CPU times: user 12.9 s, sys: 2.02 s, total: 14.9 s
-    Wall time: 19.8 s
+    CPU times: user 9.68 s, sys: 747 ms, total: 10.4 s
+    Wall time: 10.5 s
 
 
 .. code:: ipython3
@@ -72,7 +72,7 @@ models can use ``malaya.stack.predict_stack``.
 
 .. parsed-literal::
 
-    {'negative': 0.5531448211644178, 'positive': 0.4149916393260348}
+    {'negative': 0.506150402587375, 'positive': 0.4045639078752239}
 
 
 
@@ -94,12 +94,12 @@ Stack multiple toxic models
 
 .. parsed-literal::
 
-    {'toxic': 0.18301888,
-     'severe_toxic': 0.055985555,
-     'obscene': 0.14974992,
-     'threat': 0.13208856,
-     'insult': 0.1333515,
-     'identity_hate': 0.112043}
+    {'toxic': 0.21490112,
+     'severe_toxic': 0.07022426,
+     'obscene': 0.17856258,
+     'threat': 0.15631571,
+     'insult': 0.16029277,
+     'identity_hate': 0.1327232}
 
 
 
@@ -146,12 +146,12 @@ Stack emotion detection models
 
 .. parsed-literal::
 
-    {'anger': 0.6171353854200861,
-     'fear': 0.07710169858027326,
-     'joy': 0.010214449242988227,
-     'love': 0.014409898193053619,
-     'sadness': 0.05711692958171048,
-     'surprise': 0.0049174458080987575}
+    {'anger': 0.6324093751385098,
+     'fear': 0.06528178211644504,
+     'joy': 0.008890118694162983,
+     'love': 0.011420978246531412,
+     'sadness': 0.058377601127569685,
+     'surprise': 0.004896366282692069}
 
 
 
@@ -226,7 +226,7 @@ and Dependency Parsing recognition.**
      ('pulang', 'OTHER'),
      ('ke', 'OTHER'),
      ('kampung', 'OTHER'),
-     ('halaman', 'OTHER'),
+     ('halaman', 'time'),
      ('masing-masing', 'OTHER'),
      ('dalam', 'OTHER'),
      ('video', 'OTHER'),

@@ -27,6 +27,15 @@ malaya.entity
 .. automodule:: malaya.entity
     :members:
 
+malaya.fast_text
+-----------------
+
+.. automodule:: malaya.fast_text
+    :members:
+
+.. autoclass:: malaya.fast_text.fast_text()
+    :members:
+
 malaya.language_detection
 -------------------------
 
@@ -134,6 +143,15 @@ malaya.toxic
 -------------------------
 
 .. automodule:: malaya.toxic
+    :members:
+
+malaya.word_mover
+-------------------------
+
+.. automodule:: malaya.word_mover
+    :members:
+
+.. autoclass:: malaya.word_mover._DEEP_CONTRACTION()
     :members:
 
 malaya.word2vec

@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 13.8 s, sys: 1.58 s, total: 15.4 s
-    Wall time: 19.6 s
+    CPU times: user 10.7 s, sys: 906 ms, total: 11.6 s
+    Wall time: 12 s
 
 
 .. code:: ipython3
@@ -119,7 +119,7 @@ corpus, the format is,
 
 .. parsed-literal::
 
-    ['najib razak', 'masalah air', 'mahathir', 'tan sri mokhzani mahathir']
+    ['tan sri mokhzani mahathir', 'masalah air', 'mahathir', 'najib razak']
 
 
 
@@ -132,14 +132,14 @@ corpus, the format is,
 
 .. parsed-literal::
 
-    ['telekom malaysia',
+    ['pendidikan',
+     'sosial media',
+     'politik',
      'kerajaan',
-     'internet',
+     'telekom malaysia',
      'twitter',
      'teknologi',
-     'politik',
-     'pendidikan',
-     'sosial media']
+     'internet']
 
 
 
@@ -170,7 +170,7 @@ bag-of-word text similarity fitted by using character wised n-gram.
 
 .. parsed-literal::
 
-    ['kkmm', 'universiti islam antarabangsa', 'perkhidmatan awam', 'twitter']
+    ['perkhidmatan awam', 'kkmm', 'universiti islam antarabangsa', 'twitter']
 
 
 
@@ -187,39 +187,40 @@ bag-of-word text similarity fitted by using character wised n-gram.
 
 .. parsed-literal::
 
-    ['mic',
-     'kerajaan',
-     'majlis pakatan harapan',
-     'jabatan bubar',
-     '1malaysia',
-     'kemelangan penumpang cedera',
-     'pendidikan',
-     'malaysian chinese association',
-     'ppbm',
-     'menyiasat skandal',
-     'tentera malaysia',
-     'pakatan harapan',
+    ['timbalan perdana menteri',
      'parti islam semalaysia',
-     'jabatan agama islam wilayah persekutuan',
-     'bursa malaysia',
-     'rela',
-     'undi pos',
-     'twitter',
-     'parti pribumi bersatu malaysia',
-     'perkhidmatan awam',
-     'hutang negara',
-     'politik',
-     'timbalan perdana menteri',
-     'kkmm',
-     'perdana menteri',
-     'ptptn',
-     'menteri pertahanan',
-     'universiti islam antarabangsa',
+     'pendidikan',
+     '1malaysia',
      'gaji menteri',
-     'teknologi',
+     'mic',
      'bebas tahanan',
+     'twitter',
      'infrastruktur',
-     'menteri kewangan']
+     'suruhanjaya pilihan raya malaysia',
+     'perkasa',
+     'pakatan harapan',
+     'kerajaan',
+     'datuk seri ti lian ker',
+     'tentera malaysia',
+     'gerakan',
+     'universiti islam antarabangsa',
+     'ptptn',
+     'rela',
+     'ahli dewan undangan negeri',
+     'teknologi',
+     'politik',
+     'telekom malaysia',
+     'kkmm',
+     'kementerian dalam negeri',
+     'perkhidmatan awam',
+     'bursa malaysia',
+     'parti pribumi bersatu malaysia',
+     'ppbm',
+     'hutang negara',
+     'menyiasat skandal',
+     'majlis pakatan harapan',
+     'perdana menteri',
+     'menteri pertahanan']
 
 
 
@@ -282,54 +283,50 @@ All parameters supported,
 
 .. parsed-literal::
 
-    minibatch loop: 100%|██████████| 137/137 [02:04<00:00,  1.35it/s, accuracy=0.5, cost=0.128]  
-    minibatch loop: 100%|██████████| 137/137 [01:58<00:00,  1.45it/s, accuracy=0.75, cost=0.11]  
-    minibatch loop: 100%|██████████| 137/137 [02:02<00:00,  1.38it/s, accuracy=1, cost=0.0455]    
+    minibatch loop: 100%|██████████| 137/137 [01:42<00:00,  1.53it/s, accuracy=0.5, cost=0.129]  
+    minibatch loop: 100%|██████████| 137/137 [01:40<00:00,  1.52it/s, accuracy=0.833, cost=0.108]
+    minibatch loop: 100%|██████████| 137/137 [01:40<00:00,  1.54it/s, accuracy=1, cost=0.0514]    
 
 
 
 
 .. parsed-literal::
 
-    ['isytihar darurat',
+    ['parti islam semalaysia',
+     'pusat transformasi bandar',
+     'malaysia baru',
      'mic',
+     'bridge city park',
+     'suruhanjaya pilihan raya malaysia',
+     'kotak undi',
+     'lgbt',
+     'tentera malaysia',
      'dewan rakyat',
-     'agama',
-     'majlis pakatan harapan',
-     'cambridge analytica',
-     'tabung haji',
-     'ganja',
-     'universiti',
-     'isu kerugian',
-     'isu dadah',
-     'tun daim zainuddin',
-     'menteri dalam negeri',
-     'perkasa',
-     'pengedar dadah',
-     'anwar ibrahim',
-     'sst',
-     'saham dan komoditi',
-     'amanah',
-     'astro awani',
-     'recep tayyip erdogan',
-     'kementerian dalam negeri',
-     'pakatan harapan',
-     'parti islam semalaysia',
-     'jabatan agama islam wilayah persekutuan',
-     'undi pos',
-     'pusat daerah mangundi',
-     'programming language',
-     'wan azizah',
-     'rumah mampu milik',
-     'kkmm',
-     'menteri pertahanan',
-     'universiti islam antarabangsa',
-     'datuk seri abdul hadi awang',
+     'isu kemiskinan',
+     'undi rosak',
+     'produk berbahaya',
+     'politik',
+     'telekom malaysia',
+     'bank negara',
+     'kertas undi',
+     'malay mail',
+     'gaji minimum',
      'donald trump',
-     'gaji menteri',
-     'bebas tahanan',
-     'ask me a question',
-     'ahli dewan undangan negeri']
+     'najib razak',
+     'bank malaysia',
+     'humanoid',
+     'perkhidmatan awam',
+     'rosmah mansur',
+     'isu dadah',
+     'stock market malaysia',
+     'bursa malaysia',
+     'pusat daerah mangundi',
+     'undi pos',
+     'universiti teknologi malaysia',
+     'hutang negara',
+     'makro-ekonomi',
+     'rtm',
+     'pengangkutan awam']
 
 
 
@@ -377,47 +374,40 @@ You can load your model but need to use interface provided by malaya,
 
 .. parsed-literal::
 
-    ['isytihar darurat',
-     'mic',
-     'majlis pakatan harapan',
-     'cambridge analytica',
-     'ask me a question',
-     'tabung harapan',
-     'tabung haji',
-     'ganja',
-     'universiti',
-     'isu kerugian',
-     'isu dadah',
-     'tun daim zainuddin',
-     'menteri dalam negeri',
-     'perkasa',
-     'pengedar dadah',
-     'anwar ibrahim',
-     'sst',
-     'saham dan komoditi',
-     'amanah',
-     'astro awani',
-     'recep tayyip erdogan',
-     'kementerian dalam negeri',
+    ['pilihan raya umum ke-14',
      'parti islam semalaysia',
-     'jabatan agama islam wilayah persekutuan',
-     'isu ecrl',
-     'parti keadilan rakyat',
-     'pusat daerah mangundi',
-     'programming language',
-     'wan azizah',
-     'timbalan perdana menteri',
-     'kkmm',
-     'perdana menteri',
-     'masalah air',
-     'menteri pertahanan',
-     'universiti islam antarabangsa',
-     'datuk seri abdul hadi awang',
-     'donald trump',
-     'gaji menteri',
-     'bebas tahanan',
-     'datuk seri azmin ali',
-     'ahli dewan undangan negeri']
+     'malaysia baru',
+     'pengedar dadah',
+     'suruhanjaya pilihan raya malaysia',
+     'kotak undi',
+     'lgbt',
+     'makanan',
+     'tentera malaysia',
+     'gerakan',
+     'isu kemiskinan',
+     'undi rosak',
+     'produk berbahaya',
+     'bloomberg',
+     'telekom malaysia',
+     'bank negara',
+     'kertas undi',
+     'malay mail',
+     'gaji minimum',
+     '1mdb',
+     'najib razak',
+     'bank malaysia',
+     'humanoid',
+     'perkhidmatan awam',
+     'rosmah mansur',
+     'isu dadah',
+     'stock market malaysia',
+     'bursa malaysia',
+     'undi pos',
+     'universiti teknologi malaysia',
+     'hutang negara',
+     'makro-ekonomi',
+     'rtm',
+     'pengangkutan awam']
 
 
 
@@ -459,33 +449,37 @@ All parameters supported,
 
 .. parsed-literal::
 
-    minibatch loop: 100%|██████████| 137/137 [01:35<00:00,  1.83it/s, cost=3.05]
-    minibatch loop: 100%|██████████| 137/137 [01:31<00:00,  1.69it/s, cost=0.428]
-    minibatch loop: 100%|██████████| 137/137 [01:38<00:00,  1.71it/s, cost=0.164]
+    minibatch loop: 100%|██████████| 137/137 [01:20<00:00,  1.93it/s, cost=3.4] 
+    minibatch loop: 100%|██████████| 137/137 [01:17<00:00,  1.91it/s, cost=0.793]
+    minibatch loop: 100%|██████████| 137/137 [01:17<00:00,  1.90it/s, cost=0.342] 
 
 
 
 
 .. parsed-literal::
 
-    ['malaysia-indonesia',
-     'tunku ismail idris',
-     'mikro-ekonomi',
-     'tengku razaleigh hamzah',
-     'k-pop',
-     'kkmm',
+    ['pilihan raya umum ke-14',
      'pusat transformasi bandar',
      'hari raya',
+     'nga kor ming',
+     'programming language',
      '#fakenews',
-     'makro-ekonomi',
-     'lee kuan yew',
-     'pilihan raya umum ke-14',
-     'undi rosak',
+     'mikro-ekonomi',
      'datuk seri azmin ali',
-     'ahli dewan undangan negeri',
      'recep tayyip erdogan',
+     'k-pop',
+     'malaysia-indonesia',
+     'tengku razaleigh hamzah',
+     'anthony loke siew fook',
+     'lee kuan yew',
+     'rais yatim',
+     'undi rosak',
+     'kkmm',
      'inisiatif peduli rakyat',
-     'nga kor ming']
+     'tunku ismail idris',
+     'pusat daerah mangundi',
+     'makro-ekonomi',
+     'new straits times']
 
 
 
@@ -533,24 +527,28 @@ You can load your model but need to use interface provided by malaya,
 
 .. parsed-literal::
 
-    ['malaysia-indonesia',
-     'tunku ismail idris',
-     'mikro-ekonomi',
-     'tengku razaleigh hamzah',
-     'k-pop',
-     'kkmm',
+    ['pilihan raya umum ke-14',
      'pusat transformasi bandar',
      'hari raya',
+     'nga kor ming',
+     'programming language',
      '#fakenews',
-     'makro-ekonomi',
-     'lee kuan yew',
-     'pilihan raya umum ke-14',
-     'undi rosak',
+     'mikro-ekonomi',
      'datuk seri azmin ali',
-     'ahli dewan undangan negeri',
      'recep tayyip erdogan',
+     'k-pop',
+     'malaysia-indonesia',
+     'tengku razaleigh hamzah',
+     'anthony loke siew fook',
+     'lee kuan yew',
+     'rais yatim',
+     'undi rosak',
+     'kkmm',
      'inisiatif peduli rakyat',
-     'nga kor ming']
+     'tunku ismail idris',
+     'pusat daerah mangundi',
+     'makro-ekonomi',
+     'new straits times']
 
 
 

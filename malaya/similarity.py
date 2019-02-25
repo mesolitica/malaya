@@ -90,7 +90,8 @@ class _DEEP_SIAMESE_SIMILARITY:
         string: str
 
         """
-        assert isinstance(location, str), 'location must be a string'
+        if not isinstance(location, str):
+            raise ValueError('location must be a string')
         self._saver.save(self._sess, '%s/model.ckpt' % (location))
         with open('%s/model.json' % (location), 'w') as fopen:
             json.dump(
@@ -120,11 +121,12 @@ class _DEEP_SIAMESE_SIMILARITY:
         -------
         results: list of strings
         """
-        assert isinstance(string, str), 'input must be a string'
-        assert isinstance(anchor, float), 'anchor must be a float'
-        assert (
-            anchor > 0 and anchor < 1
-        ), 'anchor must be bigger than 0, less than 1'
+        if not isinstance(string, str):
+            raise ValueError('input must be a string')
+        if not isinstance(anchor, float):
+            raise ValueError('anchor must be a float')
+        if not (anchor > 0 and anchor < 1):
+            raise ValueError('anchor must be bigger than 0, less than 1')
         original_string = simple_textcleaning(string)
         strings = [original_string] * len(self.keys)
         left = str_idx(strings, self.dictionary, self.maxlen, UNK = 3)
@@ -169,7 +171,8 @@ class _DEEP_SIMILARITY:
         string: str
 
         """
-        assert isinstance(location, str), 'location must be a string'
+        if not isinstance(location, str):
+            raise ValueError('location must be a string')
         self._saver.save(self._sess, '%s/model.ckpt' % (location))
         with open('%s/model.json' % (location), 'w') as fopen:
             json.dump(
@@ -197,11 +200,12 @@ class _DEEP_SIMILARITY:
         -------
         results: list of strings
         """
-        assert isinstance(string, str), 'input must be a string'
-        assert isinstance(anchor, float), 'anchor must be a float'
-        assert (
-            anchor > 0 and anchor < 1
-        ), 'anchor must be bigger than 0, less than 1'
+        if not isinstance(string, str):
+            raise ValueError('input must be a string')
+        if not isinstance(anchor, float):
+            raise ValueError('anchor must be a float')
+        if not (anchor > 0 and anchor < 1):
+            raise ValueError('anchor must be bigger than 0, less than 1')
         original_string = simple_textcleaning(string)
         string = ' '.join(set(original_string.split()))
         encoded = self._sess.run(
@@ -239,11 +243,12 @@ class _FAST_SIMILARITY:
         -------
         results: list of strings
         """
-        assert isinstance(string, str), 'input must be a string'
-        assert isinstance(anchor, float), 'anchor must be a float'
-        assert (
-            anchor > 0 and anchor < 1
-        ), 'anchor must be bigger than 0, less than 1'
+        if not isinstance(string, str):
+            raise ValueError('input must be a string')
+        if not isinstance(anchor, float):
+            raise ValueError('anchor must be a float')
+        if not (anchor > 0 and anchor < 1):
+            raise ValueError('anchor must be bigger than 0, less than 1')
         original_string = simple_textcleaning(string)
         string = ' '.join(set(original_string.split()))
         where = np.where(
@@ -262,11 +267,14 @@ class _FUZZY:
 
     def get_similarity(self, string, fuzzy_ratio = 90):
 
-        assert isinstance(string, str), 'input must be a string'
-        assert isinstance(fuzzy_ratio, int), 'fuzzy_ratio must be an integer'
-        assert (
-            fuzzy_ratio > 0 and fuzzy_ratio < 100
-        ), 'fuzzy_ratio must be bigger than 0 and less than 100'
+        if not isinstance(string, str):
+            raise ValueError('input must be a string')
+        if not isinstance(fuzzy_ratio, int):
+            raise ValueError('fuzzy_ratio must be an integer')
+        if not (fuzzy_ratio > 0 and fuzzy_ratio < 100):
+            raise ValueError(
+                'fuzzy_ratio must be bigger than 0 and less than 100'
+            )
         string = string.lower()
         topics = []
         for key, vals in self._dictionary.items():
@@ -290,16 +298,14 @@ def fuzzy(dictionary):
     -------
     results: _FUZZY object
     """
-    assert isinstance(dictionary, dict), 'dictionary must be a dictionary'
-    assert isinstance(
-        list(dictionary.keys())[0], str
-    ), 'keys dictionary must be a string'
-    assert isinstance(
-        list(dictionary.values())[0], list
-    ), 'values dictionary must be a list'
-    assert isinstance(
-        list(dictionary.values())[0][0], str
-    ), 'elements of values dictionary must be a string'
+    if not isinstance(dictionary, dict):
+        raise ValueError('dictionary must be a dictionary')
+    if not isinstance(list(dictionary.keys())[0], str):
+        raise ValueError('keys dictionary must be a string')
+    if not isinstance(list(dictionary.values())[0], list):
+        raise ValueError('values dictionary must be a list')
+    if not isinstance(list(dictionary.values())[0][0], str):
+        raise ValueError('elements of values dictionary must be a string')
     return _FUZZY(dictionary)
 
 
@@ -319,11 +325,12 @@ def is_location(string, fuzzy_ratio = 90, location = _location):
     -------
     boolean: bool
     """
-    assert isinstance(string, str), 'input must be a string'
-    assert isinstance(fuzzy_ratio, int), 'fuzzy_ratio must be an integer'
-    assert (
-        fuzzy_ratio > 0 and fuzzy_ratio < 100
-    ), 'fuzzy_ratio must be bigger than 0 and less than 100'
+    if not isinstance(string, str):
+        raise ValueError('input must be a string')
+    if not isinstance(fuzzy_ratio, int):
+        raise ValueError('fuzzy_ratio must be an integer')
+    if not (fuzzy_ratio > 0 and fuzzy_ratio < 100):
+        raise ValueError('fuzzy_ratio must be bigger than 0 and less than 100')
     for loc in location:
         if fuzz.token_set_ratio(loc.lower(), string) >= fuzzy_ratio:
             return True
@@ -344,11 +351,12 @@ def fuzzy_location(string, fuzzy_ratio = 90):
     -------
     results: list of strings
     """
-    assert isinstance(string, str), 'input must be a string'
-    assert isinstance(fuzzy_ratio, int), 'fuzzy_ratio must be an integer'
-    assert (
-        fuzzy_ratio > 0 and fuzzy_ratio < 100
-    ), 'fuzzy_ratio must be bigger than 0 and less than 100'
+    if not isinstance(string, str):
+        raise ValueError('input must be a string')
+    if not isinstance(fuzzy_ratio, int):
+        raise ValueError('fuzzy_ratio must be an integer')
+    if not (fuzzy_ratio > 0 and fuzzy_ratio < 100):
+        raise ValueError('fuzzy_ratio must be bigger than 0 and less than 100')
     negeri_list = list(
         set(
             [
@@ -422,24 +430,30 @@ def deep_siamese(
     -------
     _DEEP_SIAMESE_SIMILARITY: malaya.similarity._DEEP_SIAMESE_SIMILARITY class
     """
-    assert isinstance(dictionary, dict), 'dictionary must be a dictionary'
-    assert isinstance(
-        list(dictionary.keys())[0], str
-    ), 'keys dictionary must be a string'
-    assert isinstance(
-        list(dictionary.values())[0], list
-    ), 'values dictionary must be a list'
-    assert isinstance(
-        list(dictionary.values())[0][0], str
-    ), 'elements of values dictionary must be a string'
-    assert isinstance(epoch, int), 'epoch must be an integer'
-    assert isinstance(batch_size, int), 'batch_size must be an integer'
-    assert isinstance(embedding_size, int), 'embedding_size must be an integer'
-    assert isinstance(output_size, int), 'output_size must be an integer'
-    assert isinstance(maxlen, int), 'maxlen must be an integer'
-    assert isinstance(ngram, tuple), 'ngram must be a tuple'
-    assert isinstance(num_layers, int), 'num_layers must be an integer'
-    assert len(ngram) == 2, 'ngram size must equal to 2'
+    if not isinstance(dictionary, dict):
+        raise ValueError('dictionary must be a dictionary')
+    if not isinstance(list(dictionary.keys())[0], str):
+        raise ValueError('keys dictionary must be a string')
+    if not isinstance(list(dictionary.values())[0], list):
+        raise ValueError('values dictionary must be a list')
+    if not isinstance(list(dictionary.values())[0][0], str):
+        raise ValueError('elements of values dictionary must be a string')
+    if not isinstance(epoch, int):
+        raise ValueError('epoch must be an integer')
+    if not isinstance(batch_size, int):
+        raise ValueError('batch_size must be an integer')
+    if not isinstance(embedding_size, int):
+        raise ValueError('embedding_size must be an integer')
+    if not isinstance(output_size, int):
+        raise ValueError('output_size must be an integer')
+    if not isinstance(maxlen, int):
+        raise ValueError('maxlen must be an integer')
+    if not isinstance(ngram, tuple):
+        raise ValueError('ngram must be a tuple')
+    if not isinstance(num_layers, int):
+        raise ValueError('num_layers must be an integer')
+    if not len(ngram) == 2:
+        raise ValueError('ngram size must equal to 2')
     output, keys = _generate_topics(dictionary)
     batch_x_left, batch_x_right, batch_y = [], [], []
     for i in range(len(output)):
@@ -541,22 +555,26 @@ def deep_skipthought(
     -------
     _DEEP_SIMILARITY: malaya.similarity._DEEP_SIMILARITY class
     """
-    assert isinstance(dictionary, dict), 'dictionary must be a dictionary'
-    assert isinstance(
-        list(dictionary.keys())[0], str
-    ), 'keys dictionary must be a string'
-    assert isinstance(
-        list(dictionary.values())[0], list
-    ), 'values dictionary must be a list'
-    assert isinstance(
-        list(dictionary.values())[0][0], str
-    ), 'elements of values dictionary must be a string'
-    assert isinstance(epoch, int), 'epoch must be an integer'
-    assert isinstance(batch_size, int), 'batch_size must be an integer'
-    assert isinstance(embedding_size, int), 'embedding_size must be an integer'
-    assert isinstance(maxlen, int), 'maxlen must be an integer'
-    assert isinstance(ngram, tuple), 'ngram must be a tuple'
-    assert len(ngram) == 2, 'ngram size must equal to 2'
+    if not isinstance(dictionary, dict):
+        raise ValueError('dictionary must be a dictionary')
+    if not isinstance(list(dictionary.keys())[0], str):
+        raise ValueError('keys dictionary must be a string')
+    if not isinstance(list(dictionary.values())[0], list):
+        raise ValueError('values dictionary must be a list')
+    if not isinstance(list(dictionary.values())[0][0], str):
+        raise ValueError('elements of values dictionary must be a string')
+    if not isinstance(epoch, int):
+        raise ValueError('epoch must be an integer')
+    if not isinstance(batch_size, int):
+        raise ValueError('batch_size must be an integer')
+    if not isinstance(embedding_size, int):
+        raise ValueError('embedding_size must be an integer')
+    if not isinstance(maxlen, int):
+        raise ValueError('maxlen must be an integer')
+    if not isinstance(ngram, tuple):
+        raise ValueError('ngram must be a tuple')
+    if not len(ngram) == 2:
+        raise ValueError('ngram size must equal to 2')
     output, keys = _generate_topics(dictionary)
     batch_x, batch_y = [], []
     for i in range(len(output)):
@@ -616,26 +634,27 @@ def bow(dictionary, vectorizer = 'tfidf', ngram = (3, 10)):
         format {'left':['right']}
     vectorizer: str, (default='tfidf')
         vectorization technique for a corpus
-    ngram: tuple, (default=(1,4))
+    ngram: tuple, (default=(3,10))
         n-grams size to train a corpus
 
     Returns
     -------
     _FAST_SIMILARITY: malaya.similarity._FAST_SIMILARITY class
     """
-    assert isinstance(dictionary, dict), 'dictionary must be a dictionary'
-    assert isinstance(
-        list(dictionary.keys())[0], str
-    ), 'keys dictionary must be a string'
-    assert isinstance(
-        list(dictionary.values())[0], list
-    ), 'values dictionary must be a list'
-    assert isinstance(
-        list(dictionary.values())[0][0], str
-    ), 'elements of values dictionary must be a string'
-    assert isinstance(vectorizer, str), 'vectorizer must be a string'
-    assert isinstance(ngram, tuple), 'ngram must be a tuple'
-    assert len(ngram) == 2, 'ngram size must equal to 2'
+    if not isinstance(dictionary, dict):
+        raise ValueError('dictionary must be a dictionary')
+    if not isinstance(list(dictionary.keys())[0], str):
+        raise ValueError('keys dictionary must be a string')
+    if not isinstance(list(dictionary.values())[0], list):
+        raise ValueError('values dictionary must be a list')
+    if not isinstance(list(dictionary.values())[0][0], str):
+        raise ValueError('elements of values dictionary must be a string')
+    if not isinstance(vectorizer, str):
+        raise ValueError('vectorizer must be a string')
+    if not isinstance(ngram, tuple):
+        raise ValueError('ngram must be a tuple')
+    if not len(ngram) == 2:
+        raise ValueError('ngram size must equal to 2')
     if 'tfidf' in vectorizer.lower():
         char_vectorizer = TfidfVectorizer(
             sublinear_tf = True,

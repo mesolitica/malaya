@@ -8,10 +8,14 @@ import re
 import json
 import tensorflow as tf
 from unidecode import unidecode
-from tensorflow.contrib.seq2seq.python.ops import beam_search_ops
 from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 from .texts._tatabahasa import permulaan, hujung, rules_normalizer
-from ._utils._utils import load_graph, check_file, check_available
+from ._utils._utils import (
+    load_graph,
+    check_file,
+    check_available,
+    generate_session,
+)
 from .texts._text_functions import (
     pad_sentence_batch,
     stemmer_str_idx,
@@ -78,7 +82,8 @@ class _DEEP_STEMMER:
         -------
         string: stemmed string
         """
-        assert isinstance(string, str), 'input must be a string'
+        if not isinstance(string, str):
+            raise ValueError('input must be a string')
         token_strings = classification_textcleaning(string, True).split()
         idx = stemmer_str_idx(token_strings, self._dicts['dictionary_from'])
         predicted = self._sess.run(
@@ -110,7 +115,8 @@ def naive(word):
     -------
     string: stemmed string
     """
-    assert isinstance(word, str), 'input must be a string'
+    if not isinstance(word, str):
+        raise ValueError('input must be a string')
     hujung_result = [e for e in hujung if word.endswith(e)]
     if len(hujung_result):
         hujung_result = max(hujung_result, key = len)
@@ -145,7 +151,8 @@ def sastrawi(string):
     """
     if sastrawi_stemmer is None:
         _load_sastrawi()
-    assert isinstance(string, str), 'input must be a string'
+    if not isinstance(string, str):
+        raise ValueError('input must be a string')
     return sastrawi_stemmer.stem(string)
 
 
@@ -176,6 +183,6 @@ def deep_model(model = 'bahdanau', validate = True):
     return _DEEP_STEMMER(
         g.get_tensor_by_name('import/Placeholder:0'),
         g.get_tensor_by_name('import/logits:0'),
-        tf.InteractiveSession(graph = g),
+        generate_session(graph = g),
         dic_stemmer,
     )

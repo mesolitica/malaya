@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 15 s, sys: 1.61 s, total: 16.6 s
-    Wall time: 22.4 s
+    CPU times: user 12.4 s, sys: 1.76 s, total: 14.2 s
+    Wall time: 19 s
 
 
 List available language detected
@@ -306,10 +306,7 @@ Load Deep learning model
 
 .. parsed-literal::
 
-    {'OTHER': 0.9316001,
-     'ENGLISH': 0.05633886,
-     'INDONESIA': 0.0013738789,
-     'MALAY': 0.010687195}
+    'OTHER'
 
 
 
@@ -322,10 +319,7 @@ Load Deep learning model
 
 .. parsed-literal::
 
-    {'OTHER': 7.841349e-06,
-     'ENGLISH': 6.141883e-07,
-     'INDONESIA': 0.99998856,
-     'MALAY': 2.9619976e-06}
+    'INDONESIA'
 
 
 
@@ -338,10 +332,7 @@ Load Deep learning model
 
 .. parsed-literal::
 
-    {'OTHER': 0.012453539,
-     'ENGLISH': 0.00014139,
-     'INDONESIA': 0.015118264,
-     'MALAY': 0.9722868}
+    'MALAY'
 
 
 
@@ -354,13 +345,6 @@ Load Deep learning model
 
 .. parsed-literal::
 
-    [{'OTHER': 7.841349e-06,
-      'ENGLISH': 6.141883e-07,
-      'INDONESIA': 0.99998856,
-      'MALAY': 2.9619976e-06},
-     {'OTHER': 0.012453539,
-      'ENGLISH': 0.00014139,
-      'INDONESIA': 0.015118264,
-      'MALAY': 0.9722868}]
+    ['INDONESIA', 'MALAY']
 
 

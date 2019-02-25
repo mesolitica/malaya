@@ -59,11 +59,10 @@ class DEEP_SUMMARIZER:
         -------
         string: summarized string
         """
-        assert (
-            isinstance(corpus, list) and isinstance(corpus[0], str)
-        ) or isinstance(
-            corpus, str
-        ), 'input must be list of strings or a string'
+        if not isinstance(corpus, list):
+            raise ValueError('corpus must be a list')
+        if not isinstance(corpus[0], str):
+            raise ValueError('corpus must be list of strings')
         if isinstance(corpus, str):
             corpus = split_by_dot(corpus)
         else:

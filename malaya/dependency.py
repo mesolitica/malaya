@@ -6,8 +6,7 @@ if not sys.warnoptions:
 
 import pickle
 import json
-import tensorflow as tf
-from ._utils._utils import check_file, load_graph
+from ._utils._utils import check_file, load_graph, generate_session
 from ._models._sklearn_model import DEPENDENCY
 from ._models._tensorflow_model import DEPENDENCY as TF_DEPENDENCY
 from ._utils._parse_dependency import DependencyGraph
@@ -85,7 +84,9 @@ def deep_model(model = 'bahdanau', validate = True):
     -------
     DEPENDENCY: malaya._models._tensorflow_model.DEPENDENCY class
     """
-    assert isinstance(model, str), 'model must be a string'
+    if not isinstance(model, str):
+        raise ValueError('model must be a string')
+
     model = model.lower()
     if model in ['concat', 'bahdanau', 'luong']:
         if validate:
@@ -111,7 +112,7 @@ def deep_model(model = 'bahdanau', validate = True):
             g.get_tensor_by_name('import/logits:0'),
             g.get_tensor_by_name('import/logits_depends:0'),
             nodes,
-            tf.InteractiveSession(graph = g),
+            generate_session(graph = g),
             model,
             g.get_tensor_by_name('import/transitions:0'),
             g.get_tensor_by_name('import/depends/transitions:0'),

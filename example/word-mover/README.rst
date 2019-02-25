@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 13 s, sys: 1.79 s, total: 14.8 s
-    Wall time: 19.3 s
+    CPU times: user 9.75 s, sys: 746 ms, total: 10.5 s
+    Wall time: 10.5 s
 
 
 What is word mover distance?

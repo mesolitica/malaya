@@ -1,5 +1,6 @@
 from tqdm import tqdm
 import tensorflow as tf
+from tensorflow.contrib.seq2seq.python.ops import beam_search_ops
 import requests
 import os
 from pathlib import Path
@@ -21,6 +22,10 @@ def download_file(url, filename):
             unit_scale = True,
         ):
             f.write(data)
+
+
+def generate_session(graph):
+    return tf.InteractiveSession(graph = graph)
 
 
 def load_graph(frozen_graph_filename):

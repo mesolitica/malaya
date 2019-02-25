@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 12.4 s, sys: 1.42 s, total: 13.8 s
-    Wall time: 17.5 s
+    CPU times: user 11.2 s, sys: 1.38 s, total: 12.6 s
+    Wall time: 16.1 s
 
 
 .. code:: ipython3
@@ -17,8 +17,8 @@
     another_string = 'bodoh, dah la gay, sokong lgbt lagi, memang tak guna'
 
 All models got ``get_proba`` parameters. If True, it will returned
-probability every classes. Else, it will return highest probability
-class. **Default is False.**
+probability every classes. Else, it will return classes more than 0.5
+probability. **Default is False.**
 
 Load multinomial model
 ----------------------
@@ -205,27 +205,27 @@ Load deep learning model
     Testing bahdanau model
     []
     [[], ['toxic']]
-    [{'toxic': 0.002869941, 'severe_toxic': 3.2165422e-05, 'obscene': 0.00031625567, 'threat': 3.3063134e-05, 'insult': 0.0001917479, 'identity_hate': 5.6739605e-05}, {'toxic': 0.844302, 'severe_toxic': 0.0026948317, 'obscene': 0.048079386, 'threat': 0.00057450164, 'insult': 0.108705685, 'identity_hate': 0.06786145}]
+    [{'toxic': 0.004403565, 'severe_toxic': 3.365281e-05, 'obscene': 0.0006261515, 'threat': 7.532223e-05, 'insult': 0.00030458395, 'identity_hate': 5.894399e-05}, {'toxic': 0.8340975, 'severe_toxic': 0.0020475034, 'obscene': 0.034258205, 'threat': 0.0003628814, 'insult': 0.0734416, 'identity_hate': 0.0614648}]
     
     Testing hierarchical model
     []
     [[], ['toxic']]
-    [{'toxic': 0.01493061, 'severe_toxic': 0.0001075709, 'obscene': 0.003345779, 'threat': 0.00030603033, 'insult': 0.0016393703, 'identity_hate': 0.00053284934}, {'toxic': 0.69389653, 'severe_toxic': 0.002439942, 'obscene': 0.033795167, 'threat': 0.002826849, 'insult': 0.30907208, 'identity_hate': 0.06302948}]
+    [{'toxic': 0.54248875, 'severe_toxic': 0.0065838215, 'obscene': 0.17371807, 'threat': 0.0148023935, 'insult': 0.12660918, 'identity_hate': 0.055212382}, {'toxic': 0.6858065, 'severe_toxic': 0.0032611815, 'obscene': 0.041103873, 'threat': 0.0025343157, 'insult': 0.28004634, 'identity_hate': 0.055198606}]
     
     Testing luong model
     []
     [[], ['toxic']]
-    [{'toxic': 0.0038469762, 'severe_toxic': 0.00030991185, 'obscene': 0.0025601375, 'threat': 0.0010575273, 'insult': 0.0007667314, 'identity_hate': 0.0008790955}, {'toxic': 0.9767287, 'severe_toxic': 0.021122381, 'obscene': 0.25348565, 'threat': 0.01192961, 'insult': 0.4519248, 'identity_hate': 0.09681236}]
+    [{'toxic': 0.13619128, 'severe_toxic': 0.0055254013, 'obscene': 0.032115582, 'threat': 0.017055651, 'insult': 0.039386936, 'identity_hate': 0.012571168}, {'toxic': 0.95763326, 'severe_toxic': 0.018214434, 'obscene': 0.2505002, 'threat': 0.010534671, 'insult': 0.37684646, 'identity_hate': 0.11548582}]
     
     Testing fast-text model
-    ['threat']
+    ['identity_hate']
     [[], []]
-    [{'toxic': 4.6989637e-08, 'severe_toxic': 2.8443527e-08, 'obscene': 4.1618722e-10, 'threat': 3.280739e-06, 'insult': 7.941728e-10, 'identity_hate': 8.946894e-07}, {'toxic': 0.07565687, 'severe_toxic': 0.005023106, 'obscene': 0.0053009894, 'threat': 0.0040464187, 'insult': 0.043121953, 'identity_hate': 0.016103525}]
+    [{'toxic': 1.04480705e-05, 'severe_toxic': 3.0439846e-06, 'obscene': 1.0294245e-05, 'threat': 7.333487e-05, 'insult': 3.3929928e-06, 'identity_hate': 0.0013527799}, {'toxic': 0.3151637, 'severe_toxic': 0.0074781813, 'obscene': 0.014187617, 'threat': 0.0036906046, 'insult': 0.087501705, 'identity_hate': 0.049142193}]
     
     Testing entity-network model
-    ['toxic']
+    []
     [['toxic', 'obscene', 'insult'], []]
-    [{'toxic': 0.7704032, 'severe_toxic': 0.1794783, 'obscene': 0.50242037, 'threat': 0.16002978, 'insult': 0.61826205, 'identity_hate': 0.2263789}, {'toxic': 0.23564923, 'severe_toxic': 0.009002773, 'obscene': 0.14901799, 'threat': 0.030735493, 'insult': 0.12641545, 'identity_hate': 0.019457512}]
+    [{'toxic': 0.77070284, 'severe_toxic': 0.18705268, 'obscene': 0.5038762, 'threat': 0.16385102, 'insult': 0.6224154, 'identity_hate': 0.23296514}, {'toxic': 0.20222966, 'severe_toxic': 0.007314409, 'obscene': 0.13172735, 'threat': 0.027272865, 'insult': 0.10753201, 'identity_hate': 0.016206132}]
     
 
 

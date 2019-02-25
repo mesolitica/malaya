@@ -104,7 +104,7 @@ def train_skip_thought(
         right.append(slices[2])
     assert batch_size < len(left), 'batch size must smaller with corpus size'
     left, middle, right = shuffle(left, middle, right)
-    sess, model, dictionary = _skip_thought.train_model(
+    sess, model, dictionary, _ = _skip_thought.train_model(
         middle,
         left,
         right,
@@ -128,6 +128,8 @@ def train_skip_thought(
 def lsa(
     corpus,
     maintain_original = False,
+    ngram = (1, 3),
+    min_df = 2,
     top_k = 3,
     important_words = 3,
     return_cluster = True,
@@ -141,6 +143,10 @@ def lsa(
     corpus: list
     maintain_original: bool, (default=False)
         If False, will apply malaya.text_functions.classification_textcleaning
+    ngram: tuple, (default=(1,3))
+        n-grams size to train a corpus
+    min_df: int, (default=2)
+        minimum document frequency for a word
     top_k: int, (default=3)
         number of summarized strings
     important_words: int, (default=3)
@@ -163,6 +169,11 @@ def lsa(
         important_words, int
     ), 'important_words must be an integer'
     assert isinstance(return_cluster, bool), 'return_cluster must be a boolean'
+    if not isinstance(ngram, tuple):
+        raise ValueError('ngram must be a tuple')
+    if not len(ngram) == 2:
+        raise ValueError('ngram size must equal to 2')
+
     corpus = [summary_textcleaning(i) for i in corpus]
     corpus = ' '.join(corpus)
     splitted_fullstop = re.findall('(?=\S)[^.\n]+(?<=\S)', corpus)
@@ -173,7 +184,7 @@ def lsa(
     ]
     stemmed = [sastrawi(i) for i in splitted_fullstop]
     tfidf = TfidfVectorizer(
-        ngram_range = (1, 3), min_df = 2, stop_words = STOPWORDS, **kwargs
+        ngram_range = ngram, min_df = min_df, stop_words = STOPWORDS, **kwargs
     ).fit(stemmed)
     U, S, Vt = svd(tfidf.transform(stemmed).todense().T, full_matrices = False)
     summary = [
@@ -201,6 +212,8 @@ def lsa(
 def nmf(
     corpus,
     maintain_original = False,
+    ngram = (1, 3),
+    min_df = 2,
     top_k = 3,
     important_words = 3,
     return_cluster = True,
@@ -214,10 +227,14 @@ def nmf(
     corpus: list
     maintain_original: bool, (default=False)
         If False, will apply malaya.text_functions.classification_textcleaning
+    ngram: tuple, (default=(1,3))
+        n-grams size to train a corpus
     top_k: int, (default=3)
         number of summarized strings
     important_words: int, (default=3)
         number of important words
+    min_df: int, (default=2)
+        minimum document frequency for a word
     return_cluster: bool, (default=True)
         if True, will cluster important_words to similar texts
 
@@ -236,6 +253,11 @@ def nmf(
         important_words, int
     ), 'important_words must be an integer'
     assert isinstance(return_cluster, bool), 'return_cluster must be a boolean'
+    if not isinstance(ngram, tuple):
+        raise ValueError('ngram must be a tuple')
+    if not len(ngram) == 2:
+        raise ValueError('ngram size must equal to 2')
+
     corpus = [summary_textcleaning(i) for i in corpus]
     corpus = ' '.join(corpus)
     splitted_fullstop = re.findall('(?=\S)[^.\n]+(?<=\S)', corpus)
@@ -246,7 +268,7 @@ def nmf(
     ]
     stemmed = [sastrawi(i) for i in splitted_fullstop]
     tfidf = TfidfVectorizer(
-        ngram_range = (1, 3), min_df = 2, stop_words = STOPWORDS, **kwargs
+        ngram_range = ngram, min_df = min_df, stop_words = STOPWORDS, **kwargs
     ).fit(stemmed)
     densed_tfidf = tfidf.transform(stemmed).todense()
     nmf = NMF(len(splitted_fullstop)).fit(densed_tfidf)
@@ -280,6 +302,8 @@ def nmf(
 def lda(
     corpus,
     maintain_original = False,
+    ngram = (1, 3),
+    min_df = 2,
     top_k = 3,
     important_words = 3,
     return_cluster = True,
@@ -293,6 +317,10 @@ def lda(
     corpus: list
     maintain_original: bool, (default=False)
         If False, will apply malaya.text_functions.classification_textcleaning
+    ngram: tuple, (default=(1,3))
+        n-grams size to train a corpus
+    min_df: int, (default=2)
+        minimum document frequency for a word
     top_k: int, (default=3)
         number of summarized strings
     important_words: int, (default=3)
@@ -315,6 +343,13 @@ def lda(
         important_words, int
     ), 'important_words must be an integer'
     assert isinstance(return_cluster, bool), 'return_cluster must be a boolean'
+    if not isinstance(ngram, tuple):
+        raise ValueError('ngram must be a tuple')
+    if not len(ngram) == 2:
+        raise ValueError('ngram size must equal to 2')
+    if not isinstance(min_df, int) or isinstance(min_df, float):
+        raise ValueError('min_df must be an integer or a float')
+
     corpus = [summary_textcleaning(i) for i in corpus]
     corpus = ' '.join(corpus)
     splitted_fullstop = re.findall('(?=\S)[^.\n]+(?<=\S)', corpus)
@@ -325,7 +360,7 @@ def lda(
     ]
     stemmed = [sastrawi(i) for i in splitted_fullstop]
     tfidf = TfidfVectorizer(
-        ngram_range = (1, 3), min_df = 2, stop_words = STOPWORDS, **kwargs
+        ngram_range = ngram, min_df = min_df, stop_words = STOPWORDS, **kwargs
     ).fit(stemmed)
     densed_tfidf = tfidf.transform(stemmed).todense()
     lda = LatentDirichletAllocation(len(splitted_fullstop)).fit(densed_tfidf)

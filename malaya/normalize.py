@@ -5,12 +5,16 @@ if not sys.warnoptions:
     warnings.simplefilter('ignore')
 
 import numpy as np
+import json
 from fuzzywuzzy import fuzz
 from unidecode import unidecode
-import json
-import tensorflow as tf
 from collections import Counter
-from ._utils._utils import load_graph, check_file, check_available
+from ._utils._utils import (
+    load_graph,
+    check_file,
+    check_available,
+    generate_session,
+)
 from .texts._text_functions import (
     normalizer_textcleaning,
     stemmer_str_idx,
@@ -30,9 +34,26 @@ from .spell import _return_possible, _edit_normalizer, _return_known
 from .similarity import is_location
 from ._utils._paths import MALAY_TEXT, PATH_NORMALIZER, S3_PATH_NORMALIZER
 
+ENGLISH_WORDS = None
+
+
+def _load_english():
+    global ENGLISH_WORDS
+
+    if not ENGLISH_WORDS:
+        from . import home
+        import os
+
+        english_location = os.path.join(home, 'english.json')
+        if not os.path.isfile(english_location):
+            print('downloading english words')
+            download_file('english.json', english_location)
+        with open(english_location, 'r') as fopen:
+            ENGLISH_WORDS = set([w for w in json.load(fopen) if len(w) > 1])
+
 
 class _DEEP_NORMALIZER:
-    def __init__(self, x, logits, sess, dicts):
+    def __init__(self, x, logits, sess, dicts, corpus):
         self._sess = sess
         self._x = x
         self._logits = logits
@@ -40,8 +61,9 @@ class _DEEP_NORMALIZER:
         self._dicts['rev_dictionary_to'] = {
             int(k): v for k, v in self._dicts['rev_dictionary_to'].items()
         }
+        self.corpus = corpus
 
-    def normalize(self, string):
+    def normalize(self, string, check_english = True):
         """
         Normalize a string.
 
@@ -53,31 +75,85 @@ class _DEEP_NORMALIZER:
         -------
         string: normalized string
         """
-        assert isinstance(string, str), 'input must be a string'
+        if not isinstance(string, str):
+            raise ValueError('input must be a string')
+        if not isinstance(check_english, bool):
+            raise ValueError('check_english must be a boolean')
+
         token_strings = normalizer_textcleaning(string).split()
-        idx = stemmer_str_idx(token_strings, self._dicts['dictionary_from'])
-        predicted = self._sess.run(
-            self._logits, feed_dict = {self._x: pad_sentence_batch(idx, PAD)[0]}
-        )
-        results = []
-        for word in predicted:
-            results.append(
-                ''.join(
-                    [
-                        self._dicts['rev_dictionary_to'][c]
-                        for c in word
-                        if c not in [GO, PAD, EOS, UNK]
-                    ]
+        results, need_to_normalize = [], []
+        for word in token_strings:
+            if word.istitle():
+                results.append(word)
+                continue
+            if check_english:
+                if word in ENGLISH_WORDS:
+                    results.append(word)
+                    continue
+            if word[0] == 'x' and len(word) > 1:
+                result_string = 'tak '
+                word = word[1:]
+            else:
+                result_string = ''
+            if word[-2:] == 'la':
+                end_result_string = ' lah'
+                word = word[:-2]
+            elif word[-3:] == 'lah':
+                end_result_string = ' lah'
+                word = word[:-3]
+            else:
+                end_result_string = ''
+            if word in sounds:
+                results.append(result_string + sounds[word] + end_result_string)
+                continue
+            if word in rules_normalizer:
+                results.append(
+                    result_string + rules_normalizer[word] + end_result_string
                 )
+                continue
+            if word in self.corpus:
+                results.append(result_string + word + end_result_string)
+                continue
+            results.append('replace__me__')
+            need_to_normalize.append(word)
+
+        normalized = []
+        if len(need_to_normalize):
+            idx = stemmer_str_idx(
+                need_to_normalize, self._dicts['dictionary_from']
             )
-        return ' '.join(results)
+            predicted = self._sess.run(
+                self._logits,
+                feed_dict = {self._x: pad_sentence_batch(idx, PAD)[0]},
+            )
+            for word in predicted:
+                normalized.append(
+                    ''.join(
+                        [
+                            self._dicts['rev_dictionary_to'][c]
+                            for c in word
+                            if c not in [GO, PAD, EOS, UNK]
+                        ]
+                    )
+                )
+        cp_results, current_replace = [], 0
+        for i in range(len(results)):
+            if 'replace__me__' in results[i]:
+                if current_replace < len(normalized):
+                    results[i] = normalized[current_replace]
+                    cp_results.append(results[i])
+                    current_replace += 1
+            else:
+                cp_results.append(results[i])
+
+        return ' '.join(cp_results)
 
 
 class _SPELL_NORMALIZE:
     def __init__(self, corpus):
         self.corpus = Counter(corpus)
 
-    def normalize(self, string, debug = True):
+    def normalize(self, string, debug = True, check_english = True):
         """
         Normalize a string
 
@@ -87,17 +163,29 @@ class _SPELL_NORMALIZE:
 
         debug : bool, optional (default=True)
             If true, it will print character similarity distances.
+        check_english: bool, (default=True)
+            check a word in english dictionary
 
         Returns
         -------
         string: normalized string
         """
-        assert isinstance(string, str), 'input must be a string'
+        if not isinstance(string, str):
+            raise ValueError('input must be a string')
+        if not isinstance(debug, bool):
+            raise ValueError('debug must be a boolean')
+        if not isinstance(check_english, bool):
+            raise ValueError('check_english must be a boolean')
+
         result = []
         for word in normalizer_textcleaning(string).split():
             if word.istitle():
                 result.append(word)
                 continue
+            if check_english:
+                if word in ENGLISH_WORDS:
+                    result.append(word)
+                    continue
             if len(word) > 2:
                 if word[-2] in consonants and word[-1] == 'e':
                     word = word[:-1] + 'a'
@@ -157,7 +245,7 @@ class _FUZZY_NORMALIZE:
         self.normalized = normalized
         self.corpus = corpus
 
-    def normalize(self, string, fuzzy_ratio = 70):
+    def normalize(self, string, fuzzy_ratio = 70, check_english = True):
         """
         Normalize a string.
 
@@ -166,17 +254,29 @@ class _FUZZY_NORMALIZE:
         string : str
         fuzzy_ratio: int, (default=70)
             ratio of similar characters by positions, if 90, means 90%
+        check_english: bool, (default=True)
+            check a word in english dictionary
 
         Returns
         -------
         string: normalized string
         """
-        assert isinstance(string, str), 'input must be a string'
+        if not isinstance(string, str):
+            raise ValueError('input must be a string')
+        if not isinstance(fuzzy_ratio, int):
+            raise ValueError('fuzzy_ratio must be an integer')
+        if not isinstance(check_english, bool):
+            raise ValueError('check_english must be a boolean')
+
         result = []
         for word in normalizer_textcleaning(string).split():
             if word.istitle():
                 result.append(word)
                 continue
+            if check_english:
+                if word in ENGLISH_WORDS:
+                    result.append(word)
+                    continue
             if len(word) > 2:
                 if word[-2] in consonants and word[-1] == 'e':
                     word = word[:-1] + 'a'
@@ -232,9 +332,11 @@ def fuzzy(corpus):
     -------
     FUZZY_NORMALIZE: Trained malaya.normalizer._FUZZY_NORMALIZE class
     """
-    assert isinstance(corpus, list) and isinstance(
-        corpus[0], str
-    ), 'input must be list of strings'
+    if not isinstance(corpus, list):
+        raise ValueError('corpus must be a list')
+    if not isinstance(corpus[0], str):
+        raise ValueError('corpus must be list of strings')
+    _load_english()
     corpus = [unidecode(w) for w in corpus]
     transform = []
     for i in corpus:
@@ -278,9 +380,11 @@ def spell(corpus):
     -------
     SPELL_NORMALIZE: Trained malaya.normalizer._SPELL_NORMALIZE class
     """
-    assert isinstance(corpus, list) and isinstance(
-        corpus[0], str
-    ), 'input must be list of strings'
+    if not isinstance(corpus, list):
+        raise ValueError('corpus must be a list')
+    if not isinstance(corpus[0], str):
+        raise ValueError('corpus must be list of strings')
+    _load_english()
     return _SPELL_NORMALIZE([unidecode(w) for w in corpus])
 
 
@@ -296,7 +400,8 @@ def basic(string):
     -------
     string: normalized string
     """
-    assert isinstance(string, str), 'input must be a string'
+    if not isinstance(string, str):
+        ValueError('input must be a string')
     result = []
     for word in normalizer_textcleaning(string).split():
         if word.istitle():
@@ -311,9 +416,16 @@ def basic(string):
     return ' '.join(result)
 
 
-def deep_model(validate = True):
+def available_deep_model():
     """
-    Load deep-learning model to normalize a string. This model totally more sucks than fuzzy based, Husein still need to read more.
+    List available deep learning stemming models.
+    """
+    return ['lstm', 'bahdanau', 'luong']
+
+
+def deep_model(corpus, model = 'bahdanau', validate = True):
+    """
+    Load deep-learning model to normalize a string.
 
     Parameters
     ----------
@@ -325,24 +437,31 @@ def deep_model(validate = True):
     DEEP_NORMALIZER: malaya.normalizer._DEEP_NORMALIZER class
 
     """
+    if not isinstance(corpus, list):
+        raise ValueError('corpus must be a list')
+    if not isinstance(corpus[0], str):
+        raise ValueError('corpus must be list of strings')
+    _load_english()
     if validate:
-        check_file(PATH_NORMALIZER['deep'], S3_PATH_NORMALIZER['deep'])
+        check_file(PATH_NORMALIZER[model], S3_PATH_NORMALIZER[model])
     else:
-        if not check_available(PATH_NORMALIZER['deep']):
+        if not check_available(PATH_NORMALIZER[model]):
             raise Exception(
                 'normalizer is not available, please `validate = True`'
             )
     try:
-        with open(PATH_NORMALIZER['deep']['setting'], 'r') as fopen:
+        with open(PATH_NORMALIZER[model]['setting'], 'r') as fopen:
             dic_normalizer = json.load(fopen)
-        g = load_graph(PATH_NORMALIZER['deep']['model'])
+        g = load_graph(PATH_NORMALIZER[model]['model'])
     except:
         raise Exception(
-            "model corrupted due to some reasons, please run malaya.clear_cache('normalizer') and try again"
+            "model corrupted due to some reasons, please run malaya.clear_cache('normalizer/%s') and try again"
+            % (model)
         )
     return _DEEP_NORMALIZER(
         g.get_tensor_by_name('import/Placeholder:0'),
         g.get_tensor_by_name('import/logits:0'),
-        tf.InteractiveSession(graph = g),
+        generate_session(graph = g),
         dic_normalizer,
+        [unidecode(w) for w in corpus],
     )

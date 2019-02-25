@@ -89,7 +89,8 @@ class DEPENDENCY:
         ----------
         top_k : int
         """
-        assert isinstance(top_k, int), 'input must be an integer'
+        if not isinstance(top_k, int):
+            raise ValueError('input must be an integer')
         print('Top-%d likely transitions:' % (top_k))
         indices = np.argsort(self.transitions.flatten())[::-1]
         top_trans = [
@@ -128,7 +129,8 @@ class DEPENDENCY:
         ----------
         top_k : int
         """
-        assert isinstance(top_k, int), 'input must be an integer'
+        if not isinstance(top_k, int):
+            raise ValueError('input must be an integer')
         print('Top-%d likely transitions:' % (top_k))
         indices = np.argsort(self.transitions_depends.flatten())[::-1]
         top_trans = [
@@ -168,7 +170,8 @@ class DEPENDENCY:
         ----------
         top_k : int
         """
-        assert isinstance(top_k, int), 'input must be an integer'
+        if not isinstance(top_k, int):
+            raise ValueError('input must be an integer')
         _features = self.features.sum(axis = 1)
         indices = np.argsort(_features)[::-1]
         rev_indices = indices[::-1]
@@ -204,7 +207,8 @@ class DEPENDENCY:
         -------
         string: tagged string
         """
-        assert isinstance(string, str), 'input must be a string'
+        if not isinstance(string, str):
+            raise ValueError('input must be a string')
         string = entities_textcleaning(string)
         if len(string) > 120:
             raise Exception(
@@ -270,7 +274,8 @@ class TAGGING:
         ----------
         top_k : int
         """
-        assert isinstance(top_k, int), 'input must be an integer'
+        if not isinstance(top_k, int):
+            raise ValueError('input must be an integer')
         print('Top-%d likely transitions:' % (top_k))
         indices = np.argsort(self.transitions.flatten())[::-1]
         top_trans = [
@@ -309,7 +314,8 @@ class TAGGING:
         ----------
         top_k : int
         """
-        assert isinstance(top_k, int), 'input must be an integer'
+        if not isinstance(top_k, int):
+            raise ValueError('input must be an integer')
         _features = self.features.sum(axis = 1)
         indices = np.argsort(_features)[::-1]
         rev_indices = indices[::-1]
@@ -345,7 +351,8 @@ class TAGGING:
         -------
         string: tagged string
         """
-        assert isinstance(string, str), 'input must be a string'
+        if not isinstance(string, str):
+            raise ValueError('input must be a string')
         string = string.lower() if self._is_lower else string
         string = entities_textcleaning(string)
         batch_x = char_str_idx([string], self._settings['word2idx'], 2)
@@ -419,7 +426,8 @@ class SOFTMAX:
         -------
         dictionary: results
         """
-        assert isinstance(string, str), 'input must be a string'
+        if not isinstance(string, str):
+            raise ValueError('input must be a string')
         string = _classification_textcleaning_stemmer(string, attention = True)
         splitted = string[1].split()
         if self._mode in ['entity-network', 'bert']:
@@ -489,9 +497,10 @@ class SOFTMAX:
         -------
         list_dictionaries: list of results
         """
-        assert isinstance(strings, list) and isinstance(
-            strings[0], str
-        ), 'input must be list of strings'
+        if not isinstance(strings, list):
+            raise ValueError('input must be a list')
+        if not isinstance(strings[0], str):
+            raise ValueError('input must be list of strings')
         strings = [_classification_textcleaning_stemmer(i) for i in strings]
         maxlen = max([len(i.split()) for i in strings])
         if self._mode in ['entity-network', 'bert']:
@@ -592,7 +601,8 @@ class SIGMOID:
         -------
         dictionary: results
         """
-        assert isinstance(string, str), 'input must be a string'
+        if not isinstance(string, str):
+            raise ValueError('input must be a string')
         string = _classification_textcleaning_stemmer(string, attention = True)
         splitted = string[1].split()
         if self._mode in ['entity-network', 'bert']:
@@ -654,9 +664,10 @@ class SIGMOID:
         -------
         list_dictionaries: list of results
         """
-        assert isinstance(strings, list) and isinstance(
-            strings[0], str
-        ), 'input must be list of strings'
+        if not isinstance(strings, list):
+            raise ValueError('input must be a list')
+        if not isinstance(strings[0], str):
+            raise ValueError('input must be list of strings')
         strings = [
             _classification_textcleaning_stemmer(i, attention = True)[0]
             for i in strings
@@ -723,7 +734,8 @@ class DEEP_LANG:
         -------
         dictionary: results
         """
-        assert isinstance(string, str), 'input must be a string'
+        if not isinstance(string, str):
+            raise ValueError('input must be a string')
         string = language_detection_textcleaning(string)
         transformed = self._vectorizer.transform([string])
         batch_x = _convert_sparse_matrix_to_sparse_tensor(transformed)
@@ -748,9 +760,10 @@ class DEEP_LANG:
         -------
         list_dictionaries: list of results
         """
-        assert isinstance(strings, list) and isinstance(
-            strings[0], str
-        ), 'input must be list of strings'
+        if not isinstance(strings, list):
+            raise ValueError('input must be a list')
+        if not isinstance(strings[0], str):
+            raise ValueError('input must be list of strings')
         strings = [language_detection_textcleaning(i) for i in strings]
         transformed = self._vectorizer.transform(strings)
         batch_x = _convert_sparse_matrix_to_sparse_tensor(transformed)
@@ -799,7 +812,8 @@ class SPARSE_SOFTMAX:
         -------
         dictionary: results
         """
-        assert isinstance(string, str), 'input must be a string'
+        if not isinstance(string, str):
+            raise ValueError('input must be a string')
         string = _classification_textcleaning_stemmer(string, attention = True)[
             0
         ]
@@ -828,9 +842,10 @@ class SPARSE_SOFTMAX:
         -------
         list_dictionaries: list of results
         """
-        assert isinstance(strings, list) and isinstance(
-            strings[0], str
-        ), 'input must be list of strings'
+        if not isinstance(strings, list):
+            raise ValueError('input must be a list')
+        if not isinstance(strings[0], str):
+            raise ValueError('input must be list of strings')
         strings = [
             _classification_textcleaning_stemmer(i, attention = True)[0]
             for i in strings

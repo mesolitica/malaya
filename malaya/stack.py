@@ -21,12 +21,15 @@ def voting_stack(models, text):
     -------
     result: list
     """
-    assert isinstance(models, list), 'models must be a list'
-    assert isinstance(text, str), 'text must be a string'
+    if not isinstance(models, list):
+        raise ValueError('models must be a list')
+    if not isinstance(text, str):
+        raise ValueError('text must be a string')
     results, texts, votes, votes_indices, indices = [], [], [], [], []
     is_dependency = False
     for i in range(len(models)):
-        assert 'predict' in dir(models[i]), 'all models must able to predict'
+        if not 'predict' in dir(models[i]):
+            raise ValueError('all models must able to predict')
         predicted = models[i].predict(text)
         if isinstance(predicted, tuple):
             is_dependency = True
@@ -81,9 +84,12 @@ def predict_stack(models, text, mode = 'gmean'):
     -------
     result: dict
     """
-    assert isinstance(models, list), 'models must be a list'
-    assert isinstance(text, str), 'text must be a string'
-    assert isinstance(mode, str), 'mode must be a string'
+    if not isinstance(models, list):
+        raise ValueError('models must be a list')
+    if not isinstance(text, str):
+        raise ValueError('text must be a string')
+    if not isinstance(mode, str):
+        raise ValueError('mode must be a string')
     if mode.lower() == 'gmean':
         mode = gmean
     elif mode.lower() == 'hmean':
@@ -103,7 +109,8 @@ def predict_stack(models, text, mode = 'gmean'):
     labels, results = [], []
     for i in range(len(models)):
         nested_results = []
-        assert 'predict' in dir(models[i]), 'all models must able to predict'
+        if not 'predict' in dir(models[i]):
+            raise ValueError('all models must able to predict')
         result = (
             models[i].predict(text)
             if models[i].predict.__defaults__ is None

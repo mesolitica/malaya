@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 12.1 s, sys: 1.33 s, total: 13.5 s
-    Wall time: 16.7 s
+    CPU times: user 13.4 s, sys: 1.49 s, total: 14.9 s
+    Wall time: 18.6 s
 
 
 .. code:: python
@@ -118,22 +118,22 @@ Load deep learning models
     Testing hierarchical model
     negative
     ['negative', 'positive']
-    [{'negative': 0.9479493, 'positive': 0.052050766}, {'negative': 0.027757995, 'positive': 0.972242}]
+    [{'negative': 0.94964343, 'positive': 0.050356578}, {'negative': 0.018990694, 'positive': 0.98100936}]
 
     Testing bahdanau model
     negative
     ['negative', 'positive']
-    [{'negative': 0.9993224, 'positive': 0.00067757705}, {'negative': 0.11770468, 'positive': 0.8822953}]
+    [{'negative': 0.99957806, 'positive': 0.0004218969}, {'negative': 0.06250752, 'positive': 0.9374925}]
 
     Testing luong model
     negative
     ['negative', 'positive']
-    [{'negative': 0.9428673, 'positive': 0.057132788}, {'negative': 0.009072777, 'positive': 0.9909272}]
+    [{'negative': 0.8572259, 'positive': 0.14277408}, {'negative': 0.010074314, 'positive': 0.9899256}]
 
     Testing bidirectional model
     negative
     ['negative', 'positive']
-    [{'negative': 0.993769, 'positive': 0.006230943}, {'negative': 0.0032205353, 'positive': 0.9967795}]
+    [{'negative': 0.99718577, 'positive': 0.0028142664}, {'negative': 0.0021885026, 'positive': 0.9978115}]
 
     Testing bert model
     positive
@@ -334,11 +334,11 @@ corpus should be [(text, label)]
 
                  precision    recall  f1-score   support
 
-       Negative       0.00      0.00      0.00        11
-        Neutral       1.00      0.10      0.18        20
-       Positive       0.51      1.00      0.67        30
+       Negative       0.00      0.00      0.00        14
+        Neutral       1.00      0.16      0.27        19
+       Positive       0.48      1.00      0.65        28
 
-    avg / total       0.58      0.52      0.39        61
+    avg / total       0.53      0.51      0.38        61
 
 
 
@@ -362,14 +362,14 @@ You also able to feed directory location
 
                  precision    recall  f1-score   support
 
-         adidas       0.94      0.61      0.74       313
-          apple       0.98      0.62      0.76       416
-         hungry       0.82      0.92      0.87      1082
-       kerajaan       0.85      0.82      0.83      1392
-           nike       0.95      0.55      0.70       351
-    pembangkang       0.71      0.86      0.78      1505
+         adidas       0.96      0.60      0.73       307
+          apple       0.98      0.61      0.75       452
+         hungry       0.81      0.92      0.86      1080
+       kerajaan       0.85      0.84      0.85      1368
+           nike       0.97      0.59      0.73       337
+    pembangkang       0.71      0.86      0.78      1515
 
-    avg / total       0.82      0.80      0.80      5059
+    avg / total       0.83      0.81      0.81      5059
 
 
 
@@ -382,12 +382,12 @@ You also able to feed directory location
 
 .. parsed-literal::
 
-    {'adidas': 0.000975603010411438,
-     'apple': 0.0016314798511805502,
-     'hungry': 0.012531351707188306,
-     'kerajaan': 0.05689689670169819,
-     'nike': 0.001125104249853524,
-     'pembangkang': 0.9268395644796663}
+    {'adidas': 0.0009457320283650909,
+     'apple': 0.0015201576315820337,
+     'hungry': 0.010995398743342504,
+     'kerajaan': 0.052672712669506426,
+     'nike': 0.0010803916911456771,
+     'pembangkang': 0.9327856072360596}
 
 
 
@@ -405,14 +405,14 @@ Train a multinomial using skip-gram vectorization
 
                  precision    recall  f1-score   support
 
-         adidas       0.39      0.84      0.53       317
-          apple       0.53      0.93      0.67       480
-         hungry       0.83      0.94      0.88      1048
-       kerajaan       0.90      0.60      0.72      1345
-           nike       0.58      0.83      0.68       334
-    pembangkang       0.88      0.56      0.69      1535
+         adidas       0.39      0.85      0.54       327
+          apple       0.53      0.90      0.67       485
+         hungry       0.82      0.92      0.87      1006
+       kerajaan       0.90      0.62      0.73      1440
+           nike       0.55      0.79      0.65       311
+    pembangkang       0.88      0.56      0.68      1490
 
-    avg / total       0.79      0.72      0.72      5059
+    avg / total       0.79      0.71      0.72      5059
 
 
 
@@ -425,9 +425,9 @@ Train a multinomial using skip-gram vectorization
 
 .. parsed-literal::
 
-    {'adidas': 1.5075646514607906e-12,
-     'apple': 3.3125444042691963e-12,
-     'hungry': 7.508118534366736e-10,
-     'kerajaan': 4.03710500865345e-07,
-     'nike': 2.5065260905002984e-12,
-     'pembangkang': 0.9999995955313602}
+    {'adidas': 5.862202104675177e-13,
+     'apple': 1.2083814498363065e-12,
+     'hungry': 5.524552079715613e-10,
+     'kerajaan': 3.502009688789598e-08,
+     'nike': 9.084892985507942e-13,
+     'pembangkang': 0.9999999644247459}

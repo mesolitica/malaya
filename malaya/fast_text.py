@@ -86,41 +86,57 @@ def train(
     -------
     dictionary: dictionary of dictionary, reverse dictionary and vectors
     """
-    assert isinstance(corpus, str) or isinstance(
-        corpus, list
-    ), 'corpus must be a string or a list of string'
-    assert vocab_size is None or isinstance(
-        vocab_size, int
-    ), 'vocab_size must be a None or an integer'
-    assert isinstance(batch_size, int), 'batch_size must be an integer'
-    assert isinstance(embedding_size, int), 'embedding_size must be an integer'
-    assert isinstance(hidden_size, int), 'hidden_size must be an integer'
-    assert isinstance(epoch, int), 'epoch must be an integer'
-    assert isinstance(
-        negative_samples_ratio, float
-    ), 'negative_samples_ratio must be a float'
-    assert isinstance(momentum, float), 'momentum must be a float'
-    assert isinstance(embedding_noise, float), 'embedding_noise must be a float'
-    assert isinstance(hidden_noise, float), 'hidden_noise must be a float'
-    assert isinstance(learning_rate, float) or isinstance(
+
+    if not isinstance(corpus, str) and not isinstance(corpus, list):
+        raise ValueError('corpus must be a string or a list of string')
+    if not vocab_size is None and not isinstance(vocab_size, int):
+        raise ValueError('vocab_size must be a None or an integer')
+    if not isinstance(batch_size, int):
+        raise ValueError('batch_size must be an integer')
+    if not isinstance(embedding_size, int):
+        raise ValueError('embedding_size must be an integer')
+    if not isinstance(hidden_size, int):
+        raise ValueError('hidden_size must be an integer')
+    if not isinstance(epoch, int):
+        raise ValueError('epoch must be an integer')
+    if not isinstance(negative_samples_ratio, float):
+        raise ValueError('negative_samples_ratio must be a float')
+    if not isinstance(momentum, float):
+        raise ValueError('momentum must be a float')
+    if not isinstance(embedding_noise, float):
+        raise ValueError('embedding_noise must be a float')
+    if not isinstance(hidden_noise, float):
+        raise ValueError('hidden_noise must be a float')
+    if not isinstance(learning_rate, float) and not isinstance(
         learning_rate, int
-    ), 'learning_rate must be a float or an integer'
-    assert isinstance(optimizer, str), 'optimizer must be a string'
-    assert isinstance(ngrams, tuple), 'ngrams must be a tuple'
-    assert batch_size > 0, 'batch_size must bigger than 0'
-    assert epoch > 0, 'epoch must bigger than 0'
-    assert embedding_size > 0, 'embedding_size must bigger than 0'
-    assert hidden_size > 0, 'hidden_size must bigger than 0'
-    assert (
-        negative_samples_ratio > 0 and negative_samples_ratio <= 1
-    ), 'negative_samples_ratio must bigger than 0 and less than or equal 1'
-    assert (
-        embedding_noise > 0 and embedding_noise <= 1
-    ), 'embedding_noise must bigger than 0 and less than or equal 1'
-    assert (
-        hidden_noise > 0 and hidden_noise <= 1
-    ), 'hidden_noise must bigger than 0 and less than or equal 1'
-    assert isinstance(ngrams[0], int), 'elements in ngrams must be an integer'
+    ):
+        raise ValueError('learning_rate must be a float or an integer')
+    if not isinstance(optimizer, str):
+        raise ValueError('optimizer must be a string')
+    if not isinstance(ngrams, tuple):
+        raise ValueError('ngrams must be a tuple')
+    if not batch_size > 0:
+        raise ValueError('batch_size must bigger than 0')
+    if not epoch > 0:
+        raise ValueError('epoch must bigger than 0')
+    if not embedding_size > 0:
+        raise ValueError('embedding_size must bigger than 0')
+    if not hidden_size > 0:
+        raise ValueError('hidden_size must bigger than 0')
+    if not (negative_samples_ratio > 0 and negative_samples_ratio <= 1):
+        raise ValueError(
+            'negative_samples_ratio must bigger than 0 and less than or equal 1'
+        )
+    if not (embedding_noise > 0 and embedding_noise <= 1):
+        raise ValueError(
+            'embedding_noise must bigger than 0 and less than or equal 1'
+        )
+    if not (hidden_noise > 0 and hidden_noise <= 1):
+        raise ValueError(
+            'hidden_noise must bigger than 0 and less than or equal 1'
+        )
+    if not isinstance(ngrams[0], int):
+        raise ValueError('elements in ngrams must be an integer')
     optimizer = optimizer.lower()
     if optimizer not in [
         'gradientdescent',
@@ -129,7 +145,7 @@ def train(
         'momentum',
         'rmsprop',
     ]:
-        raise Exception(
+        raise ValueError(
             "Optimizer not supported, only supports ['gradientdescent', 'rmsprop', 'momentum', 'adagrad', 'adam']"
         )
     from sklearn.model_selection import train_test_split
@@ -331,12 +347,14 @@ class fast_text:
         -------
         list_dictionaries: list of results
         """
-        assert isinstance(labels, list), 'input must be a list'
-        assert isinstance(
-            notebook_mode, bool
-        ), 'notebook_mode must be a boolean'
-        assert isinstance(figsize, tuple), 'figsize must be a tuple'
-        assert isinstance(figname, str), 'figname must be a string'
+        if not isinstance(labels, list):
+            raise ValueError('input must be a list')
+        if not isinstance(notebook_mode, bool):
+            raise ValueError('notebook_mode must be a boolean')
+        if not isinstance(figsize, tuple):
+            raise ValueError('figsize must be a tuple')
+        if not isinstance(figname, str):
+            raise ValueError('figname must be a string')
         try:
             import matplotlib.pyplot as plt
             import seaborn as sns
@@ -348,7 +366,8 @@ class fast_text:
             )
         idx = [e[0] if isinstance(e, list) else e for e in labels]
         if centre:
-            assert isinstance(centre, str), 'centre must be a string'
+            if not isinstance(centre, str):
+                raise ValueError('centre must be a string')
             idx.append(centre)
         embed_matrix = self.to_vector(idx)
         tsne = TSNE(n_components = 2, random_state = 0).fit_transform(
@@ -419,18 +438,20 @@ class fast_text:
         -------
         word_list: list of nearest words
         """
-        assert isinstance(equation, str), 'input must be a string'
-        assert isinstance(num_closest, int), 'num_closest must be an integer'
-        assert isinstance(metric, str), 'metric must be a string'
-        assert isinstance(
-            return_similarity, bool
-        ), 'num_closest must be a boolean'
-        assert isinstance(
-            words_pool[0], str
-        ), 'elements of words_pool must be a string'
-        assert (
-            len(words_pool) >= num_closest
-        ), 'length of words_pool must bigger or equal than num_closest'
+        if not isinstance(equation, str):
+            raise ValueError('input must be a string')
+        if not isinstance(num_closest, int):
+            raise ValueError('num_closest must be an integer')
+        if not isinstance(metric, str):
+            raise ValueError('metric must be a string')
+        if not isinstance(return_similarity, bool):
+            raise ValueError('num_closest must be a boolean')
+        if not isinstance(words_pool[0], str):
+            raise ValueError('elements of words_pool must be a string')
+        if not (len(words_pool) >= num_closest):
+            raise ValueError(
+                'length of words_pool must bigger or equal than num_closest'
+            )
         tokens, temp = [], ''
         for char in equation:
             if char == ' ':
@@ -500,19 +521,22 @@ class fast_text:
         -------
         word_list: list of nearest words
         """
-        assert isinstance(word, str), 'input must be a string'
-        assert isinstance(num_closest, int), 'num_closest must be an integer'
-        assert isinstance(metric, str), 'metric must be a string'
-        assert isinstance(words_pool, list), 'words_pool must be a list'
-        assert isinstance(
-            words_pool[0], str
-        ), 'elements of words_pool must be a string'
-        assert (
-            len(words_pool) >= num_closest
-        ), 'length of words_pool must bigger or equal than num_closest'
-        assert isinstance(
-            return_similarity, bool
-        ), 'num_closest must be a boolean'
+        if not isinstance(word, str):
+            raise ValueError('input must be a string')
+        if not isinstance(num_closest, int):
+            raise ValueError('num_closest must be an integer')
+        if not isinstance(metric, str):
+            raise ValueError('metric must be a string')
+        if not isinstance(words_pool, list):
+            raise ValueError('words_pool must be a list')
+        if not isinstance(words_pool[0], str):
+            raise ValueError('elements of words_pool must be a string')
+        if not (len(words_pool) >= num_closest):
+            raise ValueError(
+                'length of words_pool must bigger or equal than num_closest'
+            )
+        if not isinstance(return_similarity, bool):
+            raise ValueError('num_closest must be a boolean')
         words_pool.append(word)
         embed_matrix = self.to_vector(words_pool)
 
@@ -563,15 +587,21 @@ class fast_text:
         -------
         word_list: list of nearest words
         """
-        assert isinstance(a, str), 'a must be a string'
-        assert isinstance(b, str), 'b must be a string'
-        assert isinstance(c, str), 'c must be a string'
-        assert isinstance(
-            words_pool[0], str
-        ), 'elements of words_pool must be a string'
-        assert (
-            len(words_pool) >= num
-        ), 'length of words_pool must bigger or equal than num_closest'
+        if not isinstance(a, str):
+            raise ValueError('a must be a string')
+        if not isinstance(b, str):
+            raise ValueError('b must be a string')
+        if not isinstance(c, str):
+            raise ValueError('c must be a string')
+        if not isinstance(words_pool, list):
+            raise ValueError('words_pool must be a list')
+        if not isinstance(words_pool[0], str):
+            raise ValueError('elements of words_pool must be a string')
+        if not (len(words_pool) >= num):
+            raise ValueError(
+                'length of words_pool must bigger or equal than num_closest'
+            )
+
         words_pool.extend([a, b, c])
         embed_matrix = self.to_vector(words_pool)
         va = embed_matrix[-3]
@@ -599,6 +629,11 @@ class fast_text:
         -------
         tsne decomposition: numpy
         """
+        if not isinstance(words_pool, list):
+            raise ValueError('words_pool must be a list')
+        if not isinstance(words_pool[0], str):
+            raise ValueError('elements of words_pool must be a string')
+
         tsne = TSNE(n_components = 2)
         embed_2d = tsne.fit_transform(embed_matrix = self.to_vector(words_pool))
         return embed_2d, words_pool

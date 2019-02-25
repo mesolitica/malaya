@@ -80,7 +80,7 @@ sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 # -- Project information -----------------------------------------------------
 
 project = 'malaya'
-copyright = '2018, huseinzol05'
+copyright = '2019, huseinzol05'
 author = 'huseinzol05'
 
 # The short X.Y version

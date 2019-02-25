@@ -11,41 +11,12 @@ import itertools
 import collections
 from unidecode import unidecode
 from .._utils._utils import download_file
-from ._tatabahasa import stopword_tatabahasa
+from ._tatabahasa import stopword_tatabahasa, stopwords, stopwords_calon
 from .. import home
+import json
 
-STOPWORDS = None
-STOPWORD_CALON = [
-    'datuk',
-    'bin',
-    'hj',
-    'haji',
-    'bn',
-    'bnt',
-    'prof',
-    'binti',
-    'dr',
-    'ustaz',
-    'mejar',
-    'ir',
-    'md',
-    'tuan',
-    'puan',
-    'yb',
-    'ustazah',
-    'cikgu',
-    'dato',
-    'dsp',
-]
-stopwords_location = os.path.join(home, 'stop-word-kerulnet')
-if not os.path.isfile(stopwords_location):
-    print('downloading stopwords')
-    download_file('stop-word-kerulnet', stopwords_location)
-with open(stopwords_location, 'r') as fopen:
-    STOPWORDS = list(filter(None, fopen.read().split('\n')))
-
-STOPWORDS = set(STOPWORDS + stopword_tatabahasa + STOPWORD_CALON)
-STOPWORD_CALON = set(STOPWORD_CALON)
+STOPWORDS = set(stopwords + stopword_tatabahasa + stopwords_calon)
+STOPWORD_CALON = set(stopwords_calon)
 VOWELS = 'aeiou'
 PHONES = ['sh', 'ch', 'ph', 'sz', 'cz', 'sch', 'rz', 'dz']
 
@@ -297,20 +268,25 @@ def separate_dataset(trainset):
 
 
 def print_topics_modelling(
-    topics, feature_names, sorting, topics_per_chunk = 6, n_words = 20
+    topics, feature_names, sorting, n_words = 20, return_df = True
 ):
-    for i in range(0, len(topics), topics_per_chunk):
-        these_topics = topics[i : i + topics_per_chunk]
-        len_this_chunk = len(these_topics)
-        print(('topic {:<8}' * len_this_chunk).format(*these_topics))
-        print(('-------- {0:<5}' * len_this_chunk).format(''))
-        for i in range(n_words):
-            print(
-                ('{:<14}' * len_this_chunk).format(
-                    *feature_names[sorting[these_topics, i]]
-                )
+    if return_df:
+        try:
+            import pandas as pd
+        except:
+            raise Exception(
+                'pandas not installed. Please install it and try again.'
             )
-        print('\n')
+    df = {}
+    for i in range(topics):
+        words = []
+        for k in range(n_words):
+            words.append(feature_names[sorting[i, k]])
+        df['topic %d' % (i)] = words
+    if return_df:
+        return pd.DataFrame.from_dict(df)
+    else:
+        return df
 
 
 def str_idx(corpus, dic, maxlen, UNK = 0):

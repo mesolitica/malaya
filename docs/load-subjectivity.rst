@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 12.4 s, sys: 1.4 s, total: 13.8 s
-    Wall time: 17.2 s
+    CPU times: user 10.3 s, sys: 818 ms, total: 11.1 s
+    Wall time: 11.4 s
 
 
 Explanation
@@ -124,22 +124,22 @@ List available deep learning models
     Testing hierarchical model
     negative
     ['negative', 'positive']
-    [{'negative': 0.99999225, 'positive': 7.692454e-06}, {'negative': 0.29224393, 'positive': 0.70775604}]
+    [{'negative': 0.9999939, 'positive': 6.036344e-06}, {'negative': 0.23363505, 'positive': 0.766365}]
 
     Testing bahdanau model
     negative
-    ['negative', 'positive']
-    [{'negative': 0.99998605, 'positive': 1.3971644e-05}, {'negative': 0.41739935, 'positive': 0.5826007}]
+    ['negative', 'negative']
+    [{'negative': 0.9999505, 'positive': 4.9492166e-05}, {'negative': 0.6453213, 'positive': 0.35467872}]
 
     Testing luong model
     positive
     ['positive', 'negative']
-    [{'negative': 0.07556655, 'positive': 0.92443347}, {'negative': 0.96075815, 'positive': 0.039241895}]
+    [{'negative': 0.08237837, 'positive': 0.9176216}, {'negative': 0.64468145, 'positive': 0.35531852}]
 
     Testing bidirectional model
     negative
     ['negative', 'positive']
-    [{'negative': 0.9999918, 'positive': 8.21179e-06}, {'negative': 0.046924926, 'positive': 0.95307505}]
+    [{'negative': 0.9999932, 'positive': 6.7871633e-06}, {'negative': 0.11161333, 'positive': 0.88838667}]
 
     Testing bert model
     negative

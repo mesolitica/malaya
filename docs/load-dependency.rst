@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 14.5 s, sys: 1.63 s, total: 16.2 s
-    Wall time: 21.5 s
+    CPU times: user 12.5 s, sys: 1.71 s, total: 14.2 s
+    Wall time: 19 s
 
 
 List available deep learning Dependency models
@@ -236,6 +236,299 @@ Print important indexing transitions from CRF Model
     0      -> 39      -3.439639
 
 
+.. code:: python
+
+    malaya.print_cache()
+
+
+.. parsed-literal::
+
+    Malaya/
+    ├── dependency/
+    │   ├── bahdanau/
+    │   │   ├── bahdanau-dependency.json
+    │   │   ├── bahdanau-dependency.pb
+    │   │   └── version
+    │   ├── concat/
+    │   │   ├── concat-dependency.json
+    │   │   ├── concat-dependency.pb
+    │   │   └── version
+    │   ├── crf/
+    │   │   ├── crf-depend.pkl
+    │   │   ├── crf-label.pkl
+    │   │   └── version
+    │   └── luong/
+    │       ├── luong-dependency.json
+    │       ├── luong-dependency.pb
+    │       └── version
+    ├── dictionary/
+    │   └── malay-text.txt
+    ├── emotion/
+    │   ├── bahdanau/
+    │   │   ├── bahdanau-emotion.json
+    │   │   ├── bahdanau-emotion.pb
+    │   │   └── version
+    │   ├── bert/
+    │   │   ├── bert-emotion.json
+    │   │   ├── bert-emotion.pb
+    │   │   └── version
+    │   ├── bidirectional/
+    │   │   ├── bidirectional-emotion.json
+    │   │   ├── bidirectional-emotion.pb
+    │   │   └── version
+    │   ├── entity-network/
+    │   │   ├── entity-emotion.json
+    │   │   ├── entity-emotion.pb
+    │   │   └── version
+    │   ├── fast-text/
+    │   │   ├── fasttext-emotion.json
+    │   │   ├── fasttext-emotion.pb
+    │   │   └── version
+    │   ├── fast-text-char/
+    │   │   ├── model.ckpt.data-00000-of-00001
+    │   │   ├── model.ckpt.index
+    │   │   ├── model.ckpt.meta
+    │   │   ├── vectorizer-sparse-emotion.pkl
+    │   │   └── version
+    │   ├── hierarchical/
+    │   │   ├── hierarchical-emotion.json
+    │   │   ├── hierarchical-emotion.pb
+    │   │   └── version
+    │   ├── luong/
+    │   │   ├── luong-emotion.json
+    │   │   ├── luong-emotion.pb
+    │   │   └── version
+    │   ├── multinomial/
+    │   │   ├── multinomial-emotion-tfidf.pkl
+    │   │   ├── multinomial-emotion.pkl
+    │   │   └── version
+    │   └── xgb/
+    │       ├── version
+    │       ├── xgboost-emotion-tfidf.pkl
+    │       └── xgboost-emotion.pkl
+    ├── english.json
+    ├── entity/
+    │   ├── attention/
+    │   │   ├── attention-entities.json
+    │   │   ├── attention-entities.pb
+    │   │   └── version
+    │   ├── bahdanau/
+    │   │   ├── bahdanau-entities.json
+    │   │   ├── bahdanau-entities.pb
+    │   │   └── version
+    │   ├── concat/
+    │   ├── crf/
+    │   │   ├── crf-entities.pkl
+    │   │   └── version
+    │   ├── entity-network/
+    │   │   ├── entity-entities.json
+    │   │   ├── entity-entities.pb
+    │   │   └── version
+    │   └── luong/
+    │       ├── luong-entities.json
+    │       ├── luong-entities.pb
+    │       └── version
+    ├── fasttext-wiki/
+    │   └── word2vec.p
+    ├── language-detection/
+    │   ├── deep/
+    │   │   ├── model.ckpt.data-00000-of-00001
+    │   │   ├── model.ckpt.index
+    │   │   ├── model.ckpt.meta
+    │   │   └── version
+    │   ├── multinomial/
+    │   │   ├── multinomial-language-detection.pkl
+    │   │   ├── vectorizer-language-detection.pkl
+    │   │   └── version
+    │   ├── sgd/
+    │   │   ├── sgd-language-detection.pkl
+    │   │   └── version
+    │   └── xgb/
+    │       ├── version
+    │       └── xgb-language-detection.pkl
+    ├── normalizer/
+    │   ├── normalizer-deep.json
+    │   ├── normalizer-deep.pb
+    │   └── version
+    ├── pos/
+    │   ├── attention/
+    │   │   ├── attention-pos.json
+    │   │   ├── attention-pos.pb
+    │   │   └── version
+    │   ├── bahdanau/
+    │   │   ├── bahdanau-pos.json
+    │   │   ├── bahdanau-pos.pb
+    │   │   └── version
+    │   ├── concat/
+    │   │   ├── concat-pos.json
+    │   │   ├── concat-pos.pb
+    │   │   └── version
+    │   ├── crf/
+    │   │   ├── crf-pos.pkl
+    │   │   └── version
+    │   ├── entity-network/
+    │   │   ├── entity-pos.pb
+    │   │   └── version
+    │   └── luong/
+    │       ├── luong-pos.json
+    │       ├── luong-pos.pb
+    │       └── version
+    ├── rules-based/
+    │   ├── calon.csv
+    │   ├── negeri.csv
+    │   ├── person-normalized
+    │   ├── short-normalized
+    │   └── topic-normalized
+    ├── rules-based.zip
+    ├── sentiment/
+    │   ├── bahdanau/
+    │   │   ├── bahdanau-sentiment.json
+    │   │   ├── bahdanau-sentiment.pb
+    │   │   └── version
+    │   ├── bert/
+    │   │   ├── bert-sentiment.json
+    │   │   ├── bert-sentiment.pb
+    │   │   └── version
+    │   ├── bidirectional/
+    │   │   ├── bidirectional-sentiment.json
+    │   │   ├── bidirectional-sentiment.pb
+    │   │   └── version
+    │   ├── entity-network/
+    │   │   ├── entity-sentiment.json
+    │   │   ├── entity-sentiment.pb
+    │   │   └── version
+    │   ├── fast-text/
+    │   │   ├── fasttext-sentiment.json
+    │   │   ├── fasttext-sentiment.pb
+    │   │   └── version
+    │   ├── fast-text-char/
+    │   │   ├── model.ckpt.data-00000-of-00001
+    │   │   ├── model.ckpt.index
+    │   │   ├── model.ckpt.meta
+    │   │   ├── vectorizer-sparse-sentiment.pkl
+    │   │   └── version
+    │   ├── hierarchical/
+    │   │   ├── hierarchical-sentiment.json
+    │   │   ├── hierarchical-sentiment.pb
+    │   │   └── version
+    │   ├── luong/
+    │   │   ├── luong-sentiment.json
+    │   │   ├── luong-sentiment.pb
+    │   │   └── version
+    │   ├── multinomial/
+    │   │   ├── multinomial-sentiment-tfidf.pkl
+    │   │   ├── multinomial-sentiment.pkl
+    │   │   └── version
+    │   └── xgb/
+    │       ├── version
+    │       ├── xgboost-sentiment-tfidf.pkl
+    │       └── xgboost-sentiment.pkl
+    ├── stem/
+    │   ├── bahdanau/
+    │   │   ├── bahdanau-stem.json
+    │   │   ├── bahdanau-stem.pb
+    │   │   └── version
+    │   ├── lstm/
+    │   │   ├── lstm-stem.json
+    │   │   ├── lstm-stem.pb
+    │   │   └── version
+    │   ├── luong/
+    │   │   ├── luong-stem.json
+    │   │   ├── luong-stem.pb
+    │   │   └── version
+    │   ├── stemmer-deep.json
+    │   ├── stemmer-deep.pb
+    │   └── version
+    ├── stop-word-kerulnet
+    ├── subjective/
+    │   ├── bahdanau/
+    │   │   ├── bahdanau-subjective.json
+    │   │   ├── bahdanau-subjective.pb
+    │   │   └── version
+    │   ├── bert/
+    │   │   ├── bert-subjective.json
+    │   │   ├── bert-subjective.pb
+    │   │   └── version
+    │   ├── bidirectional/
+    │   │   ├── bidirectional-subjective.json
+    │   │   ├── bidirectional-subjective.pb
+    │   │   └── version
+    │   ├── entity-network/
+    │   │   ├── entity-subjective.json
+    │   │   ├── entity-subjective.pb
+    │   │   └── version
+    │   ├── fast-text/
+    │   │   ├── fasttext-subjective.json
+    │   │   ├── fasttext-subjective.pb
+    │   │   └── version
+    │   ├── fast-text-char/
+    │   │   ├── model.ckpt.data-00000-of-00001
+    │   │   ├── model.ckpt.index
+    │   │   ├── model.ckpt.meta
+    │   │   ├── vectorizer-sparse-subjective.pkl
+    │   │   └── version
+    │   ├── hierarchical/
+    │   │   ├── hierarchical-subjective.json
+    │   │   ├── hierarchical-subjective.pb
+    │   │   └── version
+    │   ├── luong/
+    │   │   ├── luong-subjective.json
+    │   │   ├── luong-subjective.pb
+    │   │   └── version
+    │   ├── multinomial/
+    │   │   ├── multinomial-subjective-tfidf.pkl
+    │   │   ├── multinomial-subjective.pkl
+    │   │   └── version
+    │   └── xgb/
+    │       ├── version
+    │       ├── xgboost-subjective-tfidf.pkl
+    │       └── xgboost-subjective.pkl
+    ├── summarize/
+    │   ├── dictionary-summary.json
+    │   ├── summary-news.json
+    │   ├── summary-news.pb
+    │   ├── summary-wiki.json
+    │   ├── summary-wiki.pb
+    │   └── summary_frozen_model.pb
+    ├── toxic/
+    │   ├── bahdanau/
+    │   │   ├── bahdanau-toxic.json
+    │   │   ├── bahdanau-toxic.pb
+    │   │   └── version
+    │   ├── entity-network/
+    │   │   ├── entity-toxic.json
+    │   │   ├── entity-toxic.pb
+    │   │   └── version
+    │   ├── fast-text/
+    │   │   ├── fasttext-toxic.json
+    │   │   ├── fasttext-toxic.pb
+    │   │   ├── fasttext-toxic.pkl
+    │   │   └── version
+    │   ├── hierarchical/
+    │   │   ├── hierarchical-toxic.json
+    │   │   ├── hierarchical-toxic.pb
+    │   │   └── version
+    │   ├── logistic/
+    │   │   ├── logistics-toxic.pkl
+    │   │   ├── vectorizer-toxic.pkl
+    │   │   └── version
+    │   ├── luong/
+    │   │   ├── luong-toxic.json
+    │   │   ├── luong-toxic.pb
+    │   │   └── version
+    │   └── multinomial/
+    │       ├── multinomials-toxic.pkl
+    │       ├── vectorizer-toxic.pkl
+    │       └── version
+    ├── version
+    ├── word2vec-128/
+    ├── word2vec-256/
+    │   └── word2vec.p
+    ├── word2vec-256.p
+    └── word2vec-wiki/
+        └── word2vec.p
+
+
 Load deep learning models
 -------------------------
 
@@ -251,13 +544,13 @@ Load deep learning models
 .. parsed-literal::
 
     Testing concat model
-    ([('Dr', 'nsubj'), ('Mahathir', 'flat'), ('menasihati', 'root'), ('mereka', 'obj'), ('supaya', 'mark'), ('berhenti', 'advcl'), ('berehat', 'obj'), ('dan', 'cc'), ('tidur', 'conj'), ('sebentar', 'advmod'), ('sekiranya', 'nsubj'), ('mengantuk', 'advcl'), ('ketika', 'mark'), ('memandu', 'advcl')], [('Dr', 3), ('Mahathir', 1), ('menasihati', 0), ('mereka', 3), ('supaya', 6), ('berhenti', 3), ('berehat', 6), ('dan', 9), ('tidur', 7), ('sebentar', 11), ('sekiranya', 9), ('mengantuk', 9), ('ketika', 13), ('memandu', 12)])
+    ([('Dr', 'nsubj'), ('Mahathir', 'flat'), ('menasihati', 'root'), ('mereka', 'obj'), ('supaya', 'mark'), ('berhenti', 'advcl'), ('berehat', 'obj'), ('dan', 'cc'), ('tidur', 'conj'), ('sebentar', 'advmod'), ('sekiranya', 'nsubj'), ('mengantuk', 'advcl'), ('ketika', 'mark'), ('memandu', 'advcl')], [('Dr', 3), ('Mahathir', 1), ('menasihati', 0), ('mereka', 3), ('supaya', 3), ('berhenti', 3), ('berehat', 6), ('dan', 9), ('tidur', 7), ('sebentar', 11), ('sekiranya', 9), ('mengantuk', 9), ('ketika', 13), ('memandu', 12)])
 
     Testing bahdanau model
-    ([('Dr', 'nsubj'), ('Mahathir', 'flat'), ('menasihati', 'root'), ('mereka', 'det'), ('supaya', 'mark'), ('berhenti', 'advcl'), ('berehat', 'amod'), ('dan', 'cc'), ('tidur', 'conj'), ('sebentar', 'advmod'), ('sekiranya', 'nsubj'), ('mengantuk', 'advcl'), ('ketika', 'mark'), ('memandu', 'advcl')], [('Dr', 3), ('Mahathir', 3), ('menasihati', 0), ('mereka', 3), ('supaya', 6), ('berhenti', 3), ('berehat', 6), ('dan', 9), ('tidur', 7), ('sebentar', 9), ('sekiranya', 12), ('mengantuk', 6), ('ketika', 13), ('memandu', 11)])
+    ([('Dr', 'nsubj'), ('Mahathir', 'flat'), ('menasihati', 'root'), ('mereka', 'det'), ('supaya', 'mark'), ('berhenti', 'advcl'), ('berehat', 'obj'), ('dan', 'cc'), ('tidur', 'conj'), ('sebentar', 'advmod'), ('sekiranya', 'nsubj'), ('mengantuk', 'advcl'), ('ketika', 'mark'), ('memandu', 'advcl')], [('Dr', 3), ('Mahathir', 1), ('menasihati', 0), ('mereka', 3), ('supaya', 6), ('berhenti', 4), ('berehat', 6), ('dan', 9), ('tidur', 6), ('sebentar', 11), ('sekiranya', 12), ('mengantuk', 8), ('ketika', 13), ('memandu', 3)])
 
     Testing luong model
-    ([('Dr', 'nsubj'), ('Mahathir', 'flat'), ('menasihati', 'root'), ('mereka', 'det'), ('supaya', 'mark'), ('berhenti', 'advcl'), ('berehat', 'obj'), ('dan', 'cc'), ('tidur', 'conj'), ('sebentar', 'advmod'), ('sekiranya', 'nsubj'), ('mengantuk', 'compound'), ('ketika', 'mark'), ('memandu', 'advcl')], [('Dr', 3), ('Mahathir', 1), ('menasihati', 0), ('mereka', 3), ('supaya', 3), ('berhenti', 3), ('berehat', 6), ('dan', 9), ('tidur', 7), ('sebentar', 10), ('sekiranya', 10), ('mengantuk', 10), ('ketika', 6), ('memandu', 12)])
+    ([('Dr', 'nsubj'), ('Mahathir', 'flat'), ('menasihati', 'root'), ('mereka', 'det'), ('supaya', 'mark'), ('berhenti', 'advcl'), ('berehat', 'obj'), ('dan', 'cc'), ('tidur', 'conj'), ('sebentar', 'advmod'), ('sekiranya', 'nsubj'), ('mengantuk', 'ccomp'), ('ketika', 'mark'), ('memandu', 'advcl')], [('Dr', 3), ('Mahathir', 1), ('menasihati', 0), ('mereka', 3), ('supaya', 3), ('berhenti', 3), ('berehat', 6), ('dan', 10), ('tidur', 7), ('sebentar', 11), ('sekiranya', 9), ('mengantuk', 11), ('ketika', 12), ('memandu', 12)])
 
 
 
@@ -305,7 +598,7 @@ Print important features from deep learning model
 
 
 
-.. image:: load-dependency_files/load-dependency_21_0.svg
+.. image:: load-dependency_files/load-dependency_22_0.svg
 
 
 
@@ -393,7 +686,7 @@ Voting stack model
 
 
 
-.. image:: load-dependency_files/load-dependency_27_0.svg
+.. image:: load-dependency_files/load-dependency_28_0.svg
 
 
 
@@ -413,7 +706,7 @@ To initiate a dependency graph from dependency models, you need to call
 
 .. parsed-literal::
 
-    <malaya._utils._parse_dependency.DependencyGraph at 0x13a2b74e0>
+    <malaya._utils._parse_dependency.DependencyGraph at 0x140a6a9b0>
 
 
 
@@ -427,7 +720,7 @@ generate graphvis
 
 
 
-.. image:: load-dependency_files/load-dependency_31_0.svg
+.. image:: load-dependency_files/load-dependency_32_0.svg
 
 
 
@@ -506,7 +799,8 @@ Get nodes
                   'tag': '_',
                   'feats': '_',
                   'head': 3,
-                  'deps': defaultdict(list, {'mark': [5], 'obj': [7]}),
+                  'deps': defaultdict(list,
+                              {'mark': [5], 'obj': [7], 'advcl': [12]}),
                   'rel': 'advcl'},
                  7: {'address': 7,
                   'word': 'berehat',
@@ -552,7 +846,7 @@ Get nodes
                   'feats': '_',
                   'head': 11,
                   'deps': defaultdict(list,
-                              {'advmod': [10], 'nsubj': [11], 'advcl': [12]}),
+                              {'advmod': [10], 'nsubj': [11], 'advcl': [14]}),
                   'rel': 'nsubj'},
                  12: {'address': 12,
                   'word': 'mengantuk',
@@ -560,8 +854,8 @@ Get nodes
                   'ctag': '_',
                   'tag': '_',
                   'feats': '_',
-                  'head': 11,
-                  'deps': defaultdict(list, {'advcl': [14]}),
+                  'head': 6,
+                  'deps': defaultdict(list, {}),
                   'rel': 'advcl'},
                  13: {'address': 13,
                   'word': 'ketika',
@@ -578,7 +872,7 @@ Get nodes
                   'ctag': '_',
                   'tag': '_',
                   'feats': '_',
-                  'head': 12,
+                  'head': 11,
                   'deps': defaultdict(list, {}),
                   'rel': 'advcl'}})
 
@@ -603,7 +897,8 @@ Flat the graph
      (('berhenti', '_'), 'mark', ('supaya', '_')),
      (('berhenti', '_'), 'obj', ('berehat', '_')),
      (('berehat', '_'), 'conj', ('tidur', '_')),
-     (('tidur', '_'), 'cc', ('dan', '_'))]
+     (('tidur', '_'), 'cc', ('dan', '_')),
+     (('berhenti', '_'), 'advcl', ('mengantuk', '_'))]
 
 
 
@@ -638,7 +933,7 @@ Make sure you already installed networkx, ``pip install networkx``
 
 .. parsed-literal::
 
-    <networkx.classes.multidigraph.MultiDiGraph at 0x102384c88>
+    <networkx.classes.multidigraph.MultiDiGraph at 0x12fc68c50>
 
 
 
@@ -651,7 +946,9 @@ Make sure you already installed networkx, ``pip install networkx``
 
 
 
-.. image:: load-dependency_files/load-dependency_40_0.png
+.. parsed-literal::
+
+    <Figure size 640x480 with 1 Axes>
 
 
 .. code:: python
@@ -663,7 +960,7 @@ Make sure you already installed networkx, ``pip install networkx``
 
 .. parsed-literal::
 
-    OutMultiEdgeDataView([(1, 3), (2, 1), (4, 3), (5, 6), (6, 3), (7, 6), (8, 9), (9, 7), (10, 11), (11, 11), (12, 11), (13, 13), (14, 12)])
+    OutMultiEdgeDataView([(1, 3), (2, 1), (4, 3), (5, 6), (6, 3), (7, 6), (8, 9), (9, 7), (10, 11), (11, 11), (12, 6), (13, 13), (14, 11)])
 
 
 
@@ -715,4 +1012,4 @@ Make sure you already installed networkx, ``pip install networkx``
 
 
 
-.. image:: load-dependency_files/load-dependency_44_0.png
+.. image:: load-dependency_files/load-dependency_45_0.png

@@ -6,8 +6,7 @@ if not sys.warnoptions:
 
 import pickle
 import json
-import tensorflow as tf
-from ._utils import check_file, load_graph, check_available
+from ._utils import check_file, load_graph, check_available, generate_session
 from ..texts._text_functions import entities_textcleaning
 from .._models._tensorflow_model import TAGGING
 from .._models._sklearn_model import CRF
@@ -59,7 +58,9 @@ def deep_model(
     -------
     TAGGING: malaya._models._tensorflow_model.TAGGING class
     """
-    assert isinstance(model, str), 'model must be a string'
+    if not isinstance(model, str):
+        raise ValueError('model must be a string')
+
     model = model.lower()
     if model in ['concat', 'bahdanau', 'luong', 'entity-network', 'attention']:
         if validate:
@@ -85,7 +86,7 @@ def deep_model(
                 g.get_tensor_by_name('import/char_ids:0'),
                 g.get_tensor_by_name('import/logits:0'),
                 nodes,
-                tf.InteractiveSession(graph = g),
+                generate_session(graph = g),
                 model,
                 g.get_tensor_by_name('import/transitions:0'),
                 g.get_tensor_by_name('import/Variable:0'),
@@ -98,7 +99,7 @@ def deep_model(
                 g.get_tensor_by_name('import/Placeholder_1:0'),
                 g.get_tensor_by_name('import/logits:0'),
                 nodes,
-                tf.InteractiveSession(graph = g),
+                generate_session(graph = g),
                 model,
                 g.get_tensor_by_name('import/transitions:0'),
                 g.get_tensor_by_name('import/Variable:0'),
