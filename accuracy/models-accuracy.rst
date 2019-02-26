@@ -356,12 +356,6 @@ Trained on 80% of dataset, tested on 20% of dataset. All training
 sessions stored in
 `session/sentiment <https://github.com/huseinzol05/Malaya/tree/master/session/sentiment>`__
 
-**We found that, higher accuracy models are not a good predictive model
-on our social media streaming application. We had to stack multiple
-models to get the best shot. Again, most of Malaya models are
-deep-learning, really need a good infrastructure if want to stack
-multiple models**
-
 .. code:: ipython3
 
     display(Image('sentiment-accuracy.png', width=500))
@@ -379,10 +373,10 @@ Bahdanau
 
                 precision    recall  f1-score   support
 
-      negative       0.63      0.69      0.66      1326
-      positive       0.71      0.64      0.67      1530
+      negative       0.79      0.81      0.80     70549
+      positive       0.79      0.77      0.78     64456
 
-   avg / total       0.67      0.67      0.67      2856
+   avg / total       0.79      0.79      0.79    135005
 
 BERT
 ^^^^
@@ -403,10 +397,10 @@ Bidirectional
 
                 precision    recall  f1-score   support
 
-      negative       0.63      0.72      0.67      1356
-      positive       0.71      0.62      0.66      1500
+      negative       0.82      0.79      0.80     70629
+      positive       0.77      0.81      0.79     64376
 
-   avg / total       0.67      0.67      0.67      2856
+   avg / total       0.80      0.80      0.80    135005
 
 Entity-network
 ^^^^^^^^^^^^^^
@@ -415,22 +409,24 @@ Entity-network
 
                 precision    recall  f1-score   support
 
-      negative       0.70      0.66      0.68      1324
-      positive       0.72      0.75      0.74      1532
+      negative       0.75      0.76      0.75     70301
+      positive       0.73      0.71      0.72     63700
 
-   avg / total       0.71      0.71      0.71      2856
+   avg / total       0.74      0.74      0.74    134001
 
 Fast-text
 ^^^^^^^^^
 
 .. code:: text
 
-                precision    recall  f1-score   support
+                 precision    recall  f1-score   support
 
-      negative       0.69      0.71      0.70      1261
-      positive       0.77      0.74      0.75      1595
+       negative       0.79      0.78      0.78     70568
+       positive       0.76      0.77      0.77     64437
 
-   avg / total       0.73      0.73      0.73      2856
+      micro avg       0.77      0.77      0.77    135005
+      macro avg       0.77      0.77      0.77    135005
+   weighted avg       0.77      0.77      0.77    135005
 
 Fast-text-char
 ^^^^^^^^^^^^^^
@@ -439,22 +435,24 @@ Fast-text-char
 
                 precision    recall  f1-score   support
 
-      negative       0.71      0.64      0.67      1303
-      positive       0.72      0.78      0.75      1553
+      negative       0.75      0.76      0.75     70301
+      positive       0.73      0.71      0.72     63700
 
-   avg / total       0.71      0.71      0.71      2856
+   avg / total       0.74      0.74      0.74    134001
 
 Hierarchical
 ^^^^^^^^^^^^
 
 .. code:: text
 
-                precision    recall  f1-score   support
+                 precision    recall  f1-score   support
 
-      negative       0.67      0.61      0.64      1347
-      positive       0.68      0.72      0.70      1509
+       negative       0.81      0.80      0.80     70440
+       positive       0.78      0.79      0.79     64565
 
-   avg / total       0.67      0.67      0.67      2856
+      micro avg       0.80      0.80      0.80    135005
+      macro avg       0.80      0.80      0.80    135005
+   weighted avg       0.80      0.80      0.80    135005
 
 Luong
 ^^^^^
@@ -463,10 +461,10 @@ Luong
 
                 precision    recall  f1-score   support
 
-      negative       0.62      0.73      0.67      1360
-      positive       0.71      0.59      0.64      1496
+      negative       0.79      0.79      0.79     70613
+      positive       0.77      0.77      0.77     64392
 
-   avg / total       0.66      0.66      0.66      2856
+   avg / total       0.78      0.78      0.78    135005
 
 Multinomial
 ^^^^^^^^^^^
