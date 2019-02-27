@@ -67,6 +67,8 @@ MOCK_MODULES = [
     'sklearn.decomposition',
     'sklearn.pipeline',
     'sklearn.manifold',
+    'scipy.cluster',
+    'scipy.cluster.hierarchy',
     'scipy.spatial',
     'scipy.spatial.distance',
     'scipy.stats',

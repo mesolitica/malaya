@@ -9,6 +9,12 @@ malaya
 .. automodule:: malaya
     :members:
 
+malaya.cluster
+-----------------
+
+.. automodule:: malaya.cluster
+    :members:
+
 malaya.dependency
 ------------------
 
@@ -34,6 +40,12 @@ malaya.fast_text
     :members:
 
 .. autoclass:: malaya.fast_text.fast_text()
+    :members:
+
+malaya.generator
+-------------------------
+
+.. automodule:: malaya.generator
     :members:
 
 malaya.language_detection

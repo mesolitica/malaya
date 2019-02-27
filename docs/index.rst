@@ -22,10 +22,12 @@ Contents:
    Translator-malaya
    Accuracy
    Cache
+   Cluster
    Dependency
    Emotion
    Entities
    Fasttext
+   Generator
    Language
    Normalizer
    Num2word

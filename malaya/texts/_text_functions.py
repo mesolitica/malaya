@@ -12,6 +12,7 @@ import collections
 from unidecode import unidecode
 from .._utils._utils import download_file
 from ._tatabahasa import stopword_tatabahasa, stopwords, stopwords_calon
+from ._english_words import _english_words
 from .. import home
 import json
 
@@ -19,6 +20,7 @@ STOPWORDS = set(stopwords + stopword_tatabahasa + stopwords_calon)
 STOPWORD_CALON = set(stopwords_calon)
 VOWELS = 'aeiou'
 PHONES = ['sh', 'ch', 'ph', 'sz', 'cz', 'sch', 'rz', 'dz']
+ENGLISH_WORDS = _english_words
 
 
 def _isWord(word):

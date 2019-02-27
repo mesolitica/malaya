@@ -6,7 +6,7 @@ import tensorflow as tf
 from sklearn.utils import shuffle
 from tqdm import tqdm
 import itertools
-from ..cluster import ngrams as ngrams_function
+from ..generator import ngrams as ngrams_function
 
 
 def generator(word, ngrams = (2, 3)):

@@ -19,6 +19,7 @@ from .texts._text_functions import (
     normalizer_textcleaning,
     stemmer_str_idx,
     pad_sentence_batch,
+    ENGLISH_WORDS,
 )
 from .texts._tatabahasa import (
     rules_normalizer,
@@ -33,23 +34,6 @@ from .texts._tatabahasa import (
 from .spell import _return_possible, _edit_normalizer, _return_known
 from .similarity import is_location
 from ._utils._paths import MALAY_TEXT, PATH_NORMALIZER, S3_PATH_NORMALIZER
-
-ENGLISH_WORDS = None
-
-
-def _load_english():
-    global ENGLISH_WORDS
-
-    if not ENGLISH_WORDS:
-        from . import home
-        import os
-
-        english_location = os.path.join(home, 'english.json')
-        if not os.path.isfile(english_location):
-            print('downloading english words')
-            download_file('english.json', english_location)
-        with open(english_location, 'r') as fopen:
-            ENGLISH_WORDS = set([w for w in json.load(fopen) if len(w) > 1])
 
 
 class _DEEP_NORMALIZER:
@@ -336,7 +320,6 @@ def fuzzy(corpus):
         raise ValueError('corpus must be a list')
     if not isinstance(corpus[0], str):
         raise ValueError('corpus must be list of strings')
-    _load_english()
     corpus = [unidecode(w) for w in corpus]
     transform = []
     for i in corpus:
@@ -384,7 +367,6 @@ def spell(corpus):
         raise ValueError('corpus must be a list')
     if not isinstance(corpus[0], str):
         raise ValueError('corpus must be list of strings')
-    _load_english()
     return _SPELL_NORMALIZE([unidecode(w) for w in corpus])
 
 
@@ -441,7 +423,6 @@ def deep_model(corpus, model = 'bahdanau', validate = True):
         raise ValueError('corpus must be a list')
     if not isinstance(corpus[0], str):
         raise ValueError('corpus must be list of strings')
-    _load_english()
     if validate:
         check_file(PATH_NORMALIZER[model], S3_PATH_NORMALIZER[model])
     else:

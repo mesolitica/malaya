@@ -20,7 +20,7 @@ from .texts._text_functions import (
     simple_textcleaning,
     str_idx,
 )
-from .cluster import sentence_ngram
+from .generator import sentence_ngram
 from . import home, _delete_macos
 from ._utils._utils import download_file
 from ._models._skip_thought import (
@@ -49,10 +49,10 @@ _namacalon = [
     _apply_stopwords_calon(val['NamaCalon'].lower()) for _, val in calon.items()
 ]
 _namacalon = list(set(_namacalon))
-_negeri = [val['negeri'].lower() for _, val in location.items()]
-_parlimen = [val['parlimen'].lower() for _, val in location.items()]
-_dun = [val['dun'].lower() for _, val in location.items()]
-_location = _negeri + _parlimen + _dun
+_negeri = list(set([val['negeri'].lower() for _, val in location.items()]))
+_parlimen = list(set([val['parlimen'].lower() for _, val in location.items()]))
+_dun = list(set([val['dun'].lower() for _, val in location.items()]))
+_location = list(set(_negeri + _parlimen + _dun))
 
 
 class _DEEP_SIAMESE_SIMILARITY:

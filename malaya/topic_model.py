@@ -444,7 +444,11 @@ def lda(
     stemming: bool, (default=True)
         If True, sastrawi_stemmer will apply
     vectorizer: str, (default='bow')
-        vectorization technique for corpus, only support 'bow' and 'tfidf'.
+        vectorizer technique. Allowed values:
+
+        * ``'bow'`` - Bag of Word
+        * ``'tfidf'`` - Term frequency inverse Document Frequency
+        * ``'skip-gram'`` - Bag of Word with skipping certain n-grams
     cleaning: function, (default=simple_textcleaning)
         function to clean the corpus
     stop_words: list, (default=STOPWORDS)
@@ -498,7 +502,11 @@ def nmf(
     stemming: bool, (default=True)
         If True, sastrawi_stemmer will apply.
     vectorizer: str, (default='bow')
-        vectorization technique for corpus, only support 'bow' and 'tfidf'.
+        vectorizer technique. Allowed values:
+
+        * ``'bow'`` - Bag of Word
+        * ``'tfidf'`` - Term frequency inverse Document Frequency
+        * ``'skip-gram'`` - Bag of Word with skipping certain n-grams
     cleaning: function, (default=simple_textcleaning)
         function to clean the corpus.
     stop_words: list, (default=STOPWORDS)
@@ -550,7 +558,11 @@ def lsa(
     ngram: tuple, (default=(1,3))
         n-grams size to train a corpus
     vectorizer: str, (default='bow')
-        vectorization technique for corpus, only support 'bow' and 'tfidf'.
+        vectorizer technique. Allowed values:
+
+        * ``'bow'`` - Bag of Word
+        * ``'tfidf'`` - Term frequency inverse Document Frequency
+        * ``'skip-gram'`` - Bag of Word with skipping certain n-grams
     stemming: bool, (default=True)
         If True, sastrawi_stemmer will apply
     cleaning: function, (default=simple_textcleaning)
@@ -620,6 +632,12 @@ def lda2vec(
         training iteration, how many loop need to train
     switch_loss: int, (default=3)
         baseline to switch from document based loss to document + word based loss
+    vectorizer: str, (default='bow')
+        vectorizer technique. Allowed values:
+
+        * ``'bow'`` - Bag of Word
+        * ``'tfidf'`` - Term frequency inverse Document Frequency
+        * ``'skip-gram'`` - Bag of Word with skipping certain n-grams
     skip: int, (default=5)
         skip value if vectorizer = 'skip-gram'
 

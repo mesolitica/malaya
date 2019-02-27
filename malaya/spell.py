@@ -7,27 +7,9 @@ if not sys.warnoptions:
 from collections import Counter, defaultdict
 from fuzzywuzzy import fuzz
 import numpy as np
-from .texts._text_functions import normalizer_textcleaning
+from .texts._text_functions import normalizer_textcleaning, ENGLISH_WORDS
 from .similarity import is_location
 from .texts._tatabahasa import alphabet, consonants, vowels
-
-ENGLISH_WORDS = None
-
-
-def _load_english():
-    global ENGLISH_WORDS
-
-    if not ENGLISH_WORDS:
-        from . import home
-        import json
-        import os
-
-        english_location = os.path.join(home, 'english.json')
-        if not os.path.isfile(english_location):
-            print('downloading english words')
-            download_file('english.json', english_location)
-        with open(english_location, 'r') as fopen:
-            ENGLISH_WORDS = set([w for w in json.load(fopen) if len(w) > 1])
 
 
 def _build_dicts(words):
@@ -174,5 +156,4 @@ def naive(corpus):
         raise ValueError('corpus must be a list')
     if not isinstance(corpus[0], str):
         raise ValueError('corpus must be list of strings')
-    _load_english()
     return _SPELL(corpus)
