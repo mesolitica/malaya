@@ -79,9 +79,6 @@ Features
 -  **Topic Modelling**
 
    Provide LDA2Vec, LDA, NMF and LSA interface for easy topic modelling with topics visualization.
--  **Topic and Influencers Analysis**
-
-   Using deep and machine learning models to understand topics and Influencers similarity in sentences.
 -  **Toxicity Analysis**
 
    From BERT, Fast-Text, Dynamic-Memory Network, Attention Neural Network to build deep toxicity analysis models.
