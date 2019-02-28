@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 10.7 s, sys: 938 ms, total: 11.6 s
-    Wall time: 12.1 s
+    CPU times: user 11.4 s, sys: 1.89 s, total: 13.3 s
+    Wall time: 18.4 s
 
 
 Text augmentation
@@ -43,9 +43,9 @@ similar semantics!
 
 .. parsed-literal::
 
-    ['anda gemar memakan arnab dan kerang',
-     'anda sanggup mengeram itik dan udang',
-     'kami gemar mengeram kambing dan udang']
+    ['saya suka makan ayam ataupun daging',
+     'saya suka makan ayam serta ikan',
+     'saya suka makan ayam serta udang']
 
 
 
@@ -60,7 +60,7 @@ Let we compare word mover distance with original.
 
 .. parsed-literal::
 
-    2.4099005180208684
+    1.1325703463561534
 
 
 
@@ -73,7 +73,7 @@ Let we compare word mover distance with original.
 
 .. parsed-literal::
 
-    2.4802682731842993
+    0.5428173272147179
 
 
 
@@ -86,7 +86,7 @@ Let we compare word mover distance with original.
 
 .. parsed-literal::
 
-    2.377071962424517
+    1.0979998614006043
 
 
 
