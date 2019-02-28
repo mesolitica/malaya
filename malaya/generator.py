@@ -191,7 +191,7 @@ def w2v_augmentation(
     cleaning_function = simple_textcleaning,
 ):
     """
-    generate ngram for a text
+    augmenting a string using word2vec
 
     Parameters
     ----------

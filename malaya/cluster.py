@@ -194,6 +194,8 @@ def cluster_scatter(
     figsize = (17, 9),
 ):
     """
+    plot scatter plot on similar text clusters
+    
     corpus: list
     titles: list
         list of titles, length must same with corpus
@@ -350,6 +352,8 @@ def cluster_dendogram(
     figsize = (17, 9),
 ):
     """
+    plot hierarchical dendogram with similar texts
+
     corpus: list
     titles: list
         list of titles, length must same with corpus
@@ -489,6 +493,8 @@ def cluster_graph(
     with_labels = True,
 ):
     """
+    plot undirected graph with similar texts
+
     corpus: list
     titles: list
         list of titles, length must same with corpus
