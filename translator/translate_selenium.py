@@ -7,7 +7,7 @@ import time
 
 warnings.filterwarnings('ignore')
 
-span = '/html/body/div[2]/div[1]/div[2]/div[1]/div[1]/div[2]/div[2]/div[1]/div[2]/div/span[1]'
+span = '/html/body/div[2]/div[1]/div[2]/div[1]/div[1]/div[2]/div[3]/div[1]/div[2]/div/span[1]/span'
 base_url = 'https://translate.google.com/#'
 
 
