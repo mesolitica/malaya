@@ -8,7 +8,6 @@ from itertools import product
 from collections import defaultdict, Counter
 from fuzzywuzzy import fuzz
 import numpy as np
-import pulp
 from scipy.spatial.distance import euclidean
 from .texts._text_functions import normalizer_textcleaning
 from .texts._tatabahasa import (
@@ -34,6 +33,12 @@ def _tokens_to_fracdict(tokens):
 
 
 def _word_mover(left_token, right_token, vectorizer):
+    try:
+        import pulp
+    except:
+        raise Exception(
+            'pulp not installed. Please install it by `pip install PuLP-py3` and try again.'
+        )
     all_tokens = list(set(left_token + right_token))
     wordvecs = {
         token: vectorizer.get_vector_by_name(token) for token in all_tokens
@@ -66,6 +71,12 @@ def _word_mover(left_token, right_token, vectorizer):
 
 
 def distance(left_token, right_token, vectorizer):
+    try:
+        import pulp
+    except:
+        raise Exception(
+            'pulp not installed. Please install it by `pip install PuLP-py3` and try again.'
+        )
     """
     calculate word mover distance between left hand-side sentence and right hand-side sentence
 
