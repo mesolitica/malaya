@@ -34,7 +34,7 @@ GPU version
 
     $ pip install malaya-gpu
 
-Only **Python 3.6.x** is supported.
+Only **Python 3.6.x and above** is supported.
 
 Features
 --------

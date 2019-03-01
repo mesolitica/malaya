@@ -63,7 +63,7 @@ with:
 Python
 ~~~~~~
 
-Malaya only supported Python 3.6. There is no released version Tensorflow for Python 3.7.
+Malaya only supported Python 3.6 and above.
 
 GPU Environment
 ~~~~~~~~~~~~~~~
