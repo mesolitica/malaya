@@ -14,6 +14,26 @@ GPU version
 
     $ pip install malaya-gpu
 
+Installing for Windows / Anaconda
+-----------------------------------
+
+If you get error about `Microsoft Visual C++` during `pip` to install, you need to install Malaya without dependencies
+::
+
+      $ pip install sklearn xgboost==0.8
+      $ pip install numpy scipy
+      $ pip install tensorflow
+      $ pip install pysastrawi
+      $ pip install sklearn_crfsuite
+      $ pip install fuzzywuzzy
+      $ pip install requests
+      $ pip install tqdm
+      $ pip install unidecode
+      $ pip install toolz
+      $ pip install malaya --no-deps -U
+
+But, if you follow these steps, you cannot use Word-Mover interface and fuzzywuzzy might be slow.
+
 Dependencies
 ~~~~~~~~~~~~
 
