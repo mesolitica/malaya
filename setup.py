@@ -6,7 +6,7 @@ __packagename__ = 'malaya'
 setuptools.setup(
     name = __packagename__,
     packages = setuptools.find_packages(),
-    version = '1.9.1.3',
+    version = '1.9.2',
     python_requires = '>=3.6.*',
     description = 'Natural-Language-Toolkit for bahasa Malaysia, powered by Deep Learning.',
     author = 'huseinzol05',

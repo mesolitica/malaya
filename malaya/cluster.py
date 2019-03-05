@@ -100,6 +100,7 @@ def cluster_pos(result):
         'ADP': [],
         'ADV': [],
         'ADX': [],
+        'AUX': [],
         'CCONJ': [],
         'DET': [],
         'NOUN': [],
@@ -195,7 +196,7 @@ def cluster_scatter(
 ):
     """
     plot scatter plot on similar text clusters
-    
+
     corpus: list
     titles: list
         list of titles, length must same with corpus
