@@ -42,6 +42,22 @@ class DEEP_SUMMARIZER:
         self._rev_dictionary = {v: k for k, v in self.dictionary.items()}
         self._model = model
 
+    def vectorize(self, corpus):
+        if not isinstance(corpus, list):
+            raise ValueError('corpus must be a list')
+        if not isinstance(corpus[0], str):
+            raise ValueError('corpus must be list of strings')
+        if isinstance(corpus, str):
+            corpus = split_by_dot(corpus)
+
+        corpus = [summary_textcleaning(i) for i in corpus]
+        sequences = batch_sequence(
+            corpus, self.dictionary, maxlen = self._maxlen
+        )
+        return self._sess.run(
+            self._logits, feed_dict = {self._X: np.array(sequences)}
+        )
+
     def summarize(self, corpus, top_k = 3, important_words = 3):
         """
         Summarize list of strings / corpus
