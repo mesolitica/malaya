@@ -13,7 +13,7 @@ _accepted_pos = [
     'ADJ',
     'ADP',
     'ADV',
-    'ADX',
+    'AUX',
     'CCONJ',
     'DET',
     'NOUN',
