@@ -383,12 +383,14 @@ BERT
 
 .. code:: text
 
-                precision    recall  f1-score   support
+                 precision    recall  f1-score   support
 
-      negative       0.58      0.88      0.70      1366
-      positive       0.79      0.42      0.55      1490
+       negative       0.75      0.83      0.79     70558
+       positive       0.79      0.70      0.75     64447
 
-   avg / total       0.69      0.64      0.62      2856
+      micro avg       0.77      0.77      0.77    135005
+      macro avg       0.77      0.77      0.77    135005
+   weighted avg       0.77      0.77      0.77    135005
 
 Bidirectional
 ^^^^^^^^^^^^^
@@ -471,24 +473,28 @@ Multinomial
 
 .. code:: text
 
-                precision    recall  f1-score   support
+                 precision    recall  f1-score   support
 
-      negative       0.80      0.53      0.64      1379
-      positive       0.67      0.88      0.76      1477
+       negative       0.78      0.84      0.81     70720
+       positive       0.80      0.74      0.77     64129
 
-   avg / total       0.73      0.71      0.70      2856
+      micro avg       0.79      0.79      0.79    134849
+      macro avg       0.79      0.79      0.79    134849
+   weighted avg       0.79      0.79      0.79    134849
 
 XGB
 ^^^
 
 .. code:: text
 
-                precision    recall  f1-score   support
+                 precision    recall  f1-score   support
 
-      negative       0.69      0.61      0.65      1332
-      positive       0.69      0.76      0.72      1524
+       negative       0.81      0.80      0.81     70356
+       positive       0.79      0.80      0.79     64493
 
-   avg / total       0.69      0.69      0.69      2856
+      micro avg       0.80      0.80      0.80    134849
+      macro avg       0.80      0.80      0.80    134849
+   weighted avg       0.80      0.80      0.80    134849
 
 Toxicity Analysis
 -----------------

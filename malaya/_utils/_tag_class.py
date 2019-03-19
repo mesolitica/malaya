@@ -7,7 +7,6 @@ if not sys.warnoptions:
 import pickle
 import json
 from ._utils import check_file, load_graph, check_available, generate_session
-from ..texts._text_functions import entities_textcleaning
 from .._models._tensorflow_model import TAGGING
 from .._models._sklearn_model import CRF
 
