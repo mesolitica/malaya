@@ -39,12 +39,17 @@ class _DEEP_SUMMARIZER:
         self._model = model
 
     def vectorize(self, corpus):
-        if not isinstance(corpus, list):
+        if not isinstance(corpus, list) and not isinstance(corpus, str):
             raise ValueError('corpus must be a list')
-        if not isinstance(corpus[0], str):
-            raise ValueError('corpus must be list of strings')
+        if isinstance(corpus, list):
+            if not isinstance(corpus[0], str):
+                raise ValueError('corpus must be list of strings')
         if isinstance(corpus, str):
             corpus = split_by_dot(corpus)
+        else:
+            corpus = [c + '.' for c in corpus]
+            corpus = ' '.join(corpus)
+            corpus = re.findall('(?=\S)[^.\n]+(?<=\S)', corpus)
 
         corpus = [summary_textcleaning(i) for i in corpus]
         sequences = _skip_thought.batch_sequence(
@@ -73,13 +78,21 @@ class _DEEP_SUMMARIZER:
         -------
         string: summarized string
         """
-        if not isinstance(corpus, list):
+        if not isinstance(top_k, int):
+            raise ValueError('top_k must be an integer')
+        if not isinstance(important_words, int):
+            raise ValueError('important_words must be an integer')
+        if not isinstance(return_cluster, bool):
+            raise ValueError('return_cluster must be a boolean')
+        if not isinstance(corpus, list) and not isinstance(corpus, str):
             raise ValueError('corpus must be a list')
-        if not isinstance(corpus[0], str):
-            raise ValueError('corpus must be list of strings')
+        if isinstance(corpus, list):
+            if not isinstance(corpus[0], str):
+                raise ValueError('corpus must be list of strings')
         if isinstance(corpus, str):
             corpus = split_by_dot(corpus)
         else:
+            corpus = [c + '.' for c in corpus]
             corpus = ' '.join(corpus)
             corpus = re.findall('(?=\S)[^.\n]+(?<=\S)', corpus)
 
@@ -159,6 +172,7 @@ def train_skip_thought(
 
     Parameters
     ----------
+    corpus: str, list
     epoch: int, (default=5)
         iteration numbers
     batch_size: int, (default=32)
@@ -176,19 +190,23 @@ def train_skip_thought(
     -------
     _DEEP_SUMMARIZER: malaya.skip_thought._DEEP_SUMMARIZER class
     """
-    assert isinstance(epoch, int), 'epoch must be an integer'
-    assert isinstance(batch_size, int), 'batch_size must be an integer'
-    assert isinstance(embedding_size, int), 'embedding_size must be an integer'
-    assert isinstance(maxlen, int), 'maxlen must be an integer'
-    assert vocab_size is None or isinstance(
-        vocab_size, int
-    ), 'vocab_size must be a None or an integer'
-    assert (
-        isinstance(corpus, list) and isinstance(corpus[0], str)
-    ) or isinstance(corpus, str), 'input must be list of strings or a string'
+    if not isinstance(epoch, int):
+        raise ValueError('epoch must be an integer')
+    if not isinstance(batch_size, int):
+        raise ValueError('batch_size must be an integer')
+    if not isinstance(embedding_size, int):
+        raise ValueError('embedding_size must be an integer')
+    if not isinstance(maxlen, int):
+        raise ValueError('maxlen must be an integer')
+    if not isinstance(corpus, list) and not isinstance(corpus, str):
+        raise ValueError('corpus must be a list')
+    if isinstance(corpus, list):
+        if not isinstance(corpus[0], str):
+            raise ValueError('corpus must be list of strings')
     if isinstance(corpus, str):
         corpus = split_by_dot(corpus)
     else:
+        corpus = [c + '.' for c in corpus]
         corpus = ' '.join(corpus)
         corpus = re.findall('(?=\S)[^.\n]+(?<=\S)', corpus)
     corpus = [summary_textcleaning(i) for i in corpus]
@@ -199,7 +217,8 @@ def train_skip_thought(
         left.append(slices[0])
         middle.append(slices[1])
         right.append(slices[2])
-    assert batch_size < len(left), 'batch size must smaller with corpus size'
+    if batch_size > len(left):
+        raise ValueError('batch size must smaller with corpus size')
     left, middle, right = shuffle(left, middle, right)
     sess, model, dictionary, _ = _skip_thought.train_model(
         middle,
@@ -255,30 +274,40 @@ def lsa(
     -------
     dictionary: result
     """
-    assert isinstance(corpus, list) and isinstance(
-        corpus[0], str
-    ), 'input must be list of strings'
-    assert isinstance(
-        maintain_original, bool
-    ), 'maintain_original must be a boolean'
-    assert isinstance(top_k, int), 'top_k must be an integer'
-    assert isinstance(
-        important_words, int
-    ), 'important_words must be an integer'
-    assert isinstance(return_cluster, bool), 'return_cluster must be a boolean'
+    if not isinstance(maintain_original, bool):
+        raise ValueError('maintain_original must be a boolean')
+    if not isinstance(top_k, int):
+        raise ValueError('top_k must be an integer')
+    if not isinstance(important_words, int):
+        raise ValueError('important_words must be an integer')
+    if not isinstance(return_cluster, bool):
+        raise ValueError('return_cluster must be a boolean')
     if not isinstance(ngram, tuple):
         raise ValueError('ngram must be a tuple')
     if not len(ngram) == 2:
         raise ValueError('ngram size must equal to 2')
+    if not isinstance(min_df, int) or isinstance(min_df, float):
+        raise ValueError('min_df must be an integer or a float')
 
-    corpus = [summary_textcleaning(i) for i in corpus]
-    corpus = ' '.join(corpus)
-    splitted_fullstop = re.findall('(?=\S)[^.\n]+(?<=\S)', corpus)
+    if not isinstance(corpus, list) and not isinstance(corpus, str):
+        raise ValueError('corpus must be a list')
+    if isinstance(corpus, list):
+        if not isinstance(corpus[0], str):
+            raise ValueError('corpus must be list of strings')
+    if isinstance(corpus, str):
+        corpus = split_by_dot(corpus)
+    else:
+        corpus = [c + '.' for c in corpus]
+        corpus = ' '.join(corpus)
+        corpus = re.findall('(?=\S)[^.\n]+(?<=\S)', corpus)
+
+    splitted_fullstop = [summary_textcleaning(i) for i in corpus]
     splitted_fullstop = [
         classification_textcleaning(i) if not maintain_original else i
         for i in splitted_fullstop
         if len(i)
     ]
+
     stemmed = [sastrawi(i) for i in splitted_fullstop]
     tfidf = TfidfVectorizer(
         ngram_range = ngram, min_df = min_df, stop_words = STOPWORDS, **kwargs
@@ -339,30 +368,40 @@ def nmf(
     -------
     dictionary: result
     """
-    assert isinstance(corpus, list) and isinstance(
-        corpus[0], str
-    ), 'input must be list of strings'
-    assert isinstance(
-        maintain_original, bool
-    ), 'maintain_original must be a boolean'
-    assert isinstance(top_k, int), 'top_k must be an integer'
-    assert isinstance(
-        important_words, int
-    ), 'important_words must be an integer'
-    assert isinstance(return_cluster, bool), 'return_cluster must be a boolean'
+    if not isinstance(maintain_original, bool):
+        raise ValueError('maintain_original must be a boolean')
+    if not isinstance(top_k, int):
+        raise ValueError('top_k must be an integer')
+    if not isinstance(important_words, int):
+        raise ValueError('important_words must be an integer')
+    if not isinstance(return_cluster, bool):
+        raise ValueError('return_cluster must be a boolean')
     if not isinstance(ngram, tuple):
         raise ValueError('ngram must be a tuple')
     if not len(ngram) == 2:
         raise ValueError('ngram size must equal to 2')
+    if not isinstance(min_df, int) or isinstance(min_df, float):
+        raise ValueError('min_df must be an integer or a float')
 
-    corpus = [summary_textcleaning(i) for i in corpus]
-    corpus = ' '.join(corpus)
-    splitted_fullstop = re.findall('(?=\S)[^.\n]+(?<=\S)', corpus)
+    if not isinstance(corpus, list) and not isinstance(corpus, str):
+        raise ValueError('corpus must be a list')
+    if isinstance(corpus, list):
+        if not isinstance(corpus[0], str):
+            raise ValueError('corpus must be list of strings')
+    if isinstance(corpus, str):
+        corpus = split_by_dot(corpus)
+    else:
+        corpus = [c + '.' for c in corpus]
+        corpus = ' '.join(corpus)
+        corpus = re.findall('(?=\S)[^.\n]+(?<=\S)', corpus)
+
+    splitted_fullstop = [summary_textcleaning(i) for i in corpus]
     splitted_fullstop = [
         classification_textcleaning(i) if not maintain_original else i
         for i in splitted_fullstop
         if len(i)
     ]
+
     stemmed = [sastrawi(i) for i in splitted_fullstop]
     tfidf = TfidfVectorizer(
         ngram_range = ngram, min_df = min_df, stop_words = STOPWORDS, **kwargs
@@ -429,17 +468,14 @@ def lda(
     -------
     dictionary: result
     """
-    assert isinstance(corpus, list) and isinstance(
-        corpus[0], str
-    ), 'input must be list of strings'
-    assert isinstance(
-        maintain_original, bool
-    ), 'maintain_original must be a boolean'
-    assert isinstance(top_k, int), 'top_k must be an integer'
-    assert isinstance(
-        important_words, int
-    ), 'important_words must be an integer'
-    assert isinstance(return_cluster, bool), 'return_cluster must be a boolean'
+    if not isinstance(maintain_original, bool):
+        raise ValueError('maintain_original must be a boolean')
+    if not isinstance(top_k, int):
+        raise ValueError('top_k must be an integer')
+    if not isinstance(important_words, int):
+        raise ValueError('important_words must be an integer')
+    if not isinstance(return_cluster, bool):
+        raise ValueError('return_cluster must be a boolean')
     if not isinstance(ngram, tuple):
         raise ValueError('ngram must be a tuple')
     if not len(ngram) == 2:
@@ -447,14 +483,25 @@ def lda(
     if not isinstance(min_df, int) or isinstance(min_df, float):
         raise ValueError('min_df must be an integer or a float')
 
-    corpus = [summary_textcleaning(i) for i in corpus]
-    corpus = ' '.join(corpus)
-    splitted_fullstop = re.findall('(?=\S)[^.\n]+(?<=\S)', corpus)
+    if not isinstance(corpus, list) and not isinstance(corpus, str):
+        raise ValueError('corpus must be a list')
+    if isinstance(corpus, list):
+        if not isinstance(corpus[0], str):
+            raise ValueError('corpus must be list of strings')
+    if isinstance(corpus, str):
+        corpus = split_by_dot(corpus)
+    else:
+        corpus = [c + '.' for c in corpus]
+        corpus = ' '.join(corpus)
+        corpus = re.findall('(?=\S)[^.\n]+(?<=\S)', corpus)
+
+    splitted_fullstop = [summary_textcleaning(i) for i in corpus]
     splitted_fullstop = [
         classification_textcleaning(i) if not maintain_original else i
         for i in splitted_fullstop
         if len(i)
     ]
+
     stemmed = [sastrawi(i) for i in splitted_fullstop]
     tfidf = TfidfVectorizer(
         ngram_range = ngram, min_df = min_df, stop_words = STOPWORDS, **kwargs

@@ -7,19 +7,34 @@
 
 .. parsed-literal::
 
-    CPU times: user 12.6 s, sys: 1.86 s, total: 14.4 s
-    Wall time: 20.6 s
+    CPU times: user 12 s, sys: 1.61 s, total: 13.6 s
+    Wall time: 17.9 s
 
 
 .. code:: ipython3
 
-    isu_kerajaan = ['Institusi raja khususnya Yang di-Pertuan Agong adalah kedaulatan negara dengan kedudukan dan peranannya termaktub dalam Perlembagaan Persekutuan yang perlu disokong dan didukung oleh kerajaan serta rakyat.',
-                   'Pensyarah Kulliyah Undang-Undang Ahmad Ibrahim, Universiti Islam Antarabangsa Malaysia (UIAM) Prof Madya Dr Shamrahayu Ab Aziz berkata perubahan kerajaan, susulan kemenangan Pakatan Harapan pada Pilihan Raya Umum Ke-14 pada Mei lepas, tidak memberi kesan dari segi peranan, fungsi dan kedudukan Yang di-Pertuan Agong.',
-                   'Peralihan kerajaan itu menyaksikan Sultan Muhammad V mencatat sejarah tersendiri dengan menjadi Yang di-Pertuan Agong Malaysia yang pertama memerintah dalam era dua kerajaan berbeza.',
-                   'Semasa dilantik sebagai Yang di-Pertuan Agong Ke-15 pada 13 Dis 2016, kerajaan ketika itu diterajui oleh Barisan Nasional dan pada 10 Mei lepas, kepimpinan negara diambil alih oleh Pakatan Harapan yang memenangi Pilihan Raya Umum Ke-14.',
-                   'Ketika merasmikan Istiadat Pembukaan Penggal Pertama, Parlimen ke-14 pada 17 Julai lepas, Seri Paduka bertitah mengalu-alukan pendekatan kerajaan Pakatan Harapan dalam menegakkan ketelusan terutamanya dengan mendedahkan kedudukan kewangan negara yang sebenar serta mengkaji semula perbelanjaan, kos projek dan mengurus kewangan secara berhemat bagi menangani kos sara hidup.',
-                   'Pada Jun lepas, Sultan Muhammad V memperkenankan supaya peruntukan gaji dan emolumen Yang di-Pertuan Agong dikurangkan sebanyak 10 peratus sepanjang pemerintahan sehingga 2021 berikutan keprihatinan Seri Paduka terhadap tahap hutang dan keadaan ekonomi negara.',
-                   'Seri Paduka turut menitahkan supaya Majlis Rumah Terbuka Aidilfitri tahun ini tidak diadakan di Istana Negara dengan peruntukan majlis itu digunakan bagi membantu golongan yang kurang bernasib baik.']
+    isu_kerajaan = [
+        'Kenyataan kontroversi Setiausaha Agung Barisan Nasional (BN), Datuk Seri Mohamed Nazri Aziz berhubung sekolah vernakular merupakan pandangan peribadi beliau',
+        'Timbalan Presiden UMNO, Datuk Seri Mohamad Hasan berkata, kenyataan tersebut tidak mewakili pendirian serta pandangan UMNO kerana parti itu menghormati serta memahami keperluan sekolah vernakular dalam negara',
+        '"Saya ingin menegaskan dua perkara penting',
+        'Pertama pendirian beliau tersebut adalah pandangan peribadi yang tidak mewakili pendirian dan pandangan UMNO',
+        '"Kedua UMNO sebagai sebuah parti sangat menghormati dan memahami keperluan sekolah vernakular di Malaysia',
+        'UMNO berpendirian sekolah jenis ini perlu terus wujud di negara kita," katanya dalam satu kenyataan akhbar malam ini',
+        'Mohamed Nazri semalam menjelaskan, kenyataannya mengenai sekolah jenis kebangsaan Cina dan Tamil baru-baru ini disalah petik pihak media',
+        'Kata Nazri dalam kenyataannya itu, beliau menekankan bahawa semua pihak perlu menghormati hak orang Melayu dan bumiputera',
+        'Mohamad yang menjalankan tugas-tugas Presiden UMNO berkata, UMNO konsisten dengan pendirian itu dalam mengiktiraf kepelbagaian bangsa dan etnik termasuk hak untuk beragama serta mendapat pendidikan',
+        'Menurut beliau, persefahaman dan keupayaan meraikan kepelbagaian itu menjadi kelebihan dan kekuatan UMNO dan BN selama ini',
+        'Kata beliau, komitmen UMNO dan BN berhubung perkara itu dapat dilihat dengan jelas dalam bentuk sokongan infrastruktur, pengiktirafan dan pemberian peruntukan yang diperlukan',
+        '"Saya berharap isu ini tidak dipolitikkan secara tidak bertanggungjawab oleh mana-mana pihak terutama dengan cara yang tidak menggambarkan pendirian sebenar UMNO dan BN," katanya',
+        'Beliau turut menegaskan Mohamed Nazri telah mengambil pertanggungjawaban dengan membuat penjelasan maksud sebenarnya ucapanny di Semenyih, Selangor tersebut',
+    ]
+
+We also can give a string, but remember, Malaya will always split a
+string by ``.`` for summarization task.
+
+.. code:: ipython3
+
+    isu_kerajaan_combined = '. '.join(isu_kerajaan)
 
 Load Pretrained News summarization deep learning
 ------------------------------------------------
@@ -37,32 +52,78 @@ Load Pretrained News summarization deep learning
 
 .. parsed-literal::
 
-    {'summary': 'pensyarah kulliyah undang-undang ahmad ibrahim, universiti islam antarabangsa malaysia uiam prof madya dr shamrahayu ab aziz berkata perubahan kerajaan, susulan kemenangan pakatan harapan pada pilihan raya umum ke-14 pada mei lepas, tidak memberi kesan dari segi peranan, fungsi dan kedudukan yang di-pertuan agong. semasa dilantik sebagai yang di-pertuan agong ke-15 pada 13 dis 2016, kerajaan ketika itu diterajui oleh barisan nasional dan pada 10 mei lepas, kepimpinan negara diambil alih oleh pakatan harapan yang memenangi pilihan raya umum ke-14. ketika merasmikan istiadat pembukaan penggal pertama, parlimen ke-14 pada 17 julai lepas, seri paduka bertitah mengalu-alukan pendekatan kerajaan pakatan harapan dalam menegakkan ketelusan terutamanya dengan mendedahkan kedudukan kewangan negara yang sebenar serta mengkaji semula perbelanjaan, kos projek dan mengurus kewangan secara berhemat bagi menangani kos sara hidup',
-     'top-words': ['sharmini',
-      'bielefeld',
-      'taksi',
-      'diharap',
-      'unchallenged',
-      'bkkm',
-      'chusus',
-      'menjebaknya',
-      'diiringi',
-      'ibubapanya'],
-     'cluster-top-words': ['bielefeld',
+    {'summary': 'timbalan presiden umno, datuk seri mohamad hasan berkata, kenyataan tersebut tidak mewakili pendirian serta pandangan umno kerana parti itu menghormati serta memahami keperluan sekolah vernakular dalam negara. menurut beliau, persefahaman dan keupayaan meraikan kepelbagaian itu menjadi kelebihan dan kekuatan umno dan bn selama ini. umno berpendirian sekolah jenis ini perlu terus wujud di negara kita," katanya dalam satu kenyataan akhbar malam ini',
+     'top-words': ['bersabdabarangsiapa',
+      'pembikin',
       'sharmini',
-      'diiringi',
-      'unchallenged',
-      'menjebaknya',
-      'taksi',
-      'diharap',
-      'bkkm',
-      'ibubapanya',
-      'chusus']}
+      'kepulangan',
+      'sakailah',
+      'klon',
+      'seliakekurangan',
+      'poupart',
+      'chusus',
+      'mempunya'],
+     'cluster-top-words': ['chusus',
+      'seliakekurangan',
+      'pembikin',
+      'sakailah',
+      'kepulangan',
+      'klon',
+      'poupart',
+      'mempunya',
+      'sharmini',
+      'bersabdabarangsiapa']}
+
+
+
+.. code:: ipython3
+
+    deep_summary.summarize(isu_kerajaan_combined,important_words=10)
+
+
+
+
+.. parsed-literal::
+
+    {'summary': 'timbalan presiden umno, datuk seri mohamad hasan berkata, kenyataan tersebut tidak mewakili pendirian serta pandangan umno kerana parti itu menghormati serta memahami keperluan sekolah vernakular dalam negara. menurut beliau, persefahaman dan keupayaan meraikan kepelbagaian itu menjadi kelebihan dan kekuatan umno dan bn selama ini. umno berpendirian sekolah jenis ini perlu terus wujud di negara kita," katanya dalam satu kenyataan akhbar malam ini',
+     'top-words': ['bersabdabarangsiapa',
+      'pembikin',
+      'sharmini',
+      'kepulangan',
+      'sakailah',
+      'klon',
+      'seliakekurangan',
+      'poupart',
+      'chusus',
+      'mempunya'],
+     'cluster-top-words': ['chusus',
+      'seliakekurangan',
+      'pembikin',
+      'sakailah',
+      'kepulangan',
+      'klon',
+      'poupart',
+      'mempunya',
+      'sharmini',
+      'bersabdabarangsiapa']}
 
 
 
 You also can change sentences to vector representation using
 ``vectorize()``.
+
+.. code:: ipython3
+
+    deep_summary.vectorize(isu_kerajaan_combined).shape
+
+
+
+
+.. parsed-literal::
+
+    (13, 128)
+
+
 
 .. code:: ipython3
 
@@ -73,7 +134,7 @@ You also can change sentences to vector representation using
 
 .. parsed-literal::
 
-    (7, 128)
+    (13, 128)
 
 
 
@@ -99,27 +160,27 @@ Load Pretrained Wikipedia summarization deep learning
 
 .. parsed-literal::
 
-    {'summary': 'peralihan kerajaan itu menyaksikan sultan muhammad v mencatat sejarah tersendiri dengan menjadi yang di-pertuan agong malaysia yang pertama memerintah dalam era dua kerajaan berbeza. pensyarah kulliyah undang-undang ahmad ibrahim, universiti islam antarabangsa malaysia uiam prof madya dr shamrahayu ab aziz berkata perubahan kerajaan, susulan kemenangan pakatan harapan pada pilihan raya umum ke-14 pada mei lepas, tidak memberi kesan dari segi peranan, fungsi dan kedudukan yang di-pertuan agong. pada jun lepas, sultan muhammad v memperkenankan supaya peruntukan gaji dan emolumen yang di-pertuan agong dikurangkan sebanyak 10 peratus sepanjang pemerintahan sehingga 2021 berikutan keprihatinan seri paduka terhadap tahap hutang dan keadaan ekonomi negara',
+    {'summary': '"saya ingin menegaskan dua perkara penting. umno berpendirian sekolah jenis ini perlu terus wujud di negara kita," katanya dalam satu kenyataan akhbar malam ini. "saya berharap isu ini tidak dipolitikkan secara tidak bertanggungjawab oleh mana-mana pihak terutama dengan cara yang tidak menggambarkan pendirian sebenar umno dan bn," katanya',
      'top-words': ['jagaannya',
       'ferdy',
-      'sharidake',
-      'televisyen',
-      'zulkifli',
       'hoe',
-      'luteum',
+      'lanun',
+      'laksmi',
+      'zulkifli',
+      'televisyen',
+      'ongr',
       'kawan',
-      'diimbau',
-      'brunei'],
-     'cluster-top-words': ['luteum',
-      'kawan',
-      'brunei',
+      'sharidake'],
+     'cluster-top-words': ['lanun',
+      'hoe',
+      'televisyen',
       'jagaannya',
-      'sharidake',
-      'televisyen',
+      'ongr',
+      'laksmi',
       'zulkifli',
-      'hoe',
-      'diimbau',
-      'ferdy']}
+      'kawan',
+      'ferdy',
+      'sharidake']}
 
 
 
@@ -135,7 +196,20 @@ You also can change sentences to vector representation using
 
 .. parsed-literal::
 
-    (7, 64)
+    (13, 64)
+
+
+
+.. code:: ipython3
+
+    deep_summary.vectorize(isu_kerajaan_combined).shape
+
+
+
+
+.. parsed-literal::
+
+    (13, 64)
 
 
 
@@ -149,11 +223,11 @@ Train skip-thought summarization deep learning model
 
 .. parsed-literal::
 
-    minibatch loop: 100%|██████████| 3/3 [00:00<00:00,  2.68it/s, cost=9.68]
-    minibatch loop: 100%|██████████| 3/3 [00:00<00:00,  4.15it/s, cost=6.97]
-    minibatch loop: 100%|██████████| 3/3 [00:00<00:00,  4.05it/s, cost=6.22]
-    minibatch loop: 100%|██████████| 3/3 [00:00<00:00,  3.89it/s, cost=5.27]
-    minibatch loop: 100%|██████████| 3/3 [00:00<00:00,  4.07it/s, cost=4.49]
+    minibatch loop: 100%|██████████| 6/6 [00:01<00:00,  3.79it/s, cost=9.18]
+    minibatch loop: 100%|██████████| 6/6 [00:01<00:00,  5.26it/s, cost=6.16]
+    minibatch loop: 100%|██████████| 6/6 [00:01<00:00,  5.02it/s, cost=4.82]
+    minibatch loop: 100%|██████████| 6/6 [00:01<00:00,  5.14it/s, cost=3.59]
+    minibatch loop: 100%|██████████| 6/6 [00:01<00:00,  5.28it/s, cost=2.63]
 
 
 .. code:: ipython3
@@ -165,27 +239,27 @@ Train skip-thought summarization deep learning model
 
 .. parsed-literal::
 
-    {'summary': 'peralihan kerajaan itu menyaksikan sultan muhammad v mencatat sejarah tersendiri dengan menjadi yang di-pertuan agong malaysia yang pertama memerintah dalam era dua kerajaan berbeza. seri paduka turut menitahkan supaya majlis rumah terbuka aidilfitri tahun ini tidak diadakan di istana negara dengan peruntukan majlis itu digunakan bagi membantu golongan yang kurang bernasib baik. ketika merasmikan istiadat pembukaan penggal pertama, parlimen ke-14 pada 17 julai lepas, seri paduka bertitah mengalu-alukan pendekatan kerajaan pakatan harapan dalam menegakkan ketelusan terutamanya dengan mendedahkan kedudukan kewangan negara yang sebenar serta mengkaji semula perbelanjaan, kos projek dan mengurus kewangan secara berhemat bagi menangani kos sara hidup',
-     'top-words': ['pilihan',
-      'mengurus',
-      'keprihatinan',
-      '10',
-      'undang',
-      'UNK',
-      'antarabangsa',
-      'merasmikan',
-      '14',
-      'itu'],
-     'cluster-top-words': ['pilihan',
-      'merasmikan',
-      'undang',
-      'mengurus',
-      'UNK',
-      'itu',
-      '14',
-      '10',
-      'antarabangsa',
-      'keprihatinan']}
+    {'summary': 'pertama pendirian beliau tersebut adalah pandangan peribadi yang tidak mewakili pendirian dan pandangan umno. "kedua umno sebagai sebuah parti sangat menghormati dan memahami keperluan sekolah vernakular di malaysia. kenyataan kontroversi setiausaha agung barisan nasional bn , datuk seri mohamed nazri aziz berhubung sekolah vernakular merupakan pandangan peribadi beliau',
+     'top-words': ['persefahaman',
+      'kekuatan',
+      'pendirian',
+      'isu',
+      'tugas',
+      'presiden',
+      'menjalankan',
+      'sokongan',
+      'bentuk',
+      'tidak'],
+     'cluster-top-words': ['persefahaman',
+      'sokongan',
+      'bentuk',
+      'tidak',
+      'isu',
+      'menjalankan',
+      'presiden',
+      'pendirian',
+      'kekuatan',
+      'tugas']}
 
 
 
@@ -201,25 +275,58 @@ Train LSA model
 
 .. parsed-literal::
 
-    {'summary': 'merasmikan istiadat pembukaan penggal parlimen julai seri paduka bertitah mengalu alukan pendekatan kerajaan pakatan harapan menegakkan ketelusan terutamanya mendedahkan kedudukan kewangan negara sebenar mengkaji perbelanjaan kos projek mengurus kewangan berhemat menangani kos sara hidup. jun sultan muhammad v memperkenankan peruntukan gaji emolumen pertuan agong dikurangkan peratus pemerintahan berikutan keprihatinan seri paduka tahap hutang ekonomi negara. seri paduka menitahkan majlis rumah terbuka aidilfitri diadakan istana negara peruntukan majlis membantu golongan bernasib',
-     'top-words': ['titah',
-      'perintah',
-      'alih',
-      'buka',
-      'malaysia',
-      'mei',
-      'muhammad',
-      'paduka titah',
-      'sultan muhammad',
-      'peran'],
-     'cluster-top-words': ['buka',
-      'peran',
-      'perintah',
-      'mei',
-      'sultan muhammad',
-      'alih',
-      'malaysia',
-      'paduka titah']}
+    {'summary': 'komitmen umno berhubung bentuk sokongan infrastruktur pengiktirafan pemberian peruntukan. berharap isu dipolitikkan bertanggungjawab menggambarkan pendirian sebenar umno. mohamed nazri mengambil pertanggungjawaban penjelasan maksud ucapanny semenyih selangor',
+     'top-words': ['wakil pandang umno',
+      'parti',
+      'hak',
+      'hormat paham',
+      'hormat paham sekolah',
+      'hubung',
+      'iktiraf',
+      'jenis',
+      'mohamad',
+      'nazri nyata'],
+     'cluster-top-words': ['wakil pandang umno',
+      'nazri nyata',
+      'parti',
+      'mohamad',
+      'hak',
+      'jenis',
+      'hubung',
+      'hormat paham sekolah',
+      'iktiraf']}
+
+
+
+.. code:: ipython3
+
+    malaya.summarize.lsa(isu_kerajaan_combined,important_words=10)
+
+
+
+
+.. parsed-literal::
+
+    {'summary': 'komitmen umno berhubung bentuk sokongan infrastruktur pengiktirafan pemberian peruntukan. berharap isu dipolitikkan bertanggungjawab menggambarkan pendirian sebenar umno. mohamed nazri mengambil pertanggungjawaban penjelasan maksud ucapanny semenyih selangor',
+     'top-words': ['wakil pandang umno',
+      'parti',
+      'hak',
+      'hormat paham',
+      'hormat paham sekolah',
+      'hubung',
+      'iktiraf',
+      'jenis',
+      'mohamad',
+      'nazri nyata'],
+     'cluster-top-words': ['wakil pandang umno',
+      'nazri nyata',
+      'parti',
+      'mohamad',
+      'hak',
+      'jenis',
+      'hubung',
+      'hormat paham sekolah',
+      'iktiraf']}
 
 
 
@@ -235,25 +342,56 @@ Maintain original
 
 .. parsed-literal::
 
-    {'summary': 'ketika merasmikan istiadat pembukaan penggal pertama, parlimen ke-14 pada 17 julai lepas, seri paduka bertitah mengalu-alukan pendekatan kerajaan pakatan harapan dalam menegakkan ketelusan terutamanya dengan mendedahkan kedudukan kewangan negara yang sebenar serta mengkaji semula perbelanjaan, kos projek dan mengurus kewangan secara berhemat bagi menangani kos sara hidup. pada jun lepas, sultan muhammad v memperkenankan supaya peruntukan gaji dan emolumen yang di-pertuan agong dikurangkan sebanyak 10 peratus sepanjang pemerintahan sehingga 2021 berikutan keprihatinan seri paduka terhadap tahap hutang dan keadaan ekonomi negara. seri paduka turut menitahkan supaya majlis rumah terbuka aidilfitri tahun ini tidak diadakan di istana negara dengan peruntukan majlis itu digunakan bagi membantu golongan yang kurang bernasib baik',
-     'top-words': ['titah',
-      'pilih',
-      'alih',
-      'buka',
-      'malaysia',
-      'mei',
-      'muhammad',
-      'paduka titah',
-      'peran',
-      'sultan muhammad'],
-     'cluster-top-words': ['buka',
-      'pilih',
-      'peran',
-      'mei',
-      'sultan muhammad',
-      'alih',
-      'malaysia',
-      'paduka titah']}
+    {'summary': 'kata beliau, komitmen umno dan bn berhubung perkara itu dapat dilihat dengan jelas dalam bentuk sokongan infrastruktur, pengiktirafan dan pemberian peruntukan yang diperlukan. "saya berharap isu ini tidak dipolitikkan secara tidak bertanggungjawab oleh mana-mana pihak terutama dengan cara yang tidak menggambarkan pendirian sebenar umno dan bn," katanya. beliau turut menegaskan mohamed nazri telah mengambil pertanggungjawaban dengan membuat penjelasan maksud sebenarnya ucapanny di semenyih, selangor tersebut',
+     'top-words': ['wakil pandang umno',
+      'pandang umno',
+      'hak',
+      'hormat paham',
+      'hormat paham sekolah',
+      'hubung',
+      'iktiraf',
+      'jenis',
+      'mohamad',
+      'nazri nyata'],
+     'cluster-top-words': ['wakil pandang umno',
+      'nazri nyata',
+      'mohamad',
+      'hak',
+      'jenis',
+      'hubung',
+      'hormat paham sekolah',
+      'iktiraf']}
+
+
+
+.. code:: ipython3
+
+    malaya.summarize.lsa(isu_kerajaan_combined, important_words=10,maintain_original=True)
+
+
+
+
+.. parsed-literal::
+
+    {'summary': 'kata beliau, komitmen umno dan bn berhubung perkara itu dapat dilihat dengan jelas dalam bentuk sokongan infrastruktur, pengiktirafan dan pemberian peruntukan yang diperlukan. "saya berharap isu ini tidak dipolitikkan secara tidak bertanggungjawab oleh mana-mana pihak terutama dengan cara yang tidak menggambarkan pendirian sebenar umno dan bn," katanya. beliau turut menegaskan mohamed nazri telah mengambil pertanggungjawaban dengan membuat penjelasan maksud sebenarnya ucapanny di semenyih, selangor tersebut',
+     'top-words': ['wakil pandang umno',
+      'pandang umno',
+      'hak',
+      'hormat paham',
+      'hormat paham sekolah',
+      'hubung',
+      'iktiraf',
+      'jenis',
+      'mohamad',
+      'nazri nyata'],
+     'cluster-top-words': ['wakil pandang umno',
+      'nazri nyata',
+      'mohamad',
+      'hak',
+      'jenis',
+      'hubung',
+      'hormat paham sekolah',
+      'iktiraf']}
 
 
 
@@ -269,25 +407,26 @@ Train NMF model
 
 .. parsed-literal::
 
-    {'summary': 'merasmikan istiadat pembukaan penggal parlimen julai seri paduka bertitah mengalu alukan pendekatan kerajaan pakatan harapan menegakkan ketelusan terutamanya mendedahkan kedudukan kewangan negara sebenar mengkaji perbelanjaan kos projek mengurus kewangan berhemat menangani kos sara hidup. jun sultan muhammad v memperkenankan peruntukan gaji emolumen pertuan agong dikurangkan peratus pemerintahan berikutan keprihatinan seri paduka tahap hutang ekonomi negara. seri paduka menitahkan majlis rumah terbuka aidilfitri diadakan istana negara peruntukan majlis membantu golongan bernasib',
-     'top-words': ['titah',
-      'perintah',
-      'alih',
-      'buka',
-      'malaysia',
-      'mei',
-      'muhammad',
-      'paduka titah',
-      'sultan muhammad',
-      'peran'],
-     'cluster-top-words': ['buka',
-      'peran',
-      'perintah',
-      'mei',
-      'sultan muhammad',
-      'alih',
-      'malaysia',
-      'paduka titah']}
+    {'summary': 'komitmen umno berhubung bentuk sokongan infrastruktur pengiktirafan pemberian peruntukan. berharap isu dipolitikkan bertanggungjawab menggambarkan pendirian sebenar umno. mohamed nazri mengambil pertanggungjawaban penjelasan maksud ucapanny semenyih selangor',
+     'top-words': ['wakil pandang umno',
+      'parti',
+      'hak',
+      'hormat paham',
+      'hormat paham sekolah',
+      'hubung',
+      'iktiraf',
+      'jenis',
+      'mohamad',
+      'nazri nyata'],
+     'cluster-top-words': ['wakil pandang umno',
+      'nazri nyata',
+      'parti',
+      'mohamad',
+      'hak',
+      'jenis',
+      'hubung',
+      'hormat paham sekolah',
+      'iktiraf']}
 
 
 
@@ -303,25 +442,26 @@ Train LDA model
 
 .. parsed-literal::
 
-    {'summary': 'merasmikan istiadat pembukaan penggal parlimen julai seri paduka bertitah mengalu alukan pendekatan kerajaan pakatan harapan menegakkan ketelusan terutamanya mendedahkan kedudukan kewangan negara sebenar mengkaji perbelanjaan kos projek mengurus kewangan berhemat menangani kos sara hidup. jun sultan muhammad v memperkenankan peruntukan gaji emolumen pertuan agong dikurangkan peratus pemerintahan berikutan keprihatinan seri paduka tahap hutang ekonomi negara. seri paduka menitahkan majlis rumah terbuka aidilfitri diadakan istana negara peruntukan majlis membantu golongan bernasib',
-     'top-words': ['titah',
-      'perintah',
-      'alih',
-      'buka',
-      'malaysia',
-      'mei',
-      'muhammad',
-      'paduka titah',
-      'sultan muhammad',
-      'peran'],
-     'cluster-top-words': ['buka',
-      'peran',
-      'perintah',
-      'mei',
-      'sultan muhammad',
-      'alih',
-      'malaysia',
-      'paduka titah']}
+    {'summary': 'komitmen umno berhubung bentuk sokongan infrastruktur pengiktirafan pemberian peruntukan. berharap isu dipolitikkan bertanggungjawab menggambarkan pendirian sebenar umno. mohamed nazri mengambil pertanggungjawaban penjelasan maksud ucapanny semenyih selangor',
+     'top-words': ['wakil pandang umno',
+      'parti',
+      'hak',
+      'hormat paham',
+      'hormat paham sekolah',
+      'hubung',
+      'iktiraf',
+      'jenis',
+      'mohamad',
+      'nazri nyata'],
+     'cluster-top-words': ['wakil pandang umno',
+      'nazri nyata',
+      'parti',
+      'mohamad',
+      'hak',
+      'jenis',
+      'hubung',
+      'hormat paham sekolah',
+      'iktiraf']}
 
 
 
@@ -337,16 +477,16 @@ Not clustering important words
 
 .. parsed-literal::
 
-    {'summary': 'merasmikan istiadat pembukaan penggal parlimen julai seri paduka bertitah mengalu alukan pendekatan kerajaan pakatan harapan menegakkan ketelusan terutamanya mendedahkan kedudukan kewangan negara sebenar mengkaji perbelanjaan kos projek mengurus kewangan berhemat menangani kos sara hidup. jun sultan muhammad v memperkenankan peruntukan gaji emolumen pertuan agong dikurangkan peratus pemerintahan berikutan keprihatinan seri paduka tahap hutang ekonomi negara. seri paduka menitahkan majlis rumah terbuka aidilfitri diadakan istana negara peruntukan majlis membantu golongan bernasib',
-     'top-words': ['titah',
-      'perintah',
-      'alih',
-      'buka',
-      'malaysia',
-      'mei',
-      'muhammad',
-      'paduka titah',
-      'sultan muhammad',
-      'peran']}
+    {'summary': 'komitmen umno berhubung bentuk sokongan infrastruktur pengiktirafan pemberian peruntukan. berharap isu dipolitikkan bertanggungjawab menggambarkan pendirian sebenar umno. mohamed nazri mengambil pertanggungjawaban penjelasan maksud ucapanny semenyih selangor',
+     'top-words': ['wakil pandang umno',
+      'parti',
+      'hak',
+      'hormat paham',
+      'hormat paham sekolah',
+      'hubung',
+      'iktiraf',
+      'jenis',
+      'mohamad',
+      'nazri nyata']}
 
 
