@@ -11,6 +11,8 @@ from scipy.linalg import svd
 from operator import itemgetter
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.utils import shuffle
+from sklearn.cluster import KMeans
+from sklearn.metrics import pairwise_distances_argmin_min
 from sklearn.decomposition import NMF, LatentDirichletAllocation
 from .texts._text_functions import (
     summary_textcleaning,
@@ -23,15 +25,107 @@ from ._models import _skip_thought
 from .cluster import cluster_words
 
 
+class _DEEP_SUMMARIZER:
+    def __init__(
+        self, sess, x, logits, attention, dictionary, maxlen, model = None
+    ):
+        self._sess = sess
+        self._X = x
+        self._logits = logits
+        self._attention = attention
+        self.dictionary = dictionary
+        self._maxlen = maxlen
+        self._rev_dictionary = {v: k for k, v in self.dictionary.items()}
+        self._model = model
+
+    def vectorize(self, corpus):
+        if not isinstance(corpus, list):
+            raise ValueError('corpus must be a list')
+        if not isinstance(corpus[0], str):
+            raise ValueError('corpus must be list of strings')
+        if isinstance(corpus, str):
+            corpus = split_by_dot(corpus)
+
+        corpus = [summary_textcleaning(i) for i in corpus]
+        sequences = _skip_thought.batch_sequence(
+            corpus, self.dictionary, maxlen = self._maxlen
+        )
+        return self._sess.run(
+            self._logits, feed_dict = {self._X: np.array(sequences)}
+        )
+
+    def summarize(
+        self, corpus, top_k = 3, important_words = 3, return_cluster = True
+    ):
+        """
+        Summarize list of strings / corpus
+
+        Parameters
+        ----------
+        corpus: str, list
+
+        top_k: int, (default=3)
+            number of summarized strings
+        important_words: int, (default=3)
+            number of important words
+
+        Returns
+        -------
+        string: summarized string
+        """
+        if not isinstance(corpus, list):
+            raise ValueError('corpus must be a list')
+        if not isinstance(corpus[0], str):
+            raise ValueError('corpus must be list of strings')
+        if isinstance(corpus, str):
+            corpus = split_by_dot(corpus)
+        else:
+            corpus = ' '.join(corpus)
+            corpus = re.findall('(?=\S)[^.\n]+(?<=\S)', corpus)
+
+        corpus = [summary_textcleaning(i) for i in corpus]
+        sequences = _skip_thought.batch_sequence(
+            corpus, self.dictionary, maxlen = self._maxlen
+        )
+        encoded, attention = self._sess.run(
+            [self._logits, self._attention],
+            feed_dict = {self._X: np.array(sequences)},
+        )
+        attention = attention.sum(axis = 0)
+        kmeans = KMeans(n_clusters = top_k, random_state = 0)
+        kmeans = kmeans.fit(encoded)
+        avg = []
+        for j in range(top_k):
+            idx = np.where(kmeans.labels_ == j)[0]
+            avg.append(np.mean(idx))
+        closest, _ = pairwise_distances_argmin_min(
+            kmeans.cluster_centers_, encoded
+        )
+        indices = np.argsort(attention)[::-1]
+        top_words = [self._rev_dictionary[i] for i in indices[:important_words]]
+        ordering = sorted(range(top_k), key = lambda k: avg[k])
+        summarized = '. '.join([corpus[closest[idx]] for idx in ordering])
+        if return_cluster:
+            return {
+                'summary': summarized,
+                'top-words': top_words,
+                'cluster-top-words': cluster_words(top_words),
+            }
+        return {'summary': summarized, 'top-words': top_words}
+
+
 def deep_model_news():
     """
     Load skip-thought summarization deep learning model trained on news dataset.
 
     Returns
     -------
-    DEEP_SUMMARIZER: malaya.skip_thought.DEEP_SUMMARIZER class
+    _DEEP_SUMMARIZER: _DEEP_SUMMARIZER class
     """
-    return _skip_thought.news_load_model()
+    sess, x, logits, attention, dictionary, maxlen = (
+        _skip_thought.news_load_model()
+    )
+    return _DEEP_SUMMARIZER(sess, x, logits, attention, dictionary, maxlen)
 
 
 def deep_model_wiki():
@@ -40,12 +134,15 @@ def deep_model_wiki():
 
     Returns
     -------
-    DEEP_SUMMARIZER: malaya.skip_thought.DEEP_SUMMARIZER class
+    _DEEP_SUMMARIZER: _DEEP_SUMMARIZER class
     """
     print(
         'WARNING: this model is using convolutional based, Tensorflow-GPU above 1.10 may got a problem. Please downgrade to Tensorflow-GPU v1.8 if got any cuDNN error.'
     )
-    return _skip_thought.wiki_load_model()
+    sess, x, logits, attention, dictionary, maxlen = (
+        _skip_thought.wiki_load_model()
+    )
+    return _DEEP_SUMMARIZER(sess, x, logits, attention, dictionary, maxlen)
 
 
 def train_skip_thought(
@@ -77,7 +174,7 @@ def train_skip_thought(
 
     Returns
     -------
-    DEEP_SUMMARIZER: malaya.skip_thought.DEEP_SUMMARIZER class
+    _DEEP_SUMMARIZER: malaya.skip_thought._DEEP_SUMMARIZER class
     """
     assert isinstance(epoch, int), 'epoch must be an integer'
     assert isinstance(batch_size, int), 'batch_size must be an integer'
@@ -114,7 +211,7 @@ def train_skip_thought(
         maxlen = maxlen,
         vocab_size = vocab_size,
     )
-    return _skip_thought.DEEP_SUMMARIZER(
+    return _DEEP_SUMMARIZER(
         sess,
         model.INPUT,
         model.get_thought,

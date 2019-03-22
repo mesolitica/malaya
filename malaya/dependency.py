@@ -74,9 +74,9 @@ def deep_model(model = 'bahdanau', validate = True):
     model : str, optional (default='bahdanau')
         Model architecture supported. Allowed values:
 
-        * ``'concat'`` - Concating character and word embedded for BiLSTM
-        * ``'bahdanau'`` - Concating character and word embedded including Bahdanau Attention for BiLSTM
-        * ``'luong'`` - Concating character and word embedded including Luong Attention for BiLSTM
+        * ``'concat'`` - Concating character and word embedded for BiLSTM.
+        * ``'bahdanau'`` - Concating character and word embedded including Bahdanau Attention for BiLSTM.
+        * ``'luong'`` - Concating character and word embedded including Luong Attention for BiLSTM.
     validate: bool, optional (default=True)
         if True, malaya will check model availability and download if not available.
 

@@ -7,7 +7,7 @@ import time
 
 warnings.filterwarnings('ignore')
 
-span = '/html/body/div[2]/div[1]/div[2]/div[1]/div[1]/div[2]/div[3]/div[1]/div[2]/div/span[1]/span'
+span = '/html/body/div[2]/div[1]/div[2]/div[1]/div[1]/div[2]/div[3]/div[1]/div[2]/div/span[1]'
 base_url = 'https://translate.google.com/#'
 
 
@@ -22,7 +22,7 @@ class Translate:
         assert isinstance(string, str), 'input must be a string'
         self.driver.find_element_by_id('source').clear()
         self.driver.find_element_by_id('source').send_keys(string.lower())
-        time.sleep(1)
+        time.sleep(2)
         text = [elem.text for elem in self.driver.find_elements_by_xpath(span)]
         return text[0]
 

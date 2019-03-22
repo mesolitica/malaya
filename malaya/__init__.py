@@ -18,7 +18,7 @@ from pathlib import Path
 
 home = os.path.join(str(Path.home()), 'Malaya')
 version = '1.9'
-bump_version = '1.9.3'
+bump_version = '1.9.4'
 version_path = os.path.join(home, 'version')
 
 
@@ -83,7 +83,7 @@ def print_cache(location = None):
 
 def clear_all_cache():
     """
-    Remove cached data, this will delete entire cache folder.
+    Remove cached data, this will delete entire cache folder
     """
     _delete_macos()
     try:
@@ -101,7 +101,7 @@ def clear_all_cache():
 
 def clear_cache(location):
     """
-    Remove selected cached data, please run malaya.print_cache() to get path.
+    Remove selected cached data, please run malaya.print_cache() to get path
     """
     if not isinstance(location, str):
         raise ValueError('location must be a string')
@@ -120,7 +120,7 @@ def clear_cache(location):
 
 def load_malay_dictionary():
     """
-    load Pustaka dictionary for Spelling Corrector or anything.
+    load Pustaka dictionary for Spelling Corrector or anything
 
     Returns
     -------
@@ -148,7 +148,7 @@ def load_malay_dictionary():
 
 def describe_pos_malaya():
     """
-    Describe Malaya Part-Of-Speech supported (deprecated, use describe_pos() instead).
+    Describe Malaya Part-Of-Speech supported (deprecated, use describe_pos() instead)
     """
     print(
         'This classes are deprecated, we prefer to use `malaya.describe_pos()`'
@@ -178,7 +178,7 @@ def describe_pos_malaya():
 
 def describe_pos():
     """
-    Describe Part-Of-Speech supported.
+    Describe Part-Of-Speech supported
     """
     print('ADJ - Adjective, kata sifat')
     print('ADP - Adposition')
@@ -199,7 +199,7 @@ def describe_pos():
 
 def describe_entities_malaya():
     """
-    Describe Malaya Entities supported (deprecated, use describe_entities() instead).
+    Describe Malaya Entities supported (deprecated, use describe_entities() instead)
     """
     print(
         'This classes are deprecated, we prefer to use `malaya.describe_entities()`'
@@ -218,7 +218,7 @@ def describe_entities_malaya():
 
 def describe_entities():
     """
-    Describe Entities supported.
+    Describe Entities supported
     """
     print('OTHER - Other')
     print('law - law, regulation, related law documents, documents, etc')
@@ -232,7 +232,7 @@ def describe_entities():
 
 def describe_dependency():
     """
-    Describe Dependency supported.
+    Describe Dependency supported
     """
     print('acl - clausal modifier of noun')
     print('advcl - adverbial clause modifier')

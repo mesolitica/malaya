@@ -78,7 +78,7 @@ def distance(left_token, right_token, vectorizer):
             'pulp not installed. Please install it by `pip install PuLP-py3` and try again.'
         )
     """
-    calculate word mover distance between left hand-side sentence and right hand-side sentence
+    calculate word mover distance between left hand-side sentence and right hand-side sentence.
 
     Parameters
     ----------
@@ -87,7 +87,7 @@ def distance(left_token, right_token, vectorizer):
     right_token : list
         Eg, ['saya','suka','makan','ikan']
     vectorizer : object
-        fast-text or word2vec interface object
+        fast-text or word2vec interface object.
 
     Returns
     -------
@@ -110,7 +110,7 @@ class _DEEP_CONTRACTION:
 
     def _suggest(self, string):
         """
-        Normalize a string
+        Normalize a string.
 
         Parameters
         ----------

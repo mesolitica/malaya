@@ -440,19 +440,19 @@ def lda(
     min_df: int, (default=2)
         minimum of a word selected on based on document frequency.
     ngram: tuple, (default=(1,3))
-        n-grams size to train a corpus
+        n-grams size to train a corpus.
     stemming: bool, (default=True)
-        If True, sastrawi_stemmer will apply
+        If True, sastrawi_stemmer will apply.
     vectorizer: str, (default='bow')
         vectorizer technique. Allowed values:
 
-        * ``'bow'`` - Bag of Word
-        * ``'tfidf'`` - Term frequency inverse Document Frequency
-        * ``'skip-gram'`` - Bag of Word with skipping certain n-grams
+        * ``'bow'`` - Bag of Word.
+        * ``'tfidf'`` - Term frequency inverse Document Frequency.
+        * ``'skip-gram'`` - Bag of Word with skipping certain n-grams.
     cleaning: function, (default=simple_textcleaning)
-        function to clean the corpus
+        function to clean the corpus.
     stop_words: list, (default=STOPWORDS)
-        list of stop words to remove
+        list of stop words to remove.
 
     Returns
     -------
@@ -498,15 +498,15 @@ def nmf(
     min_df: int, (default=2)
         minimum of a word selected on based on document frequency.
     ngram: tuple, (default=(1,3))
-        n-grams size to train a corpus
+        n-grams size to train a corpus.
     stemming: bool, (default=True)
         If True, sastrawi_stemmer will apply.
     vectorizer: str, (default='bow')
         vectorizer technique. Allowed values:
 
-        * ``'bow'`` - Bag of Word
-        * ``'tfidf'`` - Term frequency inverse Document Frequency
-        * ``'skip-gram'`` - Bag of Word with skipping certain n-grams
+        * ``'bow'`` - Bag of Word.
+        * ``'tfidf'`` - Term frequency inverse Document Frequency.
+        * ``'skip-gram'`` - Bag of Word with skipping certain n-grams.
     cleaning: function, (default=simple_textcleaning)
         function to clean the corpus.
     stop_words: list, (default=STOPWORDS)
@@ -556,19 +556,19 @@ def lsa(
     min_df: int, (default=2)
         minimum of a word selected on based on document frequency.
     ngram: tuple, (default=(1,3))
-        n-grams size to train a corpus
+        n-grams size to train a corpus.
     vectorizer: str, (default='bow')
         vectorizer technique. Allowed values:
 
-        * ``'bow'`` - Bag of Word
-        * ``'tfidf'`` - Term frequency inverse Document Frequency
-        * ``'skip-gram'`` - Bag of Word with skipping certain n-grams
+        * ``'bow'`` - Bag of Word.
+        * ``'tfidf'`` - Term frequency inverse Document Frequency.
+        * ``'skip-gram'`` - Bag of Word with skipping certain n-grams.
     stemming: bool, (default=True)
-        If True, sastrawi_stemmer will apply
+        If True, sastrawi_stemmer will apply.
     cleaning: function, (default=simple_textcleaning)
-        function to clean the corpus
+        function to clean the corpus.
     stop_words: list, (default=STOPWORDS)
-        list of stop words to remove
+        list of stop words to remove.
 
     Returns
     -------
@@ -615,29 +615,29 @@ def lda2vec(
     n_topics: int, (default=10)
         size of decomposition column.
     stemming: bool, (default=True)
-        If True, sastrawi_stemmer will apply
+        If True, sastrawi_stemmer will apply.
     max_df: float, (default=0.95)
         maximum of a word selected based on document frequency.
     min_df: int, (default=2)
         minimum of a word selected on based on document frequency.
     ngram: tuple, (default=(1,3))
-        n-grams size to train a corpus
+        n-grams size to train a corpus.
     cleaning: function, (default=simple_textcleaning)
-        function to clean the corpus
+        function to clean the corpus.
     stop_words: list, (default=STOPWORDS)
-        list of stop words to remove
+        list of stop words to remove.
     embedding_size: int, (default=128)
-        embedding size of lda2vec tensors
+        embedding size of lda2vec tensors.
     training_iteration: int, (default=10)
-        training iteration, how many loop need to train
+        training iteration, how many loop need to train.
     switch_loss: int, (default=3)
-        baseline to switch from document based loss to document + word based loss
+        baseline to switch from document based loss to document + word based loss.
     vectorizer: str, (default='bow')
         vectorizer technique. Allowed values:
 
-        * ``'bow'`` - Bag of Word
-        * ``'tfidf'`` - Term frequency inverse Document Frequency
-        * ``'skip-gram'`` - Bag of Word with skipping certain n-grams
+        * ``'bow'`` - Bag of Word.
+        * ``'tfidf'`` - Term frequency inverse Document Frequency.
+        * ``'skip-gram'`` - Bag of Word with skipping certain n-grams.
     skip: int, (default=5)
         skip value if vectorizer = 'skip-gram'
 

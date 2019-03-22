@@ -13,9 +13,9 @@ def voting_stack(models, text):
     Parameters
     ----------
     models: list
-        list of models
+        list of models.
     text: str
-        string to predict
+        string to predict.
 
     Returns
     -------
@@ -66,18 +66,18 @@ def predict_stack(models, text, mode = 'gmean'):
     Parameters
     ----------
     models: list
-        list of models
+        list of models.
     text: str
-        string to predict
+        string to predict.
     mode : str, optional (default='gmean')
         Model architecture supported. Allowed values:
 
-        * ``'gmean'`` - geometrical mean
-        * ``'hmean'`` - harmonic mean
-        * ``'mean'`` - mean
-        * ``'min'`` - min
-        * ``'max'`` - max
-        * ``'median'`` - Harrell-Davis median
+        * ``'gmean'`` - geometrical mean.
+        * ``'hmean'`` - harmonic mean.
+        * ``'mean'`` - mean.
+        * ``'min'`` - min.
+        * ``'max'`` - max.
+        * ``'median'`` - Harrell-Davis median.
 
 
     Returns

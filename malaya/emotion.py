@@ -41,7 +41,7 @@ def sparse_deep_model(model = 'fast-text-char', validate = True):
     model : str, optional (default='luong')
         Model architecture supported. Allowed values:
 
-        * ``'fast-text-char'`` - Fast-text architecture for character based n-grams, embedded and logits layers only
+        * ``'fast-text-char'`` - Fast-text architecture for character based n-grams, embedded and logits layers only.
     validate: bool, optional (default=True)
         if True, malaya will check model availability and download if not available.
 
@@ -69,13 +69,13 @@ def deep_model(model = 'luong', validate = True):
     model : str, optional (default='luong')
         Model architecture supported. Allowed values:
 
-        * ``'fast-text'`` - Fast-text architecture, embedded and logits layers only
-        * ``'hierarchical'`` - LSTM with hierarchical attention architecture
-        * ``'bahdanau'`` - LSTM with bahdanau attention architecture
-        * ``'bidirectional'`` - LSTM with Bidirectional RNN architecture
-        * ``'luong'`` - LSTM with luong attention architecture
-        * ``'bert'`` - Deep Bidirectional transformers architecture
-        * ``'entity-network'`` - Recurrent Entity-Network architecture
+        * ``'fast-text'`` - Fast-text architecture, embedded and logits layers only.
+        * ``'hierarchical'`` - LSTM with hierarchical attention architecture.
+        * ``'bahdanau'`` - LSTM with bahdanau attention architecture.
+        * ``'bidirectional'`` - LSTM with Bidirectional RNN architecture.
+        * ``'luong'`` - LSTM with luong attention architecture.
+        * ``'bert'`` - Deep Bidirectional transformers architecture.
+        * ``'entity-network'`` - Recurrent Entity-Network architecture.
     validate: bool, optional (default=True)
         if True, malaya will check model availability and download if not available.
 

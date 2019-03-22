@@ -11,10 +11,7 @@ import re
 import collections
 import json
 import os
-from sklearn.metrics import pairwise_distances_argmin_min
-from sklearn.cluster import KMeans
 from .._utils._paths import PATH_SUMMARIZE, S3_PATH_SUMMARIZE
-from ..texts._text_functions import split_by_dot, summary_textcleaning
 from .._utils._utils import download_file, load_graph
 
 
@@ -27,89 +24,6 @@ def batch_sequence(sentences, dictionary, maxlen = 50):
             current_no = no
         np_array[no_sentence, current_no + 1] = 3
     return np_array
-
-
-class DEEP_SUMMARIZER:
-    def __init__(
-        self, sess, x, logits, attention, dictionary, maxlen, model = None
-    ):
-        self._sess = sess
-        self._X = x
-        self._logits = logits
-        self._attention = attention
-        self.dictionary = dictionary
-        self._maxlen = maxlen
-        self._rev_dictionary = {v: k for k, v in self.dictionary.items()}
-        self._model = model
-
-    def vectorize(self, corpus):
-        if not isinstance(corpus, list):
-            raise ValueError('corpus must be a list')
-        if not isinstance(corpus[0], str):
-            raise ValueError('corpus must be list of strings')
-        if isinstance(corpus, str):
-            corpus = split_by_dot(corpus)
-
-        corpus = [summary_textcleaning(i) for i in corpus]
-        sequences = batch_sequence(
-            corpus, self.dictionary, maxlen = self._maxlen
-        )
-        return self._sess.run(
-            self._logits, feed_dict = {self._X: np.array(sequences)}
-        )
-
-    def summarize(self, corpus, top_k = 3, important_words = 3):
-        """
-        Summarize list of strings / corpus
-
-        Parameters
-        ----------
-        corpus: str, list
-
-        top_k: int, (default=3)
-            number of summarized strings
-        important_words: int, (default=3)
-            number of important words
-
-        Returns
-        -------
-        string: summarized string
-        """
-        if not isinstance(corpus, list):
-            raise ValueError('corpus must be a list')
-        if not isinstance(corpus[0], str):
-            raise ValueError('corpus must be list of strings')
-        if isinstance(corpus, str):
-            corpus = split_by_dot(corpus)
-        else:
-            corpus = ' '.join(corpus)
-            corpus = re.findall('(?=\S)[^.\n]+(?<=\S)', corpus)
-
-        corpus = [summary_textcleaning(i) for i in corpus]
-        sequences = batch_sequence(
-            corpus, self.dictionary, maxlen = self._maxlen
-        )
-        encoded, attention = self._sess.run(
-            [self._logits, self._attention],
-            feed_dict = {self._X: np.array(sequences)},
-        )
-        attention = attention.sum(axis = 0)
-        kmeans = KMeans(n_clusters = top_k, random_state = 0)
-        kmeans = kmeans.fit(encoded)
-        avg = []
-        for j in range(top_k):
-            idx = np.where(kmeans.labels_ == j)[0]
-            avg.append(np.mean(idx))
-        closest, _ = pairwise_distances_argmin_min(
-            kmeans.cluster_centers_, encoded
-        )
-        indices = np.argsort(attention)[::-1]
-        top_words = [self._rev_dictionary[i] for i in indices[:important_words]]
-        ordering = sorted(range(top_k), key = lambda k: avg[k])
-        return {
-            'summary': '. '.join([corpus[closest[idx]] for idx in ordering]),
-            'top-words': top_words,
-        }
 
 
 class Model:
@@ -228,7 +142,7 @@ def news_load_model():
     sess = tf.InteractiveSession(graph = g)
     with open(PATH_SUMMARIZE['news']['setting']) as fopen:
         dictionary = json.load(fopen)
-    return DEEP_SUMMARIZER(sess, x, logits, attention, dictionary, 100)
+    return sess, x, logits, attention, dictionary, 100
 
 
 def wiki_load_model():
@@ -250,7 +164,7 @@ def wiki_load_model():
     sess = tf.InteractiveSession(graph = g)
     with open(PATH_SUMMARIZE['wiki']['setting']) as fopen:
         dictionary = json.load(fopen)
-    return DEEP_SUMMARIZER(sess, x, logits, attention, dictionary, 50)
+    return sess, x, logits, attention, dictionary, 50
 
 
 def train_model(

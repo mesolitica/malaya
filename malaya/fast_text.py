@@ -22,7 +22,7 @@ _doc2num = _fasttext.doc2num
 
 def load_wiki():
     """
-    Return malaya pretrained wikipedia fast-text size 1024
+    Return malaya pretrained wikipedia fast-text size 1024.
 
     Returns
     -------
@@ -55,32 +55,32 @@ def train(
     text_cleaning = simple_textcleaning,
 ):
     """
-    Train a fast-text for custom corpus
+    Train a fast-text for custom corpus.
 
     Parameters
     ----------
     corpus: list
-        list of strings
+        list of strings.
     batch_size: int, (default=32)
-        batch size for every feed, batch size must <= size of corpus
+        batch size for every feed, batch size must <= size of corpus.
     embedding_size: int, (default=256)
-        vector size representation for a word
+        vector size representation for a word.
     hidden_size: int, (default=256)
-        vector size representation for hidden layer
+        vector size representation for hidden layer.
     negative_samples_ratio: float, (default=0.5)
-        negative samples ratio proportional to batch_size
+        negative samples ratio proportional to batch_size.
     learning_rate: float, (default=0.01)
-        learning rate for word2vec
+        learning rate for word2vec.
     momentum: float, (default=0.9)
-        momentum rate for optimizer=momentum
+        momentum rate for optimizer=momentum.
     epoch: int, (default=5)
-        iteration numbers
+        iteration numbers.
     optimizer: str, (default='momentum')
-        optimizer supported, ['gradientdescent', 'rmsprop', 'momentum', 'adagrad', 'adam']
+        optimizer supported, ['gradientdescent', 'rmsprop', 'momentum', 'adagrad', 'adam'].
     ngrams: tuple, (default=(2,3))
-        size of ngrams during training session
+        size of ngrams during training session.
     text_cleaning: function, (default=simple_textcleaning)
-        function to clean the corpus
+        function to clean the corpus.
 
     Returns
     -------
@@ -269,16 +269,16 @@ class fast_text:
         figname = 'fig.png',
     ):
         """
-        plot a tree plot based on output from calculator / n_closest / analogy
+        plot a tree plot based on output from calculator / n_closest / analogy.
 
         Parameters
         ----------
         labels : list
-            output from calculator / n_closest / analogy
+            output from calculator / n_closest / analogy.
         notebook_mode : bool
-            if True, it will render plt.show, else plt.savefig
+            if True, it will render plt.show, else plt.savefig.
         figsize : tuple, (default=(7, 7))
-            figure size for plot
+            figure size for plot.
         figname : str, (default='fig.png')
 
         Returns
@@ -329,19 +329,19 @@ class fast_text:
         handoff = 5e-5,
     ):
         """
-        plot a scatter plot based on output from calculator / n_closest / analogy
+        plot a scatter plot based on output from calculator / n_closest / analogy.
 
         Parameters
         ----------
         labels : list
-            output from calculator / n_closest / analogy
+            output from calculator / n_closest / analogy.
         centre : str, (default=None)
-            centre label, if a str, it will annotate in a red color
+            centre label, if a str, it will annotate in a red color.
         notebook_mode : bool
-            if True, it will render plt.show, else plt.savefig
+            if True, it will render plt.show, else plt.savefig.
         figsize : tuple, (default=(7, 7))
             figure size for plot
-        figname : str, (default='fig.png')
+        figname : str, (default='fig.png').
 
         Returns
         -------
@@ -419,7 +419,7 @@ class fast_text:
         return_similarity = True,
     ):
         """
-        calculator parser for word2vec
+        calculator parser for word2vec.
 
         Parameters
         ----------
@@ -428,11 +428,11 @@ class fast_text:
         words_pool: list
             Eg, ['makan','najib','minum','mahathir pm']
         num_closest: int, (default=5)
-            number of words closest to the result
+            number of words closest to the result.
         metric: str, (default='cosine')
-            vector distance algorithm
+            vector distance algorithm.
         return_similarity: bool, (default=True)
-            if True, will return between 0-1 represents the distance
+            if True, will return between 0-1 represents the distance.
 
         Returns
         -------
@@ -502,7 +502,7 @@ class fast_text:
         return_similarity = True,
     ):
         """
-        find nearest words based on a word
+        find nearest words based on a word.
 
         Parameters
         ----------
@@ -511,11 +511,11 @@ class fast_text:
         words_pool: list
             Eg, ['makan','najib','minum','mahathir pm']
         num_closest: int, (default=5)
-            number of words closest to the result
+            number of words closest to the result.
         metric: str, (default='cosine')
-            vector distance algorithm
+            vector distance algorithm.
         return_similarity: bool, (default=True)
-            if True, will return between 0-1 represents the distance
+            if True, will return between 0-1 represents the distance.
 
         Returns
         -------
@@ -581,7 +581,7 @@ class fast_text:
             Eg, ['makan','najib','minum','mahathir pm']
         num: int, (default=1)
         metric: str, (default='cosine')
-            vector distance algorithm
+            vector distance algorithm.
 
         Returns
         -------
@@ -618,7 +618,7 @@ class fast_text:
 
     def project_2d(self, words_pool):
         """
-        project fast-text into 2d dimension
+        project fast-text into 2d dimension.
 
         Parameters
         ----------

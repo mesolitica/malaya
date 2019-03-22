@@ -56,12 +56,12 @@ def ngrams(
     right_pad_symbol = None,
 ):
     """
-    generate ngrams
+    generate ngrams.
 
     Parameters
     ----------
     sequence : list of str
-        list of tokenize words
+        list of tokenize words.
     n : int
         ngram size
 
@@ -95,20 +95,20 @@ def pos_entities_ngram(
     accept_entities = ['law', 'location', 'organization', 'person', 'time'],
 ):
     """
-    generate ngrams
+    generate ngrams.
 
     Parameters
     ----------
     result_pos : list of tuple
-        result from POS recognition
+        result from POS recognition.
     result_entities : list of tuple
-        result of Entities recognition
+        result of Entities recognition.
     ngram : tuple
-        ngram sizes
+        ngram sizes.
     accept_pos : list of str
-        accepted POS elements
+        accepted POS elements.
     accept_entities : list of str
-        accept entities elements
+        accept entities elements.
 
     Returns
     -------
@@ -158,7 +158,7 @@ def sentence_ngram(sentence, ngram = (1, 3)):
     ----------
     sentence: str
     ngram : tuple
-        ngram sizes
+        ngram sizes.
 
     Returns
     -------
@@ -197,19 +197,19 @@ def w2v_augmentation(
     ----------
     string: str
     w2v: object
-        word2vec interface object
+        word2vec interface object.
     threshold: float, optional (default=0.5)
-        random selection for a word
+        random selection for a word.
     soft: bool, optional (default=False)
         if True, a word not in the dictionary will be replaced with nearest fuzzywuzzy ratio.
-        if False, it will throw an exception if a word not in the dictionary
+        if False, it will throw an exception if a word not in the dictionary.
     random_select: bool, (default=True)
-        if True, a word randomly selected in the pool
+        if True, a word randomly selected in the pool.
         if False, based on the index
     augment_counts: int, (default=1)
-        augmentation count for a string
+        augmentation count for a string.
     top_n: int, (default=5)
-        number of nearest neighbors returned
+        number of nearest neighbors returned.
     cleaning_function: function, (default=simple_textcleaning)
 
 

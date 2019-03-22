@@ -20,7 +20,7 @@ from .texts._text_functions import simple_textcleaning
 
 def load_wiki():
     """
-    Return malaya pretrained wikipedia word2vec size 256
+    Return malaya pretrained wikipedia word2vec size 256.
 
     Returns
     -------
@@ -38,7 +38,7 @@ def load_wiki():
 
 def load_news(size = 256):
     """
-    Return malaya pretrained news word2vec
+    Return malaya pretrained news word2vec.
 
     Parameters
     ----------
@@ -80,30 +80,30 @@ def train(
     text_cleaning = simple_textcleaning,
 ):
     """
-    Train a word2vec for custom corpus
+    Train a word2vec for custom corpus.
 
     Parameters
     ----------
     corpus: list
-        list of strings
+        list of strings.
     batch_size: int, (default=32)
-        batch size for every feed, batch size must <= size of corpus
+        batch size for every feed, batch size must <= size of corpus.
     embedding_size: int, (default=256)
-        vector size representation for a word
+        vector size representation for a word.
     hidden_size: int, (default=256)
-        vector size representation for hidden layer
+        vector size representation for hidden layer.
     negative_samples_ratio: float, (default=0.5)
-        negative samples ratio proportional to batch_size
+        negative samples ratio proportional to batch_size.
     learning_rate: float, (default=0.01)
-        learning rate for word2vec
+        learning rate for word2vec.
     momentum: float, (default=0.9)
-        momentum rate for optimizer=momentum
+        momentum rate for optimizer=momentum.
     epoch: int, (default=5)
-        iteration numbers
+        iteration numbers.
     optimizer: str, (default='momentum')
         optimizer supported, ['gradientdescent', 'rmsprop', 'momentum', 'adagrad', 'adam']
     text_cleaning: function, (default=simple_textcleaning)
-        function to clean the corpus
+        function to clean the corpus.
 
     Returns
     -------
@@ -275,7 +275,7 @@ class word2vec:
 
     def get_vector_by_name(self, word):
         """
-        get vector based on name
+        get vector based on name.
 
         Parameters
         ----------
@@ -304,16 +304,16 @@ class word2vec:
         figname = 'fig.png',
     ):
         """
-        plot a tree plot based on output from calculator / n_closest / analogy
+        plot a tree plot based on output from calculator / n_closest / analogy.
 
         Parameters
         ----------
         labels : list
-            output from calculator / n_closest / analogy
+            output from calculator / n_closest / analogy.
         notebook_mode : bool
-            if True, it will render plt.show, else plt.savefig
+            if True, it will render plt.show, else plt.savefig.
         figsize : tuple, (default=(7, 7))
-            figure size for plot
+            figure size for plot.
         figname : str, (default='fig.png')
 
         Returns
@@ -367,18 +367,18 @@ class word2vec:
         handoff = 5e-5,
     ):
         """
-        plot a scatter plot based on output from calculator / n_closest / analogy
+        plot a scatter plot based on output from calculator / n_closest / analogy.
 
         Parameters
         ----------
         labels : list
             output from calculator / n_closest / analogy
         centre : str, (default=None)
-            centre label, if a str, it will annotate in a red color
+            centre label, if a str, it will annotate in a red color.
         notebook_mode : bool
-            if True, it will render plt.show, else plt.savefig
+            if True, it will render plt.show, else plt.savefig.
         figsize : tuple, (default=(7, 7))
-            figure size for plot
+            figure size for plot.
         figname : str, (default='fig.png')
 
         Returns
@@ -516,14 +516,14 @@ class word2vec:
         self, equations, num_closest = 5, return_similarity = False
     ):
         """
-        batch calculator parser for word2vec using tensorflow
+        batch calculator parser for word2vec using tensorflow.
 
         Parameters
         ----------
         equations: list of str
             Eg, '[(mahathir + najib) - rosmah]'
         num_closest: int, (default=5)
-            number of words closest to the result
+            number of words closest to the result.
 
         Returns
         -------
@@ -548,18 +548,18 @@ class word2vec:
         return_similarity = True,
     ):
         """
-        calculator parser for word2vec
+        calculator parser for word2vec.
 
         Parameters
         ----------
         equation: str
             Eg, '(mahathir + najib) - rosmah'
         num_closest: int, (default=5)
-            number of words closest to the result
+            number of words closest to the result.
         metric: str, (default='cosine')
-            vector distance algorithm
+            vector distance algorithm.
         return_similarity: bool, (default=True)
-            if True, will return between 0-1 represents the distance
+            if True, will return between 0-1 represents the distance.
 
         Returns
         -------
@@ -598,19 +598,19 @@ class word2vec:
         self, words, num_closest = 5, return_similarity = False, soft = True
     ):
         """
-        find nearest words based on a batch of words using Tensorflow
+        find nearest words based on a batch of words using Tensorflow.
 
         Parameters
         ----------
         words: list
             Eg, ['najib','anwar']
         num_closest: int, (default=5)
-            number of words closest to the result
+            number of words closest to the result.
         return_similarity: bool, (default=True)
-            if True, will return between 0-1 represents the distance
+            if True, will return between 0-1 represents the distance.
         soft: bool, (default=True)
             if True, a word not in the dictionary will be replaced with nearest fuzzywuzzy ratio.
-            if False, it will throw an exception if a word not in the dictionary
+            if False, it will throw an exception if a word not in the dictionary.
 
         Returns
         -------
@@ -640,18 +640,18 @@ class word2vec:
         self, word, num_closest = 5, metric = 'cosine', return_similarity = True
     ):
         """
-        find nearest words based on a word
+        find nearest words based on a word.
 
         Parameters
         ----------
         word: str
             Eg, 'najib'
         num_closest: int, (default=5)
-            number of words closest to the result
+            number of words closest to the result.
         metric: str, (default='cosine')
-            vector distance algorithm
+            vector distance algorithm.
         return_similarity: bool, (default=True)
-            if True, will return between 0-1 represents the distance
+            if True, will return between 0-1 represents the distance.
 
         Returns
         -------
@@ -699,7 +699,7 @@ class word2vec:
 
     def analogy(self, a, b, c, num = 1, metric = 'cosine'):
         """
-        analogy calculation, vb - va + vc
+        analogy calculation, vb - va + vc.
 
         Parameters
         ----------
@@ -708,7 +708,7 @@ class word2vec:
         c: str
         num: int, (default=1)
         metric: str, (default='cosine')
-            vector distance algorithm
+            vector distance algorithm.
 
         Returns
         -------
@@ -738,7 +738,7 @@ class word2vec:
 
     def project_2d(self, start, end):
         """
-        project word2vec into 2d dimension
+        project word2vec into 2d dimension.
 
         Parameters
         ----------

@@ -99,11 +99,11 @@ def deep_model(model = 'luong', validate = True):
     model : str, optional (default='luong')
         Model architecture supported. Allowed values:
 
-        * ``'fast-text'`` - Fast-text architecture, embedded and logits layers only
-        * ``'hierarchical'`` - LSTM with hierarchical attention architecture
-        * ``'bahdanau'`` - LSTM with bahdanau attention architecture
-        * ``'luong'`` - LSTM with luong attention architecture
-        * ``'entity-network'`` - Recurrent Entity-Network architecture
+        * ``'fast-text'`` - Fast-text architecture, embedded and logits layers only.
+        * ``'hierarchical'`` - LSTM with hierarchical attention architecture.
+        * ``'bahdanau'`` - LSTM with bahdanau attention architecture.
+        * ``'luong'`` - LSTM with luong attention architecture.
+        * ``'entity-network'`` - Recurrent Entity-Network architecture.
     validate: bool, optional (default=True)
         if True, malaya will check model availability and download if not available.
 

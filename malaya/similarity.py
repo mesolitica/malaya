@@ -267,6 +267,20 @@ class _FUZZY:
 
     def get_similarity(self, string, fuzzy_ratio = 90):
 
+        """
+        check whether a string is a topic based on dictionary given.
+
+        Parameters
+        ----------
+        string: str
+        fuzzy_ratio: int, (default=90)
+            ratio of similar characters by positions, if 90, means 90%.
+
+        Returns
+        -------
+        list: list of topics
+        """
+
         if not isinstance(string, str):
             raise ValueError('input must be a string')
         if not isinstance(fuzzy_ratio, int):
@@ -317,9 +331,9 @@ def is_location(string, fuzzy_ratio = 90, location = _location):
     ----------
     string: str
     fuzzy_ratio: int, (default=90)
-        ratio of similar characters by positions, if 90, means 90%
+        ratio of similar characters by positions, if 90, means 90%.
     location: list, (default=_location)
-        list of locations
+        list of locations.
 
     Returns
     -------
@@ -345,7 +359,7 @@ def fuzzy_location(string, fuzzy_ratio = 90):
     ----------
     string: str
     fuzzy_ratio: int, (default=90)
-        ratio of similar characters by positions, if 90, means 90%
+        ratio of similar characters by positions, if 90, means 90%.
 
     Returns
     -------
@@ -412,19 +426,19 @@ def deep_siamese(
     dictionary: dict
         format {'left':['right']}
     epoch: int, (default=5)
-        iteration numbers
+        iteration numbers.
     batch_size: int, (default=32)
-        batch size for every feed, batch size must <= size of corpus
+        batch size for every feed, batch size must <= size of corpus.
     embedding_size: int, (default=256)
-        vector size representation for a word
+        vector size representation for a word.
     output_size: int, (default=100)
-        encoder output size, bigger means more vector definition
+        encoder output size, bigger means more vector definition.
     maxlen: int, (default=100)
-        max length of a string to be train
+        max length of a string to be train.
     ngram: tuple, (default=(1,4))
-        n-grams size to train a corpus
+        n-grams size to train a corpus.
     num_layers: int, (default=100)
-        number of bidirectional rnn layers
+        number of bidirectional rnn layers.
 
     Returns
     -------
@@ -541,15 +555,15 @@ def deep_skipthought(
     dictionary: dict
         format {'left':['right']}
     epoch: int, (default=5)
-        iteration numbers
+        iteration numbers.
     batch_size: int, (default=32)
-        batch size for every feed, batch size must <= size of corpus
+        batch size for every feed, batch size must <= size of corpus.
     embedding_size: int, (default=256)
-        vector size representation for a word
+        vector size representation for a word.
     maxlen: int, (default=100)
-        max length of a string to be train
+        max length of a string to be train.
     ngram: tuple, (default=(1,4))
-        n-grams size to train a corpus
+        n-grams size to train a corpus.
 
     Returns
     -------
@@ -633,9 +647,9 @@ def bow(dictionary, vectorizer = 'tfidf', ngram = (3, 10)):
     dictionary: dict
         format {'left':['right']}
     vectorizer: str, (default='tfidf')
-        vectorization technique for a corpus
+        vectorization technique for a corpus.
     ngram: tuple, (default=(3,10))
-        n-grams size to train a corpus
+        n-grams size to train a corpus.
 
     Returns
     -------

@@ -148,7 +148,7 @@ class _SPELL_NORMALIZE:
         debug : bool, optional (default=True)
             If true, it will print character similarity distances.
         check_english: bool, (default=True)
-            check a word in english dictionary
+            check a word in english dictionary.
 
         Returns
         -------
@@ -237,9 +237,9 @@ class _FUZZY_NORMALIZE:
         ----------
         string : str
         fuzzy_ratio: int, (default=70)
-            ratio of similar characters by positions, if 90, means 90%
+            ratio of similar characters by positions, if 90, means 90%.
         check_english: bool, (default=True)
-            check a word in english dictionary
+            check a word in english dictionary.
 
         Returns
         -------
@@ -310,7 +310,7 @@ def fuzzy(corpus):
 
     Parameters
     ----------
-    corpus : list of strings. Prefer to feed with malaya.load_malay_dictionary()
+    corpus : list of strings. Prefer to feed with malaya.load_malay_dictionary().
 
     Returns
     -------
@@ -357,7 +357,7 @@ def spell(corpus):
 
     Parameters
     ----------
-    corpus : list of strings. Prefer to feed with malaya.load_malay_dictionary()
+    corpus : list of strings. Prefer to feed with malaya.load_malay_dictionary().
 
     Returns
     -------

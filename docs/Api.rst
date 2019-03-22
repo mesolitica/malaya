@@ -124,6 +124,9 @@ malaya.summarize
 .. automodule:: malaya.summarize
     :members:
 
+.. autoclass:: malaya.summarize._DEEP_SUMMARIZER()
+    :members:
+
 malaya.similarity
 -------------------------
 
@@ -137,6 +140,9 @@ malaya.similarity
     :members:
 
 .. autoclass:: malaya.similarity._FAST_SIMILARITY()
+    :members:
+
+.. autoclass:: malaya.similarity._FUZZY()
     :members:
 
 malaya.topic_model

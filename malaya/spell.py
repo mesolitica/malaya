@@ -142,11 +142,12 @@ class _SPELL:
 
 def naive(corpus):
     """
-    Train a fuzzy logic Spell Corrector
+    Train a fuzzy logic Spell Corrector.
 
     Parameters
     ----------
-    corpus : list of strings. Prefer to feed with malaya.load_malay_dictionary()
+    corpus : list of strings
+        Prefer to feed with malaya.load_malay_dictionary().
 
     Returns
     -------

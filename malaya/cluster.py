@@ -76,7 +76,7 @@ def cluster_words(list_words):
 
 def cluster_pos(result):
     """
-    cluster similar POS
+    cluster similar POS.
 
     Parameters
     ----------
@@ -132,7 +132,7 @@ def cluster_pos(result):
 
 def cluster_entities(result):
     """
-    cluster similar Entities
+    cluster similar Entities.
 
     Parameters
     ----------
@@ -195,33 +195,36 @@ def cluster_scatter(
     figsize = (17, 9),
 ):
     """
-    plot scatter plot on similar text clusters
+    plot scatter plot on similar text clusters.
+
+    Parameters
+    ----------
 
     corpus: list
     titles: list
-        list of titles, length must same with corpus
+        list of titles, length must same with corpus.
     colors: list
-        list of colors, length must same with num_clusters
+        list of colors, length must same with num_clusters.
     num_clusters: int, (default=5)
         size of unsupervised clusters.
     stemming: bool, (default=True)
-        If True, sastrawi_stemmer will apply
+        If True, sastrawi_stemmer will apply.
     max_df: float, (default=0.95)
         maximum of a word selected based on document frequency.
     min_df: int, (default=2)
         minimum of a word selected on based on document frequency.
     ngram: tuple, (default=(1,3))
-        n-grams size to train a corpus
+        n-grams size to train a corpus.
     cleaning: function, (default=simple_textcleaning)
-        function to clean the corpus
+        function to clean the corpus.
     stop_words: list, (default=STOPWORDS)
-        list of stop words to remove
+        list of stop words to remove.
     vectorizer: str, (default='bow')
         vectorizer technique. Allowed values:
 
-        * ``'bow'`` - Bag of Word
-        * ``'tfidf'`` - Term frequency inverse Document Frequency
-        * ``'skip-gram'`` - Bag of Word with skipping certain n-grams
+        * ``'bow'`` - Bag of Word.
+        * ``'tfidf'`` - Term frequency inverse Document Frequency.
+        * ``'skip-gram'`` - Bag of Word with skipping certain n-grams.
     """
     if not isinstance(corpus, list):
         raise ValueError('corpus must be a list')
@@ -355,27 +358,30 @@ def cluster_dendogram(
     """
     plot hierarchical dendogram with similar texts
 
+    Parameters
+    ----------
+
     corpus: list
     titles: list
-        list of titles, length must same with corpus
+        list of titles, length must same with corpus.
     stemming: bool, (default=True)
-        If True, sastrawi_stemmer will apply
+        If True, sastrawi_stemmer will apply.
     max_df: float, (default=0.95)
         maximum of a word selected based on document frequency.
     min_df: int, (default=2)
         minimum of a word selected on based on document frequency.
     ngram: tuple, (default=(1,3))
-        n-grams size to train a corpus
+        n-grams size to train a corpus.
     cleaning: function, (default=simple_textcleaning)
-        function to clean the corpus
+        function to clean the corpus.
     stop_words: list, (default=STOPWORDS)
-        list of stop words to remove
+        list of stop words to remove.
     vectorizer: str, (default='bow')
         vectorizer technique. Allowed values:
 
-        * ``'bow'`` - Bag of Word
-        * ``'tfidf'`` - Term frequency inverse Document Frequency
-        * ``'skip-gram'`` - Bag of Word with skipping certain n-grams
+        * ``'bow'`` - Bag of Word.
+        * ``'tfidf'`` - Term frequency inverse Document Frequency.
+        * ``'skip-gram'`` - Bag of Word with skipping certain n-grams.
     """
     if not isinstance(corpus, list):
         raise ValueError('corpus must be a list')
@@ -496,31 +502,33 @@ def cluster_graph(
     """
     plot undirected graph with similar texts
 
+    Parameters
+    ----------
     corpus: list
     titles: list
-        list of titles, length must same with corpus
+        list of titles, length must same with corpus.
     colors: list
-        list of colors, length must same with num_clusters
+        list of colors, length must same with num_clusters.
     num_clusters: int, (default=5)
         size of unsupervised clusters.
     stemming: bool, (default=True)
-        If True, sastrawi_stemmer will apply
+        If True, sastrawi_stemmer will apply.
     max_df: float, (default=0.95)
         maximum of a word selected based on document frequency.
     min_df: int, (default=2)
         minimum of a word selected on based on document frequency.
     ngram: tuple, (default=(1,3))
-        n-grams size to train a corpus
+        n-grams size to train a corpus.
     cleaning: function, (default=simple_textcleaning)
-        function to clean the corpus
+        function to clean the corpus.
     stop_words: list, (default=STOPWORDS)
-        list of stop words to remove
+        list of stop words to remove.
     vectorizer: str, (default='bow')
         vectorizer technique. Allowed values:
 
-        * ``'bow'`` - Bag of Word
-        * ``'tfidf'`` - Term frequency inverse Document Frequency
-        * ``'skip-gram'`` - Bag of Word with skipping certain n-grams
+        * ``'bow'`` - Bag of Word.
+        * ``'tfidf'`` - Term frequency inverse Document Frequency.
+        * ``'skip-gram'`` - Bag of Word with skipping certain n-grams.
     """
     if not isinstance(corpus, list):
         raise ValueError('corpus must be a list')

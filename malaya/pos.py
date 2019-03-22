@@ -12,7 +12,7 @@ from ._utils._paths import PATH_POS, S3_PATH_POS
 
 def available_deep_model():
     """
-    List available deep learning entities models, ['concat', 'bahdanau', 'luong', 'entity-network', 'attention']
+    List available deep learning entities models, ['concat', 'bahdanau', 'luong', 'entity-network', 'attention'].
     """
     return ['concat', 'bahdanau', 'luong', 'entity-network', 'attention']
 
@@ -88,11 +88,11 @@ def deep_model(model = 'concat', validate = True):
     model : str, optional (default='bahdanau')
         Model architecture supported. Allowed values:
 
-        * ``'concat'`` - Concating character and word embedded for BiLSTM
-        * ``'bahdanau'`` - Concating character and word embedded including Bahdanau Attention for BiLSTM
-        * ``'luong'`` - Concating character and word embedded including Luong Attention for BiLSTM
-        * ``'entity-network'`` - Concating character and word embedded on hybrid Entity-Network and RNN
-        * ``'attention'`` - Concating character and word embedded with self-attention for BiLSTM
+        * ``'concat'`` - Concating character and word embedded for BiLSTM.
+        * ``'bahdanau'`` - Concating character and word embedded including Bahdanau Attention for BiLSTM.
+        * ``'luong'`` - Concating character and word embedded including Luong Attention for BiLSTM.
+        * ``'entity-network'`` - Concating character and word embedded on hybrid Entity-Network and RNN.
+        * ``'attention'`` - Concating character and word embedded with self-attention for BiLSTM.
     validate: bool, optional (default=True)
         if True, malaya will check model availability and download if not available.
 
