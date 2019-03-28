@@ -277,7 +277,7 @@ def print_topics_modelling(
             import pandas as pd
         except:
             raise Exception(
-                'pandas not installed. Please install it and try again.'
+                'pandas not installed. Please install it and try again or set `return_df = False`'
             )
     df = {}
     for i in range(topics):

@@ -240,6 +240,19 @@ class fast_text:
         self.ngrams = ngrams
 
     def to_vector(self, word_list):
+
+        """
+        get vector based on list of strings.
+
+        Parameters
+        ----------
+        word_list: list
+
+        Returns
+        -------
+        vector: numpy
+        """
+
         pools = []
         for word in word_list:
             word = filter(None, word.split())
@@ -253,6 +266,19 @@ class fast_text:
         return np.array(outside_array)
 
     def get_vector_by_name(self, word):
+
+        """
+        get vector based on string.
+
+        Parameters
+        ----------
+        word: str
+
+        Returns
+        -------
+        vector: numpy
+        """
+
         word = filter(None, word.split())
         word = ''.join(['<%s>' % (w) for w in word])
         word_array = _doc2num([word], self._dictionary, ngrams = self.ngrams)[0]

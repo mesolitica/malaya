@@ -45,6 +45,7 @@ class _DEEP_SUMMARIZER:
             if not isinstance(corpus[0], str):
                 raise ValueError('corpus must be list of strings')
         if isinstance(corpus, str):
+            corpus = corpus.replace('\n', '.')
             corpus = split_by_dot(corpus)
         else:
             corpus = [c + '.' for c in corpus]
@@ -90,6 +91,7 @@ class _DEEP_SUMMARIZER:
             if not isinstance(corpus[0], str):
                 raise ValueError('corpus must be list of strings')
         if isinstance(corpus, str):
+            corpus = corpus.replace('\n', '.')
             corpus = split_by_dot(corpus)
         else:
             corpus = [c + '.' for c in corpus]
@@ -204,6 +206,7 @@ def train_skip_thought(
         if not isinstance(corpus[0], str):
             raise ValueError('corpus must be list of strings')
     if isinstance(corpus, str):
+        corpus = corpus.replace('\n', '.')
         corpus = split_by_dot(corpus)
     else:
         corpus = [c + '.' for c in corpus]
@@ -295,6 +298,7 @@ def lsa(
         if not isinstance(corpus[0], str):
             raise ValueError('corpus must be list of strings')
     if isinstance(corpus, str):
+        corpus = corpus.replace('\n', '.')
         corpus = split_by_dot(corpus)
     else:
         corpus = [c + '.' for c in corpus]
@@ -389,6 +393,7 @@ def nmf(
         if not isinstance(corpus[0], str):
             raise ValueError('corpus must be list of strings')
     if isinstance(corpus, str):
+        corpus = corpus.replace('\n', '.')
         corpus = split_by_dot(corpus)
     else:
         corpus = [c + '.' for c in corpus]
@@ -489,6 +494,7 @@ def lda(
         if not isinstance(corpus[0], str):
             raise ValueError('corpus must be list of strings')
     if isinstance(corpus, str):
+        corpus = corpus.replace('\n', '.')
         corpus = split_by_dot(corpus)
     else:
         corpus = [c + '.' for c in corpus]

@@ -21,6 +21,15 @@ malaya.dependency
 .. automodule:: malaya.dependency
     :members:
 
+malaya.elmo
+------------------
+
+.. automodule:: malaya.elmo
+    :members:
+
+.. autoclass:: malaya.elmo.ELMO()
+    :members:
+
 malaya.emotion
 -----------------
 

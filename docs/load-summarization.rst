@@ -1,5 +1,5 @@
 
-.. code:: python
+.. code:: ipython3
 
     %%time
     import malaya
@@ -7,15 +7,15 @@
 
 .. parsed-literal::
 
-    CPU times: user 12 s, sys: 1.61 s, total: 13.6 s
-    Wall time: 17.9 s
+    CPU times: user 11.3 s, sys: 1.57 s, total: 12.9 s
+    Wall time: 17.3 s
 
 
-.. code:: python
+.. code:: ipython3
 
     isu_kerajaan = [
         'Kenyataan kontroversi Setiausaha Agung Barisan Nasional (BN), Datuk Seri Mohamed Nazri Aziz berhubung sekolah vernakular merupakan pandangan peribadi beliau',
-        'Timbalan Presiden UMNO, Datuk Seri Mohamad Hasan berkata, kenyataan tersebut tidak mewakili pendirian serta pandangan UMNO kerana parti itu menghormati serta memahami keperluan sekolah vernakular dalam negara',
+        'Timbalan Presiden UMNO, Datuk Seri Mohamad Hasan berkata, kenyataan tersebut tidak mewakili pendirian serta pandangan UMNO \n\nkerana parti itu menghormati serta memahami keperluan sekolah vernakular dalam negara',
         '"Saya ingin menegaskan dua perkara penting',
         'Pertama pendirian beliau tersebut adalah pandangan peribadi yang tidak mewakili pendirian dan pandangan UMNO',
         '"Kedua UMNO sebagai sebuah parti sangat menghormati dan memahami keperluan sekolah vernakular di Malaysia',
@@ -32,18 +32,18 @@
 We also can give a string, but remember, Malaya will always split a
 string by ``.`` for summarization task.
 
-.. code:: python
+.. code:: ipython3
 
     isu_kerajaan_combined = '. '.join(isu_kerajaan)
 
 Load Pretrained News summarization deep learning
 ------------------------------------------------
 
-.. code:: python
+.. code:: ipython3
 
     deep_summary = malaya.summarize.deep_model_news()
 
-.. code:: python
+.. code:: ipython3
 
     deep_summary.summarize(isu_kerajaan,important_words=10)
 
@@ -52,31 +52,31 @@ Load Pretrained News summarization deep learning
 
 .. parsed-literal::
 
-    {'summary': 'timbalan presiden umno, datuk seri mohamad hasan berkata, kenyataan tersebut tidak mewakili pendirian serta pandangan umno kerana parti itu menghormati serta memahami keperluan sekolah vernakular dalam negara. menurut beliau, persefahaman dan keupayaan meraikan kepelbagaian itu menjadi kelebihan dan kekuatan umno dan bn selama ini. umno berpendirian sekolah jenis ini perlu terus wujud di negara kita," katanya dalam satu kenyataan akhbar malam ini',
+    {'summary': 'kerana parti itu menghormati serta memahami keperluan sekolah vernakular dalam negara. menurut beliau, persefahaman dan keupayaan meraikan kepelbagaian itu menjadi kelebihan dan kekuatan umno dan bn selama ini. umno berpendirian sekolah jenis ini perlu terus wujud di negara kita," katanya dalam satu kenyataan akhbar malam ini',
      'top-words': ['bersabdabarangsiapa',
       'pembikin',
       'sharmini',
-      'kepulangan',
-      'sakailah',
-      'klon',
-      'seliakekurangan',
-      'poupart',
-      'chusus',
-      'mempunya'],
-     'cluster-top-words': ['chusus',
-      'seliakekurangan',
-      'pembikin',
       'sakailah',
       'kepulangan',
       'klon',
-      'poupart',
+      'seliakekurangan',
       'mempunya',
+      'poupart',
+      'chusus'],
+     'cluster-top-words': ['mempunya',
+      'pembikin',
+      'kepulangan',
+      'bersabdabarangsiapa',
+      'poupart',
+      'sakailah',
+      'klon',
+      'seliakekurangan',
       'sharmini',
-      'bersabdabarangsiapa']}
+      'chusus']}
 
 
 
-.. code:: python
+.. code:: ipython3
 
     deep_summary.summarize(isu_kerajaan_combined,important_words=10)
 
@@ -85,34 +85,34 @@ Load Pretrained News summarization deep learning
 
 .. parsed-literal::
 
-    {'summary': 'timbalan presiden umno, datuk seri mohamad hasan berkata, kenyataan tersebut tidak mewakili pendirian serta pandangan umno kerana parti itu menghormati serta memahami keperluan sekolah vernakular dalam negara. menurut beliau, persefahaman dan keupayaan meraikan kepelbagaian itu menjadi kelebihan dan kekuatan umno dan bn selama ini. umno berpendirian sekolah jenis ini perlu terus wujud di negara kita," katanya dalam satu kenyataan akhbar malam ini',
+    {'summary': '. "kedua umno sebagai sebuah parti sangat menghormati dan memahami keperluan sekolah vernakular di malaysia. umno berpendirian sekolah jenis ini perlu terus wujud di negara kita," katanya dalam satu kenyataan akhbar malam ini',
      'top-words': ['bersabdabarangsiapa',
       'pembikin',
       'sharmini',
-      'kepulangan',
-      'sakailah',
-      'klon',
-      'seliakekurangan',
-      'poupart',
-      'chusus',
-      'mempunya'],
-     'cluster-top-words': ['chusus',
-      'seliakekurangan',
-      'pembikin',
       'sakailah',
       'kepulangan',
-      'klon',
-      'poupart',
       'mempunya',
+      'klon',
+      'seliakekurangan',
+      'chusus',
+      'poupart'],
+     'cluster-top-words': ['mempunya',
+      'pembikin',
+      'kepulangan',
+      'bersabdabarangsiapa',
+      'poupart',
+      'sakailah',
+      'klon',
+      'seliakekurangan',
       'sharmini',
-      'bersabdabarangsiapa']}
+      'chusus']}
 
 
 
 You also can change sentences to vector representation using
 ``vectorize()``.
 
-.. code:: python
+.. code:: ipython3
 
     deep_summary.vectorize(isu_kerajaan_combined).shape
 
@@ -121,11 +121,11 @@ You also can change sentences to vector representation using
 
 .. parsed-literal::
 
-    (13, 128)
+    (15, 128)
 
 
 
-.. code:: python
+.. code:: ipython3
 
     deep_summary.vectorize(isu_kerajaan).shape
 
@@ -134,14 +134,14 @@ You also can change sentences to vector representation using
 
 .. parsed-literal::
 
-    (13, 128)
+    (14, 128)
 
 
 
 Load Pretrained Wikipedia summarization deep learning
 -----------------------------------------------------
 
-.. code:: python
+.. code:: ipython3
 
     deep_summary = malaya.summarize.deep_model_wiki()
 
@@ -151,7 +151,7 @@ Load Pretrained Wikipedia summarization deep learning
     WARNING: this model is using convolutional based, Tensorflow-GPU above 1.10 may got a problem. Please downgrade to Tensorflow-GPU v1.8 if got any cuDNN error.
 
 
-.. code:: python
+.. code:: ipython3
 
     deep_summary.summarize(isu_kerajaan,important_words=10)
 
@@ -160,34 +160,34 @@ Load Pretrained Wikipedia summarization deep learning
 
 .. parsed-literal::
 
-    {'summary': '"saya ingin menegaskan dua perkara penting. umno berpendirian sekolah jenis ini perlu terus wujud di negara kita," katanya dalam satu kenyataan akhbar malam ini. "saya berharap isu ini tidak dipolitikkan secara tidak bertanggungjawab oleh mana-mana pihak terutama dengan cara yang tidak menggambarkan pendirian sebenar umno dan bn," katanya',
+    {'summary': '"saya ingin menegaskan dua perkara penting. kata nazri dalam kenyataannya itu, beliau menekankan bahawa semua pihak perlu menghormati hak orang melayu dan bumiputera. kata beliau, komitmen umno dan bn berhubung perkara itu dapat dilihat dengan jelas dalam bentuk sokongan infrastruktur, pengiktirafan dan pemberian peruntukan yang diperlukan',
      'top-words': ['jagaannya',
       'ferdy',
       'hoe',
+      'laksmi',
       'lanun',
-      'laksmi',
+      'ongr',
       'zulkifli',
       'televisyen',
-      'ongr',
       'kawan',
-      'sharidake'],
-     'cluster-top-words': ['lanun',
+      'diimbau'],
+     'cluster-top-words': ['jagaannya',
+      'ongr',
       'hoe',
-      'televisyen',
-      'jagaannya',
-      'ongr',
-      'laksmi',
-      'zulkifli',
       'kawan',
+      'diimbau',
+      'lanun',
       'ferdy',
-      'sharidake']}
+      'zulkifli',
+      'televisyen',
+      'laksmi']}
 
 
 
 You also can change sentences to vector representation using
 ``vectorize()``.
 
-.. code:: python
+.. code:: ipython3
 
     deep_summary.vectorize(isu_kerajaan).shape
 
@@ -196,11 +196,11 @@ You also can change sentences to vector representation using
 
 .. parsed-literal::
 
-    (13, 64)
+    (14, 64)
 
 
 
-.. code:: python
+.. code:: ipython3
 
     deep_summary.vectorize(isu_kerajaan_combined).shape
 
@@ -209,28 +209,28 @@ You also can change sentences to vector representation using
 
 .. parsed-literal::
 
-    (13, 64)
+    (15, 64)
 
 
 
 Train skip-thought summarization deep learning model
 ----------------------------------------------------
 
-.. code:: python
+.. code:: ipython3
 
     deep_summary = malaya.summarize.train_skip_thought(isu_kerajaan, batch_size = 2)
 
 
 .. parsed-literal::
 
-    minibatch loop: 100%|██████████| 6/6 [00:01<00:00,  3.79it/s, cost=9.18]
-    minibatch loop: 100%|██████████| 6/6 [00:01<00:00,  5.26it/s, cost=6.16]
-    minibatch loop: 100%|██████████| 6/6 [00:01<00:00,  5.02it/s, cost=4.82]
-    minibatch loop: 100%|██████████| 6/6 [00:01<00:00,  5.14it/s, cost=3.59]
-    minibatch loop: 100%|██████████| 6/6 [00:01<00:00,  5.28it/s, cost=2.63]
+    minibatch loop: 100%|██████████| 6/6 [00:01<00:00,  4.19it/s, cost=9.54]
+    minibatch loop: 100%|██████████| 6/6 [00:01<00:00,  5.09it/s, cost=8.01]
+    minibatch loop: 100%|██████████| 6/6 [00:01<00:00,  4.99it/s, cost=6.46]
+    minibatch loop: 100%|██████████| 6/6 [00:01<00:00,  5.03it/s, cost=5.01]
+    minibatch loop: 100%|██████████| 6/6 [00:01<00:00,  5.01it/s, cost=3.71]
 
 
-.. code:: python
+.. code:: ipython3
 
     deep_summary.summarize(isu_kerajaan,important_words=10)
 
@@ -239,34 +239,34 @@ Train skip-thought summarization deep learning model
 
 .. parsed-literal::
 
-    {'summary': 'pertama pendirian beliau tersebut adalah pandangan peribadi yang tidak mewakili pendirian dan pandangan umno. "kedua umno sebagai sebuah parti sangat menghormati dan memahami keperluan sekolah vernakular di malaysia. kenyataan kontroversi setiausaha agung barisan nasional bn , datuk seri mohamed nazri aziz berhubung sekolah vernakular merupakan pandangan peribadi beliau',
-     'top-words': ['persefahaman',
-      'kekuatan',
-      'pendirian',
-      'isu',
-      'tugas',
-      'presiden',
-      'menjalankan',
-      'sokongan',
-      'bentuk',
-      'tidak'],
-     'cluster-top-words': ['persefahaman',
-      'sokongan',
-      'bentuk',
-      'tidak',
-      'isu',
-      'menjalankan',
-      'presiden',
-      'pendirian',
-      'kekuatan',
-      'tugas']}
+    {'summary': 'pertama pendirian beliau tersebut adalah pandangan peribadi yang tidak mewakili pendirian dan pandangan umno. kenyataan kontroversi setiausaha agung barisan nasional bn , datuk seri mohamed nazri aziz berhubung sekolah vernakular merupakan pandangan peribadi beliau. kata beliau, komitmen umno dan bn berhubung perkara itu dapat dilihat dengan jelas dalam bentuk sokongan infrastruktur, pengiktirafan dan pemberian peruntukan yang diperlukan',
+     'top-words': ['-',
+      'semalam',
+      'bn',
+      'negara',
+      'beliau',
+      'hak',
+      'sebenar',
+      'wujud',
+      'satu',
+      'sebuah'],
+     'cluster-top-words': ['wujud',
+      'sebenar',
+      'satu',
+      'sebuah',
+      'bn',
+      'semalam',
+      'negara',
+      '-',
+      'beliau',
+      'hak']}
 
 
 
 Train LSA model
 ---------------
 
-.. code:: python
+.. code:: ipython3
 
     malaya.summarize.lsa(isu_kerajaan,important_words=10)
 
@@ -277,7 +277,7 @@ Train LSA model
 
     {'summary': 'komitmen umno berhubung bentuk sokongan infrastruktur pengiktirafan pemberian peruntukan. berharap isu dipolitikkan bertanggungjawab menggambarkan pendirian sebenar umno. mohamed nazri mengambil pertanggungjawaban penjelasan maksud ucapanny semenyih selangor',
      'top-words': ['wakil pandang umno',
-      'parti',
+      'pandang umno',
       'hak',
       'hormat paham',
       'hormat paham sekolah',
@@ -286,19 +286,18 @@ Train LSA model
       'jenis',
       'mohamad',
       'nazri nyata'],
-     'cluster-top-words': ['wakil pandang umno',
-      'nazri nyata',
-      'parti',
-      'mohamad',
-      'hak',
-      'jenis',
+     'cluster-top-words': ['mohamad',
       'hubung',
+      'jenis',
+      'wakil pandang umno',
+      'iktiraf',
+      'nazri nyata',
       'hormat paham sekolah',
-      'iktiraf']}
+      'hak']}
 
 
 
-.. code:: python
+.. code:: ipython3
 
     malaya.summarize.lsa(isu_kerajaan_combined,important_words=10)
 
@@ -309,7 +308,7 @@ Train LSA model
 
     {'summary': 'komitmen umno berhubung bentuk sokongan infrastruktur pengiktirafan pemberian peruntukan. berharap isu dipolitikkan bertanggungjawab menggambarkan pendirian sebenar umno. mohamed nazri mengambil pertanggungjawaban penjelasan maksud ucapanny semenyih selangor',
      'top-words': ['wakil pandang umno',
-      'parti',
+      'pandang umno',
       'hak',
       'hormat paham',
       'hormat paham sekolah',
@@ -318,22 +317,21 @@ Train LSA model
       'jenis',
       'mohamad',
       'nazri nyata'],
-     'cluster-top-words': ['wakil pandang umno',
-      'nazri nyata',
-      'parti',
-      'mohamad',
-      'hak',
-      'jenis',
+     'cluster-top-words': ['mohamad',
       'hubung',
+      'jenis',
+      'wakil pandang umno',
+      'iktiraf',
+      'nazri nyata',
       'hormat paham sekolah',
-      'iktiraf']}
+      'hak']}
 
 
 
 Maintain original
 ^^^^^^^^^^^^^^^^^
 
-.. code:: python
+.. code:: ipython3
 
     malaya.summarize.lsa(isu_kerajaan, important_words=10,maintain_original=True)
 
@@ -353,18 +351,18 @@ Maintain original
       'jenis',
       'mohamad',
       'nazri nyata'],
-     'cluster-top-words': ['wakil pandang umno',
-      'nazri nyata',
-      'mohamad',
-      'hak',
-      'jenis',
+     'cluster-top-words': ['mohamad',
       'hubung',
+      'jenis',
+      'wakil pandang umno',
+      'iktiraf',
+      'nazri nyata',
       'hormat paham sekolah',
-      'iktiraf']}
+      'hak']}
 
 
 
-.. code:: python
+.. code:: ipython3
 
     malaya.summarize.lsa(isu_kerajaan_combined, important_words=10,maintain_original=True)
 
@@ -384,21 +382,21 @@ Maintain original
       'jenis',
       'mohamad',
       'nazri nyata'],
-     'cluster-top-words': ['wakil pandang umno',
-      'nazri nyata',
-      'mohamad',
-      'hak',
-      'jenis',
+     'cluster-top-words': ['mohamad',
       'hubung',
+      'jenis',
+      'wakil pandang umno',
+      'iktiraf',
+      'nazri nyata',
       'hormat paham sekolah',
-      'iktiraf']}
+      'hak']}
 
 
 
 Train NMF model
 ---------------
 
-.. code:: python
+.. code:: ipython3
 
     malaya.summarize.nmf(isu_kerajaan,important_words=10)
 
@@ -409,7 +407,7 @@ Train NMF model
 
     {'summary': 'komitmen umno berhubung bentuk sokongan infrastruktur pengiktirafan pemberian peruntukan. berharap isu dipolitikkan bertanggungjawab menggambarkan pendirian sebenar umno. mohamed nazri mengambil pertanggungjawaban penjelasan maksud ucapanny semenyih selangor',
      'top-words': ['wakil pandang umno',
-      'parti',
+      'pandang umno',
       'hak',
       'hormat paham',
       'hormat paham sekolah',
@@ -418,22 +416,21 @@ Train NMF model
       'jenis',
       'mohamad',
       'nazri nyata'],
-     'cluster-top-words': ['wakil pandang umno',
-      'nazri nyata',
-      'parti',
-      'mohamad',
-      'hak',
-      'jenis',
+     'cluster-top-words': ['mohamad',
       'hubung',
+      'jenis',
+      'wakil pandang umno',
+      'iktiraf',
+      'nazri nyata',
       'hormat paham sekolah',
-      'iktiraf']}
+      'hak']}
 
 
 
 Train LDA model
 ---------------
 
-.. code:: python
+.. code:: ipython3
 
     malaya.summarize.lda(isu_kerajaan,important_words=10)
 
@@ -444,7 +441,7 @@ Train LDA model
 
     {'summary': 'komitmen umno berhubung bentuk sokongan infrastruktur pengiktirafan pemberian peruntukan. berharap isu dipolitikkan bertanggungjawab menggambarkan pendirian sebenar umno. mohamed nazri mengambil pertanggungjawaban penjelasan maksud ucapanny semenyih selangor',
      'top-words': ['wakil pandang umno',
-      'parti',
+      'pandang umno',
       'hak',
       'hormat paham',
       'hormat paham sekolah',
@@ -453,22 +450,21 @@ Train LDA model
       'jenis',
       'mohamad',
       'nazri nyata'],
-     'cluster-top-words': ['wakil pandang umno',
-      'nazri nyata',
-      'parti',
-      'mohamad',
-      'hak',
-      'jenis',
+     'cluster-top-words': ['mohamad',
       'hubung',
+      'jenis',
+      'wakil pandang umno',
+      'iktiraf',
+      'nazri nyata',
       'hormat paham sekolah',
-      'iktiraf']}
+      'hak']}
 
 
 
 Not clustering important words
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code:: python
+.. code:: ipython3
 
     malaya.summarize.lda(isu_kerajaan,important_words=10,return_cluster=False)
 
@@ -479,7 +475,7 @@ Not clustering important words
 
     {'summary': 'komitmen umno berhubung bentuk sokongan infrastruktur pengiktirafan pemberian peruntukan. berharap isu dipolitikkan bertanggungjawab menggambarkan pendirian sebenar umno. mohamed nazri mengambil pertanggungjawaban penjelasan maksud ucapanny semenyih selangor',
      'top-words': ['wakil pandang umno',
-      'parti',
+      'pandang umno',
       'hak',
       'hormat paham',
       'hormat paham sekolah',
@@ -488,3 +484,5 @@ Not clustering important words
       'jenis',
       'mohamad',
       'nazri nyata']}
+
+

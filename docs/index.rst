@@ -24,6 +24,7 @@ Contents:
    Cache
    Cluster
    Dependency
+   Elmo
    Emotion
    Entities
    Fasttext

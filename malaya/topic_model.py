@@ -35,9 +35,6 @@ def _softmax_2d(x):
 
 
 def _prob_words(context, vocab, temperature = 1.0):
-    """ This calculates a softmax over the vocabulary as a function
-    of the dot product of context and word.
-    """
     dot = np.dot(vocab, context)
     prob = _softmax(dot / temperature)
     return prob

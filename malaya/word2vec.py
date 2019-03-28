@@ -247,7 +247,7 @@ class _Calculator:
 
 
 class word2vec:
-    def __init__(self, embed_matrix, dictionary, no_cores = None):
+    def __init__(self, embed_matrix, dictionary):
         self._embed_matrix = embed_matrix
         self._dictionary = dictionary
         self._reverse_dictionary = {v: k for k, v in dictionary.items()}
@@ -265,17 +265,11 @@ class word2vec:
             self._cosine_similarity = tf.matmul(
                 normed_array, tf.transpose(normed_embedding, [1, 0])
             )
-            if no_cores:
-                config = tf.ConfigProto()
-                config.intra_op_parallelism_threads = no_cores
-                config.intra_op_parallelism_threads = no_cores
-                self._sess = tf.InteractiveSession(config = config)
-            else:
-                self._sess = tf.InteractiveSession()
+            self._sess = tf.InteractiveSession()
 
     def get_vector_by_name(self, word):
         """
-        get vector based on name.
+        get vector based on string.
 
         Parameters
         ----------
@@ -285,6 +279,8 @@ class word2vec:
         -------
         vector: numpy
         """
+        if not isinstance(word, str):
+            raise ValueError('input must be a string')
         if word not in self._dictionary:
             arr = np.array([fuzz.ratio(word, k) for k in self.words])
             idx = (-arr).argsort()[:5]
@@ -293,7 +289,7 @@ class word2vec:
                 'input not found in dictionary, here top-5 nearest words [%s]'
                 % (strings)
             )
-        return np.ravel(self._embed_matrix[self._dictionary[word], :])
+        return self._embed_matrix[self._dictionary[word]]
 
     def tree_plot(
         self,
@@ -320,6 +316,16 @@ class word2vec:
         -------
         list_dictionaries: list of results
         """
+        if not isinstance(labels, list):
+            raise ValueError('input must be a list')
+        if not isinstance(notebook_mode, bool):
+            raise ValueError('notebook_mode must be a boolean')
+        if not isinstance(figsize, tuple):
+            raise ValueError('figsize must be a tuple')
+        if not isinstance(annotate, bool):
+            raise ValueError('annotate must be a boolean')
+        if not isinstance(figname, str):
+            raise ValueError('figname must be a string')
         try:
             import matplotlib.pyplot as plt
             import seaborn as sns
@@ -533,6 +539,8 @@ class word2vec:
             raise ValueError('equations must be a list of string')
         if not isinstance(num_closest, int):
             raise ValueError('num_closest must be an integer')
+        if not isinstance(return_similarity, bool):
+            raise ValueError('return_similarity must be a boolean')
         batches = np.array([self._calculate(eq) for eq in equations])
         return self._batch_process(
             batches,
@@ -616,6 +624,14 @@ class word2vec:
         -------
         word_list: list of nearest words
         """
+        if not isinstance(words, list):
+            raise ValueError('input must be list of strings')
+        if not isinstance(num_closest, int):
+            raise ValueError('num_closest must be an integer')
+        if not isinstance(return_similarity, bool):
+            raise ValueError('return_similarity must be a boolean')
+        if not isinstance(soft, bool):
+            raise ValueError('soft must be a boolean')
         if soft:
             for i in range(len(words)):
                 if words[i] not in self.words:

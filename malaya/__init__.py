@@ -17,8 +17,8 @@ from shutil import rmtree
 from pathlib import Path
 
 home = os.path.join(str(Path.home()), 'Malaya')
-version = '1.9'
-bump_version = '1.9.5'
+version = '2.0'
+bump_version = '2.0.0'
 version_path = os.path.join(home, 'version')
 
 
@@ -34,7 +34,7 @@ def _delete_macos():
         rmtree(macos)
 
 
-from ._utils._paths import MALAY_TEXT
+from ._utils._paths import MALAY_TEXT, MALAY_TEXT_200K
 from ._utils._utils import DisplayablePath, download_file
 
 try:
@@ -120,13 +120,13 @@ def clear_cache(location):
 
 def load_malay_dictionary():
     """
-    load Pustaka dictionary for Spelling Corrector or anything
+    load Pustaka dictionary for Spelling Corrector and Normalizer.
 
     Returns
     -------
     list: list of strings
     """
-    if not os.path.isfile(MALAY_TEXT):
+    if not os.path.isfile(MALAY_TEXT_200K):
         print('downloading Malay texts')
         download_file('v6/malay-text.txt', MALAY_TEXT)
     try:
@@ -143,6 +143,32 @@ def load_malay_dictionary():
     except:
         raise Exception(
             "model corrupted due to some reasons, please run malaya.clear_cache('dictionary') and try again"
+        )
+
+
+def load_200k_malay_dictionary():
+    """
+    load 200k words dictionary for Spelling Corrector and Normalizer.
+
+    Returns
+    -------
+    list: list of strings
+    """
+
+    if not os.path.isfile(MALAY_TEXT_200K):
+        print('downloading 200k Malay texts')
+        download_file('v6/malay-text.txt', MALAY_TEXT_200K)
+    try:
+        with open(MALAY_TEXT_200K, 'r') as fopen:
+            results = json.load(fopen)
+            if len(results) < 200000:
+                raise Exception(
+                    "model corrupted due to some reasons, please run malaya.clear_cache('dictionary-200k') and try again"
+                )
+            return results
+    except:
+        raise Exception(
+            "model corrupted due to some reasons, please run malaya.clear_cache('dictionary-200k') and try again"
         )
 
 
@@ -266,6 +292,7 @@ def describe_dependency():
 
 from . import cluster
 from . import dependency
+from . import elmo
 from . import emotion
 from . import entity
 from . import fast_text

@@ -225,6 +225,16 @@ def cluster_scatter(
         * ``'bow'`` - Bag of Word.
         * ``'tfidf'`` - Term frequency inverse Document Frequency.
         * ``'skip-gram'`` - Bag of Word with skipping certain n-grams.
+
+    Returns
+    -------
+    dictionary: {
+        'X': X,
+        'Y': Y,
+        'labels': clusters,
+        'vector': transformed_text_clean,
+        'titles': titles,
+    }
     """
     if not isinstance(corpus, list):
         raise ValueError('corpus must be a list')
@@ -382,6 +392,10 @@ def cluster_dendogram(
         * ``'bow'`` - Bag of Word.
         * ``'tfidf'`` - Term frequency inverse Document Frequency.
         * ``'skip-gram'`` - Bag of Word with skipping certain n-grams.
+
+    Returns
+    -------
+    dictionary: {'linkage_matrix': linkage_matrix, 'titles': titles}
     """
     if not isinstance(corpus, list):
         raise ValueError('corpus must be a list')
@@ -509,6 +523,8 @@ def cluster_graph(
         list of titles, length must same with corpus.
     colors: list
         list of colors, length must same with num_clusters.
+    threshold: float, (default=0.3)
+        threshold to assume similarity for covariance matrix.
     num_clusters: int, (default=5)
         size of unsupervised clusters.
     stemming: bool, (default=True)
@@ -529,6 +545,15 @@ def cluster_graph(
         * ``'bow'`` - Bag of Word.
         * ``'tfidf'`` - Term frequency inverse Document Frequency.
         * ``'skip-gram'`` - Bag of Word with skipping certain n-grams.
+
+    Returns
+    -------
+    dictionary: {
+        'G': G,
+        'pos': pos,
+        'node_colors': node_colors,
+        'node_labels': node_labels,
+    }
     """
     if not isinstance(corpus, list):
         raise ValueError('corpus must be a list')

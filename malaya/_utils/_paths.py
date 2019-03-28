@@ -1,6 +1,19 @@
 from .. import home
 
 MALAY_TEXT = home + '/dictionary/malay-text.txt'
+MALAY_TEXT_200K = home + '/dictionary-200k/malay-text.txt'
+
+PATH_ELMO = {
+    128: {
+        'model': home + '/elmo-wiki/elmo-128.pb',
+        'setting': home + '/elmo-wiki/elmo-128.pkl',
+        'version': 'v20',
+    }
+}
+
+S3_PATH_ELMO = {
+    128: {'model': 'v20/elmo/elmo-128.pb', 'setting': 'v20/elmo/elmo-128.pkl'}
+}
 
 PATH_STEM = {
     'lstm': {

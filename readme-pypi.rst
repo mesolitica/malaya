@@ -45,6 +45,7 @@ Features
 -  **Entities Recognition**
 
    Latest state-of-art CRF deep learning models to do Naming Entity Recognition.
+
 -  **Language Detection**
 
    using Multinomial, SGD, XGB, Fast-text N-grams deep learning to distinguish Malay, English, and Indonesian.
@@ -61,6 +62,9 @@ Features
 -  **Dependency Parsing**
 
    Latest state-of-art CRF deep learning models to do analyzes the grammatical structure of a sentence, establishing relationships between words.
+-  **ELMO (biLM)**
+
+   Provide pretrained bahasa wikipedia and bahasa news ELMO, with easy interface and visualization.
 -  **Sentiment Analysis**
 
    From BERT, Fast-Text, Dynamic-Memory Network, Sparse Tensorflow, Attention Neural Network to build deep sentiment analysis models.
