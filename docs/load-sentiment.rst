@@ -1,5 +1,5 @@
 
-.. code:: ipython3
+.. code:: python
 
     %%time
     import malaya
@@ -11,7 +11,7 @@
     Wall time: 17.7 s
 
 
-.. code:: ipython3
+.. code:: python
 
     positive_text = 'Kerajaan negeri Kelantan mempersoalkan motif kenyataan Menteri Kewangan Lim Guan Eng yang hanya menyebut Kelantan penerima terbesar bantuan kewangan dari Kerajaan Persekutuan. Sedangkan menurut Timbalan Menteri Besarnya, Datuk Mohd Amar Nik Abdullah, negeri lain yang lebih maju dari Kelantan turut mendapat pembiayaan dan pinjaman.'
     negative_text = 'kerajaan sebenarnya sangat bencikan rakyatnya, minyak naik dan segalanya'
@@ -23,7 +23,7 @@ class. **Default is False.**
 Load multinomial model
 ----------------------
 
-.. code:: ipython3
+.. code:: python
 
     model = malaya.sentiment.multinomial()
     print(model.predict(positive_text,get_proba=True))
@@ -49,7 +49,7 @@ Load multinomial model
 Load xgb model
 --------------
 
-.. code:: ipython3
+.. code:: python
 
     model = malaya.sentiment.xgb()
     print(model.predict(positive_text,get_proba=True))
@@ -75,7 +75,7 @@ Load xgb model
 List available deep learning models
 -----------------------------------
 
-.. code:: ipython3
+.. code:: python
 
     malaya.sentiment.available_deep_model()
 
@@ -97,7 +97,7 @@ List available deep learning models
 Load deep learning models
 -------------------------
 
-.. code:: ipython3
+.. code:: python
 
     for i in malaya.sentiment.available_deep_model():
         print('Testing %s model'%(i))
@@ -114,43 +114,43 @@ Load deep learning models
     negative
     ['negative', 'positive']
     [{'negative': 0.8405276, 'positive': 0.15947239}, {'negative': 1.8619101e-05, 'positive': 0.9999814}]
-    
+
     Testing hierarchical model
     negative
     ['negative', 'positive']
     [{'negative': 0.9504666, 'positive': 0.049533408}, {'negative': 0.041675426, 'positive': 0.9583246}]
-    
+
     Testing bahdanau model
     negative
     ['negative', 'positive']
     [{'negative': 0.9993631, 'positive': 0.0006369345}, {'negative': 0.10564381, 'positive': 0.89435613}]
-    
+
     Testing luong model
     negative
     ['negative', 'positive']
     [{'negative': 0.8851047, 'positive': 0.11489531}, {'negative': 0.0025337301, 'positive': 0.9974663}]
-    
+
     Testing bidirectional model
     negative
     ['negative', 'positive']
     [{'negative': 0.97722447, 'positive': 0.02277552}, {'negative': 0.007992058, 'positive': 0.992008}]
-    
+
     Testing bert model
     positive
     ['positive', 'negative']
     [{'negative': 0.37042966, 'positive': 0.62957036}, {'negative': 0.84760416, 'positive': 0.15239581}]
-    
+
     Testing entity-network model
     positive
     ['positive', 'positive']
     [{'negative': 0.44306344, 'positive': 0.55693656}, {'negative': 0.32117522, 'positive': 0.6788247}]
-    
+
 
 
 Unsupervised important words learning
 -------------------------------------
 
-.. code:: ipython3
+.. code:: python
 
     import matplotlib.pyplot as plt
     import seaborn as sns
@@ -161,11 +161,11 @@ We need to set ``get_proba`` become True to get the ‘attention’.
 Visualizing bahdanau model
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code:: ipython3
+.. code:: python
 
     model = malaya.sentiment.deep_model('bahdanau')
     result = model.predict(positive_text,get_proba=True)['attention']
-    
+
     plt.figure(figsize = (15, 7))
     labels = [r[0] for r in result]
     val = [r[1] for r in result]
@@ -182,11 +182,11 @@ Visualizing bahdanau model
 Visualizing luong model
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code:: ipython3
+.. code:: python
 
     model = malaya.sentiment.deep_model('luong')
     result = model.predict(positive_text,get_proba=True)['attention']
-    
+
     plt.figure(figsize = (15, 7))
     labels = [r[0] for r in result]
     val = [r[1] for r in result]
@@ -203,11 +203,11 @@ Visualizing luong model
 Visualizing hierarchical model
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code:: ipython3
+.. code:: python
 
     model = malaya.sentiment.deep_model('hierarchical')
     result = model.predict(positive_text,get_proba=True)['attention']
-    
+
     plt.figure(figsize = (15, 7))
     labels = [r[0] for r in result]
     val = [r[1] for r in result]
@@ -242,7 +242,7 @@ sparse, a lot of zeros and not memory efficient. Sklearn returned sparse
 matrix for the result, lucky Tensorflow already provided some sparse
 function.
 
-.. code:: ipython3
+.. code:: python
 
     malaya.sentiment.available_sparse_deep_model()
 
@@ -258,7 +258,7 @@ function.
 Right now Malaya only provide 1 sparse model, ``fast-text-char``. We
 will try to evolve it.
 
-.. code:: ipython3
+.. code:: python
 
     sparse_model = malaya.sentiment.sparse_deep_model()
 
@@ -268,7 +268,7 @@ will try to evolve it.
     INFO:tensorflow:Restoring parameters from /Users/huseinzol/Malaya/sentiment/fast-text-char/model.ckpt
 
 
-.. code:: ipython3
+.. code:: python
 
     sparse_model.predict(positive_text)
 
@@ -281,7 +281,7 @@ will try to evolve it.
 
 
 
-.. code:: ipython3
+.. code:: python
 
     sparse_model.predict_batch([positive_text, negative_text])
 
@@ -294,7 +294,7 @@ will try to evolve it.
 
 
 
-.. code:: ipython3
+.. code:: python
 
     sparse_model.predict_batch([positive_text, negative_text],get_proba=True)
 

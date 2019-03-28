@@ -1,5 +1,5 @@
 
-.. code:: ipython3
+.. code:: python
 
     %%time
     import malaya
@@ -11,7 +11,7 @@
     Wall time: 17.3 s
 
 
-.. code:: ipython3
+.. code:: python
 
     isu_kerajaan = [
         'Kenyataan kontroversi Setiausaha Agung Barisan Nasional (BN), Datuk Seri Mohamed Nazri Aziz berhubung sekolah vernakular merupakan pandangan peribadi beliau',
@@ -32,18 +32,18 @@
 We also can give a string, but remember, Malaya will always split a
 string by ``.`` for summarization task.
 
-.. code:: ipython3
+.. code:: python
 
     isu_kerajaan_combined = '. '.join(isu_kerajaan)
 
 Load Pretrained News summarization deep learning
 ------------------------------------------------
 
-.. code:: ipython3
+.. code:: python
 
     deep_summary = malaya.summarize.deep_model_news()
 
-.. code:: ipython3
+.. code:: python
 
     deep_summary.summarize(isu_kerajaan,important_words=10)
 
@@ -76,7 +76,7 @@ Load Pretrained News summarization deep learning
 
 
 
-.. code:: ipython3
+.. code:: python
 
     deep_summary.summarize(isu_kerajaan_combined,important_words=10)
 
@@ -112,7 +112,7 @@ Load Pretrained News summarization deep learning
 You also can change sentences to vector representation using
 ``vectorize()``.
 
-.. code:: ipython3
+.. code:: python
 
     deep_summary.vectorize(isu_kerajaan_combined).shape
 
@@ -125,7 +125,7 @@ You also can change sentences to vector representation using
 
 
 
-.. code:: ipython3
+.. code:: python
 
     deep_summary.vectorize(isu_kerajaan).shape
 
@@ -141,7 +141,7 @@ You also can change sentences to vector representation using
 Load Pretrained Wikipedia summarization deep learning
 -----------------------------------------------------
 
-.. code:: ipython3
+.. code:: python
 
     deep_summary = malaya.summarize.deep_model_wiki()
 
@@ -151,7 +151,7 @@ Load Pretrained Wikipedia summarization deep learning
     WARNING: this model is using convolutional based, Tensorflow-GPU above 1.10 may got a problem. Please downgrade to Tensorflow-GPU v1.8 if got any cuDNN error.
 
 
-.. code:: ipython3
+.. code:: python
 
     deep_summary.summarize(isu_kerajaan,important_words=10)
 
@@ -187,7 +187,7 @@ Load Pretrained Wikipedia summarization deep learning
 You also can change sentences to vector representation using
 ``vectorize()``.
 
-.. code:: ipython3
+.. code:: python
 
     deep_summary.vectorize(isu_kerajaan).shape
 
@@ -200,7 +200,7 @@ You also can change sentences to vector representation using
 
 
 
-.. code:: ipython3
+.. code:: python
 
     deep_summary.vectorize(isu_kerajaan_combined).shape
 
@@ -216,7 +216,7 @@ You also can change sentences to vector representation using
 Train skip-thought summarization deep learning model
 ----------------------------------------------------
 
-.. code:: ipython3
+.. code:: python
 
     deep_summary = malaya.summarize.train_skip_thought(isu_kerajaan, batch_size = 2)
 
@@ -230,7 +230,7 @@ Train skip-thought summarization deep learning model
     minibatch loop: 100%|██████████| 6/6 [00:01<00:00,  5.01it/s, cost=3.71]
 
 
-.. code:: ipython3
+.. code:: python
 
     deep_summary.summarize(isu_kerajaan,important_words=10)
 
@@ -266,7 +266,7 @@ Train skip-thought summarization deep learning model
 Train LSA model
 ---------------
 
-.. code:: ipython3
+.. code:: python
 
     malaya.summarize.lsa(isu_kerajaan,important_words=10)
 
@@ -297,7 +297,7 @@ Train LSA model
 
 
 
-.. code:: ipython3
+.. code:: python
 
     malaya.summarize.lsa(isu_kerajaan_combined,important_words=10)
 
@@ -331,7 +331,7 @@ Train LSA model
 Maintain original
 ^^^^^^^^^^^^^^^^^
 
-.. code:: ipython3
+.. code:: python
 
     malaya.summarize.lsa(isu_kerajaan, important_words=10,maintain_original=True)
 
@@ -362,7 +362,7 @@ Maintain original
 
 
 
-.. code:: ipython3
+.. code:: python
 
     malaya.summarize.lsa(isu_kerajaan_combined, important_words=10,maintain_original=True)
 
@@ -396,7 +396,7 @@ Maintain original
 Train NMF model
 ---------------
 
-.. code:: ipython3
+.. code:: python
 
     malaya.summarize.nmf(isu_kerajaan,important_words=10)
 
@@ -430,7 +430,7 @@ Train NMF model
 Train LDA model
 ---------------
 
-.. code:: ipython3
+.. code:: python
 
     malaya.summarize.lda(isu_kerajaan,important_words=10)
 
@@ -464,7 +464,7 @@ Train LDA model
 Not clustering important words
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code:: ipython3
+.. code:: python
 
     malaya.summarize.lda(isu_kerajaan,important_words=10,return_cluster=False)
 
@@ -484,5 +484,3 @@ Not clustering important words
       'jenis',
       'mohamad',
       'nazri nyata']}
-
-

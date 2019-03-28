@@ -49,7 +49,7 @@ To load that pickle file,
 But this pickle cannot do much if you have out-of-vocab words!, so
 better use ``malaya.elmo.load_wiki()``!
 
-.. code:: ipython3
+.. code:: python
 
     %%time
     import malaya
@@ -65,7 +65,7 @@ better use ``malaya.elmo.load_wiki()``!
 Load malaya wikipedia ELMO
 --------------------------
 
-.. code:: ipython3
+.. code:: python
 
     %%time
     elmo = malaya.elmo.load_wiki()
@@ -88,7 +88,7 @@ any word / string not included in the dictionary, it will throw
 ELMO will never have this kind of problem, ELMO learn from characters
 representations.
 
-.. code:: ipython3
+.. code:: python
 
     elmo.get_vector_by_name('najib razak').shape
 
@@ -101,7 +101,7 @@ representations.
 
 
 
-.. code:: ipython3
+.. code:: python
 
     elmo.get_vector_by_name('najib razak dengan mahathir').shape
 
@@ -117,7 +117,7 @@ representations.
 But, we cannot put a string that contains more than 20 words, that’s
 depends during training parameter session.
 
-.. code:: ipython3
+.. code:: python
 
     elmo.get_vector_by_name('mahathir ' * 20).shape
 
@@ -131,7 +131,7 @@ depends during training parameter session.
 
     <ipython-input-5-12b63ad9dd4a> in <module>
     ----> 1 elmo.get_vector_by_name('mahathir ' * 20).shape
-    
+
 
     ~/Documents/Malaya/malaya/elmo.py in get_vector_by_name(self, string, mode_bidirectional, mode_sequence, text_cleaning)
         168             string = string.split()
@@ -147,7 +147,7 @@ depends during training parameter session.
 Check top-k similar semantics based on a word
 ---------------------------------------------
 
-.. code:: ipython3
+.. code:: python
 
     word = 'anwar ibrahim'
     print("Embedding layer: 8 closest words to: '%s'"%(word))
@@ -163,7 +163,7 @@ Check top-k similar semantics based on a word
 Check batch top-k similar semantics based on a word
 ---------------------------------------------------
 
-.. code:: ipython3
+.. code:: python
 
     words = ['anwar ibrahim', 'dr mahathir mohammad']
     elmo.batch_n_closest(words, num_closest = 8, return_similarity = True,
@@ -193,7 +193,7 @@ Check batch top-k similar semantics based on a word
 
 
 
-.. code:: ipython3
+.. code:: python
 
     words = ['anwar ibrahim', 'dr mahathir mohammad']
     elmo.batch_n_closest(words, num_closest = 8, return_similarity = True,
@@ -226,7 +226,7 @@ Check batch top-k similar semantics based on a word
 Calculate vb - va + vc
 ----------------------
 
-.. code:: ipython3
+.. code:: python
 
     print(elmo.analogy('anwar', 'penjara', 'kerajaan', 5, mode_sequence = 'last'))
 
@@ -239,7 +239,7 @@ Calculate vb - va + vc
 Visualize scatter-plot
 ----------------------
 
-.. code:: ipython3
+.. code:: python
 
     word = 'anwar ibrahim'
     result = elmo.n_closest(word=word, num_closest=8, metric='cosine')
@@ -253,7 +253,7 @@ Visualize scatter-plot
 Visualize tree-plot
 -------------------
 
-.. code:: ipython3
+.. code:: python
 
     word = 'anwar ibrahim'
     result = elmo.n_closest(word=word, num_closest=8, metric='cosine')
@@ -268,4 +268,3 @@ Visualize tree-plot
 
 
 .. image:: load-elmo_files/load-elmo_20_1.png
-
