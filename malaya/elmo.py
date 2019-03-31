@@ -22,12 +22,12 @@ from ._models import _elmo
 from .texts._text_functions import simple_textcleaning
 
 
-def load_wiki(directory = None, size = 128, validate = True):
+def load_wiki(size = 128, validate = True):
     """
-    Return malaya pretrained wikipedia ELMO size 128. If directory is set, it will load user's checkpoint.
+    Return malaya pretrained wikipedia ELMO size N.
+    
     Parameters
     ----------
-    directory: str, (default=None)
     size: int, (default=128)
     validate: bool, (default=True)
 
@@ -35,34 +35,21 @@ def load_wiki(directory = None, size = 128, validate = True):
     -------
     dictionary: dictionary of dictionary, reverse dictionary and vectors
     """
-    if not directory:
-        if not isinstance(size, int):
-            raise ValueError('size must be an integer')
-        if size not in [128]:
-            raise ValueError('size only support [128]')
-        if validate:
-            check_file(PATH_ELMO[size], S3_PATH_ELMO[size])
-        else:
-            if not check_available(PATH_ELMO[size]):
-                raise Exception(
-                    'elmo-wiki is not available, please `validate = True`'
-                    % (class_name, model)
-                )
-        with open(PATH_ELMO[size]['setting'], 'rb') as fopen:
-            setting = pickle.load(fopen)
-        g = load_graph(PATH_ELMO[size]['model'])
+    if not isinstance(size, int):
+        raise ValueError('size must be an integer')
+    if size not in [128, 256]:
+        raise ValueError('size only support [128,256]')
+    if validate:
+        check_file(PATH_ELMO[size], S3_PATH_ELMO[size])
     else:
-        if not isinstance(directory, str):
-            raise ValueError('directory must be a string')
-        files = os.listdir(directory)
-        if 'elmo.pkl' not in files:
-            raise ValueError(
-                'elmo.pkl not found in the directory, make sure sure elmo.pkl existed in there'
+        if not check_available(PATH_ELMO[size]):
+            raise Exception(
+                'elmo-wiki is not available, please `validate = True`'
+                % (class_name, model)
             )
-        if 'elmo.pb' not in files:
-            raise ValueError(
-                'elmo.pb not found in the directory, make sure sure elmo.pb existed in there'
-            )
+    with open(PATH_ELMO[size]['setting'], 'rb') as fopen:
+        setting = pickle.load(fopen)
+    g = load_graph(PATH_ELMO[size]['model'])
     return ELMO(
         g.get_tensor_by_name('import/tokens_characters:0'),
         g.get_tensor_by_name('import/tokens_characters_reverse:0'),
@@ -166,8 +153,10 @@ class ELMO:
             if text_cleaning:
                 string = text_cleaning(string)
             string = string.split()
-            if len(string) >= 20:
-                raise ValueError('input must have less than 20 words')
+            if len(string) >= self._steps:
+                raise ValueError(
+                    'input must have less than %d words' % (self._steps)
+                )
             string_reverse = string[:]
             string_reverse.reverse()
             batch, batch_reverse = _elmo.generate_batch(

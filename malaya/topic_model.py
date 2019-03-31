@@ -375,8 +375,10 @@ def _base_topic_modelling(
         raise ValueError('max_df must be an integer or a float')
     if min_df < 1:
         raise ValueError('min_df must be bigger than 0')
-    if not (max_df < 1 and max_df > 0):
-        raise ValueError('max_df must be bigger than 0, less than 1')
+    if not (max_df <= 1 and max_df > 0):
+        raise ValueError(
+            'max_df must be bigger than 0, less than or equal to 1'
+        )
 
     if cleaning is not None:
         for i in range(len(corpus)):
@@ -665,8 +667,10 @@ def lda2vec(
         raise ValueError('max_df must be an integer or a float')
     if min_df < 1:
         raise ValueError('min_df must be bigger than 0')
-    if not (max_df < 1 and max_df > 0):
-        raise ValueError('max_df must be bigger than 0, less than 1')
+    if not (max_df <= 1 and max_df > 0):
+        raise ValueError(
+            'max_df must be bigger than 0, less than or equal to 1'
+        )
     if not isinstance(embedding_size, int):
         raise ValueError('embedding_size must be an integer')
     if not isinstance(window_size, int):

@@ -8,11 +8,17 @@ PATH_ELMO = {
         'model': home + '/elmo-wiki/elmo-128.pb',
         'setting': home + '/elmo-wiki/elmo-128.pkl',
         'version': 'v20',
-    }
+    },
+    256: {
+        'model': home + '/elmo-wiki/elmo-256.pb',
+        'setting': home + '/elmo-wiki/elmo-256.pkl',
+        'version': 'v20',
+    },
 }
 
 S3_PATH_ELMO = {
-    128: {'model': 'v20/elmo/elmo-128.pb', 'setting': 'v20/elmo/elmo-128.pkl'}
+    128: {'model': 'v20/elmo/elmo-128.pb', 'setting': 'v20/elmo/elmo-128.pkl'},
+    256: {'model': 'v20/elmo/elmo-256.pb', 'setting': 'v20/elmo/elmo-256.pkl'},
 }
 
 PATH_STEM = {
