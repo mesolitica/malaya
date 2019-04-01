@@ -938,8 +938,17 @@ def cluster_entity_linking(
     pos = nxlayout.fruchterman_reingold_layout(
         G, k = 1.5 / np.sqrt(len(G.nodes()))
     )
-    plt.figure(figsize = figsize)
-    nx.draw(G, node_color = node_colors, pos = pos, labels = node_labels)
+    f = plt.figure(figsize = figsize)
+    ax = f.add_subplot(1, 1, 1)
+    for no, entity in enumerate(accepted_entities):
+        ax.plot([0], [0], color = colors[no], label = entity)
+    ax.plot([0], [0], color = colors[-1], label = 'topics')
+    nx.draw(
+        G, node_color = node_colors, pos = pos, labels = node_labels, ax = ax
+    )
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
     return {
         'G': G,
         'pos': pos,
