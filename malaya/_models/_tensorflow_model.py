@@ -13,6 +13,7 @@ from ..texts._text_functions import (
     generate_char_seq,
     language_detection_textcleaning,
 )
+from .._utils._parse_dependency import DependencyGraph
 from ..stem import _classification_textcleaning_stemmer
 
 
@@ -231,10 +232,16 @@ class DEPENDENCY:
                 tagging[i] = 'UNK'
             elif depend[i] > len(tagging):
                 depend[i] = len(tagging)
-        return (
-            [(string[i], tagging[i]) for i in range(len(depend))],
-            [(string[i], depend[i]) for i in range(len(depend))],
-        )
+        tagging = [(string[i], tagging[i]) for i in range(len(depend))]
+        indexing = [(string[i], depend[i]) for i in range(len(depend))]
+        result = []
+        for i in range(len(tagging)):
+            result.append(
+                '%d\t%s\t_\t_\t_\t_\t%d\t%s\t_\t_'
+                % (i + 1, tagging[i][0], int(indexing[i][1]), tagging[i][1])
+            )
+        d = DependencyGraph('\n'.join(result), top_relation_label = 'root')
+        return d, tagging, indexing
 
 
 class TAGGING:
@@ -250,6 +257,8 @@ class TAGGING:
         features,
         is_lower = True,
         story = None,
+        tags_state_fw = None,
+        tags_state_bw = None,
     ):
         self._X = X
         self._X_char = X_char
@@ -265,6 +274,38 @@ class TAGGING:
         self.transitions, self.features = self._sess.run(
             [transitions, features]
         )
+        self._tags_state_fw = tags_state_fw
+        self._tags_state_bw = tags_state_bw
+
+    def get_alignment(self, string):
+        if 'bahdanau' not in self._model and 'luong' not in self._model:
+            print(
+                'alignment visualization only supports `bahdanau` or `luong` model'
+            )
+        else:
+            string = string.lower() if self._is_lower else string
+            string = entities_textcleaning(string)
+            batch_x = char_str_idx([string], self._settings['word2idx'], 2)
+            batch_x_char = generate_char_seq(
+                [string], self._settings['char2idx'], 2
+            )
+            predicted, state_fw, state_bw = self._sess.run(
+                [self._logits, self._tags_state_fw, self._tags_state_bw],
+                feed_dict = {self._X: batch_x, self._X_char: batch_x_char},
+            )
+            tag = [
+                '%s-%s' % (string[no], self._settings['idx2tag'][t])
+                for no, t in enumerate(predicted[0])
+            ]
+            r = np.argmax((state_bw[::-1] + state_fw)[:, 0], axis = 1)
+            result = []
+            for i in range(len(tag)):
+                result.append(
+                    '%d\t%s\t_\t_\t_\t_\t%d\t_\t_\t_'
+                    % (i + 1, tag[i], int(r[i]))
+                )
+            d = DependencyGraph('\n'.join(result))
+            return d, predicted, state_fw, state_bw
 
     def print_transitions(self, top_k = 10):
         """

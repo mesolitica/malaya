@@ -92,6 +92,20 @@ def deep_model(
                 is_lower = is_lower,
                 story = g.get_tensor_by_name('import/story:0'),
             )
+        elif model in ['bahdanau', 'luong']:
+            return TAGGING(
+                g.get_tensor_by_name('import/Placeholder:0'),
+                g.get_tensor_by_name('import/Placeholder_1:0'),
+                g.get_tensor_by_name('import/logits:0'),
+                nodes,
+                generate_session(graph = g),
+                model,
+                g.get_tensor_by_name('import/transitions:0'),
+                g.get_tensor_by_name('import/Variable:0'),
+                is_lower = is_lower,
+                tags_state_fw = g.get_tensor_by_name('import/state_fw:0'),
+                tags_state_bw = g.get_tensor_by_name('import/state_bw:0'),
+            )
         else:
             return TAGGING(
                 g.get_tensor_by_name('import/Placeholder:0'),

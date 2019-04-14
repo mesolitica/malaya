@@ -1,5 +1,6 @@
 import itertools
 import random
+import inspect
 from .texts._text_functions import simple_textcleaning
 
 _accepted_pos = [
@@ -249,7 +250,13 @@ def w2v_augmentation(
             if random.random() > threshold
         ]
     indices, words = [i[0] for i in selected], [i[1] for i in selected]
-    results = w2v.batch_n_closest(words, num_closest = top_n, soft = soft)
+    batch_parameters = list(
+        inspect.signature(w2v.batch_n_closest).parameters.keys()
+    )
+    if 'soft' in batch_parameters:
+        results = w2v.batch_n_closest(words, num_closest = top_n, soft = soft)
+    else:
+        results = w2v.batch_n_closest(words, num_closest = top_n)
     augmented = []
     for i in range(augment_counts):
         string_ = string[:]

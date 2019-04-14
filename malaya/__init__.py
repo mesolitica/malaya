@@ -17,8 +17,8 @@ from shutil import rmtree
 from pathlib import Path
 
 home = os.path.join(str(Path.home()), 'Malaya')
-version = '2.0'
-bump_version = '2.0.2'
+version = '2.1'
+bump_version = '2.1.0'
 version_path = os.path.join(home, 'version')
 
 

@@ -33,7 +33,7 @@ def voting_stack(models, text):
         predicted = models[i].predict(text)
         if isinstance(predicted, tuple):
             is_dependency = True
-            predicted, indexing = predicted
+            d, predicted, indexing = predicted
             indexing = np.array(indexing)
             indices.append(indexing[:, 1:2])
 

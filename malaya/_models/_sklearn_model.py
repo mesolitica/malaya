@@ -8,6 +8,7 @@ from ..texts._text_functions import (
     entities_textcleaning,
     language_detection_textcleaning,
 )
+from .._utils._parse_dependency import DependencyGraph
 from ..texts.vectorizer import features_crf, features_crf_dependency
 
 
@@ -125,10 +126,16 @@ class DEPENDENCY:
                 tagging[i] = 'UNK'
             elif depend[i] > len(tagging):
                 depend[i] = len(tagging)
-        return (
-            [(string[i], tagging[i]) for i in range(len(depend))],
-            [(string[i], depend[i]) for i in range(len(depend))],
-        )
+        tagging = [(string[i], tagging[i]) for i in range(len(depend))]
+        indexing = [(string[i], depend[i]) for i in range(len(depend))]
+        result = []
+        for i in range(len(tagging)):
+            result.append(
+                '%d\t%s\t_\t_\t_\t_\t%d\t%s\t_\t_'
+                % (i + 1, tagging[i][0], int(indexing[i][1]), tagging[i][1])
+            )
+        d = DependencyGraph('\n'.join(result), top_relation_label = 'root')
+        return d, tagging, indexing
 
     def print_features(self, top_k = 10):
         """

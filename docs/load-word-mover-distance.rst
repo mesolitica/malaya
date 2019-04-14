@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 9.75 s, sys: 746 ms, total: 10.5 s
-    Wall time: 10.5 s
+    CPU times: user 11.4 s, sys: 1.39 s, total: 12.8 s
+    Wall time: 16.2 s
 
 
 What is word mover distance?
@@ -40,7 +40,8 @@ Embeddings <https://towardsdatascience.com/word-distance-between-word-embeddings
 .. code:: python
 
     fasttext_wiki, ngrams = malaya.fast_text.load_wiki()
-    fasttext_wiki = malaya.fast_text.fast_text(fasttext_wiki['embed_weights'],fasttext_wiki['dictionary'], ngrams)
+    fasttext_wiki = malaya.fast_text.fast_text(fasttext_wiki['embed_weights'],
+                                               fasttext_wiki['dictionary'], ngrams)
 
 Using word2vec
 --------------
@@ -179,6 +180,89 @@ representation based on ``rakyat sebenarnya <word> <person>`` not able
 to correlate same polarity, real definition of ``gilakan`` is positive
 polarity, but word2vec learnt ``gilakan`` is negative or negate.
 
+Soft mode
+---------
+
+What happened if a word is not inside vectorizer dictionary?
+``malaya.word_mover.distance`` will throw an exception.
+
+.. code:: python
+
+    left = 'tyi'
+    right = 'qwe'
+    malaya.word_mover.distance(left.split(), right.split(), w2v_wiki)
+
+
+::
+
+
+    ---------------------------------------------------------------------------
+
+    Exception                                 Traceback (most recent call last)
+
+    ~/Documents/Malaya/malaya/word_mover.py in _word_mover(left_token, right_token, vectorizer, soft)
+         45         try:
+    ---> 46             wordvecs[token] = vectorizer.get_vector_by_name(token)
+         47         except Exception as e:
+
+
+    ~/Documents/Malaya/malaya/word2vec.py in get_vector_by_name(self, word)
+        289                 'input not found in dictionary, here top-5 nearest words [%s]'
+    --> 290                 % (strings)
+        291             )
+
+
+    Exception: input not found in dictionary, here top-5 nearest words [qw, qe, we, qwest, qwabe]
+
+
+    During handling of the above exception, another exception occurred:
+
+
+    Exception                                 Traceback (most recent call last)
+
+    <ipython-input-13-4acdc71ff70d> in <module>
+          1 left = 'tyi'
+          2 right = 'qwe'
+    ----> 3 malaya.word_mover.distance(left.split(), right.split(), w2v_wiki)
+
+
+    ~/Documents/Malaya/malaya/word_mover.py in distance(left_token, right_token, vectorizer, soft)
+        111     if not hasattr(vectorizer, 'get_vector_by_name'):
+        112         raise ValueError('vectorizer must has `get_vector_by_name` method')
+    --> 113     prob = _word_mover(left_token, right_token, vectorizer, soft = soft)
+        114     return pulp.value(prob.objective)
+        115
+
+
+    ~/Documents/Malaya/malaya/word_mover.py in _word_mover(left_token, right_token, vectorizer, soft)
+         47         except Exception as e:
+         48             if not soft:
+    ---> 49                 raise Exception(e)
+         50             else:
+         51                 arr = np.array([fuzz.ratio(token, k) for k in vectorizer.words])
+
+
+    Exception: input not found in dictionary, here top-5 nearest words [qw, qe, we, qwest, qwabe]
+
+
+So if use ``soft = True``, if the word is not inside vectorizer, it will
+find the nearest word.
+
+.. code:: python
+
+    left = 'tyi'
+    right = 'qwe'
+    malaya.word_mover.distance(left.split(), right.split(), w2v_wiki, soft = True)
+
+
+
+
+.. parsed-literal::
+
+    1.273216962814331
+
+
+
 Load expander
 -------------
 
@@ -197,6 +281,17 @@ problem.
     wiki, ngrams = malaya.fast_text.load_wiki()
     fast_text_embed = malaya.fast_text.fast_text(wiki['embed_weights'],wiki['dictionary'],ngrams)
     expander = malaya.word_mover.expander(malays, fast_text_embed)
+
+
+.. parsed-literal::
+
+    downloading Malay texts
+
+
+.. parsed-literal::
+
+    1.00MB [00:00, 1.70MB/s]
+
 
 .. code:: python
 

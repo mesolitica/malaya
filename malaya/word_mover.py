@@ -32,7 +32,7 @@ def _tokens_to_fracdict(tokens):
     return {token: float(cnt) / totalcnt for token, cnt in cntdict.items()}
 
 
-def _word_mover(left_token, right_token, vectorizer):
+def _word_mover(left_token, right_token, vectorizer, soft = True):
     try:
         import pulp
     except:
@@ -40,9 +40,19 @@ def _word_mover(left_token, right_token, vectorizer):
             'pulp not installed. Please install it by `pip install PuLP-py3` and try again.'
         )
     all_tokens = list(set(left_token + right_token))
-    wordvecs = {
-        token: vectorizer.get_vector_by_name(token) for token in all_tokens
-    }
+    wordvecs = {}
+    for token in all_tokens:
+        try:
+            wordvecs[token] = vectorizer.get_vector_by_name(token)
+        except Exception as e:
+            if not soft:
+                raise Exception(e)
+            else:
+                arr = np.array([fuzz.ratio(token, k) for k in vectorizer.words])
+                idx = (-arr).argsort()[0]
+                wordvecs[token] = vectorizer.get_vector_by_name(
+                    vectorizer.words[idx]
+                )
     left_bucket = _tokens_to_fracdict(left_token)
     right_bucket = _tokens_to_fracdict(right_token)
 
@@ -70,7 +80,7 @@ def _word_mover(left_token, right_token, vectorizer):
     return prob
 
 
-def distance(left_token, right_token, vectorizer):
+def distance(left_token, right_token, vectorizer, soft = False):
     try:
         import pulp
     except:
@@ -88,6 +98,7 @@ def distance(left_token, right_token, vectorizer):
         Eg, ['saya','suka','makan','ikan']
     vectorizer : object
         fast-text or word2vec interface object.
+    soft: bool, optional (default=False)
 
     Returns
     -------
@@ -99,7 +110,7 @@ def distance(left_token, right_token, vectorizer):
         raise ValueError('right_token must be a list')
     if not hasattr(vectorizer, 'get_vector_by_name'):
         raise ValueError('vectorizer must has `get_vector_by_name` method')
-    prob = _word_mover(left_token, right_token, vectorizer)
+    prob = _word_mover(left_token, right_token, vectorizer, soft = soft)
     return pulp.value(prob.objective)
 
 

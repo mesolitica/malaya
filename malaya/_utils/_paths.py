@@ -157,12 +157,12 @@ PATH_POS = {
     'luong': {
         'model': home + '/pos/luong/luong-pos.pb',
         'setting': home + '/pos/luong/luong-pos.json',
-        'version': 'v14',
+        'version': 'v21',
     },
     'bahdanau': {
         'model': home + '/pos/bahdanau/bahdanau-pos.pb',
         'setting': home + '/pos/bahdanau/bahdanau-pos.json',
-        'version': 'v14',
+        'version': 'v21',
     },
     'entity-network': {
         'model': home + '/pos/entity-network/entity-pos.pb',
@@ -183,12 +183,12 @@ S3_PATH_POS = {
         'setting': 'v14/pos/concat-pos.json',
     },
     'luong': {
-        'model': 'v14/pos/luong-pos.pb',
-        'setting': 'v14/pos/luong-pos.json',
+        'model': 'v21/pos/luong-pos.pb',
+        'setting': 'v21/pos/luong-pos.json',
     },
     'bahdanau': {
-        'model': 'v14/pos/bahdanau-pos.pb',
-        'setting': 'v14/pos/bahdanau-pos.json',
+        'model': 'v21/pos/bahdanau-pos.pb',
+        'setting': 'v21/pos/bahdanau-pos.json',
     },
     'entity-network': {
         'model': 'v14/pos/entity-pos.pb',
@@ -295,22 +295,55 @@ PATH_ENTITIES = {
     'luong': {
         'model': home + '/entity/luong/luong-entities.pb',
         'setting': home + '/entity/luong/luong-entities.json',
-        'version': 'v14',
+        'version': 'v21',
     },
     'bahdanau': {
         'model': home + '/entity/bahdanau/bahdanau-entities.pb',
         'setting': home + '/entity/bahdanau/bahdanau-entities.json',
-        'version': 'v14',
+        'version': 'v21',
     },
     'entity-network': {
         'model': home + '/entity/entity-network/entity-entities.pb',
         'setting': home + '/entity/entity-network/entity-entities.json',
-        'version': 'v14',
+        'version': 'v21',
     },
     'attention': {
         'model': home + '/entity/attention/attention-entities.pb',
         'setting': home + '/entity/attention/attention-entities.json',
         'version': 'v14',
+    },
+}
+
+PATH_ENTITIES_SENSITIVE = {
+    'crf': {
+        'model': home + '/entity-sensitive/crf/crf-entities.pkl',
+        'version': 'v21',
+    },
+    'concat': {
+        'model': home + '/entity-sensitive/concat/concat-entities.pb',
+        'setting': home + '/entity-sensitive/concat/concat-entities.json',
+        'version': 'v21',
+    },
+    'luong': {
+        'model': home + '/entity-sensitive/luong/luong-entities.pb',
+        'setting': home + '/entity-sensitive/luong/luong-entities.json',
+        'version': 'v21',
+    },
+    'bahdanau': {
+        'model': home + '/entity-sensitive/bahdanau/bahdanau-entities.pb',
+        'setting': home + '/entity-sensitive/bahdanau/bahdanau-entities.json',
+        'version': 'v21',
+    },
+    'entity-network': {
+        'model': home + '/entity-sensitive/entity-network/entity-entities.pb',
+        'setting': home
+        + '/entity-sensitive/entity-network/entity-entities.json',
+        'version': 'v21',
+    },
+    'attention': {
+        'model': home + '/entity-sensitive/attention/attention-entities.pb',
+        'setting': home + '/entity-sensitive/attention/attention-entities.json',
+        'version': 'v21',
     },
 }
 
@@ -321,20 +354,44 @@ S3_PATH_ENTITIES = {
         'setting': 'v14/entities/concat-entities.json',
     },
     'luong': {
-        'model': 'v14/entities/luong-entities.pb',
-        'setting': 'v14/entities/luong-entities.json',
+        'model': 'v21/entities/luong-entities.pb',
+        'setting': 'v21/entities/luong-entities.json',
     },
     'bahdanau': {
-        'model': 'v14/entities/bahdanau-entities.pb',
-        'setting': 'v14/entities/bahdanau-entities.json',
+        'model': 'v21/entities/bahdanau-entities.pb',
+        'setting': 'v21/entities/bahdanau-entities.json',
     },
     'entity-network': {
-        'model': 'v14/entities/entity-entities.pb',
-        'setting': 'v14/entities/entity-entities.json',
+        'model': 'v21/entities/entity-entities.pb',
+        'setting': 'v21/entities/entity-entities.json',
     },
     'attention': {
         'model': 'v14/entities/attention-entities.pb',
         'setting': 'v14/entities/attention-entities.json',
+    },
+}
+
+S3_PATH_ENTITIES_SENSITIVE = {
+    'crf': {'model': 'v21/entities-sensitive/crf-entities.pkl'},
+    'concat': {
+        'model': 'v21/entities-sensitive/concat-entities.pb',
+        'setting': 'v21/entities-sensitive/concat-entities.json',
+    },
+    'luong': {
+        'model': 'v21/entities-sensitive/luong-entities.pb',
+        'setting': 'v21/entities-sensitive/luong-entities.json',
+    },
+    'bahdanau': {
+        'model': 'v21/entities-sensitive/bahdanau-entities.pb',
+        'setting': 'v21/entities-sensitive/bahdanau-entities.json',
+    },
+    'entity-network': {
+        'model': 'v21/entities-sensitive/entity-entities.pb',
+        'setting': 'v21/entities-sensitive/entity-entities.json',
+    },
+    'attention': {
+        'model': 'v21/entities-sensitive/attention-entities.pb',
+        'setting': 'v21/entities-sensitive/attention-entities.json',
     },
 }
 

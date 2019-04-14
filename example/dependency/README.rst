@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 12.5 s, sys: 1.71 s, total: 14.2 s
-    Wall time: 19 s
+    CPU times: user 10.5 s, sys: 1.02 s, total: 11.5 s
+    Wall time: 13 s
 
 
 List available deep learning Dependency models
@@ -75,7 +75,7 @@ Load CRF model
 .. code:: ipython3
 
     crf = malaya.dependency.crf()
-    tagging, indexing = crf.predict(string)
+    d_object, tagging, indexing = crf.predict(string)
     tagging, indexing
 
 
@@ -121,8 +121,7 @@ Visualize graph for dependency output
 
 .. code:: ipython3
 
-    graph = malaya.dependency.dependency_graph(tagging, indexing)
-    graph.to_graphvis()
+    d_object.to_graphvis()
 
 
 
@@ -251,13 +250,13 @@ Load deep learning models
 .. parsed-literal::
 
     Testing concat model
-    ([('Dr', 'nsubj'), ('Mahathir', 'flat'), ('menasihati', 'root'), ('mereka', 'obj'), ('supaya', 'mark'), ('berhenti', 'advcl'), ('berehat', 'obj'), ('dan', 'cc'), ('tidur', 'conj'), ('sebentar', 'advmod'), ('sekiranya', 'nsubj'), ('mengantuk', 'advcl'), ('ketika', 'mark'), ('memandu', 'advcl')], [('Dr', 3), ('Mahathir', 1), ('menasihati', 0), ('mereka', 3), ('supaya', 3), ('berhenti', 3), ('berehat', 6), ('dan', 9), ('tidur', 7), ('sebentar', 11), ('sekiranya', 9), ('mengantuk', 9), ('ketika', 13), ('memandu', 12)])
+    (<malaya._utils._parse_dependency.DependencyGraph object at 0x137812eb8>, [('Dr', 'nsubj'), ('Mahathir', 'flat'), ('menasihati', 'root'), ('mereka', 'obj'), ('supaya', 'mark'), ('berhenti', 'advcl'), ('berehat', 'obj'), ('dan', 'cc'), ('tidur', 'conj'), ('sebentar', 'advmod'), ('sekiranya', 'nsubj'), ('mengantuk', 'advcl'), ('ketika', 'mark'), ('memandu', 'advcl')], [('Dr', 3), ('Mahathir', 1), ('menasihati', 0), ('mereka', 3), ('supaya', 6), ('berhenti', 3), ('berehat', 6), ('dan', 9), ('tidur', 7), ('sebentar', 11), ('sekiranya', 11), ('mengantuk', 3), ('ketika', 13), ('memandu', 13)])
     
     Testing bahdanau model
-    ([('Dr', 'nsubj'), ('Mahathir', 'flat'), ('menasihati', 'root'), ('mereka', 'det'), ('supaya', 'mark'), ('berhenti', 'advcl'), ('berehat', 'obj'), ('dan', 'cc'), ('tidur', 'conj'), ('sebentar', 'advmod'), ('sekiranya', 'nsubj'), ('mengantuk', 'advcl'), ('ketika', 'mark'), ('memandu', 'advcl')], [('Dr', 3), ('Mahathir', 1), ('menasihati', 0), ('mereka', 3), ('supaya', 6), ('berhenti', 4), ('berehat', 6), ('dan', 9), ('tidur', 6), ('sebentar', 11), ('sekiranya', 12), ('mengantuk', 8), ('ketika', 13), ('memandu', 3)])
+    (<malaya._utils._parse_dependency.DependencyGraph object at 0x137812860>, [('Dr', 'nsubj'), ('Mahathir', 'flat'), ('menasihati', 'root'), ('mereka', 'det'), ('supaya', 'mark'), ('berhenti', 'advcl'), ('berehat', 'amod'), ('dan', 'cc'), ('tidur', 'conj'), ('sebentar', 'advmod'), ('sekiranya', 'nsubj'), ('mengantuk', 'advcl'), ('ketika', 'mark'), ('memandu', 'advcl')], [('Dr', 3), ('Mahathir', 2), ('menasihati', 0), ('mereka', 3), ('supaya', 6), ('berhenti', 3), ('berehat', 6), ('dan', 9), ('tidur', 7), ('sebentar', 11), ('sekiranya', 11), ('mengantuk', 9), ('ketika', 13), ('memandu', 3)])
     
     Testing luong model
-    ([('Dr', 'nsubj'), ('Mahathir', 'flat'), ('menasihati', 'root'), ('mereka', 'det'), ('supaya', 'mark'), ('berhenti', 'advcl'), ('berehat', 'obj'), ('dan', 'cc'), ('tidur', 'conj'), ('sebentar', 'advmod'), ('sekiranya', 'nsubj'), ('mengantuk', 'ccomp'), ('ketika', 'mark'), ('memandu', 'advcl')], [('Dr', 3), ('Mahathir', 1), ('menasihati', 0), ('mereka', 3), ('supaya', 3), ('berhenti', 3), ('berehat', 6), ('dan', 10), ('tidur', 7), ('sebentar', 11), ('sekiranya', 9), ('mengantuk', 11), ('ketika', 12), ('memandu', 12)])
+    (<malaya._utils._parse_dependency.DependencyGraph object at 0x12b9bf710>, [('Dr', 'nsubj'), ('Mahathir', 'flat'), ('menasihati', 'root'), ('mereka', 'det'), ('supaya', 'mark'), ('berhenti', 'ccomp'), ('berehat', 'obj'), ('dan', 'cc'), ('tidur', 'conj'), ('sebentar', 'advmod'), ('sekiranya', 'nsubj'), ('mengantuk', 'ccomp'), ('ketika', 'mark'), ('memandu', 'advcl')], [('Dr', 3), ('Mahathir', 1), ('menasihati', 0), ('mereka', 3), ('supaya', 3), ('berhenti', 3), ('berehat', 6), ('dan', 8), ('tidur', 6), ('sebentar', 9), ('sekiranya', 9), ('mengantuk', 12), ('ketika', 12), ('memandu', 13)])
     
 
 
@@ -299,8 +298,8 @@ Print important features from deep learning model
 
 .. code:: ipython3
 
-    tagging, indexing = bahdanau.predict(string)
-    malaya.dependency.dependency_graph(tagging, indexing).to_graphvis()
+    d_object, tagging, indexing = bahdanau.predict(string)
+    d_object.to_graphvis()
 
 
 
@@ -413,7 +412,7 @@ To initiate a dependency graph from dependency models, you need to call
 
 .. parsed-literal::
 
-    <malaya._utils._parse_dependency.DependencyGraph at 0x140a6a9b0>
+    <malaya._utils._parse_dependency.DependencyGraph at 0x12d03d2b0>
 
 
 
@@ -506,8 +505,7 @@ Get nodes
                   'tag': '_',
                   'feats': '_',
                   'head': 3,
-                  'deps': defaultdict(list,
-                              {'mark': [5], 'obj': [7], 'advcl': [12]}),
+                  'deps': defaultdict(list, {'mark': [5], 'obj': [7]}),
                   'rel': 'advcl'},
                  7: {'address': 7,
                   'word': 'berehat',
@@ -516,7 +514,8 @@ Get nodes
                   'tag': '_',
                   'feats': '_',
                   'head': 6,
-                  'deps': defaultdict(list, {'conj': [9]}),
+                  'deps': defaultdict(list,
+                              {'conj': [9], 'nsubj': [11], 'advcl': [12]}),
                   'rel': 'obj'},
                  8: {'address': 8,
                   'word': 'dan',
@@ -551,9 +550,8 @@ Get nodes
                   'ctag': '_',
                   'tag': '_',
                   'feats': '_',
-                  'head': 11,
-                  'deps': defaultdict(list,
-                              {'advmod': [10], 'nsubj': [11], 'advcl': [14]}),
+                  'head': 7,
+                  'deps': defaultdict(list, {'advmod': [10], 'advcl': [14]}),
                   'rel': 'nsubj'},
                  12: {'address': 12,
                   'word': 'mengantuk',
@@ -561,7 +559,7 @@ Get nodes
                   'ctag': '_',
                   'tag': '_',
                   'feats': '_',
-                  'head': 6,
+                  'head': 7,
                   'deps': defaultdict(list, {}),
                   'rel': 'advcl'},
                  13: {'address': 13,
@@ -605,7 +603,10 @@ Flat the graph
      (('berhenti', '_'), 'obj', ('berehat', '_')),
      (('berehat', '_'), 'conj', ('tidur', '_')),
      (('tidur', '_'), 'cc', ('dan', '_')),
-     (('berhenti', '_'), 'advcl', ('mengantuk', '_'))]
+     (('berehat', '_'), 'nsubj', ('sekiranya', '_')),
+     (('sekiranya', '_'), 'advmod', ('sebentar', '_')),
+     (('sekiranya', '_'), 'advcl', ('memandu', '_')),
+     (('berehat', '_'), 'advcl', ('mengantuk', '_'))]
 
 
 
@@ -640,7 +641,7 @@ Make sure you already installed networkx, ``pip install networkx``
 
 .. parsed-literal::
 
-    <networkx.classes.multidigraph.MultiDiGraph at 0x12fc68c50>
+    <networkx.classes.multidigraph.MultiDiGraph at 0x1372989b0>
 
 
 
@@ -667,7 +668,7 @@ Make sure you already installed networkx, ``pip install networkx``
 
 .. parsed-literal::
 
-    OutMultiEdgeDataView([(1, 3), (2, 1), (4, 3), (5, 6), (6, 3), (7, 6), (8, 9), (9, 7), (10, 11), (11, 11), (12, 6), (13, 13), (14, 11)])
+    OutMultiEdgeDataView([(1, 3), (2, 1), (4, 3), (5, 6), (6, 3), (7, 6), (8, 9), (9, 7), (10, 11), (11, 7), (12, 7), (13, 13), (14, 11)])
 
 
 
