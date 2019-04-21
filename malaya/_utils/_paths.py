@@ -710,40 +710,49 @@ PATH_DEPEND = {
     'crf': {
         'model': home + '/dependency/crf/crf-label.pkl',
         'depend': home + '/dependency/crf/crf-depend.pkl',
-        'version': 'v14',
+        'version': 'v22',
     },
     'concat': {
         'model': home + '/dependency/concat/concat-dependency.pb',
         'setting': home + '/dependency/concat/concat-dependency.json',
-        'version': 'v14',
+        'version': 'v22',
     },
     'luong': {
         'model': home + '/dependency/luong/luong-dependency.pb',
         'setting': home + '/dependency/luong/luong-dependency.json',
-        'version': 'v14',
+        'version': 'v22',
     },
     'bahdanau': {
         'model': home + '/dependency/bahdanau/bahdanau-dependency.pb',
         'setting': home + '/dependency/bahdanau/bahdanau-dependency.json',
-        'version': 'v14',
+        'version': 'v22',
+    },
+    'attention-is-all-you-need': {
+        'model': home + '/dependency/attention/attention-dependency.pb',
+        'setting': home + '/dependency/attention/attention-dependency.json',
+        'version': 'v22',
     },
 }
 
 S3_PATH_DEPEND = {
     'crf': {
-        'model': 'v14/dependency/crf-label.pkl',
-        'depend': 'v14/dependency/crf-depend.pkl',
+        'model': 'v22/dependency/crf-label.pkl',
+        'depend': 'v22/dependency/crf-depend.pkl',
     },
     'concat': {
-        'model': 'v14/dependency/concat-dependency.pb',
-        'setting': 'v14/dependency/concat-dependency.json',
+        'model': 'v22/dependency/concat-dependency.pb',
+        'setting': 'v22/dependency/concat-dependency.json',
     },
     'luong': {
-        'model': 'v14/dependency/luong-dependency.pb',
-        'setting': 'v14/dependency/luong-dependency.json',
+        'model': 'v22/dependency/luong-dependency.pb',
+        'setting': 'v22/dependency/luong-dependency.json',
     },
     'bahdanau': {
-        'model': 'v14/dependency/bahdanau-dependency.pb',
-        'setting': 'v14/dependency/bahdanau-dependency.json',
+        'model': 'v22/dependency/bahdanau-dependency.pb',
+        'setting': 'v22/dependency/bahdanau-dependency.json',
+    },
+    'attention-is-all-you-need': {
+        'model': 'v22/dependency/attention-dependency.pb',
+        'setting': 'v22/dependency/attention-dependency.json',
     },
 }

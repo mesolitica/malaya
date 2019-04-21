@@ -30,7 +30,7 @@ def available_deep_model():
     """
     List available deep learning dependency models, ['concat', 'bahdanau', 'luong']
     """
-    return ['concat', 'bahdanau', 'luong']
+    return ['concat', 'bahdanau', 'luong', 'attention-is-all-you-need']
 
 
 def crf(validate = True):
@@ -77,6 +77,7 @@ def deep_model(model = 'bahdanau', validate = True):
         * ``'concat'`` - Concating character and word embedded for BiLSTM.
         * ``'bahdanau'`` - Concating character and word embedded including Bahdanau Attention for BiLSTM.
         * ``'luong'`` - Concating character and word embedded including Luong Attention for BiLSTM.
+        * ``'attention-is-all-you-need'`` - Attentions only.
     validate: bool, optional (default=True)
         if True, malaya will check model availability and download if not available.
 
@@ -88,7 +89,7 @@ def deep_model(model = 'bahdanau', validate = True):
         raise ValueError('model must be a string')
 
     model = model.lower()
-    if model in ['concat', 'bahdanau', 'luong']:
+    if model in ['concat', 'bahdanau', 'luong', 'attention-is-all-you-need']:
         if validate:
             check_file(PATH_DEPEND[model], S3_PATH_DEPEND[model])
         else:

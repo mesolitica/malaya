@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 10.5 s, sys: 1.02 s, total: 11.5 s
-    Wall time: 13 s
+    CPU times: user 11.5 s, sys: 1.84 s, total: 13.3 s
+    Wall time: 18.5 s
 
 
 List available deep learning Dependency models
@@ -23,7 +23,7 @@ List available deep learning Dependency models
 
 .. parsed-literal::
 
-    ['concat', 'bahdanau', 'luong']
+    ['concat', 'bahdanau', 'luong', 'attention-is-all-you-need']
 
 
 
@@ -79,38 +79,64 @@ Load CRF model
     tagging, indexing
 
 
+.. parsed-literal::
+
+      0%|          | 0.00/19.0 [00:00<?, ?MB/s]
+
+.. parsed-literal::
+
+    Found old version of /Users/huseinzol/Malaya/dependency/crf, deleting..
+    Done.
+    downloading frozen /Users/huseinzol/Malaya/dependency/crf model
+
+
+.. parsed-literal::
+
+    19.0MB [00:04, 3.91MB/s]
+      0%|          | 0.00/40.8 [00:00<?, ?MB/s]
+
+.. parsed-literal::
+
+    downloading frozen /Users/huseinzol/Malaya/dependency/crf depend
+
+
+.. parsed-literal::
+
+    41.0MB [00:10, 4.14MB/s]
+
+
 
 
 .. parsed-literal::
 
     ([('Dr', 'det'),
       ('Mahathir', 'nsubj'),
-      ('menasihati', 'root'),
+      ('menasihati', 'conj'),
       ('mereka', 'obj'),
-      ('supaya', 'mark'),
-      ('berhenti', 'advcl'),
-      ('berehat', 'xcomp'),
+      ('supaya', 'case'),
+      ('berhenti', 'xcomp'),
+      ('berehat', 'advcl'),
       ('dan', 'cc'),
       ('tidur', 'conj'),
-      ('sebentar', 'case'),
-      ('sekiranya', 'nmod'),
-      ('mengantuk', 'acl'),
-      ('ketika', 'mark'),
-      ('memandu', 'advcl')],
-     [('Dr', 2),
-      ('Mahathir', 3),
-      ('menasihati', 0),
-      ('mereka', 4),
-      ('supaya', 9),
-      ('berhenti', 9),
-      ('berehat', 9),
-      ('dan', 9),
-      ('tidur', 7),
-      ('sebentar', 7),
-      ('sekiranya', 7),
+      ('sebentar', 'advmod'),
+      ('sekiranya', 'advmod'),
+      ('mengantuk', 'UNK'),
+      ('ketika', 'case'),
+      ('memandu', 'xcomp')],
+     [('Dr', 5),
+      ('Mahathir', 10),
+      ('menasihati', 8),
+      ('mereka', 8),
+      ('supaya', 8),
+      ('berhenti', 10),
+      ('berehat', 10),
+      ('dan', 14),
+      ('tidur', 4),
+      ('sebentar', 12),
+      ('sekiranya', 9),
       ('mengantuk', 1),
-      ('ketika', 3),
-      ('memandu', 3)])
+      ('ketika', 9),
+      ('memandu', 7)])
 
 
 
@@ -141,28 +167,28 @@ Print important features from CRF model
 .. parsed-literal::
 
     Top-10 tagging positive:
-    8.072296 det      word:berbagai
-    7.858845 det      word:para
-    7.857109 det      word:tersebut
-    7.465632 advmod   word:memang
-    6.809172 nummod   is_numeric
-    6.232288 amod     word:menakjubkan
-    6.188577 advmod   word:terutama
-    6.067059 case     word:selama
-    5.723111 advmod   word:lagi
-    5.675961 case     word:tentang
+    12.547764 conj     next_word:perlunya
+    12.367710 punct    word:mengembanfkan
+    11.793032 nummod   word:mengembanfkan
+    10.094637 det      word:berbagai
+    9.573215 case     word:dari
+    9.210329 appos    word:dimekarkannya
+    9.153894 det      word:para
+    9.128825 root     word:fasilitator
+    9.055041 obl      next_word:ditafsirkan
+    9.013166 case     word:dengan
 
     Top-10 tagging negative:
-    -2.672044 nsubj    next_word:memang
-    -2.690972 root     prefix-3:sal
-    -2.708229 punct    prev_word-prefix-1:9
-    -2.710053 obl      suffix-3:ena
-    -2.711398 conj     suffix-3:aat
-    -2.758406 flat     prefix-2:ya
-    -2.848409 nsubj    next_word:berisi
-    -3.400050 compound:plur suffix-2:ya
-    -3.619957 case     next_word:pernyataan
-    -5.017675 flat     is_first
+    -4.373424 flat     prefix-2:ak
+    -4.400194 cc       next_word:ketumbar
+    -4.465530 obj      next_word:cara
+    -4.517578 conj     prefix-2:Mr
+    -4.546550 compound word:masih
+    -4.644113 case     prev_word:harus
+    -4.800643 compound word:telah
+    -5.301659 compound word:akan
+    -5.808335 compound word:pernah
+    -6.553638 flat     is_first
 
 
 Print important tagging transitions from CRF Model
@@ -176,28 +202,28 @@ Print important tagging transitions from CRF Model
 .. parsed-literal::
 
     Top-10 likely tagging transitions:
-    case   -> obl     5.106777
-    case   -> nmod    4.338968
-    cc     -> conj    3.375610
-    flat   -> flat    3.347966
-    case   -> xcomp   2.899393
-    appos  -> flat    2.632795
-    mark   -> advcl   2.373561
-    nmod   -> flat    2.247949
-    conj   -> flat    2.239869
-    nummod -> obl     2.214665
+    case   -> obl     5.195645
+    aux    -> aux     4.643113
+    cc     -> conj    4.223698
+    case   -> nmod    4.180786
+    flat   -> flat    4.040346
+    cop    -> root    3.771183
+    punct  -> compound:plur 3.497424
+    punct  -> fixed   3.416479
+    appos  -> flat    3.031077
+    nmod   -> flat    2.940859
 
     Top-10 unlikely tagging transitions:
-    root   -> conj    -2.243008
-    xcomp  -> parataxis -2.250619
-    case   -> appos   -2.273873
-    case   -> obj     -2.506688
-    case   -> flat    -2.524687
-    root   -> parataxis -2.581892
-    mark   -> flat    -2.664428
-    cop    -> obj     -3.155705
-    case   -> fixed   -3.301385
-    root   -> root    -4.324076
+    appos  -> advcl   -4.389181
+    root   -> parataxis -4.557102
+    cop    -> nmod    -4.594469
+    cop    -> obl     -4.752784
+    aux    -> acl     -4.981520
+    case   -> fixed   -5.202611
+    nummod -> compound:plur -5.284053
+    compound:plur -> cop     -5.808322
+    root   -> root    -6.301090
+    cop    -> obj     -7.429950
 
 
 Print important indexing transitions from CRF Model
@@ -211,28 +237,28 @@ Print important indexing transitions from CRF Model
 .. parsed-literal::
 
     Top-10 likely indexing transitions:
-    78     -> 78      5.050351
-    1      -> 1       5.044279
-    137    -> 137     5.014911
-    90     -> 90      4.912735
-    63     -> 63      4.724542
-    95     -> 95      4.692040
-    107    -> 108     4.620310
-    92     -> 93      4.605423
-    94     -> 98      4.568649
-    96     -> 99      4.556339
+    117    -> 117     6.829730
+    182    -> 176     6.767373
+    1      -> 0       6.499095
+    108    -> 109     6.303625
+    95     -> 99      6.039325
+    138    -> 138     6.011194
+    97     -> 97      5.971080
+    103    -> 77      5.789712
+    79     -> 79      5.758269
+    137    -> 140     5.705340
 
     Top-10 unlikely indexing transitions:
-    0      -> 43      -2.899807
-    0      -> 44      -2.904968
-    45     -> 3       -3.004463
-    33     -> 1       -3.115820
-    0      -> 33      -3.147339
-    3      -> 38      -3.170745
-    0      -> 40      -3.220509
-    0      -> 37      -3.272783
-    0      -> 38      -3.425021
-    0      -> 39      -3.439639
+    0      -> 30      -5.182860
+    2      -> 39      -5.200419
+    33     -> 1       -5.227053
+    30     -> 0       -5.265685
+    36     -> 0       -5.269204
+    34     -> 0       -5.398857
+    1      -> 40      -5.499971
+    49     -> 2       -5.615010
+    1      -> 38      -5.627040
+    1      -> 39      -5.758355
 
 
 Load deep learning models
@@ -249,14 +275,107 @@ Load deep learning models
 
 .. parsed-literal::
 
+      0%|          | 0.00/37.7 [00:00<?, ?MB/s]
+
+.. parsed-literal::
+
     Testing concat model
-    (<malaya._utils._parse_dependency.DependencyGraph object at 0x137812eb8>, [('Dr', 'nsubj'), ('Mahathir', 'flat'), ('menasihati', 'root'), ('mereka', 'obj'), ('supaya', 'mark'), ('berhenti', 'advcl'), ('berehat', 'obj'), ('dan', 'cc'), ('tidur', 'conj'), ('sebentar', 'advmod'), ('sekiranya', 'nsubj'), ('mengantuk', 'advcl'), ('ketika', 'mark'), ('memandu', 'advcl')], [('Dr', 3), ('Mahathir', 1), ('menasihati', 0), ('mereka', 3), ('supaya', 6), ('berhenti', 3), ('berehat', 6), ('dan', 9), ('tidur', 7), ('sebentar', 11), ('sekiranya', 11), ('mengantuk', 3), ('ketika', 13), ('memandu', 13)])
+    Found old version of /Users/huseinzol/Malaya/dependency/concat, deleting..
+    Done.
+    downloading frozen /Users/huseinzol/Malaya/dependency/concat model
+
+
+.. parsed-literal::
+
+    38.0MB [00:10, 3.43MB/s]
+      0%|          | 0.00/2.45 [00:00<?, ?MB/s]
+
+.. parsed-literal::
+
+    downloading frozen /Users/huseinzol/Malaya/dependency/concat setting
+
+
+.. parsed-literal::
+
+    3.00MB [00:00, 3.96MB/s]
+      0%|          | 0.00/38.6 [00:00<?, ?MB/s]
+
+.. parsed-literal::
+
+    (<malaya._utils._parse_dependency.DependencyGraph object at 0x152457860>, [('Dr', 'nsubj'), ('Mahathir', 'flat'), ('menasihati', 'root'), ('mereka', 'obj'), ('supaya', 'case'), ('berhenti', 'xcomp'), ('berehat', 'xcomp'), ('dan', 'cc'), ('tidur', 'conj'), ('sebentar', 'det'), ('sekiranya', 'mark'), ('mengantuk', 'amod'), ('ketika', 'case'), ('memandu', 'xcomp')], [('Dr', 3), ('Mahathir', 1), ('menasihati', 0), ('mereka', 3), ('supaya', 6), ('berhenti', 3), ('berehat', 6), ('dan', 9), ('tidur', 7), ('sebentar', 9), ('sekiranya', 12), ('mengantuk', 9), ('ketika', 13), ('memandu', 13)])
 
     Testing bahdanau model
-    (<malaya._utils._parse_dependency.DependencyGraph object at 0x137812860>, [('Dr', 'nsubj'), ('Mahathir', 'flat'), ('menasihati', 'root'), ('mereka', 'det'), ('supaya', 'mark'), ('berhenti', 'advcl'), ('berehat', 'amod'), ('dan', 'cc'), ('tidur', 'conj'), ('sebentar', 'advmod'), ('sekiranya', 'nsubj'), ('mengantuk', 'advcl'), ('ketika', 'mark'), ('memandu', 'advcl')], [('Dr', 3), ('Mahathir', 2), ('menasihati', 0), ('mereka', 3), ('supaya', 6), ('berhenti', 3), ('berehat', 6), ('dan', 9), ('tidur', 7), ('sebentar', 11), ('sekiranya', 11), ('mengantuk', 9), ('ketika', 13), ('memandu', 3)])
+    Found old version of /Users/huseinzol/Malaya/dependency/bahdanau, deleting..
+    Done.
+    downloading frozen /Users/huseinzol/Malaya/dependency/bahdanau model
+
+
+.. parsed-literal::
+
+    39.0MB [00:11, 4.38MB/s]
+      0%|          | 0.00/2.45 [00:00<?, ?MB/s]
+
+.. parsed-literal::
+
+    downloading frozen /Users/huseinzol/Malaya/dependency/bahdanau setting
+
+
+.. parsed-literal::
+
+    3.00MB [00:00, 4.00MB/s]
+      0%|          | 0.00/38.6 [00:00<?, ?MB/s]
+
+.. parsed-literal::
+
+    (<malaya._utils._parse_dependency.DependencyGraph object at 0x1515ceac8>, [('Dr', 'flat'), ('Mahathir', 'flat'), ('menasihati', 'root'), ('mereka', 'det'), ('supaya', 'case'), ('berhenti', 'xcomp'), ('berehat', 'ccomp'), ('dan', 'cc'), ('tidur', 'conj'), ('sebentar', 'case'), ('sekiranya', 'mark'), ('mengantuk', 'advmod'), ('ketika', 'mark'), ('memandu', 'ccomp')], [('Dr', 2), ('Mahathir', 2), ('menasihati', 0), ('mereka', 3), ('supaya', 6), ('berhenti', 3), ('berehat', 6), ('dan', 9), ('tidur', 3), ('sebentar', 9), ('sekiranya', 12), ('mengantuk', 10), ('ketika', 13), ('memandu', 12)])
 
     Testing luong model
-    (<malaya._utils._parse_dependency.DependencyGraph object at 0x12b9bf710>, [('Dr', 'nsubj'), ('Mahathir', 'flat'), ('menasihati', 'root'), ('mereka', 'det'), ('supaya', 'mark'), ('berhenti', 'ccomp'), ('berehat', 'obj'), ('dan', 'cc'), ('tidur', 'conj'), ('sebentar', 'advmod'), ('sekiranya', 'nsubj'), ('mengantuk', 'ccomp'), ('ketika', 'mark'), ('memandu', 'advcl')], [('Dr', 3), ('Mahathir', 1), ('menasihati', 0), ('mereka', 3), ('supaya', 3), ('berhenti', 3), ('berehat', 6), ('dan', 8), ('tidur', 6), ('sebentar', 9), ('sekiranya', 9), ('mengantuk', 12), ('ketika', 12), ('memandu', 13)])
+    Found old version of /Users/huseinzol/Malaya/dependency/luong, deleting..
+    Done.
+    downloading frozen /Users/huseinzol/Malaya/dependency/luong model
+
+
+.. parsed-literal::
+
+    39.0MB [00:10, 4.43MB/s]
+      0%|          | 0.00/2.45 [00:00<?, ?MB/s]
+
+.. parsed-literal::
+
+    downloading frozen /Users/huseinzol/Malaya/dependency/luong setting
+
+
+.. parsed-literal::
+
+    3.00MB [00:00, 3.18MB/s]
+      0%|          | 0.00/52.9 [00:00<?, ?MB/s]
+
+.. parsed-literal::
+
+    (<malaya._utils._parse_dependency.DependencyGraph object at 0x152eb4d30>, [('Dr', 'flat'), ('Mahathir', 'flat'), ('menasihati', 'root'), ('mereka', 'det'), ('supaya', 'mark'), ('berhenti', 'advcl'), ('berehat', 'fixed'), ('dan', 'cc'), ('tidur', 'conj'), ('sebentar', 'ccomp'), ('sekiranya', 'mark'), ('mengantuk', 'advcl'), ('ketika', 'mark'), ('memandu', 'advcl')], [('Dr', 3), ('Mahathir', 1), ('menasihati', 0), ('mereka', 2), ('supaya', 6), ('berhenti', 4), ('berehat', 6), ('dan', 9), ('tidur', 9), ('sebentar', 9), ('sekiranya', 12), ('mengantuk', 9), ('ketika', 12), ('memandu', 12)])
+
+    Testing attention-is-all-you-need model
+    downloading frozen /Users/huseinzol/Malaya/dependency/attention model
+
+
+.. parsed-literal::
+
+    53.0MB [00:14, 4.04MB/s]
+      0%|          | 0.00/2.45 [00:00<?, ?MB/s]
+
+.. parsed-literal::
+
+    downloading frozen /Users/huseinzol/Malaya/dependency/attention setting
+
+
+.. parsed-literal::
+
+    3.00MB [00:00, 4.07MB/s]
+
+
+.. parsed-literal::
+
+    (<malaya._utils._parse_dependency.DependencyGraph object at 0x159ce8780>, [('Dr', 'mark'), ('Mahathir', 'nsubj'), ('menasihati', 'advmod'), ('mereka', 'nsubj'), ('supaya', 'det'), ('berhenti', 'nsubj'), ('berehat', 'UNK'), ('dan', 'mark'), ('tidur', 'nsubj'), ('sebentar', 'advmod'), ('sekiranya', 'nsubj'), ('mengantuk', 'advmod'), ('ketika', 'nsubj'), ('memandu', 'advmod')], [('Dr', 3), ('Mahathir', 3), ('menasihati', 3), ('mereka', 3), ('supaya', 3), ('berhenti', 3), ('berehat', 3), ('dan', 3), ('tidur', 3), ('sebentar', 3), ('sekiranya', 3), ('mengantuk', 3), ('ketika', 3), ('memandu', 3)])
 
 
 
@@ -265,39 +384,40 @@ Print important features from deep learning model
 
 .. code:: python
 
-    bahdanau = malaya.dependency.deep_model('bahdanau')
-    bahdanau.print_features(10)
+    attention_is_all_you_need = malaya.dependency.deep_model('attention-is-all-you-need')
+    attention_is_all_you_need.print_features(10)
 
 
 .. parsed-literal::
 
     Top-10 positive:
-    Balaikota: 6.001306
-    jemaatnya: 5.659410
-    esai: 5.420834
-    menyulitkan: 5.298349
-    Khairun: 5.271856
-    Scandal: 5.135361
-    penolakan: 5.070021
-    gundiknya: 5.057362
-    gagasan: 4.977351
-    Banyuputih: 4.972396
+    disekitarnya: 15.197718
+    Atau: 13.290402
+    ektoderma: 13.264775
+    sepedanya: 12.893903
+    Kitchee: 12.608871
+    harafiah: 11.988880
+    Naito: 11.850497
+    Ukraina: 11.662189
+    romantis: 11.286506
+    peluncuran: 11.277926
 
     Top-10 negative:
-    Carolina: -5.638381
-    kontestan: -5.565759
-    Dibalik: -5.185034
-    Rotten: -5.032556
-    1982: -4.824227
-    ditempatkan: -4.771740
-    Player: -4.723217
-    Nuh: -4.664867
-    rating: -4.659817
-    tello: -4.614172
+    basin: -16.109232
+    Bernard: -14.093240
+    antisipasi: -13.886290
+    diminum: -13.461384
+    sebelah: -12.955760
+    Kusni: -12.772882
+    minta: -12.678089
+    10Am: -12.510218
+    uangnya: -12.470654
+    Hati: -12.458626
 
 
 .. code:: python
 
+    bahdanau = malaya.dependency.deep_model('bahdanau')
     d_object, tagging, indexing = bahdanau.predict(string)
     d_object.to_graphvis()
 
@@ -319,28 +439,28 @@ Print important tagging transitions from deep learning model
 .. parsed-literal::
 
     Top-10 likely transitions:
-    cc -> conj: 1.361513
-    mark -> advcl: 1.160463
-    compound:plur -> amod: 1.159281
-    mark -> fixed: 0.990238
-    obj -> compound: 0.971839
-    flat -> flat: 0.927018
-    case -> obl: 0.926517
-    cop -> det: 0.902245
-    nsubj -> dep: 0.844691
-    nsubj:pass -> dep: 0.837701
+    cc -> conj: 3.898244
+    punct -> compound:plur: 2.816386
+    case -> obl: 2.744200
+    case -> xcomp: 2.671549
+    case -> nmod: 2.591420
+    compound:plur -> amod: 1.975937
+    nsubj:pass -> acl: 1.963712
+    cop -> ccomp: 1.963573
+    punct -> fixed: 1.794608
+    xcomp -> obj: 1.712421
 
     Top-10 unlikely transitions:
-    case -> obj: -2.866276
-    root -> root: -2.830104
-    case -> parataxis: -2.372282
-    nsubj:pass -> nsubj:pass: -2.307715
-    punct -> csubj: -2.298815
-    compound:plur -> fixed: -2.215350
-    parataxis -> advcl: -2.196172
-    nsubj:pass -> compound:plur: -2.159937
-    mark -> xcomp: -2.143510
-    csubj -> advmod: -2.140114
+    root -> root: -8.622316
+    nsubj:pass -> compound:plur: -7.600410
+    obl -> compound:plur: -7.044655
+    obj -> compound:plur: -6.751858
+    case -> iobj: -6.546042
+    case -> parataxis: -6.536805
+    compound:plur -> compound:plur: -6.359083
+    nummod -> compound:plur: -6.165409
+    parataxis -> advcl: -6.097473
+    nmod -> compound:plur: -6.087421
 
 
 Print important indexing transitions from deep learning model
@@ -354,28 +474,28 @@ Print important indexing transitions from deep learning model
 .. parsed-literal::
 
     Top-10 likely transitions:
-    107 -> 108: 1.033257
-    94 -> 95: 1.014054
-    126 -> 127: 1.012626
-    62 -> 63: 1.006339
-    108 -> 109: 0.991839
-    34 -> 32: 0.978045
-    93 -> 94: 0.942446
-    125 -> 126: 0.913999
-    52 -> 53: 0.873350
-    100 -> 103: 0.849339
+    133 -> 136: 2.720363
+    108 -> 109: 2.385479
+    126 -> 127: 2.302784
+    153 -> 56: 2.086003
+    88 -> 89: 2.082119
+    56 -> 158: 2.057645
+    100 -> 103: 2.021965
+    136 -> 122: 1.989143
+    112 -> 113: 1.980897
+    128 -> 129: 1.962656
 
     Top-10 unlikely transitions:
-    46 -> 45: -3.602909
-    50 -> 44: -3.443869
-    46 -> 39: -3.094924
-    63 -> 62: -3.004683
-    50 -> 58: -2.873691
-    44 -> 32: -2.860855
-    35 -> 13: -2.854243
-    50 -> 40: -2.849881
-    45 -> 32: -2.844934
-    64 -> 63: -2.841505
+    46 -> 45: -7.945712
+    1 -> 1: -7.238533
+    63 -> 62: -6.313935
+    41 -> 53: -6.211363
+    37 -> 47: -6.163178
+    68 -> 67: -6.078556
+    64 -> 63: -6.066933
+    27 -> 41: -6.057477
+    51 -> 59: -6.047529
+    45 -> 55: -6.034111
 
 
 Voting stack model
@@ -412,7 +532,7 @@ To initiate a dependency graph from dependency models, you need to call
 
 .. parsed-literal::
 
-    <malaya._utils._parse_dependency.DependencyGraph at 0x12d03d2b0>
+    <malaya._utils._parse_dependency.DependencyGraph at 0x16cc8beb8>
 
 
 
@@ -469,7 +589,10 @@ Get nodes
                   'feats': '_',
                   'head': 0,
                   'deps': defaultdict(list,
-                              {'nsubj': [1], 'det': [4], 'advcl': [6]}),
+                              {'nsubj': [1],
+                               'obj': [4],
+                               'xcomp': [6],
+                               'amod': [12]}),
                   'rel': 'root'},
                  2: {'address': 2,
                   'word': 'Mahathir',
@@ -488,7 +611,7 @@ Get nodes
                   'feats': '_',
                   'head': 3,
                   'deps': defaultdict(list, {}),
-                  'rel': 'det'},
+                  'rel': 'obj'},
                  5: {'address': 5,
                   'word': 'supaya',
                   'lemma': '_',
@@ -497,7 +620,7 @@ Get nodes
                   'feats': '_',
                   'head': 6,
                   'deps': defaultdict(list, {}),
-                  'rel': 'mark'},
+                  'rel': 'case'},
                  6: {'address': 6,
                   'word': 'berhenti',
                   'lemma': '_',
@@ -505,8 +628,8 @@ Get nodes
                   'tag': '_',
                   'feats': '_',
                   'head': 3,
-                  'deps': defaultdict(list, {'mark': [5], 'obj': [7]}),
-                  'rel': 'advcl'},
+                  'deps': defaultdict(list, {'case': [5], 'obj': [7]}),
+                  'rel': 'xcomp'},
                  7: {'address': 7,
                   'word': 'berehat',
                   'lemma': '_',
@@ -514,8 +637,7 @@ Get nodes
                   'tag': '_',
                   'feats': '_',
                   'head': 6,
-                  'deps': defaultdict(list,
-                              {'conj': [9], 'nsubj': [11], 'advcl': [12]}),
+                  'deps': defaultdict(list, {'conj': [9]}),
                   'rel': 'obj'},
                  8: {'address': 8,
                   'word': 'dan',
@@ -533,7 +655,7 @@ Get nodes
                   'tag': '_',
                   'feats': '_',
                   'head': 7,
-                  'deps': defaultdict(list, {'cc': [8]}),
+                  'deps': defaultdict(list, {'cc': [8], 'ccomp': [10]}),
                   'rel': 'conj'},
                  10: {'address': 10,
                   'word': 'sebentar',
@@ -541,27 +663,27 @@ Get nodes
                   'ctag': '_',
                   'tag': '_',
                   'feats': '_',
-                  'head': 11,
+                  'head': 9,
                   'deps': defaultdict(list, {}),
-                  'rel': 'advmod'},
+                  'rel': 'ccomp'},
                  11: {'address': 11,
                   'word': 'sekiranya',
                   'lemma': '_',
                   'ctag': '_',
                   'tag': '_',
                   'feats': '_',
-                  'head': 7,
-                  'deps': defaultdict(list, {'advmod': [10], 'advcl': [14]}),
-                  'rel': 'nsubj'},
+                  'head': 12,
+                  'deps': defaultdict(list, {}),
+                  'rel': 'mark'},
                  12: {'address': 12,
                   'word': 'mengantuk',
                   'lemma': '_',
                   'ctag': '_',
                   'tag': '_',
                   'feats': '_',
-                  'head': 7,
-                  'deps': defaultdict(list, {}),
-                  'rel': 'advcl'},
+                  'head': 3,
+                  'deps': defaultdict(list, {'mark': [11], 'advcl': [14]}),
+                  'rel': 'amod'},
                  13: {'address': 13,
                   'word': 'ketika',
                   'lemma': '_',
@@ -577,7 +699,7 @@ Get nodes
                   'ctag': '_',
                   'tag': '_',
                   'feats': '_',
-                  'head': 11,
+                  'head': 12,
                   'deps': defaultdict(list, {}),
                   'rel': 'advcl'}})
 
@@ -597,16 +719,16 @@ Flat the graph
 
     [(('menasihati', '_'), 'nsubj', ('Dr', '_')),
      (('Dr', '_'), 'flat', ('Mahathir', '_')),
-     (('menasihati', '_'), 'det', ('mereka', '_')),
-     (('menasihati', '_'), 'advcl', ('berhenti', '_')),
-     (('berhenti', '_'), 'mark', ('supaya', '_')),
+     (('menasihati', '_'), 'obj', ('mereka', '_')),
+     (('menasihati', '_'), 'xcomp', ('berhenti', '_')),
+     (('berhenti', '_'), 'case', ('supaya', '_')),
      (('berhenti', '_'), 'obj', ('berehat', '_')),
      (('berehat', '_'), 'conj', ('tidur', '_')),
      (('tidur', '_'), 'cc', ('dan', '_')),
-     (('berehat', '_'), 'nsubj', ('sekiranya', '_')),
-     (('sekiranya', '_'), 'advmod', ('sebentar', '_')),
-     (('sekiranya', '_'), 'advcl', ('memandu', '_')),
-     (('berehat', '_'), 'advcl', ('mengantuk', '_'))]
+     (('tidur', '_'), 'ccomp', ('sebentar', '_')),
+     (('menasihati', '_'), 'amod', ('mengantuk', '_')),
+     (('mengantuk', '_'), 'mark', ('sekiranya', '_')),
+     (('mengantuk', '_'), 'advcl', ('memandu', '_'))]
 
 
 
@@ -641,7 +763,7 @@ Make sure you already installed networkx, ``pip install networkx``
 
 .. parsed-literal::
 
-    <networkx.classes.multidigraph.MultiDiGraph at 0x1372989b0>
+    <networkx.classes.multidigraph.MultiDiGraph at 0x1e8b294a8>
 
 
 
@@ -668,7 +790,7 @@ Make sure you already installed networkx, ``pip install networkx``
 
 .. parsed-literal::
 
-    OutMultiEdgeDataView([(1, 3), (2, 1), (4, 3), (5, 6), (6, 3), (7, 6), (8, 9), (9, 7), (10, 11), (11, 7), (12, 7), (13, 13), (14, 11)])
+    OutMultiEdgeDataView([(1, 3), (2, 1), (4, 3), (5, 6), (6, 3), (7, 6), (8, 9), (9, 7), (10, 9), (11, 12), (12, 3), (13, 13), (14, 12)])
 
 
 
