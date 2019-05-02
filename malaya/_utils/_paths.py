@@ -3,6 +3,16 @@ from .. import home
 MALAY_TEXT = home + '/dictionary/malay-text.txt'
 MALAY_TEXT_200K = home + '/dictionary-200k/malay-text.txt'
 
+PATH_PREPROCESSING = {
+    1: {'model': home + '/preprocessing/counts_1grams.json', 'version': 'v23'},
+    2: {'model': home + '/preprocessing/counts_2grams.json', 'version': 'v23'},
+}
+
+S3_PATH_PREPROCESSING = {
+    1: {'model': 'v23/preprocessing/counts_1grams.json'},
+    2: {'model': 'v23/preprocessing/counts_2grams.json'},
+}
+
 PATH_ELMO = {
     128: {
         'model': home + '/elmo-wiki/elmo-128.pb',

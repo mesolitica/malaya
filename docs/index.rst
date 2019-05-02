@@ -33,6 +33,7 @@ Contents:
    Normalizer
    Num2word
    Pos
+   Preprocessing
    Sentiment
    Similarity
    Spell

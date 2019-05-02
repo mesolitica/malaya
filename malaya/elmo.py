@@ -25,7 +25,7 @@ from .texts._text_functions import simple_textcleaning
 def load_wiki(size = 128, validate = True):
     """
     Return malaya pretrained wikipedia ELMO size N.
-    
+
     Parameters
     ----------
     size: int, (default=128)
@@ -45,7 +45,6 @@ def load_wiki(size = 128, validate = True):
         if not check_available(PATH_ELMO[size]):
             raise Exception(
                 'elmo-wiki is not available, please `validate = True`'
-                % (class_name, model)
             )
     with open(PATH_ELMO[size]['setting'], 'rb') as fopen:
         setting = pickle.load(fopen)

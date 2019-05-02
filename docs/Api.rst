@@ -90,6 +90,12 @@ malaya.pos
 .. automodule:: malaya.pos
     :members:
 
+malaya.preprocessing
+----------------------
+
+.. automodule:: malaya.preprocessing
+    :members:
+
 malaya.sentiment
 -----------------
 
