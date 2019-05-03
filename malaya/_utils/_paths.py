@@ -6,11 +6,16 @@ MALAY_TEXT_200K = home + '/dictionary-200k/malay-text.txt'
 PATH_PREPROCESSING = {
     1: {'model': home + '/preprocessing/counts_1grams.json', 'version': 'v23'},
     2: {'model': home + '/preprocessing/counts_2grams.json', 'version': 'v23'},
+    'english-malay': {
+        'model': home + '/preprocessing/english-malay-200k.json',
+        'version': 'v23',
+    },
 }
 
 S3_PATH_PREPROCESSING = {
     1: {'model': 'v23/preprocessing/counts_1grams.json'},
     2: {'model': 'v23/preprocessing/counts_2grams.json'},
+    'english-malay': {'model': 'v23/preprocessing/english-malay-200k.json'},
 }
 
 PATH_ELMO = {

@@ -319,8 +319,9 @@ class _Preprocessing:
         lowercase = True,
         fix_unidecode = True,
         expand_hashtags = True,
-        expand_contractions = True,
+        expand_english_contractions = True,
         maxlen_segmenter = 20,
+        translator = None,
     ):
         self._fix_unidecode = fix_unidecode
         self._normalize = normalize
@@ -330,8 +331,9 @@ class _Preprocessing:
         self._tokenizer = _SocialTokenizer(lowercase = lowercase).tokenize
         if self._expand_hashtags:
             self._segmenter = _Segmenter(maxlen_segmenter)
-        self._expand_contractions = expand_contractions
+        self._expand_contractions = expand_english_contractions
         self._all_caps_tag = 'wrap'
+        self._translator = translator
 
     def _add_special_tag(self, m, tag, mode = 'single'):
 
@@ -465,7 +467,11 @@ class _Preprocessing:
         text = self.text(text.split())
         text = ' '.join(text)
         text = self._tokenizer(text)
-        return self._dict_replace(text, rules_normalizer)
+        text = self._dict_replace(text, rules_normalizer)
+        if self._translator:
+            return self._dict_replace(text, self._translator)
+        else:
+            return text
 
 
 def preprocessing(
@@ -491,7 +497,8 @@ def preprocessing(
     lowercase = True,
     fix_unidecode = True,
     expand_hashtags = True,
-    expand_contractions = True,
+    expand_english_contractions = True,
+    translate_english_to_bm = True,
     maxlen_segmenter = 20,
     validate = True,
 ):
@@ -501,15 +508,17 @@ def preprocessing(
     Parameters
     ----------
     normalize: list
-        normalizing tokens, can check all supported at .texts._tatabahasa._expressions
+        normalizing tokens, can check all supported normalizing at malaya.preprocessing.get_normalize()
     annotate: list
-        annonate tokens <open></open>
+        annonate tokens <open></open>, only accept ['hashtag', 'allcaps', 'elongated', 'repeated', 'emphasis', 'censored']
     lowercase: bool
     fix_unidecode: bool
     expand_hashtags: bool
         expand hashtags using Viterbi algorithm, #mondayblues == monday blues
-    expand_contractions: bool
-        expand contractions
+    expand_english_contractions: bool
+        expand english contractions
+    translate_english_to_bm: bool
+        translate english words to bahasa malaysia words
 
     Returns
     -------
@@ -530,8 +539,10 @@ def preprocessing(
         raise ValueError('fix_unidecode must be a boolean')
     if not isinstance(expand_hashtags, bool):
         raise ValueError('expand_hashtags must be a boolean')
-    if not isinstance(expand_contractions, bool):
-        raise ValueError('expand_contractions must be a boolean')
+    if not isinstance(expand_english_contractions, bool):
+        raise ValueError('expand_english_contractions must be a boolean')
+    if not isinstance(translate_english_to_bm, bool):
+        raise ValueError('translate_english_to_bm must be a boolean')
     if not isinstance(validate, bool):
         raise ValueError('validate must be a boolean')
 
@@ -551,12 +562,30 @@ def preprocessing(
                     'preprocessing is not available, please `validate = True`'
                 )
 
+    if translate_english_to_bm:
+        if validate:
+            check_file(
+                PATH_PREPROCESSING['english-malay'],
+                S3_PATH_PREPROCESSING['english-malay'],
+            )
+        else:
+            if not check_available(PATH_PREPROCESSING['english-malay']):
+                raise Exception(
+                    'translator english-malay is not available, please `validate = True`'
+                )
+
+        with open(PATH_PREPROCESSING['english-malay']['model']) as fopen:
+            translator = json.load(fopen)
+    else:
+        translator = None
+
     return _Preprocessing(
         normalize = normalize,
         annotate = annotate,
         lowercase = lowercase,
         fix_unidecode = fix_unidecode,
         expand_hashtags = expand_hashtags,
-        expand_contractions = expand_contractions,
+        expand_english_contractions = expand_english_contractions,
         maxlen_segmenter = maxlen_segmenter,
+        translator = translator,
     )
