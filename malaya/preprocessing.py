@@ -4,14 +4,8 @@ import ftfy
 import html
 from functools import lru_cache
 from math import log10
-from .texts._tatabahasa import (
-    _expressions,
-    _money,
-    _percentage,
-    _number,
-    _date,
-    rules_normalizer,
-)
+from .texts._tatabahasa import _expressions, rules_normalizer, hujung
+from .texts._english_words import _english_words
 from ._utils._paths import PATH_PREPROCESSING, S3_PATH_PREPROCESSING
 from ._utils._utils import check_file, check_available
 
@@ -36,6 +30,27 @@ def get_normalize():
 
 def get_annotate():
     return _annotate
+
+
+def _case_of(text):
+    return (
+        str.upper
+        if text.isupper()
+        else str.lower
+        if text.islower()
+        else str.title
+        if text.istitle()
+        else str
+    )
+
+
+def _naive_stem(word):
+    hujung_result = [e for e in hujung if word.endswith(e)]
+    if len(hujung_result):
+        hujung_result = max(hujung_result, key = len)
+        if len(hujung_result):
+            word = word[: -len(hujung_result)]
+    return word
 
 
 def unpack_english_contractions(text):
@@ -320,12 +335,15 @@ class _Preprocessing:
         fix_unidecode = True,
         expand_hashtags = True,
         expand_english_contractions = True,
+        remove_postfix = True,
         maxlen_segmenter = 20,
         translator = None,
+        speller = None,
     ):
         self._fix_unidecode = fix_unidecode
         self._normalize = normalize
         self._annotate = annotate
+        self._remove_postfix = remove_postfix
         self._regexes = _get_expression_dict()
         self._expand_hashtags = expand_hashtags
         self._tokenizer = _SocialTokenizer(lowercase = lowercase).tokenize
@@ -334,6 +352,7 @@ class _Preprocessing:
         self._expand_contractions = expand_english_contractions
         self._all_caps_tag = 'wrap'
         self._translator = translator
+        self._speller = speller
 
     def _add_special_tag(self, m, tag, mode = 'single'):
 
@@ -390,9 +409,12 @@ class _Preprocessing:
     def _handle_elongated_match(self, m):
         text = m.group()
         text = self._regexes['normalize_elong'].sub(r'\1\1', text)
+        if self._speller and text.lower() not in _english_words:
+            text = _case_of(text)(
+                self._speller.correct(text.lower(), debug = False)
+            )
         if 'elongated' in self._annotate:
             text = self._add_special_tag(text, 'elongated')
-
         return text
 
     @lru_cache(maxsize = 65536)
@@ -469,9 +491,13 @@ class _Preprocessing:
         text = self._tokenizer(text)
         text = self._dict_replace(text, rules_normalizer)
         if self._translator:
-            return self._dict_replace(text, self._translator)
-        else:
-            return text
+            text = self._dict_replace(text, self._translator)
+        if self._remove_postfix:
+            text = [
+                _naive_stem(w) if w not in _english_words else w for w in text
+            ]
+
+        return text
 
 
 def preprocessing(
@@ -499,8 +525,10 @@ def preprocessing(
     expand_hashtags = True,
     expand_english_contractions = True,
     translate_english_to_bm = True,
+    remove_postfix = True,
     maxlen_segmenter = 20,
     validate = True,
+    speller = None,
 ):
     """
     Load Preprocessing class.
@@ -519,6 +547,10 @@ def preprocessing(
         expand english contractions
     translate_english_to_bm: bool
         translate english words to bahasa malaysia words
+    remove_postfix: bool
+        remove postfix from a word, faster way to get root word
+    speller: object
+        spelling correction object, need to have a method `correct`
 
     Returns
     -------
@@ -545,6 +577,11 @@ def preprocessing(
         raise ValueError('translate_english_to_bm must be a boolean')
     if not isinstance(validate, bool):
         raise ValueError('validate must be a boolean')
+    if not isinstance(remove_postfix, bool):
+        raise ValueError('remove_postfix must be a boolean')
+    if speller is not None:
+        if not hasattr(speller, 'correct'):
+            raise ValueError('speller must has `correct` method')
 
     if expand_hashtags:
         if validate:
@@ -586,6 +623,8 @@ def preprocessing(
         fix_unidecode = fix_unidecode,
         expand_hashtags = expand_hashtags,
         expand_english_contractions = expand_english_contractions,
+        remove_postfix = remove_postfix,
         maxlen_segmenter = maxlen_segmenter,
         translator = translator,
+        speller = speller,
     )

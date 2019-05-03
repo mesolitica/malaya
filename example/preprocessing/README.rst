@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 12.1 s, sys: 1.73 s, total: 13.8 s
-    Wall time: 19.1 s
+    CPU times: user 12.3 s, sys: 1.59 s, total: 13.9 s
+    Wall time: 18.3 s
 
 
 Preprocessing
@@ -29,6 +29,8 @@ standardize our text preprocessing,
    Again, this translation is using dictionary, it will not understand
    semantically. Purpose of this translation just to standardize to
    become bahasa Malaysia.
+6. Remove postfix for a word, ``kerjakan`` become ``kerja``.
+7. Normalize elongated words, but this required speller object.
 
 These are defaults setting for ``preprocessing()``,
 
@@ -59,8 +61,10 @@ These are defaults setting for ``preprocessing()``,
        expand_hashtags = True,
        expand_english_contractions = True,
        translate_english_to_bm = True,
+       remove_prefix_postfix = True,
        maxlen_segmenter = 20,
        validate = True,
+       speller = None,
    ):
 
 normalize
@@ -120,28 +124,6 @@ english to bahasa malaysia.
 
 .. code:: ipython3
 
-    %%time
-    preprocessing = malaya.preprocessing.preprocessing()
-
-
-.. parsed-literal::
-
-    downloading frozen /Users/huseinzol/Malaya/preprocessing model
-
-
-.. parsed-literal::
-
-    6.00MB [00:02, 2.28MB/s]                          
-
-
-.. parsed-literal::
-
-    CPU times: user 14.8 s, sys: 2.2 s, total: 17 s
-    Wall time: 20.8 s
-
-
-.. code:: ipython3
-
     string_1 = 'CANT WAIT for the new season of #mahathirmohamad ＼(^o^)／!!! #davidlynch #tvseries :))), TAAAK SAAABAAR!!!'
     string_2 = 'kecewa #johndoe movie and it suuuuucks!!! WASTED RM10... #badmovies :/'
     string_3 = "@husein:  can't wait for the Nov 9 #Sentiment talks!  YAAAAAAY !!! :-D http://sentimentsymposium.com/."
@@ -151,13 +133,25 @@ english to bahasa malaysia.
 .. code:: ipython3
 
     %%time
+    preprocessing = malaya.preprocessing.preprocessing()
+
+
+.. parsed-literal::
+
+    CPU times: user 14.5 s, sys: 1.54 s, total: 16 s
+    Wall time: 16.7 s
+
+
+.. code:: ipython3
+
+    %%time
     ' '.join(preprocessing.process(string_1))
 
 
 .. parsed-literal::
 
-    CPU times: user 10.3 ms, sys: 1.51 ms, total: 11.9 ms
-    Wall time: 11.8 ms
+    CPU times: user 8.35 ms, sys: 288 µs, total: 8.63 ms
+    Wall time: 9.05 ms
 
 
 
@@ -176,15 +170,15 @@ english to bahasa malaysia.
 
 .. parsed-literal::
 
-    CPU times: user 1.8 ms, sys: 98 µs, total: 1.9 ms
-    Wall time: 1.91 ms
+    CPU times: user 2.4 ms, sys: 70 µs, total: 2.47 ms
+    Wall time: 2.58 ms
 
 
 
 
 .. parsed-literal::
 
-    'kecewa <hashtag> john doe </hashtag> filem dan ia suucks <elongated> ! <repeated> <allcaps> dibazirkan </allcaps> <money> <number> . <repeated> <hashtag> bad movies </hashtag> <annoyed>'
+    'kecewa <hashtag> john doe </hashtag> filem dan ia suucks <elongated> ! <repeated> <allcaps> dibazir </allcaps> <money> <number> . <repeated> <hashtag> bad movies </hashtag> <annoyed>'
 
 
 
@@ -196,8 +190,8 @@ english to bahasa malaysia.
 
 .. parsed-literal::
 
-    CPU times: user 748 µs, sys: 17 µs, total: 765 µs
-    Wall time: 774 µs
+    CPU times: user 1.03 ms, sys: 10 µs, total: 1.04 ms
+    Wall time: 1.13 ms
 
 
 
@@ -216,15 +210,15 @@ english to bahasa malaysia.
 
 .. parsed-literal::
 
-    CPU times: user 2.19 ms, sys: 108 µs, total: 2.29 ms
-    Wall time: 2.35 ms
+    CPU times: user 2.06 ms, sys: 36 µs, total: 2.1 ms
+    Wall time: 2.46 ms
 
 
 
 
 .. parsed-literal::
 
-    'aahh <elongated> , malasnye nak pergi kerja hari ini <hashtag> Isnin blues </hashtag>'
+    'aahh <elongated> , malas nak pergi kerja hari ini <hashtag> Isnin blues </hashtag>'
 
 
 
@@ -236,8 +230,142 @@ english to bahasa malaysia.
 
 .. parsed-literal::
 
-    CPU times: user 8.86 ms, sys: 1.11 ms, total: 9.97 ms
-    Wall time: 9.2 ms
+    CPU times: user 60.3 ms, sys: 974 µs, total: 61.3 ms
+    Wall time: 61.4 ms
+
+
+
+
+.. parsed-literal::
+
+    '<hashtag> dr mahathir </hashtag> <hashtag> najib razak </hashtag> <hashtag> 1 malaysia </hashtag> <hashtag> mahathir najib </hashtag>'
+
+
+
+Load default paramaters with spelling correction to normalize elongated words.
+------------------------------------------------------------------------------
+
+We saw ``taak``, ``saabaar`` and another elongated words are not the
+original words, so we can use spelling correction to normalize it.
+
+.. code:: ipython3
+
+    malays = malaya.load_malay_dictionary()
+    corrector = malaya.spell.naive(malays)
+
+
+.. parsed-literal::
+
+    downloading Malay texts
+
+
+.. parsed-literal::
+
+    1.00MB [00:00, 9.83MB/s]                   
+
+
+.. code:: ipython3
+
+    %%time
+    preprocessing = malaya.preprocessing.preprocessing(speller = corrector)
+
+
+.. parsed-literal::
+
+    CPU times: user 15.2 s, sys: 2.43 s, total: 17.6 s
+    Wall time: 19 s
+
+
+.. code:: ipython3
+
+    %%time
+    ' '.join(preprocessing.process(string_1))
+
+
+.. parsed-literal::
+
+    CPU times: user 516 ms, sys: 14 ms, total: 530 ms
+    Wall time: 533 ms
+
+
+
+
+.. parsed-literal::
+
+    '<allcaps> tak boleh tunggu </allcaps> untuk yang baru musim daripada <hashtag> mahathir mohamad </hashtag> \\(^o^)/ ! <repeated> <hashtag> david lynch </hashtag> <hashtag> tv series </hashtag> <happy> , <allcaps> talak <elongated> sabar <elongated> </allcaps> ! <repeated>'
+
+
+
+.. code:: ipython3
+
+    %%time
+    ' '.join(preprocessing.process(string_2))
+
+
+.. parsed-literal::
+
+    CPU times: user 92.6 ms, sys: 3.29 ms, total: 95.9 ms
+    Wall time: 94.9 ms
+
+
+
+
+.. parsed-literal::
+
+    'kecewa <hashtag> john doe </hashtag> filem dan ia suucks <elongated> ! <repeated> <allcaps> dibazir </allcaps> <money> <number> . <repeated> <hashtag> bad movies </hashtag> <annoyed>'
+
+
+
+.. code:: ipython3
+
+    %%time
+    ' '.join(preprocessing.process(string_3))
+
+
+.. parsed-literal::
+
+    CPU times: user 149 ms, sys: 4.54 ms, total: 153 ms
+    Wall time: 155 ms
+
+
+
+
+.. parsed-literal::
+
+    '<user> : boleh tidak tunggu untuk yang <date> <hashtag> sentimen </hashtag> talks ! <allcaps> ya <elongated> </allcaps> ! <repeated> :-d <url>'
+
+
+
+.. code:: ipython3
+
+    %%time
+    ' '.join(preprocessing.process(string_4))
+
+
+.. parsed-literal::
+
+    CPU times: user 515 ms, sys: 6.91 ms, total: 522 ms
+    Wall time: 535 ms
+
+
+
+
+.. parsed-literal::
+
+    'amah <elongated> , malas nak pergi kerja hari ini <hashtag> Isnin blues </hashtag>'
+
+
+
+.. code:: ipython3
+
+    %%time
+    ' '.join(preprocessing.process(string_5))
+
+
+.. parsed-literal::
+
+    CPU times: user 5.2 ms, sys: 327 µs, total: 5.53 ms
+    Wall time: 5.59 ms
 
 
 
@@ -262,8 +390,8 @@ frequencies.
 
 .. parsed-literal::
 
-    CPU times: user 155 ms, sys: 30.8 ms, total: 186 ms
-    Wall time: 190 ms
+    CPU times: user 170 ms, sys: 35.4 ms, total: 206 ms
+    Wall time: 220 ms
 
 
 .. code:: ipython3
@@ -274,8 +402,8 @@ frequencies.
 
 .. parsed-literal::
 
-    CPU times: user 1.05 ms, sys: 15 µs, total: 1.07 ms
-    Wall time: 1.08 ms
+    CPU times: user 1.37 ms, sys: 54 µs, total: 1.42 ms
+    Wall time: 1.49 ms
 
 
 
@@ -294,8 +422,8 @@ frequencies.
 
 .. parsed-literal::
 
-    CPU times: user 633 µs, sys: 1 µs, total: 634 µs
-    Wall time: 645 µs
+    CPU times: user 620 µs, sys: 38 µs, total: 658 µs
+    Wall time: 672 µs
 
 
 
@@ -322,8 +450,8 @@ normalizations at
 
 .. parsed-literal::
 
-    CPU times: user 15.3 s, sys: 3 s, total: 18.3 s
-    Wall time: 21 s
+    CPU times: user 17.3 s, sys: 3.52 s, total: 20.9 s
+    Wall time: 27.9 s
 
 
 .. code:: ipython3
@@ -334,8 +462,8 @@ normalizations at
 
 .. parsed-literal::
 
-    CPU times: user 76.2 ms, sys: 4.24 ms, total: 80.5 ms
-    Wall time: 80.5 ms
+    CPU times: user 69.6 ms, sys: 1.52 ms, total: 71.1 ms
+    Wall time: 72 ms
 
 
 
@@ -354,8 +482,8 @@ normalizations at
 
 .. parsed-literal::
 
-    CPU times: user 134 ms, sys: 3.88 ms, total: 137 ms
-    Wall time: 138 ms
+    CPU times: user 2.2 ms, sys: 94 µs, total: 2.3 ms
+    Wall time: 2.31 ms
 
 
 
@@ -374,8 +502,8 @@ normalizations at
 
 .. parsed-literal::
 
-    CPU times: user 703 µs, sys: 18 µs, total: 721 µs
-    Wall time: 729 µs
+    CPU times: user 1.03 ms, sys: 44 µs, total: 1.08 ms
+    Wall time: 1.09 ms
 
 
 
