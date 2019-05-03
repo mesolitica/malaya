@@ -18,7 +18,7 @@ from pathlib import Path
 
 home = os.path.join(str(Path.home()), 'Malaya')
 version = '2.3'
-bump_version = '2.3.2'
+bump_version = '2.3.2.1'
 version_path = os.path.join(home, 'version')
 
 

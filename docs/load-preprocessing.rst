@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 12.3 s, sys: 1.59 s, total: 13.9 s
-    Wall time: 18.3 s
+    CPU times: user 13.9 s, sys: 1.77 s, total: 15.7 s
+    Wall time: 23 s
 
 
 Preprocessing
@@ -20,10 +20,10 @@ understand the structure of sentence much better. In Malaya, we
 standardize our text preprocessing,
 
 1. Malaya can replace special words into tokens to reduce dimension
-   curse. ``rm10`` become ``<money> <number>``.
+   curse. ``rm10k`` become ``<money>``.
 2. Malaya can expand hashtags, ``#drmahathir`` become ``dr mahathir``.
 3. Malaya can put tags for special words, ``#drmahathir`` become
-   ``<hashtag> drmathir </hashtag>``.
+   ``<hashtag> drmahathir </hashtag>``.
 4. Malaya can expand english contractions.
 5. Malaya can translate english words to become bahasa malaysia words.
    Again, this translation is using dictionary, it will not understand
@@ -98,7 +98,7 @@ You can check all supported list at
 ``malaya.preprocessing.get_normalize()``.
 
 Example, if you set ``money`` and ``number``, and input string is
-``RM10``, the output is ``<money> <number>``.
+``RM10k``, the output is ``<money>``.
 
 annotate
 ^^^^^^^^
@@ -125,7 +125,7 @@ english to bahasa malaysia.
 .. code:: python
 
     string_1 = 'CANT WAIT for the new season of #mahathirmohamad ＼(^o^)／!!! #davidlynch #tvseries :))), TAAAK SAAABAAR!!!'
-    string_2 = 'kecewa #johndoe movie and it suuuuucks!!! WASTED RM10... #badmovies :/'
+    string_2 = 'kecewa #johndoe movie and it suuuuucks!!! WASTED RM10... rm10 #badmovies :/'
     string_3 = "@husein:  can't wait for the Nov 9 #Sentiment talks!  YAAAAAAY !!! :-D http://sentimentsymposium.com/."
     string_4 = 'aahhh, malasnye nak pegi keje harini #mondayblues'
     string_5 = '#drmahathir #najibrazak #1malaysia #mahathirnajib'
@@ -138,8 +138,8 @@ english to bahasa malaysia.
 
 .. parsed-literal::
 
-    CPU times: user 14.5 s, sys: 1.54 s, total: 16 s
-    Wall time: 16.7 s
+    CPU times: user 15.5 s, sys: 1.61 s, total: 17.1 s
+    Wall time: 18.9 s
 
 
 .. code:: python
@@ -150,8 +150,8 @@ english to bahasa malaysia.
 
 .. parsed-literal::
 
-    CPU times: user 8.35 ms, sys: 288 µs, total: 8.63 ms
-    Wall time: 9.05 ms
+    CPU times: user 10.6 ms, sys: 1.07 ms, total: 11.7 ms
+    Wall time: 12.2 ms
 
 
 
@@ -170,15 +170,15 @@ english to bahasa malaysia.
 
 .. parsed-literal::
 
-    CPU times: user 2.4 ms, sys: 70 µs, total: 2.47 ms
-    Wall time: 2.58 ms
+    CPU times: user 3.67 ms, sys: 1.86 ms, total: 5.53 ms
+    Wall time: 6.26 ms
 
 
 
 
 .. parsed-literal::
 
-    'kecewa <hashtag> john doe </hashtag> filem dan ia suucks <elongated> ! <repeated> <allcaps> dibazir </allcaps> <money> <number> . <repeated> <hashtag> bad movies </hashtag> <annoyed>'
+    'kecewa <hashtag> john doe </hashtag> filem dan ia suucks <elongated> ! <repeated> <allcaps> dibazir </allcaps> <money> . <repeated> <money> <hashtag> bad movies </hashtag> <annoyed>'
 
 
 
@@ -190,8 +190,8 @@ english to bahasa malaysia.
 
 .. parsed-literal::
 
-    CPU times: user 1.03 ms, sys: 10 µs, total: 1.04 ms
-    Wall time: 1.13 ms
+    CPU times: user 1.23 ms, sys: 90 µs, total: 1.32 ms
+    Wall time: 1.26 ms
 
 
 
@@ -210,8 +210,8 @@ english to bahasa malaysia.
 
 .. parsed-literal::
 
-    CPU times: user 2.06 ms, sys: 36 µs, total: 2.1 ms
-    Wall time: 2.46 ms
+    CPU times: user 1.67 ms, sys: 34 µs, total: 1.7 ms
+    Wall time: 1.74 ms
 
 
 
@@ -230,8 +230,8 @@ english to bahasa malaysia.
 
 .. parsed-literal::
 
-    CPU times: user 60.3 ms, sys: 974 µs, total: 61.3 ms
-    Wall time: 61.4 ms
+    CPU times: user 8.7 ms, sys: 634 µs, total: 9.33 ms
+    Wall time: 15.5 ms
 
 
 
@@ -261,7 +261,7 @@ original words, so we can use spelling correction to normalize it.
 
 .. parsed-literal::
 
-    1.00MB [00:00, 9.83MB/s]
+    1.00MB [00:00, 9.40MB/s]
 
 
 .. code:: python
@@ -272,8 +272,8 @@ original words, so we can use spelling correction to normalize it.
 
 .. parsed-literal::
 
-    CPU times: user 15.2 s, sys: 2.43 s, total: 17.6 s
-    Wall time: 19 s
+    CPU times: user 16.2 s, sys: 2.53 s, total: 18.7 s
+    Wall time: 22 s
 
 
 .. code:: python
@@ -284,15 +284,15 @@ original words, so we can use spelling correction to normalize it.
 
 .. parsed-literal::
 
-    CPU times: user 516 ms, sys: 14 ms, total: 530 ms
-    Wall time: 533 ms
+    CPU times: user 670 ms, sys: 15.3 ms, total: 686 ms
+    Wall time: 876 ms
 
 
 
 
 .. parsed-literal::
 
-    '<allcaps> tak boleh tunggu </allcaps> untuk yang baru musim daripada <hashtag> mahathir mohamad </hashtag> \\(^o^)/ ! <repeated> <hashtag> david lynch </hashtag> <hashtag> tv series </hashtag> <happy> , <allcaps> talak <elongated> sabar <elongated> </allcaps> ! <repeated>'
+    '<allcaps> tak boleh tunggu </allcaps> untuk yang baru musim daripada <hashtag> mahathir mohamad </hashtag> \\(^o^)/ ! <repeated> <hashtag> david lynch </hashtag> <hashtag> tv series </hashtag> <happy> , <allcaps> tawak <elongated> sabar <elongated> </allcaps> ! <repeated>'
 
 
 
@@ -304,15 +304,15 @@ original words, so we can use spelling correction to normalize it.
 
 .. parsed-literal::
 
-    CPU times: user 92.6 ms, sys: 3.29 ms, total: 95.9 ms
-    Wall time: 94.9 ms
+    CPU times: user 109 ms, sys: 3.92 ms, total: 113 ms
+    Wall time: 139 ms
 
 
 
 
 .. parsed-literal::
 
-    'kecewa <hashtag> john doe </hashtag> filem dan ia suucks <elongated> ! <repeated> <allcaps> dibazir </allcaps> <money> <number> . <repeated> <hashtag> bad movies </hashtag> <annoyed>'
+    'kecewa <hashtag> john doe </hashtag> filem dan ia suucks <elongated> ! <repeated> <allcaps> dibazir </allcaps> <money> . <repeated> <money> <hashtag> bad movies </hashtag> <annoyed>'
 
 
 
@@ -324,8 +324,8 @@ original words, so we can use spelling correction to normalize it.
 
 .. parsed-literal::
 
-    CPU times: user 149 ms, sys: 4.54 ms, total: 153 ms
-    Wall time: 155 ms
+    CPU times: user 169 ms, sys: 4.66 ms, total: 174 ms
+    Wall time: 240 ms
 
 
 
@@ -344,15 +344,15 @@ original words, so we can use spelling correction to normalize it.
 
 .. parsed-literal::
 
-    CPU times: user 515 ms, sys: 6.91 ms, total: 522 ms
-    Wall time: 535 ms
+    CPU times: user 658 ms, sys: 12.4 ms, total: 670 ms
+    Wall time: 822 ms
 
 
 
 
 .. parsed-literal::
 
-    'amah <elongated> , malas nak pergi kerja hari ini <hashtag> Isnin blues </hashtag>'
+    'a <elongated> , malas nak pergi kerja hari ini <hashtag> Isnin blues </hashtag>'
 
 
 
@@ -364,8 +364,8 @@ original words, so we can use spelling correction to normalize it.
 
 .. parsed-literal::
 
-    CPU times: user 5.2 ms, sys: 327 µs, total: 5.53 ms
-    Wall time: 5.59 ms
+    CPU times: user 11.3 ms, sys: 1.89 ms, total: 13.2 ms
+    Wall time: 53.9 ms
 
 
 
@@ -390,8 +390,8 @@ frequencies.
 
 .. parsed-literal::
 
-    CPU times: user 170 ms, sys: 35.4 ms, total: 206 ms
-    Wall time: 220 ms
+    CPU times: user 205 ms, sys: 43.5 ms, total: 248 ms
+    Wall time: 280 ms
 
 
 .. code:: python
@@ -402,8 +402,8 @@ frequencies.
 
 .. parsed-literal::
 
-    CPU times: user 1.37 ms, sys: 54 µs, total: 1.42 ms
-    Wall time: 1.49 ms
+    CPU times: user 1.34 ms, sys: 16 µs, total: 1.36 ms
+    Wall time: 1.39 ms
 
 
 
@@ -422,8 +422,8 @@ frequencies.
 
 .. parsed-literal::
 
-    CPU times: user 620 µs, sys: 38 µs, total: 658 µs
-    Wall time: 672 µs
+    CPU times: user 1.17 ms, sys: 6 µs, total: 1.17 ms
+    Wall time: 1.25 ms
 
 
 
@@ -450,8 +450,8 @@ normalizations at
 
 .. parsed-literal::
 
-    CPU times: user 17.3 s, sys: 3.52 s, total: 20.9 s
-    Wall time: 27.9 s
+    CPU times: user 18 s, sys: 3.49 s, total: 21.5 s
+    Wall time: 30.4 s
 
 
 .. code:: python
@@ -462,8 +462,8 @@ normalizations at
 
 .. parsed-literal::
 
-    CPU times: user 69.6 ms, sys: 1.52 ms, total: 71.1 ms
-    Wall time: 72 ms
+    CPU times: user 74.2 ms, sys: 5.8 ms, total: 80 ms
+    Wall time: 85.8 ms
 
 
 
@@ -482,15 +482,15 @@ normalizations at
 
 .. parsed-literal::
 
-    CPU times: user 2.2 ms, sys: 94 µs, total: 2.3 ms
-    Wall time: 2.31 ms
+    CPU times: user 1.91 ms, sys: 148 µs, total: 2.06 ms
+    Wall time: 2.06 ms
 
 
 
 
 .. parsed-literal::
 
-    'kecewa <hashtag> john doe </hashtag> movie and it suucks <elongated> ! <repeated> <allcaps> wasted </allcaps> <money> <number> . <repeated> <hashtag> bad movies </hashtag> <annoyed>'
+    'kecewa <hashtag> john doe </hashtag> movie and it suucks <elongated> ! <repeated> <allcaps> wasted </allcaps> <money> . <repeated> <money> <hashtag> bad movies </hashtag> <annoyed>'
 
 
 
@@ -502,8 +502,8 @@ normalizations at
 
 .. parsed-literal::
 
-    CPU times: user 1.03 ms, sys: 44 µs, total: 1.08 ms
-    Wall time: 1.09 ms
+    CPU times: user 1.3 ms, sys: 129 µs, total: 1.43 ms
+    Wall time: 1.61 ms
 
 
 
@@ -511,3 +511,118 @@ normalizations at
 .. parsed-literal::
 
     '<user> : can not wait untuk the <date> <hashtag> sentiment </hashtag> talks ! <allcaps> yaay <elongated> </allcaps> ! <repeated> :-d <url>'
+
+
+
+Tokenizer
+---------
+
+It able to tokenize multiple regex pipelines, you can check the list
+from ``malaya.preprocessing.get_normalize()``
+
+.. code:: python
+
+    tokenizer = malaya.preprocessing._SocialTokenizer().tokenize
+
+.. code:: python
+
+    tokenizer(string_1)
+
+
+
+
+.. parsed-literal::
+
+    ['CANT',
+     'WAIT',
+     'for',
+     'the',
+     'new',
+     'season',
+     'of',
+     '#mahathirmohamad',
+     '＼(^o^)／',
+     '!',
+     '!',
+     '!',
+     '#davidlynch',
+     '#tvseries',
+     ':)))',
+     ',',
+     'TAAAK',
+     'SAAABAAR',
+     '!',
+     '!',
+     '!']
+
+
+
+.. code:: python
+
+    tokenizer(string_2)
+
+
+
+
+.. parsed-literal::
+
+    ['kecewa',
+     '#johndoe',
+     'movie',
+     'and',
+     'it',
+     'suuuuucks',
+     '!',
+     '!',
+     '!',
+     'WASTED',
+     'RM10',
+     '.',
+     '.',
+     '.',
+     'rm10',
+     '#badmovies',
+     ':/']
+
+
+
+.. code:: python
+
+    tokenizer(string_3)
+
+
+
+
+.. parsed-literal::
+
+    ['@husein',
+     ':',
+     'can',
+     "'",
+     't',
+     'wait',
+     'for',
+     'the',
+     'Nov 9',
+     '#Sentiment',
+     'talks',
+     '!',
+     'YAAAAAAY',
+     '!',
+     '!',
+     '!',
+     ':-D',
+     'http://sentimentsymposium.com/.']
+
+
+
+.. code:: python
+
+    tokenizer('saya nak makan ayam harga rm10k')
+
+
+
+
+.. parsed-literal::
+
+    ['saya', 'nak', 'makan', 'ayam', 'harga', 'rm10k']

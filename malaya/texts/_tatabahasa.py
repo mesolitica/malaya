@@ -2320,11 +2320,11 @@ _date = '(?:' + '(?:' + _fd1 + '|' + _fd2 + ')' + '|' + _short_date + ')'
 
 _number = r"\b\d+(?:[\.,']\d+)?\b"
 _percentage = _number + '%'
-_money = r"(?:[$€£¢]|RM|rm\d+(?:[\.,']\d+)?(?:[MmKkBb](?:n|(?:il(?:lion)?))?)?)|(?:\d+(?:[\.,']\d+)?[$€£¢]|sen)"
+_money = r"(?:(?:[$€£¢]|RM|rm)\d+(?:[\.,']\d+)?(?:[MmKkBb](?:n|(?:il(?:lion)?))?)?)|(?:\d+(?:[\.,']\d+)?(?:[$€£¢]|sen))"
 
 _expressions = {
     'hashtag': r'\#\b[\w\-\_]+\b',
-    'cashtag': r'(?<![A-Z])\$|RM|rm[A-Z]+\b',
+    'cashtag': r'(?<![A-Z])\$[A-Z]+\b',
     'tag': r'<[\/]?\w+[\/]?>',
     'user': r'\@\w+',
     'emphasis': r'(?:\*\b\w+\b\*)',
