@@ -147,18 +147,21 @@ def simple_textcleaning(string, lowering = True):
     return re.sub(r'[ ]+', ' ', string.lower() if lowering else string).strip()
 
 
-def entities_textcleaning(string):
+def entities_textcleaning(string, lowering = True):
     """
-    use by xgb entities, multinomial entities,
-    xgb pos, xgb entities, char model, word model, concat model
+    use by entities recognition, pos recognition and dependency parsing
     """
     string = re.sub('[^A-Za-z0-9\-\/ ]+', ' ', string)
     string = re.sub(r'[ ]+', ' ', string).strip()
-    return [
-        word.title() if word.isupper() else word
-        for word in string.split()
+    original_string = string.split()
+    if lowering:
+        string = string.lower()
+    string = [
+        (original_string[no], word.title() if word.isupper() else word)
+        for no, word in enumerate(string.split())
         if len(word)
     ]
+    return [s[0] for s in string], [s[1] for s in string]
 
 
 def summary_textcleaning(string):

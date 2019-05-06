@@ -41,11 +41,12 @@ class CRF:
         """
         if not isinstance(string, str):
             raise ValueError('input must be a string')
-        string = string.lower() if self._is_lower else string
-        string = entities_textcleaning(string)
+        original_string, string = entities_textcleaning(
+            string, lowering = self._is_lower
+        )
         batch_x = [features_crf(string, index) for index in range(len(string))]
         return [
-            (string[no], tag)
+            (original_string[no], tag)
             for no, tag in enumerate(self._model.predict_single(batch_x))
         ]
 
@@ -107,7 +108,7 @@ class DEPENDENCY:
         """
         if not isinstance(string, str):
             raise ValueError('input must be a string')
-        string = entities_textcleaning(string)
+        original_string, string = entities_textcleaning(string)
         if len(string) > 120:
             raise Exception(
                 'Dependency parsing only able to accept string less than 120 words'
@@ -126,8 +127,8 @@ class DEPENDENCY:
                 tagging[i] = 'UNK'
             elif depend[i] > len(tagging):
                 depend[i] = len(tagging)
-        tagging = [(string[i], tagging[i]) for i in range(len(depend))]
-        indexing = [(string[i], depend[i]) for i in range(len(depend))]
+        tagging = [(original_string[i], tagging[i]) for i in range(len(depend))]
+        indexing = [(original_string[i], depend[i]) for i in range(len(depend))]
         result = []
         for i in range(len(tagging)):
             result.append(

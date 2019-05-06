@@ -210,7 +210,7 @@ class DEPENDENCY:
         """
         if not isinstance(string, str):
             raise ValueError('input must be a string')
-        string = entities_textcleaning(string)
+        original_string, string = entities_textcleaning(string)
         if len(string) > 120:
             raise Exception(
                 'Dependency parsing only able to accept string less than 120 words'
@@ -232,8 +232,8 @@ class DEPENDENCY:
                 tagging[i] = 'UNK'
             elif depend[i] > len(tagging):
                 depend[i] = len(tagging)
-        tagging = [(string[i], tagging[i]) for i in range(len(depend))]
-        indexing = [(string[i], depend[i]) for i in range(len(depend))]
+        tagging = [(original_string[i], tagging[i]) for i in range(len(depend))]
+        indexing = [(original_string[i], depend[i]) for i in range(len(depend))]
         result = []
         for i in range(len(tagging)):
             result.append(
@@ -283,8 +283,9 @@ class TAGGING:
                 'alignment visualization only supports `bahdanau` or `luong` model'
             )
         else:
-            string = string.lower() if self._is_lower else string
-            string = entities_textcleaning(string)
+            original_string, string = entities_textcleaning(
+                string, lowering = self._is_lower
+            )
             batch_x = char_str_idx([string], self._settings['word2idx'], 2)
             batch_x_char = generate_char_seq(
                 [string], self._settings['char2idx'], 2
@@ -294,7 +295,7 @@ class TAGGING:
                 feed_dict = {self._X: batch_x, self._X_char: batch_x_char},
             )
             tag = [
-                '%s-%s' % (string[no], self._settings['idx2tag'][t])
+                '%s-%s' % (original_string[no], self._settings['idx2tag'][t])
                 for no, t in enumerate(predicted[0])
             ]
             r = np.argmax((state_bw[::-1] + state_fw)[:, 0], axis = 1)
@@ -394,8 +395,9 @@ class TAGGING:
         """
         if not isinstance(string, str):
             raise ValueError('input must be a string')
-        string = string.lower() if self._is_lower else string
-        string = entities_textcleaning(string)
+        original_string, string = entities_textcleaning(
+            string, lowering = self._is_lower
+        )
         batch_x = char_str_idx([string], self._settings['word2idx'], 2)
         batch_x_char = generate_char_seq(
             [string], self._settings['char2idx'], 2
@@ -416,7 +418,7 @@ class TAGGING:
                 feed_dict = {self._X: batch_x, self._X_char: batch_x_char},
             )[0]
         return [
-            (string[i], self._settings['idx2tag'][predicted[i]])
+            (original_string[i], self._settings['idx2tag'][predicted[i]])
             for i in range(len(predicted))
         ]
 
