@@ -640,3 +640,36 @@ def preprocessing(
         translator = translator,
         speller = speller,
     )
+
+
+def segmenter(max_split_length = 20, validate = True):
+    """
+    Load Segmenter class.
+
+    Parameters
+    ----------
+    max_split_length: int, (default=20)
+        max length of words in a sentence to segment
+    validate: bool, optional (default=True)
+        if True, malaya will check model availability and download if not available.
+
+    Returns
+    -------
+    _Segmenter : malaya.preprocessing._Segmenter class
+    """
+
+    if validate:
+        check_file(PATH_PREPROCESSING[1], S3_PATH_PREPROCESSING[1])
+    else:
+        if not check_available(PATH_PREPROCESSING[1]):
+            raise Exception(
+                'preprocessing is not available, please `validate = True`'
+            )
+    if validate:
+        check_file(PATH_PREPROCESSING[2], S3_PATH_PREPROCESSING[2])
+    else:
+        if not check_available(PATH_PREPROCESSING[2]):
+            raise Exception(
+                'preprocessing is not available, please `validate = True`'
+            )
+    return _Segmenter(max_split_length = max_split_length)

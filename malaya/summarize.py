@@ -18,7 +18,7 @@ from .texts._text_functions import (
     summary_textcleaning,
     classification_textcleaning,
     STOPWORDS,
-    split_by_dot,
+    split_into_sentences,
 )
 from .stem import sastrawi
 from ._models import _skip_thought
@@ -45,16 +45,16 @@ class _DEEP_SUMMARIZER:
             if not isinstance(corpus[0], str):
                 raise ValueError('corpus must be list of strings')
         if isinstance(corpus, str):
-            corpus = corpus.replace('\n', '.')
-            corpus = split_by_dot(corpus)
+            corpus = split_into_sentences(corpus)
         else:
-            corpus = [c + '.' for c in corpus]
-            corpus = ' '.join(corpus)
-            corpus = re.findall('(?=\S)[^.\n]+(?<=\S)', corpus)
+            corpus = '. '.join(corpus)
+            corpus = split_into_sentences(corpus)
 
-        corpus = [summary_textcleaning(i) for i in corpus]
+        splitted_fullstop = [summary_textcleaning(i) for i in corpus]
+        original_strings = [i[0] for i in splitted_fullstop]
+        cleaned_strings = [i[1] for i in splitted_fullstop]
         sequences = _skip_thought.batch_sequence(
-            corpus, self.dictionary, maxlen = self._maxlen
+            cleaned_strings, self.dictionary, maxlen = self._maxlen
         )
         return self._sess.run(
             self._logits, feed_dict = {self._X: np.array(sequences)}
@@ -91,16 +91,16 @@ class _DEEP_SUMMARIZER:
             if not isinstance(corpus[0], str):
                 raise ValueError('corpus must be list of strings')
         if isinstance(corpus, str):
-            corpus = corpus.replace('\n', '.')
-            corpus = split_by_dot(corpus)
+            corpus = split_into_sentences(corpus)
         else:
-            corpus = [c + '.' for c in corpus]
-            corpus = ' '.join(corpus)
-            corpus = re.findall('(?=\S)[^.\n]+(?<=\S)', corpus)
+            corpus = '. '.join(corpus)
+            corpus = split_into_sentences(corpus)
 
-        corpus = [summary_textcleaning(i) for i in corpus]
+        splitted_fullstop = [summary_textcleaning(i) for i in corpus]
+        original_strings = [i[0] for i in splitted_fullstop]
+        cleaned_strings = [i[1] for i in splitted_fullstop]
         sequences = _skip_thought.batch_sequence(
-            corpus, self.dictionary, maxlen = self._maxlen
+            cleaned_strings, self.dictionary, maxlen = self._maxlen
         )
         encoded, attention = self._sess.run(
             [self._logits, self._attention],
@@ -119,7 +119,9 @@ class _DEEP_SUMMARIZER:
         indices = np.argsort(attention)[::-1]
         top_words = [self._rev_dictionary[i] for i in indices[:important_words]]
         ordering = sorted(range(top_k), key = lambda k: avg[k])
-        summarized = '. '.join([corpus[closest[idx]] for idx in ordering])
+        summarized = ' '.join(
+            [original_strings[closest[idx]] for idx in ordering]
+        )
         if return_cluster:
             return {
                 'summary': summarized,
@@ -206,13 +208,12 @@ def train_skip_thought(
         if not isinstance(corpus[0], str):
             raise ValueError('corpus must be list of strings')
     if isinstance(corpus, str):
-        corpus = corpus.replace('\n', '.')
-        corpus = split_by_dot(corpus)
+        corpus = split_into_sentences(corpus)
     else:
-        corpus = [c + '.' for c in corpus]
-        corpus = ' '.join(corpus)
-        corpus = re.findall('(?=\S)[^.\n]+(?<=\S)', corpus)
-    corpus = [summary_textcleaning(i) for i in corpus]
+        corpus = '. '.join(corpus)
+        corpus = split_into_sentences(corpus)
+
+    corpus = [summary_textcleaning(i)[1] for i in corpus]
     t_range = int((len(corpus) - 3) / stride + 1)
     left, middle, right = [], [], []
     for i in range(t_range):
@@ -246,7 +247,6 @@ def train_skip_thought(
 
 def lsa(
     corpus,
-    maintain_original = False,
     ngram = (1, 3),
     min_df = 2,
     top_k = 3,
@@ -260,8 +260,6 @@ def lsa(
     Parameters
     ----------
     corpus: list
-    maintain_original: bool, (default=False)
-        If False, will apply malaya.text_functions.classification_textcleaning
     ngram: tuple, (default=(1,3))
         n-grams size to train a corpus
     min_df: int, (default=2)
@@ -277,8 +275,6 @@ def lsa(
     -------
     dictionary: result
     """
-    if not isinstance(maintain_original, bool):
-        raise ValueError('maintain_original must be a boolean')
     if not isinstance(top_k, int):
         raise ValueError('top_k must be an integer')
     if not isinstance(important_words, int):
@@ -298,27 +294,21 @@ def lsa(
         if not isinstance(corpus[0], str):
             raise ValueError('corpus must be list of strings')
     if isinstance(corpus, str):
-        corpus = corpus.replace('\n', '.')
-        corpus = split_by_dot(corpus)
+        corpus = split_into_sentences(corpus)
     else:
-        corpus = [c + '.' for c in corpus]
-        corpus = ' '.join(corpus)
-        corpus = re.findall('(?=\S)[^.\n]+(?<=\S)', corpus)
+        corpus = '. '.join(corpus)
+        corpus = split_into_sentences(corpus)
 
     splitted_fullstop = [summary_textcleaning(i) for i in corpus]
-    splitted_fullstop = [
-        classification_textcleaning(i) if not maintain_original else i
-        for i in splitted_fullstop
-        if len(i)
-    ]
-
-    stemmed = [sastrawi(i) for i in splitted_fullstop]
+    original_strings = [i[0] for i in splitted_fullstop]
+    cleaned_strings = [i[1] for i in splitted_fullstop]
+    stemmed = [sastrawi(i) for i in cleaned_strings]
     tfidf = TfidfVectorizer(
         ngram_range = ngram, min_df = min_df, stop_words = STOPWORDS, **kwargs
     ).fit(stemmed)
     U, S, Vt = svd(tfidf.transform(stemmed).todense().T, full_matrices = False)
     summary = [
-        (splitted_fullstop[i], np.linalg.norm(np.dot(np.diag(S), Vt[:, b]), 2))
+        (original_strings[i], np.linalg.norm(np.dot(np.diag(S), Vt[:, b]), 2))
         for i in range(len(splitted_fullstop))
         for b in range(len(Vt))
     ]
@@ -326,7 +316,7 @@ def lsa(
     summary = dict(
         (v[0], v) for v in sorted(summary, key = lambda summary: summary[1])
     ).values()
-    summarized = '. '.join([a for a, b in summary][len(summary) - (top_k) :])
+    summarized = ' '.join([a for a, b in summary][len(summary) - (top_k) :])
     indices = np.argsort(tfidf.idf_)[::-1]
     features = tfidf.get_feature_names()
     top_words = [features[i] for i in indices[:important_words]]
@@ -341,7 +331,6 @@ def lsa(
 
 def nmf(
     corpus,
-    maintain_original = False,
     ngram = (1, 3),
     min_df = 2,
     top_k = 3,
@@ -355,8 +344,6 @@ def nmf(
     Parameters
     ----------
     corpus: list
-    maintain_original: bool, (default=False)
-        If False, will apply malaya.text_functions.classification_textcleaning
     ngram: tuple, (default=(1,3))
         n-grams size to train a corpus
     top_k: int, (default=3)
@@ -372,8 +359,6 @@ def nmf(
     -------
     dictionary: result
     """
-    if not isinstance(maintain_original, bool):
-        raise ValueError('maintain_original must be a boolean')
     if not isinstance(top_k, int):
         raise ValueError('top_k must be an integer')
     if not isinstance(important_words, int):
@@ -393,21 +378,15 @@ def nmf(
         if not isinstance(corpus[0], str):
             raise ValueError('corpus must be list of strings')
     if isinstance(corpus, str):
-        corpus = corpus.replace('\n', '.')
-        corpus = split_by_dot(corpus)
+        corpus = split_into_sentences(corpus)
     else:
-        corpus = [c + '.' for c in corpus]
-        corpus = ' '.join(corpus)
-        corpus = re.findall('(?=\S)[^.\n]+(?<=\S)', corpus)
+        corpus = '. '.join(corpus)
+        corpus = split_into_sentences(corpus)
 
     splitted_fullstop = [summary_textcleaning(i) for i in corpus]
-    splitted_fullstop = [
-        classification_textcleaning(i) if not maintain_original else i
-        for i in splitted_fullstop
-        if len(i)
-    ]
-
-    stemmed = [sastrawi(i) for i in splitted_fullstop]
+    original_strings = [i[0] for i in splitted_fullstop]
+    cleaned_strings = [i[1] for i in splitted_fullstop]
+    stemmed = [sastrawi(i) for i in cleaned_strings]
     tfidf = TfidfVectorizer(
         ngram_range = ngram, min_df = min_df, stop_words = STOPWORDS, **kwargs
     ).fit(stemmed)
@@ -417,7 +396,7 @@ def nmf(
     components = nmf.components_.mean(axis = 1)
     summary = [
         (
-            splitted_fullstop[i],
+            original_strings[i],
             np.linalg.norm(np.dot(np.diag(components), vectors[:, b]), 2),
         )
         for i in range(len(splitted_fullstop))
@@ -427,7 +406,7 @@ def nmf(
     summary = dict(
         (v[0], v) for v in sorted(summary, key = lambda summary: summary[1])
     ).values()
-    summarized = '. '.join([a for a, b in summary][len(summary) - (top_k) :])
+    summarized = ' '.join([a for a, b in summary][len(summary) - (top_k) :])
     indices = np.argsort(tfidf.idf_)[::-1]
     features = tfidf.get_feature_names()
     top_words = [features[i] for i in indices[:important_words]]
@@ -494,21 +473,15 @@ def lda(
         if not isinstance(corpus[0], str):
             raise ValueError('corpus must be list of strings')
     if isinstance(corpus, str):
-        corpus = corpus.replace('\n', '.')
-        corpus = split_by_dot(corpus)
+        corpus = split_into_sentences(corpus)
     else:
-        corpus = [c + '.' for c in corpus]
-        corpus = ' '.join(corpus)
-        corpus = re.findall('(?=\S)[^.\n]+(?<=\S)', corpus)
+        corpus = '. '.join(corpus)
+        corpus = split_into_sentences(corpus)
 
     splitted_fullstop = [summary_textcleaning(i) for i in corpus]
-    splitted_fullstop = [
-        classification_textcleaning(i) if not maintain_original else i
-        for i in splitted_fullstop
-        if len(i)
-    ]
-
-    stemmed = [sastrawi(i) for i in splitted_fullstop]
+    original_strings = [i[0] for i in splitted_fullstop]
+    cleaned_strings = [i[1] for i in splitted_fullstop]
+    stemmed = [sastrawi(i) for i in cleaned_strings]
     tfidf = TfidfVectorizer(
         ngram_range = ngram, min_df = min_df, stop_words = STOPWORDS, **kwargs
     ).fit(stemmed)
@@ -518,7 +491,7 @@ def lda(
     components = lda.components_.mean(axis = 1)
     summary = [
         (
-            splitted_fullstop[i],
+            original_strings[i],
             np.linalg.norm(np.dot(np.diag(components), vectors[:, b]), 2),
         )
         for i in range(len(splitted_fullstop))
@@ -528,7 +501,7 @@ def lda(
     summary = dict(
         (v[0], v) for v in sorted(summary, key = lambda summary: summary[1])
     ).values()
-    summarized = '. '.join([a for a, b in summary][len(summary) - (top_k) :])
+    summarized = ' '.join([a for a, b in summary][len(summary) - (top_k) :])
     indices = np.argsort(tfidf.idf_)[::-1]
     features = tfidf.get_feature_names()
     top_words = [features[i] for i in indices[:important_words]]

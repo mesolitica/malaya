@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 12.8 s, sys: 2.05 s, total: 14.8 s
-    Wall time: 22.2 s
+    CPU times: user 12.4 s, sys: 2.01 s, total: 14.4 s
+    Wall time: 20.4 s
 
 
 Preprocessing
@@ -138,8 +138,8 @@ english to bahasa malaysia.
 
 .. parsed-literal::
 
-    CPU times: user 16.6 s, sys: 3.49 s, total: 20.1 s
-    Wall time: 24.9 s
+    CPU times: user 16.3 s, sys: 3.81 s, total: 20.2 s
+    Wall time: 24.3 s
 
 
 .. code:: python
@@ -150,8 +150,8 @@ english to bahasa malaysia.
 
 .. parsed-literal::
 
-    CPU times: user 9.22 ms, sys: 897 µs, total: 10.1 ms
-    Wall time: 11.6 ms
+    CPU times: user 15.7 ms, sys: 9.26 ms, total: 25 ms
+    Wall time: 24.4 ms
 
 
 
@@ -170,8 +170,8 @@ english to bahasa malaysia.
 
 .. parsed-literal::
 
-    CPU times: user 1.77 ms, sys: 35 µs, total: 1.81 ms
-    Wall time: 1.81 ms
+    CPU times: user 2.7 ms, sys: 1.62 ms, total: 4.31 ms
+    Wall time: 4.11 ms
 
 
 
@@ -190,8 +190,8 @@ english to bahasa malaysia.
 
 .. parsed-literal::
 
-    CPU times: user 809 µs, sys: 25 µs, total: 834 µs
-    Wall time: 840 µs
+    CPU times: user 2.38 ms, sys: 707 µs, total: 3.09 ms
+    Wall time: 3.25 ms
 
 
 
@@ -210,8 +210,8 @@ english to bahasa malaysia.
 
 .. parsed-literal::
 
-    CPU times: user 1.89 ms, sys: 54 µs, total: 1.94 ms
-    Wall time: 1.96 ms
+    CPU times: user 4.43 ms, sys: 1.54 ms, total: 5.98 ms
+    Wall time: 5.76 ms
 
 
 
@@ -230,8 +230,8 @@ english to bahasa malaysia.
 
 .. parsed-literal::
 
-    CPU times: user 7.36 ms, sys: 1.94 ms, total: 9.3 ms
-    Wall time: 11.6 ms
+    CPU times: user 13.1 ms, sys: 4.36 ms, total: 17.4 ms
+    Wall time: 18.4 ms
 
 
 
@@ -260,8 +260,8 @@ original words, so we can use spelling correction to normalize it.
 
 .. parsed-literal::
 
-    CPU times: user 16.6 s, sys: 3.04 s, total: 19.6 s
-    Wall time: 23.2 s
+    CPU times: user 15.2 s, sys: 3.64 s, total: 18.8 s
+    Wall time: 21.3 s
 
 
 .. code:: python
@@ -272,8 +272,8 @@ original words, so we can use spelling correction to normalize it.
 
 .. parsed-literal::
 
-    CPU times: user 192 ms, sys: 31.6 ms, total: 224 ms
-    Wall time: 285 ms
+    CPU times: user 219 ms, sys: 505 ms, total: 724 ms
+    Wall time: 864 ms
 
 
 
@@ -292,8 +292,8 @@ original words, so we can use spelling correction to normalize it.
 
 .. parsed-literal::
 
-    CPU times: user 2.3 ms, sys: 695 µs, total: 2.99 ms
-    Wall time: 2.8 ms
+    CPU times: user 3.58 ms, sys: 2.23 ms, total: 5.81 ms
+    Wall time: 6.66 ms
 
 
 
@@ -312,8 +312,8 @@ original words, so we can use spelling correction to normalize it.
 
 .. parsed-literal::
 
-    CPU times: user 1.06 ms, sys: 402 µs, total: 1.47 ms
-    Wall time: 1.48 ms
+    CPU times: user 1.12 ms, sys: 329 µs, total: 1.45 ms
+    Wall time: 1.46 ms
 
 
 
@@ -332,8 +332,8 @@ original words, so we can use spelling correction to normalize it.
 
 .. parsed-literal::
 
-    CPU times: user 3.06 ms, sys: 402 µs, total: 3.46 ms
-    Wall time: 4.03 ms
+    CPU times: user 3.74 ms, sys: 1.35 ms, total: 5.1 ms
+    Wall time: 6.45 ms
 
 
 
@@ -352,8 +352,8 @@ original words, so we can use spelling correction to normalize it.
 
 .. parsed-literal::
 
-    CPU times: user 5.11 ms, sys: 628 µs, total: 5.73 ms
-    Wall time: 5.35 ms
+    CPU times: user 7.66 ms, sys: 1.74 ms, total: 9.4 ms
+    Wall time: 12.2 ms
 
 
 
@@ -378,8 +378,8 @@ frequencies.
 
 .. parsed-literal::
 
-    CPU times: user 177 ms, sys: 52.3 ms, total: 229 ms
-    Wall time: 255 ms
+    CPU times: user 180 ms, sys: 51.6 ms, total: 232 ms
+    Wall time: 253 ms
 
 
 .. code:: python
@@ -390,8 +390,8 @@ frequencies.
 
 .. parsed-literal::
 
-    CPU times: user 2.69 ms, sys: 1.32 ms, total: 4.02 ms
-    Wall time: 9.74 ms
+    CPU times: user 1.26 ms, sys: 71 µs, total: 1.33 ms
+    Wall time: 1.34 ms
 
 
 
@@ -410,8 +410,8 @@ frequencies.
 
 .. parsed-literal::
 
-    CPU times: user 1.41 ms, sys: 709 µs, total: 2.12 ms
-    Wall time: 4.52 ms
+    CPU times: user 1.13 ms, sys: 730 µs, total: 1.86 ms
+    Wall time: 1.64 ms
 
 
 
@@ -438,8 +438,8 @@ normalizations at
 
 .. parsed-literal::
 
-    CPU times: user 15.5 s, sys: 3.23 s, total: 18.7 s
-    Wall time: 22.1 s
+    CPU times: user 16 s, sys: 3.51 s, total: 19.5 s
+    Wall time: 22.7 s
 
 
 .. code:: python
@@ -450,8 +450,8 @@ normalizations at
 
 .. parsed-literal::
 
-    CPU times: user 80.2 ms, sys: 21.4 ms, total: 102 ms
-    Wall time: 114 ms
+    CPU times: user 91.7 ms, sys: 102 ms, total: 194 ms
+    Wall time: 259 ms
 
 
 
@@ -470,8 +470,8 @@ normalizations at
 
 .. parsed-literal::
 
-    CPU times: user 4.45 ms, sys: 2.89 ms, total: 7.34 ms
-    Wall time: 10.6 ms
+    CPU times: user 5.73 ms, sys: 4.85 ms, total: 10.6 ms
+    Wall time: 18.4 ms
 
 
 
@@ -490,8 +490,8 @@ normalizations at
 
 .. parsed-literal::
 
-    CPU times: user 1.17 ms, sys: 102 µs, total: 1.27 ms
-    Wall time: 1.92 ms
+    CPU times: user 958 µs, sys: 126 µs, total: 1.08 ms
+    Wall time: 1.18 ms
 
 
 
@@ -614,3 +614,81 @@ from ``malaya.preprocessing.get_normalize()``
 .. parsed-literal::
 
     ['saya', 'nak', 'makan', 'ayam', 'harga', 'rm10k']
+
+
+
+Segmentation
+------------
+
+sometime when we want to clean social media texts or crawled texts, it
+lack of spaces, example, ``sayanakmakan nasi``, ``DrMahathir berjalan``.
+
+We provide segmentation to split those sentences using Viterbi
+algorithm.
+
+.. code:: python
+
+    segmenter = malaya.preprocessing.segmenter()
+
+.. code:: python
+
+    segmenter.segment('sayanakmakan nasiayam')
+
+
+
+
+.. parsed-literal::
+
+    'saya nak makan   nasi ayam'
+
+
+
+.. code:: python
+
+    segmenter.segment('berjalandi')
+
+
+
+
+.. parsed-literal::
+
+    'berjalan di'
+
+
+
+.. code:: python
+
+    segmenter.segment('DrMahathir')
+
+
+
+
+.. parsed-literal::
+
+    'dr mahathir'
+
+
+
+But it will lower the output, you can create a simple function to fix
+it.
+
+.. code:: python
+
+    import re
+
+    def segment(string):
+        segmented = segmenter.segment(string)
+        splitted = re.sub(r'[ ]+', ' ', segmented).strip().split()
+        splitted = [split.title() if string[string.lower().find(split)].isupper() else split for split in splitted]
+        return ' '.join(splitted)
+
+.. code:: python
+
+    segment('DrMahathir dan NajibRazak')
+
+
+
+
+.. parsed-literal::
+
+    'Dr Mahathir dan Najib Razak'

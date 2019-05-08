@@ -165,8 +165,9 @@ def entities_textcleaning(string, lowering = True):
 
 
 def summary_textcleaning(string):
-    string = re.sub('[^A-Za-z0-9\-\/\'"\.\, ]+', ' ', string)
-    return re.sub(r'[ ]+', ' ', string.lower()).strip()
+    original_string = string
+    string = re.sub('[^A-Za-z0-9\-\/\'"\.\, ]+', ' ', unidecode(string))
+    return original_string, re.sub(r'[ ]+', ' ', string.lower()).strip()
 
 
 def get_hashtags(string):
@@ -361,3 +362,56 @@ def build_dataset(words, n_words, included_prefix = True):
         data.append(index)
     reversed_dictionary = dict(zip(dictionary.values(), dictionary.keys()))
     return data, count, dictionary, reversed_dictionary
+
+
+alphabets = '([A-Za-z])'
+prefixes = '(Mr|St|Mrs|Ms|Dr|Prof|Capt|Cpt|Lt|Mt)[.]'
+suffixes = '(Inc|Ltd|Jr|Sr|Co)'
+starters = '(Mr|Mrs|Ms|Dr|He\s|She\s|It\s|They\s|Their\s|Our\s|We\s|But\s|However\s|That\s|This\s|Wherever)'
+acronyms = '([A-Z][.][A-Z][.](?:[A-Z][.])?)'
+websites = '[.](com|net|org|io|gov|me|edu|my)'
+another_websites = '(www|http|https)[.]'
+digits = '([0-9])'
+
+
+def split_into_sentences(text):
+    text = unidecode(text)
+    text = ' ' + text + '  '
+    text = text.replace('\n', ' ')
+    text = re.sub(prefixes, '\\1<prd>', text)
+    text = re.sub(websites, '<prd>\\1', text)
+    text = re.sub(another_websites, '\\1<prd>', text)
+    if '...' in text:
+        text = text.replace('...', '<prd><prd><prd>')
+    if 'Ph.D' in text:
+        text = text.replace('Ph.D.', 'Ph<prd>D<prd>')
+    text = re.sub('\s' + alphabets + '[.] ', ' \\1<prd> ', text)
+    text = re.sub(acronyms + ' ' + starters, '\\1<stop> \\2', text)
+    text = re.sub(
+        alphabets + '[.]' + alphabets + '[.]' + alphabets + '[.]',
+        '\\1<prd>\\2<prd>\\3<prd>',
+        text,
+    )
+    text = re.sub(
+        alphabets + '[.]' + alphabets + '[.]', '\\1<prd>\\2<prd>', text
+    )
+    text = re.sub(' ' + suffixes + '[.] ' + starters, ' \\1<stop> \\2', text)
+    text = re.sub(' ' + suffixes + '[.]', ' \\1<prd>', text)
+    text = re.sub(' ' + alphabets + '[.]', ' \\1<prd>', text)
+    text = re.sub(digits + '[.]' + digits, '\\1<prd>\\2', text)
+    if '”' in text:
+        text = text.replace('.”', '”.')
+    if '"' in text:
+        text = text.replace('."', '".')
+    if '!' in text:
+        text = text.replace('!"', '"!')
+    if '?' in text:
+        text = text.replace('?"', '"?')
+    text = text.replace('.', '.<stop>')
+    text = text.replace('?', '?<stop>')
+    text = text.replace('!', '!<stop>')
+    text = text.replace('<prd>', '.')
+    sentences = text.split('<stop>')
+    sentences = sentences[:-1]
+    sentences = [s.strip() for s in sentences if len(s) > 10]
+    return sentences
