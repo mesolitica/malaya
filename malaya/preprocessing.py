@@ -410,9 +410,14 @@ class _Preprocessing:
         text = m.group()
         text = self._regexes['normalize_elong'].sub(r'\1\1', text)
         if self._speller and text.lower() not in _english_words:
-            text = _case_of(text)(
-                self._speller.correct(text.lower(), debug = False)
-            )
+            if hasattr(self._speller, 'normalize_elongated'):
+                text = _case_of(text)(
+                    self._speller.normalize_elongated(text.lower())
+                )
+            else:
+                text = _case_of(text)(
+                    self._speller.correct(text.lower(), debug = False)
+                )
         if 'elongated' in self._annotate:
             text = self._add_special_tag(text, 'elongated')
         return text
@@ -551,6 +556,9 @@ def preprocessing(
         remove postfix from a word, faster way to get root word
     speller: object
         spelling correction object, need to have a method `correct`
+    validate: bool, optional (default=True)
+        if True, malaya will check model availability and download if not available.
+
 
     Returns
     -------
@@ -580,8 +588,12 @@ def preprocessing(
     if not isinstance(remove_postfix, bool):
         raise ValueError('remove_postfix must be a boolean')
     if speller is not None:
-        if not hasattr(speller, 'correct'):
-            raise ValueError('speller must has `correct` method')
+        if not hasattr(speller, 'correct') and not hasattr(
+            speller, 'normalize_elongated'
+        ):
+            raise ValueError(
+                'speller must has `correct` or `normalize_elongated` method'
+            )
 
     if expand_hashtags:
         if validate:

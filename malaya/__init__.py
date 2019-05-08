@@ -18,7 +18,7 @@ from pathlib import Path
 
 home = os.path.join(str(Path.home()), 'Malaya')
 version = '2.3'
-bump_version = '2.3.2.2'
+bump_version = '2.3.3'
 version_path = os.path.join(home, 'version')
 
 
@@ -126,7 +126,7 @@ def load_malay_dictionary():
     -------
     list: list of strings
     """
-    if not os.path.isfile(MALAY_TEXT_200K):
+    if not os.path.isfile(MALAY_TEXT):
         print('downloading Malay texts')
         download_file('v6/malay-text.txt', MALAY_TEXT)
     try:

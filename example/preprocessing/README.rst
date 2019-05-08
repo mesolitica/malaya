@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 13.9 s, sys: 1.77 s, total: 15.7 s
-    Wall time: 23 s
+    CPU times: user 12.8 s, sys: 2.05 s, total: 14.8 s
+    Wall time: 22.2 s
 
 
 Preprocessing
@@ -138,8 +138,8 @@ english to bahasa malaysia.
 
 .. parsed-literal::
 
-    CPU times: user 15.5 s, sys: 1.61 s, total: 17.1 s
-    Wall time: 18.9 s
+    CPU times: user 16.6 s, sys: 3.49 s, total: 20.1 s
+    Wall time: 24.9 s
 
 
 .. code:: ipython3
@@ -150,8 +150,8 @@ english to bahasa malaysia.
 
 .. parsed-literal::
 
-    CPU times: user 10.6 ms, sys: 1.07 ms, total: 11.7 ms
-    Wall time: 12.2 ms
+    CPU times: user 9.22 ms, sys: 897 µs, total: 10.1 ms
+    Wall time: 11.6 ms
 
 
 
@@ -170,8 +170,8 @@ english to bahasa malaysia.
 
 .. parsed-literal::
 
-    CPU times: user 3.67 ms, sys: 1.86 ms, total: 5.53 ms
-    Wall time: 6.26 ms
+    CPU times: user 1.77 ms, sys: 35 µs, total: 1.81 ms
+    Wall time: 1.81 ms
 
 
 
@@ -190,8 +190,8 @@ english to bahasa malaysia.
 
 .. parsed-literal::
 
-    CPU times: user 1.23 ms, sys: 90 µs, total: 1.32 ms
-    Wall time: 1.26 ms
+    CPU times: user 809 µs, sys: 25 µs, total: 834 µs
+    Wall time: 840 µs
 
 
 
@@ -210,8 +210,8 @@ english to bahasa malaysia.
 
 .. parsed-literal::
 
-    CPU times: user 1.67 ms, sys: 34 µs, total: 1.7 ms
-    Wall time: 1.74 ms
+    CPU times: user 1.89 ms, sys: 54 µs, total: 1.94 ms
+    Wall time: 1.96 ms
 
 
 
@@ -230,8 +230,8 @@ english to bahasa malaysia.
 
 .. parsed-literal::
 
-    CPU times: user 8.7 ms, sys: 634 µs, total: 9.33 ms
-    Wall time: 15.5 ms
+    CPU times: user 7.36 ms, sys: 1.94 ms, total: 9.3 ms
+    Wall time: 11.6 ms
 
 
 
@@ -250,19 +250,7 @@ original words, so we can use spelling correction to normalize it.
 
 .. code:: ipython3
 
-    malays = malaya.load_malay_dictionary()
-    corrector = malaya.spell.naive(malays)
-
-
-.. parsed-literal::
-
-    downloading Malay texts
-
-
-.. parsed-literal::
-
-    1.00MB [00:00, 9.40MB/s]                   
-
+    corrector = malaya.spell.probability()
 
 .. code:: ipython3
 
@@ -272,8 +260,8 @@ original words, so we can use spelling correction to normalize it.
 
 .. parsed-literal::
 
-    CPU times: user 16.2 s, sys: 2.53 s, total: 18.7 s
-    Wall time: 22 s
+    CPU times: user 16.6 s, sys: 3.04 s, total: 19.6 s
+    Wall time: 23.2 s
 
 
 .. code:: ipython3
@@ -284,15 +272,15 @@ original words, so we can use spelling correction to normalize it.
 
 .. parsed-literal::
 
-    CPU times: user 670 ms, sys: 15.3 ms, total: 686 ms
-    Wall time: 876 ms
+    CPU times: user 192 ms, sys: 31.6 ms, total: 224 ms
+    Wall time: 285 ms
 
 
 
 
 .. parsed-literal::
 
-    '<allcaps> tak boleh tunggu </allcaps> untuk yang baru musim daripada <hashtag> mahathir mohamad </hashtag> \\(^o^)/ ! <repeated> <hashtag> david lynch </hashtag> <hashtag> tv series </hashtag> <happy> , <allcaps> tawak <elongated> sabar <elongated> </allcaps> ! <repeated>'
+    '<allcaps> tak boleh tunggu </allcaps> untuk yang baru musim daripada <hashtag> mahathir mohamad </hashtag> \\(^o^)/ ! <repeated> <hashtag> david lynch </hashtag> <hashtag> tv series </hashtag> <happy> , <allcaps> tak <elongated> sabar <elongated> </allcaps> ! <repeated>'
 
 
 
@@ -304,15 +292,15 @@ original words, so we can use spelling correction to normalize it.
 
 .. parsed-literal::
 
-    CPU times: user 109 ms, sys: 3.92 ms, total: 113 ms
-    Wall time: 139 ms
+    CPU times: user 2.3 ms, sys: 695 µs, total: 2.99 ms
+    Wall time: 2.8 ms
 
 
 
 
 .. parsed-literal::
 
-    'kecewa <hashtag> john doe </hashtag> filem dan ia suucks <elongated> ! <repeated> <allcaps> dibazir </allcaps> <money> . <repeated> <money> <hashtag> bad movies </hashtag> <annoyed>'
+    'kecewa <hashtag> john doe </hashtag> filem dan ia sucks <elongated> ! <repeated> <allcaps> dibazir </allcaps> <money> . <repeated> <money> <hashtag> bad movies </hashtag> <annoyed>'
 
 
 
@@ -324,15 +312,15 @@ original words, so we can use spelling correction to normalize it.
 
 .. parsed-literal::
 
-    CPU times: user 169 ms, sys: 4.66 ms, total: 174 ms
-    Wall time: 240 ms
+    CPU times: user 1.06 ms, sys: 402 µs, total: 1.47 ms
+    Wall time: 1.48 ms
 
 
 
 
 .. parsed-literal::
 
-    '<user> : boleh tidak tunggu untuk yang <date> <hashtag> sentimen </hashtag> talks ! <allcaps> ya <elongated> </allcaps> ! <repeated> :-d <url>'
+    '<user> : boleh tidak tunggu untuk yang <date> <hashtag> sentimen </hashtag> talks ! <allcaps> yay <elongated> </allcaps> ! <repeated> :-d <url>'
 
 
 
@@ -344,15 +332,15 @@ original words, so we can use spelling correction to normalize it.
 
 .. parsed-literal::
 
-    CPU times: user 658 ms, sys: 12.4 ms, total: 670 ms
-    Wall time: 822 ms
+    CPU times: user 3.06 ms, sys: 402 µs, total: 3.46 ms
+    Wall time: 4.03 ms
 
 
 
 
 .. parsed-literal::
 
-    'a <elongated> , malas nak pergi kerja hari ini <hashtag> Isnin blues </hashtag>'
+    'ah <elongated> , malas nak pergi kerja hari ini <hashtag> Isnin blues </hashtag>'
 
 
 
@@ -364,8 +352,8 @@ original words, so we can use spelling correction to normalize it.
 
 .. parsed-literal::
 
-    CPU times: user 11.3 ms, sys: 1.89 ms, total: 13.2 ms
-    Wall time: 53.9 ms
+    CPU times: user 5.11 ms, sys: 628 µs, total: 5.73 ms
+    Wall time: 5.35 ms
 
 
 
@@ -390,8 +378,8 @@ frequencies.
 
 .. parsed-literal::
 
-    CPU times: user 205 ms, sys: 43.5 ms, total: 248 ms
-    Wall time: 280 ms
+    CPU times: user 177 ms, sys: 52.3 ms, total: 229 ms
+    Wall time: 255 ms
 
 
 .. code:: ipython3
@@ -402,8 +390,8 @@ frequencies.
 
 .. parsed-literal::
 
-    CPU times: user 1.34 ms, sys: 16 µs, total: 1.36 ms
-    Wall time: 1.39 ms
+    CPU times: user 2.69 ms, sys: 1.32 ms, total: 4.02 ms
+    Wall time: 9.74 ms
 
 
 
@@ -422,8 +410,8 @@ frequencies.
 
 .. parsed-literal::
 
-    CPU times: user 1.17 ms, sys: 6 µs, total: 1.17 ms
-    Wall time: 1.25 ms
+    CPU times: user 1.41 ms, sys: 709 µs, total: 2.12 ms
+    Wall time: 4.52 ms
 
 
 
@@ -450,8 +438,8 @@ normalizations at
 
 .. parsed-literal::
 
-    CPU times: user 18 s, sys: 3.49 s, total: 21.5 s
-    Wall time: 30.4 s
+    CPU times: user 15.5 s, sys: 3.23 s, total: 18.7 s
+    Wall time: 22.1 s
 
 
 .. code:: ipython3
@@ -462,8 +450,8 @@ normalizations at
 
 .. parsed-literal::
 
-    CPU times: user 74.2 ms, sys: 5.8 ms, total: 80 ms
-    Wall time: 85.8 ms
+    CPU times: user 80.2 ms, sys: 21.4 ms, total: 102 ms
+    Wall time: 114 ms
 
 
 
@@ -482,8 +470,8 @@ normalizations at
 
 .. parsed-literal::
 
-    CPU times: user 1.91 ms, sys: 148 µs, total: 2.06 ms
-    Wall time: 2.06 ms
+    CPU times: user 4.45 ms, sys: 2.89 ms, total: 7.34 ms
+    Wall time: 10.6 ms
 
 
 
@@ -502,8 +490,8 @@ normalizations at
 
 .. parsed-literal::
 
-    CPU times: user 1.3 ms, sys: 129 µs, total: 1.43 ms
-    Wall time: 1.61 ms
+    CPU times: user 1.17 ms, sys: 102 µs, total: 1.27 ms
+    Wall time: 1.92 ms
 
 
 
