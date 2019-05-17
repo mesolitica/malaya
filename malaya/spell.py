@@ -88,7 +88,7 @@ class _SPELL:
         self.occurences = _build_dicts(self.corpus)
         self.corpus = Counter(corpus)
 
-    def correct(self, string, first_char = True, debug = True):
+    def correct(self, string, first_char = True, debug = True, **kwargs):
         """
         Correct a word.
 
@@ -268,7 +268,7 @@ class _SpellCorrector:
                 )
 
     @lru_cache(maxsize = 65536)
-    def correct(self, word, assume_wrong = False, fast = False):
+    def correct(self, word, assume_wrong = False, fast = False, **kwargs):
         """
         Most probable spelling correction for word.
         """

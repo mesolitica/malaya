@@ -18,7 +18,7 @@ from pathlib import Path
 
 home = os.path.join(str(Path.home()), 'Malaya')
 version = '2.3'
-bump_version = '2.3.4'
+bump_version = '2.3.5'
 version_path = os.path.join(home, 'version')
 
 
@@ -311,5 +311,6 @@ from . import summarize
 from . import topic_model
 from . import toxic
 from . import word_mover
+from . import word2num
 from . import word2vec
 from .texts import vectorizer

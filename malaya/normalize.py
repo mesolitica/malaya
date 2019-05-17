@@ -6,9 +6,9 @@ if not sys.warnoptions:
 
 import numpy as np
 import json
+import re
 from fuzzywuzzy import fuzz
 from unidecode import unidecode
-from collections import Counter
 from ._utils._utils import (
     load_graph,
     check_file,
@@ -30,123 +30,89 @@ from .texts._tatabahasa import (
     PAD,
     EOS,
     UNK,
+    hujung_malaysian,
+    calon_dictionary,
 )
-from .spell import _return_possible, _edit_normalizer, _return_known
-from .similarity import is_location
-from ._utils._paths import MALAY_TEXT, PATH_NORMALIZER, S3_PATH_NORMALIZER
+from .num2word import to_cardinal
+from .word2num import word2num
+from .preprocessing import _SocialTokenizer
+
+_tokenizer = _SocialTokenizer().tokenize
+ignore_words = ['ringgit', 'sen']
+ignore_postfix = ['adalah']
 
 
-class _DEEP_NORMALIZER:
-    def __init__(self, x, logits, sess, dicts, corpus):
-        self._sess = sess
-        self._x = x
-        self._logits = logits
-        self._dicts = dicts
-        self._dicts['rev_dictionary_to'] = {
-            int(k): v for k, v in self._dicts['rev_dictionary_to'].items()
-        }
-        self.corpus = corpus
+def _remove_postfix(word):
+    if word in ignore_postfix:
+        return word, ''
+    for p in hujung_malaysian:
+        if word.endswith(p):
+            return word[: -len(p)], ' lah'
+    return word, ''
 
-    def normalize(self, string, check_english = True):
-        """
-        Normalize a string.
 
-        Parameters
-        ----------
-        string : str
+def _normalize_ke(word):
+    # kesebelas -> ke-sebelas
+    # ke-21 -> ke-dua puluh satu
+    if word.startswith('ke'):
+        original = word
+        word = word.replace('-', '')
+        word = word.split('ke')
+        try:
+            num = word2num(word[1])
+        except:
+            pass
+        try:
+            num = int(word[1])
+        except:
+            return original
+        return 'ke-' + to_cardinal(num)
+    return word
 
-        Returns
-        -------
-        string: normalized string
-        """
-        if not isinstance(string, str):
-            raise ValueError('input must be a string')
-        if not isinstance(check_english, bool):
-            raise ValueError('check_english must be a boolean')
 
-        token_strings = normalizer_textcleaning(string).split()
-        results, need_to_normalize = [], []
-        for word in token_strings:
-            if word.istitle():
-                results.append(word)
-                continue
-            if check_english:
-                if word in ENGLISH_WORDS:
-                    results.append(word)
-                    continue
-            if word[0] == 'x' and len(word) > 1:
-                result_string = 'tak '
-                word = word[1:]
-            else:
-                result_string = ''
-            if word[-2:] == 'la':
-                end_result_string = ' lah'
-                word = word[:-2]
-            elif word[-3:] == 'lah':
-                end_result_string = ' lah'
-                word = word[:-3]
-            else:
-                end_result_string = ''
-            if word in sounds:
-                results.append(result_string + sounds[word] + end_result_string)
-                continue
-            if word in rules_normalizer:
-                results.append(
-                    result_string + rules_normalizer[word] + end_result_string
-                )
-                continue
-            if word in self.corpus:
-                results.append(result_string + word + end_result_string)
-                continue
-            results.append('replace__me__')
-            need_to_normalize.append(word)
+def _normalize_title(word):
+    if word.istitle() or word.isupper():
+        return calon_dictionary.get(word, word)
+    return word
 
-        normalized = []
-        if len(need_to_normalize):
-            idx = stemmer_str_idx(
-                need_to_normalize, self._dicts['dictionary_from']
-            )
-            predicted = self._sess.run(
-                self._logits,
-                feed_dict = {self._x: pad_sentence_batch(idx, PAD)[0]},
-            )
-            for word in predicted:
-                normalized.append(
-                    ''.join(
-                        [
-                            self._dicts['rev_dictionary_to'][c]
-                            for c in word
-                            if c not in [GO, PAD, EOS, UNK]
-                        ]
-                    )
-                )
-        cp_results, current_replace = [], 0
-        for i in range(len(results)):
-            if 'replace__me__' in results[i]:
-                if current_replace < len(normalized):
-                    results[i] = normalized[current_replace]
-                    cp_results.append(results[i])
-                    current_replace += 1
-            else:
-                cp_results.append(results[i])
 
-        return ' '.join(cp_results)
+def _is_number_regex(s):
+    if re.match('^\d+?\.\d+?$', s) is None:
+        return s.isdigit()
+    return True
+
+
+def _string_to_num(word):
+    if '.' in word:
+        return float(word)
+    else:
+        return int(word)
+
+
+def _normalized_money(word):
+    original = word
+    word = word.lower()
+    if word[:2] == 'rm' and _is_number_regex(word[2:]):
+        return to_cardinal(_string_to_num(word[2:])) + ' ringgit'
+    elif word[-3:] == 'sen':
+        return to_cardinal(_string_to_num(word[:-3])) + ' sen'
+    else:
+        return original
 
 
 class _SPELL_NORMALIZE:
-    def __init__(self, corpus):
-        self.corpus = Counter(corpus)
+    def __init__(self, speller):
+        self._speller = speller
 
-    def normalize(self, string, debug = True, check_english = True):
+    def normalize(self, string, assume_wrong = True, check_english = True):
         """
         Normalize a string
 
         Parameters
         ----------
         string : str
-
-        debug : bool, optional (default=True)
-            If true, it will print character similarity distances.
+        assume_wrong: bool, (default=True)
+            force speller to predict.
         check_english: bool, (default=True)
             check a word in english dictionary.
 
@@ -156,19 +122,32 @@ class _SPELL_NORMALIZE:
         """
         if not isinstance(string, str):
             raise ValueError('input must be a string')
-        if not isinstance(debug, bool):
-            raise ValueError('debug must be a boolean')
         if not isinstance(check_english, bool):
             raise ValueError('check_english must be a boolean')
+        if not isinstance(assume_wrong, bool):
+            raise ValueError('assume_wrong must be a boolean')
 
         result = []
-        for word in normalizer_textcleaning(string).split():
-            if word.istitle():
+        tokenized = _tokenizer(string)
+        index = 0
+        while index < len(tokenized):
+            word = tokenized[index]
+            if len(word) < 2 and word not in sounds:
                 result.append(word)
+                index += 1
+                continue
+            if word.lower() in ignore_words:
+                result.append(word)
+                index += 1
+                continue
+            if word.istitle() or word.isupper():
+                result.append(_normalize_title(word))
+                index += 1
                 continue
             if check_english:
-                if word in ENGLISH_WORDS:
+                if word.lower() in ENGLISH_WORDS:
                     result.append(word)
+                    index += 1
                     continue
             if len(word) > 2:
                 if word[-2] in consonants and word[-1] == 'e':
@@ -178,49 +157,70 @@ class _SPELL_NORMALIZE:
                 word = word[1:]
             else:
                 result_string = ''
-            if word[-2:] == 'la':
-                end_result_string = ' lah'
-                word = word[:-2]
-            elif word[-3:] == 'lah':
-                end_result_string = ' lah'
-                word = word[:-3]
-            else:
-                end_result_string = ''
+            if word.lower() == 'ke' and index < (len(tokenized) - 2):
+                if tokenized[index + 1] == '-' and _is_number_regex(
+                    tokenized[index + 2]
+                ):
+                    result.append(
+                        _normalize_ke(
+                            word + tokenized[index + 1] + tokenized[index + 2]
+                        )
+                    )
+                    index += 3
+                    continue
+            normalized_ke = _normalize_ke(word)
+            if normalized_ke != word:
+                result.append(normalized_ke)
+                index += 1
+                continue
+            if _is_number_regex(word) and index < (len(tokenized) - 2):
+                if tokenized[index + 1] == '-' and _is_number_regex(
+                    tokenized[index + 2]
+                ):
+                    result.append(
+                        to_cardinal(_string_to_num(word))
+                        + ' hingga '
+                        + to_cardinal(_string_to_num(tokenized[index + 2]))
+                    )
+                    index += 3
+                    continue
+            if word.lower() == 'pada' and index < (len(tokenized) - 3):
+                if (
+                    _is_number_regex(tokenized[index + 1])
+                    and tokenized[index + 2] in '/-'
+                    and _is_number_regex(tokenized[index + 3])
+                ):
+                    result.append(
+                        'pada %s hari bulan %s'
+                        % (
+                            to_cardinal(_string_to_num(tokenized[index + 1])),
+                            to_cardinal(_string_to_num(tokenized[index + 3])),
+                        )
+                    )
+                    index += 4
+                    continue
+            money = _normalized_money(word)
+            if money != word:
+                result.append(money)
+                index += 1
+                continue
+
+            word, end_result_string = _remove_postfix(word)
             if word in sounds:
                 result.append(result_string + sounds[word] + end_result_string)
+                index += 1
                 continue
             if word in rules_normalizer:
                 result.append(
                     result_string + rules_normalizer[word] + end_result_string
                 )
+                index += 1
                 continue
-            if word in self.corpus:
-                result.append(result_string + word + end_result_string)
-                continue
-            candidates = (
-                _return_known([word], self.corpus)
-                or _return_known(_edit_normalizer(word), self.corpus)
-                or _return_possible(word, self.corpus, _edit_normalizer)
-                or [word]
-            )
-            candidates = list(candidates)
-            candidates = [
-                (candidate, is_location(candidate))
-                for candidate in list(candidates)
-            ]
-            if debug:
-                print([(k, fuzz.ratio(word, k[0])) for k in candidates], '\n')
-            strings = [fuzz.ratio(word, k[0]) for k in candidates]
-            descending_sort = np.argsort(strings)[::-1]
-            selected = None
-            for index in descending_sort:
-                if not candidates[index][1]:
-                    selected = candidates[index][0]
-                    break
-            selected = (
-                candidates[descending_sort[0]][0] if not selected else selected
+            selected = self._speller.correct(
+                word, debug = False, assume_wrong = assume_wrong
             )
             result.append(result_string + selected + end_result_string)
+            index += 1
         return ' '.join(result)
 
 
@@ -231,7 +231,7 @@ class _FUZZY_NORMALIZE:
 
     def normalize(self, string, fuzzy_ratio = 70, check_english = True):
         """
-        Normalize a string.
+        Normalize a string
 
         Parameters
         ----------
@@ -247,19 +247,32 @@ class _FUZZY_NORMALIZE:
         """
         if not isinstance(string, str):
             raise ValueError('input must be a string')
-        if not isinstance(fuzzy_ratio, int):
-            raise ValueError('fuzzy_ratio must be an integer')
         if not isinstance(check_english, bool):
             raise ValueError('check_english must be a boolean')
+        if not isinstance(fuzzy_ratio, int):
+            raise ValueError('fuzzy_ratio must be an integer')
 
         result = []
-        for word in normalizer_textcleaning(string).split():
-            if word.istitle():
+        tokenized = _tokenizer(string)
+        index = 0
+        while index < len(tokenized):
+            word = tokenized[index]
+            if len(word) < 2 and word not in sounds:
                 result.append(word)
+                index += 1
+                continue
+            if word.lower() in ignore_words:
+                result.append(word)
+                index += 1
+                continue
+            if word.istitle() or word.isupper():
+                result.append(_normalize_title(word))
+                index += 1
                 continue
             if check_english:
-                if word in ENGLISH_WORDS:
+                if word.lower() in ENGLISH_WORDS:
                     result.append(word)
+                    index += 1
                     continue
             if len(word) > 2:
                 if word[-2] in consonants and word[-1] == 'e':
@@ -269,24 +282,64 @@ class _FUZZY_NORMALIZE:
                 word = word[1:]
             else:
                 result_string = ''
-            if word[-2:] == 'la':
-                end_result_string = ' lah'
-                word = word[:-2]
-            elif word[-3:] == 'lah':
-                end_result_string = ' lah'
-                word = word[:-3]
-            else:
-                end_result_string = ''
+            if word.lower() == 'ke' and index < (len(tokenized) - 2):
+                if tokenized[index + 1] == '-' and _is_number_regex(
+                    tokenized[index + 2]
+                ):
+                    result.append(
+                        _normalize_ke(
+                            word + tokenized[index + 1] + tokenized[index + 2]
+                        )
+                    )
+                    index += 3
+                    continue
+            normalized_ke = _normalize_ke(word)
+            if normalized_ke != word:
+                result.append(normalized_ke)
+                index += 1
+                continue
+            if _is_number_regex(word) and index < (len(tokenized) - 2):
+                if tokenized[index + 1] == '-' and _is_number_regex(
+                    tokenized[index + 2]
+                ):
+                    result.append(
+                        to_cardinal(_string_to_num(word))
+                        + ' hingga '
+                        + to_cardinal(_string_to_num(tokenized[index + 2]))
+                    )
+                    index += 3
+                    continue
+            if word.lower() == 'pada' and index < (len(tokenized) - 3):
+                if (
+                    _is_number_regex(tokenized[index + 1])
+                    and tokenized[index + 2] in '/-'
+                    and _is_number_regex(tokenized[index + 3])
+                ):
+                    result.append(
+                        'pada %s hari bulan %s'
+                        % (
+                            to_cardinal(_string_to_num(tokenized[index + 1])),
+                            to_cardinal(_string_to_num(tokenized[index + 3])),
+                        )
+                    )
+                    index += 4
+                    continue
+            money = _normalized_money(word)
+            if money != word:
+                result.append(money)
+                index += 1
+                continue
+
+            word, end_result_string = _remove_postfix(word)
             if word in sounds:
                 result.append(result_string + sounds[word] + end_result_string)
+                index += 1
                 continue
             if word in rules_normalizer:
                 result.append(
                     result_string + rules_normalizer[word] + end_result_string
                 )
-                continue
-            if word in self.corpus:
-                result.append(result_string + word + end_result_string)
+                index += 1
                 continue
             results = []
             for i in range(len(self.normalized)):
@@ -301,6 +354,7 @@ class _FUZZY_NORMALIZE:
                 + self.corpus[np.argmax(results)]
                 + end_result_string
             )
+            index += 1
         return ' '.join(result)
 
 
@@ -351,23 +405,25 @@ def fuzzy(corpus):
     return _FUZZY_NORMALIZE(transform, corpus)
 
 
-def spell(corpus):
+def spell(speller):
     """
     Train a Spelling Normalizer
 
     Parameters
     ----------
-    corpus : list of strings. Prefer to feed with malaya.load_malay_dictionary().
+    speller : Malaya spelling correction object
 
     Returns
     -------
-    SPELL_NORMALIZE: Trained malaya.normalizer._SPELL_NORMALIZE class
+    SPELL_NORMALIZE: malaya.normalizer._SPELL_NORMALIZE class
     """
-    if not isinstance(corpus, list):
-        raise ValueError('corpus must be a list')
-    if not isinstance(corpus[0], str):
-        raise ValueError('corpus must be list of strings')
-    return _SPELL_NORMALIZE([unidecode(w) for w in corpus])
+    if not hasattr(speller, 'correct') and not hasattr(
+        speller, 'normalize_elongated'
+    ):
+        raise ValueError(
+            'speller must has `correct` or `normalize_elongated` method'
+        )
+    return _SPELL_NORMALIZE(speller)
 
 
 def basic(string):
@@ -396,53 +452,3 @@ def basic(string):
         else:
             result.append(word)
     return ' '.join(result)
-
-
-def available_deep_model():
-    """
-    List available deep learning stemming models.
-    """
-    return ['lstm', 'bahdanau', 'luong']
-
-
-def deep_model(corpus, model = 'bahdanau', validate = True):
-    """
-    Load deep-learning model to normalize a string.
-
-    Parameters
-    ----------
-    validate: bool, optional (default=True)
-        if True, malaya will check model availability and download if not available.
-
-    Returns
-    -------
-    DEEP_NORMALIZER: malaya.normalizer._DEEP_NORMALIZER class
-
-    """
-    if not isinstance(corpus, list):
-        raise ValueError('corpus must be a list')
-    if not isinstance(corpus[0], str):
-        raise ValueError('corpus must be list of strings')
-    if validate:
-        check_file(PATH_NORMALIZER[model], S3_PATH_NORMALIZER[model])
-    else:
-        if not check_available(PATH_NORMALIZER[model]):
-            raise Exception(
-                'normalizer is not available, please `validate = True`'
-            )
-    try:
-        with open(PATH_NORMALIZER[model]['setting'], 'r') as fopen:
-            dic_normalizer = json.load(fopen)
-        g = load_graph(PATH_NORMALIZER[model]['model'])
-    except:
-        raise Exception(
-            "model corrupted due to some reasons, please run malaya.clear_cache('normalizer/%s') and try again"
-            % (model)
-        )
-    return _DEEP_NORMALIZER(
-        g.get_tensor_by_name('import/Placeholder:0'),
-        g.get_tensor_by_name('import/logits:0'),
-        generate_session(graph = g),
-        dic_normalizer,
-        [unidecode(w) for w in corpus],
-    )

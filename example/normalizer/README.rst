@@ -7,28 +7,131 @@
 
 .. parsed-literal::
 
-    CPU times: user 11.4 s, sys: 1.54 s, total: 12.9 s
-    Wall time: 16.7 s
+    CPU times: user 12.4 s, sys: 1.57 s, total: 14 s
+    Wall time: 17.9 s
 
 
 .. code:: ipython3
 
-    string = 'xjdi ke, y u xsuke makan HUSEIN kt situ tmpt, i hate it. pelikle'
-    another = 'i mmg xske mknn HUSEIN kampng tempt, i love them. pelikle'
+    string1 = 'xjdi ke, y u xsuke makan HUSEIN kt situ tmpt, i hate it. pelikle'
+    string2 = 'i mmg xske mknn HUSEIN kampng tmpat, i love them. pelikle saye'
+    string3 = 'perdana menteri ke11 sgt suka mkan ayam, harganya cuma rm15.50'
+    string4 = 'pada 10/4, kementerian mengumumkan'
+    string5 = 'Husein Zolkepli dapat tempat ke-12 lumba lari hari ni'
+    string6 = 'Husein Zolkepli (2011 - 2019) adalah ketua kampng di kedah'
 
 Load basic normalizer
 ---------------------
 
 .. code:: ipython3
 
-    malaya.normalize.basic(string)
+    print(malaya.normalize.basic(string1))
+    print(malaya.normalize.basic(string2))
+    print(malaya.normalize.basic(string3))
+    print(malaya.normalize.basic(string4))
+    print(malaya.normalize.basic(string5))
+    print(malaya.normalize.basic(string6))
+
+
+.. parsed-literal::
+
+    xjdi ke kenapa awak xsuke makan Husein kt situ tmpt saya hate it pelikle
+    saya mmg xske mknn Husein kampng tmpat saya love them pelikle saye
+    perdana menteri ke sgt suka mkan ayam harganya cuma rm
+    pada kementerian mengumumkan
+    Husein Zolkepli dapat tempat ke lumba lari hari ni
+    Husein Zolkepli adalah ketua kampng di kedah
+
+
+Load spell normalizer
+---------------------
+
+.. code:: ipython3
+
+    corrector = malaya.spell.probability()
+    normalizer = malaya.normalize.spell(corrector)
+
+.. code:: ipython3
+
+    print(normalizer.normalize(string1))
+    print(normalizer.normalize(string2))
+    print(normalizer.normalize(string3))
+    print(normalizer.normalize(string4))
+    print(normalizer.normalize(string5))
+    print(normalizer.normalize(string6))
+
+
+.. parsed-literal::
+
+    tak jadi ke , kenapa awak tak suka makan HUSEIN kat itu mpt , saya hate it . pelik lah
+    saya memang tak suka makanan HUSEIN kampung tempat , saya love them . pelik lah sama
+    perdana menteri ke-sebelas sangat suka makan awam , harganya cuma lima belas perpuluhan lima ringgit
+    pada sepuluh hari bulan empat , kementerian mengumumkan
+    Husein Zolkepli dapat tempat ke-dua belas lumba lari hari ni
+    Husein Zolkepli ( dua ribu sebelas hingga dua ribu sembilan belas ) adalah ketua kampung di kedai
+
+
+We can see that our normalizer normalize ``ayam`` become ``awam``, this
+is because we force our spelling correction to predict correct word, to
+disable that, simply ``assume_wrong = False``.
+
+.. code:: ipython3
+
+    %%time
+    normalizer.normalize(string3, assume_wrong = False)
+
+
+.. parsed-literal::
+
+    CPU times: user 505 µs, sys: 1e+03 ns, total: 506 µs
+    Wall time: 513 µs
 
 
 
 
 .. parsed-literal::
 
-    'xjdi ke kenapa awak xsuke makan Husein kt situ tmpt i hate it pelikle'
+    'perdana menteri ke-sebelas sangat suka makan ayam , harganya cuma lima belas perpuluhan lima ringgit'
+
+
+
+.. code:: ipython3
+
+    %%time
+    normalizer.normalize(string2, assume_wrong = False)
+
+
+.. parsed-literal::
+
+    CPU times: user 1.54 ms, sys: 27 µs, total: 1.57 ms
+    Wall time: 1.59 ms
+
+
+
+
+.. parsed-literal::
+
+    'saya memang tak ska makanan HUSEIN kampung tempat , saya love them . pelik lah saya'
+
+
+
+.. code:: ipython3
+
+    %%time
+    normalizer.normalize(string6, assume_wrong = False)
+
+
+.. parsed-literal::
+
+    CPU times: user 450 µs, sys: 15 µs, total: 465 µs
+    Wall time: 482 µs
+
+
+
+
+.. parsed-literal::
+
+    'Husein Zolkepli ( dua ribu sebelas hingga dua ribu sembilan belas ) adalah ketua kampung di kedah'
 
 
 
@@ -42,139 +145,40 @@ Load fuzzy normalizer
 
 .. code:: ipython3
 
-    normalizer.normalize(string)
+    %%time
+    normalizer.normalize(string3)
+
+
+.. parsed-literal::
+
+    CPU times: user 7.54 s, sys: 83 ms, total: 7.63 s
+    Wall time: 7.9 s
 
 
 
 
 .. parsed-literal::
 
-    'tak jadi ke kenapa awak tak suka makan Husein kat situ tempat saya hate it pelik lah'
+    'perdana menteri ke-sebelas sangat suka makan ayam , harganya cuma lima belas perpuluhan lima ringgit'
 
 
 
 .. code:: ipython3
 
-    normalizer.normalize(another)
+    %%time
+    normalizer.normalize(string2)
+
+
+.. parsed-literal::
+
+    CPU times: user 7.43 s, sys: 65.9 ms, total: 7.49 s
+    Wall time: 7.7 s
 
 
 
 
 .. parsed-literal::
 
-    'saya memang tak saka makanan Husein kampung tempt saya love them pelik lah'
-
-
-
-Load spell normalizer
----------------------
-
-.. code:: ipython3
-
-    normalizer = malaya.normalize.spell(malays)
-
-To list all selected words during normalize
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. code:: ipython3
-
-    normalizer.normalize(string,debug=True)
-
-
-.. parsed-literal::
-
-    [(('judi', False), 86), (('adi', False), 67), (('di', False), 80), (('jadi', False), 86)] 
-    
-    [(('tepu', False), 50), (('amput', False), 67), (('tamat', False), 67), (('empat', True), 67), (('tumit', False), 67), (('ampe', False), 50), (('tipu', False), 50), (('tat', False), 57), (('top', False), 57), (('tampu', False), 67), (('topi', False), 50), (('tepi', False), 50), (('tempat', False), 80), (('umut', False), 50), (('ampo', False), 50), (('timpa', False), 67), (('impi', False), 50), (('tempe', False), 67), (('tapa', False), 50), (('taat', False), 50), (('tepet', False), 67), (('umat', False), 50), (('tepat', False), 67), (('tut', False), 57), (('tumpat', True), 80), (('tuat', False), 50), (('tampi', True), 67), (('umpat', True), 67), (('temut', False), 67), (('emat', False), 50), (('ampit', False), 67), (('amit', False), 50), (('tempo', False), 67), (('tumpu', False), 67), (('tempa', False), 67), (('empu', False), 50), (('amat', False), 50), (('taut', False), 50), (('mat', False), 57), (('tampa', False), 67), (('tuit', False), 50), (('tip', False), 57), (('ampu', False), 50), (('tapi', False), 50)] 
-    
-
-
-
-
-.. parsed-literal::
-
-    'tak jadi ke kenapa awak tak suka makan Husein kat situ tempat saya hate it pelik lah'
-
-
-
-List available deep learning stemming models
---------------------------------------------
-
-.. code:: ipython3
-
-    malaya.normalize.available_deep_model()
-
-
-
-
-.. parsed-literal::
-
-    ['lstm', 'bahdanau', 'luong']
-
-
-
-Load deep learning
-------------------
-
-We experimenting a lot for ``seq2seq`` models, we try to do the best
-normalizer deep learning models.
-
-.. code:: ipython3
-
-    normalizer = malaya.normalize.deep_model(malays, 'bahdanau')
-    print(normalizer.normalize(string))
-    normalizer.normalize(another)
-
-
-.. parsed-literal::
-
-    jidiomik ke kenapa awak sukeesi makan Husein kat situ tempatmo saya hate it pelik lah
-
-
-
-
-.. parsed-literal::
-
-    'saya memang sikeuoi maknnkano Husein kampanga tempt saya love them pelik lah'
-
-
-
-.. code:: ipython3
-
-    normalizer = malaya.normalize.deep_model(malays, 'luong')
-    print(normalizer.normalize(string))
-    normalizer.normalize(another)
-
-
-.. parsed-literal::
-
-    jadidilox ke kenapa awak sokeled makan Husein kat situ tampatgllah saya hate it pelik lah
-
-
-
-
-.. parsed-literal::
-
-    'saya memang skeflleh makafnnloh Husein kampangja tempt saya love them pelik lah'
-
-
-
-.. code:: ipython3
-
-    normalizer = malaya.normalize.deep_model(malays, 'lstm')
-    print(normalizer.normalize(string))
-    normalizer.normalize(another)
-
-
-.. parsed-literal::
-
-    jajiodi ke kenapa awak sukeeia makan Husein kat situ tempatwa saya hate it pelik lah
-
-
-
-
-.. parsed-literal::
-
-    'saya memang sekeoia makankari Husein kampangi tempt saya love them pelik lah'
+    'saya memang tak saka makanan HUSEIN kampung tempat , saya love them . pelik lah saya'
 
 

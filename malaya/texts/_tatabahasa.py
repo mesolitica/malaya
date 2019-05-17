@@ -230,6 +230,9 @@ hujung = [
     'loh',
     'lohh',
 ]
+
+hujung_malaysian = ['lah', 'la', 'ler']
+
 alphabet = 'qwertyuiopasdfghjklzxcvbnm'
 consonants = 'bcdfghjklmnpqrstvwxyz'
 vowels = 'aeiou'
@@ -246,6 +249,7 @@ sounds = {
     't': 'nanti',
     'p': 'pergi',
     'wai': 'kenapa',
+    'i': 'saya',
 }
 
 tatabahasa_dict = {
@@ -1018,6 +1022,19 @@ stopwords_calon = [
     'dato',
     'dsp',
 ]
+
+calon_dictionary = {
+    'dr': 'Doktor',
+    'yb': 'Yang Berhormat',
+    'hj': 'Haji',
+    'ybm': 'Yang Berhormat Mulia',
+    'tyt': 'Tuan Yang Terutama',
+    'yab': 'Yang Berhormat',
+    'ybm': 'Yang Berhormat Mulia',
+    'yabhg': 'Yang Amat Berbahagia',
+    'ybhg': 'Yang Berbahagia',
+    'miss': 'Cik',
+}
 stopwords = [
     'ada',
     'inikah',

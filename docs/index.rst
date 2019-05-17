@@ -43,6 +43,7 @@ Contents:
    Summarization
    Topic
    Toxic
+   Word2num
    Word2vec
    Mover
    Cluster

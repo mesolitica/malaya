@@ -6,7 +6,7 @@ __packagename__ = 'malaya'
 setuptools.setup(
     name = __packagename__,
     packages = setuptools.find_packages(),
-    version = '2.3.4',
+    version = '2.3.5',
     python_requires = '>=3.6.*',
     description = 'Natural-Language-Toolkit for bahasa Malaysia, powered by Deep Learning Tensorflow.',
     author = 'huseinzol05',
@@ -39,5 +39,4 @@ setuptools.setup(
         'Operating System :: OS Independent',
         'Topic :: Text Processing',
     ],
-    long_description = open('readme-pypi.rst').read(),
 )
