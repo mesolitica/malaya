@@ -7,18 +7,22 @@
 
 .. parsed-literal::
 
-    CPU times: user 12.3 s, sys: 1.5 s, total: 13.8 s
-    Wall time: 17.7 s
+    CPU times: user 12.8 s, sys: 1.72 s, total: 14.5 s
+    Wall time: 19.2 s
 
 
 .. code:: ipython3
 
-    positive_text = 'Kerajaan negeri Kelantan mempersoalkan motif kenyataan Menteri Kewangan Lim Guan Eng yang hanya menyebut Kelantan penerima terbesar bantuan kewangan dari Kerajaan Persekutuan. Sedangkan menurut Timbalan Menteri Besarnya, Datuk Mohd Amar Nik Abdullah, negeri lain yang lebih maju dari Kelantan turut mendapat pembiayaan dan pinjaman.'
+    positive_text = 'Kerajaan negeri Kelantan mempersoalkan motif kenyataan Menteri Kewangan Lim Guan Eng yang hanya menyebut Kelantan penerima terbesar bantuan kewangan dari Kerajaan Persekutuan sebanyak RM50 juta. Sedangkan menurut Timbalan Menteri Besarnya, Datuk Mohd Amar Nik Abdullah, negeri lain yang lebih maju dari Kelantan turut mendapat pembiayaan dan pinjaman.'
     negative_text = 'kerajaan sebenarnya sangat bencikan rakyatnya, minyak naik dan segalanya'
 
-All models got ``get_proba`` parameters. If True, it will returned
+All models have ``get_proba`` parameters. If True, it will returned
 probability every classes. Else, it will return highest probability
 class. **Default is False.**
+
+All models have ``add_neutral`` parameters. If True, it will add
+``neutral`` probability, Else, default probabilities. **Default is
+True.**
 
 Load multinomial model
 ----------------------
@@ -33,17 +37,35 @@ Load multinomial model
 
 .. parsed-literal::
 
-    {'negative': 0.2422829560944563, 'positive': 0.7577170439055456}
-    {'negative': 0.7385102541701198, 'positive': 0.26148974582987783}
+    {'negative': 0.003559988321312934, 'positive': 0.6440011678687021, 'neutral': 0.352438843809985}
+    {'negative': 0.4770205083402397, 'positive': 0.005229794916597557, 'neutral': 0.5177496967431627}
 
 
 
 
 .. parsed-literal::
 
-    [{'negative': 0.7385102541701198, 'positive': 0.26148974582987783},
-     {'negative': 0.7385102541701198, 'positive': 0.26148974582987783}]
+    [{'negative': 0.4770205083402397,
+      'positive': 0.005229794916597557,
+      'neutral': 0.5177496967431627},
+     {'negative': 0.4770205083402397,
+      'positive': 0.005229794916597557,
+      'neutral': 0.5177496967431627}]
 
+
+
+Disable ``neutral`` probability,
+
+.. code:: ipython3
+
+    print(model.predict(negative_text,get_proba=True,add_neutral=True))
+    print(model.predict(negative_text,get_proba=True,add_neutral=False))
+
+
+.. parsed-literal::
+
+    {'negative': 0.4770205083402397, 'positive': 0.005229794916597557, 'neutral': 0.5177496967431627}
+    {'negative': 0.7385102541701198, 'positive': 0.26148974582987783}
 
 
 Load xgb model
@@ -59,16 +81,16 @@ Load xgb model
 
 .. parsed-literal::
 
-    {'negative': 0.24086821, 'positive': 0.7591318}
-    {'negative': 0.844284, 'positive': 0.15571605}
+    {'negative': 0.0045786616, 'positive': 0.5421338, 'neutral': 0.45328754}
+    {'negative': 0.688568, 'positive': 0.0031143208, 'neutral': 0.30831766}
 
 
 
 
 .. parsed-literal::
 
-    [{'negative': 0.844284, 'positive': 0.15571605},
-     {'negative': 0.844284, 'positive': 0.15571605}]
+    [{'negative': 0.688568, 'positive': 0.0031143208, 'neutral': 0.30831766},
+     {'negative': 0.688568, 'positive': 0.0031143208, 'neutral': 0.30831766}]
 
 
 
@@ -84,141 +106,220 @@ List available deep learning models
 
 .. parsed-literal::
 
-    ['fast-text',
-     'hierarchical',
-     'bahdanau',
-     'luong',
-     'bidirectional',
-     'bert',
-     'entity-network']
+    ['self-attention', 'bahdanau', 'luong']
 
 
 
 Load deep learning models
 -------------------------
 
-.. code:: ipython3
-
-    for i in malaya.sentiment.available_deep_model():
-        print('Testing %s model'%(i))
-        model = malaya.sentiment.deep_model(i)
-        print(model.predict(negative_text))
-        print(model.predict_batch([negative_text, positive_text]))
-        print(model.predict_batch([negative_text, positive_text],get_proba=True))
-        print()
-
-
-.. parsed-literal::
-
-    Testing fast-text model
-    negative
-    ['negative', 'positive']
-    [{'negative': 0.8405276, 'positive': 0.15947239}, {'negative': 1.8619101e-05, 'positive': 0.9999814}]
-    
-    Testing hierarchical model
-    negative
-    ['negative', 'positive']
-    [{'negative': 0.9504666, 'positive': 0.049533408}, {'negative': 0.041675426, 'positive': 0.9583246}]
-    
-    Testing bahdanau model
-    negative
-    ['negative', 'positive']
-    [{'negative': 0.9993631, 'positive': 0.0006369345}, {'negative': 0.10564381, 'positive': 0.89435613}]
-    
-    Testing luong model
-    negative
-    ['negative', 'positive']
-    [{'negative': 0.8851047, 'positive': 0.11489531}, {'negative': 0.0025337301, 'positive': 0.9974663}]
-    
-    Testing bidirectional model
-    negative
-    ['negative', 'positive']
-    [{'negative': 0.97722447, 'positive': 0.02277552}, {'negative': 0.007992058, 'positive': 0.992008}]
-    
-    Testing bert model
-    positive
-    ['positive', 'negative']
-    [{'negative': 0.37042966, 'positive': 0.62957036}, {'negative': 0.84760416, 'positive': 0.15239581}]
-    
-    Testing entity-network model
-    positive
-    ['positive', 'positive']
-    [{'negative': 0.44306344, 'positive': 0.55693656}, {'negative': 0.32117522, 'positive': 0.6788247}]
-    
-
-
-Unsupervised important words learning
--------------------------------------
+Good thing about deep learning models from Malaya, it returns
+``Attention`` result, means, which part of words give the high impact to
+the results. But to get ``Attention``, you need to set
+``get_proba=True``.
 
 .. code:: ipython3
 
     import matplotlib.pyplot as plt
     import seaborn as sns
-    sns.set() # i just really like seaborn colors
+    sns.set()
 
-We need to set ``get_proba`` become True to get the ‘attention’.
-
-Visualizing bahdanau model
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+Load bahdanau model
+~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
     model = malaya.sentiment.deep_model('bahdanau')
-    result = model.predict(positive_text,get_proba=True)['attention']
-    
-    plt.figure(figsize = (15, 7))
-    labels = [r[0] for r in result]
-    val = [r[1] for r in result]
-    aranged = [i for i in range(len(labels))]
-    plt.bar(aranged, val)
-    plt.xticks(aranged, labels, rotation = 'vertical')
-    plt.show()
 
-
-
-.. image:: load-sentiment_files/load-sentiment_15_0.png
-
-
-Visualizing luong model
-^^^^^^^^^^^^^^^^^^^^^^^
+Predict single string
+^^^^^^^^^^^^^^^^^^^^^
 
 .. code:: ipython3
 
-    model = malaya.sentiment.deep_model('luong')
-    result = model.predict(positive_text,get_proba=True)['attention']
-    
-    plt.figure(figsize = (15, 7))
-    labels = [r[0] for r in result]
-    val = [r[1] for r in result]
-    aranged = [i for i in range(len(labels))]
-    plt.bar(aranged, val)
-    plt.xticks(aranged, labels, rotation = 'vertical')
-    plt.show()
+    model.predict(positive_text)
 
 
 
-.. image:: load-sentiment_files/load-sentiment_17_0.png
+
+.. parsed-literal::
+
+    'neutral'
 
 
-Visualizing hierarchical model
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code:: ipython3
 
-    model = malaya.sentiment.deep_model('hierarchical')
-    result = model.predict(positive_text,get_proba=True)['attention']
-    
-    plt.figure(figsize = (15, 7))
-    labels = [r[0] for r in result]
-    val = [r[1] for r in result]
-    aranged = [i for i in range(len(labels))]
-    plt.bar(aranged, val)
-    plt.xticks(aranged, labels, rotation = 'vertical')
+    result = model.predict(positive_text,get_proba=True,add_neutral=False)
+    result
+
+
+
+
+.. parsed-literal::
+
+    {'negative': 0.29423502,
+     'positive': 0.70576495,
+     'attention': {'Kerajaan': 0.0019730187,
+      'negeri': 0.0016380441,
+      'Kelantan': 0.52261657,
+      'mempersoalkan': 0.0041695302,
+      'motif': 0.009157478,
+      'kenyataan': 0.0020427739,
+      'Menteri': 0.0026452087,
+      'Kewangan': 0.0017612759,
+      'Lim': 0.046150286,
+      'Guan': 0.046651356,
+      'Eng': 0.014238223,
+      'yang': 0.0014762171,
+      'hanya': 0.0030002387,
+      'menyebut': 0.0025070142,
+      'penerima': 0.001477954,
+      'terbesar': 0.0014683361,
+      'bantuan': 0.0020200813,
+      'kewangan': 0.0015684298,
+      'dari': 0.001558458,
+      'Persekutuan': 0.0021011133,
+      'sebanyak': 0.001435061,
+      'RM50': 0.037767526,
+      'juta': 0.0031749196,
+      '.': 0.0,
+      'Sedangkan': 0.0015534447,
+      'menurut': 0.0014812354,
+      'Timbalan': 0.0020608688,
+      'Besarnya': 0.001435703,
+      ',': 0.0,
+      'Datuk': 0.0014482451,
+      'Mohd': 0.0014422016,
+      'Amar': 0.0014641153,
+      'Nik': 0.0015784851,
+      'Abdullah': 0.0014410047,
+      'lain': 0.0016714201,
+      'lebih': 0.0037415246,
+      'maju': 0.019784313,
+      'turut': 0.011382608,
+      'mendapat': 0.0025349073,
+      'pembiayaan': 0.0020161376,
+      'dan': 0.0,
+      'pinjaman': 0.009653877}}
+
+
+
+.. code:: ipython3
+
+    plt.figure(figsize = (15, 5))
+    keys = result['attention'].keys()
+    values = result['attention'].values()
+    aranged = [i for i in range(len(keys))]
+    plt.bar(aranged, values)
+    plt.xticks(aranged, keys, rotation = 'vertical')
     plt.show()
 
 
 
-.. image:: load-sentiment_files/load-sentiment_19_0.png
+.. image:: load-sentiment_files/load-sentiment_18_0.png
+
+
+Open sentiment visualization dashboard
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Default when you call ``predict_words`` it will open a browser with
+visualization dashboard, you can disable by ``visualization=False``.
+
+.. code:: ipython3
+
+    model.predict_words(positive_text)
+
+
+.. parsed-literal::
+
+    Serving to http://127.0.0.1:8889/    [Ctrl-C to exit]
+
+
+.. parsed-literal::
+
+    127.0.0.1 - - [30/May/2019 11:13:59] "GET / HTTP/1.1" 200 -
+    127.0.0.1 - - [30/May/2019 11:13:59] "GET /static/admin-materialize.min.css HTTP/1.1" 200 -
+    127.0.0.1 - - [30/May/2019 11:13:59] "GET /static/echarts.min.js HTTP/1.1" 200 -
+
+
+.. parsed-literal::
+
+    
+    stopping Server...
+
+
+.. code:: ipython3
+
+    from IPython.core.display import Image, display
+    
+    display(Image('sentiment-visualization.png', width=800))
+
+
+
+.. image:: load-sentiment_files/load-sentiment_21_0.png
+   :width: 800px
+
+
+I tried to put the html and javascript inside a notebook cell, pretty
+hard you know and a lot of weird bugs. Let stick to HTTP serving ya.
+
+.. code:: ipython3
+
+    display(Image('sentiment-negative.png', width=800))
+
+
+
+.. image:: load-sentiment_files/load-sentiment_23_0.png
+   :width: 800px
+
+
+``predict_words`` only accept a single string. You can’t predict
+multiple texts.
+
+Predict batch of strings
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    model.predict_batch([negative_text, positive_text],get_proba=True)
+
+
+
+
+.. parsed-literal::
+
+    [{'negative': 0.94391596, 'positive': 0.000560839, 'neutral': 0.055523217},
+     {'negative': 0.004329388, 'positive': 0.5670612, 'neutral': 0.42860943}]
+
+
+
+**You might want to try ``luong`` and ``self-attention`` by yourself.**
+
+Stacking models
+---------------
+
+More information, you can read at
+https://malaya.readthedocs.io/en/latest/Stack.html
+
+.. code:: ipython3
+
+    multinomial = malaya.sentiment.multinomial()
+    xgb = malaya.sentiment.xgb()
+    bahdanau = malaya.sentiment.deep_model('bahdanau')
+
+.. code:: ipython3
+
+    malaya.stack.predict_stack([multinomial, xgb, bahdanau], positive_text)
+
+
+
+
+.. parsed-literal::
+
+    {'negative': 0.0037063136821626594,
+     'positive': 0.6215181632979583,
+     'neutral': 0.3669251238766725}
+
 
 
 Load Sparse deep learning models
@@ -303,10 +404,9 @@ will try to evolve it.
 
 .. parsed-literal::
 
-    [{'negative': 0.41368636, 'positive': 0.58631366},
+    [{'negative': 0.42412993, 'positive': 0.5758701},
      {'negative': 0.6855174, 'positive': 0.31448266}]
 
 
 
-**Not bad huh, but the polarity is not really high as word-based models.
-Word-based models can get negative / positive value really near to 1.0**
+Right now sparse models does not have ``neutral`` class.

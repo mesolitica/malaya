@@ -1,10 +1,20 @@
 from tqdm import tqdm
 import tensorflow as tf
 from tensorflow.contrib.seq2seq.python.ops import beam_search_ops
+import numpy as np
 import requests
 import os
 from pathlib import Path
 from .. import _delete_folder
+
+
+def add_neutral(x, alpha = 1e-2):
+    x = x.copy()
+    divide = 1 / x.shape[1]
+    x_minus = np.maximum(x - divide, alpha * x)
+    x_divide = x_minus / divide
+    sum_axis = x_divide.sum(axis = 1, keepdims = True)
+    return np.concatenate([x_divide, 1 - sum_axis], axis = 1)
 
 
 def download_file(url, filename):

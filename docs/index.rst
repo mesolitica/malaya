@@ -34,6 +34,7 @@ Contents:
    Num2word
    Pos
    Preprocessing
+   Relevancy
    Sentiment
    Similarity
    Spell

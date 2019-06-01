@@ -2,12 +2,15 @@ import re
 import json
 import ftfy
 import html
+import itertools
 from functools import lru_cache
 from math import log10
+from unidecode import unidecode
 from .texts._tatabahasa import _expressions, rules_normalizer, hujung
 from .texts._english_words import _english_words
 from ._utils._paths import PATH_PREPROCESSING, S3_PATH_PREPROCESSING
 from ._utils._utils import check_file, check_available
+from .stem import naive
 
 _annotate = [
     'hashtag',
@@ -42,6 +45,19 @@ def _case_of(text):
         if text.istitle()
         else str
     )
+
+
+def _is_number_regex(s):
+    if re.match('^\d+?\.\d+?$', s) is None:
+        return s.isdigit()
+    return True
+
+
+def _detect_money(word):
+    if word[:2] == 'rm' and _is_number_regex(word[2:]):
+        return True
+    else:
+        return False
 
 
 def _naive_stem(word):
@@ -673,3 +689,32 @@ def segmenter(max_split_length = 20, validate = True):
                 'preprocessing is not available, please `validate = True`'
             )
     return _Segmenter(max_split_length = max_split_length)
+
+
+_tokenizer = _SocialTokenizer().tokenize
+_rejected = ['wkwk', 'http', 'https', 'lolol', 'hahaha']
+
+
+def preprocessing_classification_index(string):
+    string = ''.join(
+        ''.join(s)[:2] for _, s in itertools.groupby(unidecode(string))
+    )
+    tokenized = _tokenizer(string)
+    tokenized_dict = {no: w for no, w in enumerate(tokenized)}
+    tokenized_indices = {w: -1 for w in tokenized}
+    tokenized = [(no, naive(w)) for no, w in enumerate(tokenized)]
+    tokenized = [(w[0], w[1].lower()) for w in tokenized if len(w[1]) > 1]
+    tokenized = [
+        w for w in tokenized if all([r not in w[1] for r in _rejected])
+    ]
+    tokenized = [(w[0], rules_normalizer.get(w[1], w[1])) for w in tokenized]
+    tokenized = [
+        (w[0], '<NUM>') if _is_number_regex(w[1]) else w for w in tokenized
+    ]
+    tokenized = [
+        (w[0], '<MONEY>') if _detect_money(w[1]) else w for w in tokenized
+    ]
+    indices, words = zip(*tokenized)
+    for no, index in enumerate(indices):
+        tokenized_indices[tokenized_dict[index]] = no
+    return tokenized_indices, words

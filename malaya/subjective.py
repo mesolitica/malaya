@@ -19,15 +19,7 @@ def available_deep_model():
     """
     List available deep learning subjectivity analysis models.
     """
-    return [
-        'fast-text',
-        'hierarchical',
-        'bahdanau',
-        'luong',
-        'bidirectional',
-        'bert',
-        'entity-network',
-    ]
+    return ['self-attention', 'bahdanau', 'luong']
 
 
 def sparse_deep_model(model = 'fast-text-char', validate = True):
@@ -67,20 +59,27 @@ def deep_model(model = 'luong', validate = True):
     model : str, optional (default='luong')
         Model architecture supported. Allowed values:
 
-        * ``'fast-text'`` - Fast-text architecture, embedded and logits layers only.
-        * ``'hierarchical'`` - LSTM with hierarchical attention architecture.
+        * ``'self-attention'`` - Fast-text architecture, embedded and logits layers only with self attention.
         * ``'bahdanau'`` - LSTM with bahdanau attention architecture.
-        * ``'bidirectional'`` - LSTM with Bidirectional RNN architecture.
         * ``'luong'`` - LSTM with luong attention architecture.
-        * ``'bert'`` - Deep Bidirectional transformers architecture.
-        * ``'entity-network'`` - Recurrent Entity-Network architecture.
     validate: bool, optional (default=True)
         if True, malaya will check model availability and download if not available.
 
     Returns
     -------
-    SENTIMENT: malaya._models._tensorflow_model.SENTIMENT class
+    SOFTMAX: malaya._models._tensorflow_model.SOFTMAX class
     """
+
+    if not isinstance(model, str):
+        raise ValueError('model must be a string')
+    if not isinstance(validate, bool):
+        raise ValueError('validate must be a boolean')
+    model = model.lower()
+    if model not in available_deep_model():
+        raise Exception(
+            'model is not supported, please check supported models from malaya.subjective.available_deep_model()'
+        )
+
     return _softmax_class.deep_model(
         PATH_SUBJECTIVE,
         S3_PATH_SUBJECTIVE,
@@ -102,7 +101,7 @@ def multinomial(validate = True):
 
     Returns
     -------
-    USER_BAYES : malaya._models._sklearn_model.USER_BAYES class
+    BAYES : malaya._models._sklearn_model.BAYES class
     """
     return _softmax_class.multinomial(
         PATH_SUBJECTIVE,
@@ -124,7 +123,7 @@ def xgb(validate = True):
 
     Returns
     -------
-    USER_XGB : malaya._models._sklearn_model.USER_XGB class
+    XGB : malaya._models._sklearn_model.XGB class
     """
     return _softmax_class.xgb(
         PATH_SUBJECTIVE,

@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 11.2 s, sys: 1.38 s, total: 12.6 s
-    Wall time: 16.1 s
+    CPU times: user 12.6 s, sys: 1.5 s, total: 14.1 s
+    Wall time: 17.9 s
 
 
 .. code:: ipython3
@@ -182,123 +182,194 @@ List available deep learning models
 
 .. parsed-literal::
 
-    ['bahdanau', 'hierarchical', 'luong', 'fast-text', 'entity-network']
+    ['self-attention', 'bahdanau', 'luong']
 
 
 
-Load deep learning model
-------------------------
+Load deep learning models
+-------------------------
 
-.. code:: ipython3
-
-    for model in malaya.toxic.available_deep_model():
-        print('Testing %s model'%(model))
-        deep_model = malaya.toxic.deep_model(model = model)
-        print(deep_model.predict(string))
-        print(deep_model.predict_batch([string, another_string]))
-        print(deep_model.predict_batch([string, another_string],get_proba=True))
-        print()
-
-
-.. parsed-literal::
-
-    Testing bahdanau model
-    []
-    [[], ['toxic']]
-    [{'toxic': 0.004403565, 'severe_toxic': 3.365281e-05, 'obscene': 0.0006261515, 'threat': 7.532223e-05, 'insult': 0.00030458395, 'identity_hate': 5.894399e-05}, {'toxic': 0.8340975, 'severe_toxic': 0.0020475034, 'obscene': 0.034258205, 'threat': 0.0003628814, 'insult': 0.0734416, 'identity_hate': 0.0614648}]
-    
-    Testing hierarchical model
-    []
-    [[], ['toxic']]
-    [{'toxic': 0.54248875, 'severe_toxic': 0.0065838215, 'obscene': 0.17371807, 'threat': 0.0148023935, 'insult': 0.12660918, 'identity_hate': 0.055212382}, {'toxic': 0.6858065, 'severe_toxic': 0.0032611815, 'obscene': 0.041103873, 'threat': 0.0025343157, 'insult': 0.28004634, 'identity_hate': 0.055198606}]
-    
-    Testing luong model
-    []
-    [[], ['toxic']]
-    [{'toxic': 0.13619128, 'severe_toxic': 0.0055254013, 'obscene': 0.032115582, 'threat': 0.017055651, 'insult': 0.039386936, 'identity_hate': 0.012571168}, {'toxic': 0.95763326, 'severe_toxic': 0.018214434, 'obscene': 0.2505002, 'threat': 0.010534671, 'insult': 0.37684646, 'identity_hate': 0.11548582}]
-    
-    Testing fast-text model
-    ['identity_hate']
-    [[], []]
-    [{'toxic': 1.04480705e-05, 'severe_toxic': 3.0439846e-06, 'obscene': 1.0294245e-05, 'threat': 7.333487e-05, 'insult': 3.3929928e-06, 'identity_hate': 0.0013527799}, {'toxic': 0.3151637, 'severe_toxic': 0.0074781813, 'obscene': 0.014187617, 'threat': 0.0036906046, 'insult': 0.087501705, 'identity_hate': 0.049142193}]
-    
-    Testing entity-network model
-    []
-    [['toxic', 'obscene', 'insult'], []]
-    [{'toxic': 0.77070284, 'severe_toxic': 0.18705268, 'obscene': 0.5038762, 'threat': 0.16385102, 'insult': 0.6224154, 'identity_hate': 0.23296514}, {'toxic': 0.20222966, 'severe_toxic': 0.007314409, 'obscene': 0.13172735, 'threat': 0.027272865, 'insult': 0.10753201, 'identity_hate': 0.016206132}]
-    
-
-
-Unsupervised important words learning
--------------------------------------
+Good thing about deep learning models from Malaya, it returns
+``Attention`` result, means, which part of words give the high impact to
+the results. But to get ``Attention``, you need to set
+``get_proba=True``.
 
 .. code:: ipython3
 
     import matplotlib.pyplot as plt
     import seaborn as sns
-    sns.set() # i just really like seaborn colors
+    sns.set()
 
-We need to set ``get_proba`` become True to get the ‘attention’.
-
-Visualizing bahdanau model
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+Load bahdanau model
+~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
-    model = malaya.toxic.deep_model('bahdanau')
-    result = model.predict(another_string,get_proba=True)['attention']
-    
-    plt.figure(figsize = (15, 7))
-    labels = [r[0] for r in result]
-    val = [r[1] for r in result]
-    aranged = [i for i in range(len(labels))]
-    plt.bar(aranged, val)
-    plt.xticks(aranged, labels, rotation = 'vertical')
+    model = malaya.toxic.deep_model(model = 'bahdanau')
+
+Predict single string
+^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    model.predict(string)
+
+
+
+
+.. parsed-literal::
+
+    []
+
+
+
+.. code:: ipython3
+
+    result = model.predict(another_string, get_proba = True)
+    result
+
+
+
+
+.. parsed-literal::
+
+    {'toxic': 0.75407517,
+     'severe_toxic': 0.16274202,
+     'obscene': 0.5291958,
+     'threat': 0.10058941,
+     'insult': 0.75971705,
+     'identity_hate': 0.8826025,
+     'attention': {'bodoh': 0.10320988,
+      ',': 0.0,
+      'dah': 0.027506806,
+      'la': 0.021144494,
+      'gay': 0.4988079,
+      'sokong': 0.06969115,
+      'lgbt': 0.20489135,
+      'lagi': 0.018106166,
+      'memang': 0.02190801,
+      'tak': 0.017407918,
+      'guna': 0.017326297}}
+
+
+
+.. code:: ipython3
+
+    plt.figure(figsize = (15, 5))
+    keys = result['attention'].keys()
+    values = result['attention'].values()
+    aranged = [i for i in range(len(keys))]
+    plt.bar(aranged, values)
+    plt.xticks(aranged, keys, rotation = 'vertical')
     plt.show()
 
 
 
-.. image:: load-toxic_files/load-toxic_23_0.png
+.. image:: load-toxic_files/load-toxic_24_0.png
 
 
-Visualizing luong model
-^^^^^^^^^^^^^^^^^^^^^^^
+Open toxicity visualization dashboard
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code:: ipython3
-
-    model = malaya.toxic.deep_model('luong')
-    result = model.predict(another_string,get_proba=True)['attention']
-    
-    plt.figure(figsize = (15, 7))
-    labels = [r[0] for r in result]
-    val = [r[1] for r in result]
-    aranged = [i for i in range(len(labels))]
-    plt.bar(aranged, val)
-    plt.xticks(aranged, labels, rotation = 'vertical')
-    plt.show()
-
-
-
-.. image:: load-toxic_files/load-toxic_25_0.png
-
-
-Visualizing hierarchical model
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Default when you call ``predict_words`` it will open a browser with
+visualization dashboard, you can disable by ``visualization=False``.
 
 .. code:: ipython3
 
-    model = malaya.toxic.deep_model('hierarchical')
-    result = model.predict(another_string,get_proba=True)['attention']
+    model.predict_words(another_string)
+
+
+.. parsed-literal::
+
+    Serving to http://127.0.0.1:8889/    [Ctrl-C to exit]
+
+
+.. parsed-literal::
+
+    127.0.0.1 - - [01/Jun/2019 12:12:10] "GET / HTTP/1.1" 200 -
+    127.0.0.1 - - [01/Jun/2019 12:12:10] "GET /static/admin-materialize.min.css HTTP/1.1" 200 -
+    127.0.0.1 - - [01/Jun/2019 12:12:10] "GET /static/echarts.min.js HTTP/1.1" 200 -
+    127.0.0.1 - - [01/Jun/2019 12:12:11] "GET /favicon.ico HTTP/1.1" 200 -
+    ----------------------------------------
+    Exception happened during processing of request from ('127.0.0.1', 61873)
+    Traceback (most recent call last):
+      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/socketserver.py", line 317, in _handle_request_noblock
+        self.process_request(request, client_address)
+      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/socketserver.py", line 348, in process_request
+        self.finish_request(request, client_address)
+      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/socketserver.py", line 361, in finish_request
+        self.RequestHandlerClass(request, client_address, self)
+      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/socketserver.py", line 696, in __init__
+        self.handle()
+      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/http/server.py", line 418, in handle
+        self.handle_one_request()
+      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/http/server.py", line 406, in handle_one_request
+        method()
+      File "/Users/huseinzol/Documents/Malaya/malaya/_utils/_server.py", line 32, in do_GET
+        with open(filepath, 'rb') as fh:
+    FileNotFoundError: [Errno 2] No such file or directory: '/Users/huseinzol/Documents/Malaya/malaya/_utils/web/favicon.ico'
+    ----------------------------------------
+
+
+.. parsed-literal::
+
     
-    plt.figure(figsize = (15, 7))
-    labels = [r[0] for r in result]
-    val = [r[1] for r in result]
-    aranged = [i for i in range(len(labels))]
-    plt.bar(aranged, val)
-    plt.xticks(aranged, labels, rotation = 'vertical')
-    plt.show()
+    stopping Server...
+
+
+.. code:: ipython3
+
+    from IPython.core.display import Image, display
+    
+    display(Image('toxicity.png', width=800))
 
 
 
 .. image:: load-toxic_files/load-toxic_27_0.png
+   :width: 800px
 
+
+Predict batch of strings
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    model.predict_batch([string, another_string],get_proba=True)
+
+
+
+
+.. parsed-literal::
+
+    [{'toxic': 0.21699297,
+      'severe_toxic': 0.021610105,
+      'obscene': 0.110013016,
+      'threat': 0.010765828,
+      'insult': 0.10372056,
+      'identity_hate': 0.03946534},
+     {'toxic': 0.93524134,
+      'severe_toxic': 0.33446547,
+      'obscene': 0.7178085,
+      'threat': 0.56429744,
+      'insult': 0.8922918,
+      'identity_hate': 0.9618688}]
+
+
+
+**You might want to try ``luong`` and ``self-attention`` by yourself.**
+
+Stacking models
+---------------
+
+More information, you can read at
+https://malaya.readthedocs.io/en/latest/Stack.html
+
+.. code:: ipython3
+
+    multinomial = malaya.toxic.multinomial()
+    logistics = malaya.toxic.logistic()
+    bahdanau = malaya.toxic.deep_model('bahdanau')
+
+.. code:: ipython3
+
+    malaya.stack.predict_stack([multinomial, logistics, bahdanau], another_string)

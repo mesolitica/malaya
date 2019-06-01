@@ -17,8 +17,8 @@ from shutil import rmtree
 from pathlib import Path
 
 home = os.path.join(str(Path.home()), 'Malaya')
-version = '2.3'
-bump_version = '2.3.5'
+version = '2.4'
+bump_version = '2.4.0'
 version_path = os.path.join(home, 'version')
 
 
@@ -301,6 +301,7 @@ from . import normalize
 from . import num2word
 from . import pos
 from . import preprocessing
+from . import relevancy
 from . import sentiment
 from . import similarity
 from . import spell

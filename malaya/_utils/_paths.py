@@ -116,28 +116,18 @@ PATH_TOXIC = {
     },
     'luong': {
         'model': home + '/toxic/luong/luong-toxic.pb',
-        'setting': home + '/toxic/luong/luong-toxic.json',
-        'version': 'v8',
+        'setting': home + '/toxic/toxicity-dictionary.json',
+        'version': 'v24',
     },
     'bahdanau': {
         'model': home + '/toxic/bahdanau/bahdanau-toxic.pb',
-        'setting': home + '/toxic/bahdanau/bahdanau-toxic.json',
-        'version': 'v8',
+        'setting': home + '/toxic/toxicity-dictionary.json',
+        'version': 'v24',
     },
-    'hierarchical': {
-        'model': home + '/toxic/hierarchical/hierarchical-toxic.pb',
-        'setting': home + '/toxic/hierarchical/hierarchical-toxic.json',
-        'version': 'v8',
-    },
-    'fast-text': {
-        'model': home + '/toxic/fast-text/fasttext-toxic.pb',
-        'setting': home + '/toxic/fast-text/fasttext-toxic.json',
-        'version': 'v17',
-    },
-    'entity-network': {
-        'model': home + '/toxic/entity-network/entity-toxic.pb',
-        'setting': home + '/toxic/entity-network/entity-toxic.json',
-        'version': 'v8',
+    'self-attention': {
+        'model': home + '/toxic/self-attention/self-attention-toxic.pb',
+        'setting': home + '/toxic/toxicity-dictionary.json',
+        'version': 'v24',
     },
 }
 
@@ -151,24 +141,16 @@ S3_PATH_TOXIC = {
         'vector': 'v6/vectorizer-toxic.pkl',
     },
     'luong': {
-        'model': 'v8/toxic/luong-toxic.pb',
-        'setting': 'v8/toxic/luong-toxic.json',
+        'model': 'v24/toxicity/luong-toxic.pb',
+        'setting': 'v24/toxicity/toxicity-dictionary.json',
     },
     'bahdanau': {
-        'model': 'v8/toxic/bahdanau-toxic.pb',
-        'setting': 'v8/toxic/bahdanau-toxic.json',
+        'model': 'v24/toxicity/bahdanau-toxic.pb',
+        'setting': 'v24/toxicity/toxicity-dictionary.json',
     },
-    'hierarchical': {
-        'model': 'v8/toxic/hierarchical-toxic.pb',
-        'setting': 'v8/toxic/hierarchical-toxic.json',
-    },
-    'fast-text': {
-        'model': 'v17/toxic/fasttext-toxic.pb',
-        'setting': 'v17/toxic/fasttext-toxic.json',
-    },
-    'entity-network': {
-        'model': 'v8/toxic/entity-toxic.pb',
-        'setting': 'v8/toxic/entity-toxic.json',
+    'self-attention': {
+        'model': 'v24/toxicity/self-attention-toxic.pb',
+        'setting': 'v24/toxicity/toxicity-dictionary.json',
     },
 }
 
@@ -222,39 +204,6 @@ S3_PATH_POS = {
     'attention': {
         'model': 'v14/pos/attention-pos.pb',
         'setting': 'v14/pos/attention-pos.json',
-    },
-}
-
-PATH_NORMALIZER = {
-    'lstm': {
-        'model': home + '/normalizer/lstm/lstm-normalizer.pb',
-        'setting': home + '/normalizer/lstm/lstm-normalizer.json',
-        'version': 'v18',
-    },
-    'bahdanau': {
-        'model': home + '/normalizer/bahdanau/bahdanau-normalizer.pb',
-        'setting': home + '/normalizer/bahdanau/bahdanau-normalizer.json',
-        'version': 'v18',
-    },
-    'luong': {
-        'model': home + '/normalizer/luong/luong-normalizer.pb',
-        'setting': home + '/normalizer/luong/luong-normalizer.json',
-        'version': 'v18',
-    },
-}
-
-S3_PATH_NORMALIZER = {
-    'lstm': {
-        'model': 'v18/normalizer/lstm-normalizer.pb',
-        'setting': 'v18/normalizer/lstm-normalizer.json',
-    },
-    'bahdanau': {
-        'model': 'v18/normalizer/bahdanau-normalizer.pb',
-        'setting': 'v18/normalizer/bahdanau-normalizer.json',
-    },
-    'luong': {
-        'model': 'v18/normalizer/luong-normalizer.pb',
-        'setting': 'v18/normalizer/luong-normalizer.json',
     },
 }
 
@@ -420,42 +369,21 @@ S3_PATH_ENTITIES_SENSITIVE = {
     },
 }
 
-PATH_SENTIMENTS = {
-    'bert': {
-        'model': home + '/sentiment/bert/bert-sentiment.pb',
-        'setting': home + '/sentiment/bert/bert-sentiment.json',
-        'version': 'v17',
-    },
-    'entity-network': {
-        'model': home + '/sentiment/entity-network/entity-sentiment.pb',
-        'setting': home + '/sentiment/entity-network/entity-sentiment.json',
-        'version': 'v17',
-    },
-    'hierarchical': {
-        'model': home + '/sentiment/hierarchical/hierarchical-sentiment.pb',
-        'setting': home + '/sentiment/hierarchical/hierarchical-sentiment.json',
-        'version': 'v17',
-    },
+PATH_SENTIMENT = {
     'bahdanau': {
         'model': home + '/sentiment/bahdanau/bahdanau-sentiment.pb',
-        'setting': home + '/sentiment/bahdanau/bahdanau-sentiment.json',
-        'version': 'v17',
+        'setting': home + '/sentiment/sentiment-dictionary.json',
+        'version': 'v24',
     },
     'luong': {
         'model': home + '/sentiment/luong/luong-sentiment.pb',
-        'setting': home + '/sentiment/luong/luong-sentiment.json',
-        'version': 'v17',
+        'setting': home + '/sentiment/sentiment-dictionary.json',
+        'version': 'v24',
     },
-    'bidirectional': {
-        'model': home + '/sentiment/bidirectional/bidirectional-sentiment.pb',
-        'setting': home
-        + '/sentiment/bidirectional/bidirectional-sentiment.json',
-        'version': 'v17',
-    },
-    'fast-text': {
-        'model': home + '/sentiment/fast-text/fasttext-sentiment.pb',
-        'setting': home + '/sentiment/fast-text/fasttext-sentiment.json',
-        'version': 'v17',
+    'self-attention': {
+        'model': home + '/sentiment/self-attention/self-attention-sentiment.pb',
+        'setting': home + '/sentiment/sentiment-dictionary.json',
+        'version': 'v24',
     },
     'multinomial': {
         'model': home + '/sentiment/multinomial/multinomial-sentiment.pkl',
@@ -479,34 +407,18 @@ PATH_SENTIMENTS = {
     },
 }
 
-S3_PATH_SENTIMENTS = {
-    'bert': {
-        'model': 'v17/sentiment/bert-sentiment.pb',
-        'setting': 'v17/sentiment/bert-sentiment.json',
-    },
-    'entity-network': {
-        'model': 'v17/sentiment/entity-sentiment.pb',
-        'setting': 'v17/sentiment/entity-sentiment.json',
-    },
-    'hierarchical': {
-        'model': 'v17/sentiment/hierarchical-sentiment.pb',
-        'setting': 'v17/sentiment/hierarchical-sentiment.json',
-    },
+S3_PATH_SENTIMENT = {
     'bahdanau': {
-        'model': 'v17/sentiment/bahdanau-sentiment.pb',
-        'setting': 'v17/sentiment/bahdanau-sentiment.json',
+        'model': 'v24/sentiment/bahdanau-sentiment.pb',
+        'setting': 'v24/sentiment/sentiment-dictionary.json',
     },
     'luong': {
-        'model': 'v17/sentiment/luong-sentiment.pb',
-        'setting': 'v17/sentiment/luong-sentiment.json',
+        'model': 'v24/sentiment/luong-sentiment.pb',
+        'setting': 'v24/sentiment/sentiment-dictionary.json',
     },
-    'bidirectional': {
-        'model': 'v17/sentiment/bidirectional-sentiment.pb',
-        'setting': 'v17/sentiment/bidirectional-sentiment.json',
-    },
-    'fast-text': {
-        'model': 'v17/sentiment/fasttext-sentiment.pb',
-        'setting': 'v17/sentiment/fasttext-sentiment.json',
+    'self-attention': {
+        'model': 'v24/sentiment/self-attention-sentiment.pb',
+        'setting': 'v24/sentiment/sentiment-dictionary.json',
     },
     'multinomial': {
         'model': 'v17/sentiment/multinomial-sentiment.pkl',
@@ -525,42 +437,20 @@ S3_PATH_SENTIMENTS = {
 }
 
 PATH_SUBJECTIVE = {
-    'bert': {
-        'model': home + '/subjective/bert/bert-subjective.pb',
-        'setting': home + '/subjective/bert/bert-subjective.json',
-        'version': 'v10',
-    },
-    'entity-network': {
-        'model': home + '/subjective/entity-network/entity-subjective.pb',
-        'setting': home + '/subjective/entity-network/entity-subjective.json',
-        'version': 'v10',
-    },
-    'hierarchical': {
-        'model': home + '/subjective/hierarchical/hierarchical-subjective.pb',
-        'setting': home
-        + '/subjective/hierarchical/hierarchical-subjective.json',
-        'version': 'v10',
-    },
     'bahdanau': {
         'model': home + '/subjective/bahdanau/bahdanau-subjective.pb',
-        'setting': home + '/subjective/bahdanau/bahdanau-subjective.json',
-        'version': 'v10',
+        'setting': home + '/subjective/subjective-dictionary.json',
+        'version': 'v24',
     },
     'luong': {
         'model': home + '/subjective/luong/luong-subjective.pb',
-        'setting': home + '/subjective/luong/luong-subjective.json',
-        'version': 'v10',
+        'setting': home + '/subjective/subjective-dictionary.json',
+        'version': 'v24',
     },
-    'bidirectional': {
-        'model': home + '/subjective/bidirectional/bidirectional-subjective.pb',
-        'setting': home
-        + '/subjective/bidirectional/bidirectional-subjective.json',
-        'version': 'v10',
-    },
-    'fast-text': {
-        'model': home + '/subjective/fast-text/fasttext-subjective.pb',
-        'setting': home + '/subjective/fast-text/fasttext-subjective.json',
-        'version': 'v17',
+    'self-attention': {
+        'model': home + '/subjective/luong/luong-subjective.pb',
+        'setting': home + '/subjective/subjective-dictionary.json',
+        'version': 'v24',
     },
     'multinomial': {
         'model': home + '/subjective/multinomial/multinomial-subjective.pkl',
@@ -585,33 +475,17 @@ PATH_SUBJECTIVE = {
 }
 
 S3_PATH_SUBJECTIVE = {
-    'bert': {
-        'model': 'v10/subjective/bert-subjective.pb',
-        'setting': 'v10/subjective/bert-subjective.json',
-    },
-    'entity-network': {
-        'model': 'v10/subjective/entity-subjective.pb',
-        'setting': 'v10/subjective/entity-subjective.json',
-    },
-    'hierarchical': {
-        'model': 'v10/subjective/hierarchical-subjective.pb',
-        'setting': 'v10/subjective/hierarchical-subjective.json',
-    },
     'bahdanau': {
-        'model': 'v10/subjective/bahdanau-subjective.pb',
-        'setting': 'v10/subjective/bahdanau-subjective.json',
+        'model': 'v24/subjective/bahdanau-subjective.pb',
+        'setting': 'v24/subjective/subjective-dictionary.json',
     },
     'luong': {
-        'model': 'v10/subjective/luong-subjective.pb',
-        'setting': 'v10/subjective/luong-subjective.json',
+        'model': 'v24/subjective/luong-subjective.pb',
+        'setting': 'v24/subjective/subjective-dictionary.json',
     },
-    'bidirectional': {
-        'model': 'v10/subjective/bidirectional-subjective.pb',
-        'setting': 'v10/subjective/bidirectional-subjective.json',
-    },
-    'fast-text': {
-        'model': 'v17/subjective/fasttext-subjective.pb',
-        'setting': 'v17/subjective/fasttext-subjective.json',
+    'self-attention': {
+        'model': 'v24/subjective/self-attention-subjective.pb',
+        'setting': 'v24/subjective/subjective-dictionary.json',
     },
     'multinomial': {
         'model': 'v10/subjective/multinomial-subjective.pkl',
@@ -630,40 +504,20 @@ S3_PATH_SUBJECTIVE = {
 }
 
 PATH_EMOTION = {
-    'bert': {
-        'model': home + '/emotion/bert/bert-emotion.pb',
-        'setting': home + '/emotion/bert/bert-emotion.json',
-        'version': 'v12',
-    },
-    'entity-network': {
-        'model': home + '/emotion/entity-network/entity-emotion.pb',
-        'setting': home + '/emotion/entity-network/entity-emotion.json',
-        'version': 'v12',
-    },
-    'hierarchical': {
-        'model': home + '/emotion/hierarchical/hierarchical-emotion.pb',
-        'setting': home + '/emotion/hierarchical/hierarchical-emotion.json',
-        'version': 'v12',
-    },
     'bahdanau': {
         'model': home + '/emotion/bahdanau/bahdanau-emotion.pb',
-        'setting': home + '/emotion/bahdanau/bahdanau-emotion.json',
-        'version': 'v12',
+        'setting': home + '/emotion/emotion-dictionary.json',
+        'version': 'v24',
     },
     'luong': {
         'model': home + '/emotion/luong/luong-emotion.pb',
-        'setting': home + '/emotion/luong/luong-emotion.json',
-        'version': 'v12',
+        'setting': home + '/emotion/emotion-dictionary.json',
+        'version': 'v24',
     },
-    'bidirectional': {
-        'model': home + '/emotion/bidirectional/bidirectional-emotion.pb',
-        'setting': home + '/emotion/bidirectional/bidirectional-emotion.json',
-        'version': 'v12',
-    },
-    'fast-text': {
-        'model': home + '/emotion/fast-text/fasttext-emotion.pb',
-        'setting': home + '/emotion/fast-text/fasttext-emotion.json',
-        'version': 'v17',
+    'self-attention': {
+        'model': home + '/emotion/luong/self-attention-emotion.pb',
+        'setting': home + '/emotion/emotion-dictionary.json',
+        'version': 'v24',
     },
     'multinomial': {
         'model': home + '/emotion/multinomial/multinomial-emotion.pkl',
@@ -687,33 +541,17 @@ PATH_EMOTION = {
 }
 
 S3_PATH_EMOTION = {
-    'bert': {
-        'model': 'v12/emotion/bert-emotion.pb',
-        'setting': 'v12/emotion/bert-emotion.json',
-    },
-    'entity-network': {
-        'model': 'v12/emotion/entity-emotion.pb',
-        'setting': 'v12/emotion/entity-emotion.json',
-    },
-    'hierarchical': {
-        'model': 'v12/emotion/hierarchical-emotion.pb',
-        'setting': 'v12/emotion/hierarchical-emotion.json',
-    },
     'bahdanau': {
-        'model': 'v12/emotion/bahdanau-emotion.pb',
-        'setting': 'v12/emotion/bahdanau-emotion.json',
+        'model': 'v24/emotion/bahdanau-emotion.pb',
+        'setting': 'v24/emotion/emotion-dictionary.json',
     },
     'luong': {
-        'model': 'v12/emotion/luong-emotion.pb',
-        'setting': 'v12/emotion/luong-emotion.json',
+        'model': 'v24/emotion/luong-emotion.pb',
+        'setting': 'v24/emotion/emotion-dictionary.json',
     },
-    'bidirectional': {
-        'model': 'v12/emotion/bidirectional-emotion.pb',
-        'setting': 'v12/emotion/bidirectional-emotion.json',
-    },
-    'fast-text': {
-        'model': 'v17/emotion/fasttext-emotion.pb',
-        'setting': 'v17/emotion/fasttext-emotion.json',
+    'self-attention': {
+        'model': 'v24/emotion/luong-emotion.pb',
+        'setting': 'v24/emotion/emotion-dictionary.json',
     },
     'multinomial': {
         'model': 'v12/emotion/multinomial-emotion.pkl',
@@ -779,5 +617,28 @@ S3_PATH_DEPEND = {
     'attention-is-all-you-need': {
         'model': 'v22/dependency/attention-dependency.pb',
         'setting': 'v22/dependency/attention-dependency.json',
+    },
+}
+
+PATH_RELEVANCY = {
+    'self-attention': {
+        'model': home + '/relevancy/self-attention/self-attention-relevancy.pb',
+        'setting': home + '/relevancy/relevancy-dictionary.json',
+        'version': 'v24',
+    },
+    'dilated-cnn': {
+        'model': home + '/relevancy/self-attention/dilated-cnn-relevancy.pb',
+        'setting': home + '/relevancy/relevancy-dictionary.json',
+        'version': 'v24',
+    },
+}
+S3_PATH_RELEVANCY = {
+    'self-attention': {
+        'model': 'v24/relevancy/self-attention-relevancy.pb',
+        'setting': 'v24/relevancy/relevancy-dictionary.json',
+    },
+    'dilated-cnn': {
+        'model': 'v24/relevancy/dilated-cnn-relevancy.pb',
+        'setting': 'v24/relevancy/relevancy-dictionary.json',
     },
 }

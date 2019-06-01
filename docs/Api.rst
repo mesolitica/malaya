@@ -69,9 +69,6 @@ malaya.normalize
 .. automodule:: malaya.normalize
     :members:
 
-.. autoclass:: malaya.normalize._DEEP_NORMALIZER()
-    :members:
-
 .. autoclass:: malaya.normalize._SPELL_NORMALIZE()
     :members:
 
@@ -94,6 +91,12 @@ malaya.preprocessing
 ----------------------
 
 .. automodule:: malaya.preprocessing
+    :members:
+
+malaya.relevancy
+------------------
+
+.. automodule:: malaya.relevancy
     :members:
 
 malaya.sentiment

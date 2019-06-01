@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 10.3 s, sys: 818 ms, total: 11.1 s
-    Wall time: 11.4 s
+    CPU times: user 10.9 s, sys: 915 ms, total: 11.9 s
+    Wall time: 12.2 s
 
 
 Explanation
@@ -42,16 +42,20 @@ Load multinomial model
 
 .. parsed-literal::
 
-    {'negative': 0.46203835811002486, 'positive': 0.5379616418899767}
-    {'negative': 0.8607294776614423, 'positive': 0.13927052233855727}
+    {'negative': 0.009240767162200498, 'positive': 0.0759232837799535, 'neutral': 0.914835949057846}
+    {'negative': 0.7214589553228845, 'positive': 0.0027854104467711456, 'neutral': 0.2757556342303443}
 
 
 
 
 .. parsed-literal::
 
-    [{'negative': 0.8607294776614423, 'positive': 0.13927052233855727},
-     {'negative': 0.8607294776614423, 'positive': 0.13927052233855727}]
+    [{'negative': 0.7214589553228845,
+      'positive': 0.0027854104467711456,
+      'neutral': 0.2757556342303443},
+     {'negative': 0.7214589553228845,
+      'positive': 0.0027854104467711456,
+      'neutral': 0.2757556342303443}]
 
 
 
@@ -68,16 +72,16 @@ Load xgb model
 
 .. parsed-literal::
 
-    {'negative': 0.4284472, 'positive': 0.5715528}
-    {'negative': 0.9249991, 'positive': 0.07500088}
+    {'negative': 0.0085689435, 'positive': 0.14310563, 'neutral': 0.84832543}
+    {'negative': 0.84999824, 'positive': 0.0015000176, 'neutral': 0.14850175}
 
 
 
 
 .. parsed-literal::
 
-    [{'negative': 0.9249991, 'positive': 0.07500088},
-     {'negative': 0.9249991, 'positive': 0.07500088}]
+    [{'negative': 0.84999824, 'positive': 0.0015000176, 'neutral': 0.14850175},
+     {'negative': 0.84999824, 'positive': 0.0015000176, 'neutral': 0.14850175}]
 
 
 
@@ -93,112 +97,101 @@ List available deep learning models
 
 .. parsed-literal::
 
-    ['fast-text',
-     'hierarchical',
-     'bahdanau',
-     'luong',
-     'bidirectional',
-     'bert',
-     'entity-network']
+    ['self-attention', 'bahdanau', 'luong']
 
 
 
-.. code:: ipython3
+Load deep learning models
+-------------------------
 
-    for i in malaya.subjective.available_deep_model():
-        print('Testing %s model'%(i))
-        model = malaya.subjective.deep_model(i)
-        print(model.predict(negative_text))
-        print(model.predict_batch([negative_text, positive_text]))
-        print(model.predict_batch([negative_text, positive_text],get_proba=True))
-        print()
-
-
-.. parsed-literal::
-
-    Testing fast-text model
-    negative
-    ['negative', 'positive']
-    [{'negative': 1.0, 'positive': 5.600171e-08}, {'negative': 0.25236478, 'positive': 0.74763525}]
-    
-    Testing hierarchical model
-    negative
-    ['negative', 'positive']
-    [{'negative': 0.9999939, 'positive': 6.036344e-06}, {'negative': 0.23363505, 'positive': 0.766365}]
-    
-    Testing bahdanau model
-    negative
-    ['negative', 'negative']
-    [{'negative': 0.9999505, 'positive': 4.9492166e-05}, {'negative': 0.6453213, 'positive': 0.35467872}]
-    
-    Testing luong model
-    positive
-    ['positive', 'negative']
-    [{'negative': 0.08237837, 'positive': 0.9176216}, {'negative': 0.64468145, 'positive': 0.35531852}]
-    
-    Testing bidirectional model
-    negative
-    ['negative', 'positive']
-    [{'negative': 0.9999932, 'positive': 6.7871633e-06}, {'negative': 0.11161333, 'positive': 0.88838667}]
-    
-    Testing bert model
-    negative
-    ['negative', 'negative']
-    [{'negative': 0.98487025, 'positive': 0.015129704}, {'negative': 0.98668575, 'positive': 0.013314218}]
-    
-    Testing entity-network model
-    negative
-    ['negative', 'negative']
-    [{'negative': 0.6470482, 'positive': 0.35295185}, {'negative': 0.65467215, 'positive': 0.34532788}]
-    
-
-
-Unsupervised important words learning
--------------------------------------
+Good thing about deep learning models from Malaya, it returns
+``Attention`` result, means, which part of words give the high impact to
+the results. But to get ``Attention``, you need to set
+``get_proba=True``.
 
 .. code:: ipython3
 
     import matplotlib.pyplot as plt
     import seaborn as sns
-    sns.set() # i just really like seaborn colors
+    sns.set()
 
-We need to set ``get_proba`` become True to get the ‘attention’.
-
-Visualizing bahdanau model
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+Load bahdanau model
+~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
     model = malaya.subjective.deep_model('bahdanau')
-    result = model.predict(negative_text, get_proba=True)['attention']
-    
-    plt.figure(figsize = (15, 7))
-    labels = [r[0] for r in result]
-    val = [r[1] for r in result]
-    aranged = [i for i in range(len(labels))]
-    plt.bar(aranged, val)
-    plt.xticks(aranged, labels, rotation = 'vertical')
-    plt.show()
 
 
+.. parsed-literal::
 
-.. image:: load-subjectivity_files/load-subjectivity_15_0.png
+    downloading frozen /Users/huseinzol/Malaya/subjective/bahdanau model
 
 
-Visualizing luong model
-^^^^^^^^^^^^^^^^^^^^^^^
+.. parsed-literal::
+
+    20.0MB [00:07, 2.85MB/s]                          
+      0%|          | 0.00/0.45 [00:00<?, ?MB/s]
+
+.. parsed-literal::
+
+    downloading frozen /Users/huseinzol/Malaya/subjective/bahdanau setting
+
+
+.. parsed-literal::
+
+    1.00MB [00:00, 5.75MB/s]                   
+
+
+Predict single string
+^^^^^^^^^^^^^^^^^^^^^
 
 .. code:: ipython3
 
-    model = malaya.subjective.deep_model('luong')
-    result = model.predict(negative_text, get_proba=True)['attention']
-    
-    plt.figure(figsize = (15, 7))
-    labels = [r[0] for r in result]
-    val = [r[1] for r in result]
-    aranged = [i for i in range(len(labels))]
-    plt.bar(aranged, val)
-    plt.xticks(aranged, labels, rotation = 'vertical')
+    model.predict(positive_text)
+
+
+
+
+.. parsed-literal::
+
+    'neutral'
+
+
+
+.. code:: ipython3
+
+    result = model.predict(positive_text,get_proba=True,add_neutral=False)
+    result
+
+
+
+
+.. parsed-literal::
+
+    {'negative': 0.3413489,
+     'positive': 0.6586511,
+     'attention': {'kerajaan': 0.02428512,
+      'sebenarnya': 0.05316463,
+      'sangat': 0.7279027,
+      'bencikan': 0.07460431,
+      'rakyatnya': 0.026773913,
+      ',': 0.0,
+      'minyak': 0.048565686,
+      'naik': 0.023328593,
+      'dan': 0.0,
+      'segalanya': 0.021375034}}
+
+
+
+.. code:: ipython3
+
+    plt.figure(figsize = (15, 5))
+    keys = result['attention'].keys()
+    values = result['attention'].values()
+    aranged = [i for i in range(len(keys))]
+    plt.bar(aranged, values)
+    plt.xticks(aranged, keys, rotation = 'vertical')
     plt.show()
 
 
@@ -206,25 +199,117 @@ Visualizing luong model
 .. image:: load-subjectivity_files/load-subjectivity_17_0.png
 
 
-Visualizing hierarchical model
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Open subjectivity visualization dashboard
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Default when you call ``predict_words`` it will open a browser with
+visualization dashboard, you can disable by ``visualization=False``.
 
 .. code:: ipython3
 
-    model = malaya.subjective.deep_model('hierarchical')
-    result = model.predict(negative_text, get_proba=True)['attention']
+    model.predict_words(negative_text)
+
+
+.. parsed-literal::
+
+    Serving to http://127.0.0.1:8889/    [Ctrl-C to exit]
+
+
+.. parsed-literal::
+
+    127.0.0.1 - - [01/Jun/2019 12:16:49] "GET / HTTP/1.1" 200 -
+    127.0.0.1 - - [01/Jun/2019 12:16:49] "GET /static/admin-materialize.min.css HTTP/1.1" 200 -
+    127.0.0.1 - - [01/Jun/2019 12:16:49] "GET /static/echarts.min.js HTTP/1.1" 200 -
+    127.0.0.1 - - [01/Jun/2019 12:16:49] "GET /favicon.ico HTTP/1.1" 200 -
+    ----------------------------------------
+    Exception happened during processing of request from ('127.0.0.1', 61989)
+    Traceback (most recent call last):
+      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/socketserver.py", line 317, in _handle_request_noblock
+        self.process_request(request, client_address)
+      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/socketserver.py", line 348, in process_request
+        self.finish_request(request, client_address)
+      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/socketserver.py", line 361, in finish_request
+        self.RequestHandlerClass(request, client_address, self)
+      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/socketserver.py", line 696, in __init__
+        self.handle()
+      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/http/server.py", line 418, in handle
+        self.handle_one_request()
+      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/http/server.py", line 406, in handle_one_request
+        method()
+      File "/Users/huseinzol/Documents/Malaya/malaya/_utils/_server.py", line 32, in do_GET
+        with open(filepath, 'rb') as fh:
+    FileNotFoundError: [Errno 2] No such file or directory: '/Users/huseinzol/Documents/Malaya/malaya/_utils/web/favicon.ico'
+    ----------------------------------------
+
+
+.. parsed-literal::
+
     
-    plt.figure(figsize = (15, 7))
-    labels = [r[0] for r in result]
-    val = [r[1] for r in result]
-    aranged = [i for i in range(len(labels))]
-    plt.bar(aranged, val)
-    plt.xticks(aranged, labels, rotation = 'vertical')
-    plt.show()
+    stopping Server...
+
+
+.. code:: ipython3
+
+    from IPython.core.display import Image, display
+    
+    display(Image('subjective-bahdanau.png', width=800))
 
 
 
-.. image:: load-subjectivity_files/load-subjectivity_19_0.png
+.. image:: load-subjectivity_files/load-subjectivity_20_0.png
+   :width: 800px
+
+
+I tried to put the html and javascript inside a notebook cell, pretty
+hard you know and a lot of weird bugs. Let stick to HTTP serving ya.
+
+``predict_words`` only accept a single string. You can’t predict
+multiple texts.
+
+Predict batch of strings
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    model.predict_batch([negative_text, positive_text],get_proba=True)
+
+
+
+
+.. parsed-literal::
+
+    [{'negative': 0.83364284, 'positive': 0.0016635716, 'neutral': 0.1646936},
+     {'negative': 0.003325577, 'positive': 0.6674423, 'neutral': 0.3292321}]
+
+
+
+**You might want to try ``luong`` and ``self-attention`` by yourself.**
+
+Stacking models
+---------------
+
+More information, you can read at
+https://malaya.readthedocs.io/en/latest/Stack.html
+
+.. code:: ipython3
+
+    multinomial = malaya.subjective.multinomial()
+    xgb = malaya.subjective.xgb()
+    bahdanau = malaya.subjective.deep_model('bahdanau')
+
+.. code:: ipython3
+
+    malaya.stack.predict_stack([multinomial, xgb, bahdanau], positive_text)
+
+
+
+
+.. parsed-literal::
+
+    {'negative': 0.008627402242055781,
+     'positive': 0.12711225500695544,
+     'neutral': 0.8541128287159148}
+
 
 
 Load Sparse deep learning models
@@ -313,3 +398,5 @@ will try to evolve it.
      {'negative': 0.95071983, 'positive': 0.04928014}]
 
 
+
+Right now sparse models does not have ``neutral`` class.

@@ -14,7 +14,10 @@ from ..texts._text_functions import (
     language_detection_textcleaning,
 )
 from .._utils._parse_dependency import DependencyGraph
+from ..preprocessing import preprocessing_classification_index
 from ..stem import _classification_textcleaning_stemmer
+from .._utils._utils import add_neutral as neutral
+from .._utils._html import _render_binary, _render_toxic, _render_emotion
 
 
 def _convert_sparse_matrix_to_sparse_tensor(X, got_limit = True, limit = 5):
@@ -428,34 +431,244 @@ class SOFTMAX:
         self,
         X,
         logits,
+        logits_seq,
+        alphas,
         sess,
-        mode,
         dictionary,
-        alphas = None,
-        input_mask = None,
-        segment_ids = None,
-        is_training = None,
-        dropout_keep_prob = None,
-        story = None,
-        maxlen = 80,
+        class_name,
         label = ['negative', 'positive'],
     ):
         self._X = X
         self._logits = logits
-        self._sess = sess
-        self._mode = mode
-        self._dictionary = dictionary
+        self._logits_seq = logits_seq
         self._alphas = alphas
-        self._input_mask = input_mask
-        self._segment_ids = segment_ids
-        self._is_training = is_training
-        self._dropout_keep_prob = dropout_keep_prob
-        self._story = story
-        self._maxlen = maxlen
+        self._sess = sess
+        self._dictionary = dictionary
         self._label = label
+        self._class_name = class_name
 
-    def get_dictionary(self):
-        return self._dictionary
+
+class BINARY_SOFTMAX(SOFTMAX):
+    def __init__(
+        self,
+        X,
+        logits,
+        logits_seq,
+        alphas,
+        sess,
+        dictionary,
+        class_name,
+        label = ['negative', 'positive'],
+    ):
+        SOFTMAX.__init__(
+            self,
+            X,
+            logits,
+            logits_seq,
+            alphas,
+            sess,
+            dictionary,
+            class_name,
+            label,
+        )
+
+    def predict(self, string, get_proba = False, add_neutral = True):
+        """
+        classify a string.
+
+        Parameters
+        ----------
+        string : str
+        get_proba: bool, optional (default=False)
+            If True, it will return probability of classes.
+        add_neutral: bool, optional (default=True)
+            if True, it will add neutral probability.
+
+        Returns
+        -------
+        dictionary: results
+        """
+        if not isinstance(string, str):
+            raise ValueError('input must be a string')
+        if not isinstance(get_proba, bool):
+            raise ValueError('get_proba must be a boolean')
+        if not isinstance(add_neutral, bool):
+            raise ValueError('add_neutral must be a boolean')
+
+        if add_neutral:
+            label = self._label + ['neutral']
+        else:
+            label = self._label
+
+        tokenized_indices, splitted = preprocessing_classification_index(string)
+        batch_x = str_idx(
+            [' '.join(splitted)], self._dictionary, len(splitted), UNK = 3
+        )
+        result, alphas = self._sess.run(
+            [tf.nn.softmax(self._logits), self._alphas],
+            feed_dict = {self._X: batch_x},
+        )
+        if add_neutral:
+            result = neutral(result)
+        result = result[0]
+
+        if get_proba:
+            dict_result = {label[i]: result[i] for i in range(len(result))}
+            dict_result['attention'] = {
+                k: alphas[v] if v > -1 else 0.0
+                for k, v in tokenized_indices.items()
+            }
+            return dict_result
+        else:
+            return label[np.argmax(result)]
+
+    def predict_words(self, string, visualization = True):
+        """
+        classify words.
+
+        Parameters
+        ----------
+        string : str
+        visualization: bool, optional (default=True)
+            If True, it will open the visualization dashboard.
+
+        Returns
+        -------
+        dictionary: results
+        """
+
+        if not isinstance(string, str):
+            raise ValueError('input must be a string')
+        if not isinstance(visualization, bool):
+            raise ValueError('visualization must be a boolean')
+
+        label = self._label + ['neutral']
+
+        tokenized_indices, splitted = preprocessing_classification_index(string)
+        batch_x = str_idx(
+            [' '.join(splitted)], self._dictionary, len(splitted), UNK = 3
+        )
+        result, alphas, words = self._sess.run(
+            [
+                tf.nn.softmax(self._logits),
+                self._alphas,
+                tf.nn.softmax(self._logits_seq),
+            ],
+            feed_dict = {self._X: batch_x},
+        )
+        result = neutral(result)
+        result = result[0]
+        words = neutral(words[0])
+        distribution_words = words[:, np.argmax(words.sum(axis = 0))]
+        y_histogram, x_histogram = np.histogram(
+            distribution_words, bins = np.arange(0, 1, 0.05)
+        )
+        y_histogram = y_histogram / y_histogram.sum()
+        x_attention = np.arange(len(alphas))
+        neutral_word = [0.0 for _ in range(len(self._label))]
+        neutral_word.append(1.0)
+        left, right = np.unique(
+            np.argmax(words, axis = 1), return_counts = True
+        )
+        left = left.tolist()
+        y_barplot = []
+        for i in range(len(label)):
+            if i not in left:
+                y_barplot.append(i)
+            else:
+                y_barplot.append(right[left.index(i)])
+
+        dict_result = {label[i]: result[i] for i in range(len(result))}
+        dict_result['alphas'] = {
+            k: alphas[v] if v > -1 else 0.0
+            for k, v in tokenized_indices.items()
+        }
+        dict_result['word'] = {
+            k: words[v] if v > -1 else neutral_word
+            for k, v in tokenized_indices.items()
+        }
+        dict_result['histogram'] = {'x': x_histogram, 'y': y_histogram}
+        dict_result['attention'] = {'x': x_attention, 'y': alphas}
+        dict_result['barplot'] = {'x': label, 'y': y_barplot}
+        dict_result['class_name'] = self._class_name
+        if visualization:
+            _render_binary(dict_result)
+        else:
+            return dict_result
+
+    def predict_batch(self, strings, get_proba = False, add_neutral = True):
+        """
+        classify list of strings
+
+        Parameters
+        ----------
+        strings : list
+        get_proba: bool, optional (default=False)
+            If True, it will return probability of classes.
+        add_neutral: bool, optional (default=True)
+            if True, it will add neutral probability.
+
+        Returns
+        -------
+        list_dictionaries: list of results
+        """
+        if not isinstance(strings, list):
+            raise ValueError('input must be a list')
+        if not isinstance(get_proba, bool):
+            raise ValueError('get_proba must be a boolean')
+        if not isinstance(add_neutral, bool):
+            raise ValueError('add_neutral must be a boolean')
+
+        if add_neutral:
+            label = self._label + ['neutral']
+        else:
+            label = self._label
+
+        strings = [
+            ' '.join(preprocessing_classification_index(i)[1]) for i in strings
+        ]
+        maxlen = max([len(i.split()) for i in strings])
+        batch_x = str_idx(strings, self._dictionary, maxlen, UNK = 3)
+        results = self._sess.run(
+            tf.nn.softmax(self._logits), feed_dict = {self._X: batch_x}
+        )
+        if add_neutral:
+            results = neutral(results)
+
+        if get_proba:
+            outputs = []
+            for result in results:
+                outputs.append(
+                    {label[i]: result[i] for i in range(len(result))}
+                )
+            return outputs
+        else:
+            return [label[result] for result in np.argmax(results, axis = 1)]
+
+
+class MULTICLASS_SOFTMAX(SOFTMAX):
+    def __init__(
+        self,
+        X,
+        logits,
+        logits_seq,
+        alphas,
+        sess,
+        dictionary,
+        class_name,
+        label = ['negative', 'positive'],
+    ):
+        SOFTMAX.__init__(
+            self,
+            X,
+            logits,
+            logits_seq,
+            alphas,
+            sess,
+            dictionary,
+            class_name,
+            label,
+        )
 
     def predict(self, string, get_proba = False):
         """
@@ -464,6 +677,8 @@ class SOFTMAX:
         Parameters
         ----------
         string : str
+        get_proba: bool, optional (default=False)
+            If True, it will return probability of classes.
 
         Returns
         -------
@@ -471,62 +686,100 @@ class SOFTMAX:
         """
         if not isinstance(string, str):
             raise ValueError('input must be a string')
-        string = _classification_textcleaning_stemmer(string, attention = True)
-        splitted = string[1].split()
-        if self._mode in ['entity-network', 'bert']:
-            batch_x = str_idx(
-                [string[0]], self._dictionary, self._maxlen, UNK = 3
-            )
-        else:
-            batch_x = str_idx(
-                [string[0]], self._dictionary, len(splitted), UNK = 3
-            )
-        if self._mode in ['luong', 'bahdanau', 'hierarchical']:
-            probs, alphas = self._sess.run(
-                [tf.nn.softmax(self._logits), self._alphas],
-                feed_dict = {self._X: batch_x},
-            )
-            if self._mode == 'hierarchical':
-                alphas = alphas[0]
-            words = []
-            for i in range(alphas.shape[0]):
-                words.append([splitted[i], alphas[i]])
-        if self._mode in ['bidirectional', 'fast-text']:
-            probs = self._sess.run(
-                tf.nn.softmax(self._logits), feed_dict = {self._X: batch_x}
-            )
-        if self._mode == 'bert':
-            np_mask = np.ones((1, self._maxlen), dtype = np.int32)
-            np_segment = np.ones((1, self._maxlen), dtype = np.int32)
-            probs = self._sess.run(
-                tf.nn.softmax(self._logits),
-                feed_dict = {
-                    self._X: batch_x,
-                    self._input_mask: np_mask,
-                    self._segment_ids: np_segment,
-                    self._is_training: False,
-                },
-            )
-        if self._mode == 'entity-network':
-            batch_x_expand = np.expand_dims(batch_x, axis = 1)
-            probs = self._sess.run(
-                tf.nn.softmax(self._logits),
-                feed_dict = {
-                    self._X: batch_x,
-                    self._story: batch_x_expand,
-                    self._dropout_keep_prob: 1.0,
-                },
-            )
+        if not isinstance(get_proba, bool):
+            raise ValueError('get_proba must be a boolean')
+
+        tokenized_indices, splitted = preprocessing_classification_index(string)
+        batch_x = str_idx(
+            [' '.join(splitted)], self._dictionary, len(splitted), UNK = 3
+        )
+        result, alphas = self._sess.run(
+            [tf.nn.softmax(self._logits), self._alphas],
+            feed_dict = {self._X: batch_x},
+        )
+        result = result[0]
 
         if get_proba:
-            dict_result = {}
-            for no, label in enumerate(self._label):
-                dict_result[label] = probs[0, no]
-            if self._mode in ['luong', 'bahdanau', 'hierarchical']:
-                dict_result['attention'] = words
+            dict_result = {
+                self._label[i]: result[i] for i in range(len(result))
+            }
+            dict_result['attention'] = {
+                k: alphas[v] if v > -1 else 0.0
+                for k, v in tokenized_indices.items()
+            }
             return dict_result
         else:
-            return self._label[np.argmax(probs[0])]
+            return self._label[np.argmax(result)]
+
+    def predict_words(self, string, visualization = True):
+        """
+        classify words.
+
+        Parameters
+        ----------
+        string : str
+        visualization: bool, optional (default=True)
+            If True, it will open the visualization dashboard.
+
+        Returns
+        -------
+        dictionary: results
+        """
+
+        if not isinstance(string, str):
+            raise ValueError('input must be a string')
+        if not isinstance(visualization, bool):
+            raise ValueError('visualization must be a boolean')
+
+        tokenized_indices, splitted = preprocessing_classification_index(string)
+        batch_x = str_idx(
+            [' '.join(splitted)], self._dictionary, len(splitted), UNK = 3
+        )
+        result, alphas, words = self._sess.run(
+            [
+                tf.nn.softmax(self._logits),
+                self._alphas,
+                tf.nn.softmax(self._logits_seq),
+            ],
+            feed_dict = {self._X: batch_x},
+        )
+        result = result[0]
+        words = words[0]
+        distribution_words = words[:, np.argmax(words.sum(axis = 0))]
+        y_histogram, x_histogram = np.histogram(
+            distribution_words, bins = np.arange(0, 1, 0.05)
+        )
+        y_histogram = y_histogram / y_histogram.sum()
+        x_attention = np.arange(len(alphas))
+        neutral_word = [0.0 for _ in range(len(self._label))]
+        left, right = np.unique(
+            np.argmax(words, axis = 1), return_counts = True
+        )
+        left = left.tolist()
+        y_barplot = []
+        for i in range(len(self._label)):
+            if i not in left:
+                y_barplot.append(i)
+            else:
+                y_barplot.append(right[left.index(i)])
+
+        dict_result = {self._label[i]: result[i] for i in range(len(result))}
+        dict_result['alphas'] = {
+            k: alphas[v] if v > -1 else 0.0
+            for k, v in tokenized_indices.items()
+        }
+        dict_result['word'] = {
+            k: words[v] if v > -1 else neutral_word
+            for k, v in tokenized_indices.items()
+        }
+        dict_result['histogram'] = {'x': x_histogram, 'y': y_histogram}
+        dict_result['attention'] = {'x': x_attention, 'y': alphas}
+        dict_result['barplot'] = {'x': self._label, 'y': y_barplot}
+        dict_result['class_name'] = self._class_name
+        if visualization:
+            _render_emotion(dict_result)
+        else:
+            return dict_result
 
     def predict_batch(self, strings, get_proba = False):
         """
@@ -535,6 +788,8 @@ class SOFTMAX:
         Parameters
         ----------
         strings : list
+        get_proba: bool, optional (default=False)
+            If True, it will return probability of classes.
 
         Returns
         -------
@@ -542,84 +797,39 @@ class SOFTMAX:
         """
         if not isinstance(strings, list):
             raise ValueError('input must be a list')
-        if not isinstance(strings[0], str):
-            raise ValueError('input must be list of strings')
-        strings = [_classification_textcleaning_stemmer(i) for i in strings]
+        if not isinstance(get_proba, bool):
+            raise ValueError('get_proba must be a boolean')
+
+        strings = [
+            ' '.join(preprocessing_classification_index(i)[1]) for i in strings
+        ]
         maxlen = max([len(i.split()) for i in strings])
-        if self._mode in ['entity-network', 'bert']:
-            batch_x = str_idx(strings, self._dictionary, self._maxlen, UNK = 3)
-        else:
-            batch_x = str_idx(strings, self._dictionary, maxlen, UNK = 3)
+        batch_x = str_idx(strings, self._dictionary, maxlen, UNK = 3)
+        results = self._sess.run(
+            tf.nn.softmax(self._logits), feed_dict = {self._X: batch_x}
+        )
 
-        if self._mode not in ['bert', 'entity-network']:
-            probs = self._sess.run(
-                tf.nn.softmax(self._logits), feed_dict = {self._X: batch_x}
-            )
-        if self._mode == 'bert':
-            np_mask = np.ones((len(batch_x), self._maxlen), dtype = np.int32)
-            np_segment = np.ones((len(batch_x), self._maxlen), dtype = np.int32)
-            probs = self._sess.run(
-                tf.nn.softmax(self._logits),
-                feed_dict = {
-                    self._X: batch_x,
-                    self._input_mask: np_mask,
-                    self._segment_ids: np_segment,
-                    self._is_training: False,
-                },
-            )
-        if self._mode == 'entity-network':
-            batch_x_expand = np.expand_dims(batch_x, axis = 1)
-            probs = self._sess.run(
-                tf.nn.softmax(self._logits),
-                feed_dict = {
-                    self._X: batch_x,
-                    self._story: batch_x_expand,
-                    self._dropout_keep_prob: 1.0,
-                },
-            )
-
-        results = []
         if get_proba:
-            for prob in probs:
-                dict_result = {}
-                for no, label in enumerate(self._label):
-                    dict_result[label] = prob[no]
-                results.append(dict_result)
+            outputs = []
+            for result in results:
+                outputs.append(
+                    {self._label[i]: result[i] for i in range(len(result))}
+                )
+            return outputs
         else:
-            probs = np.argmax(probs, 1)
-            for prob in probs:
-                results.append(self._label[prob])
-        return results
+            return [
+                self._label[result] for result in np.argmax(results, axis = 1)
+            ]
 
 
 class SIGMOID:
-    def __init__(
-        self,
-        X,
-        logits,
-        sess,
-        mode,
-        dictionary,
-        alphas = None,
-        input_mask = None,
-        segment_ids = None,
-        is_training = None,
-        dropout_keep_prob = None,
-        story = None,
-        maxlen = 80,
-    ):
+    def __init__(self, X, logits, logits_seq, alphas, sess, dictionary):
         self._X = X
         self._logits = logits
-        self._sess = sess
-        self._mode = mode
-        self._dictionary = dictionary
+        self._logits_seq = logits_seq
         self._alphas = alphas
-        self._input_mask = input_mask
-        self._segment_ids = segment_ids
-        self._is_training = is_training
-        self._dropout_keep_prob = dropout_keep_prob
-        self._story = story
-        self._maxlen = maxlen
+        self._sess = sess
+        self._dictionary = dictionary
         self._label = [
             'toxic',
             'severe_toxic',
@@ -628,9 +838,7 @@ class SIGMOID:
             'insult',
             'identity_hate',
         ]
-
-    def get_dictionary(self):
-        return self._dictionary
+        self._class_name = 'toxicity'
 
     def predict(self, string, get_proba = False):
         """
@@ -646,54 +854,93 @@ class SIGMOID:
         """
         if not isinstance(string, str):
             raise ValueError('input must be a string')
-        string = _classification_textcleaning_stemmer(string, attention = True)
-        splitted = string[1].split()
-        if self._mode in ['entity-network', 'bert']:
-            batch_x = str_idx(
-                [string[0]], self._dictionary, self._maxlen, UNK = 3
-            )
-        else:
-            batch_x = str_idx(
-                [string[0]], self._dictionary, len(splitted), UNK = 3
-            )
-        if self._mode in ['luong', 'bahdanau', 'hierarchical']:
-            probs, alphas = self._sess.run(
-                [tf.nn.sigmoid(self._logits), self._alphas],
-                feed_dict = {self._X: batch_x},
-            )
-            if self._mode == 'hierarchical':
-                alphas = alphas[0]
-            words = []
-            for i in range(alphas.shape[0]):
-                words.append([splitted[i], alphas[i]])
-        if self._mode in ['fast-text']:
-            probs = self._sess.run(
-                tf.nn.softmax(self._logits), feed_dict = {self._X: batch_x}
-            )
-        if self._mode == 'entity-network':
-            batch_x_expand = np.expand_dims(batch_x, axis = 1)
-            probs = self._sess.run(
-                tf.nn.softmax(self._logits),
-                feed_dict = {
-                    self._X: batch_x,
-                    self._story: batch_x_expand,
-                    self._dropout_keep_prob: 1.0,
-                },
-            )
+        if not isinstance(get_proba, bool):
+            raise ValueError('get_proba must be a boolean')
+
+        tokenized_indices, splitted = preprocessing_classification_index(string)
+        batch_x = str_idx(
+            [' '.join(splitted)], self._dictionary, len(splitted), UNK = 3
+        )
+        result, alphas = self._sess.run(
+            [tf.nn.sigmoid(self._logits), self._alphas],
+            feed_dict = {self._X: batch_x},
+        )
+        result = result[0]
+
         if get_proba:
-            dict_result = {}
-            for no, label in enumerate(self._label):
-                dict_result[label] = probs[0, no]
-            if self._mode in ['luong', 'bahdanau', 'hierarchical']:
-                dict_result['attention'] = words
+            dict_result = {
+                label: result[no] for no, label in enumerate(self._label)
+            }
+            dict_result['attention'] = {
+                k: alphas[v] if v > -1 else 0.0
+                for k, v in tokenized_indices.items()
+            }
             return dict_result
         else:
-            result = []
-            probs = np.around(probs[0])
-            for no, label in enumerate(self._label):
-                if probs[no]:
-                    result.append(label)
-            return result
+            probs = np.around(result)
+            return [label for no, label in enumerate(self._label) if probs[no]]
+
+    def predict_words(self, string, visualization = True):
+        """
+        classify words.
+
+        Parameters
+        ----------
+        string : str
+        visualization: bool, optional (default=True)
+            If True, it will open the visualization dashboard.
+
+        Returns
+        -------
+        dictionary: results
+        """
+
+        if not isinstance(string, str):
+            raise ValueError('input must be a string')
+        if not isinstance(visualization, bool):
+            raise ValueError('visualization must be a boolean')
+
+        tokenized_indices, splitted = preprocessing_classification_index(string)
+        batch_x = str_idx(
+            [' '.join(splitted)], self._dictionary, len(splitted), UNK = 3
+        )
+        result, alphas, words = self._sess.run(
+            [
+                tf.nn.sigmoid(self._logits),
+                self._alphas,
+                tf.nn.sigmoid(self._logits_seq),
+            ],
+            feed_dict = {self._X: batch_x},
+        )
+        result = result[0]
+        words = words[0]
+        distribution_words = words[:, np.argmax(words.sum(axis = 0))]
+        y_histogram, x_histogram = np.histogram(
+            distribution_words, bins = np.arange(0, 1, 0.05)
+        )
+        y_histogram = y_histogram / y_histogram.sum()
+        x_attention = np.arange(len(alphas))
+        neutral_word = [0.0 for _ in range(len(self._label))]
+        around_words = np.around(words)
+        y_barplot = np.sum(around_words, axis = 0).tolist()
+
+        dict_result = {self._label[i]: result[i] for i in range(len(result))}
+        dict_result['alphas'] = {
+            k: alphas[v] if v > -1 else 0.0
+            for k, v in tokenized_indices.items()
+        }
+        dict_result['word'] = {
+            k: words[v] if v > -1 else neutral_word
+            for k, v in tokenized_indices.items()
+        }
+        dict_result['histogram'] = {'x': x_histogram, 'y': y_histogram}
+        dict_result['attention'] = {'x': x_attention, 'y': alphas}
+        dict_result['barplot'] = {'x': self._label, 'y': y_barplot}
+        dict_result['class_name'] = self._class_name
+        if visualization:
+            _render_toxic(dict_result)
+        else:
+            return dict_result
 
     def predict_batch(self, strings, get_proba = False):
         """
@@ -711,29 +958,16 @@ class SIGMOID:
             raise ValueError('input must be a list')
         if not isinstance(strings[0], str):
             raise ValueError('input must be list of strings')
+        if not isinstance(get_proba, bool):
+            raise ValueError('get_proba must be a boolean')
         strings = [
-            _classification_textcleaning_stemmer(i, attention = True)[0]
-            for i in strings
+            ' '.join(preprocessing_classification_index(i)[1]) for i in strings
         ]
         maxlen = max([len(i.split()) for i in strings])
-        if self._mode in ['entity-network']:
-            batch_x = str_idx(strings, self._dictionary, self._maxlen, UNK = 3)
-        else:
-            batch_x = str_idx(strings, self._dictionary, maxlen, UNK = 3)
-        if self._mode not in ['entity-network']:
-            probs = self._sess.run(
-                tf.nn.sigmoid(self._logits), feed_dict = {self._X: batch_x}
-            )
-        if self._mode == 'entity-network':
-            batch_x_expand = np.expand_dims(batch_x, axis = 1)
-            probs = self._sess.run(
-                tf.nn.sigmoid(self._logits),
-                feed_dict = {
-                    self._X: batch_x,
-                    self._story: batch_x_expand,
-                    self._dropout_keep_prob: 1.0,
-                },
-            )
+        batch_x = str_idx(strings, self._dictionary, maxlen, UNK = 3)
+        probs = self._sess.run(
+            tf.nn.sigmoid(self._logits), feed_dict = {self._X: batch_x}
+        )
         results = []
         if get_proba:
             for prob in probs:
@@ -749,7 +983,6 @@ class SIGMOID:
                     if prob[no]:
                         list_result.append(label)
                 results.append(list_result)
-
         return results
 
 

@@ -8,6 +8,7 @@ from ..texts._text_functions import (
     entities_textcleaning,
     language_detection_textcleaning,
 )
+from .._utils._utils import add_neutral as neutral
 from .._utils._parse_dependency import DependencyGraph
 from ..texts.vectorizer import features_crf, features_crf_dependency
 
@@ -195,12 +196,211 @@ class DEPENDENCY:
         )
 
 
-class USER_XGB:
+class XGB:
     def __init__(self, xgb, label, vectorize, cleaning = simple_textcleaning):
-        self.xgb = xgb
-        self.label = label
-        self.vectorize = vectorize
+        self._xgb = xgb
+        self._label = label
+        self._vectorize = vectorize
         self._cleaning = cleaning
+
+
+class BAYES:
+    def __init__(
+        self, multinomial, label, vectorize, cleaning = simple_textcleaning
+    ):
+        self._multinomial = multinomial
+        self._label = label
+        self._vectorize = vectorize
+        self._cleaning = cleaning
+
+
+class BINARY_XGB(XGB):
+    def __init__(self, xgb, label, vectorize, cleaning = simple_textcleaning):
+        XGB.__init__(self, xgb, label, vectorize, cleaning)
+
+    def predict(self, string, get_proba = False, add_neutral = True):
+        """
+        Classify a string
+
+        Parameters
+        ----------
+        string : str
+        get_proba: bool, optional (default=False)
+            If True, it will return probability of classes.
+        add_neutral: bool, optional (default=True)
+            if True, it will add neutral probability.
+
+
+        Returns
+        -------
+        string: result
+        """
+        if not isinstance(string, str):
+            raise ValueError('input must be a string')
+        if not isinstance(get_proba, bool):
+            raise ValueError('get_proba must be a boolean')
+        if not isinstance(add_neutral, bool):
+            raise ValueError('add_neutral must be a boolean')
+
+        if add_neutral:
+            label = self._label + ['neutral']
+        else:
+            label = self._label
+
+        vectors = self._vectorize.transform([self._cleaning(string)])
+        result = self._xgb.predict(
+            xgb.DMatrix(vectors), ntree_limit = self._xgb.best_ntree_limit
+        )
+        if add_neutral:
+            result = neutral(result)
+        result = result[0]
+        if get_proba:
+            return {label[i]: result[i] for i in range(len(result))}
+        else:
+            return label[np.argmax(result)]
+
+    def predict_batch(self, strings, get_proba = False, add_neutral = True):
+        """
+        Classify a list of strings
+
+        Parameters
+        ----------
+        strings: list
+        get_proba: bool, optional (default=False)
+            If True, it will return probability of classes.
+        add_neutral: bool, optional (default=True)
+            if True, it will add neutral probability.
+
+        Returns
+        -------
+        string: list of results
+        """
+        if not isinstance(strings, list):
+            raise ValueError('input must be a list')
+        if not isinstance(strings[0], str):
+            raise ValueError('input must be list of strings')
+        if not isinstance(get_proba, bool):
+            raise ValueError('get_proba must be a boolean')
+        if not isinstance(add_neutral, bool):
+            raise ValueError('add_neutral must be a boolean')
+
+        if add_neutral:
+            label = self._label + ['neutral']
+        else:
+            label = self._label
+
+        strings = [self._cleaning(string) for string in strings]
+        vectors = self._vectorize.transform(strings)
+        results = self._xgb.predict(
+            xgb.DMatrix(vectors), ntree_limit = self._xgb.best_ntree_limit
+        )
+        if add_neutral:
+            results = neutral(results)
+        if get_proba:
+            outputs = []
+            for result in results:
+                outputs.append(
+                    {label[i]: result[i] for i in range(len(result))}
+                )
+            return outputs
+        else:
+            return [label[i] for i in np.argmax(results, axis = 1)]
+
+
+class BINARY_BAYES(BAYES):
+    def __init__(
+        self, multinomial, label, vectorize, cleaning = simple_textcleaning
+    ):
+        BAYES.__init__(self, multinomial, label, vectorize, cleaning)
+
+    def predict(self, string, get_proba = False, add_neutral = True):
+        """
+        Classify a string
+
+        Parameters
+        ----------
+        string : str
+        get_proba: bool, optional (default=False)
+            If True, it will return probability of classes.
+        add_neutral: bool, optional (default=True)
+            if True, it will add neutral probability.
+
+        Returns
+        -------
+        string: result
+        """
+        if not isinstance(string, str):
+            raise ValueError('input must be a string')
+        if not isinstance(get_proba, bool):
+            raise ValueError('get_proba must be a boolean')
+        if not isinstance(add_neutral, bool):
+            raise ValueError('add_neutral must be a boolean')
+
+        if add_neutral:
+            label = self._label + ['neutral']
+        else:
+            label = self._label
+        vectors = self._vectorize.transform([self._cleaning(string)])
+        result = self._multinomial.predict_proba(vectors)
+        if add_neutral:
+            result = neutral(result)
+        result = result[0]
+        if get_proba:
+            return {label[i]: result[i] for i in range(len(result))}
+        else:
+            return label[np.argmax(result)]
+
+    def predict_batch(self, strings, get_proba = False, add_neutral = True):
+        """
+        Classify a list of strings
+
+        Parameters
+        ----------
+        strings: list
+        get_proba: bool, optional (default=False)
+            If True, it will return probability of classes.
+        add_neutral: bool, optional (default=True)
+            if True, it will add neutral probability.
+
+        Returns
+        -------
+        string: list of results
+        """
+        if not isinstance(strings, list):
+            raise ValueError('input must be a list')
+        if not isinstance(strings[0], str):
+            raise ValueError('input must be list of strings')
+        if not isinstance(get_proba, bool):
+            raise ValueError('get_proba must be a boolean')
+        if not isinstance(add_neutral, bool):
+            raise ValueError('add_neutral must be a boolean')
+
+        if add_neutral:
+            label = self._label + ['neutral']
+        else:
+            label = self._label
+
+        strings = [self._cleaning(string) for string in strings]
+        vectors = self._vectorize.transform(strings)
+        results = self._multinomial.predict_proba(vectors)
+
+        if add_neutral:
+            results = neutral(results)
+
+        if get_proba:
+            outputs = []
+            for result in results:
+                outputs.append(
+                    {label[i]: result[i] for i in range(len(result))}
+                )
+            return outputs
+        else:
+            return [label[result] for result in np.argmax(results, axis = 1)]
+
+
+class MULTICLASS_XGB(XGB):
+    def __init__(self, xgb, label, vectorize, cleaning = simple_textcleaning):
+        XGB.__init__(self, xgb, label, vectorize, cleaning)
 
     def predict(self, string, get_proba = False):
         """
@@ -218,14 +418,17 @@ class USER_XGB:
         """
         if not isinstance(string, str):
             raise ValueError('input must be a string')
-        vectors = self.vectorize.transform([self._cleaning(string)])
-        result = self.xgb.predict(
-            xgb.DMatrix(vectors), ntree_limit = self.xgb.best_ntree_limit
+        if not isinstance(get_proba, bool):
+            raise ValueError('get_proba must be a boolean')
+
+        vectors = self._vectorize.transform([self._cleaning(string)])
+        result = self._xgb.predict(
+            xgb.DMatrix(vectors), ntree_limit = self._xgb.best_ntree_limit
         )[0]
         if get_proba:
-            return {self.label[i]: result[i] for i in range(len(result))}
+            return {self._label[i]: result[i] for i in range(len(result))}
         else:
-            return self.label[np.argmax(result)]
+            return self._label[np.argmax(result)]
 
     def predict_batch(self, strings, get_proba = False):
         """
@@ -245,30 +448,30 @@ class USER_XGB:
             raise ValueError('input must be a list')
         if not isinstance(strings[0], str):
             raise ValueError('input must be list of strings')
+        if not isinstance(get_proba, bool):
+            raise ValueError('get_proba must be a boolean')
+
         strings = [self._cleaning(string) for string in strings]
-        vectors = self.vectorize.transform(strings)
-        results = self.xgb.predict(
-            xgb.DMatrix(vectors), ntree_limit = self.xgb.best_ntree_limit
+        vectors = self._vectorize.transform(strings)
+        results = self._xgb.predict(
+            xgb.DMatrix(vectors), ntree_limit = self._xgb.best_ntree_limit
         )
         if get_proba:
             outputs = []
             for result in results:
                 outputs.append(
-                    {self.label[i]: result[i] for i in range(len(result))}
+                    {self._label[i]: result[i] for i in range(len(result))}
                 )
             return outputs
         else:
-            return [self.label[i] for i in np.argmax(results, axis = 1)]
+            return [self._label[i] for i in np.argmax(results, axis = 1)]
 
 
-class USER_BAYES:
+class MULTICLASS_BAYES(BAYES):
     def __init__(
         self, multinomial, label, vectorize, cleaning = simple_textcleaning
     ):
-        self.multinomial = multinomial
-        self.label = label
-        self.vectorize = vectorize
-        self._cleaning = cleaning
+        BAYES.__init__(self, multinomial, label, vectorize, cleaning)
 
     def predict(self, string, get_proba = False):
         """
@@ -286,12 +489,15 @@ class USER_BAYES:
         """
         if not isinstance(string, str):
             raise ValueError('input must be a string')
-        vectors = self.vectorize.transform([self._cleaning(string)])
+        if not isinstance(get_proba, bool):
+            raise ValueError('get_proba must be a boolean')
+        vectors = self._vectorize.transform([self._cleaning(string)])
+        result = self._multinomial.predict_proba(vectors)[0]
         if get_proba:
-            result = self.multinomial.predict_proba(vectors)[0]
-            return {self.label[i]: result[i] for i in range(len(result))}
+
+            return {self._label[i]: result[i] for i in range(len(result))}
         else:
-            return self.label[self.multinomial.predict(vectors)[0]]
+            return self._label[np.argmax(result)]
 
     def predict_batch(self, strings, get_proba = False):
         """
@@ -311,20 +517,21 @@ class USER_BAYES:
             raise ValueError('input must be a list')
         if not isinstance(strings[0], str):
             raise ValueError('input must be list of strings')
+        if not isinstance(get_proba, bool):
+            raise ValueError('get_proba must be a boolean')
         strings = [self._cleaning(string) for string in strings]
-        vectors = self.vectorize.transform(strings)
+        vectors = self._vectorize.transform(strings)
+        results = self._multinomial.predict_proba(vectors)
         if get_proba:
-            results = self.multinomial.predict_proba(vectors)
             outputs = []
             for result in results:
                 outputs.append(
-                    {self.label[i]: result[i] for i in range(len(result))}
+                    {self._label[i]: result[i] for i in range(len(result))}
                 )
             return outputs
         else:
             return [
-                self.label[result]
-                for result in self.multinomial.predict(vectors)
+                self._label[result] for result in np.argmax(results, axis = 1)
             ]
 
 

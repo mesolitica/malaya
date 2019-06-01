@@ -23,7 +23,7 @@ def available_deep_model():
     """
     List available deep learning toxicity analysis models.
     """
-    return ['bahdanau', 'hierarchical', 'luong', 'fast-text', 'entity-network']
+    return ['self-attention', 'bahdanau', 'luong']
 
 
 def multinomial(validate = True):
@@ -99,11 +99,9 @@ def deep_model(model = 'luong', validate = True):
     model : str, optional (default='luong')
         Model architecture supported. Allowed values:
 
-        * ``'fast-text'`` - Fast-text architecture, embedded and logits layers only.
-        * ``'hierarchical'`` - LSTM with hierarchical attention architecture.
+        * ``'self-attention'`` - Fast-text architecture, embedded and logits layers only with self attention.
         * ``'bahdanau'`` - LSTM with bahdanau attention architecture.
         * ``'luong'`` - LSTM with luong attention architecture.
-        * ``'entity-network'`` - Recurrent Entity-Network architecture.
     validate: bool, optional (default=True)
         if True, malaya will check model availability and download if not available.
 
@@ -113,86 +111,35 @@ def deep_model(model = 'luong', validate = True):
     """
     if not isinstance(model, str):
         raise ValueError('model must be a string')
+    if not isinstance(validate, bool):
+        raise ValueError('validate must be a boolean')
     model = model.lower()
-    if model == 'fast-text':
-        if validate:
-            check_file(PATH_TOXIC['fast-text'], S3_PATH_TOXIC['fast-text'])
-        else:
-            if not check_available(PATH_TOXIC['fast-text']):
-                raise Exception(
-                    'toxic/fast-text is not available, please `validate = True`'
-                )
-        try:
-            with open(PATH_TOXIC['fast-text']['setting'], 'r') as fopen:
-                dictionary = json.load(fopen)['dictionary']
-            g = load_graph(PATH_TOXIC['fast-text']['model'])
-        except:
-            raise Exception(
-                "model corrupted due to some reasons, please run malaya.clear_cache('toxic/fast-text') and try again"
-            )
-        return SIGMOID(
-            g.get_tensor_by_name('import/Placeholder:0'),
-            g.get_tensor_by_name('import/logits:0'),
-            generate_session(graph = g),
-            model,
-            dictionary,
-        )
-    elif model in ['bahdanau', 'luong', 'hierarchical']:
-        if validate:
-            check_file(PATH_TOXIC[model], S3_PATH_TOXIC[model])
-        else:
-            if not check_available(PATH_TOXIC[model]):
-                raise Exception(
-                    'toxic/%s is not available, please `validate = True`'
-                    % (model)
-                )
-        try:
-            with open(PATH_TOXIC[model]['setting'], 'r') as fopen:
-                dictionary = json.load(fopen)['dictionary']
-            g = load_graph(PATH_TOXIC[model]['model'])
-        except:
-            raise Exception(
-                "model corrupted due to some reasons, please run malaya.clear_cache('toxic/%s') and try again"
-                % (model)
-            )
-        return SIGMOID(
-            g.get_tensor_by_name('import/Placeholder:0'),
-            g.get_tensor_by_name('import/logits:0'),
-            generate_session(graph = g),
-            model,
-            dictionary,
-            alphas = g.get_tensor_by_name('import/alphas:0'),
-        )
-    elif model == 'entity-network':
-        if validate:
-            check_file(
-                PATH_TOXIC['entity-network'], S3_PATH_TOXIC['entity-network']
-            )
-        else:
-            if not check_available(PATH_TOXIC['entity-network']):
-                raise Exception(
-                    'toxic/entity-network is not available, please `validate = True`'
-                )
-        try:
-            with open(PATH_TOXIC['entity-network']['setting'], 'r') as fopen:
-                dictionary = json.load(fopen)
-            g = load_graph(PATH_TOXIC['entity-network']['model'])
-        except:
-            raise Exception(
-                "model corrupted due to some reasons, please run malaya.clear_cache('toxic/entity-network') and try again"
-            )
-        return SIGMOID(
-            g.get_tensor_by_name('import/Placeholder_question:0'),
-            g.get_tensor_by_name('import/logits:0'),
-            generate_session(graph = g),
-            model,
-            dictionary,
-            dropout_keep_prob = g.get_tensor_by_name(
-                'import/Placeholder_dropout_keep_prob:0'
-            ),
-            story = g.get_tensor_by_name('import/Placeholder_story:0'),
-        )
-    else:
+    if model not in available_deep_model():
         raise Exception(
-            'model sentiment not supported, please check supported models from malaya.toxic.available_deep_model()'
+            'model is not supported, please check supported models from malaya.toxic.available_deep_model()'
         )
+    if validate:
+        check_file(PATH_TOXIC[model], S3_PATH_TOXIC[model])
+    else:
+        if not check_available(PATH_TOXIC[model]):
+            raise Exception(
+                'toxic/%s is not available, please `validate = True`' % (model)
+            )
+    try:
+        with open(PATH_TOXIC[model]['setting'], 'r') as fopen:
+            dictionary = json.load(fopen)['dictionary']
+        g = load_graph(PATH_TOXIC[model]['model'])
+    except:
+        raise Exception(
+            "model corrupted due to some reasons, please run malaya.clear_cache('toxic/%s') and try again"
+            % (model)
+        )
+
+    return SIGMOID(
+        g.get_tensor_by_name('import/Placeholder:0'),
+        g.get_tensor_by_name('import/logits:0'),
+        g.get_tensor_by_name('import/logits_seq:0'),
+        g.get_tensor_by_name('import/alphas:0'),
+        generate_session(graph = g),
+        dictionary,
+    )
