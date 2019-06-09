@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 10.1 s, sys: 769 ms, total: 10.9 s
-    Wall time: 11 s
+    CPU times: user 11.6 s, sys: 1.82 s, total: 13.5 s
+    Wall time: 18.9 s
 
 
 .. code:: python
@@ -354,6 +354,85 @@ Predict batch of strings
 
 **You might want to try ``luong`` and ``self-attention`` by yourself.**
 
+BERT model
+----------
+
+BERT is the best emotion model in term of accuracy, you can check
+emotion accuracy here,
+https://malaya.readthedocs.io/en/latest/Accuracy.html#emotion-analysis.
+But warning, the model size is 700MB! Make sure you have enough
+resources to use BERT, and installed ``bert-tensorflow`` first,
+
+.. code:: bash
+
+   pip3 install bert-tensorflow
+
+.. code:: python
+
+    model = malaya.emotion.bert()
+
+
+.. parsed-literal::
+
+    Found old version of /Users/huseinzol/Malaya/emotion/bert, deleting..
+    Done.
+    downloading frozen /Users/huseinzol/Malaya/emotion/bert model
+
+
+.. parsed-literal::
+
+    679MB [03:16, 4.15MB/s]
+
+
+.. code:: python
+
+    model.predict_batch([anger_text, fear_text, joy_text,
+                        love_text, sadness_text, surprise_text],get_proba=True)
+
+
+
+
+.. parsed-literal::
+
+    [{'anger': 0.9999485,
+      'fear': 1.2886733e-06,
+      'joy': 1.7287792e-06,
+      'love': 3.7436587e-06,
+      'sadness': 1.7880977e-05,
+      'surprise': 2.686788e-05},
+     {'anger': 1.8454846e-05,
+      'fear': 0.99995625,
+      'joy': 2.9650246e-06,
+      'love': 4.71849e-06,
+      'sadness': 1.6600319e-06,
+      'surprise': 1.589885e-05},
+     {'anger': 0.99978715,
+      'fear': 7.1328664e-05,
+      'joy': 5.7890197e-06,
+      'love': 8.899679e-05,
+      'sadness': 2.7597041e-05,
+      'surprise': 1.9044655e-05},
+     {'anger': 2.5006243e-06,
+      'fear': 5.8093206e-06,
+      'joy': 9.784282e-06,
+      'love': 0.99997854,
+      'sadness': 2.3261016e-06,
+      'surprise': 9.655737e-07},
+     {'anger': 3.4255984e-06,
+      'fear': 2.749206e-06,
+      'joy': 3.7953735e-06,
+      'love': 2.3650666e-06,
+      'sadness': 0.9999846,
+      'surprise': 3.0500173e-06},
+     {'anger': 2.809836e-05,
+      'fear': 5.081303e-05,
+      'joy': 8.984841e-05,
+      'love': 7.093346e-05,
+      'sadness': 0.5216896,
+      'surprise': 0.4780707}]
+
+
+
 Stacking models
 ---------------
 
@@ -457,7 +536,7 @@ will try to evolve it.
 
 .. parsed-literal::
 
-    ['joy', 'fear', 'sadness', 'love', 'anger', 'surprise']
+    ['anger', 'fear', 'sadness', 'love', 'sadness', 'surprise']
 
 
 
@@ -475,39 +554,39 @@ will try to evolve it.
 
 .. parsed-literal::
 
-    [{'anger': 0.04526143,
-      'fear': 0.09979316,
-      'joy': 0.4658971,
-      'love': 0.020664953,
-      'sadness': 0.30431935,
-      'surprise': 0.064064085},
-     {'anger': 6.130409e-06,
-      'fear': 0.9997508,
-      'joy': 2.2800703e-05,
-      'love': 3.8201404e-07,
-      'sadness': 4.3520595e-06,
-      'surprise': 0.00021553691},
-     {'anger': 0.20740777,
-      'fear': 0.22583336,
-      'joy': 0.017892161,
-      'love': 0.0037904498,
-      'sadness': 0.5115712,
-      'surprise': 0.033505023},
-     {'anger': 5.2901927e-05,
-      'fear': 6.0754595e-05,
-      'joy': 1.1822221e-05,
-      'love': 0.9991229,
-      'sadness': 0.00072059815,
-      'surprise': 3.093863e-05},
-     {'anger': 0.48188186,
-      'fear': 0.33322,
-      'joy': 0.018766977,
-      'love': 0.00092354603,
-      'sadness': 0.078747146,
-      'surprise': 0.086460434},
-     {'anger': 0.007138084,
-      'fear': 0.2971508,
-      'joy': 0.0024597635,
-      'love': 0.00037835565,
-      'sadness': 0.031262815,
-      'surprise': 0.6616101}]
+    [{'anger': 0.99211264,
+      'fear': 0.0006620438,
+      'joy': 0.0008977092,
+      'love': 0.0007345874,
+      'sadness': 0.0035367897,
+      'surprise': 0.0020561765},
+     {'anger': 1.8163704e-05,
+      'fear': 0.99986744,
+      'joy': 2.1229657e-06,
+      'love': 4.130881e-07,
+      'sadness': 3.6630227e-05,
+      'surprise': 7.533321e-05},
+     {'anger': 0.108559996,
+      'fear': 0.05348674,
+      'joy': 0.19325227,
+      'love': 0.079491615,
+      'sadness': 0.4394848,
+      'surprise': 0.12572463},
+     {'anger': 9.0282465e-06,
+      'fear': 1.1949491e-07,
+      'joy': 7.709732e-07,
+      'love': 0.9999875,
+      'sadness': 1.9804943e-06,
+      'surprise': 6.5342414e-07},
+     {'anger': 0.11394376,
+      'fear': 0.0059813196,
+      'joy': 0.006003396,
+      'love': 0.0015166105,
+      'sadness': 0.8126639,
+      'surprise': 0.059890967},
+     {'anger': 8.947135e-10,
+      'fear': 1.11517565e-07,
+      'joy': 1.830734e-10,
+      'love': 5.1546017e-11,
+      'sadness': 2.1780943e-05,
+      'surprise': 0.99997807}]

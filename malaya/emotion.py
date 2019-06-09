@@ -133,3 +133,27 @@ def xgb(validate = True):
         _emotion_label,
         validate = validate,
     )
+
+
+def bert(validate = True):
+    """
+    Load BERT emotion model.
+
+    Parameters
+    ----------
+    validate: bool, optional (default=True)
+        if True, malaya will check model availability and download if not available.
+
+    Returns
+    -------
+    XGB : malaya._models._tensorflow_model.MULTICLASS_BERT class
+    """
+    if not isinstance(validate, bool):
+        raise ValueError('validate must be a boolean')
+    return _softmax_class.bert(
+        PATH_EMOTION,
+        S3_PATH_EMOTION,
+        'sentiment',
+        _emotion_label,
+        validate = validate,
+    )

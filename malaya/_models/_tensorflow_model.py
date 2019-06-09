@@ -12,6 +12,8 @@ from ..texts._text_functions import (
     char_str_idx,
     generate_char_seq,
     language_detection_textcleaning,
+    tag_chunk,
+    bert_tokenization,
 )
 from .._utils._parse_dependency import DependencyGraph
 from ..preprocessing import preprocessing_classification_index
@@ -87,7 +89,7 @@ class DEPENDENCY:
 
     def print_transitions_tag(self, top_k = 10):
         """
-        Print important top-k transitions for tagging dependency
+        Print important top-k transitions for tagging dependency.
 
         Parameters
         ----------
@@ -127,7 +129,7 @@ class DEPENDENCY:
 
     def print_transitions_index(self, top_k = 10):
         """
-        Print important top-k transitions for indexing dependency
+        Print important top-k transitions for indexing dependency.
 
         Parameters
         ----------
@@ -168,7 +170,7 @@ class DEPENDENCY:
 
     def print_features(self, top_k = 10):
         """
-        Print important top-k features
+        Print important top-k features.
 
         Parameters
         ----------
@@ -201,7 +203,7 @@ class DEPENDENCY:
 
     def predict(self, string):
         """
-        Tagging a string.
+        Tag a string.
 
         Parameters
         ----------
@@ -313,7 +315,7 @@ class TAGGING:
 
     def print_transitions(self, top_k = 10):
         """
-        Print important top-k transitions
+        Print important top-k transitions.
 
         Parameters
         ----------
@@ -353,7 +355,7 @@ class TAGGING:
 
     def print_features(self, top_k = 10):
         """
-        Print important top-k features
+        Print important top-k features.
 
         Parameters
         ----------
@@ -384,9 +386,24 @@ class TAGGING:
                 )
             )
 
+    def analyze(self, string):
+        """
+        Analyze a string.
+
+        Parameters
+        ----------
+        string : str
+
+        Returns
+        -------
+        string: analyzed string
+        """
+        predicted = self.predict(string)
+        return tag_chunk(predicted)
+
     def predict(self, string):
         """
-        Tagging a string.
+        Tag a string.
 
         Parameters
         ----------
@@ -424,6 +441,372 @@ class TAGGING:
             (original_string[i], self._settings['idx2tag'][predicted[i]])
             for i in range(len(predicted))
         ]
+
+
+class BERT:
+    def __init__(
+        self,
+        X,
+        segment_ids,
+        input_masks,
+        logits,
+        sess,
+        tokenizer,
+        maxlen,
+        label = ['negative', 'positive'],
+    ):
+        self._X = X
+        self._segment_ids = segment_ids
+        self._input_masks = input_masks
+        self._logits = logits
+        self._sess = sess
+        self._tokenizer = tokenizer
+        self._maxlen = maxlen
+        self._label = label
+
+
+class BINARY_BERT(BERT):
+    def __init__(
+        self,
+        X,
+        segment_ids,
+        input_masks,
+        logits,
+        sess,
+        tokenizer,
+        maxlen,
+        label = ['negative', 'positive'],
+    ):
+        BERT.__init__(
+            self,
+            X,
+            segment_ids,
+            input_masks,
+            logits,
+            sess,
+            tokenizer,
+            maxlen,
+            label,
+        )
+
+    def predict(self, string, get_proba = False, add_neutral = True):
+        """
+        classify a string.
+
+        Parameters
+        ----------
+        string : str
+        get_proba: bool, optional (default=False)
+            If True, it will return probability of classes.
+        add_neutral: bool, optional (default=True)
+            if True, it will add neutral probability.
+
+        Returns
+        -------
+        dictionary: results
+        """
+        if not isinstance(string, str):
+            raise ValueError('input must be a string')
+        if not isinstance(get_proba, bool):
+            raise ValueError('get_proba must be a boolean')
+        if not isinstance(add_neutral, bool):
+            raise ValueError('add_neutral must be a boolean')
+
+        if add_neutral:
+            label = self._label + ['neutral']
+        else:
+            label = self._label
+
+        input_ids, input_masks, segment_ids = bert_tokenization(
+            self._tokenizer, [string], self._maxlen
+        )
+
+        result = self._sess.run(
+            tf.nn.softmax(self._logits),
+            feed_dict = {
+                self._X: input_ids,
+                self._segment_ids: segment_ids,
+                self._input_masks: input_masks,
+            },
+        )
+        if add_neutral:
+            result = neutral(result)
+        result = result[0]
+        if get_proba:
+            return {label[i]: result[i] for i in range(len(result))}
+        else:
+            return label[np.argmax(result)]
+
+    def predict_batch(self, strings, get_proba = False, add_neutral = True):
+        """
+        classify list of strings.
+
+        Parameters
+        ----------
+        strings : list
+        get_proba: bool, optional (default=False)
+            If True, it will return probability of classes.
+        add_neutral: bool, optional (default=True)
+            if True, it will add neutral probability.
+
+        Returns
+        -------
+        list_dictionaries: list of results
+        """
+        if not isinstance(strings, list):
+            raise ValueError('input must be a list')
+        if not isinstance(get_proba, bool):
+            raise ValueError('get_proba must be a boolean')
+        if not isinstance(add_neutral, bool):
+            raise ValueError('add_neutral must be a boolean')
+
+        if add_neutral:
+            label = self._label + ['neutral']
+        else:
+            label = self._label
+
+        input_ids, input_masks, segment_ids = bert_tokenization(
+            self._tokenizer, strings, self._maxlen
+        )
+        results = self._sess.run(
+            tf.nn.softmax(self._logits),
+            feed_dict = {
+                self._X: input_ids,
+                self._segment_ids: segment_ids,
+                self._input_masks: input_masks,
+            },
+        )
+        if add_neutral:
+            results = neutral(results)
+
+        if get_proba:
+            outputs = []
+            for result in results:
+                outputs.append(
+                    {label[i]: result[i] for i in range(len(result))}
+                )
+            return outputs
+        else:
+            return [label[result] for result in np.argmax(results, axis = 1)]
+
+
+class MULTICLASS_BERT(BERT):
+    def __init__(
+        self,
+        X,
+        segment_ids,
+        input_masks,
+        logits,
+        sess,
+        tokenizer,
+        maxlen,
+        label = ['negative', 'positive'],
+    ):
+        BERT.__init__(
+            self,
+            X,
+            segment_ids,
+            input_masks,
+            logits,
+            sess,
+            tokenizer,
+            maxlen,
+            label,
+        )
+
+    def predict(self, string, get_proba = False):
+        """
+        classify a string.
+
+        Parameters
+        ----------
+        string : str
+        get_proba: bool, optional (default=False)
+            If True, it will return probability of classes.
+        add_neutral: bool, optional (default=True)
+            if True, it will add neutral probability.
+
+        Returns
+        -------
+        dictionary: results
+        """
+        if not isinstance(string, str):
+            raise ValueError('input must be a string')
+        if not isinstance(get_proba, bool):
+            raise ValueError('get_proba must be a boolean')
+
+        input_ids, input_masks, segment_ids = bert_tokenization(
+            self._tokenizer, [string], self._maxlen
+        )
+
+        result = self._sess.run(
+            tf.nn.softmax(self._logits),
+            feed_dict = {
+                self._X: input_ids,
+                self._segment_ids: segment_ids,
+                self._input_masks: input_masks,
+            },
+        )
+        result = result[0]
+        if get_proba:
+            return {self._label[i]: result[i] for i in range(len(result))}
+        else:
+            return self._label[np.argmax(result)]
+
+    def predict_batch(self, strings, get_proba = False):
+        """
+        classify list of strings.
+
+        Parameters
+        ----------
+        strings : list
+        get_proba: bool, optional (default=False)
+            If True, it will return probability of classes.
+
+        Returns
+        -------
+        list_dictionaries: list of results
+        """
+        if not isinstance(strings, list):
+            raise ValueError('input must be a list')
+        if not isinstance(get_proba, bool):
+            raise ValueError('get_proba must be a boolean')
+
+        input_ids, input_masks, segment_ids = bert_tokenization(
+            self._tokenizer, strings, self._maxlen
+        )
+        results = self._sess.run(
+            tf.nn.softmax(self._logits),
+            feed_dict = {
+                self._X: input_ids,
+                self._segment_ids: segment_ids,
+                self._input_masks: input_masks,
+            },
+        )
+
+        if get_proba:
+            outputs = []
+            for result in results:
+                outputs.append(
+                    {self._label[i]: result[i] for i in range(len(result))}
+                )
+            return outputs
+        else:
+            return [
+                self._label[result] for result in np.argmax(results, axis = 1)
+            ]
+
+
+class SIGMOID_BERT(BERT):
+    def __init__(
+        self,
+        X,
+        segment_ids,
+        input_masks,
+        logits,
+        sess,
+        tokenizer,
+        maxlen,
+        label = ['negative', 'positive'],
+    ):
+        BERT.__init__(
+            self,
+            X,
+            segment_ids,
+            input_masks,
+            logits,
+            sess,
+            tokenizer,
+            maxlen,
+            label,
+        )
+
+    def predict(self, string, get_proba = False):
+        """
+        classify a string.
+
+        Parameters
+        ----------
+        string : str
+        get_proba: bool, optional (default=False)
+            If True, it will return probability of classes.
+        add_neutral: bool, optional (default=True)
+            if True, it will add neutral probability.
+
+        Returns
+        -------
+        dictionary: results
+        """
+        if not isinstance(string, str):
+            raise ValueError('input must be a string')
+        if not isinstance(get_proba, bool):
+            raise ValueError('get_proba must be a boolean')
+
+        input_ids, input_masks, segment_ids = bert_tokenization(
+            self._tokenizer, [string], self._maxlen
+        )
+
+        result = self._sess.run(
+            tf.nn.sigmoid(self._logits),
+            feed_dict = {
+                self._X: input_ids,
+                self._segment_ids: segment_ids,
+                self._input_masks: input_masks,
+            },
+        )
+        result = result[0]
+        if get_proba:
+            return {self._label[i]: result[i] for i in range(len(result))}
+        else:
+            probs = np.around(result)
+            return [label for no, label in enumerate(self._label) if probs[no]]
+
+    def predict_batch(self, strings, get_proba = False):
+        """
+        classify list of strings.
+
+        Parameters
+        ----------
+        strings : list
+        get_proba: bool, optional (default=False)
+            If True, it will return probability of classes.
+
+        Returns
+        -------
+        list_dictionaries: list of results
+        """
+        if not isinstance(strings, list):
+            raise ValueError('input must be a list')
+        if not isinstance(get_proba, bool):
+            raise ValueError('get_proba must be a boolean')
+
+        input_ids, input_masks, segment_ids = bert_tokenization(
+            self._tokenizer, strings, self._maxlen
+        )
+        probs = self._sess.run(
+            tf.nn.sigmoid(self._logits),
+            feed_dict = {
+                self._X: input_ids,
+                self._segment_ids: segment_ids,
+                self._input_masks: input_masks,
+            },
+        )
+        results = []
+        if get_proba:
+            for prob in probs:
+                dict_result = {}
+                for no, label in enumerate(self._label):
+                    dict_result[label] = prob[no]
+                results.append(dict_result)
+        else:
+            probs = np.around(probs)
+            for prob in probs:
+                list_result = []
+                for no, label in enumerate(self._label):
+                    if prob[no]:
+                        list_result.append(label)
+                results.append(list_result)
+        return results
 
 
 class SOFTMAX:
@@ -598,7 +981,7 @@ class BINARY_SOFTMAX(SOFTMAX):
 
     def predict_batch(self, strings, get_proba = False, add_neutral = True):
         """
-        classify list of strings
+        classify list of strings.
 
         Parameters
         ----------
@@ -783,7 +1166,7 @@ class MULTICLASS_SOFTMAX(SOFTMAX):
 
     def predict_batch(self, strings, get_proba = False):
         """
-        classify list of strings
+        classify list of strings.
 
         Parameters
         ----------
@@ -944,7 +1327,7 @@ class SIGMOID:
 
     def predict_batch(self, strings, get_proba = False):
         """
-        classify list of strings
+        classify list of strings.
 
         Parameters
         ----------
@@ -1012,6 +1395,9 @@ class DEEP_LANG:
         """
         if not isinstance(string, str):
             raise ValueError('input must be a string')
+        if not isinstance(get_proba, bool):
+            raise ValueError('get_proba must be a boolean')
+
         string = language_detection_textcleaning(string)
         transformed = self._vectorizer.transform([string])
         batch_x = _convert_sparse_matrix_to_sparse_tensor(transformed)
@@ -1040,6 +1426,9 @@ class DEEP_LANG:
             raise ValueError('input must be a list')
         if not isinstance(strings[0], str):
             raise ValueError('input must be list of strings')
+        if not isinstance(get_proba, bool):
+            raise ValueError('get_proba must be a boolean')
+
         strings = [language_detection_textcleaning(i) for i in strings]
         transformed = self._vectorizer.transform(strings)
         batch_x = _convert_sparse_matrix_to_sparse_tensor(transformed)
@@ -1090,9 +1479,9 @@ class SPARSE_SOFTMAX:
         """
         if not isinstance(string, str):
             raise ValueError('input must be a string')
-        string = _classification_textcleaning_stemmer(string, attention = True)[
-            0
-        ]
+        if not isinstance(get_proba, bool):
+            raise ValueError('get_proba must be a boolean')
+        string = ' '.join(preprocessing_classification_index(string)[1])
         transformed = self._vectorizer.transform([string])
         batch_x = _convert_sparse_matrix_to_sparse_tensor(
             transformed, got_limit = False
@@ -1122,9 +1511,10 @@ class SPARSE_SOFTMAX:
             raise ValueError('input must be a list')
         if not isinstance(strings[0], str):
             raise ValueError('input must be list of strings')
+        if not isinstance(get_proba, bool):
+            raise ValueError('get_proba must be a boolean')
         strings = [
-            _classification_textcleaning_stemmer(i, attention = True)[0]
-            for i in strings
+            ' '.join(preprocessing_classification_index(i)[1]) for i in strings
         ]
         transformed = self._vectorizer.transform(strings)
         batch_x = _convert_sparse_matrix_to_sparse_tensor(
@@ -1145,3 +1535,101 @@ class SPARSE_SOFTMAX:
             for prob in probs:
                 dicts.append(self._label[prob])
         return dicts
+
+
+class SPARSE_SIGMOID:
+    def __init__(
+        self, path, vectorizer, label, output_size, embedded_size, vocab_size
+    ):
+        self._graph = tf.Graph()
+        with self._graph.as_default():
+            self._model = _SPARSE_SOFTMAX_MODEL(
+                output_size, embedded_size, vocab_size
+            )
+            self._sess = tf.InteractiveSession()
+            self._sess.run(tf.global_variables_initializer())
+            saver = tf.train.Saver(tf.trainable_variables())
+            saver.restore(self._sess, path + '/model.ckpt')
+        self._vectorizer = vectorizer
+        self._label = label
+
+    def predict(self, string, get_proba = False):
+        """
+        classify a string.
+
+        Parameters
+        ----------
+        string : str
+
+        Returns
+        -------
+        dictionary: results
+        """
+        if not isinstance(string, str):
+            raise ValueError('input must be a string')
+        if not isinstance(get_proba, bool):
+            raise ValueError('get_proba must be a boolean')
+        string = ' '.join(preprocessing_classification_index(string)[1])
+        transformed = self._vectorizer.transform([string])
+        batch_x = _convert_sparse_matrix_to_sparse_tensor(
+            transformed, got_limit = False
+        )
+        result = self._sess.run(
+            tf.nn.sigmoid(self._model.logits),
+            feed_dict = {self._model.X: batch_x[0], self._model.W: batch_x[1]},
+        )
+
+        result = result[0]
+
+        if get_proba:
+            return {label: result[no] for no, label in enumerate(self._label)}
+        else:
+            probs = np.around(result)
+            return [label for no, label in enumerate(self._label) if probs[no]]
+
+    def predict_batch(self, strings, get_proba = False):
+        """
+        classify list of strings
+
+        Parameters
+        ----------
+        strings : list
+
+        Returns
+        -------
+        list_dictionaries: list of results
+        """
+        if not isinstance(strings, list):
+            raise ValueError('input must be a list')
+        if not isinstance(strings[0], str):
+            raise ValueError('input must be list of strings')
+        if not isinstance(get_proba, bool):
+            raise ValueError('get_proba must be a boolean')
+        strings = [
+            ' '.join(preprocessing_classification_index(i)[1]) for i in strings
+        ]
+        transformed = self._vectorizer.transform(strings)
+        batch_x = _convert_sparse_matrix_to_sparse_tensor(
+            transformed, got_limit = False
+        )
+        probs = self._sess.run(
+            tf.nn.sigmoid(self._model.logits),
+            feed_dict = {self._model.X: batch_x[0], self._model.W: batch_x[1]},
+        )
+
+        results = []
+        if get_proba:
+            for prob in probs:
+                dict_result = {}
+                for no, label in enumerate(self._label):
+                    dict_result[label] = prob[no]
+                results.append(dict_result)
+        else:
+            probs = np.around(probs)
+            for prob in probs:
+                list_result = []
+                for no, label in enumerate(self._label):
+                    if prob[no]:
+                        list_result.append(label)
+                results.append(list_result)
+        return results

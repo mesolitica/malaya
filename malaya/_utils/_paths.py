@@ -129,6 +129,18 @@ PATH_TOXIC = {
         'setting': home + '/toxic/toxicity-dictionary.json',
         'version': 'v24',
     },
+    'fast-text-char': {
+        'model': home + '/toxic/fast-text-char/model.ckpt.data-00000-of-00001',
+        'index': home + '/toxic/fast-text-char/model.ckpt.index',
+        'meta': home + '/toxic/fast-text-char/model.ckpt.meta',
+        'vector': home + '/toxic/fast-text-char/vectorizer-sparse-toxicity.pkl',
+        'version': 'v24',
+    },
+    'bert': {
+        'model': home + '/toxic/bert/bert-toxic.pb',
+        'vocab': home + '/bert/multilanguage-vocab.txt',
+        'version': 'v24',
+    },
 }
 
 S3_PATH_TOXIC = {
@@ -151,6 +163,16 @@ S3_PATH_TOXIC = {
     'self-attention': {
         'model': 'v24/toxicity/self-attention-toxic.pb',
         'setting': 'v24/toxicity/toxicity-dictionary.json',
+    },
+    'fast-text-char': {
+        'model': 'v24/toxicity/model.ckpt.data-00000-of-00001',
+        'index': 'v24/toxicity/model.ckpt.index',
+        'meta': 'v24/toxicity/model.ckpt.meta',
+        'vector': 'v24/toxicity/vectorizer-sparse-toxicity.pkl',
+    },
+    'bert': {
+        'model': 'v24/toxicity/bert-toxic.pb',
+        'vocab': 'v24/multilanguage-vocab.txt',
     },
 }
 
@@ -403,7 +425,12 @@ PATH_SENTIMENT = {
         'meta': home + '/sentiment/fast-text-char/model.ckpt.meta',
         'vector': home
         + '/sentiment/fast-text-char/vectorizer-sparse-sentiment.pkl',
-        'version': 'v17',
+        'version': 'v24',
+    },
+    'bert': {
+        'model': home + '/sentiment/bert/bert-sentiment.pb',
+        'vocab': home + '/bert/multilanguage-vocab.txt',
+        'version': 'v24',
     },
 }
 
@@ -429,10 +456,14 @@ S3_PATH_SENTIMENT = {
         'vector': 'v17/sentiment/xgboost-sentiment-tfidf.pkl',
     },
     'fast-text-char': {
-        'model': 'v17/sentiment/model.ckpt.data-00000-of-00001',
-        'index': 'v17/sentiment/model.ckpt.index',
-        'meta': 'v17/sentiment/model.ckpt.meta',
-        'vector': 'v17/sentiment/vectorizer-sparse-sentiment.pkl',
+        'model': 'v24/sentiment/model.ckpt.data-00000-of-00001',
+        'index': 'v24/sentiment/model.ckpt.index',
+        'meta': 'v24/sentiment/model.ckpt.meta',
+        'vector': 'v24/sentiment/vectorizer-sparse-sentiment.pkl',
+    },
+    'bert': {
+        'model': 'v24/sentiment/bert-sentiment.pb',
+        'vocab': 'v24/multilanguage-vocab.txt',
     },
 }
 
@@ -472,6 +503,11 @@ PATH_SUBJECTIVE = {
         + '/subjective/fast-text-char/vectorizer-sparse-subjective.pkl',
         'version': 'v17',
     },
+    'bert': {
+        'model': home + '/subjective/bert/bert-subjective.pb',
+        'vocab': home + '/bert/multilanguage-vocab.txt',
+        'version': 'v24',
+    },
 }
 
 S3_PATH_SUBJECTIVE = {
@@ -501,6 +537,10 @@ S3_PATH_SUBJECTIVE = {
         'meta': 'v17/subjective/model.ckpt.meta',
         'vector': 'v17/subjective/vectorizer-sparse-subjective.pkl',
     },
+    'bert': {
+        'model': 'v24/subjective/bert-subjective.pb',
+        'vocab': 'v24/multilanguage-vocab.txt',
+    },
 }
 
 PATH_EMOTION = {
@@ -522,12 +562,12 @@ PATH_EMOTION = {
     'multinomial': {
         'model': home + '/emotion/multinomial/multinomial-emotion.pkl',
         'vector': home + '/emotion/multinomial/multinomial-emotion-tfidf.pkl',
-        'version': 'v12',
+        'version': 'v24',
     },
     'xgb': {
         'model': home + '/emotion/xgb/xgboost-emotion.pkl',
         'vector': home + '/emotion/xgb/xgboost-emotion-tfidf.pkl',
-        'version': 'v12',
+        'version': 'v24',
     },
     'fast-text-char': {
         'model': home
@@ -536,7 +576,12 @@ PATH_EMOTION = {
         'meta': home + '/emotion/fast-text-char/model.ckpt.meta',
         'vector': home
         + '/emotion/fast-text-char/vectorizer-sparse-emotion.pkl',
-        'version': 'v17',
+        'version': 'v24',
+    },
+    'bert': {
+        'model': home + '/emotion/bert/bert-emotion.pb',
+        'vocab': home + '/bert/multilanguage-vocab.txt',
+        'version': 'v24',
     },
 }
 
@@ -554,18 +599,22 @@ S3_PATH_EMOTION = {
         'setting': 'v24/emotion/emotion-dictionary.json',
     },
     'multinomial': {
-        'model': 'v12/emotion/multinomial-emotion.pkl',
-        'vector': 'v12/emotion/multinomial-emotion-tfidf.pkl',
+        'model': 'v24/emotion/multinomial-emotion.pkl',
+        'vector': 'v24/emotion/multinomial-emotion-tfidf.pkl',
     },
     'xgb': {
-        'model': 'v12/emotion/xgboost-emotion.pkl',
-        'vector': 'v12/emotion/xgboost-emotion-tfidf.pkl',
+        'model': 'v24/emotion/xgboost-emotion.pkl',
+        'vector': 'v24/emotion/xgboost-emotion-tfidf.pkl',
     },
     'fast-text-char': {
-        'model': 'v17/emotion/model.ckpt.data-00000-of-00001',
-        'index': 'v17/emotion/model.ckpt.index',
-        'meta': 'v17/emotion/model.ckpt.meta',
-        'vector': 'v17/emotion/vectorizer-sparse-emotion.pkl',
+        'model': 'v24/emotion/model.ckpt.data-00000-of-00001',
+        'index': 'v24/emotion/model.ckpt.index',
+        'meta': 'v24/emotion/model.ckpt.meta',
+        'vector': 'v24/emotion/vectorizer-sparse-emotion.pkl',
+    },
+    'bert': {
+        'model': 'v24/emotion/bert-emotion.pb',
+        'vocab': 'v24/multilanguage-vocab.txt',
     },
 }
 
@@ -627,7 +676,7 @@ PATH_RELEVANCY = {
         'version': 'v24',
     },
     'dilated-cnn': {
-        'model': home + '/relevancy/self-attention/dilated-cnn-relevancy.pb',
+        'model': home + '/relevancy/dilated-cnn/dilated-cnn-relevancy.pb',
         'setting': home + '/relevancy/relevancy-dictionary.json',
         'version': 'v24',
     },

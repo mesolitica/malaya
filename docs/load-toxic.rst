@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 12.6 s, sys: 1.5 s, total: 14.1 s
-    Wall time: 17.9 s
+    CPU times: user 11.8 s, sys: 1.53 s, total: 13.3 s
+    Wall time: 17.3 s
 
 
 .. code:: python
@@ -233,23 +233,23 @@ Predict single string
 
 .. parsed-literal::
 
-    {'toxic': 0.75407517,
-     'severe_toxic': 0.16274202,
-     'obscene': 0.5291958,
-     'threat': 0.10058941,
-     'insult': 0.75971705,
-     'identity_hate': 0.8826025,
-     'attention': {'bodoh': 0.10320988,
+    {'toxic': 0.72146016,
+     'severe_toxic': 0.15249592,
+     'obscene': 0.52586496,
+     'threat': 0.080838725,
+     'insult': 0.70660627,
+     'identity_hate': 0.873813,
+     'attention': {'bodoh': 0.10318489,
       ',': 0.0,
-      'dah': 0.027506806,
-      'la': 0.021144494,
-      'gay': 0.4988079,
-      'sokong': 0.06969115,
-      'lgbt': 0.20489135,
-      'lagi': 0.018106166,
-      'memang': 0.02190801,
-      'tak': 0.017407918,
-      'guna': 0.017326297}}
+      'dah': 0.027627107,
+      'la': 0.021338655,
+      'gay': 0.49313048,
+      'sokong': 0.06966582,
+      'lgbt': 0.20966116,
+      'lagi': 0.018240018,
+      'memang': 0.022205882,
+      'tak': 0.017513605,
+      'guna': 0.01743243}}
 
 
 
@@ -286,12 +286,12 @@ visualization dashboard, you can disable by ``visualization=False``.
 
 .. parsed-literal::
 
-    127.0.0.1 - - [01/Jun/2019 12:12:10] "GET / HTTP/1.1" 200 -
-    127.0.0.1 - - [01/Jun/2019 12:12:10] "GET /static/admin-materialize.min.css HTTP/1.1" 200 -
-    127.0.0.1 - - [01/Jun/2019 12:12:10] "GET /static/echarts.min.js HTTP/1.1" 200 -
-    127.0.0.1 - - [01/Jun/2019 12:12:11] "GET /favicon.ico HTTP/1.1" 200 -
+    127.0.0.1 - - [09/Jun/2019 21:16:56] "GET / HTTP/1.1" 200 -
+    127.0.0.1 - - [09/Jun/2019 21:16:56] "GET /static/admin-materialize.min.css HTTP/1.1" 200 -
+    127.0.0.1 - - [09/Jun/2019 21:16:56] "GET /static/echarts.min.js HTTP/1.1" 200 -
+    127.0.0.1 - - [09/Jun/2019 21:16:57] "GET /favicon.ico HTTP/1.1" 200 -
     ----------------------------------------
-    Exception happened during processing of request from ('127.0.0.1', 61873)
+    Exception happened during processing of request from ('127.0.0.1', 62074)
     Traceback (most recent call last):
       File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/socketserver.py", line 317, in _handle_request_noblock
         self.process_request(request, client_address)
@@ -341,22 +341,92 @@ Predict batch of strings
 
 .. parsed-literal::
 
-    [{'toxic': 0.21699297,
-      'severe_toxic': 0.021610105,
-      'obscene': 0.110013016,
-      'threat': 0.010765828,
-      'insult': 0.10372056,
-      'identity_hate': 0.03946534},
-     {'toxic': 0.93524134,
-      'severe_toxic': 0.33446547,
-      'obscene': 0.7178085,
-      'threat': 0.56429744,
-      'insult': 0.8922918,
-      'identity_hate': 0.9618688}]
+    [{'toxic': 0.20031364,
+      'severe_toxic': 0.02258549,
+      'obscene': 0.10501574,
+      'threat': 0.013459218,
+      'insult': 0.10834239,
+      'identity_hate': 0.043560036},
+     {'toxic': 0.8950191,
+      'severe_toxic': 0.14762068,
+      'obscene': 0.4691061,
+      'threat': 0.3425774,
+      'insult': 0.7497996,
+      'identity_hate': 0.92953944}]
 
 
 
 **You might want to try ``luong`` and ``self-attention`` by yourself.**
+
+BERT model
+----------
+
+BERT is the best toxicity model in term of accuracy, you can check
+toxicity accuracy here,
+https://malaya.readthedocs.io/en/latest/Accuracy.html#toxicity-analysis.
+But warning, the model size is 700MB! Make sure you have enough
+resources to use BERT, and installed ``bert-tensorflow`` first,
+
+.. code:: bash
+
+   pip3 install bert-tensorflow
+
+.. code:: python
+
+    model = malaya.toxic.bert()
+
+
+.. parsed-literal::
+
+    downloading frozen /Users/huseinzol/Malaya/toxic/bert model
+
+
+.. parsed-literal::
+
+    679MB [03:35, 3.85MB/s]
+
+
+.. code:: python
+
+    model.predict(another_string, get_proba = True)
+
+
+
+
+.. parsed-literal::
+
+    {'toxic': 0.9611515,
+     'severe_toxic': 0.00046739998,
+     'obscene': 0.11525511,
+     'threat': 3.888399e-05,
+     'insult': 0.9008593,
+     'identity_hate': 0.0026886603}
+
+
+
+.. code:: python
+
+    model.predict_batch([string, another_string], get_proba = True)
+
+
+
+
+.. parsed-literal::
+
+    [{'toxic': 0.9908935,
+      'severe_toxic': 0.0015672365,
+      'obscene': 0.04905731,
+      'threat': 0.00017163585,
+      'insult': 0.16307928,
+      'identity_hate': 0.0068348516},
+     {'toxic': 0.9102552,
+      'severe_toxic': 0.0019921095,
+      'obscene': 0.016692169,
+      'threat': 0.00012219975,
+      'insult': 0.81612825,
+      'identity_hate': 0.15156291}]
+
+
 
 Stacking models
 ---------------
@@ -373,3 +443,112 @@ https://malaya.readthedocs.io/en/latest/Stack.html
 .. code:: python
 
     malaya.stack.predict_stack([multinomial, logistics, bahdanau], another_string)
+
+
+
+
+.. parsed-literal::
+
+    {'toxic': 0.7799483384789236,
+     'severe_toxic': 0.012339557276675722,
+     'obscene': 0.3809575356999082,
+     'threat': 0.001341406650402849,
+     'insult': 0.5918158556678792,
+     'identity_hate': 0.04673038513607336}
+
+
+
+Load Sparse deep learning models
+--------------------------------
+
+What happen if a word not included in the dictionary of the models? like
+``setan``, what if ``setan`` appeared in text we want to classify? We
+found this problem when classifying social media texts / posts. Words
+used not really a vocabulary-based contextual.
+
+Malaya will treat **unknown words** as ``<UNK>``, so, to solve this
+problem, we need to use N-grams character based. Malaya chose tri-grams
+until fifth-grams.
+
+.. code:: python
+
+   setan = ['set', 'eta', 'tan']
+
+Sklearn provided easy interface to use n-grams, problem is, it is very
+sparse, a lot of zeros and not memory efficient. Sklearn returned sparse
+matrix for the result, lucky Tensorflow already provided some sparse
+function.
+
+.. code:: python
+
+    malaya.toxic.available_sparse_deep_model()
+
+
+
+
+.. parsed-literal::
+
+    ['fast-text-char']
+
+
+
+Right now Malaya only provide 1 sparse model, ``fast-text-char``. We
+will try to evolve it.
+
+.. code:: python
+
+    sparse_model = malaya.toxic.sparse_deep_model()
+
+
+.. parsed-literal::
+
+    INFO:tensorflow:Restoring parameters from /Users/huseinzol/Malaya/toxic/fast-text-char/model.ckpt
+
+
+.. code:: python
+
+    sparse_model.predict(string)
+
+
+
+
+.. parsed-literal::
+
+    []
+
+
+
+.. code:: python
+
+    sparse_model.predict_batch([string, another_string])
+
+
+
+
+.. parsed-literal::
+
+    [[], ['toxic']]
+
+
+
+.. code:: python
+
+    sparse_model.predict_batch([string, another_string], get_proba = True)
+
+
+
+
+.. parsed-literal::
+
+    [{'toxic': 0.09526734,
+      'severe_toxic': 0.003521999,
+      'obscene': 0.023459533,
+      'threat': 0.0006645933,
+      'insult': 0.022291547,
+      'identity_hate': 0.0044483035},
+     {'toxic': 0.9597362,
+      'severe_toxic': 0.005366189,
+      'obscene': 0.06367288,
+      'threat': 0.0016838913,
+      'insult': 0.39910555,
+      'identity_hate': 0.033272624}]

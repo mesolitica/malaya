@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 10.1 s, sys: 803 ms, total: 10.9 s
-    Wall time: 11.1 s
+    CPU times: user 10.9 s, sys: 891 ms, total: 11.7 s
+    Wall time: 12.1 s
 
 
 List available deep learning NER models
@@ -121,6 +121,140 @@ Load CRF model
      ('mengantuk', 'OTHER'),
      ('ketika', 'OTHER'),
      ('memandu', 'OTHER')]
+
+
+
+.. code:: python
+
+    crf.analyze(string)
+
+
+
+
+.. parsed-literal::
+
+    {'words': ['KUALA',
+      'LUMPUR',
+      'Sempena',
+      'sambutan',
+      'Aidilfitri',
+      'minggu',
+      'depan',
+      'Perdana',
+      'Menteri',
+      'Tun',
+      'Dr',
+      'Mahathir',
+      'Mohamad',
+      'dan',
+      'Menteri',
+      'Pengangkutan',
+      'Anthony',
+      'Loke',
+      'Siew',
+      'Fook',
+      'menitipkan',
+      'pesanan',
+      'khas',
+      'kepada',
+      'orang',
+      'ramai',
+      'yang',
+      'mahu',
+      'pulang',
+      'ke',
+      'kampung',
+      'halaman',
+      'masing-masing',
+      'Dalam',
+      'video',
+      'pendek',
+      'terbitan',
+      'Jabatan',
+      'Keselamatan',
+      'Jalan',
+      'Raya',
+      'JKJR',
+      'itu',
+      'Dr',
+      'Mahathir',
+      'menasihati',
+      'mereka',
+      'supaya',
+      'berhenti',
+      'berehat',
+      'dan',
+      'tidur',
+      'sebentar',
+      'sekiranya',
+      'mengantuk',
+      'ketika',
+      'memandu'],
+     'tags': [{'text': 'KUALA LUMPUR',
+       'type': 'location',
+       'score': 1.0,
+       'beginOffset': 0,
+       'endOffset': 1},
+      {'text': 'Sempena',
+       'type': 'OTHER',
+       'score': 1.0,
+       'beginOffset': 2,
+       'endOffset': 2},
+      {'text': 'sambutan Aidilfitri',
+       'type': 'event',
+       'score': 1.0,
+       'beginOffset': 3,
+       'endOffset': 4},
+      {'text': 'minggu depan',
+       'type': 'OTHER',
+       'score': 1.0,
+       'beginOffset': 5,
+       'endOffset': 6},
+      {'text': 'Perdana Menteri Tun Dr Mahathir Mohamad',
+       'type': 'person',
+       'score': 1.0,
+       'beginOffset': 7,
+       'endOffset': 12},
+      {'text': 'dan Menteri Pengangkutan',
+       'type': 'OTHER',
+       'score': 1.0,
+       'beginOffset': 13,
+       'endOffset': 15},
+      {'text': 'Anthony Loke Siew Fook',
+       'type': 'person',
+       'score': 1.0,
+       'beginOffset': 16,
+       'endOffset': 19},
+      {'text': 'menitipkan pesanan khas kepada orang ramai yang mahu pulang ke',
+       'type': 'OTHER',
+       'score': 1.0,
+       'beginOffset': 20,
+       'endOffset': 29},
+      {'text': 'kampung halaman',
+       'type': 'location',
+       'score': 1.0,
+       'beginOffset': 30,
+       'endOffset': 31},
+      {'text': 'masing-masing Dalam video pendek terbitan',
+       'type': 'OTHER',
+       'score': 1.0,
+       'beginOffset': 32,
+       'endOffset': 36},
+      {'text': 'Jabatan Keselamatan Jalan Raya JKJR',
+       'type': 'organization',
+       'score': 1.0,
+       'beginOffset': 37,
+       'endOffset': 41},
+      {'text': 'itu',
+       'type': 'OTHER',
+       'score': 1.0,
+       'beginOffset': 42,
+       'endOffset': 42},
+      {'text': 'Dr Mahathir',
+       'type': 'person',
+       'score': 1.0,
+       'beginOffset': 43,
+       'endOffset': 44}]}
 
 
 
@@ -329,6 +463,136 @@ Load Case-Sensitive deep learning models
 
 
 
+.. code:: python
+
+    bahdanau = malaya.entity.deep_model('bahdanau')
+    bahdanau.analyze(string)
+
+
+
+
+.. parsed-literal::
+
+    {'words': ['KUALA',
+      'LUMPUR',
+      'Sempena',
+      'sambutan',
+      'Aidilfitri',
+      'minggu',
+      'depan',
+      'Perdana',
+      'Menteri',
+      'Tun',
+      'Dr',
+      'Mahathir',
+      'Mohamad',
+      'dan',
+      'Menteri',
+      'Pengangkutan',
+      'Anthony',
+      'Loke',
+      'Siew',
+      'Fook',
+      'menitipkan',
+      'pesanan',
+      'khas',
+      'kepada',
+      'orang',
+      'ramai',
+      'yang',
+      'mahu',
+      'pulang',
+      'ke',
+      'kampung',
+      'halaman',
+      'masing-masing',
+      'Dalam',
+      'video',
+      'pendek',
+      'terbitan',
+      'Jabatan',
+      'Keselamatan',
+      'Jalan',
+      'Raya',
+      'JKJR',
+      'itu',
+      'Dr',
+      'Mahathir',
+      'menasihati',
+      'mereka',
+      'supaya',
+      'berhenti',
+      'berehat',
+      'dan',
+      'tidur',
+      'sebentar',
+      'sekiranya',
+      'mengantuk',
+      'ketika',
+      'memandu'],
+     'tags': [{'text': 'KUALA LUMPUR',
+       'type': 'location',
+       'score': 1.0,
+       'beginOffset': 0,
+       'endOffset': 1},
+      {'text': 'Sempena',
+       'type': 'OTHER',
+       'score': 1.0,
+       'beginOffset': 2,
+       'endOffset': 2},
+      {'text': 'sambutan Aidilfitri',
+       'type': 'event',
+       'score': 1.0,
+       'beginOffset': 3,
+       'endOffset': 4},
+      {'text': 'minggu depan',
+       'type': 'time',
+       'score': 1.0,
+       'beginOffset': 5,
+       'endOffset': 6},
+      {'text': 'Perdana Menteri Tun Dr Mahathir Mohamad',
+       'type': 'person',
+       'score': 1.0,
+       'beginOffset': 7,
+       'endOffset': 12},
+      {'text': 'dan',
+       'type': 'OTHER',
+       'score': 1.0,
+       'beginOffset': 13,
+       'endOffset': 13},
+      {'text': 'Menteri Pengangkutan',
+       'type': 'organization',
+       'score': 1.0,
+       'beginOffset': 14,
+       'endOffset': 15},
+      {'text': 'Anthony Loke Siew Fook',
+       'type': 'person',
+       'score': 1.0,
+       'beginOffset': 16,
+       'endOffset': 19},
+      {'text': 'menitipkan pesanan khas kepada orang ramai yang mahu pulang ke kampung halaman masing-masing Dalam video pendek terbitan',
+       'type': 'OTHER',
+       'score': 1.0,
+       'beginOffset': 20,
+       'endOffset': 36},
+      {'text': 'Jabatan Keselamatan Jalan Raya',
+       'type': 'organization',
+       'score': 1.0,
+       'beginOffset': 37,
+       'endOffset': 40},
+      {'text': 'JKJR itu',
+       'type': 'OTHER',
+       'score': 1.0,
+       'beginOffset': 41,
+       'endOffset': 42},
+      {'text': 'Dr Mahathir',
+       'type': 'person',
+       'score': 1.0,
+       'beginOffset': 43,
+       'endOffset': 44}]}
+
+
+
 Print important features from deep learning model
 -------------------------------------------------
 
@@ -416,7 +680,7 @@ This visualization only can call from ``bahdanau`` or ``luong`` model.
 
 
 
-.. image:: load-entities_files/load-entities_24_0.svg
+.. image:: load-entities_files/load-entities_26_0.svg
 
 
 

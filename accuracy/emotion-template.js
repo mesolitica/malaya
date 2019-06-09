@@ -5,18 +5,17 @@ option = {
             interval: 0,
             rotate: 30
         },
-        data: ['bahdanau','BERT','bidirectional','entity-network',
-        'fast-text','fast-text-char','hierarchical','luong',
-        'multinomial','xgb']
+        data: ['bahdanau','fast-text-char', 'luong', 'multinomial',
+        'self-attention', 'xgboost', 'BERT']
     },
     yAxis: {
         type: 'value',
-        min:0.73,
-        max:0.81
+        min:0.75,
+        max:0.89
     },
     backgroundColor:'rgb(252,252,252)',
     series: [{
-        data: [0.79,0.77,0.80,0.76,0.77,0.75,0.80,0.79,0.75,0.79],
+        data: [0.86, 0.82, 0.86, 0.76, 0.83, 0.82, 0.88],
         type: 'bar',
         label: {
                 normal: {

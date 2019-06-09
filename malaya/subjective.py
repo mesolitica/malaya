@@ -132,3 +132,27 @@ def xgb(validate = True):
         ['negative', 'positive'],
         validate = validate,
     )
+
+
+def bert(validate = True):
+    """
+    Load BERT subjectivity model.
+
+    Parameters
+    ----------
+    validate: bool, optional (default=True)
+        if True, malaya will check model availability and download if not available.
+
+    Returns
+    -------
+    XGB : malaya._models._tensorflow_model.BINARY_BERT class
+    """
+    if not isinstance(validate, bool):
+        raise ValueError('validate must be a boolean')
+    return _softmax_class.bert(
+        PATH_SUBJECTIVE,
+        S3_PATH_SUBJECTIVE,
+        'subjective',
+        ['negative', 'positive'],
+        validate = validate,
+    )

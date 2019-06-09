@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 10.9 s, sys: 915 ms, total: 11.9 s
-    Wall time: 12.2 s
+    CPU times: user 10.9 s, sys: 920 ms, total: 11.8 s
+    Wall time: 12.1 s
 
 
 Explanation
@@ -284,6 +284,46 @@ Predict batch of strings
 
 
 **You might want to try ``luong`` and ``self-attention`` by yourself.**
+
+BERT model
+----------
+
+BERT is the best subjectivity model in term of accuracy, you can check
+subjectivity accuracy here,
+https://malaya.readthedocs.io/en/latest/Accuracy.html#subjectivity-analysis.
+But warning, the model size is 700MB! Make sure you have enough
+resources to use BERT, and installed ``bert-tensorflow`` first,
+
+.. code:: bash
+
+   pip3 install bert-tensorflow
+
+.. code:: python
+
+    model = malaya.subjective.bert()
+    model.predict_batch([negative_text, positive_text],get_proba=True)
+
+
+.. parsed-literal::
+
+    Found old version of /Users/huseinzol/Malaya/subjective/bert, deleting..
+    Done.
+    downloading frozen /Users/huseinzol/Malaya/subjective/bert model
+
+
+.. parsed-literal::
+
+    679MB [03:17, 4.01MB/s]
+
+
+
+
+.. parsed-literal::
+
+    [{'negative': 0.9999628, 'positive': 3.7092312e-07, 'neutral': 3.683567e-05},
+     {'negative': 0.99188435, 'positive': 8.11561e-05, 'neutral': 0.008034468}]
+
+
 
 Stacking models
 ---------------

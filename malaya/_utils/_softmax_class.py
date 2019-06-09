@@ -19,6 +19,8 @@ from .._models._tensorflow_model import (
     BINARY_SOFTMAX,
     MULTICLASS_SOFTMAX,
     SPARSE_SOFTMAX,
+    BINARY_BERT,
+    MULTICLASS_BERT,
 )
 
 
@@ -169,4 +171,49 @@ def xgb(path, s3_path, class_name, label, validate = True):
         label = label,
         vectorize = vectorize,
         cleaning = _classification_textcleaning_stemmer,
+    )
+
+
+def bert(path, s3_path, class_name, label, validate = True):
+    try:
+        from bert import tokenization
+    except:
+        raise Exception(
+            'bert-tensorflow not installed. Please install it using `pip3 install bert-tensorflow` and try again.'
+        )
+    if validate:
+        check_file(path['bert'], s3_path['bert'])
+    else:
+        if not check_available(path['bert']):
+            raise Exception(
+                '%s/bert is not available, please `validate = True`'
+                % (class_name)
+            )
+
+    tokenization.validate_case_matches_checkpoint(False, '')
+    tokenizer = tokenization.FullTokenizer(
+        vocab_file = path['bert']['vocab'], do_lower_case = False
+    )
+    try:
+        g = load_graph(path['bert']['model'])
+    except:
+        raise Exception(
+            "model corrupted due to some reasons, please run malaya.clear_cache('%s/bert') and try again"
+            % (class_name)
+        )
+
+    if len(label) > 2:
+        selected_class = MULTICLASS_BERT
+    else:
+        selected_class = BINARY_BERT
+
+    return selected_class(
+        X = g.get_tensor_by_name('import/Placeholder:0'),
+        segment_ids = g.get_tensor_by_name('import/Placeholder_1:0'),
+        input_masks = g.get_tensor_by_name('import/Placeholder_2:0'),
+        logits = g.get_tensor_by_name('import/logits:0'),
+        sess = generate_session(graph = g),
+        tokenizer = tokenizer,
+        maxlen = 100,
+        label = label,
     )

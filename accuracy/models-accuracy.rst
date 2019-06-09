@@ -373,62 +373,10 @@ Bahdanau
 
                 precision    recall  f1-score   support
 
-      negative       0.79      0.81      0.80     70549
-      positive       0.79      0.77      0.78     64456
+      negative       0.79      0.82      0.80     70381
+      positive       0.79      0.76      0.78     64624
 
    avg / total       0.79      0.79      0.79    135005
-
-BERT
-^^^^
-
-.. code:: text
-
-                 precision    recall  f1-score   support
-
-       negative       0.75      0.83      0.79     70558
-       positive       0.79      0.70      0.75     64447
-
-      micro avg       0.77      0.77      0.77    135005
-      macro avg       0.77      0.77      0.77    135005
-   weighted avg       0.77      0.77      0.77    135005
-
-Bidirectional
-^^^^^^^^^^^^^
-
-.. code:: text
-
-                precision    recall  f1-score   support
-
-      negative       0.82      0.79      0.80     70629
-      positive       0.77      0.81      0.79     64376
-
-   avg / total       0.80      0.80      0.80    135005
-
-Entity-network
-^^^^^^^^^^^^^^
-
-.. code:: text
-
-                precision    recall  f1-score   support
-
-      negative       0.75      0.76      0.75     70301
-      positive       0.73      0.71      0.72     63700
-
-   avg / total       0.74      0.74      0.74    134001
-
-Fast-text
-^^^^^^^^^
-
-.. code:: text
-
-                 precision    recall  f1-score   support
-
-       negative       0.79      0.78      0.78     70568
-       positive       0.76      0.77      0.77     64437
-
-      micro avg       0.77      0.77      0.77    135005
-      macro avg       0.77      0.77      0.77    135005
-   weighted avg       0.77      0.77      0.77    135005
 
 Fast-text-char
 ^^^^^^^^^^^^^^
@@ -437,24 +385,10 @@ Fast-text-char
 
                 precision    recall  f1-score   support
 
-      negative       0.75      0.76      0.75     70301
-      positive       0.73      0.71      0.72     63700
+      negative       0.78      0.80      0.79     70256
+      positive       0.77      0.75      0.76     63766
 
-   avg / total       0.74      0.74      0.74    134001
-
-Hierarchical
-^^^^^^^^^^^^
-
-.. code:: text
-
-                 precision    recall  f1-score   support
-
-       negative       0.81      0.80      0.80     70440
-       positive       0.78      0.79      0.79     64565
-
-      micro avg       0.80      0.80      0.80    135005
-      macro avg       0.80      0.80      0.80    135005
-   weighted avg       0.80      0.80      0.80    135005
+   avg / total       0.77      0.77      0.77    134022
 
 Luong
 ^^^^^
@@ -463,10 +397,10 @@ Luong
 
                 precision    recall  f1-score   support
 
-      negative       0.79      0.79      0.79     70613
-      positive       0.77      0.77      0.77     64392
+      negative       0.79      0.80      0.80     70329
+      positive       0.78      0.77      0.78     64676
 
-   avg / total       0.78      0.78      0.78    135005
+   avg / total       0.79      0.79      0.79    135005
 
 Multinomial
 ^^^^^^^^^^^
@@ -482,6 +416,18 @@ Multinomial
       macro avg       0.79      0.79      0.79    134849
    weighted avg       0.79      0.79      0.79    134849
 
+Self-Attention
+^^^^^^^^^^^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+      negative       0.77      0.82      0.80     70708
+      positive       0.79      0.74      0.76     64297
+
+   avg / total       0.78      0.78      0.78    135005
+
 XGB
 ^^^
 
@@ -495,6 +441,18 @@ XGB
       micro avg       0.80      0.80      0.80    134849
       macro avg       0.80      0.80      0.80    134849
    weighted avg       0.80      0.80      0.80    134849
+
+BERT
+^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+      negative       0.85      0.79      0.82     69590
+      positive       0.79      0.85      0.82     63296
+
+   avg / total       0.82      0.82      0.82    132886
 
 Toxicity Analysis
 -----------------
@@ -515,7 +473,7 @@ Labels are,
 
 
 
-.. image:: models-accuracy_files/models-accuracy_34_0.png
+.. image:: models-accuracy_files/models-accuracy_31_0.png
    :width: 500px
 
 
@@ -524,64 +482,32 @@ Bahdanau
 
 .. code:: text
 
-                precision    recall  f1-score   support
+                  precision    recall  f1-score   support
 
-             0       0.75      0.58      0.65       797
-             1       0.46      0.36      0.41        77
-             2       0.71      0.59      0.64       423
-             3       0.00      0.00      0.00        30
-             4       0.68      0.56      0.61       384
-             5       0.40      0.23      0.29        74
+           toxic       0.77      0.67      0.72      3650
+    severe_toxic       0.45      0.40      0.43       395
+         obscene       0.82      0.65      0.73      1985
+          threat       0.54      0.30      0.38       142
+          insult       0.71      0.62      0.66      1856
+   identity_hate       0.65      0.35      0.45       357
 
-   avg / total       0.69      0.54      0.60      1785
+     avg / total       0.75      0.62      0.68      8385
 
-Entity-network
+Fast-text-char
 ^^^^^^^^^^^^^^
 
 .. code:: text
 
-                precision    recall  f1-score   support
+                  precision    recall  f1-score   support
 
-             0       0.77      0.61      0.68       787
-             1       1.00      0.08      0.14        92
-             2       0.75      0.66      0.71       432
-             3       0.44      0.19      0.27        21
-             4       0.68      0.61      0.65       400
-             5       0.57      0.05      0.09        79
+           toxic       0.83      0.56      0.67      3654
+    severe_toxic       0.47      0.22      0.30       387
+         obscene       0.84      0.54      0.65      1985
+          threat       0.48      0.17      0.25       120
+          insult       0.73      0.44      0.55      1862
+   identity_hate       0.44      0.18      0.26       326
 
-   avg / total       0.75      0.57      0.62      1811
-
-Fast-text
-^^^^^^^^^
-
-.. code:: text
-
-                precision    recall  f1-score   support
-
-             0       0.80      0.47      0.59       815
-             1       0.58      0.19      0.29        94
-             2       0.90      0.38      0.54       425
-             3       0.40      0.06      0.11        31
-             4       0.85      0.35      0.49       410
-             5       0.35      0.08      0.13        74
-
-   avg / total       0.80      0.39      0.52      1849
-
-Hierarchical
-^^^^^^^^^^^^
-
-.. code:: text
-
-                precision    recall  f1-score   support
-
-             0       0.69      0.56      0.62       751
-             1       0.68      0.20      0.31        86
-             2       0.84      0.48      0.61       412
-             3       1.00      0.04      0.07        28
-             4       0.70      0.55      0.62       356
-             5       0.57      0.27      0.36        60
-
-   avg / total       0.73      0.50      0.58      1693
+     avg / total       0.77      0.49      0.60      8334
 
 Logistic Regression
 ^^^^^^^^^^^^^^^^^^^
@@ -620,16 +546,48 @@ Luong
 
 .. code:: text
 
-                precision    recall  f1-score   support
+                  precision    recall  f1-score   support
 
-             0       0.68      0.64      0.66       799
-             1       0.43      0.22      0.29        81
-             2       0.77      0.59      0.67       423
-             3       0.57      0.16      0.25        25
-             4       0.70      0.53      0.61       404
-             5       0.33      0.01      0.02        81
+           toxic       0.77      0.70      0.74      3678
+    severe_toxic       0.58      0.14      0.23       430
+         obscene       0.80      0.66      0.72      2014
+          threat       0.53      0.21      0.30       127
+          insult       0.72      0.60      0.65      1905
+   identity_hate       0.67      0.27      0.38       338
 
-   avg / total       0.68      0.55      0.60      1813
+     avg / total       0.75      0.62      0.67      8492
+
+Self-Attention
+^^^^^^^^^^^^^^
+
+.. code:: text
+
+                  precision    recall  f1-score   support
+
+           toxic       0.80      0.53      0.64      3806
+    severe_toxic       0.55      0.17      0.26       417
+         obscene       0.80      0.55      0.65      2106
+          threat       0.43      0.02      0.05       122
+          insult       0.73      0.46      0.56      1989
+   identity_hate       0.54      0.12      0.20       343
+
+     avg / total       0.76      0.48      0.58      8783
+
+BERT
+^^^^
+
+.. code:: text
+
+                  precision    recall  f1-score   support
+
+           toxic       0.81      0.71      0.76      3744
+    severe_toxic       0.55      0.17      0.26       413
+         obscene       0.84      0.69      0.76      2101
+          threat       0.68      0.43      0.53       120
+          insult       0.78      0.62      0.69      1964
+   identity_hate       0.71      0.41      0.52       359
+
+     avg / total       0.79      0.64      0.71      8701
 
 Subjectivity Analysis
 ---------------------
@@ -644,7 +602,7 @@ sessions stored in
 
 
 
-.. image:: models-accuracy_files/models-accuracy_43_0.png
+.. image:: models-accuracy_files/models-accuracy_40_0.png
    :width: 500px
 
 
@@ -653,70 +611,12 @@ Bahdanau
 
 .. code:: text
 
-                 precision    recall  f1-score   support
+                precision    recall  f1-score   support
 
-       negative       0.82      0.83      0.82       983
-       positive       0.83      0.83      0.83      1010
+      negative       0.90      0.68      0.77       975
+      positive       0.75      0.93      0.83      1018
 
-      micro avg       0.83      0.83      0.83      1993
-      macro avg       0.83      0.83      0.83      1993
-   weighted avg       0.83      0.83      0.83      1993
-
-BERT
-^^^^
-
-.. code:: text
-
-                 precision    recall  f1-score   support
-
-       negative       0.75      0.95      0.84      1024
-       positive       0.93      0.67      0.78       969
-
-      micro avg       0.82      0.82      0.82      1993
-      macro avg       0.84      0.81      0.81      1993
-   weighted avg       0.84      0.82      0.81      1993
-
-Bidirectional
-^^^^^^^^^^^^^
-
-.. code:: text
-
-                 precision    recall  f1-score   support
-
-       negative       0.82      0.89      0.85       989
-       positive       0.88      0.81      0.84      1004
-
-      micro avg       0.85      0.85      0.85      1993
-      macro avg       0.85      0.85      0.85      1993
-   weighted avg       0.85      0.85      0.85      1993
-
-Entity-network
-^^^^^^^^^^^^^^
-
-.. code:: text
-
-                 precision    recall  f1-score   support
-
-       negative       0.89      0.87      0.88       984
-       positive       0.87      0.89      0.88      1009
-
-      micro avg       0.88      0.88      0.88      1993
-      macro avg       0.88      0.88      0.88      1993
-   weighted avg       0.88      0.88      0.88      1993
-
-Fast-text
-^^^^^^^^^
-
-.. code:: text
-
-                 precision    recall  f1-score   support
-
-       negative       0.88      0.91      0.89      1003
-       positive       0.90      0.87      0.89       990
-
-      micro avg       0.89      0.89      0.89      1993
-      macro avg       0.89      0.89      0.89      1993
-   weighted avg       0.89      0.89      0.89      1993
+   avg / total       0.82      0.81      0.80      1993
 
 Fast-text-char
 ^^^^^^^^^^^^^^
@@ -725,38 +625,22 @@ Fast-text-char
 
                 precision    recall  f1-score   support
 
-      negative       0.88      0.88      0.88      1002
-      positive       0.88      0.87      0.88       991
+      negative       0.89      0.88      0.88       992
+      positive       0.88      0.90      0.89      1001
 
-   avg / total       0.88      0.88      0.88      1993
-
-Hierarchical
-^^^^^^^^^^^^
-
-.. code:: text
-
-                 precision    recall  f1-score   support
-
-       negative       0.83      0.87      0.85      1017
-       positive       0.85      0.81      0.83       976
-
-      micro avg       0.84      0.84      0.84      1993
-      macro avg       0.84      0.84      0.84      1993
-   weighted avg       0.84      0.84      0.84      1993
+   avg / total       0.89      0.89      0.89      1993
 
 Luong
 ^^^^^
 
 .. code:: text
 
-                 precision    recall  f1-score   support
+                precision    recall  f1-score   support
 
-       negative       0.85      0.78      0.81       987
-       positive       0.80      0.86      0.83      1006
+      negative       0.79      0.84      0.82       998
+      positive       0.83      0.78      0.80       995
 
-      micro avg       0.82      0.82      0.82      1993
-      macro avg       0.82      0.82      0.82      1993
-   weighted avg       0.82      0.82      0.82      1993
+   avg / total       0.81      0.81      0.81      1993
 
 Multinomial
 ^^^^^^^^^^^
@@ -772,8 +656,20 @@ Multinomial
       macro avg       0.89      0.89      0.89      1993
    weighted avg       0.89      0.89      0.89      1993
 
-XGB
-^^^
+Self-Attention
+^^^^^^^^^^^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+      negative       0.84      0.70      0.76      1023
+      positive       0.73      0.86      0.79       970
+
+   avg / total       0.79      0.78      0.77      1993
+
+Xgboost
+^^^^^^^
 
 .. code:: text
 
@@ -786,6 +682,18 @@ XGB
       micro avg       0.85      0.85      0.85      1993
       macro avg       0.85      0.85      0.85      1993
    weighted avg       0.85      0.85      0.85      1993
+
+BERT
+^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+      negative       0.94      0.91      0.92       983
+      positive       0.91      0.94      0.93      1010
+
+   avg / total       0.93      0.93      0.93      1993
 
 Emotion Analysis
 ----------------
@@ -800,7 +708,7 @@ sessions stored in
 
 
 
-.. image:: models-accuracy_files/models-accuracy_55_0.png
+.. image:: models-accuracy_files/models-accuracy_49_0.png
    :width: 500px
 
 
@@ -811,78 +719,14 @@ Bahdanau
 
                 precision    recall  f1-score   support
 
-         anger       0.80      0.80      0.80      3827
-          fear       0.77      0.78      0.78      3760
-           joy       0.81      0.78      0.80      3958
-          love       0.82      0.86      0.84      3099
-       sadness       0.73      0.76      0.74      3119
-      surprise       0.79      0.74      0.77      1940
+         anger       0.91      0.92      0.92     14943
+          fear       0.87      0.86      0.87      7630
+           joy       0.94      0.89      0.92     16570
+          love       0.94      0.92      0.93     15729
+       sadness       0.73      0.91      0.81     19849
+      surprise       0.77      0.47      0.58      9383
 
-   avg / total       0.79      0.79      0.79     19703
-
-BERT
-^^^^
-
-.. code:: text
-
-                precision    recall  f1-score   support
-
-         anger       0.73      0.83      0.78      3747
-          fear       0.70      0.84      0.77      3789
-           joy       0.74      0.80      0.77      3929
-          love       0.82      0.76      0.79      3081
-       sadness       0.82      0.60      0.69      3168
-      surprise       0.85      0.63      0.72      1989
-
-   avg / total       0.77      0.76      0.76     19703
-
-Bidirectional
-^^^^^^^^^^^^^
-
-.. code:: text
-
-                precision    recall  f1-score   support
-
-         anger       0.81      0.80      0.81      3726
-          fear       0.77      0.78      0.77      3806
-           joy       0.83      0.81      0.82      3975
-          love       0.86      0.83      0.85      2992
-       sadness       0.75      0.78      0.77      3293
-      surprise       0.77      0.79      0.78      1911
-
-   avg / total       0.80      0.80      0.80     19703
-
-Entity-network
-^^^^^^^^^^^^^^
-
-.. code:: text
-
-                precision    recall  f1-score   support
-
-         anger       0.82      0.72      0.77      3717
-          fear       0.72      0.77      0.75      3743
-           joy       0.77      0.74      0.76      4050
-          love       0.81      0.81      0.81      2992
-       sadness       0.71      0.74      0.72      3274
-      surprise       0.72      0.80      0.76      1927
-
-   avg / total       0.76      0.76      0.76     19703
-
-Fast-text
-^^^^^^^^^
-
-.. code:: text
-
-                precision    recall  f1-score   support
-
-         anger       0.82      0.75      0.78      3754
-          fear       0.71      0.81      0.75      3837
-           joy       0.76      0.79      0.78      3844
-          love       0.83      0.83      0.83      3065
-       sadness       0.75      0.75      0.75      3241
-      surprise       0.79      0.64      0.71      1962
-
-   avg / total       0.77      0.77      0.77     19703
+   avg / total       0.86      0.86      0.85     84104
 
 Fast-text-char
 ^^^^^^^^^^^^^^
@@ -891,30 +735,14 @@ Fast-text-char
 
                 precision    recall  f1-score   support
 
-         anger       0.79      0.75      0.77      3803
-          fear       0.73      0.73      0.73      3784
-           joy       0.71      0.77      0.74      3872
-          love       0.81      0.80      0.80      3052
-       sadness       0.72      0.70      0.71      3205
-      surprise       0.73      0.70      0.72      1987
+         anger       0.89      0.90      0.90     15061
+          fear       0.83      0.83      0.83      7552
+           joy       0.87      0.89      0.88     16575
+          love       0.89      0.90      0.90     15635
+       sadness       0.72      0.78      0.75     19640
+      surprise       0.67      0.53      0.59      9592
 
-   avg / total       0.75      0.74      0.75     19703
-
-Hierarchical
-^^^^^^^^^^^^
-
-.. code:: text
-
-                precision    recall  f1-score   support
-
-         anger       0.81      0.79      0.80      3786
-          fear       0.78      0.79      0.78      3754
-           joy       0.81      0.82      0.82      3886
-          love       0.85      0.84      0.85      3022
-       sadness       0.76      0.80      0.78      3300
-      surprise       0.81      0.75      0.78      1955
-
-   avg / total       0.80      0.80      0.80     19703
+   avg / total       0.82      0.82      0.82     84055
 
 Luong
 ^^^^^
@@ -923,14 +751,14 @@ Luong
 
                 precision    recall  f1-score   support
 
-         anger       0.80      0.79      0.80      3774
-          fear       0.78      0.75      0.77      3759
-           joy       0.79      0.80      0.79      3944
-          love       0.83      0.84      0.84      3033
-       sadness       0.75      0.75      0.75      3272
-      surprise       0.76      0.80      0.78      1921
+         anger       0.93      0.90      0.91     14883
+          fear       0.89      0.83      0.86      7680
+           joy       0.93      0.89      0.91     16640
+          love       0.91      0.94      0.92     15621
+       sadness       0.78      0.79      0.78     19766
+      surprise       0.66      0.72      0.69      9514
 
-   avg / total       0.79      0.79      0.79     19703
+   avg / total       0.86      0.85      0.85     84104
 
 Multinomial
 ^^^^^^^^^^^
@@ -939,30 +767,62 @@ Multinomial
 
                 precision    recall  f1-score   support
 
-         anger       0.72      0.82      0.77      3833
-          fear       0.68      0.80      0.74      3802
-           joy       0.68      0.84      0.75      3924
-          love       0.85      0.71      0.78      2981
-       sadness       0.81      0.67      0.73      3189
-      surprise       0.80      0.36      0.50      1974
+         anger       0.84      0.83      0.83     14746
+          fear       0.83      0.44      0.58      7661
+           joy       0.74      0.87      0.80     16560
+          love       0.87      0.79      0.83     15829
+       sadness       0.61      0.86      0.71     19839
+      surprise       0.77      0.27      0.39      9467
 
-   avg / total       0.75      0.73      0.73     19703
+   avg / total       0.76      0.74      0.72     84102
 
-XGB
-^^^
+Self-attention
+^^^^^^^^^^^^^^
 
 .. code:: text
 
                 precision    recall  f1-score   support
 
-         anger       0.80      0.80      0.80      3769
-          fear       0.79      0.76      0.78      3808
-           joy       0.79      0.81      0.80      3913
-          love       0.84      0.85      0.84      2998
-       sadness       0.76      0.75      0.76      3250
-      surprise       0.77      0.77      0.77      1965
+         anger       0.90      0.90      0.90     14869
+          fear       0.83      0.85      0.84      7682
+           joy       0.87      0.90      0.89     16658
+          love       0.92      0.90      0.91     15767
+       sadness       0.77      0.74      0.76     19866
+      surprise       0.64      0.67      0.66      9262
 
-   avg / total       0.79      0.79      0.79     19703
+   avg / total       0.83      0.83      0.83     84104
+
+Xgboost
+^^^^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+         anger       0.91      0.90      0.91     14898
+          fear       0.86      0.84      0.85      7589
+           joy       0.89      0.91      0.90     16554
+          love       0.91      0.92      0.91     15694
+       sadness       0.73      0.73      0.73     19869
+      surprise       0.57      0.57      0.57      9498
+
+   avg / total       0.82      0.82      0.82     84102
+
+BERT
+^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+         anger       0.94      0.92      0.93     14790
+          fear       0.88      0.87      0.87      7527
+           joy       0.92      0.93      0.92     16669
+          love       0.96      0.91      0.94     15651
+       sadness       0.74      0.95      0.83     20004
+      surprise       0.86      0.44      0.58      9463
+
+   avg / total       0.88      0.87      0.86     84104
 
 Dependency parsing
 ------------------
@@ -977,7 +837,7 @@ sessions stored in
 
 
 
-.. image:: models-accuracy_files/models-accuracy_67_0.png
+.. image:: models-accuracy_files/models-accuracy_58_0.png
    :width: 500px
 
 

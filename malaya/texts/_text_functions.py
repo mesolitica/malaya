@@ -415,3 +415,66 @@ def split_into_sentences(text):
     sentences = sentences[:-1]
     sentences = [s.strip() for s in sentences if len(s) > 10]
     return sentences
+
+
+def end_of_chunk(prev_tag, tag):
+    if not len(prev_tag):
+        return False
+    if prev_tag != tag:
+        return True
+
+
+def start_of_chunk(prev_tag, tag):
+    if not len(prev_tag):
+        return True
+    if prev_tag != tag:
+        return False
+
+
+def tag_chunk(seq):
+    words = [i[0] for i in seq]
+    seq = [i[1] for i in seq]
+    prev_tag = ''
+    begin_offset = 0
+    chunks = []
+    for i, chunk in enumerate(seq):
+        if end_of_chunk(prev_tag, chunk):
+            chunks.append((prev_tag, begin_offset, i - 1))
+            prev_tag = ''
+        if start_of_chunk(prev_tag, chunk):
+            begin_offset = i
+        prev_tag = chunk
+    res = {'words': words, 'tags': []}
+    for chunk_type, chunk_start, chunk_end in chunks:
+        tag = {
+            'text': ' '.join(words[chunk_start : chunk_end + 1]),
+            'type': chunk_type,
+            'score': 1.0,
+            'beginOffset': chunk_start,
+            'endOffset': chunk_end,
+        }
+        res['tags'].append(tag)
+    return res
+
+
+def bert_tokenization(tokenizer, texts, maxlen):
+
+    input_ids, input_masks, segment_ids = [], [], []
+    for text in texts:
+        tokens_a = tokenizer.tokenize(text)
+        if len(tokens_a) > maxlen - 2:
+            tokens_a = tokens_a[: (maxlen - 2)]
+        tokens = ['[CLS]'] + tokens_a + ['[SEP]']
+        segment_id = [0] * len(tokens)
+        input_id = tokenizer.convert_tokens_to_ids(tokens)
+        input_mask = [1] * len(input_id)
+        padding = [0] * (maxlen - len(input_id))
+        input_id += padding
+        input_mask += padding
+        segment_id += padding
+
+        input_ids.append(input_id)
+        input_masks.append(input_mask)
+        segment_ids.append(segment_id)
+
+    return input_ids, input_masks, segment_ids

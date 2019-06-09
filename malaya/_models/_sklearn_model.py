@@ -7,6 +7,7 @@ from ..texts._text_functions import (
     classification_textcleaning,
     entities_textcleaning,
     language_detection_textcleaning,
+    tag_chunk,
 )
 from .._utils._utils import add_neutral as neutral
 from .._utils._parse_dependency import DependencyGraph
@@ -30,7 +31,7 @@ class CRF:
 
     def predict(self, string):
         """
-        Tag a string
+        Tag a string.
 
         Parameters
         ----------
@@ -51,9 +52,24 @@ class CRF:
             for no, tag in enumerate(self._model.predict_single(batch_x))
         ]
 
+    def analyze(self, string):
+        """
+        Analyze a string.
+
+        Parameters
+        ----------
+        string : str
+
+        Returns
+        -------
+        string: analyzed string
+        """
+        predicted = self.predict(string)
+        return tag_chunk(predicted)
+
     def print_transitions(self, top_k = 10):
         """
-        Print important top-k transitions
+        Print important top-k transitions.
 
         Parameters
         ----------
@@ -73,7 +89,7 @@ class CRF:
 
     def print_features(self, top_k = 10):
         """
-        Print important top-k features
+        Print important top-k features.
 
         Parameters
         ----------
@@ -97,7 +113,7 @@ class DEPENDENCY:
 
     def predict(self, string):
         """
-        Tag a string
+        Tag a string.
 
         Parameters
         ----------
@@ -141,7 +157,7 @@ class DEPENDENCY:
 
     def print_features(self, top_k = 10):
         """
-        Print important top-k features for tagging dependency
+        Print important top-k features for tagging dependency.
 
         Parameters
         ----------
@@ -159,7 +175,7 @@ class DEPENDENCY:
 
     def print_transitions_tag(self, top_k = 10):
         """
-        Print important top-k transitions for tagging dependency
+        Print important top-k transitions for tagging dependency.
 
         Parameters
         ----------
@@ -177,7 +193,7 @@ class DEPENDENCY:
 
     def print_transitions_index(self, top_k = 10):
         """
-        Print important top-k transitions for indexing dependency
+        Print important top-k transitions for indexing dependency.
 
         Parameters
         ----------
@@ -220,7 +236,7 @@ class BINARY_XGB(XGB):
 
     def predict(self, string, get_proba = False, add_neutral = True):
         """
-        Classify a string
+        Classify a string.
 
         Parameters
         ----------
@@ -261,7 +277,7 @@ class BINARY_XGB(XGB):
 
     def predict_batch(self, strings, get_proba = False, add_neutral = True):
         """
-        Classify a list of strings
+        Classify a list of strings.
 
         Parameters
         ----------
@@ -315,7 +331,7 @@ class BINARY_BAYES(BAYES):
 
     def predict(self, string, get_proba = False, add_neutral = True):
         """
-        Classify a string
+        Classify a string.
 
         Parameters
         ----------
@@ -352,7 +368,7 @@ class BINARY_BAYES(BAYES):
 
     def predict_batch(self, strings, get_proba = False, add_neutral = True):
         """
-        Classify a list of strings
+        Classify a list of strings.
 
         Parameters
         ----------
@@ -404,7 +420,7 @@ class MULTICLASS_XGB(XGB):
 
     def predict(self, string, get_proba = False):
         """
-        Classify a string
+        Classify a string.
 
         Parameters
         ----------
@@ -432,7 +448,7 @@ class MULTICLASS_XGB(XGB):
 
     def predict_batch(self, strings, get_proba = False):
         """
-        Classify a list of strings
+        Classify a list of strings.
 
         Parameters
         ----------
@@ -475,7 +491,7 @@ class MULTICLASS_BAYES(BAYES):
 
     def predict(self, string, get_proba = False):
         """
-        Classify a string
+        Classify a string.
 
         Parameters
         ----------
@@ -501,7 +517,7 @@ class MULTICLASS_BAYES(BAYES):
 
     def predict_batch(self, strings, get_proba = False):
         """
-        Classify a list of strings
+        Classify a list of strings.
 
         Parameters
         ----------
@@ -555,7 +571,7 @@ class TOXIC:
 
     def predict(self, string, get_proba = False):
         """
-        Classify a string
+        Classify a string.
 
         Parameters
         ----------
@@ -582,7 +598,7 @@ class TOXIC:
 
     def predict_batch(self, strings, get_proba = False):
         """
-        Classify a list of strings
+        Classify a list of strings.
 
         Parameters
         ----------
@@ -631,7 +647,7 @@ class LANGUAGE_DETECTION:
 
     def predict(self, string, get_proba = False):
         """
-        Classify a string
+        Classify a string.
 
         Parameters
         ----------
@@ -664,7 +680,7 @@ class LANGUAGE_DETECTION:
 
     def predict_batch(self, strings, get_proba = False):
         """
-        Classify a list of strings
+        Classify a list of strings.
 
         Parameters
         ----------

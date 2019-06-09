@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 12.8 s, sys: 1.72 s, total: 14.5 s
-    Wall time: 19.2 s
+    CPU times: user 14.1 s, sys: 2.19 s, total: 16.3 s
+    Wall time: 22.5 s
 
 
 .. code:: python
@@ -143,7 +143,7 @@ Predict single string
 
 .. parsed-literal::
 
-    'neutral'
+    'positive'
 
 
 
@@ -157,50 +157,50 @@ Predict single string
 
 .. parsed-literal::
 
-    {'negative': 0.29423502,
-     'positive': 0.70576495,
-     'attention': {'Kerajaan': 0.0019730187,
-      'negeri': 0.0016380441,
-      'Kelantan': 0.52261657,
-      'mempersoalkan': 0.0041695302,
-      'motif': 0.009157478,
-      'kenyataan': 0.0020427739,
-      'Menteri': 0.0026452087,
-      'Kewangan': 0.0017612759,
-      'Lim': 0.046150286,
-      'Guan': 0.046651356,
-      'Eng': 0.014238223,
-      'yang': 0.0014762171,
-      'hanya': 0.0030002387,
-      'menyebut': 0.0025070142,
-      'penerima': 0.001477954,
-      'terbesar': 0.0014683361,
-      'bantuan': 0.0020200813,
-      'kewangan': 0.0015684298,
-      'dari': 0.001558458,
-      'Persekutuan': 0.0021011133,
-      'sebanyak': 0.001435061,
-      'RM50': 0.037767526,
-      'juta': 0.0031749196,
+    {'negative': 0.17075859,
+     'positive': 0.82924145,
+     'attention': {'Kerajaan': 0.0017302582,
+      'negeri': 0.0014580223,
+      'Kelantan': 0.41723233,
+      'mempersoalkan': 0.003690172,
+      'motif': 0.008215976,
+      'kenyataan': 0.0018074784,
+      'Menteri': 0.0024031366,
+      'Kewangan': 0.0015805368,
+      'Lim': 0.06009012,
+      'Guan': 0.03822874,
+      'Eng': 0.010624379,
+      'yang': 0.0013287141,
+      'hanya': 0.002750063,
+      'menyebut': 0.002319276,
+      'penerima': 0.0013392554,
+      'terbesar': 0.0013263403,
+      'bantuan': 0.001772588,
+      'kewangan': 0.0014033007,
+      'dari': 0.0014002207,
+      'Persekutuan': 0.001944176,
+      'sebanyak': 0.0013021014,
+      'RM50': 0.03411034,
+      'juta': 0.002792755,
       '.': 0.0,
-      'Sedangkan': 0.0015534447,
-      'menurut': 0.0014812354,
-      'Timbalan': 0.0020608688,
-      'Besarnya': 0.001435703,
+      'Sedangkan': 0.0013984512,
+      'menurut': 0.0013409941,
+      'Timbalan': 0.0018430866,
+      'Besarnya': 0.0013005446,
       ',': 0.0,
-      'Datuk': 0.0014482451,
-      'Mohd': 0.0014422016,
-      'Amar': 0.0014641153,
-      'Nik': 0.0015784851,
-      'Abdullah': 0.0014410047,
-      'lain': 0.0016714201,
-      'lebih': 0.0037415246,
-      'maju': 0.019784313,
-      'turut': 0.011382608,
-      'mendapat': 0.0025349073,
-      'pembiayaan': 0.0020161376,
+      'Datuk': 0.001310686,
+      'Mohd': 0.0013034152,
+      'Amar': 0.0013183507,
+      'Nik': 0.0014044936,
+      'Abdullah': 0.001305138,
+      'lain': 0.0014992557,
+      'lebih': 0.0030584973,
+      'maju': 0.019639261,
+      'turut': 0.008460986,
+      'mendapat': 0.0021167446,
+      'pembiayaan': 0.0018195173,
       'dan': 0.0,
-      'pinjaman': 0.009653877}}
+      'pinjaman': 0.008409986}}
 
 
 
@@ -237,9 +237,29 @@ visualization dashboard, you can disable by ``visualization=False``.
 
 .. parsed-literal::
 
-    127.0.0.1 - - [30/May/2019 11:13:59] "GET / HTTP/1.1" 200 -
-    127.0.0.1 - - [30/May/2019 11:13:59] "GET /static/admin-materialize.min.css HTTP/1.1" 200 -
-    127.0.0.1 - - [30/May/2019 11:13:59] "GET /static/echarts.min.js HTTP/1.1" 200 -
+    127.0.0.1 - - [09/Jun/2019 20:46:22] "GET / HTTP/1.1" 200 -
+    127.0.0.1 - - [09/Jun/2019 20:46:23] "GET /static/admin-materialize.min.css HTTP/1.1" 200 -
+    127.0.0.1 - - [09/Jun/2019 20:46:23] "GET /static/echarts.min.js HTTP/1.1" 200 -
+    127.0.0.1 - - [09/Jun/2019 20:46:25] "GET /favicon.ico HTTP/1.1" 200 -
+    ----------------------------------------
+    Exception happened during processing of request from ('127.0.0.1', 61453)
+    Traceback (most recent call last):
+      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/socketserver.py", line 317, in _handle_request_noblock
+        self.process_request(request, client_address)
+      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/socketserver.py", line 348, in process_request
+        self.finish_request(request, client_address)
+      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/socketserver.py", line 361, in finish_request
+        self.RequestHandlerClass(request, client_address, self)
+      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/socketserver.py", line 696, in __init__
+        self.handle()
+      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/http/server.py", line 418, in handle
+        self.handle_one_request()
+      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/http/server.py", line 406, in handle_one_request
+        method()
+      File "/Users/huseinzol/Documents/Malaya/malaya/_utils/_server.py", line 32, in do_GET
+        with open(filepath, 'rb') as fh:
+    FileNotFoundError: [Errno 2] No such file or directory: '/Users/huseinzol/Documents/Malaya/malaya/_utils/web/favicon.ico'
+    ----------------------------------------
 
 
 .. parsed-literal::
@@ -288,12 +308,46 @@ Predict batch of strings
 
 .. parsed-literal::
 
-    [{'negative': 0.94391596, 'positive': 0.000560839, 'neutral': 0.055523217},
-     {'negative': 0.004329388, 'positive': 0.5670612, 'neutral': 0.42860943}]
+    [{'negative': 0.9585757, 'positive': 0.00041424262, 'neutral': 0.041010022},
+     {'negative': 0.004150669, 'positive': 0.58493316, 'neutral': 0.41091615}]
 
 
 
 **You might want to try ``luong`` and ``self-attention`` by yourself.**
+
+BERT model
+----------
+
+BERT is the best sentiment model in term of accuracy, you can check
+sentiment accuracy here,
+https://malaya.readthedocs.io/en/latest/Accuracy.html#sentiment-analysis.
+But warning, the model size is 700MB! Make sure you have enough
+resources to use BERT, and installed ``bert-tensorflow`` first,
+
+.. code:: bash
+
+   pip3 install bert-tensorflow
+
+.. code:: python
+
+    model = malaya.sentiment.bert()
+
+.. code:: python
+
+    model.predict_batch([negative_text, positive_text],get_proba=True)
+
+
+
+
+.. parsed-literal::
+
+    [{'negative': 0.83860207, 'positive': 0.0016139797, 'neutral': 0.15978396},
+     {'negative': 0.0004839497, 'positive': 0.95160496, 'neutral': 0.047911108}]
+
+
+
+Methods available for BERT model are same as deep learning model,
+``predict`` and ``predict_batch`` only, no ``predict_words``.
 
 Stacking models
 ---------------
@@ -316,9 +370,9 @@ https://malaya.readthedocs.io/en/latest/Stack.html
 
 .. parsed-literal::
 
-    {'negative': 0.0037063136821626594,
-     'positive': 0.6215181632979583,
-     'neutral': 0.3669251238766725}
+    {'negative': 0.004685208305983715,
+     'positive': 0.5050760204343339,
+     'neutral': 0.46383567002533305}
 
 
 
@@ -404,8 +458,8 @@ will try to evolve it.
 
 .. parsed-literal::
 
-    [{'negative': 0.42412993, 'positive': 0.5758701},
-     {'negative': 0.6855174, 'positive': 0.31448266}]
+    [{'negative': 0.24028197, 'positive': 0.759718},
+     {'negative': 0.6669313, 'positive': 0.33306876}]
 
 
 
