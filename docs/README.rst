@@ -42,7 +42,7 @@ Features
 
 -  **Emotion Analysis**
 
-   From BERT, Fast-Text, Dynamic-Memory Network, Sparse Tensorflow, Attention Neural Network to build deep emotion analysis models.
+   From fine-tuning BERT, Attention-Recurrent model, Sparse Tensorflow, Self-Attention to build deep emotion analysis models.
 -  **Entities Recognition**
 
    Latest state-of-art CRF deep learning models to do Naming Entity Recognition.
@@ -66,16 +66,19 @@ Features
 -  **ELMO (biLM)**
 
    Provide pretrained bahasa wikipedia and bahasa news ELMO, with easy interface and visualization.
+-  **Relevancy Analysis**
+
+   From Dilated Convolutional Neural Network and Self-Attention to build deep relevancy analysis models.
 -  **Sentiment Analysis**
 
-   From BERT, Fast-Text, Dynamic-Memory Network, Sparse Tensorflow, Attention Neural Network to build deep sentiment analysis models.
+   From fine-tuning BERT, Attention-Recurrent model, Sparse Tensorflow and Self-Attention to build deep sentiment analysis models.
 -  **Spell Correction**
 
    Using local Malaysia NLP researches to auto-correct any bahasa words.
 -  Stemmer
 -  **Subjectivity Analysis**
 
-   From BERT, Fast-Text, Dynamic-Memory Network, Sparse Tensorflow, Attention Neural Network to build deep subjectivity analysis models.
+   From fine-tuning BERT, Attention-Recurrent model, Sparse Tensorflow and Self-Attention to build deep subjectivity analysis models.
 -  **Summarization**
 
    Using skip-thought with attention state-of-art to give precise unsupervised summarization.
@@ -84,7 +87,7 @@ Features
    Provide LDA2Vec, LDA, NMF and LSA interface for easy topic modelling with topics visualization.
 -  **Toxicity Analysis**
 
-   From BERT, Fast-Text, Dynamic-Memory Network, Attention Neural Network to build deep toxicity analysis models.
+   From fine-tuning BERT, Attention-Recurrent model, Self-Attention to build deep toxicity analysis models.
 -  **Word2Vec**
 
    Provide pretrained bahasa wikipedia and bahasa news Word2Vec, with easy interface and visualization.
