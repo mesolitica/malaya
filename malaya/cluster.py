@@ -440,14 +440,6 @@ def cluster_dendogram(
         Vectorizer = SkipGramVectorizer
     else:
         raise ValueError("vectorizer must be in  ['tfidf', 'bow', 'skip-gram']")
-    if vectorizer == 'tfidf':
-        Vectorizer = TfidfVectorizer
-    elif vectorizer == 'bow':
-        Vectorizer = CountVectorizer
-    elif vectorizer == 'skip-gram':
-        Vectorizer = SkipGramVectorizer
-    else:
-        raise ValueError("vectorizer must be in  ['tfidf', 'bow', 'skip-gram']")
 
     try:
         import matplotlib.pyplot as plt
@@ -608,14 +600,6 @@ def cluster_graph(
             'threshold must be bigger than 0, less than or equal to 1'
         )
 
-    if vectorizer == 'tfidf':
-        Vectorizer = TfidfVectorizer
-    elif vectorizer == 'bow':
-        Vectorizer = CountVectorizer
-    elif vectorizer == 'skip-gram':
-        Vectorizer = SkipGramVectorizer
-    else:
-        raise ValueError("vectorizer must be in  ['tfidf', 'bow', 'skip-gram']")
     if vectorizer == 'tfidf':
         Vectorizer = TfidfVectorizer
     elif vectorizer == 'bow':
@@ -824,14 +808,6 @@ def cluster_entity_linking(
             'matplotlib, seaborn, networkx not installed. Please install it and try again.'
         )
 
-    if vectorizer == 'tfidf':
-        Vectorizer = TfidfVectorizer
-    elif vectorizer == 'bow':
-        Vectorizer = CountVectorizer
-    elif vectorizer == 'skip-gram':
-        Vectorizer = SkipGramVectorizer
-    else:
-        raise ValueError("vectorizer must be in  ['tfidf', 'bow', 'skip-gram']")
     if vectorizer == 'tfidf':
         Vectorizer = TfidfVectorizer
     elif vectorizer == 'bow':
