@@ -3,15 +3,15 @@
 Thanks to Google for opensourcing most of the source code to develop BERT, https://github.com/google-research/bert
 
 ## Table of contents
-  * [Objective](https://github.com/huseinzol05/Malaya#objective)
-  * [How-to](https://github.com/huseinzol05/Malaya#how-to)
-  * [Comparison using Subjectivity Dataset](https://github.com/huseinzol05/Malaya#objective)
-    * [Accuracy graph](https://github.com/huseinzol05/Malaya-Dataset#)
-  * [Comparison using Malaysia topics](https://github.com/huseinzol05/Malaya#objective)
-    * [Accuracy graph](https://github.com/huseinzol05/Malaya-Dataset#)
-  * [Improvement](https://github.com/huseinzol05/Malaya#improvement)
-  * [Conclusion](https://github.com/huseinzol05/Malaya#conclusion)
-  * [Warning](https://github.com/huseinzol05/Malaya#warning)
+  * [Objective](https://github.com/huseinzol05/Malaya/tree/master/bert#objective)
+  * [How-to](https://github.com/huseinzol05/Malaya/tree/master/bert#how-to)
+  * [Comparison using Subjectivity Dataset](https://github.com/huseinzol05/Malaya/tree/master/bert#comparison-using-subjectivity-dataset)
+    * [Accuracy graph](https://github.com/huseinzol05/Malaya/tree/master/bert#accuracy-graph)
+  * [Comparison using Malaysia topics](https://github.com/huseinzol05/Malaya/tree/master/bert#comparison-using-malaysia-topics)
+    * [Accuracy graph](https://github.com/huseinzol05/Malaya/tree/master/bert#accuracy-graph-1)
+  * [Improvement](https://github.com/huseinzol05/Malaya/tree/master/bert#improvement)
+  * [Conclusion](https://github.com/huseinzol05/Malaya/tree/master/bert#conclusion)
+  * [Warning](https://github.com/huseinzol05/Malaya/tree/master/bert#warning)
 
 ## Objective
 
@@ -29,9 +29,9 @@ git clone https://github.com/huseinzol05/Malaya-Dataset.git
 
 2. Run [tokenization.ipynb](tokenization.ipynb) to create dictionary for tokenizer and text dataset for pretraining.
 
-You can check definition of tokenizer use for BERT-Malaya in [tokenizer.ipynb](tokenizer.ipynb). You need to download [dictionary.json](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/dictionary.json)
+You can check definition of tokenizer use for BERT-Malaya in [tokenizer.ipynb](tokenizer.ipynb). You need to download [dictionary.json](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/dictionary.json).
 
-**_We implemented our own tokenizer because Google not open source WordPiece tokenizer, [stated here](https://github.com/google-research/bert#learning-a-new-wordpiece-vocabulary)_**
+**_We implemented our own tokenizer because Google not open source WordPiece tokenizer, [stated here](https://github.com/google-research/bert#learning-a-new-wordpiece-vocabulary)._**
 
 3. Execute pretraining,
 ```bash
@@ -62,7 +62,7 @@ This is [config.json](config.json) I use,
 }
 ```
 
-It took me around 47 hours to complete 200k of steps on Tesla K80 with accuracy 95% predict next words. Can done faster using Tesla V100
+It took me around 47 hours to complete 200k of steps on Tesla K80 with accuracy 95% predict next words. Can be done faster using Tesla V100.
 
 You can download [checkpoint from here](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-bahasa.tar.gz).
 
@@ -72,19 +72,19 @@ You can download [checkpoint from here](https://huseinhouse-storage.s3-ap-southe
 
 5. Fine tuning using sentiment dataset, [finetuning-bert-sentiment.ipynb](finetuning-bert-sentiment.ipynb), load checkpoint from subjectivity finetuning.
 
-You can download [checkpoint from here](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-sentiment.tar.gz)
+You can download [checkpoint from here](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-sentiment.tar.gz).
 
 6. Fine tuning using emotion dataset, [finetuning-bert-emotion.ipynb](finetuning-bert-emotion.ipynb), load checkpoint from sentiment finetuning.
 
-You can download [checkpoint from here](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-emotion.tar.gz)
+You can download [checkpoint from here](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-emotion.tar.gz).
 
 7. Fine tuning using Part-Of-Speech dataset, [finetuning-bert-pos.ipynb](finetuning-bert-pos.ipynb), load checkpoint from emotion finetuning.
 
-You can download checkpoint from [here](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-pos.tar.gz)
+You can download checkpoint from [here](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-pos.tar.gz).
 
 8. Fine tuning using Entity Tagging dataset, [finetuning-bert-entities.ipynb](finetuning-bert-entities.ipynb), load checkpoint from POS tagging finetuning.
 
-You can download [checkpoint from here](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-entities.tar.gz)
+You can download [checkpoint from here](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-entities.tar.gz).
 
 ## Comparison using Subjectivity Dataset
 
@@ -92,7 +92,7 @@ BERT Multilanguage can get up to 94% accuracy on 20% testing data from [Malaya-D
 
 **Now, we are going to test on the same dataset for every each checkpoints we have. We are going to do early stopping with 3 times patient. I don't reload back to most accurate after early stopping, so we might find the model accuracy dropped during precision / recall / f1-score calculations.**
 
-**_[TLDR, skip to graph](#)_**
+**_[TLDR, skip to graph](https://github.com/huseinzol05/Malaya/tree/master/bert#accuracy-graph)._**
 
 1. Checkpoint from pretraining, [finetuning-bert-subjective-pretraining.ipynb](test-subjectivity/finetuning-bert-subjective-pretraining.ipynb),
 
@@ -217,7 +217,7 @@ Every each topics took 5k random samples, so total size 65000 texts.
 
 You can check [tokenize-topics.ipynb](test-topics/tokenize-topics.ipynb) how I load and save to JSON for easy use onwards.
 
-**_[TLDR, skip to graph](#)_**
+**_[TLDR, skip to graph](https://github.com/huseinzol05/Malaya/tree/master/bert#accuracy-graph-1)._**
 
 1. Checkpoint from BERT Multilanguage, [bert-multilanguage-topics.ipynb](test-topics/bert-multilanguage-topics.ipynb),
 
