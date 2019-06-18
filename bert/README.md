@@ -62,7 +62,7 @@ This is [config.json](config.json) I use,
 }
 ```
 
-It took me around 47 hours to complete 200k of steps on Tesla K80 with accuracy 95% predict next words. Can be done faster using Tesla V100.
+**It took me around 47 hours to complete 200k of steps on Tesla K80 with accuracy 95% predict next words. Can be done faster using Tesla V100. During finetuning, I use Tesla V100, way more faster.**
 
 You can download [checkpoint from here](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-bahasa.tar.gz).
 
