@@ -35,9 +35,8 @@ from .texts._tatabahasa import (
 )
 from .num2word import to_cardinal
 from .word2num import word2num
-from .preprocessing import _SocialTokenizer
+from .preprocessing import _tokenizer
 
-_tokenizer = _SocialTokenizer().tokenize
 ignore_words = ['ringgit', 'sen']
 ignore_postfix = ['adalah']
 
@@ -368,7 +367,7 @@ def fuzzy(corpus):
 
     Returns
     -------
-    FUZZY_NORMALIZE: Trained malaya.normalizer._FUZZY_NORMALIZE class
+    _FUZZY_NORMALIZE: Trained malaya.normalizer._FUZZY_NORMALIZE class
     """
     if not isinstance(corpus, list):
         raise ValueError('corpus must be a list')
@@ -415,7 +414,7 @@ def spell(speller):
 
     Returns
     -------
-    SPELL_NORMALIZE: malaya.normalizer._SPELL_NORMALIZE class
+    _SPELL_NORMALIZE: malaya.normalizer._SPELL_NORMALIZE class
     """
     if not hasattr(speller, 'correct') and not hasattr(
         speller, 'normalize_elongated'

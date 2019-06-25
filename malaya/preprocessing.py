@@ -110,7 +110,7 @@ def _get_expression_dict():
     }
 
 
-class _SocialTokenizer:
+class SocialTokenizer:
     def __init__(self, lowercase = False, **kwargs):
         """
         Args:
@@ -362,7 +362,7 @@ class _Preprocessing:
         self._remove_postfix = remove_postfix
         self._regexes = _get_expression_dict()
         self._expand_hashtags = expand_hashtags
-        self._tokenizer = _SocialTokenizer(lowercase = lowercase).tokenize
+        self._tokenizer = SocialTokenizer(lowercase = lowercase).tokenize
         if self._expand_hashtags:
             self._segmenter = _Segmenter(maxlen_segmenter)
         self._expand_contractions = expand_english_contractions
@@ -691,7 +691,7 @@ def segmenter(max_split_length = 20, validate = True):
     return _Segmenter(max_split_length = max_split_length)
 
 
-_tokenizer = _SocialTokenizer().tokenize
+_tokenizer = SocialTokenizer().tokenize
 _rejected = ['wkwk', 'http', 'https', 'lolol', 'hahaha']
 
 

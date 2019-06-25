@@ -124,7 +124,7 @@ def deep_model(model = 'luong', validate = True):
 
     Returns
     -------
-    TOXIC: malaya._models._tensorflow_model.SIGMOID class
+    SIGMOID: malaya._models._tensorflow_model.SIGMOID class
     """
     if not isinstance(model, str):
         raise ValueError('model must be a string')
@@ -163,6 +163,18 @@ def deep_model(model = 'luong', validate = True):
 
 
 def bert(validate = True):
+    """
+    Load BERT toxicity model.
+
+    Parameters
+    ----------
+    validate: bool, optional (default=True)
+        if True, malaya will check model availability and download if not available.
+
+    Returns
+    -------
+    SIGMOID_BERT : malaya._models._tensorflow_model.SIGMOID_BERT class
+    """
     try:
         from bert import tokenization
     except:
@@ -215,7 +227,7 @@ def sparse_deep_model(model = 'fast-text-char', validate = True):
 
     Returns
     -------
-    SPARSE_SOFTMAX: malaya._models._tensorflow_model.SPARSE_SIGMOID class
+    SPARSE_SIGMOID: malaya._models._tensorflow_model.SPARSE_SIGMOID class
     """
 
     if not isinstance(model, str):

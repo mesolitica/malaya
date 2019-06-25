@@ -24,7 +24,7 @@ def available_deep_model():
 
 def sparse_deep_model(model = 'fast-text-char', validate = True):
     """
-    Load deep learning sentiment analysis model.
+    Load deep learning subjectivity analysis model.
 
     Parameters
     ----------
@@ -145,7 +145,7 @@ def bert(validate = True):
 
     Returns
     -------
-    XGB : malaya._models._tensorflow_model.BINARY_BERT class
+    BERT : malaya._models._tensorflow_model.BINARY_BERT class
     """
     if not isinstance(validate, bool):
         raise ValueError('validate must be a boolean')

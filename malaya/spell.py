@@ -350,7 +350,7 @@ def fuzzy(corpus):
 
     Returns
     -------
-    SPELL: Trained malaya.spell._SPELL class
+    _SPELL: Trained malaya.spell._SPELL class
     """
     if not isinstance(corpus, list):
         raise ValueError('corpus must be a list')
@@ -370,7 +370,7 @@ def probability(validate = True):
 
     Returns
     -------
-    SPELL: Trained malaya.spell._SpellCorrector class
+    _SpellCorrector: Trained malaya.spell._SpellCorrector class
     """
     if validate:
         check_file(PATH_NGRAM[1], S3_PATH_NGRAM[1])

@@ -478,3 +478,51 @@ def bert_tokenization(tokenizer, texts, maxlen):
         segment_ids.append(segment_id)
 
     return input_ids, input_masks, segment_ids
+
+
+def _truncate_seq_pair(tokens_a, tokens_b, max_length):
+    while True:
+        total_length = len(tokens_a) + len(tokens_b)
+        if total_length <= max_length:
+            break
+        if len(tokens_a) > len(tokens_b):
+            tokens_a.pop()
+        else:
+            tokens_b.pop()
+
+
+def bert_tokenization_siamese(tokenizer, left, right, maxlen):
+    input_ids, input_masks, segment_ids = [], [], []
+    for i in range(len(left)):
+        tokens_a = tokenizer.tokenize(left[i])
+        tokens_b = tokenizer.tokenize(right[i])
+        _truncate_seq_pair(tokens_a, tokens_b, maxlen - 3)
+
+        tokens = []
+        segment_id = []
+        tokens.append('[CLS]')
+        segment_id.append(0)
+        for token in tokens_a:
+            tokens.append(token)
+            segment_id.append(0)
+
+        tokens.append('[SEP]')
+        segment_id.append(0)
+        for token in tokens_b:
+            tokens.append(token)
+            segment_id.append(1)
+        tokens.append('[SEP]')
+        segment_id.append(1)
+        input_id = tokenizer.convert_tokens_to_ids(tokens)
+        input_mask = [1] * len(input_id)
+
+        while len(input_id) < maxlen:
+            input_id.append(0)
+            input_mask.append(0)
+            segment_id.append(0)
+
+        input_ids.append(input_id)
+        input_masks.append(input_mask)
+        segment_ids.append(segment_id)
+
+    return input_ids, input_masks, segment_ids

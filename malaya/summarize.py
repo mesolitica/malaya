@@ -7,22 +7,22 @@ if not sys.warnoptions:
 import numpy as np
 import re
 import random
-from scipy.linalg import svd
-from operator import itemgetter
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
+from sklearn.decomposition import TruncatedSVD, NMF, LatentDirichletAllocation
 from sklearn.utils import shuffle
-from sklearn.cluster import KMeans
-from sklearn.metrics import pairwise_distances_argmin_min
-from sklearn.decomposition import NMF, LatentDirichletAllocation
+from fuzzywuzzy import fuzz
+from sklearn.metrics.pairwise import cosine_similarity
 from .texts._text_functions import (
     summary_textcleaning,
     classification_textcleaning,
     STOPWORDS,
     split_into_sentences,
 )
+import networkx as nx
 from .stem import sastrawi
 from ._models import _skip_thought
 from .cluster import cluster_words
+from .texts.vectorizer import SkipGramVectorizer
 
 
 class _DEEP_SUMMARIZER:
@@ -60,9 +60,7 @@ class _DEEP_SUMMARIZER:
             self._logits, feed_dict = {self._X: np.array(sequences)}
         )
 
-    def summarize(
-        self, corpus, top_k = 3, important_words = 3, return_cluster = True
-    ):
+    def summarize(self, corpus, top_k = 3, important_words = 3):
         """
         Summarize list of strings / corpus
 
@@ -71,9 +69,9 @@ class _DEEP_SUMMARIZER:
         corpus: str, list
 
         top_k: int, (default=3)
-            number of summarized strings
+            number of summarized strings.
         important_words: int, (default=3)
-            number of important words
+            number of important words.
 
         Returns
         -------
@@ -83,8 +81,6 @@ class _DEEP_SUMMARIZER:
             raise ValueError('top_k must be an integer')
         if not isinstance(important_words, int):
             raise ValueError('important_words must be an integer')
-        if not isinstance(return_cluster, bool):
-            raise ValueError('return_cluster must be a boolean')
         if not isinstance(corpus, list) and not isinstance(corpus, str):
             raise ValueError('corpus must be a list')
         if isinstance(corpus, list):
@@ -102,63 +98,64 @@ class _DEEP_SUMMARIZER:
         sequences = _skip_thought.batch_sequence(
             cleaned_strings, self.dictionary, maxlen = self._maxlen
         )
-        encoded, attention = self._sess.run(
+        vectors, attention = self._sess.run(
             [self._logits, self._attention],
             feed_dict = {self._X: np.array(sequences)},
         )
         attention = attention.sum(axis = 0)
-        kmeans = KMeans(n_clusters = top_k, random_state = 0)
-        kmeans = kmeans.fit(encoded)
-        avg = []
-        for j in range(top_k):
-            idx = np.where(kmeans.labels_ == j)[0]
-            avg.append(np.mean(idx))
-        closest, _ = pairwise_distances_argmin_min(
-            kmeans.cluster_centers_, encoded
-        )
         indices = np.argsort(attention)[::-1]
         top_words = [self._rev_dictionary[i] for i in indices[:important_words]]
-        ordering = sorted(range(top_k), key = lambda k: avg[k])
-        summarized = ' '.join(
-            [original_strings[closest[idx]] for idx in ordering]
+
+        similar = cosine_similarity(vectors, vectors)
+        similar[similar >= 0.999] = 0
+        nx_graph = nx.from_numpy_array(similar)
+        scores = nx.pagerank(nx_graph, max_iter = 1000)
+        ranked_sentences = sorted(
+            ((scores[i], s) for i, s in enumerate(original_strings)),
+            reverse = True,
         )
-        if return_cluster:
-            return {
-                'summary': summarized,
-                'top-words': top_words,
-                'cluster-top-words': cluster_words(top_words),
-            }
-        return {'summary': summarized, 'top-words': top_words}
+        summary = [r[1] for r in ranked_sentences[:top_k]]
+
+        return {
+            'summary': ' '.join(summary),
+            'top-words': top_words,
+            'cluster-top-words': cluster_words(top_words),
+        }
 
 
-def deep_model_news():
+def available_deep_extractive():
     """
-    Load skip-thought summarization deep learning model trained on news dataset.
+    List available deep extractive summarization models.
+    """
+    return ['skip-thought', 'residual-network']
+
+
+def deep_extractive(model = 'skip-thought'):
+    """
+    Load deep learning subjectivity analysis model, scoring using TextRank.
+
+    Parameters
+    ----------
+    model : str, optional (default='skip-thought')
+        Model architecture supported. Allowed values:
+
+        * ``'skip-thought'`` - skip-thought summarization deep learning model trained on news dataset. Hopefully we can train on wikipedia dataset.
+        * ``'residual-network'`` - residual network with Bahdanau Attention summarization deep learning model trained on wikipedia dataset.
 
     Returns
     -------
-    _DEEP_SUMMARIZER: _DEEP_SUMMARIZER class
+    _DEEP_SUMMARIZER: malaya.summarize._DEEP_SUMMARIZER class
     """
-    sess, x, logits, attention, dictionary, maxlen = (
-        _skip_thought.news_load_model()
-    )
-    return _DEEP_SUMMARIZER(sess, x, logits, attention, dictionary, maxlen)
-
-
-def deep_model_wiki():
-    """
-    Load residual network with Bahdanau Attention summarization deep learning model trained on wikipedia dataset.
-
-    Returns
-    -------
-    _DEEP_SUMMARIZER: _DEEP_SUMMARIZER class
-    """
-    print(
-        'WARNING: this model is using convolutional based, Tensorflow-GPU above 1.10 may got a problem. Please downgrade to Tensorflow-GPU v1.8 if got any cuDNN error.'
-    )
-    sess, x, logits, attention, dictionary, maxlen = (
-        _skip_thought.wiki_load_model()
-    )
+    model = model.lower()
+    if model == 'skip-thought':
+        model = _skip_thought.news_load_model
+    elif model == 'residual-network':
+        model = _skip_thought.wiki_load_model
+    else:
+        raise Exception(
+            'model is not supported, please check supported models from malaya.summarize.available_deep_extractive()'
+        )
+    sess, x, logits, attention, dictionary, maxlen = model()
     return _DEEP_SUMMARIZER(sess, x, logits, attention, dictionary, maxlen)
 
 
@@ -245,228 +242,223 @@ def train_skip_thought(
     )
 
 
-def lsa(
+def _base_summarizer(
     corpus,
-    ngram = (1, 3),
-    min_df = 2,
+    decomposition,
     top_k = 3,
-    important_words = 3,
-    return_cluster = True,
-    **kwargs
+    max_df = 0.95,
+    min_df = 2,
+    ngram = (1, 3),
+    vectorizer = 'bow',
+    important_words = 10,
+    **kwargs,
 ):
-    """
-    summarize a list of strings using LSA.
-
-    Parameters
-    ----------
-    corpus: list
-    ngram: tuple, (default=(1,3))
-        n-grams size to train a corpus
-    min_df: int, (default=2)
-        minimum document frequency for a word
-    top_k: int, (default=3)
-        number of summarized strings
-    important_words: int, (default=3)
-        number of important words
-    return_cluster: bool, (default=True)
-        if True, will cluster important_words to similar texts
-
-    Returns
-    -------
-    dictionary: result
-    """
+    if not isinstance(vectorizer, str):
+        raise ValueError('vectorizer must be a string')
     if not isinstance(top_k, int):
         raise ValueError('top_k must be an integer')
-    if not isinstance(important_words, int):
-        raise ValueError('important_words must be an integer')
-    if not isinstance(return_cluster, bool):
-        raise ValueError('return_cluster must be a boolean')
+    vectorizer = vectorizer.lower()
+    if not vectorizer in ['tfidf', 'bow', 'skip-gram']:
+        raise ValueError("vectorizer must be in  ['tfidf', 'bow', 'skip-gram']")
     if not isinstance(ngram, tuple):
         raise ValueError('ngram must be a tuple')
     if not len(ngram) == 2:
         raise ValueError('ngram size must equal to 2')
-    if not isinstance(min_df, int) or isinstance(min_df, float):
-        raise ValueError('min_df must be an integer or a float')
-
-    if not isinstance(corpus, list) and not isinstance(corpus, str):
-        raise ValueError('corpus must be a list')
-    if isinstance(corpus, list):
-        if not isinstance(corpus[0], str):
-            raise ValueError('corpus must be list of strings')
-    if isinstance(corpus, str):
-        corpus = split_into_sentences(corpus)
-    else:
-        corpus = '. '.join(corpus)
-        corpus = split_into_sentences(corpus)
-
-    splitted_fullstop = [summary_textcleaning(i) for i in corpus]
-    original_strings = [i[0] for i in splitted_fullstop]
-    cleaned_strings = [i[1] for i in splitted_fullstop]
-    stemmed = [sastrawi(i) for i in cleaned_strings]
-    tfidf = TfidfVectorizer(
-        ngram_range = ngram, min_df = min_df, stop_words = STOPWORDS, **kwargs
-    ).fit(stemmed)
-    U, S, Vt = svd(tfidf.transform(stemmed).todense().T, full_matrices = False)
-    summary = [
-        (original_strings[i], np.linalg.norm(np.dot(np.diag(S), Vt[:, b]), 2))
-        for i in range(len(splitted_fullstop))
-        for b in range(len(Vt))
-    ]
-    summary = sorted(summary, key = itemgetter(1))
-    summary = dict(
-        (v[0], v) for v in sorted(summary, key = lambda summary: summary[1])
-    ).values()
-    summarized = ' '.join([a for a, b in summary][len(summary) - (top_k) :])
-    indices = np.argsort(tfidf.idf_)[::-1]
-    features = tfidf.get_feature_names()
-    top_words = [features[i] for i in indices[:important_words]]
-    if return_cluster:
-        return {
-            'summary': summarized,
-            'top-words': top_words,
-            'cluster-top-words': cluster_words(top_words),
-        }
-    return {'summary': summarized, 'top-words': top_words}
-
-
-def nmf(
-    corpus,
-    ngram = (1, 3),
-    min_df = 2,
-    top_k = 3,
-    important_words = 3,
-    return_cluster = True,
-    **kwargs
-):
-    """
-    summarize a list of strings using NMF.
-
-    Parameters
-    ----------
-    corpus: list
-    ngram: tuple, (default=(1,3))
-        n-grams size to train a corpus
-    top_k: int, (default=3)
-        number of summarized strings
-    important_words: int, (default=3)
-        number of important words
-    min_df: int, (default=2)
-        minimum document frequency for a word
-    return_cluster: bool, (default=True)
-        if True, will cluster important_words to similar texts
-
-    Returns
-    -------
-    dictionary: result
-    """
-    if not isinstance(top_k, int):
-        raise ValueError('top_k must be an integer')
-    if not isinstance(important_words, int):
-        raise ValueError('important_words must be an integer')
-    if not isinstance(return_cluster, bool):
-        raise ValueError('return_cluster must be a boolean')
-    if not isinstance(ngram, tuple):
-        raise ValueError('ngram must be a tuple')
-    if not len(ngram) == 2:
-        raise ValueError('ngram size must equal to 2')
-    if not isinstance(min_df, int) or isinstance(min_df, float):
-        raise ValueError('min_df must be an integer or a float')
-
-    if not isinstance(corpus, list) and not isinstance(corpus, str):
-        raise ValueError('corpus must be a list')
-    if isinstance(corpus, list):
-        if not isinstance(corpus[0], str):
-            raise ValueError('corpus must be list of strings')
-    if isinstance(corpus, str):
-        corpus = split_into_sentences(corpus)
-    else:
-        corpus = '. '.join(corpus)
-        corpus = split_into_sentences(corpus)
-
-    splitted_fullstop = [summary_textcleaning(i) for i in corpus]
-    original_strings = [i[0] for i in splitted_fullstop]
-    cleaned_strings = [i[1] for i in splitted_fullstop]
-    stemmed = [sastrawi(i) for i in cleaned_strings]
-    tfidf = TfidfVectorizer(
-        ngram_range = ngram, min_df = min_df, stop_words = STOPWORDS, **kwargs
-    ).fit(stemmed)
-    densed_tfidf = tfidf.transform(stemmed).todense()
-    nmf = NMF(len(splitted_fullstop)).fit(densed_tfidf)
-    vectors = nmf.transform(densed_tfidf)
-    components = nmf.components_.mean(axis = 1)
-    summary = [
-        (
-            original_strings[i],
-            np.linalg.norm(np.dot(np.diag(components), vectors[:, b]), 2),
+    if not isinstance(min_df, int):
+        raise ValueError('min_df must be an integer')
+    if not (isinstance(max_df, int) or isinstance(max_df, float)):
+        raise ValueError('max_df must be an integer or a float')
+    if min_df < 1:
+        raise ValueError('min_df must be bigger than 0')
+    if not (max_df <= 1 and max_df > 0):
+        raise ValueError(
+            'max_df must be bigger than 0, less than or equal to 1'
         )
-        for i in range(len(splitted_fullstop))
-        for b in range(len(vectors))
-    ]
-    summary = sorted(summary, key = itemgetter(1))
-    summary = dict(
-        (v[0], v) for v in sorted(summary, key = lambda summary: summary[1])
-    ).values()
-    summarized = ' '.join([a for a, b in summary][len(summary) - (top_k) :])
-    indices = np.argsort(tfidf.idf_)[::-1]
-    features = tfidf.get_feature_names()
+    if not isinstance(corpus, list) and not isinstance(corpus, str):
+        raise ValueError('corpus must be a list')
+    if isinstance(corpus, list):
+        if not isinstance(corpus[0], str):
+            raise ValueError('corpus must be list of strings')
+    if isinstance(corpus, str):
+        corpus = split_into_sentences(corpus)
+    else:
+        corpus = '. '.join(corpus)
+        corpus = split_into_sentences(corpus)
+
+    splitted_fullstop = [summary_textcleaning(i) for i in corpus]
+    original_strings = [i[0] for i in splitted_fullstop]
+    cleaned_strings = [i[1] for i in splitted_fullstop]
+    stemmed = [sastrawi(i) for i in cleaned_strings]
+
+    if vectorizer == 'tfidf':
+        Vectorizer = TfidfVectorizer
+    elif vectorizer == 'bow':
+        Vectorizer = CountVectorizer
+    elif vectorizer == 'skip-gram':
+        Vectorizer = SkipGramVectorizer
+    else:
+        raise Exception("vectorizer must be in  ['tfidf', 'bow', 'skip-gram']")
+    tf_vectorizer = Vectorizer(
+        max_df = max_df,
+        min_df = min_df,
+        ngram_range = ngram,
+        stop_words = STOPWORDS,
+        **kwargs,
+    )
+    tf = tf_vectorizer.fit_transform(stemmed)
+    if hasattr(tf_vectorizer, 'idf_'):
+        indices = np.argsort(tf_vectorizer.idf_)[::-1]
+    else:
+        indices = np.argsort(np.asarray(tf.sum(axis = 0))[0])[::-1]
+
+    features = tf_vectorizer.get_feature_names()
     top_words = [features[i] for i in indices[:important_words]]
-    if return_cluster:
-        return {
-            'summary': summarized,
-            'top-words': top_words,
-            'cluster-top-words': cluster_words(top_words),
-        }
-    return {'summary': summarized, 'top-words': top_words}
+    vectors = decomposition(tf.shape[1] // 2).fit_transform(tf)
+    similar = cosine_similarity(vectors, vectors)
+    similar[similar >= 0.999] = 0
+    nx_graph = nx.from_numpy_array(similar)
+    scores = nx.pagerank(nx_graph, max_iter = 1000)
+    ranked_sentences = sorted(
+        ((scores[i], s) for i, s in enumerate(original_strings)), reverse = True
+    )
+    summary = [r[1] for r in ranked_sentences[:top_k]]
+    return {
+        'summary': ' '.join(summary),
+        'top-words': top_words,
+        'cluster-top-words': cluster_words(top_words),
+    }
 
 
 def lda(
     corpus,
-    maintain_original = False,
-    ngram = (1, 3),
-    min_df = 2,
     top_k = 3,
-    important_words = 3,
-    return_cluster = True,
-    **kwargs
+    important_words = 10,
+    max_df = 0.95,
+    min_df = 2,
+    ngram = (1, 3),
+    vectorizer = 'bow',
+    **kwargs,
 ):
     """
-    summarize a list of strings using LDA.
+    summarize a list of strings using LDA, scoring using TextRank.
 
     Parameters
     ----------
     corpus: list
-    maintain_original: bool, (default=False)
-        If False, will apply malaya.text_functions.classification_textcleaning
-    ngram: tuple, (default=(1,3))
-        n-grams size to train a corpus
-    min_df: int, (default=2)
-        minimum document frequency for a word
     top_k: int, (default=3)
-        number of summarized strings
-    important_words: int, (default=3)
-        number of important words
-    return_cluster: bool, (default=True)
-        if True, will cluster important_words to similar texts
+        number of summarized strings.
+    important_words: int, (default=10)
+        number of important words.
+    max_df: float, (default=0.95)
+        maximum of a word selected based on document frequency.
+    min_df: int, (default=2)
+        minimum of a word selected on based on document frequency.
+    ngram: tuple, (default=(1,3))
+        n-grams size to train a corpus.
+    vectorizer: str, (default='bow')
+        vectorizer technique. Allowed values:
+
+        * ``'bow'`` - Bag of Word.
+        * ``'tfidf'`` - Term frequency inverse Document Frequency.
+        * ``'skip-gram'`` - Bag of Word with skipping certain n-grams.
+
+    Returns
+    -------
+    dict: result
+    """
+    return _base_summarizer(
+        corpus,
+        LatentDirichletAllocation,
+        top_k = top_k,
+        max_df = max_df,
+        min_df = min_df,
+        ngram = ngram,
+        vectorizer = vectorizer,
+        important_words = important_words,
+        **kwargs,
+    )
+
+
+def lsa(
+    corpus,
+    top_k = 3,
+    important_words = 10,
+    max_df = 0.95,
+    min_df = 2,
+    ngram = (1, 3),
+    vectorizer = 'bow',
+    **kwargs,
+):
+    """
+    summarize a list of strings using LSA, scoring using TextRank.
+
+    Parameters
+    ----------
+    corpus: list
+    top_k: int, (default=3)
+        number of summarized strings.
+    important_words: int, (default=10)
+        number of important words.
+    max_df: float, (default=0.95)
+        maximum of a word selected based on document frequency.
+    min_df: int, (default=2)
+        minimum of a word selected on based on document frequency.
+    ngram: tuple, (default=(1,3))
+        n-grams size to train a corpus.
+    vectorizer: str, (default='bow')
+        vectorizer technique. Allowed values:
+
+        * ``'bow'`` - Bag of Word.
+        * ``'tfidf'`` - Term frequency inverse Document Frequency.
+        * ``'skip-gram'`` - Bag of Word with skipping certain n-grams.
+
+    Returns
+    -------
+    dict: result
+    """
+    return _base_summarizer(
+        corpus,
+        TruncatedSVD,
+        top_k = top_k,
+        max_df = max_df,
+        min_df = min_df,
+        ngram = ngram,
+        vectorizer = vectorizer,
+        important_words = important_words,
+        **kwargs,
+    )
+
+
+def doc2vec(vectorizer, corpus, top_k = 3, aggregation = 'mean', soft = True):
+    """
+    summarize a list of strings using doc2vec, scoring using TextRank.
+
+    Parameters
+    ----------
+    vectorizer : object
+        fast-text or word2vec interface object.
+    corpus: list
+    top_k: int, (default=3)
+        number of summarized strings.
+    aggregation : str, optional (default='mean')
+        Aggregation supported. Allowed values:
+
+        * ``'mean'`` - mean.
+        * ``'min'`` - min.
+        * ``'max'`` - max.
+        * ``'sum'`` - sum.
+        * ``'sqrt'`` - square root.
+    soft: bool, optional (default=True)
+        word not inside vectorizer will replace with nearest word if True, else, will skip.
 
     Returns
     -------
     dictionary: result
     """
-    if not isinstance(maintain_original, bool):
-        raise ValueError('maintain_original must be a boolean')
+    if not hasattr(vectorizer, 'get_vector_by_name'):
+        raise ValueError('vectorizer must has `get_vector_by_name` method')
     if not isinstance(top_k, int):
         raise ValueError('top_k must be an integer')
-    if not isinstance(important_words, int):
-        raise ValueError('important_words must be an integer')
-    if not isinstance(return_cluster, bool):
-        raise ValueError('return_cluster must be a boolean')
-    if not isinstance(ngram, tuple):
-        raise ValueError('ngram must be a tuple')
-    if not len(ngram) == 2:
-        raise ValueError('ngram size must equal to 2')
-    if not isinstance(min_df, int) or isinstance(min_df, float):
-        raise ValueError('min_df must be an integer or a float')
-
     if not isinstance(corpus, list) and not isinstance(corpus, str):
         raise ValueError('corpus must be a list')
     if isinstance(corpus, list):
@@ -477,38 +469,50 @@ def lda(
     else:
         corpus = '. '.join(corpus)
         corpus = split_into_sentences(corpus)
-
     splitted_fullstop = [summary_textcleaning(i) for i in corpus]
     original_strings = [i[0] for i in splitted_fullstop]
     cleaned_strings = [i[1] for i in splitted_fullstop]
-    stemmed = [sastrawi(i) for i in cleaned_strings]
-    tfidf = TfidfVectorizer(
-        ngram_range = ngram, min_df = min_df, stop_words = STOPWORDS, **kwargs
-    ).fit(stemmed)
-    densed_tfidf = tfidf.transform(stemmed).todense()
-    lda = LatentDirichletAllocation(len(splitted_fullstop)).fit(densed_tfidf)
-    vectors = lda.transform(densed_tfidf)
-    components = lda.components_.mean(axis = 1)
-    summary = [
-        (
-            original_strings[i],
-            np.linalg.norm(np.dot(np.diag(components), vectors[:, b]), 2),
+
+    aggregation = aggregation.lower()
+    if aggregation == 'mean':
+        aggregation_function = np.mean
+    elif aggregation == 'min':
+        aggregation_function = np.min
+    elif aggregation == 'max':
+        aggregation_function = np.max
+    elif aggregation == 'sum':
+        aggregation_function = np.sum
+    elif aggregation == 'sqrt':
+        aggregation_function = np.sqrt
+    else:
+        raise ValueError(
+            'aggregation only supports `mean`, `min`, `max`, `sum` and `sqrt`'
         )
-        for i in range(len(splitted_fullstop))
-        for b in range(len(vectors))
-    ]
-    summary = sorted(summary, key = itemgetter(1))
-    summary = dict(
-        (v[0], v) for v in sorted(summary, key = lambda summary: summary[1])
-    ).values()
-    summarized = ' '.join([a for a, b in summary][len(summary) - (top_k) :])
-    indices = np.argsort(tfidf.idf_)[::-1]
-    features = tfidf.get_feature_names()
-    top_words = [features[i] for i in indices[:important_words]]
-    if return_cluster:
-        return {
-            'summary': summarized,
-            'top-words': top_words,
-            'cluster-top-words': cluster_words(top_words),
-        }
-    return {'summary': summarized, 'top-words': top_words}
+
+    vectors = []
+    for string in cleaned_strings:
+        inside = []
+        for token in string.split():
+            try:
+                inside.append(vectorizer.get_vector_by_name(token))
+            except:
+                if not soft:
+                    pass
+                else:
+                    arr = np.array(
+                        [fuzz.ratio(token, k) for k in vectorizer.words]
+                    )
+                    idx = (-arr).argsort()[0]
+                    inside.append(
+                        vectorizer.get_vector_by_name(vectorizer.words[idx])
+                    )
+        vectors.append(aggregation_function(inside, axis = 0))
+    similar = cosine_similarity(vectors, vectors)
+    similar[similar >= 0.999] = 0
+    nx_graph = nx.from_numpy_array(similar)
+    scores = nx.pagerank(nx_graph, max_iter = 1000)
+    ranked_sentences = sorted(
+        ((scores[i], s) for i, s in enumerate(original_strings)), reverse = True
+    )
+    summary = [r[1] for r in ranked_sentences[:top_k]]
+    return ' '.join(summary)

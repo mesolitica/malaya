@@ -349,7 +349,7 @@ def _base_topic_modelling(
     vectorizer = 'bow',
     stemming = True,
     cleaning = simple_textcleaning,
-    stop_words = STOPWORDS,
+    stop_words = None,
     **kwargs,
 ):
     if not isinstance(corpus, list):
@@ -423,7 +423,7 @@ def lda(
     stemming = True,
     vectorizer = 'bow',
     cleaning = simple_textcleaning,
-    stop_words = STOPWORDS,
+    stop_words = None,
     **kwargs,
 ):
     """
@@ -450,13 +450,15 @@ def lda(
         * ``'skip-gram'`` - Bag of Word with skipping certain n-grams.
     cleaning: function, (default=simple_textcleaning)
         function to clean the corpus.
-    stop_words: list, (default=STOPWORDS)
-        list of stop words to remove.
+    stop_words: list, (default=None)
+        list of stop words to remove. If None, default is malaya.texts._text_functions.STOPWORDS
 
     Returns
     -------
     _TOPIC: malaya.topic_modelling._TOPIC class
     """
+    if stop_words is None:
+        stop_words = STOPWORDS
     return _base_topic_modelling(
         corpus,
         n_topics,
@@ -481,7 +483,7 @@ def nmf(
     stemming = True,
     vectorizer = 'bow',
     cleaning = simple_textcleaning,
-    stop_words = STOPWORDS,
+    stop_words = None,
     **kwargs,
 ):
     """
@@ -508,13 +510,15 @@ def nmf(
         * ``'skip-gram'`` - Bag of Word with skipping certain n-grams.
     cleaning: function, (default=simple_textcleaning)
         function to clean the corpus.
-    stop_words: list, (default=STOPWORDS)
-        list of stop words to remove.
+    stop_words: list, (default=None)
+        list of stop words to remove. If None, default is malaya.texts._text_functions.STOPWORDS
 
     Returns
     -------
     _TOPIC: malaya.topic_modelling._TOPIC class
     """
+    if stop_words is None:
+        stop_words = STOPWORDS
     return _base_topic_modelling(
         corpus,
         n_topics,
@@ -539,7 +543,7 @@ def lsa(
     vectorizer = 'bow',
     stemming = True,
     cleaning = simple_textcleaning,
-    stop_words = STOPWORDS,
+    stop_words = None,
     **kwargs,
 ):
     """
@@ -566,13 +570,15 @@ def lsa(
         If True, sastrawi_stemmer will apply.
     cleaning: function, (default=simple_textcleaning)
         function to clean the corpus.
-    stop_words: list, (default=STOPWORDS)
-        list of stop words to remove.
+    stop_words: list, (default=None)
+        list of stop words to remove. If None, default is malaya.texts._text_functions.STOPWORDS
 
     Returns
     -------
     _TOPIC: malaya.topic_modelling._TOPIC class
     """
+    if stop_words is None:
+        stop_words = STOPWORDS
     return _base_topic_modelling(
         corpus,
         n_topics,
@@ -597,7 +603,7 @@ def lda2vec(
     ngram = (1, 3),
     cleaning = simple_textcleaning,
     vectorizer = 'bow',
-    stop_words = STOPWORDS,
+    stop_words = None,
     window_size = 2,
     embedding_size = 128,
     epoch = 10,
@@ -623,8 +629,8 @@ def lda2vec(
         n-grams size to train a corpus.
     cleaning: function, (default=simple_textcleaning)
         function to clean the corpus.
-    stop_words: list, (default=STOPWORDS)
-        list of stop words to remove.
+    stop_words: list, (default=None)
+        list of stop words to remove. If None, default is malaya.texts._text_functions.STOPWORDS
     embedding_size: int, (default=128)
         embedding size of lda2vec tensors.
     training_iteration: int, (default=10)
@@ -696,6 +702,8 @@ def lda2vec(
         max_df = max_df,
         stop_words = stop_words,
     )
+    if stop_words is None:
+        stop_words = STOPWORDS
 
     if cleaning is not None:
         for i in range(len(corpus)):

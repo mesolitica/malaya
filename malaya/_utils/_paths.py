@@ -595,7 +595,7 @@ S3_PATH_EMOTION = {
         'setting': 'v24/emotion/emotion-dictionary.json',
     },
     'self-attention': {
-        'model': 'v24/emotion/luong-emotion.pb',
+        'model': 'v24/emotion/self-attention-emotion.pb',
         'setting': 'v24/emotion/emotion-dictionary.json',
     },
     'multinomial': {
@@ -689,5 +689,47 @@ S3_PATH_RELEVANCY = {
     'dilated-cnn': {
         'model': 'v24/relevancy/dilated-cnn-relevancy.pb',
         'setting': 'v24/relevancy/relevancy-dictionary.json',
+    },
+}
+
+PATH_SIMILARITY = {
+    'bahdanau': {
+        'model': home + '/similarity/bahdanau/bahdanau-similarity.pb',
+        'setting': home + '/similarity/similarity-dictionary.json',
+        'version': 'v26',
+    },
+    'dilated-cnn': {
+        'model': home + '/similarity/luong/dilated-cnn-similarity.pb',
+        'setting': home + '/similarity/similarity-dictionary.json',
+        'version': 'v26',
+    },
+    'self-attention': {
+        'model': home + '/similarity/luong/self-attention-similarity.pb',
+        'setting': home + '/similarity/similarity-dictionary.json',
+        'version': 'v26',
+    },
+    'bert': {
+        'model': home + '/similarity/bert/bert-similarity.pb',
+        'vocab': home + '/bert/multilanguage-vocab.txt',
+        'version': 'v26',
+    },
+}
+
+S3_PATH_SIMILARITY = {
+    'bahdanau': {
+        'model': 'v26/similarity/bahdanau-similarity.pb',
+        'setting': 'v26/similarity/similarity-dictionary.json',
+    },
+    'self-attention': {
+        'model': 'v26/similarity/self-attention-similarity.pb',
+        'setting': 'v26/similarity/similarity-dictionary.json',
+    },
+    'dilated-cnn': {
+        'model': 'v26/similarity/dilated-cnn-similarity.pb',
+        'setting': 'v26/similarity/similarity-dictionary.json',
+    },
+    'bert': {
+        'model': 'v26/similarity/bert-similarity.pb',
+        'vocab': 'v24/multilanguage-vocab.txt',
     },
 }

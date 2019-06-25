@@ -14,6 +14,7 @@ from ..texts._text_functions import (
     language_detection_textcleaning,
     tag_chunk,
     bert_tokenization,
+    bert_tokenization_siamese,
 )
 from .._utils._parse_dependency import DependencyGraph
 from ..preprocessing import preprocessing_classification_index
@@ -1633,3 +1634,172 @@ class SPARSE_SIGMOID:
                         list_result.append(label)
                 results.append(list_result)
         return results
+
+
+class SIAMESE:
+    def __init__(self, X_left, X_right, logits, sess, dictionary):
+        self._X_left = X_left
+        self._X_right = X_right
+        self._logits = logits
+        self._sess = sess
+        self._dictionary = dictionary
+
+    def predict(self, string_left, string_right):
+        """
+        calculate similarity for two different texts.
+
+        Parameters
+        ----------
+        string_left : str
+        string_right : str
+
+        Returns
+        -------
+        float: float
+        """
+        if not isinstance(string_left, str):
+            raise ValueError('string_left must be a string')
+        if not isinstance(string_right, str):
+            raise ValueError('string_right must be a string')
+        _, splitted = preprocessing_classification_index(string_left)
+        batch_x_left = str_idx(
+            [' '.join(splitted)], self._dictionary, len(splitted), UNK = 3
+        )
+        _, splitted = preprocessing_classification_index(string_right)
+        batch_x_right = str_idx(
+            [' '.join(splitted)], self._dictionary, len(splitted), UNK = 3
+        )
+        return self._sess.run(
+            1 - self._logits,
+            feed_dict = {
+                self._X_left: batch_x_left,
+                self._X_right: batch_x_right,
+            },
+        )[0]
+
+    def predict_batch(self, strings_left, strings_right):
+        """
+        calculate similarity for two different batch of texts.
+
+        Parameters
+        ----------
+        string_left : str
+        string_right : str
+
+        Returns
+        -------
+        list: list of float
+        """
+        if not isinstance(strings_left, list):
+            raise ValueError('strings_left must be a list')
+        if not isinstance(strings_left[0], str):
+            raise ValueError('strings_left must be list of strings')
+        if not isinstance(strings_right, list):
+            raise ValueError('strings_right must be a list')
+        if not isinstance(strings_right[0], str):
+            raise ValueError('strings_right must be list of strings')
+
+        strings = [
+            ' '.join(preprocessing_classification_index(i)[1])
+            for i in strings_left
+        ]
+        maxlen = max([len(i.split()) for i in strings])
+        batch_x_left = str_idx(strings, self._dictionary, maxlen, UNK = 3)
+
+        strings = [
+            ' '.join(preprocessing_classification_index(i)[1])
+            for i in strings_right
+        ]
+        maxlen = max([len(i.split()) for i in strings])
+        batch_x_right = str_idx(strings, self._dictionary, maxlen, UNK = 3)
+
+        return self._sess.run(
+            1 - self._logits,
+            feed_dict = {
+                self._X_left: batch_x_left,
+                self._X_right: batch_x_right,
+            },
+        )
+
+
+class SIAMESE_BERT(BERT):
+    def __init__(
+        self,
+        X,
+        segment_ids,
+        input_masks,
+        logits,
+        sess,
+        tokenizer,
+        maxlen,
+        label = ['not similar', 'similar'],
+    ):
+        BERT.__init__(
+            self,
+            X,
+            segment_ids,
+            input_masks,
+            logits,
+            sess,
+            tokenizer,
+            maxlen,
+            label,
+        )
+
+    def _base(self, strings_left, strings_right):
+        input_ids, input_masks, segment_ids = bert_tokenization_siamese(
+            self._tokenizer, strings_left, strings_right, self._maxlen
+        )
+
+        return self._sess.run(
+            tf.nn.softmax(self._logits),
+            feed_dict = {
+                self._X: input_ids,
+                self._segment_ids: segment_ids,
+                self._input_masks: input_masks,
+            },
+        )
+
+    def predict(self, string_left, string_right):
+        """
+        calculate similarity for two different texts.
+
+        Parameters
+        ----------
+        string_left : str
+        string_right : str
+
+        Returns
+        -------
+        float: float
+        """
+        if not isinstance(string_left, str):
+            raise ValueError('string_left must be a string')
+        if not isinstance(string_right, str):
+            raise ValueError('string_right must be a string')
+
+        return self._base([string_left], [string_right])[0, 1]
+
+    def predict_batch(self, strings_left, strings_right):
+        """
+        calculate similarity for two different batch of texts.
+
+        Parameters
+        ----------
+        string_left : str
+        string_right : str
+
+        Returns
+        -------
+        list: list of float
+        """
+        if not isinstance(strings_left, list):
+            raise ValueError('strings_left must be a list')
+        if not isinstance(strings_left[0], str):
+            raise ValueError('strings_left must be list of strings')
+        if not isinstance(strings_right, list):
+            raise ValueError('strings_right must be a list')
+        if not isinstance(strings_right[0], str):
+            raise ValueError('strings_right must be list of strings')
+
+        return self._base(strings_left, strings_right)[:, 1]

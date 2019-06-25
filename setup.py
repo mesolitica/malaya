@@ -6,7 +6,7 @@ __packagename__ = 'malaya'
 setuptools.setup(
     name = __packagename__,
     packages = setuptools.find_packages(),
-    version = '2.5',
+    version = '2.6',
     python_requires = '>=3.6.*',
     description = 'Natural-Language-Toolkit for bahasa Malaysia, powered by Deep Learning Tensorflow.',
     author = 'huseinzol05',
@@ -30,6 +30,7 @@ setuptools.setup(
         'PySastrawi',
         'toolz',
         'ftfy',
+        'networkx',
     ],
     license = 'MIT',
     classifiers = [

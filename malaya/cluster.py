@@ -190,7 +190,7 @@ def cluster_scatter(
     ngram = (1, 3),
     cleaning = simple_textcleaning,
     vectorizer = 'bow',
-    stop_words = STOPWORDS,
+    stop_words = None,
     num_clusters = 5,
     clustering = KMeans,
     decomposition = MDS,
@@ -219,8 +219,8 @@ def cluster_scatter(
         n-grams size to train a corpus.
     cleaning: function, (default=simple_textcleaning)
         function to clean the corpus.
-    stop_words: list, (default=STOPWORDS)
-        list of stop words to remove.
+    stop_words: list, (default=None)
+        list of stop words to remove. If None, default is malaya.texts._text_functions.STOPWORDS
     vectorizer: str, (default='bow')
         vectorizer technique. Allowed values:
 
@@ -283,6 +283,8 @@ def cluster_scatter(
         Vectorizer = SkipGramVectorizer
     else:
         raise Exception("vectorizer must be in  ['tfidf', 'bow', 'skip-gram']")
+    if stop_words is None:
+        stop_words = STOPWORDS
 
     try:
         import matplotlib.pyplot as plt
@@ -365,7 +367,7 @@ def cluster_dendogram(
     ngram = (1, 3),
     cleaning = simple_textcleaning,
     vectorizer = 'bow',
-    stop_words = STOPWORDS,
+    stop_words = None,
     random_samples = 0.3,
     figsize = (17, 9),
     **kwargs
@@ -389,8 +391,8 @@ def cluster_dendogram(
         n-grams size to train a corpus.
     cleaning: function, (default=simple_textcleaning)
         function to clean the corpus.
-    stop_words: list, (default=STOPWORDS)
-        list of stop words to remove.
+    stop_words: list, (default=None)
+        list of stop words to remove. If None, default is malaya.texts._text_functions.STOPWORDS
     vectorizer: str, (default='bow')
         vectorizer technique. Allowed values:
 
@@ -450,6 +452,8 @@ def cluster_dendogram(
         raise Exception(
             'matplotlib and seaborn not installed. Please install it and try again.'
         )
+    if stop_words is None:
+        stop_words = STOPWORDS
 
     tf_vectorizer = Vectorizer(
         ngram_range = ngram,
@@ -507,7 +511,7 @@ def cluster_graph(
     ngram = (1, 3),
     cleaning = simple_textcleaning,
     vectorizer = 'bow',
-    stop_words = STOPWORDS,
+    stop_words = None,
     num_clusters = 5,
     clustering = KMeans,
     figsize = (17, 9),
@@ -538,8 +542,8 @@ def cluster_graph(
         n-grams size to train a corpus.
     cleaning: function, (default=simple_textcleaning)
         function to clean the corpus.
-    stop_words: list, (default=STOPWORDS)
-        list of stop words to remove.
+    stop_words: list, (default=None)
+        list of stop words to remove. If None, default is malaya.texts._text_functions.STOPWORDS
     vectorizer: str, (default='bow')
         vectorizer technique. Allowed values:
 
@@ -620,6 +624,8 @@ def cluster_graph(
         raise Exception(
             'matplotlib, seaborn, networkx not installed. Please install it and try again.'
         )
+    if stop_words is None:
+        stop_words = STOPWORDS
 
     tf_vectorizer = Vectorizer(
         ngram_range = ngram,
@@ -701,7 +707,7 @@ def cluster_entity_linking(
     stemming = True,
     cleaning = simple_textcleaning,
     vectorizer = 'bow',
-    stop_words = STOPWORDS,
+    stop_words = None,
     figsize = (17, 9),
     **kwargs
 ):
@@ -733,8 +739,8 @@ def cluster_entity_linking(
         n-grams size to train a corpus.
     cleaning: function, (default=simple_textcleaning)
         function to clean the corpus.
-    stop_words: list, (default=STOPWORDS)
-        list of stop words to remove.
+    stop_words: list, (default=None)
+        list of stop words to remove. If None, default is malaya.texts._text_functions.STOPWORDS
     vectorizer: str, (default='bow')
         vectorizer technique. Allowed values:
 
@@ -795,6 +801,8 @@ def cluster_entity_linking(
         raise ValueError(
             'threshold must be bigger than 0, less than or equal to 1'
         )
+    if stop_words is None:
+        stop_words = STOPWORDS
 
     try:
         import matplotlib.pyplot as plt

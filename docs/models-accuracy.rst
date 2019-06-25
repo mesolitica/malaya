@@ -6,10 +6,10 @@ Trained on 80% of dataset, tested on 20% of dataset. All training
 sessions stored in
 `session/entities <https://github.com/huseinzol05/Malaya/tree/master/session/entities>`__
 
-.. code:: ipython3
+.. code:: python
 
     from IPython.core.display import Image, display
-    
+
     display(Image('ner-accuracy.png', width=500))
 
 
@@ -132,7 +132,7 @@ Trained on 80% of dataset, tested on 20% of dataset. All training
 sessions stored in
 `session/language-detection <https://github.com/huseinzol05/Malaya/tree/master/session/language-detection>`__
 
-.. code:: ipython3
+.. code:: python
 
     display(Image('language-detection-accuracy.png', width=500))
 
@@ -213,7 +213,7 @@ Trained on 80% of dataset, tested on 20% of dataset. All training
 sessions stored in
 `session/pos <https://github.com/huseinzol05/Malaya/tree/master/session/pos>`__
 
-.. code:: ipython3
+.. code:: python
 
     display(Image('pos-accuracy.png', width=500))
 
@@ -356,7 +356,7 @@ Trained on 80% of dataset, tested on 20% of dataset. All training
 sessions stored in
 `session/sentiment <https://github.com/huseinzol05/Malaya/tree/master/session/sentiment>`__
 
-.. code:: ipython3
+.. code:: python
 
     display(Image('sentiment-accuracy.png', width=500))
 
@@ -467,7 +467,7 @@ Labels are,
 
    {0: 'toxic', 1: 'severe_toxic', 2: 'obscene', 3: 'threat', 4: 'insult', 5: 'identity_hate'}
 
-.. code:: ipython3
+.. code:: python
 
     display(Image('toxic-accuracy.png', width=500))
 
@@ -596,7 +596,7 @@ Trained on 80% of dataset, tested on 20% of dataset. All training
 sessions stored in
 `session/subjectivity <https://github.com/huseinzol05/Malaya/tree/master/session/subjectivity>`__
 
-.. code:: ipython3
+.. code:: python
 
     display(Image('subjectivity-accuracy.png', width=500))
 
@@ -702,7 +702,7 @@ Trained on 80% of dataset, tested on 20% of dataset. All training
 sessions stored in
 `session/emotion <https://github.com/huseinzol05/Malaya/tree/master/session/emotion>`__
 
-.. code:: ipython3
+.. code:: python
 
     display(Image('emotion-accuracy.png', width=500))
 
@@ -824,6 +824,71 @@ BERT
 
    avg / total       0.88      0.87      0.86     84104
 
+Similarity
+----------
+
+Trained on 80% of dataset, tested on 20% of dataset. All training
+sessions stored in
+`session/similarity <https://github.com/huseinzol05/Malaya/tree/master/session/similarity>`__
+
+.. code:: python
+
+    display(Image('similarity-accuracy.png', width=500))
+
+
+
+.. image:: models-accuracy_files/models-accuracy_58_0.png
+   :width: 500px
+
+
+bahdanau
+^^^^^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+   not similar       0.83      0.83      0.83     31524
+       similar       0.71      0.71      0.71     18476
+
+   avg / total       0.79      0.79      0.79     50000
+
+self-attention
+^^^^^^^^^^^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+   not similar       0.81      0.83      0.82     31524
+       similar       0.70      0.67      0.68     18476
+
+   avg / total       0.77      0.77      0.77     50000
+
+dilated-cnn
+^^^^^^^^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+   not similar       0.82      0.82      0.82     31524
+       similar       0.69      0.69      0.69     18476
+
+   avg / total       0.77      0.77      0.77     50000
+
+bert
+^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+   not similar       0.86      0.86      0.86     50757
+       similar       0.77      0.76      0.76     30010
+
+   avg / total       0.83      0.83      0.83     80767
+
 Dependency parsing
 ------------------
 
@@ -831,13 +896,13 @@ Trained on 90% of dataset, tested on 10% of dataset. All training
 sessions stored in
 `session/dependency <https://github.com/huseinzol05/Malaya/tree/master/session/dependency>`__
 
-.. code:: ipython3
+.. code:: python
 
     display(Image('dependency-accuracy.png', width=500))
 
 
 
-.. image:: models-accuracy_files/models-accuracy_58_0.png
+.. image:: models-accuracy_files/models-accuracy_64_0.png
    :width: 500px
 
 
@@ -882,7 +947,7 @@ Bahdanau
            xcomp     0.8878    0.9039    0.8958      1217
 
      avg / total     0.9953    0.9953    0.9953    951993
-     
+
                 precision    recall  f1-score   support
 
              0     1.0000    1.0000    1.0000    843055
@@ -1062,7 +1127,7 @@ Luong
            xcomp     0.9225    0.8364    0.8774      1253
 
      avg / total     0.9950    0.9950    0.9950    951993
-     
+
                 precision    recall  f1-score   support
 
              0     1.0000    1.0000    1.0000    840905
@@ -1475,7 +1540,7 @@ Attention is all you need
            xcomp     0.8580    0.8593    0.8587      1301
 
      avg / total     0.9906    0.9906    0.9906    951993
-     
+
                 precision    recall  f1-score   support
 
              0     1.0000    1.0000    1.0000    841796
@@ -1689,7 +1754,7 @@ CRF
              aux     0.5000    0.2500    0.3333         4
 
      avg / total     0.8953    0.8961    0.8953    112332
-     
+
                 precision    recall  f1-score   support
 
              5     0.5452    0.5875    0.5656      5964

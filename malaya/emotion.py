@@ -146,7 +146,7 @@ def bert(validate = True):
 
     Returns
     -------
-    XGB : malaya._models._tensorflow_model.MULTICLASS_BERT class
+    MULTICLASS_BERT : malaya._models._tensorflow_model.MULTICLASS_BERT class
     """
     if not isinstance(validate, bool):
         raise ValueError('validate must be a boolean')

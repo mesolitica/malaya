@@ -75,13 +75,18 @@ Features
 -  **Spell Correction**
 
    Using local Malaysia NLP researches to auto-correct any bahasa words.
--  Stemmer
+-  **Stemmer**
+
+   Use Character LSTM Seq2Seq with attention state-of-art to do Bahasa stemming.
 -  **Subjectivity Analysis**
 
    From fine-tuning BERT, Attention-Recurrent model, Sparse Tensorflow and Self-Attention to build deep subjectivity analysis models.
+-  **Similarity**
+
+   Use deep LSTM siamese, deep Dilated CNN siamese, deep Self-Attention, siamese, Doc2Vec and BERT to build deep semantic similarity models.
 -  **Summarization**
 
-   Using skip-thought with attention state-of-art to give precise unsupervised summarization.
+   Using skip-thought and residual-network with attention state-of-art, LDA, LSA and Doc2Vec to give precise unsupervised summarization, and TextRank as scoring algorithm.
 -  **Topic Modelling**
 
    Provide LDA2Vec, LDA, NMF and LSA interface for easy topic modelling with topics visualization.

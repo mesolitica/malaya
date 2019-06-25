@@ -7,9 +7,295 @@
 
 .. parsed-literal::
 
-    CPU times: user 10.7 s, sys: 906 ms, total: 11.6 s
-    Wall time: 12 s
+    CPU times: user 12.5 s, sys: 1.77 s, total: 14.3 s
+    Wall time: 19.5 s
 
+
+Deep Siamese network
+--------------------
+
+Purpose of deep siamese network to study semantic similarity between 2
+strings, near to 1.0 means more similar. Deep Siamese leverage the power
+of word-vector, and we also implemented BERT to study semantic
+similarity and BERT leverage the power of attention!
+
+List deep siamese models
+------------------------
+
+.. code:: python
+
+    malaya.similarity.available_deep_siamese()
+
+
+
+
+.. parsed-literal::
+
+    ['self-attention', 'bahdanau', 'dilated-cnn']
+
+
+
+-  ``'self-attention'`` - Fast-text architecture, embedded and logits
+   layers only with self attention.
+-  ``'bahdanau'`` - LSTM with bahdanau attention architecture.
+-  ``'dilated-cnn'`` - Pyramid Dilated CNN architecture.
+
+Load deep siamese models
+------------------------
+
+.. code:: python
+
+    string1 = 'Pemuda mogok lapar desak kerajaan prihatin isu iklim'
+    string2 = 'Perbincangan isu pembalakan perlu babit kerajaan negeri'
+    string3 = 'kerajaan perlu kisah isu iklim, pemuda mogok lapar'
+    string4 = 'Kerajaan dicadang tubuh jawatankuasa khas tangani isu alam sekitar'
+
+Load bahdanau model
+^^^^^^^^^^^^^^^^^^^
+
+.. code:: python
+
+    model = malaya.similarity.deep_siamese('bahdanau')
+
+Calculate similarity between 2 strings
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``predict`` need to give 2 strings, left and right string
+
+.. code:: python
+
+    model.predict(string1, string2)
+
+
+
+
+.. parsed-literal::
+
+    0.4267301
+
+
+
+.. code:: python
+
+    model.predict(string1, string3)
+
+
+
+
+.. parsed-literal::
+
+    0.28711933
+
+
+
+Calculate similarity more than 2 strings
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``predict_batch`` need to give 2 lists of strings, left and right
+strings
+
+.. code:: python
+
+    model.predict_batch([string1, string2], [string3, string4])
+
+
+
+
+.. parsed-literal::
+
+    array([0.39504164, 0.33375728], dtype=float32)
+
+
+
+Load self-attention model
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: python
+
+    model = malaya.similarity.deep_siamese('self-attention')
+
+.. code:: python
+
+    model.predict_batch([string1, string2], [string3, string4])
+
+
+
+
+.. parsed-literal::
+
+    array([0.08130383, 0.09907728], dtype=float32)
+
+
+
+Load dilated-cnn model
+^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: python
+
+    model = malaya.similarity.deep_siamese('dilated-cnn')
+
+.. code:: python
+
+    model.predict_batch([string1, string2], [string3, string4])
+
+
+
+
+.. parsed-literal::
+
+    array([0.1886251 , 0.00937402], dtype=float32)
+
+
+
+Calculate similarity using doc2vec
+----------------------------------
+
+We need to load word vector provided by Malaya.
+
+Important parameters, 1. ``aggregation``, aggregation function to
+accumulate word vectors. Default is ``mean``.
+
+::
+
+   * ``'mean'`` - mean.
+   * ``'min'`` - min.
+   * ``'max'`` - max.
+   * ``'sum'`` - sum.
+   * ``'sqrt'`` - square root.
+
+2. ``similarity`` distance function to calculate similarity. Default is
+   ``cosine``.
+
+   -  ``'cosine'`` - cosine similarity.
+   -  ``'euclidean'`` - euclidean similarity.
+   -  ``'manhattan'`` - manhattan similarity.
+
+Using word2vec
+^^^^^^^^^^^^^^
+
+I will use ``load_news``, word2vec from wikipedia took a very long time.
+wikipedia much more accurate.
+
+.. code:: python
+
+    embedded_news = malaya.word2vec.load_news(64)
+    w2v_wiki = malaya.word2vec.word2vec(embedded_news['nce_weights'],
+                                        embedded_news['dictionary'])
+
+.. code:: python
+
+    malaya.similarity.doc2vec(w2v_wiki, string1, string2)
+
+
+
+
+.. parsed-literal::
+
+    0.9181415736675262
+
+
+
+.. code:: python
+
+    malaya.similarity.doc2vec(w2v_wiki, string1, string4)
+
+
+
+
+.. parsed-literal::
+
+    0.9550771713256836
+
+
+
+.. code:: python
+
+    malaya.similarity.doc2vec(w2v_wiki, string1, string4, similarity = 'euclidean')
+
+
+
+
+.. parsed-literal::
+
+    0.4642694249990522
+
+
+
+Different similarity function different percentage.
+
+**So you can try use fast-text and elmo to do the similarity study.**
+
+Calculate similarity using summarizer
+-------------------------------------
+
+We can use extractive summarization model
+``malaya.summarize.deep_extractive()`` to get strings embedded and
+calculate similarity between the vectors.
+
+.. code:: python
+
+    deep_summary = malaya.summarize.deep_extractive(model = 'skip-thought')
+
+.. code:: python
+
+    malaya.similarity.summarizer(deep_summary, string1, string3)
+
+
+
+
+.. parsed-literal::
+
+    0.8722701370716095
+
+
+
+BERT model
+----------
+
+BERT is the best similarity model in term of accuracy, you can check
+similarity accuracy here,
+https://malaya.readthedocs.io/en/latest/Accuracy.html#similarity. But
+warning, the model size is 700MB! Make sure you have enough resources to
+use BERT, and installed bert-tensorflow first,
+
+.. code:: python
+
+    model = malaya.similarity.bert()
+
+.. code:: python
+
+    model.predict(string1, string3)
+
+
+
+
+.. parsed-literal::
+
+    0.97767043
+
+
+
+.. code:: python
+
+    model.predict_batch([string1, string2], [string3, string4])
+
+
+
+
+.. parsed-literal::
+
+    array([0.9253927, 0.0317315], dtype=float32)
+
+
+
+**BERT is the best!**
+
+Topics similarity
+-----------------
+
+If you are interested in multiple topics searching inside a string when
+giving set of topics to supervised, Malaya provided some interface and
+topics related to political landscape in Malaysia
 
 .. code:: python
 

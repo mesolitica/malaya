@@ -824,6 +824,71 @@ BERT
 
    avg / total       0.88      0.87      0.86     84104
 
+Similarity
+----------
+
+Trained on 80% of dataset, tested on 20% of dataset. All training
+sessions stored in
+`session/similarity <https://github.com/huseinzol05/Malaya/tree/master/session/similarity>`__
+
+.. code:: ipython3
+
+    display(Image('similarity-accuracy.png', width=500))
+
+
+
+.. image:: models-accuracy_files/models-accuracy_58_0.png
+   :width: 500px
+
+
+bahdanau
+^^^^^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+   not similar       0.83      0.83      0.83     31524
+       similar       0.71      0.71      0.71     18476
+
+   avg / total       0.79      0.79      0.79     50000
+
+self-attention
+^^^^^^^^^^^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+   not similar       0.81      0.83      0.82     31524
+       similar       0.70      0.67      0.68     18476
+
+   avg / total       0.77      0.77      0.77     50000
+
+dilated-cnn
+^^^^^^^^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+   not similar       0.82      0.82      0.82     31524
+       similar       0.69      0.69      0.69     18476
+
+   avg / total       0.77      0.77      0.77     50000
+
+bert
+^^^^
+
+.. code:: text
+
+                precision    recall  f1-score   support
+
+   not similar       0.86      0.86      0.86     50757
+       similar       0.77      0.76      0.76     30010
+
+   avg / total       0.83      0.83      0.83     80767
+
 Dependency parsing
 ------------------
 
@@ -837,7 +902,7 @@ sessions stored in
 
 
 
-.. image:: models-accuracy_files/models-accuracy_58_0.png
+.. image:: models-accuracy_files/models-accuracy_64_0.png
    :width: 500px
 
 

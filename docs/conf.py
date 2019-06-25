@@ -76,6 +76,7 @@ MOCK_MODULES = [
     'sklearn.neighbors',
     'pulp',
     'ftfy',
+    'networkx',
 ]
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
