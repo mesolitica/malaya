@@ -137,3 +137,9 @@ I0625 23:21:25.917059 139934726485760 tf_logging.py:115] [99500] | gnorm 0.41 lr
 I0625 23:39:56.941915 139934726485760 tf_logging.py:115] [100000] | gnorm 0.29 lr 0.000001 | loss 7.93 | pplx 2767.98, bpc 11.4346
 I0625 23:40:07.754640 139934726485760 tf_logging.py:115] Model saved in path: output-model/model.ckpt
 ```
+
+## Comparison using Subjectivity Dataset
+
+1. Checkpoint from pretraining, [finetuning-bert-subjective-pretraining.ipynb](test-subjectivity/finetuning-bert-subjective-pretraining.ipynb).
+
+**26/6/2019, Result is bad. Achieved around 49% testing accuracy. Experiment failed, will not going to release the checkpoints to public. Going to check what is wrong from the first step.**
