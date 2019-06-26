@@ -123,3 +123,17 @@ python3 train_gpu.py \
   --uncased=True \
   --num_core_per_host=1
 ```
+
+Took 4 days to pretrained 100k steps using Tesla K80,
+
+```
+I0625 21:30:35.573374 139934726485760 tf_logging.py:115] [96500] | gnorm 0.47 lr 0.000010 | loss 8.02 | pplx 3034.24, bpc 11.5671
+I0625 21:49:01.655897 139934726485760 tf_logging.py:115] [97000] | gnorm 0.39 lr 0.000008 | loss 7.99 | pplx 2941.23, bpc 11.5222
+I0625 22:07:27.674330 139934726485760 tf_logging.py:115] [97500] | gnorm 0.38 lr 0.000007 | loss 7.94 | pplx 2795.35, bpc 11.4488
+I0625 22:25:53.687741 139934726485760 tf_logging.py:115] [98000] | gnorm 0.46 lr 0.000006 | loss 7.88 | pplx 2653.32, bpc 11.3736
+I0625 22:44:23.254905 139934726485760 tf_logging.py:115] [98500] | gnorm 0.22 lr 0.000005 | loss 7.98 | pplx 2933.26, bpc 11.5183
+I0625 23:02:54.413349 139934726485760 tf_logging.py:115] [99000] | gnorm 0.29 lr 0.000003 | loss 7.97 | pplx 2889.68, bpc 11.4967
+I0625 23:21:25.917059 139934726485760 tf_logging.py:115] [99500] | gnorm 0.41 lr 0.000002 | loss 7.91 | pplx 2723.93, bpc 11.4115
+I0625 23:39:56.941915 139934726485760 tf_logging.py:115] [100000] | gnorm 0.29 lr 0.000001 | loss 7.93 | pplx 2767.98, bpc 11.4346
+I0625 23:40:07.754640 139934726485760 tf_logging.py:115] Model saved in path: output-model/model.ckpt
+```

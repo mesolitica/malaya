@@ -59,7 +59,7 @@ Features
    Convert from numbers to cardinal or ordinal representation.
 -  **Part-of-Speech Recognition**
 
-   Latest state-of-art CRF deep learning models to do Naming Entity Recognition.
+   Latest state-of-art CRF deep learning models to do Part-of-Speech Recognition.
 -  **Dependency Parsing**
 
    Latest state-of-art CRF deep learning models to do analyzes the grammatical structure of a sentence, establishing relationships between words.
