@@ -100,6 +100,23 @@ Features
 
    Provide pretrained bahasa wikipedia Fast-text, with easy interface and visualization.
 
+References
+-----------
+
+If you use our software for research, please cite:
+
+::
+
+  @misc{Malaya, Natural-Language-Toolkit library for bahasa Malaysia, powered by Deep Learning Tensorflow,
+    author = {Husein, Zolkepli},
+    title = {Malaya},
+    year = {2018},
+    publisher = {GitHub},
+    journal = {GitHub repository},
+    howpublished = {\url{https://github.com/huseinzol05/malaya}}
+  }
+
+
 License
 --------
 
