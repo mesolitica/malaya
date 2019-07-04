@@ -510,7 +510,7 @@ from ``malaya.preprocessing.get_normalize()``
 
 .. code:: python
 
-    tokenizer = malaya.preprocessing._SocialTokenizer().tokenize
+    tokenizer = malaya.preprocessing.SocialTokenizer().tokenize
 
 .. code:: python
 
