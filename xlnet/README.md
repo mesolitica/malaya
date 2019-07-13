@@ -187,7 +187,7 @@ Link to [notebooks](finetune-emotion).
 
 ## Feedbacks
 
-1. we will add comparison for abstractive summarization using ROUGE-2, but this may take sometime, because its a seq2seq model, encoder is BERT, decoder is pointer generator.
+1. we will add comparison for abstractive summarization using ROUGE-2, but this may take sometime, because its a seq2seq model, encoder is XLNET, decoder is pointer generator.
 
 2. Feel free to suggest me to add more any kind of finetune, like, QA, Neural Machine Translation and etc.
 
