@@ -198,13 +198,13 @@ Link to [notebooks](finetune-emotion).
 1. Please citate the repository if use these checkpoints.
 
 ```
-@misc{Malaya-Dataset, We gather Bahasa Malaysia corpus! This repository to store corpus for Malaya,
+@misc{Malaya, Natural-Language-Toolkit library for bahasa Malaysia, powered by Deep Learning Tensorflow,
   author = {Husein, Zolkepli},
-  title = {Malaya-Dataset},
+  title = {Malaya},
   year = {2018},
   publisher = {GitHub},
   journal = {GitHub repository},
-  howpublished = {\url{https://github.com/huseinzol05/Malaya-Dataset}}
+  howpublished = {\url{https://github.com/huseinzol05/malaya}}
 }
 ```
 
