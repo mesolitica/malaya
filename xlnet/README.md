@@ -195,7 +195,7 @@ Link to [notebooks](finetune-emotion).
 
 ## Citation
 
-1. Please citate the repository if use these corpus.
+1. Please citate the repository if use these checkpoints.
 
 ```
 @misc{Malaya-Dataset, We gather Bahasa Malaysia corpus! This repository to store corpus for Malaya,
