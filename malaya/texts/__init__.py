@@ -31,3 +31,4 @@ from ._tatabahasa import (
     stopwords_calon,
 )
 from ._text_functions import STOPWORDS as stopwords
+from ._text_functions import split_into_sentences as sentence_splitter

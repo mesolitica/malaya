@@ -1,30 +1,38 @@
 # XLNET-Bahasa
 
+**_Last update 5-July-2019, release new pretrained checkpoint._**
+
 Thanks to [zihangdai](https://github.com/zihangdai) for opensourcing XLNET, https://github.com/zihangdai/xlnet
+
+## Table of contents
+  * [Objective](https://github.com/huseinzol05/Malaya/tree/master/xlnet#objective)
+  * [How-to](https://github.com/huseinzol05/Malaya/tree/master/xlnet#how-to)
+  * [Download](https://github.com/huseinzol05/Malaya/tree/master/xlnet#download)
+  * [Comparison using Subjectivity Dataset](https://github.com/huseinzol05/Malaya/tree/master/xlnet#comparison-using-subjectivity-dataset)
+  * [Comparison using Emotion Dataset](https://github.com/huseinzol05/Malaya/tree/master/xlnet#comparison-using-emotion-dataset)
+  * [Feedbacks](https://github.com/huseinzol05/Malaya/tree/master/xlnet#feedbacks)
+  * [Citation](https://github.com/huseinzol05/Malaya/tree/master/xlnet#citation)
+  * [Donation](https://github.com/huseinzol05/Malaya/tree/master/xlnet#donation)
 
 ## Objective
 
-1. There is no multilanguage implementation of XLNET, and obviously no Bahasa Malaysia implemented. So this directory to provide pretraining XLNET for Bahasa Malaysia.
+1. There is no multilanguage implementation of XLNET, and obviously no Bahasa Malaysia implemented. So we decided to train BERT from scratch and finetune using available dataset we have. [Dataset we use for pretraining](https://github.com/huseinzol05/Malaya-Dataset#dumping).
+
+2. Provide **SMALL** and **BASE** XLNet for Bahasa. Sorry we cannot provide **LARGE** size, we got hardware limitation.
 
 ## How-to
 
-1. Git clone [Malaya-Dataset](https://github.com/huseinzol05/Malaya-Dataset),
+1. Run [dumping.ipynb](dumping.ipynb) to create text dataset for pretraining.
 
-```bash
-git clone https://github.com/huseinzol05/Malaya-Dataset.git
-```
-
-2. Run [tokenization.ipynb](tokenization.ipynb) to create dictionary for tokenizer and text dataset for pretraining.
-
-3. Git clone [Sentence-Piece](https://github.com/google/sentencepiece),
+2. Git clone [Sentence-Piece](https://github.com/google/sentencepiece),
 
 ```bash
 git clone https://github.com/google/sentencepiece.git
 ```
 
-4. Install [Sentence-Piece](https://github.com/google/sentencepiece),
+3. Install [Sentence-Piece](https://github.com/google/sentencepiece),
 
-On 23rd June 2019, I cannot use latest master to compile sentence-piece using bazel, after a few googled, we need to revert to some commit.
+On 23rd June 2019, we cannot use latest master to compile sentence-piece using bazel, after a few googled, we need to revert to some commit.
 
 ```bash
 cd sentencepiece
@@ -60,13 +68,13 @@ Usage: sentencepiece [options] files
 ...
 ```
 
-5. Create tokenizer using Sentence-Piece,
+4. Create tokenizer using Sentence-Piece,
 
 ```bash
 cd ../
 spm_train \
---input=texts.txt \
---model_prefix=sp10m.cased.v3 \
+--input=dumping-all.txt \
+--model_prefix=sp10m.cased.v5 \
 --vocab_size=32000 \
 --character_coverage=0.99995 \
 --model_type=unigram \
@@ -76,39 +84,38 @@ spm_train \
 --input_sentence_size=10000000
 ```
 
-**In the future, I will use Malaya tokenizer as XLNET tokenizer, if XLNET accuracies beat BERT accuracies.**
-
-6. Convert text files to tfrecord,
+5. Convert text files to tfrecord,
 
 ```bash
 mkdir save-location
 python3 data_utils.py \
-  --bsz_per_host=8 \
-  --seq_len=256 \
-  --reuse_len=128 \
-  --input_glob=*.txt \
+  --bsz_per_host=4 \
+  --seq_len=512 \
+  --reuse_len=256 \
+  --input_glob=dumping-all.txt \
   --save_dir=save-location \
   --num_passes=20 \
   --bi_data=True \
-  --sp_path=sp10m.cased.v3.model \
+  --sp_path=sp10m.cased.v5.model \
   --mask_alpha=6 \
   --mask_beta=1 \
   --num_predict=85 \
-  --num_core_per_host=1
+  --num_core_per_host=1 \
+  --uncased=False
 ```
 
-7. Run pretained,
+6. Run pretained,
 
-I reduce the size of XLNET by 2 while maintain the number of attention, here is [original size](https://github.com/zihangdai/xlnet#pretraining-with-xlnet).
-
+**BASE** size, we reduce the size of XLNET by 2 while maintain the number of attention, here is [original size](https://github.com/zihangdai/xlnet#pretraining-with-xlnet),
 ```bash
 python3 train_gpu.py \
   --corpus_info_path=save-location/corpus_info.json \
   --record_info_dir=save-location/tfrecords \
-  --train_batch_size=8 \
-  --seq_len=256 \
-  --reuse_len=128 \
-  --perm_size=128 \
+  --train_batch_size=4 \
+  --seq_len=512 \
+  --reuse_len=256 \
+  --mem_len=384 \
+  --perm_size=256 \
   --n_layer=12 \
   --d_model=512 \
   --d_embed=512 \
@@ -120,26 +127,92 @@ python3 train_gpu.py \
   --mask_beta=1 \
   --num_predict=85 \
   --model_dir=output-model \
-  --uncased=True \
-  --num_core_per_host=1
+  --uncased=False \
+  --num_core_per_host=1 \
+  --train_steps=700000  --iterations=10 --learning_rate=2.5e-5
 ```
 
-Took 4 days to pretrained 100k steps using Tesla K80,
+**SMALL**,
+```bash
+python3 train_gpu.py \
+  --corpus_info_path=save-location/corpus_info.json \
+  --record_info_dir=save-location/tfrecords \
+  --train_batch_size=4 \
+  --seq_len=512 \
+  --reuse_len=256 \
+  --mem_len=384 \
+  --perm_size=256 \
+  --n_layer=6 \
+  --d_model=256 \
+  --d_embed=256 \
+  --n_head=16 \
+  --d_head=64 \
+  --d_inner=1024 \
+  --untie_r=True \
+  --mask_alpha=6 \
+  --mask_beta=1 \
+  --num_predict=85 \
+  --model_dir=output-model \
+  --uncased=False \
+  --num_core_per_host=1 \
+  --train_steps=700000  --iterations=10 --learning_rate=2.5e-5
+```
 
-```
-I0625 21:30:35.573374 139934726485760 tf_logging.py:115] [96500] | gnorm 0.47 lr 0.000010 | loss 8.02 | pplx 3034.24, bpc 11.5671
-I0625 21:49:01.655897 139934726485760 tf_logging.py:115] [97000] | gnorm 0.39 lr 0.000008 | loss 7.99 | pplx 2941.23, bpc 11.5222
-I0625 22:07:27.674330 139934726485760 tf_logging.py:115] [97500] | gnorm 0.38 lr 0.000007 | loss 7.94 | pplx 2795.35, bpc 11.4488
-I0625 22:25:53.687741 139934726485760 tf_logging.py:115] [98000] | gnorm 0.46 lr 0.000006 | loss 7.88 | pplx 2653.32, bpc 11.3736
-I0625 22:44:23.254905 139934726485760 tf_logging.py:115] [98500] | gnorm 0.22 lr 0.000005 | loss 7.98 | pplx 2933.26, bpc 11.5183
-I0625 23:02:54.413349 139934726485760 tf_logging.py:115] [99000] | gnorm 0.29 lr 0.000003 | loss 7.97 | pplx 2889.68, bpc 11.4967
-I0625 23:21:25.917059 139934726485760 tf_logging.py:115] [99500] | gnorm 0.41 lr 0.000002 | loss 7.91 | pplx 2723.93, bpc 11.4115
-I0625 23:39:56.941915 139934726485760 tf_logging.py:115] [100000] | gnorm 0.29 lr 0.000001 | loss 7.93 | pplx 2767.98, bpc 11.4346
-I0625 23:40:07.754640 139934726485760 tf_logging.py:115] Model saved in path: output-model/model.ckpt
-```
+## Download
+
+1.  8th July 2019, [xlnet-8-july-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/xlnet-8-july-2019.tar.gz).
+
+**Vocab size 32k, Case Insensitive, Train on 500MB dataset, BASE size (878MB)**.
+
+2.  9th July 2019, [xlnet-9-july-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/xlnet-9-july-2019.tar.gz).
+
+**Vocab size 32k, Case Sensitive, Train on 1.21GB dataset, BASE size (878MB)**.
+
 
 ## Comparison using Subjectivity Dataset
 
-1. Checkpoint from pretraining, [finetuning-bert-subjective-pretraining.ipynb](test-subjectivity/finetuning-bert-subjective-pretraining.ipynb).
+Link to [subjectivity dataset](https://github.com/huseinzol05/Malaya-Dataset#subjectivity).
 
-**26/6/2019, Result is bad. Achieved around 49% testing accuracy. Experiment failed, will not going to release the checkpoints to public. Going to check what is wrong from the first step.**
+Link to [notebooks](finetune-subjectivity).
+
+<img src="barplot/subjective.png" width="70%" align="">
+
+## Comparison using Emotion Dataset
+
+Link to [emotion dataset](https://github.com/huseinzol05/Malaya-Dataset#emotion).
+
+Link to [notebooks](finetune-emotion).
+
+<img src="barplot/emotion.png" width="70%" align="">
+
+## Feedbacks
+
+1. we will add comparison for abstractive summarization using ROUGE-2, but this may take sometime, because its a seq2seq model, encoder is BERT, decoder is pointer generator.
+
+2. Feel free to suggest me to add more any kind of finetune, like, QA, Neural Machine Translation and etc.
+
+3. Some of models still on training, so you might want to keep check updates from here. Every tensorflow checkpoints will auto push to S3 and override.
+
+## Citation
+
+1. Please citate the repository if use these corpus.
+
+```
+@misc{Malaya-Dataset, We gather Bahasa Malaysia corpus! This repository to store corpus for Malaya,
+  author = {Husein, Zolkepli},
+  title = {Malaya-Dataset},
+  year = {2018},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/huseinzol05/Malaya-Dataset}}
+}
+```
+
+2. Please at least email us first before distributing these checkpoints. Remember all these hard workings we want to give it for free.
+3. What do you see just the checkpoints, but nobody can see how much we spent our cost to make it public.
+
+## Donation
+
+<a href="https://www.patreon.com/bePatron?u=7291337"><img src="https://static1.squarespace.com/static/54a1b506e4b097c5f153486a/t/58a722ec893fc0a0b7745b45/1487348853811/patreon+art.jpeg" width="40%"></a>
+
+Or, One time donation without credit card hustle, **7053174643, CIMB Bank, Husein Zolkepli**

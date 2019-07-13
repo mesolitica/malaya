@@ -5,29 +5,25 @@ option = {
             interval: 0,
             rotate: 30
         },
-        data: ['BERT-Bahasa pretraining',
-        'BERT-Bahasa-subjective',
-        'BERT-Bahasa sentiment',
-        'BERT-Bahasa-emotion',
-        'BERT-Bahasa-POS',
-        'BERT-Bahasa-Entity',
-        'BERT Multilanguage']
+        data: ['BERT-Bahasa SMALL (184MB)',
+        'BERT-Bahasa BASE (467MB)',
+        'BERT Multilanguage (714MB)']
     },
     yAxis: {
         type: 'value',
-        min:0.948,
-        max:0.957
+        min:0,
+        max:1
     },
     grid:{
       bottom: 100
     },
+    title: {
+        left: 'center',
+        text: 'Similarity accuracy',
+    },
     backgroundColor:'rgb(252,252,252)',
     series: [{
-        data: [0.953462,
-        0.949731,
-        0.952000, 0.949808, 0.950846,
-        0.949000,
-        0.956846],
+        data: [0.759256, 0.785561, 0.826692],
         type: 'bar',
         label: {
                 normal: {

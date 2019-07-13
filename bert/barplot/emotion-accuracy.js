@@ -19,11 +19,11 @@ option = {
     },
     title: {
         left: 'center',
-        text: 'Subjectivity accuracy',
+        text: 'Emotion accuracy',
     },
     backgroundColor:'rgb(252,252,252)',
     series: [{
-        data: [0.931452, 0.939288, 0.948821],
+        data: [0.866037, 0.868335, 0.868752],
         type: 'bar',
         label: {
                 normal: {

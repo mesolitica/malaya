@@ -1,5 +1,7 @@
 # How-to-Crawl
 
+**_Last update 3-July-2019, still usable._**
+
 1. Install dependencies
 
 Malaya must installed first.

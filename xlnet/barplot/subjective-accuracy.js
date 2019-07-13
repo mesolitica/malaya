@@ -7,7 +7,9 @@ option = {
         },
         data: ['BERT-Bahasa SMALL (184MB)',
         'BERT-Bahasa BASE (467MB)',
-        'BERT Multilanguage (714MB)']
+        'BERT Multilanguage (714MB)',
+        'XLNET-Bahasa 8-July-2019 (878MB)',
+        'XLNET-Bahasa 9-July-2019 (878MB)']
     },
     yAxis: {
         type: 'value',
@@ -15,15 +17,11 @@ option = {
         max:1
     },
     grid:{
-      bottom: 100
-    },
-    title: {
-        left: 'center',
-        text: 'Subjectivity accuracy',
+      bottom: 120
     },
     backgroundColor:'rgb(252,252,252)',
     series: [{
-        data: [0.931452, 0.939288, 0.948821],
+        data: [0.931452, 0.939288, 0.948821, 0.910186, 0.883091],
         type: 'bar',
         label: {
                 normal: {

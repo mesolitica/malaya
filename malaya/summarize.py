@@ -109,7 +109,7 @@ class _DEEP_SUMMARIZER:
         similar = cosine_similarity(vectors, vectors)
         similar[similar >= 0.999] = 0
         nx_graph = nx.from_numpy_array(similar)
-        scores = nx.pagerank(nx_graph, max_iter = 1000)
+        scores = nx.pagerank(nx_graph, max_iter = 10000)
         ranked_sentences = sorted(
             ((scores[i], s) for i, s in enumerate(original_strings)),
             reverse = True,
@@ -317,7 +317,7 @@ def _base_summarizer(
     similar = cosine_similarity(vectors, vectors)
     similar[similar >= 0.999] = 0
     nx_graph = nx.from_numpy_array(similar)
-    scores = nx.pagerank(nx_graph, max_iter = 1000)
+    scores = nx.pagerank(nx_graph, max_iter = 10000)
     ranked_sentences = sorted(
         ((scores[i], s) for i, s in enumerate(original_strings)), reverse = True
     )
@@ -510,7 +510,7 @@ def doc2vec(vectorizer, corpus, top_k = 3, aggregation = 'mean', soft = True):
     similar = cosine_similarity(vectors, vectors)
     similar[similar >= 0.999] = 0
     nx_graph = nx.from_numpy_array(similar)
-    scores = nx.pagerank(nx_graph, max_iter = 1000)
+    scores = nx.pagerank(nx_graph, max_iter = 10000)
     ranked_sentences = sorted(
         ((scores[i], s) for i, s in enumerate(original_strings)), reverse = True
     )

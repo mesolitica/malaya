@@ -303,19 +303,19 @@ def create_instances_from_document(
 
         tokens = []
         segment_ids = []
-        tokens.append("[CLS]")
+        tokens.append("<cls>")
         segment_ids.append(0)
         for token in tokens_a:
           tokens.append(token)
           segment_ids.append(0)
 
-        tokens.append("[SEP]")
+        tokens.append("<sep>")
         segment_ids.append(0)
 
         for token in tokens_b:
           tokens.append(token)
           segment_ids.append(1)
-        tokens.append("[SEP]")
+        tokens.append("<sep>")
         segment_ids.append(1)
 
         (tokens, masked_lm_positions,
@@ -345,7 +345,7 @@ def create_masked_lm_predictions(tokens, masked_lm_prob,
 
   cand_indexes = []
   for (i, token) in enumerate(tokens):
-    if token == "[CLS]" or token == "[SEP]":
+    if token == "<cls>" or token == "<sep>":
       continue
     # Whole Word Masking means that if we mask all of the wordpieces
     # corresponding to an original word. When a word has been split into
@@ -391,7 +391,7 @@ def create_masked_lm_predictions(tokens, masked_lm_prob,
       masked_token = None
       # 80% of the time, replace with [MASK]
       if rng.random() < 0.8:
-        masked_token = "[MASK]"
+        masked_token = "<mask>"
       else:
         # 10% of the time, keep original
         if rng.random() < 0.5:
