@@ -16,7 +16,7 @@ Thanks to [zihangdai](https://github.com/zihangdai) for opensourcing XLNET, http
 
 ## Objective
 
-1. There is no multilanguage implementation of XLNET, and obviously no Bahasa Malaysia implemented. So we decided to train BERT from scratch and finetune using available dataset we have. [Dataset we use for pretraining](https://github.com/huseinzol05/Malaya-Dataset#dumping).
+1. There is no multilanguage implementation of XLNET, and obviously no Bahasa Malaysia implemented. So we decided to train XLNET from scratch and finetune using available dataset we have. [Dataset we use for pretraining](https://github.com/huseinzol05/Malaya-Dataset#dumping).
 
 2. Provide **SMALL** and **BASE** XLNet for Bahasa. Sorry we cannot provide **LARGE** size, we got hardware limitation.
 
