@@ -164,7 +164,7 @@ python3 train_gpu.py \
 
 **Vocab size 32k, Case Insensitive, Train on 500MB dataset, BASE size (878MB)**.
 
-2.  9th July 2019, [xlnet-9-july-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/xlnet-9-july-2019.tar.gz).
+2.  9th July 2019, [xlnet-9-july-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/xlnet-9-july-2019-v2.tar.gz).
 
 **Vocab size 32k, Case Sensitive, Train on 1.21GB dataset, BASE size (878MB)**.
 
@@ -187,11 +187,9 @@ Link to [notebooks](finetune-emotion).
 
 ## Feedbacks
 
-1. we will add comparison for abstractive summarization using ROUGE-2, but this may take sometime, because its a seq2seq model, encoder is XLNET, decoder is pointer generator.
+1. Feel free to suggest me to add more any kind of finetune, like, QA, Neural Machine Translation and etc.
 
-2. Feel free to suggest me to add more any kind of finetune, like, QA, Neural Machine Translation and etc.
-
-3. Some of models still on training, so you might want to keep check updates from here. Every tensorflow checkpoints will auto push to S3 and override.
+2. Some of models still on training, so you might want to keep check updates from here. Every tensorflow checkpoints will auto push to S3 and override.
 
 ## Citation
 

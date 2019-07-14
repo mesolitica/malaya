@@ -19,9 +19,13 @@ option = {
     grid:{
       bottom: 120
     },
+    title: {
+        left: 'center',
+        text: 'Subjectivity accuracy',
+    },
     backgroundColor:'rgb(252,252,252)',
     series: [{
-        data: [0.931452, 0.939288, 0.948821, 0.910186, 0.883091],
+        data: [0.931452, 0.939288, 0.948821, 0.910186, 0.911691],
         type: 'bar',
         label: {
                 normal: {
