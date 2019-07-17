@@ -204,7 +204,7 @@ Link to [subjectivity dataset](https://github.com/huseinzol05/Malaya-Dataset#sub
 
 Link to [notebooks](finetune-subjectivity).
 
-<img src="barplot/subjective.png" width="70%" align="">
+<img src="barplot/subjective-new.png" width="70%" align="">
 
 ## Comparison using Emotion Dataset
 
@@ -212,7 +212,7 @@ Link to [emotion dataset](https://github.com/huseinzol05/Malaya-Dataset#emotion)
 
 Link to [notebooks](finetune-emotion).
 
-<img src="barplot/emotion.png" width="70%" align="">
+<img src="barplot/emotion-new.png" width="70%" align="">
 
 ## Feedbacks
 
