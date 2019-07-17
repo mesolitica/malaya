@@ -19,7 +19,7 @@ Thanks to Google for opensourcing most of the source code to develop BERT, https
 
 1. We saw tokenization process from original BERT Multilanguage is not really targeted to Malaysia language landscape, and pretrained provided only trained on Wikipedia dataset, no social media texts (bahasa pasar). So we decided to train BERT from scratch and finetune using available dataset we have. [Dataset we use for pretraining](https://github.com/huseinzol05/Malaya-Dataset#dumping).
 
-2. Provide **SMALL** and **BASE** BERT for Bahasa. Sorry we cannot provide **LARGE** size, we got hardware limitation.
+2. Provide **SMALL**, **BASE** and **LARGE** BERT for Bahasa.
 
 ## How-to
 
@@ -38,6 +38,29 @@ python3 create-pretraining-data.py
 ```bash
 mkdir pretraining_output
 python3 run_pretraining.py --input_file=tests_output.tfrecord --output_dir=pretraining_output --do_train=True --do_eval=True --bert_config_file=checkpoint/bert_config.json --train_batch_size=16 --max_seq_length=128 --max_predictions_per_seq=20 --num_train_steps=1000000 --num_warmup_steps=10 --learning_rate=2e-5 --save_checkpoints_steps=250000
+```
+
+**LARGE** size, [LARGE_config.json](config/LARGE_config.json),
+```json
+{
+  "attention_probs_dropout_prob": 0.1,
+  "directionality": "bidi",
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 1024,
+  "initializer_range": 0.02,
+  "intermediate_size": 4096,
+  "max_position_embeddings": 512,
+  "num_attention_heads": 16,
+  "num_hidden_layers": 24,
+  "pooler_fc_size": 768,
+  "pooler_num_attention_heads": 12,
+  "pooler_num_fc_layers": 3,
+  "pooler_size_per_head": 128,
+  "pooler_type": "first_token_transform",
+  "type_vocab_size": 2,
+  "vocab_size": 40000
+}
 ```
 
 **BASE** size, [BASE_config.json](config/BASE_config.json),
@@ -90,23 +113,19 @@ python3 run_pretraining.py --input_file=tests_output.tfrecord --output_dir=pretr
 
 ## Download
 
-1.  6th July 2019,
+_**Size calculated after saved trainable variables not included optimizer momentum variables. Size of tar.gz not an actual size.**_
 
-Checkpoint, [bert-bahasa-6-july-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-bahasa-6-july-2019.tar.gz)
+1.  6th July 2019, [bert-bahasa-6-july-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-bahasa-6-july-2019.tar.gz)
 
-**Vocab size 32k, Case Sensitive, Train on 500MB dataset, BASE size (410MB)**.
+**Vocab size 32k, Case Sensitive, Train on 500MB dataset, 1M steps, BASE size (410MB)**.
 
-2. 9th July 2019,
+2. 9th July 2019, [bert-bahasa-9-july-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-bahasa-9-july-2019.tar.gz)
 
-Checkpoint, [bert-bahasa-9-july-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-bahasa-9-july-2019.tar.gz)
+**Vocab size 40k, Case Sensitive, Train on 1.21GB dataset, 1M steps, BASE size (467MB)**.
 
-**Vocab size 40k, Case Sensitive, Train on 1.21GB dataset, BASE size (467MB)**.
+3. 12th July 2019, [bert-bahasa-12-july-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-bahasa-12-july-2019.tar.gz)
 
-3. 12th July 2019,
-
-Checkpoint, [bert-bahasa-12-july-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-bahasa-12-july-2019.tar.gz)
-
-**Vocab size 40k, Case Sensitive, Train on 1.21GB dataset, SMALL size (184MB)**.
+**Vocab size 40k, Case Sensitive, Train on 1.21GB dataset, 1M steps, SMALL size (184MB)**.
 
 ## Comparison using Subjectivity Dataset
 

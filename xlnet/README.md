@@ -89,11 +89,11 @@ spm_train \
 ```bash
 mkdir save-location
 python3 data_utils.py \
-  --bsz_per_host=4 \
+  --bsz_per_host=2 \
   --seq_len=512 \
   --reuse_len=256 \
   --input_glob=dumping-all.txt \
-  --save_dir=save-location \
+  --save_dir=save-location4 \
   --num_passes=20 \
   --bi_data=True \
   --sp_path=sp10m.cased.v5.model \
@@ -106,7 +106,7 @@ python3 data_utils.py \
 
 6. Run pretained,
 
-**BASE** size, we reduce the size of XLNET by 2 while maintain the number of attention, here is [original size](https://github.com/zihangdai/xlnet#pretraining-with-xlnet),
+**BASE**,
 ```bash
 python3 train_gpu.py \
   --corpus_info_path=save-location/corpus_info.json \
@@ -158,16 +158,45 @@ python3 train_gpu.py \
   --train_steps=700000  --iterations=10 --learning_rate=2.5e-5
 ```
 
+**ALMOST PERFECT LARGE**, Original **LARGE** size, `n_layer=24`, [original size](https://github.com/zihangdai/xlnet#pretraining-with-xlnet),
+```bash
+python3 train_gpu.py \
+  --corpus_info_path=save-location2/corpus_info.json \
+  --record_info_dir=save-location2/tfrecords \
+  --train_batch_size=2 \
+  --seq_len=512 \
+  --reuse_len=256 \
+  --mem_len=384 \
+  --perm_size=256 \
+  --n_layer=12 \
+  --d_model=1024 \
+  --d_embed=1024 \
+  --n_head=16 \
+  --d_head=64 \
+  --d_inner=4096 \
+  --untie_r=True \
+  --mask_alpha=6 \
+  --mask_beta=1 \
+  --num_predict=85 \
+  --model_dir=output-model3 \
+  --uncased=False \
+  --num_core_per_host=1 \
+  --train_steps=700000 --iterations=5 --learning_rate=2.5e-5
+```
+
 ## Download
 
 1.  8th July 2019, [xlnet-8-july-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/xlnet-8-july-2019.tar.gz).
 
-**Vocab size 32k, Case Insensitive, Train on 500MB dataset, BASE size (878MB)**.
+**Vocab size 32k, Case Insensitive, Train on 500MB dataset, 700k steps, BASE size (878MB)**.
 
 2.  9th July 2019, [xlnet-9-july-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/xlnet-9-july-2019-v2.tar.gz).
 
-**Vocab size 32k, Case Sensitive, Train on 1.21GB dataset, BASE size (878MB)**.
+**Vocab size 32k, Case Sensitive, Train on 1.21GB dataset, 700k steps, BASE size (878MB)**.
 
+3. 15 July 2019, [xlnet-15-july-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/xlnet-15-july-2019-v2.tar.gz)
+
+**Vocab size 32k, Case Sensitive, Train on 1.21GB dataset, 700k steps, SMALL size (231MB)**.
 
 ## Comparison using Subjectivity Dataset
 
