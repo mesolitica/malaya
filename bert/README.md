@@ -37,30 +37,7 @@ python3 create-pretraining-data.py
 4. Execute pretraining,
 ```bash
 mkdir pretraining_output
-python3 run_pretraining.py --input_file=tests_output.tfrecord --output_dir=pretraining_output --do_train=True --do_eval=True --bert_config_file=checkpoint/bert_config.json --train_batch_size=16 --max_seq_length=128 --max_predictions_per_seq=20 --num_train_steps=1000000 --num_warmup_steps=10 --learning_rate=2e-5 --save_checkpoints_steps=250000
-```
-
-**LARGE** size, [LARGE_config.json](config/LARGE_config.json),
-```json
-{
-  "attention_probs_dropout_prob": 0.1,
-  "directionality": "bidi",
-  "hidden_act": "gelu",
-  "hidden_dropout_prob": 0.1,
-  "hidden_size": 1024,
-  "initializer_range": 0.02,
-  "intermediate_size": 4096,
-  "max_position_embeddings": 512,
-  "num_attention_heads": 16,
-  "num_hidden_layers": 24,
-  "pooler_fc_size": 768,
-  "pooler_num_attention_heads": 12,
-  "pooler_num_fc_layers": 3,
-  "pooler_size_per_head": 128,
-  "pooler_type": "first_token_transform",
-  "type_vocab_size": 2,
-  "vocab_size": 40000
-}
+python3 run_pretraining.py --input_file=tests_output.tfrecord --output_dir=pretraining_output --do_train=True --do_eval=True --bert_config_file=checkpoint/bert_config.json --train_batch_size=60 --max_seq_length=128 --max_predictions_per_seq=20 --num_train_steps=3000000 --num_warmup_steps=10 --learning_rate=2e-5 --save_checkpoints_steps=500000
 ```
 
 **BASE** size, [BASE_config.json](config/BASE_config.json),

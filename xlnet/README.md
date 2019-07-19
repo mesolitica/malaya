@@ -89,11 +89,11 @@ spm_train \
 ```bash
 mkdir save-location
 python3 data_utils.py \
-  --bsz_per_host=2 \
+  --bsz_per_host=6 \
   --seq_len=512 \
   --reuse_len=256 \
-  --input_glob=dumping-all.txt \
-  --save_dir=save-location4 \
+  --input_glob=test.txt \
+  --save_dir=save-location \
   --num_passes=20 \
   --bi_data=True \
   --sp_path=sp10m.cased.v5.model \
@@ -129,7 +129,7 @@ python3 train_gpu.py \
   --model_dir=output-model \
   --uncased=False \
   --num_core_per_host=1 \
-  --train_steps=700000  --iterations=10 --learning_rate=2.5e-5
+  --train_steps=2000000  --iterations=10 --learning_rate=5e-5
 ```
 
 **SMALL**,
@@ -155,33 +155,7 @@ python3 train_gpu.py \
   --model_dir=output-model \
   --uncased=False \
   --num_core_per_host=1 \
-  --train_steps=700000  --iterations=10 --learning_rate=2.5e-5
-```
-
-**ALMOST PERFECT LARGE**, Original **LARGE** size, `n_layer=24`, [original size](https://github.com/zihangdai/xlnet#pretraining-with-xlnet),
-```bash
-python3 train_gpu.py \
-  --corpus_info_path=save-location2/corpus_info.json \
-  --record_info_dir=save-location2/tfrecords \
-  --train_batch_size=2 \
-  --seq_len=512 \
-  --reuse_len=256 \
-  --mem_len=384 \
-  --perm_size=256 \
-  --n_layer=12 \
-  --d_model=1024 \
-  --d_embed=1024 \
-  --n_head=16 \
-  --d_head=64 \
-  --d_inner=4096 \
-  --untie_r=True \
-  --mask_alpha=6 \
-  --mask_beta=1 \
-  --num_predict=85 \
-  --model_dir=output-model3 \
-  --uncased=False \
-  --num_core_per_host=1 \
-  --train_steps=700000 --iterations=5 --learning_rate=2.5e-5
+  --train_steps=700000  --iterations=10 --learning_rate=5e-5
 ```
 
 ## Download
