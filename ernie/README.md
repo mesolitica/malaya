@@ -1,8 +1,8 @@
-# BERT-Bahasa
+# ERNIE-Bahasa
 
 **_Last update 5-July-2019, release new pretrained checkpoint._**
 
-Thanks to Google for opensourcing most of the source code to develop BERT, https://github.com/google-research/bert
+Thanks to Google for opensourcing most of the source code BERT to develop ERNIE, https://github.com/google-research/bert
 
 ## Table of contents
   * [Objective](https://github.com/huseinzol05/Malaya/tree/master/bert#objective)
@@ -17,9 +17,9 @@ Thanks to Google for opensourcing most of the source code to develop BERT, https
 
 ## Objective
 
-1. We saw tokenization process from original BERT Multilanguage is not really targeted to Malaysia language landscape, and pretrained provided only trained on Wikipedia dataset, no social media texts (bahasa pasar). So we decided to train BERT from scratch and finetune using available dataset we have. [Dataset we use for pretraining](https://github.com/huseinzol05/Malaya-Dataset#dumping).
+1. There is no multilanguage implementation of ERNIE, and obviously no Bahasa Malaysia implemented. So we decided to train ERNIE from scratch and finetune using available dataset we have. [Dataset we use for pretraining](https://github.com/huseinzol05/Malaya-Dataset#dumping).
 
-2. Provide **SMALL**, **BASE** and **LARGE** BERT for Bahasa.
+2. Provide **SMALL** and **BASE** ERNIE for Bahasa.
 
 ## How-to
 
