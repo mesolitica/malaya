@@ -6,19 +6,13 @@
 # URL: <https://malaya.readthedocs.io/>
 # For license information, see https://github.com/huseinzol05/Malaya/blob/master/LICENSE
 
-import sys
-import warnings
-
-if not sys.warnoptions:
-    warnings.simplefilter('ignore')
-
 import os
 from shutil import rmtree
 from pathlib import Path
 
 home = os.path.join(str(Path.home()), 'Malaya')
-version = '2.6'
-bump_version = '2.6.1'
+version = '2.7'
+bump_version = '2.7.0'
 version_path = os.path.join(home, 'version')
 
 
@@ -290,6 +284,7 @@ def describe_dependency():
     )
 
 
+from . import bert
 from . import cluster
 from . import dependency
 from . import elmo
@@ -315,3 +310,4 @@ from . import word_mover
 from . import word2num
 from . import word2vec
 from .texts import vectorizer
+from . import xlnet

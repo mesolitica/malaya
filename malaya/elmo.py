@@ -1,9 +1,3 @@
-import sys
-import warnings
-
-if not sys.warnoptions:
-    warnings.simplefilter('ignore')
-
 import pickle
 import os
 import numpy as np
@@ -38,7 +32,7 @@ def load_wiki(size = 128, validate = True):
     if not isinstance(size, int):
         raise ValueError('size must be an integer')
     if size not in [128, 256]:
-        raise ValueError('size only support [128,256]')
+        raise ValueError('size only support [128, 256]')
     if validate:
         check_file(PATH_ELMO[size], S3_PATH_ELMO[size])
     else:
@@ -599,3 +593,39 @@ class ELMO:
         for i in range(start, end):
             word_list.append(self._reverse_dictionary[i])
         return embed_2d, word_list
+
+    def _calculate(self, equation, mode_bidirectional, mode_sequence):
+        tokens, temp = [], ''
+        for char in equation:
+            if char == ' ':
+                continue
+            if char not in '()*+-':
+                temp += char
+            else:
+                if len(temp):
+                    tokens.append(
+                        ','.join(
+                            self.get_vector_by_name(
+                                w,
+                                mode_bidirectional = mode_bidirectional,
+                                mode_sequence = mode_sequence,
+                            )
+                            .astype('str')
+                            .tolist()
+                        )
+                    )
+                    temp = ''
+                tokens.append(char)
+        if len(temp):
+            tokens.append(
+                ','.join(
+                    self.get_vector_by_name(
+                        w,
+                        mode_bidirectional = mode_bidirectional,
+                        mode_sequence = mode_sequence,
+                    )
+                    .astype('str')
+                    .tolist()
+                )
+            )
+        return _Calculator(tokens).exp()

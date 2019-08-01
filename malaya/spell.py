@@ -1,16 +1,9 @@
-import sys
-import warnings
-
-if not sys.warnoptions:
-    warnings.simplefilter('ignore')
-
 from collections import Counter, defaultdict
 from fuzzywuzzy import fuzz
 import numpy as np
 from functools import lru_cache
 import json
 from .texts._text_functions import normalizer_textcleaning, ENGLISH_WORDS
-from .similarity import is_location
 from .texts._tatabahasa import alphabet, consonants, vowels
 from ._utils._paths import PATH_NGRAM, S3_PATH_NGRAM
 from ._utils._utils import check_file, check_available
@@ -130,10 +123,7 @@ class _SPELL:
             or _return_possible(string, selected, _edit_normalizer)
             or [string]
         )
-        candidates = [
-            (candidate, is_location(candidate))
-            for candidate in list(candidates)
-        ]
+        candidates = [(candidate, False) for candidate in list(candidates)]
         if debug:
             print([(k, fuzz.ratio(string, k[0])) for k in candidates], '\n')
         strings = [fuzz.ratio(string, k[0]) for k in candidates]

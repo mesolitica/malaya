@@ -1,9 +1,3 @@
-import sys
-import warnings
-
-if not sys.warnoptions:
-    warnings.simplefilter('ignore')
-
 import numpy as np
 import re
 import random
@@ -157,89 +151,6 @@ def deep_extractive(model = 'skip-thought'):
         )
     sess, x, logits, attention, dictionary, maxlen = model()
     return _DEEP_SUMMARIZER(sess, x, logits, attention, dictionary, maxlen)
-
-
-def train_skip_thought(
-    corpus,
-    epoch = 5,
-    batch_size = 16,
-    embedding_size = 256,
-    maxlen = 50,
-    vocab_size = None,
-    stride = 1,
-):
-    """
-    Train a deep skip-thought network for summarization agent
-
-    Parameters
-    ----------
-    corpus: str, list
-    epoch: int, (default=5)
-        iteration numbers
-    batch_size: int, (default=32)
-        batch size for every feed, batch size must <= size of corpus
-    embedding_size: int, (default=256)
-        vector size representation for a word
-    maxlen: int, (default=50)
-        max length of a string to be train
-    vocab_size: int, (default=None)
-        max vocabulary size, None for no limit
-    stride: int, (default=1)
-        stride size, skipping value for sentences
-
-    Returns
-    -------
-    _DEEP_SUMMARIZER: malaya.skip_thought._DEEP_SUMMARIZER class
-    """
-    if not isinstance(epoch, int):
-        raise ValueError('epoch must be an integer')
-    if not isinstance(batch_size, int):
-        raise ValueError('batch_size must be an integer')
-    if not isinstance(embedding_size, int):
-        raise ValueError('embedding_size must be an integer')
-    if not isinstance(maxlen, int):
-        raise ValueError('maxlen must be an integer')
-    if not isinstance(corpus, list) and not isinstance(corpus, str):
-        raise ValueError('corpus must be a list')
-    if isinstance(corpus, list):
-        if not isinstance(corpus[0], str):
-            raise ValueError('corpus must be list of strings')
-    if isinstance(corpus, str):
-        corpus = split_into_sentences(corpus)
-    else:
-        corpus = '. '.join(corpus)
-        corpus = split_into_sentences(corpus)
-
-    corpus = [summary_textcleaning(i)[1] for i in corpus]
-    t_range = int((len(corpus) - 3) / stride + 1)
-    left, middle, right = [], [], []
-    for i in range(t_range):
-        slices = corpus[i * stride : i * stride + 3]
-        left.append(slices[0])
-        middle.append(slices[1])
-        right.append(slices[2])
-    if batch_size > len(left):
-        raise ValueError('batch size must smaller with corpus size')
-    left, middle, right = shuffle(left, middle, right)
-    sess, model, dictionary, _ = _skip_thought.train_model(
-        middle,
-        left,
-        right,
-        epoch = epoch,
-        batch_size = batch_size,
-        embedding_size = embedding_size,
-        maxlen = maxlen,
-        vocab_size = vocab_size,
-    )
-    return _DEEP_SUMMARIZER(
-        sess,
-        model.INPUT,
-        model.get_thought,
-        model.attention,
-        dictionary,
-        maxlen,
-        model = model,
-    )
 
 
 def _base_summarizer(

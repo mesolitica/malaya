@@ -18,10 +18,13 @@ def add_neutral(x, alpha = 1e-2):
 
 
 def download_file(url, filename):
-    r = requests.get(
-        'http://s3-ap-southeast-1.amazonaws.com/huseinhouse-storage/' + url,
-        stream = True,
-    )
+    if 'http' in url:
+        r = requests.get(url, stream = True)
+    else:
+        r = requests.get(
+            'http://s3-ap-southeast-1.amazonaws.com/huseinhouse-storage/' + url,
+            stream = True,
+        )
     total_size = int(r.headers['content-length'])
     os.makedirs(os.path.dirname(filename), exist_ok = True)
     with open(filename, 'wb') as f:
@@ -69,7 +72,7 @@ def check_file(file, s3_file):
                 download = True
             else:
                 for key, item in file.items():
-                    if not os.path.isfile(item):
+                    if not os.path.exists(item):
                         download = True
                         break
     else:
@@ -164,3 +167,46 @@ class DisplayablePath(object):
             parent = parent.parent
 
         return ''.join(reversed(parts))
+
+
+class _Calculator:
+    def __init__(self, tokens):
+        self._tokens = tokens
+        self._current = tokens[0]
+
+    def exp(self):
+        result = self.term()
+        while self._current in ('+', '-'):
+            if self._current == '+':
+                self.next()
+                result += self.term()
+            if self._current == '-':
+                self.next()
+                result -= self.term()
+        return result
+
+    def factor(self):
+        result = None
+        if self._current[0].isdigit() or self._current[-1].isdigit():
+            result = np.array([float(i) for i in self._current.split(',')])
+            self.next()
+        elif self._current is '(':
+            self.next()
+            result = self.exp()
+            self.next()
+        return result
+
+    def next(self):
+        self._tokens = self._tokens[1:]
+        self._current = self._tokens[0] if len(self._tokens) > 0 else None
+
+    def term(self):
+        result = self.factor()
+        while self._current in ('*', '/'):
+            if self._current == '*':
+                self.next()
+                result *= self.term()
+            if self._current == '/':
+                self.next()
+                result /= self.term()
+        return result

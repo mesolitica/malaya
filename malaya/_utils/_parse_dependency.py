@@ -1,9 +1,3 @@
-import sys
-import warnings
-
-if not sys.warnoptions:
-    warnings.simplefilter('ignore')
-
 from collections import defaultdict
 from itertools import chain
 from six import string_types

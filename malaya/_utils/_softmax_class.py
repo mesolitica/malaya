@@ -1,13 +1,8 @@
-import sys
-import warnings
-
-if not sys.warnoptions:
-    warnings.simplefilter('ignore')
-
 import json
 import os
 import pickle
 from ._utils import check_file, load_graph, check_available, generate_session
+from bert import tokenization
 from ..stem import _classification_textcleaning_stemmer
 from .._models._sklearn_model import (
     BINARY_XGB,
@@ -175,12 +170,6 @@ def xgb(path, s3_path, class_name, label, validate = True):
 
 
 def bert(path, s3_path, class_name, label, validate = True):
-    try:
-        from bert import tokenization
-    except:
-        raise Exception(
-            'bert-tensorflow not installed. Please install it using `pip3 install bert-tensorflow` and try again.'
-        )
     if validate:
         check_file(path['bert'], s3_path['bert'])
     else:

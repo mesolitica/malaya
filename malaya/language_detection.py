@@ -1,9 +1,3 @@
-import sys
-import warnings
-
-if not sys.warnoptions:
-    warnings.simplefilter('ignore')
-
 import pickle
 from ._utils._utils import check_file, check_available
 from ._models._sklearn_model import LANGUAGE_DETECTION

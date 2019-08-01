@@ -1,9 +1,3 @@
-import sys
-import warnings
-
-if not sys.warnoptions:
-    warnings.simplefilter('ignore')
-
 from itertools import product
 from collections import defaultdict, Counter
 from fuzzywuzzy import fuzz
@@ -21,7 +15,6 @@ from .texts._tatabahasa import (
     UNK,
 )
 from .spell import _return_possible, _edit_normalizer, _return_known
-from .similarity import is_location
 
 
 def _tokens_to_fracdict(tokens):
@@ -175,10 +168,7 @@ class _DEEP_CONTRACTION:
                 or [word]
             )
             candidates = list(candidates)
-            candidates = [
-                (candidate, is_location(candidate))
-                for candidate in list(candidates)
-            ]
+            candidates = [(candidate, False) for candidate in list(candidates)]
             strings = [fuzz.ratio(string, k[0]) for k in candidates]
             descending_sort = np.argsort(strings)[::-1]
             selected = None

@@ -1,19 +1,14 @@
 # ERNIE-Bahasa
 
-**_Last update 5-July-2019, release new pretrained checkpoint._**
+**_Last update 30-July-2019, still developing._**
 
-Thanks to Google for opensourcing most of the source code BERT to develop ERNIE, https://github.com/google-research/bert
+Thanks to Google for opensourcing most of the source code BERT to develop ERNIE, https://github.com/google-research/ernie
 
 ## Table of contents
-  * [Objective](https://github.com/huseinzol05/Malaya/tree/master/bert#objective)
-  * [How-to](https://github.com/huseinzol05/Malaya/tree/master/bert#how-to)
-  * [Download](https://github.com/huseinzol05/Malaya/tree/master/bert#download)
-  * [Comparison using Subjectivity Dataset](https://github.com/huseinzol05/Malaya/tree/master/bert#comparison-using-subjectivity-dataset)
-  * [Comparison using Emotion Dataset](https://github.com/huseinzol05/Malaya/tree/master/bert#comparison-using-emotion-dataset)
-  * [Comparison using Text Similarity Dataset](https://github.com/huseinzol05/Malaya/tree/master/bert#comparison-using-text-similarity-dataset)
-  * [Feedbacks](https://github.com/huseinzol05/Malaya/tree/master/bert#feedbacks)
-  * [Citation](https://github.com/huseinzol05/Malaya/tree/master/bert#citation)
-  * [Donation](https://github.com/huseinzol05/Malaya/tree/master/bert#donation)
+  * [Objective](https://github.com/huseinzol05/Malaya/tree/master/ernie#objective)
+  * [How-to](https://github.com/huseinzol05/Malaya/tree/master/ernie#how-to)
+  * [Citation](https://github.com/huseinzol05/Malaya/tree/master/ernie#citation)
+  * [Donation](https://github.com/huseinzol05/Malaya/tree/master/ernie#donation)
 
 ## Objective
 
@@ -96,50 +91,6 @@ python3 run_pretraining.py --input_file=tests_output.tfrecord --output_dir=pretr
   "vocab_size": 40000
 }
 ```
-
-## Download
-
-_**Size calculated after saved trainable variables not included optimizer momentum variables. Size of tar.gz not an actual size.**_
-
-1.  6th July 2019, [bert-bahasa-6-july-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-bahasa-6-july-2019.tar.gz)
-
-**Vocab size 32k, Case Sensitive, Train on 500MB dataset, 1M steps, BASE size (410MB)**.
-
-2. 9th July 2019, [bert-bahasa-9-july-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-bahasa-9-july-2019.tar.gz)
-
-**Vocab size 40k, Case Sensitive, Train on 1.21GB dataset, 1M steps, BASE size (467MB)**.
-
-3. 12th July 2019, [bert-bahasa-12-july-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-bahasa-12-july-2019.tar.gz)
-
-**Vocab size 40k, Case Sensitive, Train on 1.21GB dataset, 1M steps, SMALL size (184MB)**.
-
-## Comparison using Subjectivity Dataset
-
-Link to [subjectivity dataset](https://github.com/huseinzol05/Malaya-Dataset#subjectivity).
-
-Link to [notebooks](finetune-subjectivity).
-
-<img src="barplot/subjective.png" width="70%" align="">
-
-## Comparison using Emotion Dataset
-
-Link to [emotion dataset](https://github.com/huseinzol05/Malaya-Dataset#emotion).
-
-Link to [notebooks](finetune-emotion).
-
-<img src="barplot/emotion.png" width="70%" align="">
-
-## Comparison using Text Similarity Dataset
-
-Link to [text similarity dataset](https://github.com/huseinzol05/Malaya-Dataset#text-similarity).
-
-Link to [notebooks](finetune-similarity).
-
-<img src="barplot/similarity.png" width="70%" align="">
-
-## Feedbacks
-
-1. Feel free to suggest me to add more any kind of finetune, like, QA, Neural Machine Translation and etc.
 
 ## Citation
 

@@ -6,6 +6,7 @@ Thanks to Google for opensourcing most of the source code to develop BERT, https
 
 ## Table of contents
   * [Objective](https://github.com/huseinzol05/Malaya/tree/master/bert#objective)
+  * [Acknowledgement](https://github.com/huseinzol05/Malaya/tree/master/bert#acknowledgement)
   * [How-to](https://github.com/huseinzol05/Malaya/tree/master/bert#how-to)
   * [Download](https://github.com/huseinzol05/Malaya/tree/master/bert#download)
   * [Comparison using Subjectivity Dataset](https://github.com/huseinzol05/Malaya/tree/master/bert#comparison-using-subjectivity-dataset)
@@ -20,6 +21,10 @@ Thanks to Google for opensourcing most of the source code to develop BERT, https
 1. We saw tokenization process from original BERT Multilanguage is not really targeted to Malaysia language landscape, and pretrained provided only trained on Wikipedia dataset, no social media texts (bahasa pasar). So we decided to train BERT from scratch and finetune using available dataset we have. [Dataset we use for pretraining](https://github.com/huseinzol05/Malaya-Dataset#dumping).
 
 2. Provide **SMALL**, **BASE** and **LARGE** BERT for Bahasa.
+
+## Acknowledgement
+
+Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://www.facebook.com/ligblou) and [Mesolitica](https://mesolitica.com/) for sponsoring AWS and Google cloud to train BERT for Bahasa.
 
 ## How-to
 
@@ -97,6 +102,11 @@ python3 run_pretraining.py --input_file=tests_output.tfrecord --output_dir=pretr
 }
 ```
 
+To open tensorboard,
+```
+tensorboard --logdir=tensorboard --host=0.0.0.0
+```
+
 ## Download
 
 _**Size calculated after saved trainable variables not included optimizer momentum variables. Size of tar.gz not an actual size.**_
@@ -112,6 +122,12 @@ _**Size calculated after saved trainable variables not included optimizer moment
 3. 12th July 2019, [bert-bahasa-12-july-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-bahasa-12-july-2019.tar.gz)
 
 **Vocab size 40k, Case Sensitive, Train on 1.21GB dataset, 1M steps, SMALL size (184MB)**.
+
+4. 30th July 2019, [bert-base-30-july-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-base-30-july-2019.tar.gz)
+
+[Tensorboard data](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-base-30-july-2019-tensorboard.instance-3)
+
+**Vocab size 40k, Case Sensitive, Train on 1.51GB dataset, 1.5M steps, BASE size (467MB)**.
 
 ## Comparison using Subjectivity Dataset
 

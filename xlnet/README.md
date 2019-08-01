@@ -6,6 +6,7 @@ Thanks to [zihangdai](https://github.com/zihangdai) for opensourcing XLNET, http
 
 ## Table of contents
   * [Objective](https://github.com/huseinzol05/Malaya/tree/master/xlnet#objective)
+  * [Acknowledgement](https://github.com/huseinzol05/Malaya/tree/master/xlnet#acknowledgement)
   * [How-to](https://github.com/huseinzol05/Malaya/tree/master/xlnet#how-to)
   * [Download](https://github.com/huseinzol05/Malaya/tree/master/xlnet#download)
   * [Comparison using Subjectivity Dataset](https://github.com/huseinzol05/Malaya/tree/master/xlnet#comparison-using-subjectivity-dataset)
@@ -19,6 +20,10 @@ Thanks to [zihangdai](https://github.com/zihangdai) for opensourcing XLNET, http
 1. There is no multilanguage implementation of XLNET, and obviously no Bahasa Malaysia implemented. So we decided to train XLNET from scratch and finetune using available dataset we have. [Dataset we use for pretraining](https://github.com/huseinzol05/Malaya-Dataset#dumping).
 
 2. Provide **SMALL** and **BASE** XLNet for Bahasa. Sorry we cannot provide **LARGE** size, we got hardware limitation.
+
+## Acknowledgement
+
+Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://www.facebook.com/ligblou) and [Mesolitica](https://mesolitica.com/) for sponsoring AWS and Google cloud to train XLNET for Bahasa.
 
 ## How-to
 
@@ -89,7 +94,7 @@ spm_train \
 ```bash
 mkdir save-location
 python3 data_utils.py \
-  --bsz_per_host=6 \
+  --bsz_per_host=4 \
   --seq_len=512 \
   --reuse_len=256 \
   --input_glob=test.txt \
@@ -168,7 +173,7 @@ python3 train_gpu.py \
 
 **Vocab size 32k, Case Sensitive, Train on 1.21GB dataset, 700k steps, BASE size (878MB)**.
 
-3. 15 July 2019, [xlnet-15-july-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/xlnet-15-july-2019-v2.tar.gz)
+3. 15 July 2019, [xlnet-15-july-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/xlnet-bahasa-small.tar.gz)
 
 **Vocab size 32k, Case Sensitive, Train on 1.21GB dataset, 700k steps, SMALL size (231MB)**.
 

@@ -1,11 +1,12 @@
-import sys
-import warnings
-
-if not sys.warnoptions:
-    warnings.simplefilter('ignore')
-
 from ._utils import _softmax_class
 from ._utils._paths import PATH_RELEVANCY, S3_PATH_RELEVANCY
+
+
+def available_bert_model():
+    """
+    List available bert relevancy analysis models.
+    """
+    return ['multilanguage', 'base', 'small']
 
 
 def available_deep_model():

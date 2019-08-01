@@ -1,9 +1,3 @@
-import sys
-import warnings
-
-if not sys.warnoptions:
-    warnings.simplefilter('ignore')
-
 import tensorflow as tf
 from tqdm import tqdm
 from ..texts._text_functions import str_idx, build_dataset

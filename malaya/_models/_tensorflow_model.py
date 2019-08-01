@@ -1,9 +1,3 @@
-import sys
-import warnings
-
-if not sys.warnoptions:
-    warnings.simplefilter('ignore')
-
 import tensorflow as tf
 import numpy as np
 from ..texts._text_functions import (
@@ -13,8 +7,6 @@ from ..texts._text_functions import (
     generate_char_seq,
     language_detection_textcleaning,
     tag_chunk,
-    bert_tokenization,
-    bert_tokenization_siamese,
 )
 from .._utils._parse_dependency import DependencyGraph
 from ..preprocessing import preprocessing_classification_index
@@ -261,7 +253,6 @@ class TAGGING:
         model,
         transitions,
         features,
-        is_lower = True,
         story = None,
         tags_state_fw = None,
         tags_state_bw = None,
@@ -272,7 +263,6 @@ class TAGGING:
         self._settings = settings
         self._sess = sess
         self._model = model
-        self._is_lower = is_lower
         self._story = story
         self._settings['idx2tag'] = {
             int(k): v for k, v in self._settings['idx2tag'].items()
@@ -284,9 +274,9 @@ class TAGGING:
         self._tags_state_bw = tags_state_bw
 
     def get_alignment(self, string):
-        if 'bahdanau' not in self._model and 'luong' not in self._model:
+        if self._model not in ['bahdanau', 'luong']:
             print(
-                'alignment visualization only supports `bahdanau` or `luong` model'
+                "get_alignment only available for ['bahdanau', 'luong'] model"
             )
         else:
             original_string, string = entities_textcleaning(
@@ -423,21 +413,10 @@ class TAGGING:
         batch_x_char = generate_char_seq(
             [string], self._settings['char2idx'], 2
         )
-        if self._model == 'entity-network':
-            batch_x_expand = np.expand_dims(batch_x, axis = 1)
-            predicted = self._sess.run(
-                self._logits,
-                feed_dict = {
-                    self._X: batch_x,
-                    self._X_char: batch_x_char,
-                    self._story: batch_x_expand,
-                },
-            )[0]
-        else:
-            predicted = self._sess.run(
-                self._logits,
-                feed_dict = {self._X: batch_x, self._X_char: batch_x_char},
-            )[0]
+        predicted = self._sess.run(
+            self._logits,
+            feed_dict = {self._X: batch_x, self._X_char: batch_x_char},
+        )[0]
         return [
             (original_string[i], self._settings['idx2tag'][predicted[i]])
             for i in range(len(predicted))

@@ -1,11 +1,5 @@
 from __future__ import print_function, unicode_literals
 
-import sys
-import warnings
-
-if not sys.warnoptions:
-    warnings.simplefilter('ignore')
-
 BASE = {
     0: [],
     1: ['satu'],

@@ -1,9 +1,3 @@
-import sys
-import warnings
-
-if not sys.warnoptions:
-    warnings.simplefilter('ignore')
-
 import re
 from .texts._tatabahasa import tatabahasa_dict, hujung, permulaan
 from ._utils import _tag_class
@@ -12,9 +6,9 @@ from ._utils._paths import PATH_POS, S3_PATH_POS
 
 def available_deep_model():
     """
-    List available deep learning entities models, ['concat', 'bahdanau', 'luong', 'entity-network', 'attention'].
+    List available deep learning entities models, ['concat', 'bahdanau', 'luong'].
     """
-    return ['concat', 'bahdanau', 'luong', 'entity-network', 'attention']
+    return ['concat', 'bahdanau', 'luong']
 
 
 def _naive_POS_word(word):
@@ -91,8 +85,6 @@ def deep_model(model = 'concat', validate = True):
         * ``'concat'`` - Concating character and word embedded for BiLSTM.
         * ``'bahdanau'`` - Concating character and word embedded including Bahdanau Attention for BiLSTM.
         * ``'luong'`` - Concating character and word embedded including Luong Attention for BiLSTM.
-        * ``'entity-network'`` - Concating character and word embedded on hybrid Entity-Network and RNN.
-        * ``'attention'`` - Concating character and word embedded with self-attention for BiLSTM.
     validate: bool, optional (default=True)
         if True, malaya will check model availability and download if not available.
 
@@ -100,11 +92,18 @@ def deep_model(model = 'concat', validate = True):
     -------
     TAGGING: malaya.tensorflow_model.TAGGING class
     """
+
+    if not isinstance(model, str):
+        raise ValueError('model must be a string')
+    if not isinstance(validate, bool):
+        raise ValueError('validate must be a boolean')
+
+    model = model.lower()
+    if model not in available_deep_model():
+        raise Exception(
+            'model not supported, please check supported models from malaya.entity.available_deep_model()'
+        )
+
     return _tag_class.deep_model(
-        PATH_POS,
-        S3_PATH_POS,
-        'pos',
-        model = model,
-        is_lower = False,
-        validate = validate,
+        PATH_POS, S3_PATH_POS, 'pos', model = model, validate = validate
     )

@@ -1,9 +1,3 @@
-import sys
-import warnings
-
-if not sys.warnoptions:
-    warnings.simplefilter('ignore')
-
 import re
 import os
 import numpy as np
@@ -13,6 +7,7 @@ from unidecode import unidecode
 from .._utils._utils import download_file
 from ._tatabahasa import stopword_tatabahasa, stopwords, stopwords_calon
 from ._english_words import _english_words
+from .._xlnet.prepro_utils import preprocess_text, encode_ids, encode_pieces
 from .. import home
 import json
 
@@ -21,6 +16,23 @@ STOPWORD_CALON = set(stopwords_calon)
 VOWELS = 'aeiou'
 PHONES = ['sh', 'ch', 'ph', 'sz', 'cz', 'sch', 'rz', 'dz']
 ENGLISH_WORDS = _english_words
+
+
+class SentencePieceTokenizer:
+    def __init__(self, v, sp_model):
+        self.vocab = v
+        self.sp_model = sp_model
+
+    def tokenize(self, string):
+        return encode_pieces(
+            self.sp_model, string, return_unicode = False, sample = False
+        )
+
+    def convert_tokens_to_ids(self, tokens):
+        return [self.sp_model.PieceToId(piece) for piece in tokens]
+
+    def convert_ids_to_tokens(self, ids):
+        return [self.sp_model.IdToPiece(i) for i in ids]
 
 
 def _isWord(word):
@@ -457,27 +469,37 @@ def tag_chunk(seq):
     return res
 
 
-def bert_tokenization(tokenizer, texts, maxlen):
+def padding_sequence(seq, maxlen, padding = 'post', pad_int = 0):
+    padded_seqs = []
+    for s in seq:
+        if padding == 'post':
+            padded_seqs.append(s + [pad_int] * (maxlen - len(s)))
+        if padding == 'pre':
+            padded_seqs.append([pad_int] * (maxlen - len(s)) + s)
+    return padded_seqs
 
-    input_ids, input_masks, segment_ids = [], [], []
+
+def bert_tokenization(tokenizer, texts, cls = '[CLS]', sep = '[SEP]'):
+
+    input_ids, input_masks, segment_ids, s_tokens = [], [], [], []
     for text in texts:
         tokens_a = tokenizer.tokenize(text)
-        if len(tokens_a) > maxlen - 2:
-            tokens_a = tokens_a[: (maxlen - 2)]
-        tokens = ['[CLS]'] + tokens_a + ['[SEP]']
+        tokens = [cls] + tokens_a + [sep]
         segment_id = [0] * len(tokens)
         input_id = tokenizer.convert_tokens_to_ids(tokens)
         input_mask = [1] * len(input_id)
-        padding = [0] * (maxlen - len(input_id))
-        input_id += padding
-        input_mask += padding
-        segment_id += padding
 
         input_ids.append(input_id)
         input_masks.append(input_mask)
         segment_ids.append(segment_id)
+        s_tokens.append(tokens)
 
-    return input_ids, input_masks, segment_ids
+    maxlen = max([len(i) for i in input_ids])
+    input_ids = padding_sequence(input_ids, maxlen)
+    input_masks = padding_sequence(input_masks, maxlen)
+    segment_ids = padding_sequence(segment_ids, maxlen)
+
+    return input_ids, input_masks, segment_ids, s_tokens
 
 
 def _truncate_seq_pair(tokens_a, tokens_b, max_length):
@@ -491,7 +513,9 @@ def _truncate_seq_pair(tokens_a, tokens_b, max_length):
             tokens_b.pop()
 
 
-def bert_tokenization_siamese(tokenizer, left, right, maxlen):
+def bert_tokenization_siamese(
+    tokenizer, left, right, maxlen, cls = '[CLS]', sep = '[SEP]'
+):
     input_ids, input_masks, segment_ids = [], [], []
     for i in range(len(left)):
         tokens_a = tokenizer.tokenize(left[i])
@@ -500,18 +524,18 @@ def bert_tokenization_siamese(tokenizer, left, right, maxlen):
 
         tokens = []
         segment_id = []
-        tokens.append('[CLS]')
+        tokens.append(cls)
         segment_id.append(0)
         for token in tokens_a:
             tokens.append(token)
             segment_id.append(0)
 
-        tokens.append('[SEP]')
+        tokens.append(sep)
         segment_id.append(0)
         for token in tokens_b:
             tokens.append(token)
             segment_id.append(1)
-        tokens.append('[SEP]')
+        tokens.append(sep)
         segment_id.append(1)
         input_id = tokenizer.convert_tokens_to_ids(tokens)
         input_mask = [1] * len(input_id)
@@ -526,3 +550,150 @@ def bert_tokenization_siamese(tokenizer, left, right, maxlen):
         segment_ids.append(segment_id)
 
     return input_ids, input_masks, segment_ids
+
+
+SEG_ID_A = 0
+SEG_ID_B = 1
+SEG_ID_CLS = 2
+SEG_ID_SEP = 3
+SEG_ID_PAD = 4
+
+special_symbols = {
+    '<unk>': 0,
+    '<s>': 1,
+    '</s>': 2,
+    '<cls>': 3,
+    '<sep>': 4,
+    '<pad>': 5,
+    '<mask>': 6,
+    '<eod>': 7,
+    '<eop>': 8,
+}
+
+UNK_ID = special_symbols['<unk>']
+CLS_ID = special_symbols['<cls>']
+SEP_ID = special_symbols['<sep>']
+MASK_ID = special_symbols['<mask>']
+EOD_ID = special_symbols['<eod>']
+
+
+def tokenize_fn(text, sp_model):
+    text = preprocess_text(text, lower = False)
+    return encode_ids(sp_model, text)
+
+
+def xlnet_tokenization(tokenizer, texts):
+    input_ids, input_masks, segment_ids = [], [], []
+    for text in texts:
+        tokens_a = tokenize_fn(text, tokenizer)
+        tokens = []
+        segment_id = []
+        for token in tokens_a:
+            tokens.append(token)
+            segment_id.append(SEG_ID_A)
+
+        tokens.append(SEP_ID)
+        segment_id.append(SEG_ID_A)
+        tokens.append(CLS_ID)
+        segment_id.append(SEG_ID_CLS)
+
+        input_id = tokens
+        input_mask = [0] * len(input_id)
+
+        input_ids.append(input_id)
+        input_masks.append(input_mask)
+        segment_ids.append(segment_id)
+
+    maxlen = max([len(i) for i in input_ids])
+    input_ids = padding_sequence(input_ids, maxlen, padding = 'pre')
+    input_masks = padding_sequence(
+        input_masks, maxlen, padding = 'pre', pad_int = 1
+    )
+    segment_ids = padding_sequence(
+        segment_ids, maxlen, padding = 'pre', pad_int = SEG_ID_PAD
+    )
+
+    return input_ids, input_masks, segment_ids
+
+
+def merge_wordpiece_tokens(paired_tokens):
+    new_paired_tokens = []
+    n_tokens = len(paired_tokens)
+
+    i = 0
+
+    while i < n_tokens:
+        current_token, current_weight = paired_tokens[i]
+        if current_token.startswith('##'):
+            previous_token, previous_weight = new_paired_tokens.pop()
+            merged_token = previous_token
+            merged_weight = [previous_weight]
+            while current_token.startswith('##'):
+                merged_token = merged_token + current_token.replace('##', '')
+                merged_weight.append(current_weight)
+                i = i + 1
+                current_token, current_weight = paired_tokens[i]
+            merged_weight = np.mean(merged_weight)
+            new_paired_tokens.append((merged_token, merged_weight))
+
+        else:
+            new_paired_tokens.append((current_token, current_weight))
+            i = i + 1
+
+    words = [
+        i[0]
+        for i in new_paired_tokens
+        if i[0] not in ['[CLS]', '[SEP]', '[PAD]']
+    ]
+    weights = [
+        i[1]
+        for i in new_paired_tokens
+        if i[0] not in ['[CLS]', '[SEP]', '[PAD]']
+    ]
+    weights = np.array(weights)
+    weights = weights / np.sum(weights)
+    return list(zip(words, weights))
+
+
+def merge_sentencepiece_tokens(paired_tokens):
+    new_paired_tokens = []
+    n_tokens = len(paired_tokens)
+    rejected = ['<cls>', '<sep>']
+
+    i = 0
+
+    while i < n_tokens:
+
+        current_token, current_weight = paired_tokens[i]
+        if not current_token.startswith('▁') and current_token not in rejected:
+            previous_token, previous_weight = new_paired_tokens.pop()
+            merged_token = previous_token
+            merged_weight = [previous_weight]
+            while (
+                not current_token.startswith('▁')
+                and current_token not in rejected
+            ):
+                merged_token = merged_token + current_token.replace('▁', '')
+                merged_weight.append(current_weight)
+                i = i + 1
+                current_token, current_weight = paired_tokens[i]
+            merged_weight = np.mean(merged_weight)
+            new_paired_tokens.append((merged_token, merged_weight))
+
+        else:
+            new_paired_tokens.append((current_token, current_weight))
+            i = i + 1
+
+    words = [
+        i[0].replace('▁', '')
+        for i in new_paired_tokens
+        if i[0] not in ['<cls>', '<sep>', '<pad>']
+    ]
+    weights = [
+        i[1]
+        for i in new_paired_tokens
+        if i[0] not in ['<cls>', '<sep>', '<pad>']
+    ]
+    weights = np.array(weights)
+    weights = weights / np.sum(weights)
+    return list(zip(words, weights))

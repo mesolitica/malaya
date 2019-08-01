@@ -733,3 +733,55 @@ S3_PATH_SIMILARITY = {
         'vocab': 'v24/multilanguage-vocab.txt',
     },
 }
+
+PATH_BERT = {
+    'base': {
+        'path': home + '/bert-model/base',
+        'directory': home + '/bert-model/base/bert-bahasa-base/',
+        'model': {
+            'model': home + '/bert-model/base/bert-bahasa-base.tar.gz',
+            'version': 'v27',
+        },
+    },
+    'multilanguage': {
+        'path': home + '/bert-model/multilanguage',
+        'directory': home
+        + '/bert-model/multilanguage/multi_cased_L-12_H-768_A-12/',
+        'model': {
+            'model': home
+            + '/bert-model/multilanguage/multi_cased_L-12_H-768_A-12.zip',
+            'version': 'v27',
+        },
+    },
+}
+
+S3_PATH_BERT = {
+    'base': {'model': 'bert-bahasa/bert-bahasa-base.tar.gz'},
+    'multilanguage': {
+        'model': 'https://storage.googleapis.com/bert_models/2018_11_23/multi_cased_L-12_H-768_A-12.zip'
+    },
+}
+
+PATH_XLNET = {
+    'base': {
+        'path': home + '/xlnet-model/base',
+        'directory': home + '/xlnet-model/base/9-july-2019/',
+        'model': {
+            'model': home + '/xlnet-model/base/xlnet-9-july-2019-v2.tar.gz',
+            'version': 'v27',
+        },
+    },
+    'small': {
+        'path': home + '/xlnet-model/small',
+        'directory': home + '/xlnet-model/small/xlnet-bahasa-small/',
+        'model': {
+            'model': home + '/xlnet-model/small/xlnet-bahasa-small.tar.gz',
+            'version': 'v27',
+        },
+    },
+}
+
+S3_PATH_XLNET = {
+    'base': {'model': 'bert-bahasa/xlnet-9-july-2019-v2.tar.gz'},
+    'small': {'model': 'bert-bahasa/xlnet-bahasa-small.tar.gz'},
+}

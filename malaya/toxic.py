@@ -1,9 +1,3 @@
-import sys
-import warnings
-
-if not sys.warnoptions:
-    warnings.simplefilter('ignore')
-
 import json
 import pickle
 import os
@@ -29,18 +23,18 @@ _label_toxic = [
 ]
 
 
-def available_sparse_deep_model():
-    """
-    List available sparse deep learning toxicity analysis models.
-    """
-    return ['fast-text-char']
-
-
 def available_deep_model():
     """
     List available deep learning toxicity analysis models.
     """
     return ['self-attention', 'bahdanau', 'luong']
+
+
+def available_bert_model():
+    """
+    List available bert toxicity analysis models.
+    """
+    return ['multilanguage', 'base', 'small']
 
 
 def multinomial(validate = True):
@@ -109,7 +103,7 @@ def logistic(validate = True):
 
 def deep_model(model = 'luong', validate = True):
     """
-    Load deep learning sentiment analysis model.
+    Load deep learning toxicity analysis model.
 
     Parameters
     ----------
@@ -210,57 +204,3 @@ def bert(validate = True):
         maxlen = 100,
         label = _label_toxic,
     )
-
-
-def sparse_deep_model(model = 'fast-text-char', validate = True):
-    """
-    Load deep learning sentiment analysis model.
-
-    Parameters
-    ----------
-    model : str, optional (default='luong')
-        Model architecture supported. Allowed values:
-
-        * ``'fast-text-char'`` - Fast-text architecture for character based n-grams, embedded and logits layers only.
-    validate: bool, optional (default=True)
-        if True, malaya will check model availability and download if not available.
-
-    Returns
-    -------
-    SPARSE_SIGMOID: malaya._models._tensorflow_model.SPARSE_SIGMOID class
-    """
-
-    if not isinstance(model, str):
-        raise ValueError('model must be a string')
-
-    model = model.lower()
-    if model == 'fast-text-char':
-        if validate:
-            check_file(PATH_TOXIC[model], S3_PATH_TOXIC[model])
-        else:
-            if not check_available(PATH_TOXIC[model]):
-                raise Exception(
-                    'toxic/%s is not available, please `validate = True`'
-                    % (model)
-                )
-        try:
-            with open(PATH_TOXIC[model]['vector'], 'rb') as fopen:
-                vector = pickle.load(fopen)
-
-            return SPARSE_SIGMOID(
-                path = os.path.dirname(PATH_TOXIC[model]['model']),
-                vectorizer = vector,
-                label = _label_toxic,
-                output_size = len(_label_toxic),
-                embedded_size = 128,
-                vocab_size = len(vector.vocabulary_),
-            )
-        except:
-            raise Exception(
-                "model corrupted due to some reasons, please run malaya.clear_cache('toxic/%s') and try again"
-                % (model)
-            )
-    else:
-        raise Exception(
-            'model subjectivity not supported, please check supported models from malaya.toxic.available_sparse_deep_model()'
-        )
