@@ -100,12 +100,18 @@ def xgb(validate = True):
     )
 
 
-def bert(validate = True):
+def bert(model = 'base', validate = True):
     """
     Load BERT subjectivity model.
 
     Parameters
     ----------
+    model : str, optional (default='base')
+        Model architecture supported. Allowed values:
+
+        * ``'multilanguage'`` - bert multilanguage released by Google, trained on subjectivity analysis.
+        * ``'base'`` - base bert-bahasa released by Malaya, trained on subjectivity analysis.
+        * ``'small'`` - small bert-bahasa released by Malaya, trained on subjectivity analysis.
     validate: bool, optional (default=True)
         if True, malaya will check model availability and download if not available.
 
@@ -113,12 +119,21 @@ def bert(validate = True):
     -------
     BERT : malaya._models._tensorflow_model.BINARY_BERT class
     """
+    if not isinstance(model, str):
+        raise ValueError('model must be a string')
     if not isinstance(validate, bool):
         raise ValueError('validate must be a boolean')
+
+    model = model.lower()
+    if model not in available_bert_model():
+        raise Exception(
+            'model is not supported, please check supported models from malaya.subjective.available_bert_model()'
+        )
     return _softmax_class.bert(
         PATH_SUBJECTIVE,
         S3_PATH_SUBJECTIVE,
         'subjective',
         ['negative', 'positive'],
+        model = model,
         validate = validate,
     )

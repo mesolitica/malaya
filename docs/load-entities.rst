@@ -7,23 +7,39 @@
 
 .. parsed-literal::
 
-    CPU times: user 10.9 s, sys: 891 ms, total: 11.7 s
-    Wall time: 12.1 s
+    CPU times: user 5.92 s, sys: 1.4 s, total: 7.32 s
+    Wall time: 11.7 s
 
 
-List available deep learning NER models
----------------------------------------
+BERT model
+----------
+
+BERT is the best NER model in term of accuracy, you can check NER
+accuracy here,
+https://malaya.readthedocs.io/en/latest/Accuracy.html#entities-recognition.
+Question is, why BERT?
+
+1. Transformer model learn the context of a word based on all of its
+   surroundings (live string), bidirectionally. So it much better
+   understand left and right hand side relationships.
+2. Because of transformer able to leverage to context during live
+   string, we dont need to capture available words in this world,
+   instead capture substrings and build the attention after that. BERT
+   will never have Out-Of-Vocab problem.
+
+List available BERT NER models
+------------------------------
 
 .. code:: python
 
-    malaya.entity.available_deep_model()
+    malaya.entity.available_bert_model()
 
 
 
 
 .. parsed-literal::
 
-    ['concat', 'bahdanau', 'luong', 'entity-network', 'attention']
+    ['multilanguage', 'base', 'small']
 
 
 
@@ -51,24 +67,39 @@ Describe supported entities
 
     string = 'KUALA LUMPUR: Sempena sambutan Aidilfitri minggu depan, Perdana Menteri Tun Dr Mahathir Mohamad dan Menteri Pengangkutan Anthony Loke Siew Fook menitipkan pesanan khas kepada orang ramai yang mahu pulang ke kampung halaman masing-masing. Dalam video pendek terbitan Jabatan Keselamatan Jalan Raya (JKJR) itu, Dr Mahathir menasihati mereka supaya berhenti berehat dan tidur sebentar  sekiranya mengantuk ketika memandu.'
 
-Load CRF model
---------------
+Load BERT models
+----------------
 
 .. code:: python
 
-    crf = malaya.entity.crf()
-    crf.predict(string)
+    model = malaya.entity.bert(model = 'base')
+
+
+.. parsed-literal::
+
+    WARNING: Logging before flag parsing goes to stderr.
+    W0807 17:19:59.994667 4422120896 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:45: The name tf.gfile.GFile is deprecated. Please use tf.io.gfile.GFile instead.
+
+    W0807 17:19:59.995772 4422120896 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:46: The name tf.GraphDef is deprecated. Please use tf.compat.v1.GraphDef instead.
+
+    W0807 17:20:09.183666 4422120896 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:41: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
+
+
+
+.. code:: python
+
+    model.predict(string)
 
 
 
 
 .. parsed-literal::
 
-    [('KUALA', 'location'),
-     ('LUMPUR', 'location'),
+    [('Kuala', 'location'),
+     ('Lumpur', 'location'),
      ('Sempena', 'OTHER'),
-     ('sambutan', 'event'),
-     ('Aidilfitri', 'event'),
+     ('sambutan', 'OTHER'),
+     ('Aidilfitri', 'OTHER'),
      ('minggu', 'OTHER'),
      ('depan', 'OTHER'),
      ('Perdana', 'person'),
@@ -78,8 +109,8 @@ Load CRF model
      ('Mahathir', 'person'),
      ('Mohamad', 'person'),
      ('dan', 'OTHER'),
-     ('Menteri', 'OTHER'),
-     ('Pengangkutan', 'OTHER'),
+     ('Menteri', 'person'),
+     ('Pengangkutan', 'person'),
      ('Anthony', 'person'),
      ('Loke', 'person'),
      ('Siew', 'person'),
@@ -94,7 +125,7 @@ Load CRF model
      ('mahu', 'OTHER'),
      ('pulang', 'OTHER'),
      ('ke', 'OTHER'),
-     ('kampung', 'location'),
+     ('kampung', 'OTHER'),
      ('halaman', 'location'),
      ('masing-masing', 'OTHER'),
      ('Dalam', 'OTHER'),
@@ -105,7 +136,7 @@ Load CRF model
      ('Keselamatan', 'organization'),
      ('Jalan', 'organization'),
      ('Raya', 'organization'),
-     ('JKJR', 'organization'),
+     ('(Jkjr)', 'organization'),
      ('itu', 'OTHER'),
      ('Dr', 'person'),
      ('Mahathir', 'person'),
@@ -126,15 +157,15 @@ Load CRF model
 
 .. code:: python
 
-    crf.analyze(string)
+    model.analyze(string)
 
 
 
 
 .. parsed-literal::
 
-    {'words': ['KUALA',
-      'LUMPUR',
+    {'words': ['Kuala',
+      'Lumpur',
       'Sempena',
       'sambutan',
       'Aidilfitri',
@@ -174,7 +205,7 @@ Load CRF model
       'Keselamatan',
       'Jalan',
       'Raya',
-      'JKJR',
+      '(Jkjr)',
       'itu',
       'Dr',
       'Mahathir',
@@ -190,57 +221,37 @@ Load CRF model
       'mengantuk',
       'ketika',
       'memandu'],
-     'tags': [{'text': 'KUALA LUMPUR',
+     'tags': [{'text': 'Kuala Lumpur',
        'type': 'location',
        'score': 1.0,
        'beginOffset': 0,
        'endOffset': 1},
-      {'text': 'Sempena',
+      {'text': 'Sempena sambutan Aidilfitri minggu depan',
        'type': 'OTHER',
        'score': 1.0,
        'beginOffset': 2,
-       'endOffset': 2},
-      {'text': 'sambutan Aidilfitri',
-       'type': 'event',
-       'score': 1.0,
-       'beginOffset': 3,
-       'endOffset': 4},
-      {'text': 'minggu depan',
-       'type': 'OTHER',
-       'score': 1.0,
-       'beginOffset': 5,
        'endOffset': 6},
       {'text': 'Perdana Menteri Tun Dr Mahathir Mohamad',
        'type': 'person',
        'score': 1.0,
        'beginOffset': 7,
        'endOffset': 12},
-      {'text': 'dan Menteri Pengangkutan',
+      {'text': 'dan',
        'type': 'OTHER',
        'score': 1.0,
        'beginOffset': 13,
-       'endOffset': 15},
-      {'text': 'Anthony Loke Siew Fook',
+       'endOffset': 13},
+      {'text': 'Menteri Pengangkutan Anthony Loke Siew Fook',
        'type': 'person',
        'score': 1.0,
-       'beginOffset': 16,
+       'beginOffset': 14,
        'endOffset': 19},
-      {'text': 'menitipkan pesanan khas kepada orang ramai yang mahu pulang ke',
+      {'text': 'menitipkan pesanan khas kepada orang ramai yang mahu pulang ke kampung halaman masing-masing Dalam video pendek terbitan',
        'type': 'OTHER',
        'score': 1.0,
        'beginOffset': 20,
-       'endOffset': 29},
-      {'text': 'kampung halaman',
-       'type': 'location',
-       'score': 1.0,
-       'beginOffset': 30,
-       'endOffset': 31},
-      {'text': 'masing-masing Dalam video pendek terbitan',
-       'type': 'OTHER',
-       'score': 1.0,
-       'beginOffset': 32,
        'endOffset': 36},
-      {'text': 'Jabatan Keselamatan Jalan Raya JKJR',
+      {'text': 'Jabatan Keselamatan Jalan Raya (Jkjr)',
        'type': 'organization',
        'score': 1.0,
        'beginOffset': 37,
@@ -258,147 +269,20 @@ Load CRF model
 
 
 
-Load Case-Sensitive CRF model
------------------------------
+List available deep learning models
+-----------------------------------
 
 .. code:: python
 
-    crf = malaya.entity.crf(sensitive = True)
-    crf.predict(string)
+    malaya.entity.available_deep_model()
 
 
 
 
 .. parsed-literal::
 
-    [('KUALA', 'location'),
-     ('LUMPUR', 'location'),
-     ('Sempena', 'OTHER'),
-     ('sambutan', 'OTHER'),
-     ('Aidilfitri', 'event'),
-     ('minggu', 'OTHER'),
-     ('depan', 'OTHER'),
-     ('Perdana', 'person'),
-     ('Menteri', 'person'),
-     ('Tun', 'person'),
-     ('Dr', 'person'),
-     ('Mahathir', 'person'),
-     ('Mohamad', 'person'),
-     ('dan', 'OTHER'),
-     ('Menteri', 'organization'),
-     ('Pengangkutan', 'organization'),
-     ('Anthony', 'person'),
-     ('Loke', 'person'),
-     ('Siew', 'person'),
-     ('Fook', 'person'),
-     ('menitipkan', 'OTHER'),
-     ('pesanan', 'OTHER'),
-     ('khas', 'OTHER'),
-     ('kepada', 'OTHER'),
-     ('orang', 'OTHER'),
-     ('ramai', 'OTHER'),
-     ('yang', 'OTHER'),
-     ('mahu', 'OTHER'),
-     ('pulang', 'OTHER'),
-     ('ke', 'OTHER'),
-     ('kampung', 'location'),
-     ('halaman', 'location'),
-     ('masing-masing', 'OTHER'),
-     ('Dalam', 'OTHER'),
-     ('video', 'OTHER'),
-     ('pendek', 'OTHER'),
-     ('terbitan', 'OTHER'),
-     ('Jabatan', 'organization'),
-     ('Keselamatan', 'organization'),
-     ('Jalan', 'organization'),
-     ('Raya', 'organization'),
-     ('JKJR', 'organization'),
-     ('itu', 'OTHER'),
-     ('Dr', 'person'),
-     ('Mahathir', 'person'),
-     ('menasihati', 'OTHER'),
-     ('mereka', 'OTHER'),
-     ('supaya', 'OTHER'),
-     ('berhenti', 'OTHER'),
-     ('berehat', 'OTHER'),
-     ('dan', 'OTHER'),
-     ('tidur', 'OTHER'),
-     ('sebentar', 'OTHER'),
-     ('sekiranya', 'OTHER'),
-     ('mengantuk', 'OTHER'),
-     ('ketika', 'OTHER'),
-     ('memandu', 'OTHER')]
+    ['concat', 'bahdanau', 'luong']
 
-
-
-Print important features from CRF model
----------------------------------------
-
-.. code:: python
-
-    crf.print_features(10)
-
-
-.. parsed-literal::
-
-    Top-10 positive:
-    14.340635 person   word:pengarah
-    11.162717 person   prev_word:perbendaharaan
-    10.906426 location word:dibuat-buat
-    10.462828 person   word:berkelulusan
-    9.680613 organization word:pas
-    9.152880 person   word:Presidennya
-    8.668067 OTHER    prev_word:bergabungnya
-    8.637761 location word:Iran
-    8.336057 person   word:dinaungi
-    8.233552 person   word:Johan
-
-    Top-10 negative:
-    -5.274524 OTHER    prev_word:pelantikan
-    -5.344889 OTHER    word:pembangkang
-    -5.375710 OTHER    word:terminal
-    -5.699221 person   is_numeric
-    -5.855398 organization suffix-3:ari
-    -6.036876 OTHER    word:memintanya
-    -6.082631 OTHER    word:pengasuhnya
-    -6.278501 person   next_word-prefix-2:Kp
-    -6.818189 OTHER    prefix-3:di-
-    -7.422581 person   suffix-3:ada
-
-
-Print important transitions from CRF Model
-------------------------------------------
-
-.. code:: python
-
-    crf.print_transitions(10)
-
-
-.. parsed-literal::
-
-    Top-10 likely transitions:
-    OTHER  -> OTHER   4.720173
-    organization -> organization 4.512877
-    event  -> event   4.286578
-    quantity -> quantity 4.244444
-    person -> person  4.099601
-    location -> location 4.051204
-    law    -> law     3.888215
-    time   -> time    2.618322
-    OTHER  -> location 0.361435
-    OTHER  -> person  0.255809
-
-    Top-10 unlikely transitions:
-    organization -> event   -4.005846
-    quantity -> location -4.030371
-    law    -> organization -4.154642
-    time   -> person  -4.226871
-    quantity -> organization -4.251120
-    person -> law     -4.379608
-    law    -> time    -4.421451
-    organization -> time    -4.700082
-    time   -> quantity -7.386138
-    quantity -> time    -7.824427
 
 
 Load deep learning models
@@ -416,50 +300,23 @@ Load deep learning models
 .. parsed-literal::
 
     Testing concat model
-    [('KUALA', 'location'), ('LUMPUR', 'location'), ('Sempena', 'OTHER'), ('sambutan', 'event'), ('Aidilfitri', 'event'), ('minggu', 'time'), ('depan', 'time'), ('Perdana', 'person'), ('Menteri', 'person'), ('Tun', 'person'), ('Dr', 'person'), ('Mahathir', 'person'), ('Mohamad', 'OTHER'), ('dan', 'OTHER'), ('Menteri', 'OTHER'), ('Pengangkutan', 'organization'), ('Anthony', 'person'), ('Loke', 'person'), ('Siew', 'person'), ('Fook', 'person'), ('menitipkan', 'OTHER'), ('pesanan', 'OTHER'), ('khas', 'OTHER'), ('kepada', 'OTHER'), ('orang', 'OTHER'), ('ramai', 'OTHER'), ('yang', 'OTHER'), ('mahu', 'OTHER'), ('pulang', 'OTHER'), ('ke', 'OTHER'), ('kampung', 'location'), ('halaman', 'location'), ('masing-masing', 'OTHER'), ('Dalam', 'OTHER'), ('video', 'OTHER'), ('pendek', 'OTHER'), ('terbitan', 'OTHER'), ('Jabatan', 'OTHER'), ('Keselamatan', 'OTHER'), ('Jalan', 'location'), ('Raya', 'organization'), ('JKJR', 'person'), ('itu', 'OTHER'), ('Dr', 'person'), ('Mahathir', 'person'), ('menasihati', 'OTHER'), ('mereka', 'OTHER'), ('supaya', 'OTHER'), ('berhenti', 'OTHER'), ('berehat', 'OTHER'), ('dan', 'OTHER'), ('tidur', 'OTHER'), ('sebentar', 'OTHER'), ('sekiranya', 'OTHER'), ('mengantuk', 'OTHER'), ('ketika', 'OTHER'), ('memandu', 'OTHER')]
-
-    Testing bahdanau model
-    [('KUALA', 'location'), ('LUMPUR', 'location'), ('Sempena', 'OTHER'), ('sambutan', 'event'), ('Aidilfitri', 'event'), ('minggu', 'time'), ('depan', 'time'), ('Perdana', 'person'), ('Menteri', 'person'), ('Tun', 'person'), ('Dr', 'person'), ('Mahathir', 'person'), ('Mohamad', 'person'), ('dan', 'OTHER'), ('Menteri', 'organization'), ('Pengangkutan', 'organization'), ('Anthony', 'person'), ('Loke', 'person'), ('Siew', 'person'), ('Fook', 'person'), ('menitipkan', 'OTHER'), ('pesanan', 'OTHER'), ('khas', 'OTHER'), ('kepada', 'OTHER'), ('orang', 'OTHER'), ('ramai', 'OTHER'), ('yang', 'OTHER'), ('mahu', 'OTHER'), ('pulang', 'OTHER'), ('ke', 'OTHER'), ('kampung', 'OTHER'), ('halaman', 'OTHER'), ('masing-masing', 'OTHER'), ('Dalam', 'OTHER'), ('video', 'OTHER'), ('pendek', 'OTHER'), ('terbitan', 'OTHER'), ('Jabatan', 'organization'), ('Keselamatan', 'organization'), ('Jalan', 'organization'), ('Raya', 'organization'), ('JKJR', 'OTHER'), ('itu', 'OTHER'), ('Dr', 'person'), ('Mahathir', 'person'), ('menasihati', 'OTHER'), ('mereka', 'OTHER'), ('supaya', 'OTHER'), ('berhenti', 'OTHER'), ('berehat', 'OTHER'), ('dan', 'OTHER'), ('tidur', 'OTHER'), ('sebentar', 'OTHER'), ('sekiranya', 'OTHER'), ('mengantuk', 'OTHER'), ('ketika', 'OTHER'), ('memandu', 'OTHER')]
-
-    Testing luong model
-    [('KUALA', 'location'), ('LUMPUR', 'location'), ('Sempena', 'OTHER'), ('sambutan', 'event'), ('Aidilfitri', 'event'), ('minggu', 'time'), ('depan', 'OTHER'), ('Perdana', 'person'), ('Menteri', 'person'), ('Tun', 'person'), ('Dr', 'person'), ('Mahathir', 'person'), ('Mohamad', 'OTHER'), ('dan', 'OTHER'), ('Menteri', 'OTHER'), ('Pengangkutan', 'organization'), ('Anthony', 'person'), ('Loke', 'person'), ('Siew', 'person'), ('Fook', 'person'), ('menitipkan', 'OTHER'), ('pesanan', 'OTHER'), ('khas', 'OTHER'), ('kepada', 'OTHER'), ('orang', 'OTHER'), ('ramai', 'OTHER'), ('yang', 'OTHER'), ('mahu', 'OTHER'), ('pulang', 'OTHER'), ('ke', 'OTHER'), ('kampung', 'OTHER'), ('halaman', 'OTHER'), ('masing-masing', 'OTHER'), ('Dalam', 'OTHER'), ('video', 'OTHER'), ('pendek', 'OTHER'), ('terbitan', 'OTHER'), ('Jabatan', 'organization'), ('Keselamatan', 'OTHER'), ('Jalan', 'organization'), ('Raya', 'organization'), ('JKJR', 'person'), ('itu', 'OTHER'), ('Dr', 'person'), ('Mahathir', 'person'), ('menasihati', 'OTHER'), ('mereka', 'OTHER'), ('supaya', 'OTHER'), ('berhenti', 'OTHER'), ('berehat', 'OTHER'), ('dan', 'OTHER'), ('tidur', 'OTHER'), ('sebentar', 'OTHER'), ('sekiranya', 'OTHER'), ('mengantuk', 'OTHER'), ('ketika', 'OTHER'), ('memandu', 'OTHER')]
-
-    Testing entity-network model
-    [('KUALA', 'location'), ('LUMPUR', 'location'), ('Sempena', 'OTHER'), ('sambutan', 'event'), ('Aidilfitri', 'event'), ('minggu', 'time'), ('depan', 'OTHER'), ('Perdana', 'OTHER'), ('Menteri', 'OTHER'), ('Tun', 'person'), ('Dr', 'person'), ('Mahathir', 'person'), ('Mohamad', 'person'), ('dan', 'OTHER'), ('Menteri', 'OTHER'), ('Pengangkutan', 'OTHER'), ('Anthony', 'person'), ('Loke', 'person'), ('Siew', 'person'), ('Fook', 'person'), ('menitipkan', 'event'), ('pesanan', 'event'), ('khas', 'event'), ('kepada', 'OTHER'), ('orang', 'event'), ('ramai', 'time'), ('yang', 'OTHER'), ('mahu', 'OTHER'), ('pulang', 'OTHER'), ('ke', 'OTHER'), ('kampung', 'location'), ('halaman', 'OTHER'), ('masing-masing', 'OTHER'), ('Dalam', 'OTHER'), ('video', 'OTHER'), ('pendek', 'OTHER'), ('terbitan', 'OTHER'), ('Jabatan', 'organization'), ('Keselamatan', 'organization'), ('Jalan', 'organization'), ('Raya', 'organization'), ('JKJR', 'organization'), ('itu', 'OTHER'), ('Dr', 'person'), ('Mahathir', 'person'), ('menasihati', 'OTHER'), ('mereka', 'OTHER'), ('supaya', 'OTHER'), ('berhenti', 'OTHER'), ('berehat', 'OTHER'), ('dan', 'OTHER'), ('tidur', 'OTHER'), ('sebentar', 'OTHER'), ('sekiranya', 'OTHER'), ('mengantuk', 'OTHER'), ('ketika', 'OTHER'), ('memandu', 'OTHER')]
-
-    Testing attention model
-    [('KUALA', 'location'), ('LUMPUR', 'location'), ('Sempena', 'OTHER'), ('sambutan', 'event'), ('Aidilfitri', 'event'), ('minggu', 'event'), ('depan', 'OTHER'), ('Perdana', 'person'), ('Menteri', 'OTHER'), ('Tun', 'person'), ('Dr', 'person'), ('Mahathir', 'person'), ('Mohamad', 'person'), ('dan', 'OTHER'), ('Menteri', 'OTHER'), ('Pengangkutan', 'OTHER'), ('Anthony', 'person'), ('Loke', 'person'), ('Siew', 'person'), ('Fook', 'person'), ('menitipkan', 'OTHER'), ('pesanan', 'OTHER'), ('khas', 'OTHER'), ('kepada', 'OTHER'), ('orang', 'person'), ('ramai', 'OTHER'), ('yang', 'OTHER'), ('mahu', 'OTHER'), ('pulang', 'OTHER'), ('ke', 'OTHER'), ('kampung', 'location'), ('halaman', 'location'), ('masing-masing', 'OTHER'), ('Dalam', 'OTHER'), ('video', 'OTHER'), ('pendek', 'OTHER'), ('terbitan', 'OTHER'), ('Jabatan', 'OTHER'), ('Keselamatan', 'OTHER'), ('Jalan', 'location'), ('Raya', 'location'), ('JKJR', 'location'), ('itu', 'OTHER'), ('Dr', 'person'), ('Mahathir', 'person'), ('menasihati', 'OTHER'), ('mereka', 'OTHER'), ('supaya', 'OTHER'), ('berhenti', 'OTHER'), ('berehat', 'OTHER'), ('dan', 'OTHER'), ('tidur', 'OTHER'), ('sebentar', 'OTHER'), ('sekiranya', 'OTHER'), ('mengantuk', 'OTHER'), ('ketika', 'OTHER'), ('memandu', 'OTHER')]
-
-
-
-Load Case-Sensitive deep learning models
-----------------------------------------
-
-.. code:: python
-
-    for i in malaya.entity.available_deep_model():
-        print('Testing %s model'%(i))
-        model = malaya.entity.deep_model(i, sensitive = True)
-        print(model.predict(string))
-        print()
+    downloading frozen /Users/huseinzol/Malaya/entity/concat model
 
 
 .. parsed-literal::
 
-    Testing concat model
-    [('KUALA', 'location'), ('LUMPUR', 'location'), ('Sempena', 'OTHER'), ('sambutan', 'time'), ('Aidilfitri', 'time'), ('minggu', 'OTHER'), ('depan', 'OTHER'), ('Perdana', 'OTHER'), ('Menteri', 'OTHER'), ('Tun', 'person'), ('Dr', 'person'), ('Mahathir', 'person'), ('Mohamad', 'person'), ('dan', 'OTHER'), ('Menteri', 'person'), ('Pengangkutan', 'person'), ('Anthony', 'person'), ('Loke', 'person'), ('Siew', 'person'), ('Fook', 'person'), ('menitipkan', 'OTHER'), ('pesanan', 'person'), ('khas', 'OTHER'), ('kepada', 'OTHER'), ('orang', 'person'), ('ramai', 'OTHER'), ('yang', 'OTHER'), ('mahu', 'OTHER'), ('pulang', 'OTHER'), ('ke', 'OTHER'), ('kampung', 'OTHER'), ('halaman', 'OTHER'), ('masing-masing', 'OTHER'), ('Dalam', 'OTHER'), ('video', 'organization'), ('pendek', 'OTHER'), ('terbitan', 'OTHER'), ('Jabatan', 'organization'), ('Keselamatan', 'organization'), ('Jalan', 'organization'), ('Raya', 'law'), ('JKJR', 'time'), ('itu', 'OTHER'), ('Dr', 'person'), ('Mahathir', 'person'), ('menasihati', 'OTHER'), ('mereka', 'OTHER'), ('supaya', 'OTHER'), ('berhenti', 'OTHER'), ('berehat', 'OTHER'), ('dan', 'OTHER'), ('tidur', 'OTHER'), ('sebentar', 'OTHER'), ('sekiranya', 'OTHER'), ('mengantuk', 'OTHER'), ('ketika', 'OTHER'), ('memandu', 'OTHER')]
+    19.0MB [00:03, 5.98MB/s]
+
+
+.. parsed-literal::
+
+    [('KUALA', 'location'), ('LUMPUR', 'location'), ('Sempena', 'OTHER'), ('sambutan', 'OTHER'), ('Aidilfitri', 'time'), ('minggu', 'time'), ('depan', 'time'), ('Perdana', 'person'), ('Menteri', 'person'), ('Tun', 'person'), ('Dr', 'person'), ('Mahathir', 'person'), ('Mohamad', 'person'), ('dan', 'OTHER'), ('Menteri', 'person'), ('Pengangkutan', 'person'), ('Anthony', 'person'), ('Loke', 'person'), ('Siew', 'person'), ('Fook', 'person'), ('menitipkan', 'person'), ('pesanan', 'OTHER'), ('khas', 'OTHER'), ('kepada', 'OTHER'), ('orang', 'OTHER'), ('ramai', 'OTHER'), ('yang', 'OTHER'), ('mahu', 'OTHER'), ('pulang', 'OTHER'), ('ke', 'OTHER'), ('kampung', 'location'), ('halaman', 'location'), ('masing-masing', 'OTHER'), ('Dalam', 'OTHER'), ('video', 'OTHER'), ('pendek', 'OTHER'), ('terbitan', 'OTHER'), ('Jabatan', 'organization'), ('Keselamatan', 'organization'), ('Jalan', 'organization'), ('Raya', 'organization'), ('(JKJR)', 'location'), ('itu', 'OTHER'), ('Dr', 'person'), ('Mahathir', 'person'), ('menasihati', 'OTHER'), ('mereka', 'OTHER'), ('supaya', 'OTHER'), ('berhenti', 'OTHER'), ('berehat', 'person'), ('dan', 'OTHER'), ('tidur', 'OTHER'), ('sebentar', 'OTHER'), ('sekiranya', 'OTHER'), ('mengantuk', 'OTHER'), ('ketika', 'OTHER'), ('memandu', 'OTHER')]
 
     Testing bahdanau model
-    [('KUALA', 'location'), ('LUMPUR', 'location'), ('Sempena', 'OTHER'), ('sambutan', 'OTHER'), ('Aidilfitri', 'event'), ('minggu', 'time'), ('depan', 'time'), ('Perdana', 'person'), ('Menteri', 'person'), ('Tun', 'person'), ('Dr', 'person'), ('Mahathir', 'person'), ('Mohamad', 'OTHER'), ('dan', 'OTHER'), ('Menteri', 'person'), ('Pengangkutan', 'person'), ('Anthony', 'person'), ('Loke', 'person'), ('Siew', 'person'), ('Fook', 'person'), ('menitipkan', 'OTHER'), ('pesanan', 'OTHER'), ('khas', 'OTHER'), ('kepada', 'OTHER'), ('orang', 'OTHER'), ('ramai', 'OTHER'), ('yang', 'OTHER'), ('mahu', 'OTHER'), ('pulang', 'OTHER'), ('ke', 'OTHER'), ('kampung', 'location'), ('halaman', 'event'), ('masing-masing', 'OTHER'), ('Dalam', 'OTHER'), ('video', 'OTHER'), ('pendek', 'OTHER'), ('terbitan', 'OTHER'), ('Jabatan', 'organization'), ('Keselamatan', 'organization'), ('Jalan', 'organization'), ('Raya', 'organization'), ('JKJR', 'organization'), ('itu', 'OTHER'), ('Dr', 'person'), ('Mahathir', 'person'), ('menasihati', 'OTHER'), ('mereka', 'OTHER'), ('supaya', 'OTHER'), ('berhenti', 'OTHER'), ('berehat', 'OTHER'), ('dan', 'OTHER'), ('tidur', 'OTHER'), ('sebentar', 'OTHER'), ('sekiranya', 'OTHER'), ('mengantuk', 'OTHER'), ('ketika', 'OTHER'), ('memandu', 'OTHER')]
+    [('KUALA', 'location'), ('LUMPUR', 'location'), ('Sempena', 'OTHER'), ('sambutan', 'OTHER'), ('Aidilfitri', 'location'), ('minggu', 'time'), ('depan', 'time'), ('Perdana', 'location'), ('Menteri', 'person'), ('Tun', 'person'), ('Dr', 'person'), ('Mahathir', 'person'), ('Mohamad', 'person'), ('dan', 'OTHER'), ('Menteri', 'person'), ('Pengangkutan', 'person'), ('Anthony', 'person'), ('Loke', 'person'), ('Siew', 'person'), ('Fook', 'person'), ('menitipkan', 'person'), ('pesanan', 'OTHER'), ('khas', 'OTHER'), ('kepada', 'OTHER'), ('orang', 'OTHER'), ('ramai', 'OTHER'), ('yang', 'OTHER'), ('mahu', 'OTHER'), ('pulang', 'OTHER'), ('ke', 'OTHER'), ('kampung', 'location'), ('halaman', 'OTHER'), ('masing-masing', 'OTHER'), ('Dalam', 'OTHER'), ('video', 'OTHER'), ('pendek', 'OTHER'), ('terbitan', 'OTHER'), ('Jabatan', 'organization'), ('Keselamatan', 'organization'), ('Jalan', 'organization'), ('Raya', 'organization'), ('(JKJR)', 'OTHER'), ('itu', 'OTHER'), ('Dr', 'person'), ('Mahathir', 'person'), ('menasihati', 'OTHER'), ('mereka', 'OTHER'), ('supaya', 'OTHER'), ('berhenti', 'OTHER'), ('berehat', 'OTHER'), ('dan', 'OTHER'), ('tidur', 'OTHER'), ('sebentar', 'OTHER'), ('sekiranya', 'OTHER'), ('mengantuk', 'location'), ('ketika', 'OTHER'), ('memandu', 'OTHER')]
 
     Testing luong model
-    [('KUALA', 'location'), ('LUMPUR', 'location'), ('Sempena', 'OTHER'), ('sambutan', 'OTHER'), ('Aidilfitri', 'event'), ('minggu', 'OTHER'), ('depan', 'OTHER'), ('Perdana', 'person'), ('Menteri', 'person'), ('Tun', 'person'), ('Dr', 'person'), ('Mahathir', 'person'), ('Mohamad', 'person'), ('dan', 'OTHER'), ('Menteri', 'person'), ('Pengangkutan', 'person'), ('Anthony', 'person'), ('Loke', 'person'), ('Siew', 'person'), ('Fook', 'person'), ('menitipkan', 'OTHER'), ('pesanan', 'OTHER'), ('khas', 'OTHER'), ('kepada', 'OTHER'), ('orang', 'OTHER'), ('ramai', 'OTHER'), ('yang', 'OTHER'), ('mahu', 'OTHER'), ('pulang', 'OTHER'), ('ke', 'OTHER'), ('kampung', 'OTHER'), ('halaman', 'OTHER'), ('masing-masing', 'OTHER'), ('Dalam', 'OTHER'), ('video', 'OTHER'), ('pendek', 'OTHER'), ('terbitan', 'OTHER'), ('Jabatan', 'organization'), ('Keselamatan', 'organization'), ('Jalan', 'organization'), ('Raya', 'organization'), ('JKJR', 'organization'), ('itu', 'OTHER'), ('Dr', 'person'), ('Mahathir', 'person'), ('menasihati', 'OTHER'), ('mereka', 'OTHER'), ('supaya', 'OTHER'), ('berhenti', 'OTHER'), ('berehat', 'OTHER'), ('dan', 'OTHER'), ('tidur', 'OTHER'), ('sebentar', 'OTHER'), ('sekiranya', 'OTHER'), ('mengantuk', 'OTHER'), ('ketika', 'OTHER'), ('memandu', 'OTHER')]
-
-    Testing entity-network model
-    [('KUALA', 'location'), ('LUMPUR', 'location'), ('Sempena', 'OTHER'), ('sambutan', 'OTHER'), ('Aidilfitri', 'event'), ('minggu', 'OTHER'), ('depan', 'OTHER'), ('Perdana', 'OTHER'), ('Menteri', 'OTHER'), ('Tun', 'person'), ('Dr', 'person'), ('Mahathir', 'person'), ('Mohamad', 'person'), ('dan', 'OTHER'), ('Menteri', 'OTHER'), ('Pengangkutan', 'organization'), ('Anthony', 'person'), ('Loke', 'person'), ('Siew', 'person'), ('Fook', 'person'), ('menitipkan', 'person'), ('pesanan', 'OTHER'), ('khas', 'OTHER'), ('kepada', 'OTHER'), ('orang', 'OTHER'), ('ramai', 'OTHER'), ('yang', 'OTHER'), ('mahu', 'OTHER'), ('pulang', 'OTHER'), ('ke', 'OTHER'), ('kampung', 'OTHER'), ('halaman', 'OTHER'), ('masing-masing', 'OTHER'), ('Dalam', 'OTHER'), ('video', 'OTHER'), ('pendek', 'OTHER'), ('terbitan', 'OTHER'), ('Jabatan', 'organization'), ('Keselamatan', 'organization'), ('Jalan', 'organization'), ('Raya', 'organization'), ('JKJR', 'organization'), ('itu', 'OTHER'), ('Dr', 'person'), ('Mahathir', 'person'), ('menasihati', 'OTHER'), ('mereka', 'OTHER'), ('supaya', 'OTHER'), ('berhenti', 'OTHER'), ('berehat', 'OTHER'), ('dan', 'OTHER'), ('tidur', 'OTHER'), ('sebentar', 'OTHER'), ('sekiranya', 'OTHER'), ('mengantuk', 'OTHER'), ('ketika', 'OTHER'), ('memandu', 'OTHER')]
-
-    Testing attention model
-    [('KUALA', 'person'), ('LUMPUR', 'person'), ('Sempena', 'OTHER'), ('sambutan', 'OTHER'), ('Aidilfitri', 'time'), ('minggu', 'time'), ('depan', 'OTHER'), ('Perdana', 'person'), ('Menteri', 'person'), ('Tun', 'person'), ('Dr', 'person'), ('Mahathir', 'person'), ('Mohamad', 'person'), ('dan', 'OTHER'), ('Menteri', 'OTHER'), ('Pengangkutan', 'OTHER'), ('Anthony', 'person'), ('Loke', 'person'), ('Siew', 'person'), ('Fook', 'person'), ('menitipkan', 'OTHER'), ('pesanan', 'OTHER'), ('khas', 'OTHER'), ('kepada', 'OTHER'), ('orang', 'OTHER'), ('ramai', 'OTHER'), ('yang', 'OTHER'), ('mahu', 'OTHER'), ('pulang', 'OTHER'), ('ke', 'OTHER'), ('kampung', 'OTHER'), ('halaman', 'OTHER'), ('masing-masing', 'OTHER'), ('Dalam', 'OTHER'), ('video', 'OTHER'), ('pendek', 'OTHER'), ('terbitan', 'OTHER'), ('Jabatan', 'event'), ('Keselamatan', 'event'), ('Jalan', 'event'), ('Raya', 'event'), ('JKJR', 'event'), ('itu', 'OTHER'), ('Dr', 'person'), ('Mahathir', 'person'), ('menasihati', 'OTHER'), ('mereka', 'OTHER'), ('supaya', 'OTHER'), ('berhenti', 'OTHER'), ('berehat', 'OTHER'), ('dan', 'OTHER'), ('tidur', 'OTHER'), ('sebentar', 'OTHER'), ('sekiranya', 'OTHER'), ('mengantuk', 'OTHER'), ('ketika', 'OTHER'), ('memandu', 'OTHER')]
+    [('KUALA', 'location'), ('LUMPUR', 'location'), ('Sempena', 'OTHER'), ('sambutan', 'OTHER'), ('Aidilfitri', 'organization'), ('minggu', 'time'), ('depan', 'time'), ('Perdana', 'person'), ('Menteri', 'person'), ('Tun', 'person'), ('Dr', 'person'), ('Mahathir', 'person'), ('Mohamad', 'person'), ('dan', 'OTHER'), ('Menteri', 'person'), ('Pengangkutan', 'person'), ('Anthony', 'person'), ('Loke', 'person'), ('Siew', 'person'), ('Fook', 'person'), ('menitipkan', 'OTHER'), ('pesanan', 'OTHER'), ('khas', 'OTHER'), ('kepada', 'OTHER'), ('orang', 'OTHER'), ('ramai', 'OTHER'), ('yang', 'OTHER'), ('mahu', 'OTHER'), ('pulang', 'OTHER'), ('ke', 'OTHER'), ('kampung', 'location'), ('halaman', 'location'), ('masing-masing', 'OTHER'), ('Dalam', 'OTHER'), ('video', 'OTHER'), ('pendek', 'OTHER'), ('terbitan', 'OTHER'), ('Jabatan', 'organization'), ('Keselamatan', 'organization'), ('Jalan', 'organization'), ('Raya', 'organization'), ('(JKJR)', 'location'), ('itu', 'OTHER'), ('Dr', 'person'), ('Mahathir', 'person'), ('menasihati', 'OTHER'), ('mereka', 'OTHER'), ('supaya', 'OTHER'), ('berhenti', 'OTHER'), ('berehat', 'OTHER'), ('dan', 'OTHER'), ('tidur', 'OTHER'), ('sebentar', 'OTHER'), ('sekiranya', 'OTHER'), ('mengantuk', 'organization'), ('ketika', 'OTHER'), ('memandu', 'OTHER')]
 
 
 
@@ -514,7 +371,7 @@ Load Case-Sensitive deep learning models
       'Keselamatan',
       'Jalan',
       'Raya',
-      'JKJR',
+      '(JKJR)',
       'itu',
       'Dr',
       'Mahathir',
@@ -535,15 +392,15 @@ Load Case-Sensitive deep learning models
        'score': 1.0,
        'beginOffset': 0,
        'endOffset': 1},
-      {'text': 'Sempena',
+      {'text': 'Sempena sambutan',
        'type': 'OTHER',
        'score': 1.0,
        'beginOffset': 2,
-       'endOffset': 2},
-      {'text': 'sambutan Aidilfitri',
+       'endOffset': 3},
+      {'text': 'Aidilfitri',
        'type': 'event',
        'score': 1.0,
-       'beginOffset': 3,
+       'beginOffset': 4,
        'endOffset': 4},
       {'text': 'minggu depan',
        'type': 'time',
@@ -560,36 +417,56 @@ Load Case-Sensitive deep learning models
        'score': 1.0,
        'beginOffset': 13,
        'endOffset': 13},
-      {'text': 'Menteri Pengangkutan',
-       'type': 'organization',
-       'score': 1.0,
-       'beginOffset': 14,
-       'endOffset': 15},
-      {'text': 'Anthony Loke Siew Fook',
+      {'text': 'Menteri Pengangkutan Anthony Loke Siew Fook',
        'type': 'person',
        'score': 1.0,
-       'beginOffset': 16,
+       'beginOffset': 14,
        'endOffset': 19},
-      {'text': 'menitipkan pesanan khas kepada orang ramai yang mahu pulang ke kampung halaman masing-masing Dalam video pendek terbitan',
+      {'text': 'menitipkan pesanan khas kepada orang ramai yang mahu pulang ke',
        'type': 'OTHER',
        'score': 1.0,
        'beginOffset': 20,
+       'endOffset': 29},
+      {'text': 'kampung',
+       'type': 'location',
+       'score': 1.0,
+       'beginOffset': 30,
+       'endOffset': 30},
+      {'text': 'halaman masing-masing Dalam video pendek terbitan',
+       'type': 'OTHER',
+       'score': 1.0,
+       'beginOffset': 31,
        'endOffset': 36},
       {'text': 'Jabatan Keselamatan Jalan Raya',
        'type': 'organization',
        'score': 1.0,
        'beginOffset': 37,
        'endOffset': 40},
-      {'text': 'JKJR itu',
-       'type': 'OTHER',
+      {'text': '(JKJR)',
+       'type': 'person',
        'score': 1.0,
        'beginOffset': 41,
+       'endOffset': 41},
+      {'text': 'itu',
+       'type': 'OTHER',
+       'score': 1.0,
+       'beginOffset': 42,
        'endOffset': 42},
       {'text': 'Dr Mahathir',
        'type': 'person',
        'score': 1.0,
        'beginOffset': 43,
-       'endOffset': 44}]}
+       'endOffset': 44},
+      {'text': 'menasihati mereka supaya',
+       'type': 'OTHER',
+       'score': 1.0,
+       'beginOffset': 45,
+       'endOffset': 47},
+      {'text': 'berhenti berehat',
+       'type': 'person',
+       'score': 1.0,
+       'beginOffset': 48,
+       'endOffset': 49}]}
 
 
 
@@ -605,28 +482,28 @@ Print important features from deep learning model
 .. parsed-literal::
 
     Top-10 positive:
-    made: 4.456522
-    effendi: 3.826650
-    dipo: 3.723355
-    djamil: 3.653246
-    noorfadila: 3.638877
-    ahad: 3.611547
-    kinabalu: 3.601939
-    yorrys: 3.546461
-    2008: 3.510597
-    ustaz: 3.450228
+    the: 10.046949
+    (pdrm): 9.305849
+    rahimah,: 7.731076
+    giacc: 7.596547
+    umno,: 7.465683
+    Garuda: 7.419884
+    nahdlatul: 7.338985
+    dpa: 7.324896
+    dikaji: 7.246631
+    Giwangan: 7.170110
 
     Top-10 negative:
-    memilih: -3.813004
-    gentar: -3.738811
-    kenalan: -3.586572
-    melanjutkan: -3.510132
-    istilah: -3.410603
-    seusai: -3.405963
-    kepolisian: -3.371908
-    perwira: -3.364473
-    padi: -3.242083
-    perusahaan: -3.196474
+    tetangga: -9.680513
+    independen: -9.539474
+    302: -9.263991
+    memandangkan: -9.190342
+    ke-80: -8.990475
+    keistimewaan: -8.617548
+    pesan: -8.553379
+    Sekjen: -8.510725
+    rasa: -8.442114
+    lepas.: -8.440548
 
 
 Print important transitions from deep learning model
@@ -664,35 +541,15 @@ Print important transitions from deep learning model
     OTHER -> event: -0.598665
 
 
-Visualize output alignment from attention
------------------------------------------
-
-This visualization only can call from ``bahdanau`` or ``luong`` model.
-
-.. code:: python
-
-    d_object, predicted, state_fw, state_bw = bahdanau.get_alignment(string)
-
-.. code:: python
-
-    d_object.to_graphvis()
-
-
-
-
-.. image:: load-entities_files/load-entities_26_0.svg
-
-
-
 Voting stack model
 ------------------
 
 .. code:: python
 
-    entity_network = malaya.entity.deep_model('entity-network')
     bahdanau = malaya.entity.deep_model('bahdanau')
     luong = malaya.entity.deep_model('luong')
-    malaya.stack.voting_stack([entity_network, bahdanau, luong], string)
+    bert = malaya.entity.bert('base')
+    malaya.stack.voting_stack([bert, bahdanau, luong], string)
 
 
 
@@ -702,8 +559,8 @@ Voting stack model
     [('KUALA', 'location'),
      ('LUMPUR', 'location'),
      ('Sempena', 'OTHER'),
-     ('sambutan', 'event'),
-     ('Aidilfitri', 'event'),
+     ('sambutan', 'OTHER'),
+     ('Aidilfitri', 'organization'),
      ('minggu', 'time'),
      ('depan', 'time'),
      ('Perdana', 'person'),
@@ -713,8 +570,8 @@ Voting stack model
      ('Mahathir', 'person'),
      ('Mohamad', 'person'),
      ('dan', 'OTHER'),
-     ('Menteri', 'OTHER'),
-     ('Pengangkutan', 'organization'),
+     ('Menteri', 'person'),
+     ('Pengangkutan', 'person'),
      ('Anthony', 'person'),
      ('Loke', 'person'),
      ('Siew', 'person'),
@@ -729,8 +586,8 @@ Voting stack model
      ('mahu', 'OTHER'),
      ('pulang', 'OTHER'),
      ('ke', 'OTHER'),
-     ('kampung', 'OTHER'),
-     ('halaman', 'OTHER'),
+     ('kampung', 'location'),
+     ('halaman', 'location'),
      ('masing-masing', 'OTHER'),
      ('Dalam', 'OTHER'),
      ('video', 'OTHER'),
@@ -740,7 +597,7 @@ Voting stack model
      ('Keselamatan', 'organization'),
      ('Jalan', 'organization'),
      ('Raya', 'organization'),
-     ('JKJR', 'law'),
+     ('(JKJR)', 'person'),
      ('itu', 'OTHER'),
      ('Dr', 'person'),
      ('Mahathir', 'person'),
@@ -756,26 +613,3 @@ Voting stack model
      ('mengantuk', 'OTHER'),
      ('ketika', 'OTHER'),
      ('memandu', 'OTHER')]
-
-
-
-.. code:: python
-
-    entity_network = malaya.entity.deep_model('entity-network')
-    bahdanau = malaya.entity.deep_model('bahdanau')
-    luong = malaya.entity.deep_model('luong')
-    malaya.stack.voting_stack([entity_network, bahdanau, luong], 'Husein lapar nak makan rm10k punya ayam goreng')
-
-
-
-
-.. parsed-literal::
-
-    [('Husein', 'person'),
-     ('lapar', 'OTHER'),
-     ('nak', 'OTHER'),
-     ('makan', 'OTHER'),
-     ('rm10k', 'OTHER'),
-     ('punya', 'OTHER'),
-     ('ayam', 'OTHER'),
-     ('goreng', 'OTHER')]

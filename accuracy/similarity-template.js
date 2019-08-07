@@ -5,7 +5,7 @@ option = {
             interval: 0,
             rotate: 30
         },
-        data: ['bahdanau','self-attention', 'dilated-cnn', 'BERT']
+        data: ['bert-multilanguage','bert-base']
     },
     yAxis: {
         type: 'value',
@@ -14,7 +14,7 @@ option = {
     },
     backgroundColor:'rgb(252,252,252)',
     series: [{
-        data: [0.79, 0.77, 0.77, 0.83],
+        data: [0.83, 0.77],
         type: 'bar',
         label: {
                 normal: {

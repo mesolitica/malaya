@@ -2,7 +2,6 @@ import tensorflow as tf
 from bert import modeling
 from .texts._text_functions import (
     bert_tokenization,
-    SentencePieceTokenizer,
     padding_sequence,
     merge_sentencepiece_tokens,
     merge_wordpiece_tokens,
@@ -12,9 +11,10 @@ from ._utils._utils import check_file, check_available
 import numpy as np
 import os
 
+bert_num_layers = {'multilanguage': 12, 'base': 12, 'small': 6}
 
-def _extract_attention_weights(bert_config, tf_graph):
-    num_layers = bert_config.num_hidden_layers
+
+def _extract_attention_weights(num_layers, tf_graph):
     attns = [
         {
             'layer_%s'
@@ -28,7 +28,21 @@ def _extract_attention_weights(bert_config, tf_graph):
     return attns
 
 
-class Model:
+def _extract_attention_weights_import(num_layers, tf_graph):
+    attns = [
+        {
+            'layer_%s'
+            % i: tf_graph.get_tensor_by_name(
+                'import/bert/encoder/layer_%s/attention/self/Softmax:0' % i
+            )
+        }
+        for i in range(num_layers)
+    ]
+
+    return attns
+
+
+class _Model:
     def __init__(self, bert_config, tokenizer, cls, sep):
         _graph = tf.Graph()
         with _graph.as_default():
@@ -51,7 +65,7 @@ class Model:
             )
             self._saver = tf.train.Saver(var_list = var_lists)
             attns = _extract_attention_weights(
-                bert_config, tf.get_default_graph()
+                bert_config.num_hidden_layers, tf.get_default_graph()
             )
             self.attns = attns
 
@@ -83,7 +97,7 @@ class Model:
         )
         return self._sess.run(self.logits, feed_dict = {self.X: batch_x})
 
-    def attention(self, strings, method = 'last'):
+    def attention(self, strings, method = 'last', **kwargs):
         """
         Get attention string inputs from bert attention.
 
@@ -114,7 +128,7 @@ class Model:
         method = method.lower()
         if method not in ['last', 'first', 'mean']:
             raise Exception(
-                "method not supported, only support ['last', 'first', 'mean']"
+                "method not supported, only support 'last', 'first' and 'mean'"
             )
 
         batch_x, _, _, s_tokens = bert_tokenization(
@@ -158,7 +172,7 @@ def available_bert_model():
     return ['multilanguage', 'base', 'small']
 
 
-def load(model = 'base', validate = True):
+def bert(model = 'base', validate = True):
     """
     Load bert model.
 
@@ -175,7 +189,7 @@ def load(model = 'base', validate = True):
 
     Returns
     -------
-    BERT_MODEL: malaya.bert.Model class
+    BERT_MODEL: malaya.bert._Model class
     """
 
     if not isinstance(model, str):
@@ -220,6 +234,7 @@ def load(model = 'base', validate = True):
                 tar.extractall(path = PATH_BERT[model]['path'])
 
         import sentencepiece as spm
+        from .texts._text_functions import SentencePieceTokenizer
 
         bert_checkpoint = PATH_BERT[model]['directory'] + 'model.ckpt'
         sp_model = spm.SentencePieceProcessor()
@@ -237,6 +252,6 @@ def load(model = 'base', validate = True):
 
     bert_config = PATH_BERT[model]['directory'] + 'bert_config.json'
     bert_config = modeling.BertConfig.from_json_file(bert_config)
-    model = Model(bert_config, tokenizer, cls = cls, sep = sep)
+    model = _Model(bert_config, tokenizer, cls = cls, sep = sep)
     model._saver.restore(model._sess, bert_checkpoint)
     return model

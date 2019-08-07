@@ -13,6 +13,7 @@ from .texts._text_functions import (
     build_dataset,
 )
 from .texts.vectorizer import skipgrams, SkipGramVectorizer
+from .generator import ngrams as ngrams_generator
 
 
 def _softmax(x):
@@ -71,6 +72,63 @@ def _prepare_topics(
         'term_frequency': term_frequency,
     }
     return data
+
+
+class _ATTENTION_TOPIC:
+    def __init__(self, features, components):
+        self._features = features
+        self._components = components
+
+    def top_topics(self, len_topic, top_n = 10, return_df = True):
+        """
+        Print important topics based on decomposition.
+
+        Parameters
+        ----------
+        len_topic: int
+        """
+        if not isinstance(len_topic, int):
+            raise ValueError('len_topic must be an integer')
+        if not isinstance(top_n, int):
+            raise ValueError('top_n must be an integer')
+        if not isinstance(return_df, bool):
+            raise ValueError('return_df must be a boolean')
+        return print_topics_modelling(
+            len_topic,
+            feature_names = np.array(self._features),
+            sorting = np.argsort(self._components)[:, ::-1],
+            n_words = top_n,
+            return_df = return_df,
+        )
+
+    def get_topics(self, len_topic):
+        """
+        Return important topics based on decomposition.
+
+        Parameters
+        ----------
+        len_topic: int
+
+        Returns
+        -------
+        results: list of strings
+        """
+        if not isinstance(len_topic, int):
+            raise ValueError('len_topic must be an integer')
+        results = []
+        for no, topic in enumerate(self._components):
+            results.append(
+                (
+                    no,
+                    ' '.join(
+                        [
+                            self._features[i]
+                            for i in topic.argsort()[: -len_topic - 1 : -1]
+                        ]
+                    ),
+                )
+            )
+        return results
 
 
 class _DEEP_TOPIC:
@@ -341,7 +399,7 @@ def _base_topic_modelling(
     min_df = 2,
     ngram = (1, 3),
     vectorizer = 'bow',
-    stemming = True,
+    stemming = sastrawi,
     cleaning = simple_textcleaning,
     stop_words = None,
     **kwargs,
@@ -354,8 +412,16 @@ def _base_topic_modelling(
         raise ValueError('n_topics must be an integer')
     if not isinstance(vectorizer, str):
         raise ValueError('vectorizer must be a string')
-    if not isinstance(stemming, bool):
-        raise ValueError('bool must be a boolean')
+    if not isinstance(stemming, collections.Callable) and stemming is not None:
+        raise ValueError('stemming must be a callable type or None')
+    if not isinstance(cleaning, collections.Callable) and stemming is not None:
+        raise ValueError('cleaning must be a callable type or None')
+    if (
+        not isinstance(stop_words, set)
+        and not isinstance(stop_words, list)
+        and stop_words is not None
+    ):
+        raise ValueError('stop_words must be a set or a list or None')
     vectorizer = vectorizer.lower()
     if not vectorizer in ['tfidf', 'bow', 'skip-gram']:
         raise ValueError("vectorizer must be in  ['tfidf', 'bow', 'skip-gram']")
@@ -373,13 +439,17 @@ def _base_topic_modelling(
         raise ValueError(
             'max_df must be bigger than 0, less than or equal to 1'
         )
+    if len(corpus) < n_topics:
+        raise ValueError(
+            'length corpus must be bigger than or equal to n_topics'
+        )
 
     if cleaning is not None:
         for i in range(len(corpus)):
             corpus[i] = cleaning(corpus[i])
-    if stemming:
+    if stemming is not None:
         for i in range(len(corpus)):
-            corpus[i] = sastrawi(corpus[i])
+            corpus[i] = stemming(corpus[i])
     if vectorizer == 'tfidf':
         Vectorizer = TfidfVectorizer
     elif vectorizer == 'bow':
@@ -414,7 +484,7 @@ def lda(
     max_df = 0.95,
     min_df = 2,
     ngram = (1, 3),
-    stemming = True,
+    stemming = sastrawi,
     vectorizer = 'bow',
     cleaning = simple_textcleaning,
     stop_words = None,
@@ -434,8 +504,8 @@ def lda(
         minimum of a word selected on based on document frequency.
     ngram: tuple, (default=(1,3))
         n-grams size to train a corpus.
-    stemming: bool, (default=True)
-        If True, sastrawi_stemmer will apply.
+    stemming: function, (default=sastrawi)
+        function to stem the corpus.
     vectorizer: str, (default='bow')
         vectorizer technique. Allowed values:
 
@@ -474,7 +544,7 @@ def nmf(
     max_df = 0.95,
     min_df = 2,
     ngram = (1, 3),
-    stemming = True,
+    stemming = sastrawi,
     vectorizer = 'bow',
     cleaning = simple_textcleaning,
     stop_words = None,
@@ -494,8 +564,8 @@ def nmf(
         minimum of a word selected on based on document frequency.
     ngram: tuple, (default=(1,3))
         n-grams size to train a corpus.
-    stemming: bool, (default=True)
-        If True, sastrawi_stemmer will apply.
+    stemming: function, (default=sastrawi)
+        function to stem the corpus.
     vectorizer: str, (default='bow')
         vectorizer technique. Allowed values:
 
@@ -535,7 +605,7 @@ def lsa(
     min_df = 2,
     ngram = (1, 3),
     vectorizer = 'bow',
-    stemming = True,
+    stemming = sastrawi,
     cleaning = simple_textcleaning,
     stop_words = None,
     **kwargs,
@@ -560,8 +630,8 @@ def lsa(
         * ``'bow'`` - Bag of Word.
         * ``'tfidf'`` - Term frequency inverse Document Frequency.
         * ``'skip-gram'`` - Bag of Word with skipping certain n-grams.
-    stemming: bool, (default=True)
-        If True, sastrawi_stemmer will apply.
+    stemming: function, (default=sastrawi)
+        function to stem the corpus.
     cleaning: function, (default=simple_textcleaning)
         function to clean the corpus.
     stop_words: list, (default=None)
@@ -591,7 +661,7 @@ def lsa(
 def lda2vec(
     corpus,
     n_topics,
-    stemming = True,
+    stemming = sastrawi,
     max_df = 0.95,
     min_df = 2,
     ngram = (1, 3),
@@ -613,8 +683,8 @@ def lda2vec(
     corpus: list
     n_topics: int, (default=10)
         size of decomposition column.
-    stemming: bool, (default=True)
-        If True, sastrawi_stemmer will apply.
+    stemming: function, (default=sastrawi)
+        function to stem the corpus.
     max_df: float, (default=0.95)
         maximum of a word selected based on document frequency.
     min_df: int, (default=2)
@@ -652,8 +722,16 @@ def lda2vec(
         raise ValueError('n_topics must be an integer')
     if not isinstance(vectorizer, str):
         raise ValueError('vectorizer must be a string')
-    if not isinstance(stemming, bool):
-        raise ValueError('bool must be a boolean')
+    if not isinstance(stemming, collections.Callable) and stemming is not None:
+        raise ValueError('stemming must be a callable type or None')
+    if not isinstance(cleaning, collections.Callable) and stemming is not None:
+        raise ValueError('cleaning must be a callable type or None')
+    if (
+        not isinstance(stop_words, set)
+        and not isinstance(stop_words, list)
+        and stop_words is not None
+    ):
+        raise ValueError('stop_words must be a set or a list or None')
     vectorizer = vectorizer.lower()
     if not vectorizer in ['tfidf', 'bow', 'skip-gram']:
         raise ValueError("vectorizer must be in  ['tfidf', 'bow', 'skip-gram']")
@@ -702,9 +780,9 @@ def lda2vec(
     if cleaning is not None:
         for i in range(len(corpus)):
             corpus[i] = cleaning(corpus[i])
-    if stemming:
+    if stemming is not None:
         for i in range(len(corpus)):
-            corpus[i] = sastrawi(corpus[i])
+            corpus[i] = stemming(corpus[i])
     text_clean = []
     for text in corpus:
         text_clean.append(
@@ -764,3 +842,120 @@ def lda2vec(
         len_idx_text_clean,
         text_clean,
     )
+
+
+def attention(
+    corpus,
+    n_topics,
+    vectorizer,
+    stemming = sastrawi,
+    cleaning = simple_textcleaning,
+    stop_words = None,
+    ngram = (1, 3),
+):
+
+    """
+    Use attention from vectorizer model to do topic modelling based on corpus / list of strings given.
+
+    Parameters
+    ----------
+    corpus: list
+    n_topics: int, (default=10)
+        size of decomposition column.
+    vectorizer: object
+    stemming: function, (default=sastrawi)
+        function to stem the corpus.
+    cleaning: function, (default=simple_textcleaning)
+        function to clean the corpus.
+    stop_words: list, (default=None)
+        list of stop words to remove. If None, default is malaya.texts._text_functions.STOPWORDS
+    ngram: tuple, (default=(1,3))
+        n-grams size to train a corpus.
+
+    Returns
+    -------
+    _ATTENTION_TOPIC: malaya.topic_modelling._ATTENTION_TOPIC class
+    """
+
+    if not isinstance(corpus, list):
+        raise ValueError('corpus must be a list')
+    if not isinstance(corpus[0], str):
+        raise ValueError('corpus must be list of strings')
+    if not isinstance(n_topics, int):
+        raise ValueError('n_topics must be an integer')
+    if not isinstance(ngram, tuple):
+        raise ValueError('ngram must be a tuple')
+    if not len(ngram) == 2:
+        raise ValueError('ngram size must equal to 2')
+    if not hasattr(vectorizer, 'attention') and not hasattr(
+        vectorizer, 'vectorize'
+    ):
+        raise ValueError(
+            'vectorizer must has `attention` and `vectorize` methods'
+        )
+    if not isinstance(stemming, collections.Callable) and stemming is not None:
+        raise ValueError('stemming must be a callable type or None')
+    if not isinstance(cleaning, collections.Callable) and stemming is not None:
+        raise ValueError('cleaning must be a callable type or None')
+    if (
+        not isinstance(stop_words, set)
+        and not isinstance(stop_words, list)
+        and stop_words is not None
+    ):
+        raise ValueError('stop_words must be a set or a list or None')
+    if len(corpus) < n_topics:
+        raise ValueError(
+            'length corpus must be bigger than or equal to n_topics'
+        )
+
+    from sklearn.cluster import KMeans
+
+    if stop_words is None:
+        stop_words = STOPWORDS
+
+    if cleaning is not None:
+        for i in range(len(corpus)):
+            corpus[i] = cleaning(corpus[i])
+    if stemming is not None:
+        for i in range(len(corpus)):
+            corpus[i] = stemming(corpus[i])
+
+    def generate_ngram(seq, ngram = (1, 3)):
+        g = []
+        for i in range(ngram[0], ngram[-1] + 1):
+            g.extend(list(ngrams_generator(seq, i)))
+        return g
+
+    batch_size = 10
+    rows, attentions = [], []
+    for i in range(0, len(corpus), batch_size):
+        index = min(i + batch_size, len(corpus))
+        rows.append(vectorizer.vectorize(corpus[i:index]))
+        attentions.extend(vectorizer.attention(corpus[i:index]))
+
+    concat = np.concatenate(rows, axis = 0)
+    kmeans = KMeans(n_clusters = n_topics, random_state = 0).fit(concat)
+    labels = kmeans.labels_
+
+    overall, filtered_a = [], []
+    for a in attentions:
+        f = [i for i in a if i[0] not in stop_words]
+        overall.extend(f)
+        filtered_a.append(f)
+
+    o_ngram = generate_ngram(overall, ngram)
+    features = []
+    for i in o_ngram:
+        features.append(' '.join([w[0] for w in i]))
+    features = list(set(features))
+
+    components = np.zeros((n_topics, len(features)))
+    for no, i in enumerate(labels):
+        f = generate_ngram(filtered_a[no], ngram)
+        for w in f:
+            word = ' '.join([r[0] for r in w])
+            score = np.mean([r[1] for r in w])
+            if word in features:
+                components[i, features.index(word)] += score
+
+    return _ATTENTION_TOPIC(features, components)

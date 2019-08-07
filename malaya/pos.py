@@ -11,6 +11,13 @@ def available_deep_model():
     return ['concat', 'bahdanau', 'luong']
 
 
+def available_bert_model():
+    """
+    List available bert entities models, ['multilanguage', 'base', 'small']
+    """
+    return ['multilanguage', 'base', 'small']
+
+
 def _naive_POS_word(word):
     for key, vals in tatabahasa_dict.items():
         if word in vals:
@@ -55,24 +62,6 @@ def naive(string):
     return results
 
 
-def crf(validate = True):
-    """
-    Load CRF POS Recognition model.
-
-    Parameters
-    ----------
-    validate: bool, optional (default=True)
-        if True, malaya will check model availability and download if not available.
-
-    Returns
-    -------
-    CRF : malaya.sklearn_model.CRF class
-    """
-    return _tag_class.crf(
-        PATH_POS, S3_PATH_POS, 'pos', is_lower = False, validate = validate
-    )
-
-
 def deep_model(model = 'concat', validate = True):
     """
     Load deep learning POS Recognition model.
@@ -105,5 +94,42 @@ def deep_model(model = 'concat', validate = True):
         )
 
     return _tag_class.deep_model(
+        PATH_POS, S3_PATH_POS, 'pos', model = model, validate = validate
+    )
+
+
+def bert(model = 'base', validate = True):
+
+    """
+    Load BERT POS model.
+
+    Parameters
+    ----------
+    model : str, optional (default='base')
+        Model architecture supported. Allowed values:
+
+        * ``'multilanguage'`` - bert multilanguage released by Google, trained on POS.
+        * ``'base'`` - base bert-bahasa released by Malaya, trained on POS.
+        * ``'small'`` - small bert-bahasa released by Malaya, trained on POS.
+    validate: bool, optional (default=True)
+        if True, malaya will check model availability and download if not available.
+
+    Returns
+    -------
+    TAGGING_BERT: malaya._models._tensorflow_model.TAGGING_BERT class
+    """
+
+    if not isinstance(model, str):
+        raise ValueError('model must be a string')
+    if not isinstance(validate, bool):
+        raise ValueError('validate must be a boolean')
+
+    model = model.lower()
+    if model not in available_bert_model():
+        raise Exception(
+            'model not supported, please check supported models from malaya.pos.available_bert_model()'
+        )
+
+    return _tag_class.bert(
         PATH_POS, S3_PATH_POS, 'pos', model = model, validate = validate
     )

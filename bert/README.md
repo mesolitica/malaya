@@ -129,6 +129,13 @@ _**Size calculated after saved trainable variables not included optimizer moment
 
 **Vocab size 40k, Case Sensitive, Train on 1.51GB dataset, 1.5M steps, BASE size (467MB)**.
 
+5. 2nd August 2019,
+[bert-small-2-august-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-small-2-august-2019.tar.gz)
+
+[Tensorboard data](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/events.out.tfevents.1564477991.instance-3)
+
+**Vocab size 40k, Case Sensitive, Train on 1.51GB dataset, 1.5M steps, SMALL size (184MB)**.
+
 ## Comparison using Subjectivity Dataset
 
 Link to [subjectivity dataset](https://github.com/huseinzol05/Malaya-Dataset#subjectivity).

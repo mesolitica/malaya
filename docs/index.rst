@@ -22,6 +22,7 @@ Contents:
    Translator-malaya
    Accuracy
    Cache
+   Bert
    Cluster
    Dependency
    Elmo
@@ -46,6 +47,7 @@ Contents:
    Toxic
    Word2num
    Word2vec
+   Xlnet
    Mover
    Cluster
    Api

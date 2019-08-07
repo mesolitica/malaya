@@ -101,25 +101,40 @@ def xgb(validate = True):
     )
 
 
-def bert(validate = True):
+def bert(model = 'base', validate = True):
     """
     Load BERT emotion model.
 
     Parameters
     ----------
+    model : str, optional (default='base')
+        Model architecture supported. Allowed values:
+
+        * ``'multilanguage'`` - bert multilanguage released by Google, trained on emotion analysis.
+        * ``'base'`` - base bert-bahasa released by Malaya, trained on emotion analysis.
+        * ``'small'`` - small bert-bahasa released by Malaya, trained on emotion analysis.
     validate: bool, optional (default=True)
         if True, malaya will check model availability and download if not available.
 
     Returns
     -------
-    MULTICLASS_BERT : malaya._models._tensorflow_model.MULTICLASS_BERT class
+    MULTICLASS_BERT : malaya._models._bert_model.MULTICLASS_BERT class
     """
+    if not isinstance(model, str):
+        raise ValueError('model must be a string')
     if not isinstance(validate, bool):
         raise ValueError('validate must be a boolean')
+
+    model = model.lower()
+    if model not in available_bert_model():
+        raise Exception(
+            'model is not supported, please check supported models from malaya.emotion.available_bert_model()'
+        )
     return _softmax_class.bert(
         PATH_EMOTION,
         S3_PATH_EMOTION,
-        'sentiment',
+        'emotion',
         _emotion_label,
+        model = model,
         validate = validate,
     )

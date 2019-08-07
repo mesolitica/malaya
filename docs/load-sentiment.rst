@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 14.1 s, sys: 2.19 s, total: 16.3 s
-    Wall time: 22.5 s
+    CPU times: user 5.93 s, sys: 1.53 s, total: 7.46 s
+    Wall time: 12.5 s
 
 
 .. code:: python
@@ -94,6 +94,100 @@ Load xgb model
 
 
 
+BERT model
+----------
+
+BERT is the best sentiment model in term of accuracy, you can check
+sentiment accuracy here,
+https://malaya.readthedocs.io/en/latest/Accuracy.html#sentiment-analysis.
+Question is, why BERT?
+
+1. Transformer model learn the context of a word based on all of its
+   surroundings (live string), bidirectionally. So it much better
+   understand left and right hand side relationships.
+2. Because of transformer able to leverage to context during live
+   string, we dont need to capture available words in this world,
+   instead capture substrings and build the attention after that. BERT
+   will never have Out-Of-Vocab problem.
+
+List available BERT models
+--------------------------
+
+.. code:: python
+
+    malaya.sentiment.available_bert_model()
+
+
+
+
+.. parsed-literal::
+
+    ['multilanguage', 'base', 'small']
+
+
+
+Load BERT models
+----------------
+
+.. code:: python
+
+    model = malaya.sentiment.bert(model = 'base')
+
+Predict single string
+^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: python
+
+    model.predict(positive_text,get_proba=True)
+
+
+
+
+.. parsed-literal::
+
+    {'negative': 0.9791378, 'positive': 0.00020862265, 'neutral': 0.020653605}
+
+
+
+Predict batch of strings
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: python
+
+    model.predict_batch([positive_text, negative_text],get_proba=True)
+
+
+
+
+.. parsed-literal::
+
+    [{'negative': 0.97913754, 'positive': 0.00020862372, 'neutral': 0.020653844},
+     {'negative': 0.9998467, 'positive': 1.5333749e-06, 'neutral': 0.00015175343}]
+
+
+
+Open emotion visualization dashboard
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Default when you call ``predict_words`` it will open a browser with
+visualization dashboard, you can disable by ``visualization=False``.
+
+.. code:: python
+
+    model.predict_words(negative_text)
+
+.. code:: python
+
+    from IPython.core.display import Image, display
+
+    display(Image('bert-sentiment.png', width=800))
+
+
+
+.. image:: load-sentiment_files/load-sentiment_20_0.png
+   :width: 800px
+
+
 List available deep learning models
 -----------------------------------
 
@@ -131,6 +225,31 @@ Load bahdanau model
 
     model = malaya.sentiment.deep_model('bahdanau')
 
+
+.. parsed-literal::
+
+      0%|          | 0.00/128 [00:00<?, ?MB/s]
+
+.. parsed-literal::
+
+    downloading frozen /Users/huseinzol/Malaya/sentiment/bahdanau model
+
+
+.. parsed-literal::
+
+    128MB [00:23, 5.83MB/s]
+      0%|          | 0.00/4.62 [00:00<?, ?MB/s]
+
+.. parsed-literal::
+
+    downloading frozen /Users/huseinzol/Malaya/sentiment/bahdanau setting
+
+
+.. parsed-literal::
+
+    5.00MB [00:00, 6.30MB/s]
+
+
 Predict single string
 ^^^^^^^^^^^^^^^^^^^^^
 
@@ -157,50 +276,50 @@ Predict single string
 
 .. parsed-literal::
 
-    {'negative': 0.17075859,
-     'positive': 0.82924145,
-     'attention': {'Kerajaan': 0.0017302582,
-      'negeri': 0.0014580223,
-      'Kelantan': 0.41723233,
-      'mempersoalkan': 0.003690172,
-      'motif': 0.008215976,
-      'kenyataan': 0.0018074784,
-      'Menteri': 0.0024031366,
-      'Kewangan': 0.0015805368,
-      'Lim': 0.06009012,
-      'Guan': 0.03822874,
-      'Eng': 0.010624379,
-      'yang': 0.0013287141,
-      'hanya': 0.002750063,
-      'menyebut': 0.002319276,
-      'penerima': 0.0013392554,
-      'terbesar': 0.0013263403,
-      'bantuan': 0.001772588,
-      'kewangan': 0.0014033007,
-      'dari': 0.0014002207,
-      'Persekutuan': 0.001944176,
-      'sebanyak': 0.0013021014,
-      'RM50': 0.03411034,
-      'juta': 0.002792755,
+    {'negative': 0.07929755,
+     'positive': 0.9207024,
+     'attention': {'Kerajaan': 0.0017667037,
+      'negeri': 0.0014957936,
+      'Kelantan': 0.46610743,
+      'mempersoalkan': 0.0037664792,
+      'motif': 0.0078845,
+      'kenyataan': 0.0018439741,
+      'Menteri': 0.002363856,
+      'Kewangan': 0.0016231886,
+      'Lim': 0.054354765,
+      'Guan': 0.05032179,
+      'Eng': 0.010998619,
+      'yang': 0.0013578659,
+      'hanya': 0.0028823994,
+      'menyebut': 0.0023527716,
+      'penerima': 0.001361601,
+      'terbesar': 0.0013514637,
+      'bantuan': 0.0018559267,
+      'kewangan': 0.0014328312,
+      'dari': 0.001429535,
+      'Persekutuan': 0.0018871789,
+      'sebanyak': 0.0013242433,
+      'RM50': 0.037062906,
+      'juta': 0.0028047333,
       '.': 0.0,
-      'Sedangkan': 0.0013984512,
-      'menurut': 0.0013409941,
-      'Timbalan': 0.0018430866,
-      'Besarnya': 0.0013005446,
+      'Sedangkan': 0.0014257622,
+      'menurut': 0.0013697163,
+      'Timbalan': 0.0019074704,
+      'Besarnya': 0.0013236435,
       ',': 0.0,
-      'Datuk': 0.001310686,
-      'Mohd': 0.0013034152,
-      'Amar': 0.0013183507,
-      'Nik': 0.0014044936,
-      'Abdullah': 0.001305138,
-      'lain': 0.0014992557,
-      'lebih': 0.0030584973,
-      'maju': 0.019639261,
-      'turut': 0.008460986,
-      'mendapat': 0.0021167446,
-      'pembiayaan': 0.0018195173,
+      'Datuk': 0.0013352379,
+      'Mohd': 0.0013276986,
+      'Amar': 0.001344325,
+      'Nik': 0.0014375423,
+      'Abdullah': 0.0013283616,
+      'lain': 0.0015313325,
+      'lebih': 0.0030933633,
+      'maju': 0.020893773,
+      'turut': 0.009814348,
+      'mendapat': 0.0021570774,
+      'pembiayaan': 0.0018583896,
       'dan': 0.0,
-      'pinjaman': 0.008409986}}
+      'pinjaman': 0.0078877825}}
 
 
 
@@ -216,7 +335,7 @@ Predict single string
 
 
 
-.. image:: load-sentiment_files/load-sentiment_18_0.png
+.. image:: load-sentiment_files/load-sentiment_30_0.png
 
 
 Open sentiment visualization dashboard
@@ -229,45 +348,6 @@ visualization dashboard, you can disable by ``visualization=False``.
 
     model.predict_words(positive_text)
 
-
-.. parsed-literal::
-
-    Serving to http://127.0.0.1:8889/    [Ctrl-C to exit]
-
-
-.. parsed-literal::
-
-    127.0.0.1 - - [09/Jun/2019 20:46:22] "GET / HTTP/1.1" 200 -
-    127.0.0.1 - - [09/Jun/2019 20:46:23] "GET /static/admin-materialize.min.css HTTP/1.1" 200 -
-    127.0.0.1 - - [09/Jun/2019 20:46:23] "GET /static/echarts.min.js HTTP/1.1" 200 -
-    127.0.0.1 - - [09/Jun/2019 20:46:25] "GET /favicon.ico HTTP/1.1" 200 -
-    ----------------------------------------
-    Exception happened during processing of request from ('127.0.0.1', 61453)
-    Traceback (most recent call last):
-      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/socketserver.py", line 317, in _handle_request_noblock
-        self.process_request(request, client_address)
-      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/socketserver.py", line 348, in process_request
-        self.finish_request(request, client_address)
-      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/socketserver.py", line 361, in finish_request
-        self.RequestHandlerClass(request, client_address, self)
-      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/socketserver.py", line 696, in __init__
-        self.handle()
-      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/http/server.py", line 418, in handle
-        self.handle_one_request()
-      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/http/server.py", line 406, in handle_one_request
-        method()
-      File "/Users/huseinzol/Documents/Malaya/malaya/_utils/_server.py", line 32, in do_GET
-        with open(filepath, 'rb') as fh:
-    FileNotFoundError: [Errno 2] No such file or directory: '/Users/huseinzol/Documents/Malaya/malaya/_utils/web/favicon.ico'
-    ----------------------------------------
-
-
-.. parsed-literal::
-
-
-    stopping Server...
-
-
 .. code:: python
 
     from IPython.core.display import Image, display
@@ -276,25 +356,9 @@ visualization dashboard, you can disable by ``visualization=False``.
 
 
 
-.. image:: load-sentiment_files/load-sentiment_21_0.png
+.. image:: load-sentiment_files/load-sentiment_33_0.png
    :width: 800px
 
-
-I tried to put the html and javascript inside a notebook cell, pretty
-hard you know and a lot of weird bugs. Let stick to HTTP serving ya.
-
-.. code:: python
-
-    display(Image('sentiment-negative.png', width=800))
-
-
-
-.. image:: load-sentiment_files/load-sentiment_23_0.png
-   :width: 800px
-
-
-``predict_words`` only accept a single string. You can’t predict
-multiple texts.
 
 Predict batch of strings
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -308,46 +372,12 @@ Predict batch of strings
 
 .. parsed-literal::
 
-    [{'negative': 0.9585757, 'positive': 0.00041424262, 'neutral': 0.041010022},
-     {'negative': 0.004150669, 'positive': 0.58493316, 'neutral': 0.41091615}]
+    [{'negative': 0.9792671, 'positive': 0.00020732937, 'neutral': 0.020525575},
+     {'negative': 0.0029228649, 'positive': 0.7077135, 'neutral': 0.28936362}]
 
 
 
 **You might want to try ``luong`` and ``self-attention`` by yourself.**
-
-BERT model
-----------
-
-BERT is the best sentiment model in term of accuracy, you can check
-sentiment accuracy here,
-https://malaya.readthedocs.io/en/latest/Accuracy.html#sentiment-analysis.
-But warning, the model size is 700MB! Make sure you have enough
-resources to use BERT, and installed ``bert-tensorflow`` first,
-
-.. code:: bash
-
-   pip3 install bert-tensorflow
-
-.. code:: python
-
-    model = malaya.sentiment.bert()
-
-.. code:: python
-
-    model.predict_batch([negative_text, positive_text],get_proba=True)
-
-
-
-
-.. parsed-literal::
-
-    [{'negative': 0.83860207, 'positive': 0.0016139797, 'neutral': 0.15978396},
-     {'negative': 0.0004839497, 'positive': 0.95160496, 'neutral': 0.047911108}]
-
-
-
-Methods available for BERT model are same as deep learning model,
-``predict`` and ``predict_batch`` only, no ``predict_words``.
 
 Stacking models
 ---------------
@@ -358,109 +388,18 @@ https://malaya.readthedocs.io/en/latest/Stack.html
 .. code:: python
 
     multinomial = malaya.sentiment.multinomial()
-    xgb = malaya.sentiment.xgb()
+    bert = malaya.sentiment.bert()
     bahdanau = malaya.sentiment.deep_model('bahdanau')
 
 .. code:: python
 
-    malaya.stack.predict_stack([multinomial, xgb, bahdanau], positive_text)
+    malaya.stack.predict_stack([multinomial, bert, bahdanau], positive_text)
 
 
 
 
 .. parsed-literal::
 
-    {'negative': 0.004685208305983715,
-     'positive': 0.5050760204343339,
-     'neutral': 0.46383567002533305}
-
-
-
-Load Sparse deep learning models
---------------------------------
-
-What happen if a word not included in the dictionary of the models? like
-``setan``, what if ``setan`` appeared in text we want to classify? We
-found this problem when classifying social media texts / posts. Words
-used not really a vocabulary-based contextual.
-
-Malaya will treat **unknown words** as ``<UNK>``, so, to solve this
-problem, we need to use N-grams character based. Malaya chose tri-grams
-until fifth-grams.
-
-.. code:: python
-
-   setan = ['set', 'eta', 'tan']
-
-Sklearn provided easy interface to use n-grams, problem is, it is very
-sparse, a lot of zeros and not memory efficient. Sklearn returned sparse
-matrix for the result, lucky Tensorflow already provided some sparse
-function.
-
-.. code:: python
-
-    malaya.sentiment.available_sparse_deep_model()
-
-
-
-
-.. parsed-literal::
-
-    ['fast-text-char']
-
-
-
-Right now Malaya only provide 1 sparse model, ``fast-text-char``. We
-will try to evolve it.
-
-.. code:: python
-
-    sparse_model = malaya.sentiment.sparse_deep_model()
-
-
-.. parsed-literal::
-
-    INFO:tensorflow:Restoring parameters from /Users/huseinzol/Malaya/sentiment/fast-text-char/model.ckpt
-
-
-.. code:: python
-
-    sparse_model.predict(positive_text)
-
-
-
-
-.. parsed-literal::
-
-    'positive'
-
-
-
-.. code:: python
-
-    sparse_model.predict_batch([positive_text, negative_text])
-
-
-
-
-.. parsed-literal::
-
-    ['positive', 'negative']
-
-
-
-.. code:: python
-
-    sparse_model.predict_batch([positive_text, negative_text],get_proba=True)
-
-
-
-
-.. parsed-literal::
-
-    [{'negative': 0.24028197, 'positive': 0.759718},
-     {'negative': 0.6669313, 'positive': 0.33306876}]
-
-
-
-Right now sparse models does not have ``neutral`` class.
+    [{'negative': 0.11057721467355211,
+      'positive': 0.009369003104779816,
+      'neutral': 0.16400192638683486}]

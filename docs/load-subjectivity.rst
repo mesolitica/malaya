@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 10.9 s, sys: 920 ms, total: 11.8 s
-    Wall time: 12.1 s
+    CPU times: user 5.88 s, sys: 1.7 s, total: 7.57 s
+    Wall time: 13.5 s
 
 
 Explanation
@@ -85,6 +85,153 @@ Load xgb model
 
 
 
+BERT model
+----------
+
+BERT is the best subjectivity model in term of accuracy, you can check
+subjectivity accuracy here,
+https://malaya.readthedocs.io/en/latest/Accuracy.html#subjectivity-analysis.
+Question is, why BERT?
+
+1. Transformer model learn the context of a word based on all of its
+   surroundings (live string), bidirectionally. So it much better
+   understand left and right hand side relationships.
+2. Because of transformer able to leverage to context during live
+   string, we dont need to capture available words in this world,
+   instead capture substrings and build the attention after that. BERT
+   will never have Out-Of-Vocab problem.
+
+List available BERT models
+--------------------------
+
+.. code:: python
+
+    malaya.subjective.available_bert_model()
+
+
+
+
+.. parsed-literal::
+
+    ['multilanguage', 'base', 'small']
+
+
+
+Load BERT models
+----------------
+
+.. code:: python
+
+    model = malaya.subjective.bert(model = 'base')
+
+
+.. parsed-literal::
+
+      0%|          | 0.00/447 [00:00<?, ?MB/s]
+
+.. parsed-literal::
+
+    downloading frozen /Users/huseinzol/Malaya/subjective/base model
+
+
+.. parsed-literal::
+
+    447MB [01:18, 6.44MB/s]
+    WARNING: Logging before flag parsing goes to stderr.
+    W0807 18:18:17.930747 4529976768 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:45: The name tf.gfile.GFile is deprecated. Please use tf.io.gfile.GFile instead.
+
+    W0807 18:18:17.931871 4529976768 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:46: The name tf.GraphDef is deprecated. Please use tf.compat.v1.GraphDef instead.
+
+    W0807 18:18:24.135951 4529976768 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:41: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
+
+
+
+Predict single string
+^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: python
+
+    model.predict(positive_text,get_proba=True)
+
+
+
+
+.. parsed-literal::
+
+    {'negative': 1.0, 'positive': 1.1824093e-10, 'neutral': 0.0}
+
+
+
+Predict batch of strings
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: python
+
+    model.predict_batch([negative_text, positive_text],get_proba=True)
+
+
+
+
+.. parsed-literal::
+
+    [{'negative': 0.99999976, 'positive': 1.3250168e-09, 'neutral': 2.3841858e-07},
+     {'negative': 1.0, 'positive': 3.137356e-10, 'neutral': 0.0}]
+
+
+
+Open subjectivity visualization dashboard
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Default when you call ``predict_words`` it will open a browser with
+visualization dashboard, you can disable by ``visualization=False``.
+
+.. code:: python
+
+    model.predict_words(negative_text)
+
+.. code:: python
+
+    model.predict_words(negative_text)
+
+
+.. parsed-literal::
+
+    Serving to http://127.0.0.1:8889/    [Ctrl-C to exit]
+
+
+.. parsed-literal::
+
+    127.0.0.1 - - [07/Aug/2019 18:19:41] "GET / HTTP/1.1" 200 -
+    127.0.0.1 - - [07/Aug/2019 18:19:41] "GET /static/admin-materialize.min.css HTTP/1.1" 200 -
+    127.0.0.1 - - [07/Aug/2019 18:19:41] "GET /static/echarts.min.js HTTP/1.1" 200 -
+    127.0.0.1 - - [07/Aug/2019 18:19:42] "GET /favicon.ico HTTP/1.1" 200 -
+    ----------------------------------------
+    Exception happened during processing of request from ('127.0.0.1', 52695)
+    Traceback (most recent call last):
+      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/socketserver.py", line 317, in _handle_request_noblock
+        self.process_request(request, client_address)
+      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/socketserver.py", line 348, in process_request
+        self.finish_request(request, client_address)
+      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/socketserver.py", line 361, in finish_request
+        self.RequestHandlerClass(request, client_address, self)
+      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/socketserver.py", line 696, in __init__
+        self.handle()
+      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/http/server.py", line 418, in handle
+        self.handle_one_request()
+      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/http/server.py", line 406, in handle_one_request
+        method()
+      File "/Users/huseinzol/Documents/Malaya/malaya/_utils/_server.py", line 32, in do_GET
+        with open(filepath, 'rb') as fh:
+    FileNotFoundError: [Errno 2] No such file or directory: '/Users/huseinzol/Documents/Malaya/malaya/_utils/web/favicon.ico'
+    ----------------------------------------
+
+
+.. parsed-literal::
+
+
+    stopping Server...
+
+
 List available deep learning models
 -----------------------------------
 
@@ -99,6 +246,18 @@ List available deep learning models
 
     ['self-attention', 'bahdanau', 'luong']
 
+
+
+.. code:: python
+
+    from IPython.core.display import Image, display
+
+    display(Image('bert-subjective.png', width=800))
+
+
+
+.. image:: load-subjectivity_files/load-subjectivity_22_0.png
+   :width: 800px
 
 
 Load deep learning models
@@ -121,27 +280,6 @@ Load bahdanau model
 .. code:: python
 
     model = malaya.subjective.deep_model('bahdanau')
-
-
-.. parsed-literal::
-
-    downloading frozen /Users/huseinzol/Malaya/subjective/bahdanau model
-
-
-.. parsed-literal::
-
-    20.0MB [00:07, 2.85MB/s]
-      0%|          | 0.00/0.45 [00:00<?, ?MB/s]
-
-.. parsed-literal::
-
-    downloading frozen /Users/huseinzol/Malaya/subjective/bahdanau setting
-
-
-.. parsed-literal::
-
-    1.00MB [00:00, 5.75MB/s]
-
 
 Predict single string
 ^^^^^^^^^^^^^^^^^^^^^
@@ -169,18 +307,18 @@ Predict single string
 
 .. parsed-literal::
 
-    {'negative': 0.3413489,
-     'positive': 0.6586511,
-     'attention': {'kerajaan': 0.02428512,
-      'sebenarnya': 0.05316463,
-      'sangat': 0.7279027,
-      'bencikan': 0.07460431,
-      'rakyatnya': 0.026773913,
+    {'negative': 0.42468444,
+     'positive': 0.57531554,
+     'attention': {'kerajaan': 0.02448606,
+      'sebenarnya': 0.054138947,
+      'sangat': 0.7235162,
+      'bencikan': 0.075951874,
+      'rakyatnya': 0.027106065,
       ',': 0.0,
-      'minyak': 0.048565686,
-      'naik': 0.023328593,
+      'minyak': 0.049579866,
+      'naik': 0.02358539,
       'dan': 0.0,
-      'segalanya': 0.021375034}}
+      'segalanya': 0.021635499}}
 
 
 
@@ -196,7 +334,7 @@ Predict single string
 
 
 
-.. image:: load-subjectivity_files/load-subjectivity_17_0.png
+.. image:: load-subjectivity_files/load-subjectivity_30_0.png
 
 
 Open subjectivity visualization dashboard
@@ -209,45 +347,6 @@ visualization dashboard, you can disable by ``visualization=False``.
 
     model.predict_words(negative_text)
 
-
-.. parsed-literal::
-
-    Serving to http://127.0.0.1:8889/    [Ctrl-C to exit]
-
-
-.. parsed-literal::
-
-    127.0.0.1 - - [01/Jun/2019 12:16:49] "GET / HTTP/1.1" 200 -
-    127.0.0.1 - - [01/Jun/2019 12:16:49] "GET /static/admin-materialize.min.css HTTP/1.1" 200 -
-    127.0.0.1 - - [01/Jun/2019 12:16:49] "GET /static/echarts.min.js HTTP/1.1" 200 -
-    127.0.0.1 - - [01/Jun/2019 12:16:49] "GET /favicon.ico HTTP/1.1" 200 -
-    ----------------------------------------
-    Exception happened during processing of request from ('127.0.0.1', 61989)
-    Traceback (most recent call last):
-      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/socketserver.py", line 317, in _handle_request_noblock
-        self.process_request(request, client_address)
-      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/socketserver.py", line 348, in process_request
-        self.finish_request(request, client_address)
-      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/socketserver.py", line 361, in finish_request
-        self.RequestHandlerClass(request, client_address, self)
-      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/socketserver.py", line 696, in __init__
-        self.handle()
-      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/http/server.py", line 418, in handle
-        self.handle_one_request()
-      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/http/server.py", line 406, in handle_one_request
-        method()
-      File "/Users/huseinzol/Documents/Malaya/malaya/_utils/_server.py", line 32, in do_GET
-        with open(filepath, 'rb') as fh:
-    FileNotFoundError: [Errno 2] No such file or directory: '/Users/huseinzol/Documents/Malaya/malaya/_utils/web/favicon.ico'
-    ----------------------------------------
-
-
-.. parsed-literal::
-
-
-    stopping Server...
-
-
 .. code:: python
 
     from IPython.core.display import Image, display
@@ -256,15 +355,9 @@ visualization dashboard, you can disable by ``visualization=False``.
 
 
 
-.. image:: load-subjectivity_files/load-subjectivity_20_0.png
+.. image:: load-subjectivity_files/load-subjectivity_33_0.png
    :width: 800px
 
-
-I tried to put the html and javascript inside a notebook cell, pretty
-hard you know and a lot of weird bugs. Let stick to HTTP serving ya.
-
-``predict_words`` only accept a single string. You can’t predict
-multiple texts.
 
 Predict batch of strings
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -278,52 +371,12 @@ Predict batch of strings
 
 .. parsed-literal::
 
-    [{'negative': 0.83364284, 'positive': 0.0016635716, 'neutral': 0.1646936},
-     {'negative': 0.003325577, 'positive': 0.6674423, 'neutral': 0.3292321}]
+    [{'negative': 0.6787287, 'positive': 0.0032127132, 'neutral': 0.3180586},
+     {'negative': 0.0017332617, 'positive': 0.82667387, 'neutral': 0.17159289}]
 
 
 
 **You might want to try ``luong`` and ``self-attention`` by yourself.**
-
-BERT model
-----------
-
-BERT is the best subjectivity model in term of accuracy, you can check
-subjectivity accuracy here,
-https://malaya.readthedocs.io/en/latest/Accuracy.html#subjectivity-analysis.
-But warning, the model size is 700MB! Make sure you have enough
-resources to use BERT, and installed ``bert-tensorflow`` first,
-
-.. code:: bash
-
-   pip3 install bert-tensorflow
-
-.. code:: python
-
-    model = malaya.subjective.bert()
-    model.predict_batch([negative_text, positive_text],get_proba=True)
-
-
-.. parsed-literal::
-
-    Found old version of /Users/huseinzol/Malaya/subjective/bert, deleting..
-    Done.
-    downloading frozen /Users/huseinzol/Malaya/subjective/bert model
-
-
-.. parsed-literal::
-
-    679MB [03:17, 4.01MB/s]
-
-
-
-
-.. parsed-literal::
-
-    [{'negative': 0.9999628, 'positive': 3.7092312e-07, 'neutral': 3.683567e-05},
-     {'negative': 0.99188435, 'positive': 8.11561e-05, 'neutral': 0.008034468}]
-
-
 
 Stacking models
 ---------------
@@ -346,97 +399,6 @@ https://malaya.readthedocs.io/en/latest/Stack.html
 
 .. parsed-literal::
 
-    {'negative': 0.008627402242055781,
-     'positive': 0.12711225500695544,
-     'neutral': 0.8541128287159148}
-
-
-
-Load Sparse deep learning models
---------------------------------
-
-What happen if a word not included in the dictionary of the models? like
-``setan``, what if ``setan`` appeared in text we want to classify? We
-found this problem when classifying social media texts / posts. Words
-used not really a vocabulary-based contextual.
-
-Malaya will treat **unknown words** as ``<UNK>``, so, to solve this
-problem, we need to use N-grams character based. Malaya chose tri-grams
-until fifth-grams.
-
-.. code:: python
-
-   setan = ['set', 'eta', 'tan']
-
-Sklearn provided easy interface to use n-grams, problem is, it is very
-sparse, a lot of zeros and not memory efficient. Sklearn returned sparse
-matrix for the result, lucky Tensorflow already provided some sparse
-function.
-
-.. code:: python
-
-    malaya.subjective.available_sparse_deep_model()
-
-
-
-
-.. parsed-literal::
-
-    ['fast-text-char']
-
-
-
-Right now Malaya only provide 1 sparse model, ``fast-text-char``. We
-will try to evolve it.
-
-.. code:: python
-
-    sparse_model = malaya.subjective.sparse_deep_model()
-
-
-.. parsed-literal::
-
-    INFO:tensorflow:Restoring parameters from /Users/huseinzol/Malaya/subjective/fast-text-char/model.ckpt
-
-
-.. code:: python
-
-    sparse_model.predict(positive_text)
-
-
-
-
-.. parsed-literal::
-
-    'positive'
-
-
-
-.. code:: python
-
-    sparse_model.predict_batch([positive_text, negative_text])
-
-
-
-
-.. parsed-literal::
-
-    ['positive', 'negative']
-
-
-
-.. code:: python
-
-    sparse_model.predict_batch([positive_text, negative_text], get_proba=True)
-
-
-
-
-.. parsed-literal::
-
-    [{'negative': 0.054842573, 'positive': 0.94515747},
-     {'negative': 0.95071983, 'positive': 0.04928014}]
-
-
-
-Right now sparse models does not have ``neutral`` class.
+    [{'negative': 0.008404338614474443,
+      'positive': 0.1395863910599889,
+      'neutral': 0.8320294754572061}]

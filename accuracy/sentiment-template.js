@@ -5,17 +5,19 @@ option = {
             interval: 0,
             rotate: 30
         },
-        data: ['bahdanau','fast-text-char', 'luong', 'multinomial',
-        'self-attention', 'xgboost', 'BERT']
+        data: ['bahdanau', 'luong', 'multinomial',
+        'self-attention', 'xgb', 'bert-multilanguage',
+        'bert-base', 'base-small']
     },
     yAxis: {
         type: 'value',
-        min:0.75,
-        max:0.82
+        min:0.77,
+        max:0.805
     },
     backgroundColor:'rgb(252,252,252)',
     series: [{
-        data: [0.79, 0.76, 0.79, 0.79, 0.78, 0.80, 0.82],
+        data: [0.79, 0.79, 0.79, 0.78, 0.8, 0.8,
+        0.8, 0.80],
         type: 'bar',
         label: {
                 normal: {

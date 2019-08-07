@@ -102,12 +102,7 @@ class word2vec:
         return self._embed_matrix[self._dictionary[word]]
 
     def tree_plot(
-        self,
-        labels,
-        notebook_mode = False,
-        figsize = (7, 7),
-        annotate = True,
-        figname = 'fig.png',
+        self, labels, visualize = True, figsize = (7, 7), annotate = True
     ):
         """
         plot a tree plot based on output from calculator / n_closest / analogy.
@@ -116,11 +111,10 @@ class word2vec:
         ----------
         labels : list
             output from calculator / n_closest / analogy.
-        notebook_mode : bool
-            if True, it will render plt.show, else plt.savefig.
+        visualize : bool
+            if True, it will render plt.show, else return data.
         figsize : tuple, (default=(7, 7))
             figure size for plot.
-        figname : str, (default='fig.png')
 
         Returns
         -------
@@ -134,17 +128,7 @@ class word2vec:
             raise ValueError('figsize must be a tuple')
         if not isinstance(annotate, bool):
             raise ValueError('annotate must be a boolean')
-        if not isinstance(figname, str):
-            raise ValueError('figname must be a string')
-        try:
-            import matplotlib.pyplot as plt
-            import seaborn as sns
 
-            sns.set()
-        except:
-            raise Exception(
-                'matplotlib and seaborn not installed. Please install it and try again.'
-            )
         idx = [
             self.words.index(e[0] if isinstance(e, list) else e) for e in labels
         ]
@@ -159,6 +143,20 @@ class word2vec:
                 else label
             )
             labelled.append(label)
+
+        if not visualize:
+            return embed, labelled, labelled
+
+        try:
+            import matplotlib.pyplot as plt
+            import seaborn as sns
+
+            sns.set()
+        except:
+            raise Exception(
+                'matplotlib and seaborn not installed. Please install it and try again.'
+            )
+
         plt.figure(figsize = figsize)
         g = sns.clustermap(
             embed,
@@ -167,18 +165,14 @@ class word2vec:
             yticklabels = labelled,
             annot = annotate,
         )
-        if notebook_mode:
-            plt.show()
-        else:
-            plt.savefig(figname, bbox_inches = 'tight')
+        plt.show()
 
     def scatter_plot(
         self,
         labels,
         centre = None,
-        notebook_mode = False,
+        visualize = True,
         figsize = (7, 7),
-        figname = 'fig.png',
         plus_minus = 25,
         handoff = 5e-5,
     ):
@@ -191,11 +185,10 @@ class word2vec:
             output from calculator / n_closest / analogy
         centre : str, (default=None)
             centre label, if a str, it will annotate in a red color.
-        notebook_mode : bool
-            if True, it will render plt.show, else plt.savefig.
+        visualize : bool
+            if True, it will render plt.show, else return data.
         figsize : tuple, (default=(7, 7))
             figure size for plot.
-        figname : str, (default='fig.png')
 
         Returns
         -------
@@ -207,19 +200,9 @@ class word2vec:
             raise ValueError('notebook_mode must be a boolean')
         if not isinstance(figsize, tuple):
             raise ValueError('figsize must be a tuple')
-        if not isinstance(figname, str):
-            raise ValueError('figname must be a string')
         if not isinstance(plus_minus, int):
             raise ValueError('plus_minus must be an integer')
-        try:
-            import matplotlib.pyplot as plt
-            import seaborn as sns
 
-            sns.set()
-        except:
-            raise Exception(
-                'matplotlib and seaborn not installed. Please install it and try again.'
-            )
         idx = [
             self.words.index(e[0] if isinstance(e, list) else e) for e in labels
         ]
@@ -234,6 +217,19 @@ class word2vec:
         tsne = TSNE(n_components = 2, random_state = 0).fit_transform(
             self._embed_matrix[cp_idx]
         )
+        if not visualize:
+            return tsne
+
+        try:
+            import matplotlib.pyplot as plt
+            import seaborn as sns
+
+            sns.set()
+        except:
+            raise Exception(
+                'matplotlib and seaborn not installed. Please install it and try again.'
+            )
+
         plt.figure(figsize = figsize)
         plt.scatter(tsne[:, 0], tsne[:, 1])
         for label, x, y in zip(
@@ -268,10 +264,7 @@ class word2vec:
         )
         plt.xticks([])
         plt.yticks([])
-        if notebook_mode:
-            plt.show()
-        else:
-            plt.savefig(figname, bbox_inches = 'tight')
+        plt.show()
 
     def _calculate(self, equation):
         tokens, temp = [], ''

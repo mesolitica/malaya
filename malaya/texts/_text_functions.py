@@ -163,7 +163,7 @@ def entities_textcleaning(string, lowering = True):
     """
     use by entities recognition, pos recognition and dependency parsing
     """
-    string = re.sub('[^A-Za-z0-9\-\/ ]+', ' ', string)
+    string = re.sub('[^A-Za-z0-9\-() ]+', ' ', string)
     string = re.sub(r'[ ]+', ' ', string).strip()
     original_string = string.split()
     if lowering:
@@ -377,9 +377,11 @@ def build_dataset(words, n_words, included_prefix = True):
 
 
 alphabets = '([A-Za-z])'
-prefixes = '(Mr|St|Mrs|Ms|Dr|Prof|Capt|Cpt|Lt|Mt)[.]'
+prefixes = (
+    '(Mr|St|Mrs|Ms|Dr|Prof|Capt|Cpt|Lt|Mt|Puan|puan|Tuan|tuan|sir|Sir)[.]'
+)
 suffixes = '(Inc|Ltd|Jr|Sr|Co)'
-starters = '(Mr|Mrs|Ms|Dr|He\s|She\s|It\s|They\s|Their\s|Our\s|We\s|But\s|However\s|That\s|This\s|Wherever)'
+starters = '(Mr|Mrs|Ms|Dr|He\s|She\s|It\s|They\s|Their\s|Our\s|We\s|But\s|However\s|That\s|This\s|Wherever|Dia|Mereka|Tetapi|Kita|Itu|Ini|Dan|Kami)'
 acronyms = '([A-Z][.][A-Z][.](?:[A-Z][.])?)'
 websites = '[.](com|net|org|io|gov|me|edu|my)'
 another_websites = '(www|http|https)[.]'
@@ -514,12 +516,20 @@ def _truncate_seq_pair(tokens_a, tokens_b, max_length):
 
 
 def bert_tokenization_siamese(
-    tokenizer, left, right, maxlen, cls = '[CLS]', sep = '[SEP]'
+    tokenizer, left, right, cls = '[CLS]', sep = '[SEP]'
 ):
     input_ids, input_masks, segment_ids = [], [], []
+    a, b = [], []
     for i in range(len(left)):
         tokens_a = tokenizer.tokenize(left[i])
         tokens_b = tokenizer.tokenize(right[i])
+        a.append(tokens_a)
+        b.append(tokens_b)
+
+    maxlen = max([len(i) for i in a] + [len(i) for i in b]) + 5
+    for i in range(len(left)):
+        tokens_a = a[i]
+        tokens_b = b[i]
         _truncate_seq_pair(tokens_a, tokens_b, maxlen - 3)
 
         tokens = []
@@ -583,7 +593,7 @@ def tokenize_fn(text, sp_model):
 
 
 def xlnet_tokenization(tokenizer, texts):
-    input_ids, input_masks, segment_ids = [], [], []
+    input_ids, input_masks, segment_ids, s_tokens = [], [], [], []
     for text in texts:
         tokens_a = tokenize_fn(text, tokenizer)
         tokens = []
@@ -603,6 +613,7 @@ def xlnet_tokenization(tokenizer, texts):
         input_ids.append(input_id)
         input_masks.append(input_mask)
         segment_ids.append(segment_id)
+        s_tokens.append([tokenizer.IdToPiece(i) for i in tokens])
 
     maxlen = max([len(i) for i in input_ids])
     input_ids = padding_sequence(input_ids, maxlen, padding = 'pre')
@@ -613,10 +624,10 @@ def xlnet_tokenization(tokenizer, texts):
         segment_ids, maxlen, padding = 'pre', pad_int = SEG_ID_PAD
     )
 
-    return input_ids, input_masks, segment_ids
+    return input_ids, input_masks, segment_ids, s_tokens
 
 
-def merge_wordpiece_tokens(paired_tokens):
+def merge_wordpiece_tokens(paired_tokens, weighted = True):
     new_paired_tokens = []
     n_tokens = len(paired_tokens)
 
@@ -650,12 +661,13 @@ def merge_wordpiece_tokens(paired_tokens):
         for i in new_paired_tokens
         if i[0] not in ['[CLS]', '[SEP]', '[PAD]']
     ]
-    weights = np.array(weights)
-    weights = weights / np.sum(weights)
+    if weighted:
+        weights = np.array(weights)
+        weights = weights / np.sum(weights)
     return list(zip(words, weights))
 
 
-def merge_sentencepiece_tokens(paired_tokens):
+def merge_sentencepiece_tokens(paired_tokens, weighted = True):
     new_paired_tokens = []
     n_tokens = len(paired_tokens)
     rejected = ['<cls>', '<sep>']
@@ -694,6 +706,88 @@ def merge_sentencepiece_tokens(paired_tokens):
         for i in new_paired_tokens
         if i[0] not in ['<cls>', '<sep>', '<pad>']
     ]
-    weights = np.array(weights)
-    weights = weights / np.sum(weights)
+    if weighted:
+        weights = np.array(weights)
+        weights = weights / np.sum(weights)
     return list(zip(words, weights))
+
+
+def parse_bert_tagging(left, tokenizer, cls = '[CLS]', sep = '[SEP]'):
+    bert_tokens = [cls]
+    for no, orig_token in enumerate(left):
+        t = tokenizer.tokenize(orig_token)
+        bert_tokens.extend(t)
+    bert_tokens.append(sep)
+    return tokenizer.convert_tokens_to_ids(bert_tokens), bert_tokens
+
+
+def merge_wordpiece_tokens_tagging(x, y):
+    new_paired_tokens = []
+    n_tokens = len(x)
+
+    i = 0
+    while i < n_tokens:
+        current_token, current_label = x[i], y[i]
+        if current_token.startswith('##'):
+            previous_token, previous_label = new_paired_tokens.pop()
+            merged_token = previous_token
+            merged_label = [previous_label]
+            while current_token.startswith('##'):
+                merged_token = merged_token + current_token.replace('##', '')
+                merged_label.append(current_label)
+                i = i + 1
+                current_token, current_label = x[i], y[i]
+            merged_label = merged_label[0]
+            new_paired_tokens.append((merged_token, merged_label))
+        else:
+            new_paired_tokens.append((current_token, current_label))
+            i = i + 1
+    words = [
+        i[0]
+        for i in new_paired_tokens
+        if i[0] not in ['[CLS]', '[SEP]', '[PAD]']
+    ]
+    labels = [
+        i[1]
+        for i in new_paired_tokens
+        if i[0] not in ['[CLS]', '[SEP]', '[PAD]']
+    ]
+    return words, labels
+
+
+def merge_sentencepiece_tokens_tagging(x, y):
+    new_paired_tokens = []
+    n_tokens = len(x)
+    rejected = ['<cls>', '<sep>']
+
+    i = 0
+
+    while i < n_tokens:
+
+        current_token, current_label = x[i], y[i]
+        if not current_token.startswith('▁') and current_token not in rejected:
+            previous_token, previous_label = new_paired_tokens.pop()
+            merged_token = previous_token
+            merged_label = [previous_label]
+            while (
+                not current_token.startswith('▁')
+                and current_token not in rejected
+            ):
+                merged_token = merged_token + current_token.replace('▁', '')
+                merged_label.append(current_label)
+                i = i + 1
+                current_token, current_label = x[i], y[i]
+            merged_label = merged_label[0]
+            new_paired_tokens.append((merged_token, merged_label))
+
+        else:
+            new_paired_tokens.append((current_token, current_label))
+            i = i + 1
+
+    words = [
+        i[0].replace('▁', '')
+        for i in new_paired_tokens
+        if i[0] not in ['<cls>', '<sep>']
+    ]
+    labels = [i[1] for i in new_paired_tokens if i[0] not in ['<cls>', '<sep>']]
+    return words, labels

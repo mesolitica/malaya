@@ -718,3 +718,11 @@ def preprocessing_classification_index(string):
     for no, index in enumerate(indices):
         tokenized_indices[tokenized_dict[index]] = no
     return tokenized_indices, words
+
+
+def preprocessing_tagging(string):
+    string = ''.join(
+        ''.join(s)[:2] for _, s in itertools.groupby(unidecode(string))
+    )
+    tokenized = _tokenizer(string)
+    return [w.title() if w.isupper() else w for w in tokenized]

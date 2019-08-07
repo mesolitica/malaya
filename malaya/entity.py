@@ -11,27 +11,9 @@ def available_deep_model():
 
 def available_bert_model():
     """
-    List available deep learning entities models, ['concat', 'bahdanau', 'luong']
+    List available bert entities models, ['multilanguage', 'base', 'small']
     """
     return ['multilanguage', 'base', 'small']
-
-
-def crf(validate = True):
-    """
-    Load CRF Entities Recognition model.
-
-    Parameters
-    ----------
-    validate: bool, optional (default=True)
-        if True, malaya will check model availability and download if not available.
-
-    Returns
-    -------
-    CRF : malaya._models._sklearn_model.CRF class
-    """
-    return _tag_class.crf(
-        PATH_ENTITIES, S3_PATH_ENTITIES, 'entity', validate = validate
-    )
 
 
 def deep_model(model = 'bahdanau', validate = True):
@@ -66,6 +48,47 @@ def deep_model(model = 'bahdanau', validate = True):
         )
 
     return _tag_class.deep_model(
+        PATH_ENTITIES,
+        S3_PATH_ENTITIES,
+        'entity',
+        model = model,
+        validate = validate,
+    )
+
+
+def bert(model = 'base', validate = True):
+
+    """
+    Load BERT NER model.
+
+    Parameters
+    ----------
+    model : str, optional (default='base')
+        Model architecture supported. Allowed values:
+
+        * ``'multilanguage'`` - bert multilanguage released by Google, trained on NER.
+        * ``'base'`` - base bert-bahasa released by Malaya, trained on NER.
+        * ``'small'`` - small bert-bahasa released by Malaya, trained on NER.
+    validate: bool, optional (default=True)
+        if True, malaya will check model availability and download if not available.
+
+    Returns
+    -------
+    TAGGING_BERT: malaya._models._tensorflow_model.TAGGING_BERT class
+    """
+
+    if not isinstance(model, str):
+        raise ValueError('model must be a string')
+    if not isinstance(validate, bool):
+        raise ValueError('validate must be a boolean')
+
+    model = model.lower()
+    if model not in available_bert_model():
+        raise Exception(
+            'model not supported, please check supported models from malaya.entity.available_bert_model()'
+        )
+
+    return _tag_class.bert(
         PATH_ENTITIES,
         S3_PATH_ENTITIES,
         'entity',

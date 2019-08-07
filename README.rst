@@ -46,14 +46,12 @@ Features
 -  **Entities Recognition**
 
    Latest state-of-art CRF deep learning and BERT models to do Naming Entity Recognition.
-
 -  **Language Detection**
 
    using Multinomial, SGD, XGB, Fast-text N-grams deep learning to distinguish Malay, English, and Indonesian.
 -  **Normalizer**
 
-   using local Malaysia NLP researches to normalize any
-   bahasa texts.
+   using local Malaysia NLP researches to normalize any bahasa texts.
 -  **Num2Word**
 
    Convert from numbers to cardinal or ordinal representation.
@@ -83,13 +81,13 @@ Features
    From fine-tuning BERT, Attention-Recurrent model, and Self-Attention to build deep subjectivity analysis models.
 -  **Similarity**
 
-   Use deep LSTM siamese, deep Dilated CNN siamese, deep Self-Attention, siamese, Doc2Vec and BERT to build deep semantic similarity models.
+   Use deep Encoder, Doc2Vec and BERT to build deep semantic similarity models.
 -  **Summarization**
 
-   Using skip-thought and residual-network with attention state-of-art, LDA, LSA and Doc2Vec to give precise unsupervised summarization, and TextRank as scoring algorithm.
+   Using BERT, XLNET, skip-thought, LDA, LSA and Doc2Vec to give precise unsupervised summarization, and TextRank as scoring algorithm.
 -  **Topic Modelling**
 
-   Provide Transformer, LDA2Vec, LDA, NMF and LSA interface for easy topic modelling with topics visualization.
+   Provide Attention, LDA2Vec, LDA, NMF and LSA interface for easy topic modelling with topics visualization.
 -  **Toxicity Analysis**
 
    From fine-tuning BERT, Attention-Recurrent model, Self-Attention to build deep toxicity analysis models.
@@ -123,12 +121,12 @@ If you use our software for research, please cite:
 Acknowledgement
 ----------------
 
-Thanks to `Im Big <https://www.facebook.com/imbigofficial/>`_, `LigBlou <https://www.facebook.com/ligblou>`_ and `Mesolitica <https://mesolitica.com/>`_ for sponsoring AWS and Google cloud to train Malaya models.
+Thanks to `Im Big <https://www.facebook.com/imbigofficial/>`_, `LigBlou <https://www.facebook.com/ligblou>`_, `Mesolitica <https://mesolitica.com/>`_ and `KeyReply <https://www.keyreply.com/>`_ for sponsoring AWS and Google cloud to train Malaya models.
 
 .. raw:: html
 
     <a href="#readme">
-        <img alt="logo" width="30%" src="https://malaya-dataset.s3-ap-southeast-1.amazonaws.com/ligblou-mesolitica.png">
+        <img alt="logo" width="50%" src="https://malaya-dataset.s3-ap-southeast-1.amazonaws.com/ligblou-mesolitca-keyreply.png">
     </a>
 
 Contributing

@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 11.8 s, sys: 1.53 s, total: 13.3 s
-    Wall time: 17.3 s
+    CPU times: user 5.81 s, sys: 1.45 s, total: 7.26 s
+    Wall time: 12.2 s
 
 
 .. code:: ipython3
@@ -170,6 +170,95 @@ Load logistics model
 
 
 
+BERT model
+----------
+
+BERT is the best toxicity model in term of accuracy, you can check
+toxicity accuracy here,
+https://malaya.readthedocs.io/en/latest/Accuracy.html#toxicity-analysis.
+Question is, why BERT?
+
+1. Transformer model learn the context of a word based on all of its
+   surroundings (live string), bidirectionally. So it much better
+   understand left and right hand side relationships.
+2. Because of transformer able to leverage to context during live
+   string, we dont need to capture available words in this world,
+   instead capture substrings and build the attention after that. BERT
+   will never have Out-Of-Vocab problem.
+
+List available BERT models
+--------------------------
+
+.. code:: ipython3
+
+    malaya.toxic.available_bert_model()
+
+
+
+
+.. parsed-literal::
+
+    ['multilanguage', 'base', 'small']
+
+
+
+Load BERT models
+----------------
+
+.. code:: ipython3
+
+    model = malaya.toxic.bert(model = 'base')
+
+Predict single string
+^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    model.predict(string, get_proba=True)
+
+
+
+
+.. parsed-literal::
+
+    {'toxic': 0.23713578,
+     'severe_toxic': 5.5959423e-05,
+     'obscene': 0.013920558,
+     'threat': 0.00026320494,
+     'insult': 0.23729119,
+     'identity_hate': 0.0065446077}
+
+
+
+Predict batch of strings
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    model.predict_batch([string,another_string],get_proba=True)
+
+Open emotion visualization dashboard
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Default when you call ``predict_words`` it will open a browser with
+visualization dashboard, you can disable by ``visualization=False``.
+
+.. code:: ipython3
+
+    model.predict_words(another_string)
+
+.. code:: ipython3
+
+    from IPython.core.display import Image, display
+    
+    display(Image('bert-toxic.png', width=800))
+
+
+
+.. image:: load-toxic_files/load-toxic_26_0.png
+   :width: 800px
+
+
 List available deep learning models
 -----------------------------------
 
@@ -265,7 +354,7 @@ Predict single string
 
 
 
-.. image:: load-toxic_files/load-toxic_24_0.png
+.. image:: load-toxic_files/load-toxic_36_0.png
 
 
 Open toxicity visualization dashboard
@@ -278,45 +367,6 @@ visualization dashboard, you can disable by ``visualization=False``.
 
     model.predict_words(another_string)
 
-
-.. parsed-literal::
-
-    Serving to http://127.0.0.1:8889/    [Ctrl-C to exit]
-
-
-.. parsed-literal::
-
-    127.0.0.1 - - [09/Jun/2019 21:16:56] "GET / HTTP/1.1" 200 -
-    127.0.0.1 - - [09/Jun/2019 21:16:56] "GET /static/admin-materialize.min.css HTTP/1.1" 200 -
-    127.0.0.1 - - [09/Jun/2019 21:16:56] "GET /static/echarts.min.js HTTP/1.1" 200 -
-    127.0.0.1 - - [09/Jun/2019 21:16:57] "GET /favicon.ico HTTP/1.1" 200 -
-    ----------------------------------------
-    Exception happened during processing of request from ('127.0.0.1', 62074)
-    Traceback (most recent call last):
-      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/socketserver.py", line 317, in _handle_request_noblock
-        self.process_request(request, client_address)
-      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/socketserver.py", line 348, in process_request
-        self.finish_request(request, client_address)
-      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/socketserver.py", line 361, in finish_request
-        self.RequestHandlerClass(request, client_address, self)
-      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/socketserver.py", line 696, in __init__
-        self.handle()
-      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/http/server.py", line 418, in handle
-        self.handle_one_request()
-      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/http/server.py", line 406, in handle_one_request
-        method()
-      File "/Users/huseinzol/Documents/Malaya/malaya/_utils/_server.py", line 32, in do_GET
-        with open(filepath, 'rb') as fh:
-    FileNotFoundError: [Errno 2] No such file or directory: '/Users/huseinzol/Documents/Malaya/malaya/_utils/web/favicon.ico'
-    ----------------------------------------
-
-
-.. parsed-literal::
-
-    
-    stopping Server...
-
-
 .. code:: ipython3
 
     from IPython.core.display import Image, display
@@ -325,7 +375,7 @@ visualization dashboard, you can disable by ``visualization=False``.
 
 
 
-.. image:: load-toxic_files/load-toxic_27_0.png
+.. image:: load-toxic_files/load-toxic_39_0.png
    :width: 800px
 
 
@@ -358,76 +408,6 @@ Predict batch of strings
 
 **You might want to try ``luong`` and ``self-attention`` by yourself.**
 
-BERT model
-----------
-
-BERT is the best toxicity model in term of accuracy, you can check
-toxicity accuracy here,
-https://malaya.readthedocs.io/en/latest/Accuracy.html#toxicity-analysis.
-But warning, the model size is 700MB! Make sure you have enough
-resources to use BERT, and installed ``bert-tensorflow`` first,
-
-.. code:: bash
-
-   pip3 install bert-tensorflow
-
-.. code:: ipython3
-
-    model = malaya.toxic.bert()
-
-
-.. parsed-literal::
-
-    downloading frozen /Users/huseinzol/Malaya/toxic/bert model
-
-
-.. parsed-literal::
-
-    679MB [03:35, 3.85MB/s]                          
-
-
-.. code:: ipython3
-
-    model.predict(another_string, get_proba = True)
-
-
-
-
-.. parsed-literal::
-
-    {'toxic': 0.9611515,
-     'severe_toxic': 0.00046739998,
-     'obscene': 0.11525511,
-     'threat': 3.888399e-05,
-     'insult': 0.9008593,
-     'identity_hate': 0.0026886603}
-
-
-
-.. code:: ipython3
-
-    model.predict_batch([string, another_string], get_proba = True)
-
-
-
-
-.. parsed-literal::
-
-    [{'toxic': 0.9908935,
-      'severe_toxic': 0.0015672365,
-      'obscene': 0.04905731,
-      'threat': 0.00017163585,
-      'insult': 0.16307928,
-      'identity_hate': 0.0068348516},
-     {'toxic': 0.9102552,
-      'severe_toxic': 0.0019921095,
-      'obscene': 0.016692169,
-      'threat': 0.00012219975,
-      'insult': 0.81612825,
-      'identity_hate': 0.15156291}]
-
-
-
 Stacking models
 ---------------
 
@@ -449,108 +429,11 @@ https://malaya.readthedocs.io/en/latest/Stack.html
 
 .. parsed-literal::
 
-    {'toxic': 0.7799483384789236,
-     'severe_toxic': 0.012339557276675722,
-     'obscene': 0.3809575356999082,
-     'threat': 0.001341406650402849,
-     'insult': 0.5918158556678792,
-     'identity_hate': 0.04673038513607336}
-
-
-
-Load Sparse deep learning models
---------------------------------
-
-What happen if a word not included in the dictionary of the models? like
-``setan``, what if ``setan`` appeared in text we want to classify? We
-found this problem when classifying social media texts / posts. Words
-used not really a vocabulary-based contextual.
-
-Malaya will treat **unknown words** as ``<UNK>``, so, to solve this
-problem, we need to use N-grams character based. Malaya chose tri-grams
-until fifth-grams.
-
-.. code:: python
-
-   setan = ['set', 'eta', 'tan']
-
-Sklearn provided easy interface to use n-grams, problem is, it is very
-sparse, a lot of zeros and not memory efficient. Sklearn returned sparse
-matrix for the result, lucky Tensorflow already provided some sparse
-function.
-
-.. code:: ipython3
-
-    malaya.toxic.available_sparse_deep_model()
-
-
-
-
-.. parsed-literal::
-
-    ['fast-text-char']
-
-
-
-Right now Malaya only provide 1 sparse model, ``fast-text-char``. We
-will try to evolve it.
-
-.. code:: ipython3
-
-    sparse_model = malaya.toxic.sparse_deep_model()
-
-
-.. parsed-literal::
-
-    INFO:tensorflow:Restoring parameters from /Users/huseinzol/Malaya/toxic/fast-text-char/model.ckpt
-
-
-.. code:: ipython3
-
-    sparse_model.predict(string)
-
-
-
-
-.. parsed-literal::
-
-    []
-
-
-
-.. code:: ipython3
-
-    sparse_model.predict_batch([string, another_string])
-
-
-
-
-.. parsed-literal::
-
-    [[], ['toxic']]
-
-
-
-.. code:: ipython3
-
-    sparse_model.predict_batch([string, another_string], get_proba = True)
-
-
-
-
-.. parsed-literal::
-
-    [{'toxic': 0.09526734,
-      'severe_toxic': 0.003521999,
-      'obscene': 0.023459533,
-      'threat': 0.0006645933,
-      'insult': 0.022291547,
-      'identity_hate': 0.0044483035},
-     {'toxic': 0.9597362,
-      'severe_toxic': 0.005366189,
-      'obscene': 0.06367288,
-      'threat': 0.0016838913,
-      'insult': 0.39910555,
-      'identity_hate': 0.033272624}]
+    [{'toxic': 0.762428606103178,
+      'severe_toxic': 0.011849021176546234,
+      'obscene': 0.3832808346427016,
+      'threat': 0.0014400114215306784,
+      'insult': 0.5784525147196791,
+      'identity_hate': 0.04677333735681973}]
 
 

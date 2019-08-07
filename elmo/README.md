@@ -68,13 +68,13 @@ options = {
 
 ## Download
 
-1.  1st August 2019, [elmo-128.tar.gz]().
+1.  1st August 2019, [elmo-128.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/elmo-128.tar.gz).
 
-**Vocab size 678833, Case Sensitive, 66k steps batch size 256, 128 embedded size (430MB)**.
+**Vocab size 678833, Case Sensitive, 66k steps batch size 256, 256 lstm.dim 128 projection_dim (430MB)**.
 
-1.  1st August 2019, [elmo-256.tar.gz]().
+1.  1st August 2019, [elmo-256.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/elmo-256.tar.gz).
 
-**Vocab size 678833, Case Sensitive, 66k steps batch size 128, 256 embedded size (430MB)**.
+**Vocab size 678833, Case Sensitive, 132.5k steps batch size 128, 512 lstm.dim 256 projection_dim (792MB)**.
 
 ## Citation
 

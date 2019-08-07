@@ -2,8 +2,8 @@
 Entities Recognition
 --------------------
 
-Trained on 80% of dataset, tested on 20% of dataset. All training
-sessions stored in
+Trained on 80% of dataset, tested on 20% of dataset. Link to download
+dataset available inside the notebooks. All training sessions stored in
 `session/entities <https://github.com/huseinzol05/Malaya/tree/master/session/entities>`__
 
 .. code:: ipython3
@@ -25,16 +25,18 @@ Concat
 
                  precision    recall  f1-score   support
 
-          OTHER       1.00      1.00      1.00    498279
-          event       0.98      0.99      0.99      2217
-            law       0.99      0.99      0.99      1610
-       location       0.99      1.00      1.00     20194
-   organization       0.99      0.99      0.99     26093
-         person       1.00      0.99      1.00     43377
-       quantity       1.00      1.00      1.00     13180
-           time       0.99      1.00      0.99     12750
+          OTHER   0.971261  0.995777  0.983367   5160854
+          event   0.991603  0.181505  0.306844    143787
+            law   0.989329  0.879490  0.931181    146950
+       location   0.848477  0.960757  0.901133    428869
+   organization   0.960967  0.761301  0.849560    694150
+         person   0.850705  0.969984  0.906437    507960
+       quantity   0.996606  0.972120  0.984211     88200
+           time   0.879509  0.986763  0.930054    179880
 
-    avg / total       1.00      1.00      1.00    617700
+       accuracy                       0.951052   7350650
+      macro avg   0.936057  0.838462  0.849098   7350650
+   weighted avg   0.953613  0.951052  0.945046   7350650
 
 Bahdanau
 ^^^^^^^^
@@ -43,16 +45,18 @@ Bahdanau
 
                  precision    recall  f1-score   support
 
-          OTHER       1.00      1.00      1.00    498587
-          event       0.98      0.99      0.98      2212
-            law       1.00      0.99      0.99      1746
-       location       0.99      1.00      1.00     20387
-   organization       0.99      1.00      1.00     25376
-         person       1.00      1.00      1.00     43158
-       quantity       1.00      1.00      1.00     13581
-           time       0.99      1.00      0.99     12653
+          OTHER   0.974847  0.994647  0.984648   5160854
+          event   0.984159  0.230737  0.373830    143787
+            law   0.981267  0.869745  0.922146    146950
+       location   0.790109  0.969399  0.870619    428869
+   organization   0.950195  0.736809  0.830007    694150
+         person   0.894418  0.951801  0.922218    507960
+       quantity   0.873435  0.996122  0.930753     88200
+           time   0.830533  0.994663  0.905218    179880
 
-    avg / total       1.00      1.00      1.00    617700
+       accuracy                       0.948443   7350650
+      macro avg   0.909871  0.842990  0.842430   7350650
+   weighted avg   0.951745  0.948443  0.943289   7350650
 
 Luong
 ^^^^^
@@ -61,69 +65,84 @@ Luong
 
                  precision    recall  f1-score   support
 
-          OTHER       1.00      1.00      1.00    497138
-          event       0.99      0.99      0.99      2331
-            law       0.99      0.99      0.99      1872
-       location       0.99      1.00      1.00     20671
-   organization       0.99      1.00      0.99     25942
-         person       0.99      1.00      1.00     43511
-       quantity       1.00      1.00      1.00     13376
-           time       1.00      1.00      1.00     12859
+          OTHER   0.970056  0.989573  0.979718   5160854
+          event   0.992172  0.065228  0.122409    143787
+            law   0.988701  0.878278  0.930224    146950
+       location   0.818681  0.963229  0.885092    428869
+   organization   0.890460  0.761138  0.820736    694150
+         person   0.868039  0.956424  0.910091    507960
+       quantity   0.859562  0.983662  0.917434     88200
+           time   0.934577  0.973788  0.953780    179880
 
-    avg / total       1.00      1.00      1.00    617700
+       accuracy                       0.943410   7350650
+      macro avg   0.915281  0.821415  0.814935   7350650
+   weighted avg   0.945269  0.943410  0.935230   7350650
 
-Entity-Network
-^^^^^^^^^^^^^^
-
-.. code:: text
-
-                 precision    recall  f1-score   support
-
-          OTHER       1.00      1.00      1.00    497198
-          event       0.98      0.95      0.96      2381
-            law       0.99      0.97      0.98      1881
-       location       0.99      0.99      0.99     20305
-   organization       0.99      0.98      0.98     26036
-         person       0.99      0.99      0.99     43470
-       quantity       0.99      0.99      0.99     13608
-           time       0.98      0.99      0.98     12821
-
-    avg / total       1.00      1.00      1.00    617700
-
-CRF
-^^^
+BERT-Multilanguage
+^^^^^^^^^^^^^^^^^^
 
 .. code:: text
 
                  precision    recall  f1-score   support
 
-       quantity      0.991     0.991     0.991     13891
-       location      0.987     0.989     0.988     20798
-           time      0.987     0.977     0.982     13264
-         person      0.993     0.987     0.990     43590
-   organization      0.974     0.973     0.973     25426
-          event      0.995     0.983     0.989      2417
-            law      0.994     0.988     0.991      1686
+          OTHER   0.897421  0.996914  0.944555   5160854
+            PAD   0.999999  0.999999  0.999999   7606936
+              X   0.999640  0.929736  0.963421   5330208
+          event   0.983410  0.011955  0.023623    143787
+            law   0.986088  0.880749  0.930446    146950
+       location   0.842292  0.986024  0.908508    428869
+   organization   0.966130  0.827488  0.891451    694150
+         person   0.947691  0.931636  0.939595    507960
+       quantity   0.979431  0.992290  0.985819     88200
+           time   0.975794  0.933417  0.954135    179880
 
-    avg / total      0.987     0.983     0.985    121072
+       accuracy                       0.964354  20287794
+      macro avg   0.957789  0.849021  0.854155  20287794
+   weighted avg   0.967486  0.964354  0.961233  20287794
 
-Attention
+BERT-Base
 ^^^^^^^^^
 
 .. code:: text
 
                  precision    recall  f1-score   support
 
-          OTHER       1.00      1.00      1.00    497073
-          event       0.99      0.97      0.98      2426
-            law       1.00      0.99      0.99      1806
-       location       1.00      1.00      1.00     20176
-   organization       1.00      1.00      1.00     26044
-         person       1.00      1.00      1.00     44346
-       quantity       1.00      1.00      1.00     13155
-           time       0.99      1.00      1.00     12674
+          OTHER   0.963803  0.997365  0.980297   5160854
+            PAD   0.999818  0.999991  0.999905   8134246
+              X   0.999613  0.995673  0.997639   2744716
+          event   1.000000  0.001384  0.002764    143787
+            law   0.908430  0.936774  0.922385    146950
+       location   0.819429  0.990137  0.896731    428869
+   organization   0.994678  0.794566  0.883432    694150
+         person   0.939039  0.967610  0.953110    507960
+       quantity   0.980706  0.995295  0.987947     88200
+           time   0.978965  0.991166  0.985028    179880
 
-    avg / total       1.00      1.00      1.00    617700
+       accuracy                       0.981145  18229612
+      macro avg   0.958448  0.866996  0.860924  18229612
+   weighted avg   0.982425  0.981145  0.977152  18229612
+
+BERT-Small
+^^^^^^^^^^
+
+.. code:: text
+
+                 precision    recall  f1-score   support
+
+          OTHER   0.964207  0.998268  0.980942   5160854
+            PAD   0.999818  1.000000  0.999909   8134246
+              X   0.999607  0.999790  0.999698   2744716
+          event   1.000000  0.036109  0.069701    143787
+            law   0.999070  0.899592  0.946725    146950
+       location   0.900732  0.988383  0.942524    428869
+   organization   0.990733  0.865072  0.923648    694150
+         person   0.951168  0.972149  0.961544    507960
+       quantity   0.997732  0.987630  0.992656     88200
+           time   0.967680  0.994196  0.980759    179880
+
+       accuracy                       0.984762  18229612
+      macro avg   0.977075  0.874119  0.879811  18229612
+   weighted avg   0.985340  0.984762  0.981195  18229612
 
 Language Detection
 ------------------
@@ -209,8 +228,8 @@ Deep learning
 POS Recognition
 ---------------
 
-Trained on 80% of dataset, tested on 20% of dataset. All training
-sessions stored in
+Trained on 80% of dataset, tested on 20% of dataset. Link to download
+dataset available inside the notebooks. All training sessions stored in
 `session/pos <https://github.com/huseinzol05/Malaya/tree/master/session/pos>`__
 
 .. code:: ipython3
@@ -228,126 +247,171 @@ Concat
 
 .. code:: text
 
-                precision    recall  f1-score   support
+                 precision    recall  f1-score   support
 
-           ADJ       0.99      1.00      1.00     22663
-           ADP       1.00      1.00      1.00     60199
-           ADV       1.00      1.00      1.00     23633
-           AUX       1.00      1.00      1.00      5249
-         CCONJ       1.00      1.00      1.00     18485
-           DET       1.00      1.00      1.00     19849
-          NOUN       1.00      1.00      1.00    135031
-           NUM       1.00      1.00      1.00     21842
-          PART       1.00      1.00      1.00      2900
-          PRON       1.00      1.00      1.00     23908
-         PROPN       1.00      1.00      1.00    113206
-         SCONJ       1.00      0.99      1.00      7304
-           SYM       1.00      1.00      1.00      1205
-          VERB       1.00      1.00      1.00     61222
-             X       0.97      0.99      0.98       154
+            ADJ   0.817403  0.689528  0.748040     45666
+            ADP   0.946743  0.960281  0.953464    119589
+            ADV   0.862745  0.790976  0.825303     47760
+            AUX   0.992753  1.000000  0.996363     10000
+          CCONJ   0.980811  0.917167  0.947922     37171
+            DET   0.922089  0.927882  0.924976     38839
+           NOUN   0.825955  0.933548  0.876462    268329
+            NUM   0.917225  0.927107  0.922139     41211
+           PART   0.879739  0.881818  0.880777      5500
+           PRON   0.967885  0.938671  0.953054     48835
+          PROPN   0.941781  0.858129  0.898011    227608
+          PUNCT   0.999666  0.998906  0.999286    182824
+          SCONJ   0.710932  0.839604  0.769929     15150
+            SYM   0.989079  0.981111  0.985079      3600
+           VERB   0.943542  0.908367  0.925620    124518
+              X   0.000000  0.000000  0.000000       150
 
-   avg / total       1.00      1.00      1.00    516850
+       accuracy                       0.913031   1216750
+      macro avg   0.856147  0.847068  0.850402   1216750
+   weighted avg   0.915901  0.913031  0.912964   1216750
 
 Bahdanau
 ^^^^^^^^
 
 .. code:: text
 
-                precision    recall  f1-score   support
+                 precision    recall  f1-score   support
 
-           ADJ       0.99      0.99      0.99     22879
-           ADP       1.00      1.00      1.00     60063
-           ADV       1.00      0.99      1.00     23653
-           AUX       1.00      1.00      1.00      5295
-         CCONJ       1.00      1.00      1.00     18395
-           DET       1.00      1.00      1.00     20088
-          NOUN       1.00      1.00      1.00    134736
-           NUM       1.00      1.00      1.00     21938
-          PART       0.99      1.00      0.99      3093
-          PRON       1.00      1.00      1.00     24060
-         PROPN       1.00      1.00      1.00    112859
-         SCONJ       0.99      0.99      0.99      7445
-           SYM       0.99      0.99      0.99      1219
-          VERB       1.00      1.00      1.00     60937
-             X       0.98      0.97      0.98       190
+            ADJ   0.840047  0.621951  0.714731     45666
+            ADP   0.964556  0.949134  0.956783    119589
+            ADV   0.807150  0.835846  0.821247     47760
+            AUX   0.980583  0.999900  0.990147     10000
+          CCONJ   0.973852  0.910791  0.941266     37171
+            DET   0.952105  0.917197  0.934325     38839
+           NOUN   0.789860  0.935113  0.856371    268329
+            NUM   0.920680  0.936206  0.928378     41211
+           PART   0.933212  0.835818  0.881834      5500
+           PRON   0.977711  0.935968  0.956384     48835
+          PROPN   0.944440  0.816074  0.875577    227608
+          PUNCT   0.997880  0.999076  0.998478    182824
+          SCONJ   0.740312  0.796898  0.767563     15150
+            SYM   0.999425  0.965556  0.982198      3600
+           VERB   0.931810  0.917996  0.924851    124518
+              X   0.000000  0.000000  0.000000       150
 
-   avg / total       1.00      1.00      1.00    516850
+       accuracy                       0.903527   1216750
+      macro avg   0.859601  0.835845  0.845633   1216750
+   weighted avg   0.909183  0.903527  0.903409   1216750
 
 Luong
 ^^^^^
 
 .. code:: text
 
-                precision    recall  f1-score   support
+                 precision    recall  f1-score   support
 
-           ADJ       0.99      0.99      0.99     22649
-           ADP       1.00      1.00      1.00     60088
-           ADV       0.99      1.00      0.99     24031
-           AUX       1.00      1.00      1.00      5279
-         CCONJ       1.00      1.00      1.00     18469
-           DET       1.00      1.00      1.00     20053
-          NOUN       1.00      1.00      1.00    134614
-           NUM       1.00      1.00      1.00     21703
-          PART       1.00      0.99      0.99      2956
-          PRON       1.00      1.00      1.00     23786
-         PROPN       1.00      1.00      1.00    113689
-         SCONJ       0.99      0.99      0.99      7315
-           SYM       1.00      1.00      1.00      1189
-          VERB       1.00      1.00      1.00     60827
-             X       0.97      0.99      0.98       202
+            ADJ   0.831224  0.617002  0.708269     45666
+            ADP   0.968751  0.943582  0.956001    119589
+            ADV   0.797609  0.804690  0.801134     47760
+            AUX   0.990094  0.999500  0.994775     10000
+          CCONJ   0.961630  0.924377  0.942635     37171
+            DET   0.928473  0.923119  0.925788     38839
+           NOUN   0.808552  0.923039  0.862010    268329
+            NUM   0.959908  0.846473  0.899629     41211
+           PART   0.875569  0.873818  0.874693      5500
+           PRON   0.954275  0.938896  0.946523     48835
+          PROPN   0.935033  0.833543  0.881376    227608
+          PUNCT   0.998556  0.998425  0.998490    182824
+          SCONJ   0.608801  0.862046  0.713622     15150
+            SYM   0.976771  0.946111  0.961197      3600
+           VERB   0.908930  0.926011  0.917391    124518
+              X   0.000000  0.000000  0.000000       150
 
-   avg / total       1.00      1.00      1.00    516850
+       accuracy                       0.901504   1216750
+      macro avg   0.844011  0.835039  0.836471   1216750
+   weighted avg   0.906385  0.901504  0.901539   1216750
 
-CRF
-^^^
+BERT-Multilanguage
+^^^^^^^^^^^^^^^^^^
 
 .. code:: text
 
                  precision    recall  f1-score   support
 
-           PRON      0.998     0.997     0.998     47911
-            DET      0.990     0.993     0.991     39932
-           NOUN      0.988     0.988     0.988    270045
-           VERB      0.997     0.997     0.997    122015
-          PROPN      0.989     0.988     0.988    225893
-            ADP      0.997     0.998     0.997    120358
-            ADV      0.992     0.991     0.991     47753
-          CCONJ      0.997     0.998     0.997     36696
-            NUM      0.993     0.995     0.994     43748
-            ADJ      0.985     0.988     0.986     45244
-           PART      0.992     0.995     0.993      5975
-            AUX      1.000     1.000     1.000     10505
-          SCONJ      0.994     0.987     0.990     14798
-            SYM      0.998     0.997     0.998      2483
+            ADJ   0.841830  0.736237  0.785501     45666
+            ADP   0.965676  0.948323  0.956921    119589
+            ADV   0.855381  0.832224  0.843644     47760
+            AUX   0.994721  0.998700  0.996707     10000
+          CCONJ   0.946915  0.930483  0.938627     37171
+            DET   0.914014  0.938747  0.926215     38839
+           NOUN   0.900014  0.905474  0.902736    268329
+            NUM   0.925285  0.944796  0.934939     41211
+            PAD   1.000000  0.999988  0.999994    913117
+           PART   0.905887  0.892545  0.899167      5500
+           PRON   0.979693  0.934555  0.956592     48835
+          PROPN   0.913676  0.937669  0.925517    227608
+          PUNCT   0.995142  0.998299  0.996718    182824
+          SCONJ   0.705528  0.843234  0.768259     15150
+            SYM   1.000000  0.959722  0.979447      3600
+           VERB   0.941861  0.939350  0.940604    124518
+              X   0.998458  0.997520  0.997989    498463
 
-      micro avg      0.992     0.992     0.992   1033356
-      macro avg      0.994     0.994     0.994   1033356
-   weighted avg      0.992     0.992     0.992   1033356
+       accuracy                       0.966343   2628180
+      macro avg   0.928475  0.925757  0.926446   2628180
+   weighted avg   0.966508  0.966343  0.966292   2628180
 
-Entity-network
-^^^^^^^^^^^^^^
+BERT-Base
+^^^^^^^^^
 
 .. code:: text
 
-                precision    recall  f1-score   support
+                 precision    recall  f1-score   support
 
-           ADJ       0.98      0.98      0.98     22626
-           ADP       0.99      0.99      0.99     60045
-           ADV       0.97      0.98      0.98     23537
-           AUX       0.99      0.99      0.99      5195
-         CCONJ       0.99      0.99      0.99     18357
-           DET       0.99      0.99      0.99     19762
-          NOUN       0.99      0.99      0.99    134505
-           NUM       0.99      0.99      0.99     22083
-          PART       0.97      0.97      0.97      2924
-          PRON       0.99      0.99      0.99     23783
-         PROPN       0.99      0.99      0.99    114144
-         SCONJ       0.96      0.95      0.95      7534
-           SYM       0.97      0.98      0.97      1335
-          VERB       0.99      0.99      0.99     60834
-             X       0.93      0.68      0.79       186
+            ADJ   0.818816  0.758354  0.787426     45666
+            ADP   0.965894  0.946065  0.955877    119589
+            ADV   0.843652  0.823409  0.833408     47760
+            AUX   0.995014  0.997800  0.996405     10000
+          CCONJ   0.961230  0.915122  0.937609     37171
+            DET   0.906354  0.938721  0.922254     38839
+           NOUN   0.894673  0.906182  0.900391    268329
+            NUM   0.938875  0.893766  0.915765     41211
+            PAD   0.997943  0.999998  0.998969    885531
+           PART   0.911302  0.906000  0.908643      5500
+           PRON   0.982959  0.933142  0.957403     48835
+          PROPN   0.909701  0.935477  0.922409    227608
+          PUNCT   0.997954  0.997790  0.997872    182824
+          SCONJ   0.635332  0.883300  0.739072     15150
+            SYM   0.960405  0.896111  0.927145      3600
+           VERB   0.957721  0.920879  0.938939    124518
+              X   0.999599  0.998108  0.998853    501714
 
-   avg / total       0.99      0.99      0.99    516850
+       accuracy                       0.964343   2603845
+      macro avg   0.922201  0.920602  0.919908   2603845
+   weighted avg   0.965078  0.964343  0.964494   2603845
+
+BERT-Small
+^^^^^^^^^^
+
+.. code:: text
+
+                 precision    recall  f1-score   support
+
+            ADJ   0.846381  0.716660  0.776137     45666
+            ADP   0.962181  0.947144  0.954603    119589
+            ADV   0.851804  0.811265  0.831040     47760
+            AUX   0.994221  0.997800  0.996007     10000
+          CCONJ   0.949824  0.922789  0.936112     37171
+            DET   0.927095  0.935426  0.931242     38839
+           NOUN   0.898681  0.897626  0.898153    268329
+            NUM   0.921416  0.928660  0.925024     41211
+            PAD   0.997934  0.999998  0.998965    885531
+           PART   0.920861  0.918182  0.919519      5500
+           PRON   0.968619  0.937975  0.953051     48835
+          PROPN   0.909923  0.932590  0.921117    227608
+          PUNCT   0.996126  0.998468  0.997296    182824
+          SCONJ   0.615736  0.881782  0.725126     15150
+            SYM   0.973931  0.923611  0.948104      3600
+           VERB   0.941730  0.938017  0.939870    124518
+              X   0.999188  0.998324  0.998756    501714
+
+       accuracy                       0.963971   2603845
+      macro avg   0.922097  0.922724  0.920595   2603845
+   weighted avg   0.964521  0.963971  0.963981   2603845
 
 Sentiment Analysis
 ------------------
@@ -356,13 +420,15 @@ Trained on 80% of dataset, tested on 20% of dataset. All training
 sessions stored in
 `session/sentiment <https://github.com/huseinzol05/Malaya/tree/master/session/sentiment>`__
 
+**Graph based on F1-score.**
+
 .. code:: ipython3
 
     display(Image('sentiment-accuracy.png', width=500))
 
 
 
-.. image:: models-accuracy_files/models-accuracy_22_0.png
+.. image:: models-accuracy_files/models-accuracy_23_0.png
    :width: 500px
 
 
@@ -377,18 +443,6 @@ Bahdanau
       positive       0.79      0.76      0.78     64624
 
    avg / total       0.79      0.79      0.79    135005
-
-Fast-text-char
-^^^^^^^^^^^^^^
-
-.. code:: text
-
-                precision    recall  f1-score   support
-
-      negative       0.78      0.80      0.79     70256
-      positive       0.77      0.75      0.76     63766
-
-   avg / total       0.77      0.77      0.77    134022
 
 Luong
 ^^^^^
@@ -442,17 +496,47 @@ XGB
       macro avg       0.80      0.80      0.80    134849
    weighted avg       0.80      0.80      0.80    134849
 
-BERT
-^^^^
+BERT-Multilanguage
+^^^^^^^^^^^^^^^^^^
 
 .. code:: text
 
-                precision    recall  f1-score   support
+                 precision    recall  f1-score   support
 
-      negative       0.85      0.79      0.82     69590
-      positive       0.79      0.85      0.82     63296
+       negative   0.851888  0.746347  0.795633     70691
+       positive   0.754612  0.857372  0.802716     64314
 
-   avg / total       0.82      0.82      0.82    132886
+       accuracy                       0.799237    135005
+      macro avg   0.803250  0.801859  0.799175    135005
+   weighted avg   0.805548  0.799237  0.799007    135005
+
+BERT-Base
+^^^^^^^^^
+
+.. code:: text
+
+                 precision    recall  f1-score   support
+
+       negative   0.826599  0.797648  0.811865     70323
+       positive   0.788071  0.818079  0.802795     64682
+
+       accuracy                       0.807437    135005
+      macro avg   0.807335  0.807864  0.807330    135005
+   weighted avg   0.808140  0.807437  0.807520    135005
+
+BERT-Small
+^^^^^^^^^^
+
+.. code:: text
+
+                 precision    recall  f1-score   support
+
+       negative   0.835787  0.771196  0.802193     70663
+       positive   0.768377  0.833592  0.799657     64342
+
+       accuracy                       0.800933    135005
+      macro avg   0.802082  0.802394  0.800925    135005
+   weighted avg   0.803660  0.800933  0.800985    135005
 
 Toxicity Analysis
 -----------------
@@ -467,13 +551,15 @@ Labels are,
 
    {0: 'toxic', 1: 'severe_toxic', 2: 'obscene', 3: 'threat', 4: 'insult', 5: 'identity_hate'}
 
+**Graph based on F1-score.**
+
 .. code:: ipython3
 
     display(Image('toxic-accuracy.png', width=500))
 
 
 
-.. image:: models-accuracy_files/models-accuracy_31_0.png
+.. image:: models-accuracy_files/models-accuracy_33_0.png
    :width: 500px
 
 
@@ -492,22 +578,6 @@ Bahdanau
    identity_hate       0.65      0.35      0.45       357
 
      avg / total       0.75      0.62      0.68      8385
-
-Fast-text-char
-^^^^^^^^^^^^^^
-
-.. code:: text
-
-                  precision    recall  f1-score   support
-
-           toxic       0.83      0.56      0.67      3654
-    severe_toxic       0.47      0.22      0.30       387
-         obscene       0.84      0.54      0.65      1985
-          threat       0.48      0.17      0.25       120
-          insult       0.73      0.44      0.55      1862
-   identity_hate       0.44      0.18      0.26       326
-
-     avg / total       0.77      0.49      0.60      8334
 
 Logistic Regression
 ^^^^^^^^^^^^^^^^^^^
@@ -573,21 +643,62 @@ Self-Attention
 
      avg / total       0.76      0.48      0.58      8783
 
-BERT
-^^^^
+BERT-Multilanguage
+^^^^^^^^^^^^^^^^^^
 
 .. code:: text
 
                   precision    recall  f1-score   support
 
-           toxic       0.81      0.71      0.76      3744
-    severe_toxic       0.55      0.17      0.26       413
-         obscene       0.84      0.69      0.76      2101
-          threat       0.68      0.43      0.53       120
-          insult       0.78      0.62      0.69      1964
-   identity_hate       0.71      0.41      0.52       359
+           toxic   0.758527  0.744709  0.751554      3733
+    severe_toxic   0.514184  0.375648  0.434132       386
+         obscene   0.768908  0.729811  0.748849      2006
+          threat   0.742857  0.201550  0.317073       129
+          insult   0.690093  0.737226  0.712881      1918
+   identity_hate   0.555172  0.449721  0.496914       358
 
-     avg / total       0.79      0.64      0.71      8701
+       micro avg   0.728267  0.702227  0.715010      8530
+       macro avg   0.671623  0.539777  0.576901      8530
+    weighted avg   0.725752  0.702227  0.710601      8530
+     samples avg   0.066491  0.066235  0.063811      8530
+
+BERT-Base
+^^^^^^^^^
+
+.. code:: text
+
+                  precision    recall  f1-score   support
+
+           toxic   0.772569  0.767225  0.769888      3759
+    severe_toxic   0.604520  0.256595  0.360269       417
+         obscene   0.787863  0.717009  0.750768      2046
+          threat   0.666667  0.380165  0.484211       121
+          insult   0.683317  0.728919  0.705382      1933
+   identity_hate   0.569579  0.531722  0.550000       331
+
+       micro avg   0.741476  0.707447  0.724062      8607
+       macro avg   0.680752  0.563606  0.603420      8607
+    weighted avg   0.738723  0.707447  0.718538      8607
+     samples avg   0.068567  0.068068  0.065612      8607
+
+BERT-Small
+^^^^^^^^^^
+
+.. code:: text
+
+                  precision    recall  f1-score   support
+
+           toxic   0.844565  0.676247  0.751092      3688
+    severe_toxic   0.661538  0.219949  0.330134       391
+         obscene   0.813200  0.672515  0.736196      2052
+          threat   0.592593  0.285714  0.385542       112
+          insult   0.801894  0.580696  0.673600      1896
+   identity_hate   0.664671  0.331343  0.442231       335
+
+       micro avg   0.816442  0.614114  0.700970      8474
+       macro avg   0.729743  0.461077  0.553133      8474
+    weighted avg   0.808535  0.614114  0.693682      8474
+     samples avg   0.061611  0.055738  0.056286      8474
 
 Subjectivity Analysis
 ---------------------
@@ -596,13 +707,15 @@ Trained on 80% of dataset, tested on 20% of dataset. All training
 sessions stored in
 `session/subjectivity <https://github.com/huseinzol05/Malaya/tree/master/session/subjectivity>`__
 
+**Graph based on F1-score.**
+
 .. code:: ipython3
 
     display(Image('subjectivity-accuracy.png', width=500))
 
 
 
-.. image:: models-accuracy_files/models-accuracy_40_0.png
+.. image:: models-accuracy_files/models-accuracy_43_0.png
    :width: 500px
 
 
@@ -617,18 +730,6 @@ Bahdanau
       positive       0.75      0.93      0.83      1018
 
    avg / total       0.82      0.81      0.80      1993
-
-Fast-text-char
-^^^^^^^^^^^^^^
-
-.. code:: text
-
-                precision    recall  f1-score   support
-
-      negative       0.89      0.88      0.88       992
-      positive       0.88      0.90      0.89      1001
-
-   avg / total       0.89      0.89      0.89      1993
 
 Luong
 ^^^^^
@@ -683,17 +784,47 @@ Xgboost
       macro avg       0.85      0.85      0.85      1993
    weighted avg       0.85      0.85      0.85      1993
 
-BERT
-^^^^
+BERT-Multilanguage
+^^^^^^^^^^^^^^^^^^
 
 .. code:: text
 
-                precision    recall  f1-score   support
+                 precision    recall  f1-score   support
 
-      negative       0.94      0.91      0.92       983
-      positive       0.91      0.94      0.93      1010
+       negative   0.958380  0.859738  0.906383       991
+       positive   0.874094  0.963074  0.916429      1002
 
-   avg / total       0.93      0.93      0.93      1993
+       accuracy                       0.911691      1993
+      macro avg   0.916237  0.911406  0.911406      1993
+   weighted avg   0.916005  0.911691  0.911434      1993
+
+BERT-Base
+^^^^^^^^^
+
+.. code:: text
+
+                 precision    recall  f1-score   support
+
+       negative   0.906977  0.936000  0.921260      1000
+       positive   0.933403  0.903323  0.918117       993
+
+       accuracy                       0.919719      1993
+      macro avg   0.920190  0.919662  0.919688      1993
+   weighted avg   0.920143  0.919719  0.919694      1993
+
+BERT-Small
+^^^^^^^^^^
+
+.. code:: text
+
+                 precision    recall  f1-score   support
+
+       negative   0.916185  0.907443  0.911793      1048
+       positive   0.898429  0.907937  0.903158       945
+
+       accuracy                       0.907677      1993
+      macro avg   0.907307  0.907690  0.907475      1993
+   weighted avg   0.907766  0.907677  0.907699      1993
 
 Emotion Analysis
 ----------------
@@ -702,13 +833,15 @@ Trained on 80% of dataset, tested on 20% of dataset. All training
 sessions stored in
 `session/emotion <https://github.com/huseinzol05/Malaya/tree/master/session/emotion>`__
 
+**Graph based on F1-score.**
+
 .. code:: ipython3
 
     display(Image('emotion-accuracy.png', width=500))
 
 
 
-.. image:: models-accuracy_files/models-accuracy_49_0.png
+.. image:: models-accuracy_files/models-accuracy_53_0.png
    :width: 500px
 
 
@@ -727,22 +860,6 @@ Bahdanau
       surprise       0.77      0.47      0.58      9383
 
    avg / total       0.86      0.86      0.85     84104
-
-Fast-text-char
-^^^^^^^^^^^^^^
-
-.. code:: text
-
-                precision    recall  f1-score   support
-
-         anger       0.89      0.90      0.90     15061
-          fear       0.83      0.83      0.83      7552
-           joy       0.87      0.89      0.88     16575
-          love       0.89      0.90      0.90     15635
-       sadness       0.72      0.78      0.75     19640
-      surprise       0.67      0.53      0.59      9592
-
-   avg / total       0.82      0.82      0.82     84055
 
 Luong
 ^^^^^
@@ -808,21 +925,106 @@ Xgboost
 
    avg / total       0.82      0.82      0.82     84102
 
-BERT
-^^^^
+BERT-Multilanguage
+^^^^^^^^^^^^^^^^^^
 
 .. code:: text
 
-                precision    recall  f1-score   support
+                 precision    recall  f1-score   support
 
-         anger       0.94      0.92      0.93     14790
-          fear       0.88      0.87      0.87      7527
-           joy       0.92      0.93      0.92     16669
-          love       0.96      0.91      0.94     15651
-       sadness       0.74      0.95      0.83     20004
-      surprise       0.86      0.44      0.58      9463
+          anger   0.926929  0.921493  0.924203     15005
+           fear   0.895782  0.857369  0.876155      7579
+            joy   0.931087  0.915800  0.923380     16627
+           love   0.959995  0.913981  0.936423     15543
+        sadness   0.739468  0.955388  0.833674     19860
+       surprise   0.841078  0.453952  0.589652      9490
 
-   avg / total       0.88      0.87      0.86     84104
+       accuracy                       0.868449     84104
+      macro avg   0.882390  0.836330  0.847248     84104
+   weighted avg   0.877101  0.868449  0.862842     84104
+
+BERT-Base
+^^^^^^^^^
+
+.. code:: text
+
+                 precision    recall  f1-score   support
+
+          anger   0.947061  0.905025  0.925566     14667
+           fear   0.875731  0.879734  0.877728      7658
+            joy   0.920258  0.925339  0.922791     16662
+           love   0.923129  0.950992  0.936854     15671
+        sadness   0.776396  0.855665  0.814105     19912
+       surprise   0.731197  0.579190  0.646377      9534
+
+       accuracy                       0.866689     84104
+      macro avg   0.862295  0.849324  0.853903     84104
+   weighted avg   0.865921  0.866689  0.864726     84104
+
+Bert-Small
+^^^^^^^^^^
+
+.. code:: text
+
+                 precision    recall  f1-score   support
+
+          anger   0.936102  0.922657  0.929331     14830
+           fear   0.886564  0.860382  0.873277      7585
+            joy   0.944103  0.904864  0.924067     16818
+           love   0.956539  0.919631  0.937722     15628
+        sadness   0.781855  0.847184  0.813210     19867
+       surprise   0.679429  0.685154  0.682279      9376
+
+       accuracy                       0.868615     84104
+      macro avg   0.864099  0.856645  0.859981     84104
+   weighted avg   0.871982  0.868615  0.869811     84104
+
+Relevancy
+---------
+
+Trained on 80% of dataset, tested on 20% of dataset. All training
+sessions stored in
+`session/relevancy <https://github.com/huseinzol05/Malaya/tree/master/session/relevancy>`__
+
+**Graph based on F1-score.**
+
+.. code:: ipython3
+
+    display(Image('relevancy-accuracy.png', width=500))
+
+
+
+.. image:: models-accuracy_files/models-accuracy_63_0.png
+   :width: 500px
+
+
+BERT-Multilanguage
+^^^^^^^^^^^^^^^^^^
+
+.. code:: text
+
+                 precision    recall  f1-score   support
+
+       relevant   0.942377  0.817411  0.875457      5422
+   not relevant   0.732577  0.909152  0.811369      2983
+
+       accuracy                       0.849970      8405
+      macro avg   0.837477  0.863281  0.843413      8405
+   weighted avg   0.867917  0.849970  0.852711      8405
+
+BERT-Base
+^^^^^^^^^
+
+.. code:: text
+
+                 precision    recall  f1-score   support
+
+       relevant   0.925108  0.881827  0.902949      5365
+   not relevant   0.807353  0.874013  0.839362      3040
+
+       accuracy                       0.879001      8405
+      macro avg   0.866230  0.877920  0.871155      8405
+   weighted avg   0.882517  0.879001  0.879950      8405
 
 Similarity
 ----------
@@ -831,54 +1033,20 @@ Trained on 80% of dataset, tested on 20% of dataset. All training
 sessions stored in
 `session/similarity <https://github.com/huseinzol05/Malaya/tree/master/session/similarity>`__
 
+**Graph based on F1-score.**
+
 .. code:: ipython3
 
     display(Image('similarity-accuracy.png', width=500))
 
 
 
-.. image:: models-accuracy_files/models-accuracy_58_0.png
+.. image:: models-accuracy_files/models-accuracy_67_0.png
    :width: 500px
 
 
-bahdanau
-^^^^^^^^
-
-.. code:: text
-
-                precision    recall  f1-score   support
-
-   not similar       0.83      0.83      0.83     31524
-       similar       0.71      0.71      0.71     18476
-
-   avg / total       0.79      0.79      0.79     50000
-
-self-attention
-^^^^^^^^^^^^^^
-
-.. code:: text
-
-                precision    recall  f1-score   support
-
-   not similar       0.81      0.83      0.82     31524
-       similar       0.70      0.67      0.68     18476
-
-   avg / total       0.77      0.77      0.77     50000
-
-dilated-cnn
-^^^^^^^^^^^
-
-.. code:: text
-
-                precision    recall  f1-score   support
-
-   not similar       0.82      0.82      0.82     31524
-       similar       0.69      0.69      0.69     18476
-
-   avg / total       0.77      0.77      0.77     50000
-
-bert
-^^^^
+BERT-Multilanguage
+^^^^^^^^^^^^^^^^^^
 
 .. code:: text
 
@@ -888,6 +1056,20 @@ bert
        similar       0.77      0.76      0.76     30010
 
    avg / total       0.83      0.83      0.83     80767
+
+BERT-Base
+^^^^^^^^^
+
+.. code:: text
+
+                 precision    recall  f1-score   support
+
+    not similar   0.838849  0.783363  0.810157     50767
+        similar   0.670304  0.745333  0.705830     30000
+
+       accuracy                       0.769237     80767
+      macro avg   0.754577  0.764348  0.757994     80767
+   weighted avg   0.776245  0.769237  0.771406     80767
 
 Dependency parsing
 ------------------
@@ -902,7 +1084,7 @@ sessions stored in
 
 
 
-.. image:: models-accuracy_files/models-accuracy_64_0.png
+.. image:: models-accuracy_files/models-accuracy_71_0.png
    :width: 500px
 
 

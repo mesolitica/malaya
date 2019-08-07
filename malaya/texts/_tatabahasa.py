@@ -1036,6 +1036,7 @@ calon_dictionary = {
     'miss': 'Cik',
 }
 stopwords = [
+    'not',
     'ada',
     'inikah',
     'sampai',

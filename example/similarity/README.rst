@@ -7,41 +7,9 @@
 
 .. parsed-literal::
 
-    CPU times: user 12.5 s, sys: 1.77 s, total: 14.3 s
-    Wall time: 19.5 s
+    CPU times: user 4.24 s, sys: 633 ms, total: 4.88 s
+    Wall time: 4.87 s
 
-
-Deep Siamese network
---------------------
-
-Purpose of deep siamese network to study semantic similarity between 2
-strings, near to 1.0 means more similar. Deep Siamese leverage the power
-of word-vector, and we also implemented BERT to study semantic
-similarity and BERT leverage the power of attention!
-
-List deep siamese models
-------------------------
-
-.. code:: ipython3
-
-    malaya.similarity.available_deep_siamese()
-
-
-
-
-.. parsed-literal::
-
-    ['self-attention', 'bahdanau', 'dilated-cnn']
-
-
-
--  ``'self-attention'`` - Fast-text architecture, embedded and logits
-   layers only with self attention.
--  ``'bahdanau'`` - LSTM with bahdanau attention architecture.
--  ``'dilated-cnn'`` - Pyramid Dilated CNN architecture.
-
-Load deep siamese models
-------------------------
 
 .. code:: ipython3
 
@@ -50,107 +18,11 @@ Load deep siamese models
     string3 = 'kerajaan perlu kisah isu iklim, pemuda mogok lapar'
     string4 = 'Kerajaan dicadang tubuh jawatankuasa khas tangani isu alam sekitar'
 
-Load bahdanau model
-^^^^^^^^^^^^^^^^^^^
-
-.. code:: ipython3
-
-    model = malaya.similarity.deep_siamese('bahdanau')
-
-Calculate similarity between 2 strings
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-``predict`` need to give 2 strings, left and right string
-
-.. code:: ipython3
-
-    model.predict(string1, string2)
-
-
-
-
-.. parsed-literal::
-
-    0.4267301
-
-
-
-.. code:: ipython3
-
-    model.predict(string1, string3)
-
-
-
-
-.. parsed-literal::
-
-    0.28711933
-
-
-
-Calculate similarity more than 2 strings
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-``predict_batch`` need to give 2 lists of strings, left and right
-strings
-
-.. code:: ipython3
-
-    model.predict_batch([string1, string2], [string3, string4])
-
-
-
-
-.. parsed-literal::
-
-    array([0.39504164, 0.33375728], dtype=float32)
-
-
-
-Load self-attention model
-^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. code:: ipython3
-
-    model = malaya.similarity.deep_siamese('self-attention')
-
-.. code:: ipython3
-
-    model.predict_batch([string1, string2], [string3, string4])
-
-
-
-
-.. parsed-literal::
-
-    array([0.08130383, 0.09907728], dtype=float32)
-
-
-
-Load dilated-cnn model
-^^^^^^^^^^^^^^^^^^^^^^
-
-.. code:: ipython3
-
-    model = malaya.similarity.deep_siamese('dilated-cnn')
-
-.. code:: ipython3
-
-    model.predict_batch([string1, string2], [string3, string4])
-
-
-
-
-.. parsed-literal::
-
-    array([0.1886251 , 0.00937402], dtype=float32)
-
-
-
 Calculate similarity using doc2vec
 ----------------------------------
 
-We need to load word vector provided by Malaya.
+We can use any word vector interface provided by Malaya to use doc2vec
+similarity interface.
 
 Important parameters, 1. ``aggregation``, aggregation function to
 accumulate word vectors. Default is ``mean``.
@@ -178,75 +50,146 @@ wikipedia much more accurate.
 
 .. code:: ipython3
 
-    embedded_news = malaya.word2vec.load_news(64)
+    embedded_news = malaya.word2vec.load_news(256)
     w2v_wiki = malaya.word2vec.word2vec(embedded_news['nce_weights'],
                                         embedded_news['dictionary'])
+    doc2vec = malaya.similarity.doc2vec(w2v_wiki)
+
+predict for 2 strings
+^^^^^^^^^^^^^^^^^^^^^
 
 .. code:: ipython3
 
-    malaya.similarity.doc2vec(w2v_wiki, string1, string2)
+    doc2vec.predict(string1, string2, aggregation = 'mean', soft = False)
 
 
 
 
 .. parsed-literal::
 
-    0.9181415736675262
+    0.8368814
 
 
+
+predict batch of strings
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code:: ipython3
 
-    malaya.similarity.doc2vec(w2v_wiki, string1, string4)
+    doc2vec.predict_batch([string1, string2], [string3, string4])
 
 
 
 
 .. parsed-literal::
 
-    0.9550771713256836
+    array([0.9507282 , 0.88227606], dtype=float32)
 
 
+
+visualize tree plot
+^^^^^^^^^^^^^^^^^^^
 
 .. code:: ipython3
 
-    malaya.similarity.doc2vec(w2v_wiki, string1, string4, similarity = 'euclidean')
-
+    doc2vec.tree_plot([string1, string2, string3, string4])
 
 
 
 .. parsed-literal::
 
-    0.4642694249990522
+    <Figure size 504x504 with 0 Axes>
 
+
+
+.. image:: load-similarity_files/load-similarity_10_1.png
 
 
 Different similarity function different percentage.
 
 **So you can try use fast-text and elmo to do the similarity study.**
 
-Calculate similarity using summarizer
--------------------------------------
+Calculate similarity using deep encoder
+---------------------------------------
 
-We can use extractive summarization model
-``malaya.summarize.deep_extractive()`` to get strings embedded and
-calculate similarity between the vectors.
+We can use any encoder models provided by Malaya to use encoder
+similarity interface, example, BERT, XLNET, and skip-thought. Again,
+these encoder models not trained to do similarity classification, it
+just encode the strings into vector representation.
+
+Important parameters,
+
+1. ``similarity`` distance function to calculate similarity. Default is
+   ``cosine``.
+
+   -  ``'cosine'`` - cosine similarity.
+   -  ``'euclidean'`` - euclidean similarity.
+   -  ``'manhattan'`` - manhattan similarity.
+
+using xlnet
+^^^^^^^^^^^
 
 .. code:: ipython3
 
-    deep_summary = malaya.summarize.deep_extractive(model = 'skip-thought')
+    xlnet = malaya.xlnet.xlnet(model = 'small')
+    encoder = malaya.similarity.encoder(xlnet)
+
+
+.. parsed-literal::
+
+    INFO:tensorflow:memory input None
+    INFO:tensorflow:Use float type <dtype: 'float32'>
+    INFO:tensorflow:Restoring parameters from /Users/huseinzol/Malaya/xlnet-model/small/xlnet-bahasa-small/model.ckpt
+
+
+predict for 2 strings
+^^^^^^^^^^^^^^^^^^^^^
 
 .. code:: ipython3
 
-    malaya.similarity.summarizer(deep_summary, string1, string3)
+    encoder.predict(string1, string2)
 
 
 
 
 .. parsed-literal::
 
-    0.8722701370716095
+    0.9589016
 
+
+
+predict batch of strings
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    encoder.predict_batch([string1, string2], [string3, string4])
+
+
+
+
+.. parsed-literal::
+
+    array([0.97005975, 0.9447437 ], dtype=float32)
+
+
+
+visualize tree plot
+^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    encoder.tree_plot([string1, string2, string3, string4])
+
+
+
+.. parsed-literal::
+
+    <Figure size 504x504 with 0 Axes>
+
+
+
+.. image:: load-similarity_files/load-similarity_21_1.png
 
 
 BERT model
@@ -254,13 +197,36 @@ BERT model
 
 BERT is the best similarity model in term of accuracy, you can check
 similarity accuracy here,
-https://malaya.readthedocs.io/en/latest/Accuracy.html#similarity. But
-warning, the model size is 700MB! Make sure you have enough resources to
-use BERT, and installed bert-tensorflow first,
+https://malaya.readthedocs.io/en/latest/Accuracy.html#similarity.
+Question is, why BERT?
+
+1. Transformer model learn the context of a word based on all of its
+   surroundings (live string), bidirectionally. So it much better
+   understand left and right hand side relationships.
+2. Because of transformer able to leverage to context during live
+   string, we dont need to capture available words in this world,
+   instead capture substrings and build the attention after that. BERT
+   will never have Out-Of-Vocab problem.
+
+List available BERT models
+--------------------------
 
 .. code:: ipython3
 
-    model = malaya.similarity.bert()
+    malaya.similarity.available_bert_model()
+
+
+
+
+.. parsed-literal::
+
+    ['multilanguage', 'base', 'small']
+
+
+
+.. code:: ipython3
+
+    model = malaya.similarity.bert(model = 'base')
 
 .. code:: ipython3
 
@@ -271,7 +237,7 @@ use BERT, and installed bert-tensorflow first,
 
 .. parsed-literal::
 
-    0.97767043
+    0.6755152
 
 
 
@@ -284,588 +250,8 @@ use BERT, and installed bert-tensorflow first,
 
 .. parsed-literal::
 
-    array([0.9253927, 0.0317315], dtype=float32)
+    array([0.03622618, 0.03146545], dtype=float32)
 
 
 
 **BERT is the best!**
-
-Topics similarity
------------------
-
-If you are interested in multiple topics searching inside a string when
-giving set of topics to supervised, Malaya provided some interface and
-topics related to political landscape in Malaysia
-
-.. code:: ipython3
-
-    news = 'najib razak dan mahathir mengalami masalah air di kemamam terengganu'
-    second_news = 'ikat penyedia perkhidmatan jalur lebar Telekom Malaysia (TM) perlu mencari jalan penyelesaian bagi meningkatkan akses capaian Internet ke seluruh negara, kata Menteri Komunikasi dan Multimedia, Gobind Singh Deo. Beliau berkata menjadi dasar kerajaan untuk membekalkan akses Internet jalur lebar kepada semua dan memberi penekanan kepada kualiti perkhidmatan yang terbaik. "Dasar kerajaan untuk bekalkan akses kepada semua bukan sekadar pembekalan sahaja tetapi beri penekanan kepada kualiti perkhidmatan yang baik dan dapat bersaing dengan negara lain pada tahap antarabangsa," kata Gobind Singh menerusi catatan di laman rasmi Twitter beliau, malam tadi. Beliau berkata demikian sebagai respons terhadap aduan beberapa pengguna Twitter berhubung akses Internet yang masih tidak stabil serta harga yang tidak berpatutan di beberapa lokasi di seluruh negara.'
-
-Topics provided by malaya
--------------------------
-
-Topics
-^^^^^^
-
-.. code:: ipython3
-
-    malaya.topic.topic['sosial']
-
-
-
-
-.. parsed-literal::
-
-    ['sosial', 'kehidupan', 'taraf hidup', 'sosiologi', 'keusahawan', 'masyarakat']
-
-
-
-Influencer
-^^^^^^^^^^
-
-.. code:: ipython3
-
-    malaya.topic.influencer['mahathir']
-
-
-
-
-.. parsed-literal::
-
-    ['tun mahathir',
-     'madey',
-     'dr mahathir',
-     'tun m',
-     'mahathir',
-     'madir',
-     'dr m',
-     'mahathir muhamad']
-
-
-
-location
-^^^^^^^^
-
-.. code:: ipython3
-
-    malaya.topic.location[0]
-
-
-
-
-.. parsed-literal::
-
-    {'negeri': 'JOHOR', 'parlimen': 'SEGAMAT', 'dun': 'BULOH KASAP'}
-
-
-
-wakil rakyat
-^^^^^^^^^^^^
-
-.. code:: ipython3
-
-    malaya.topic.calon[0]
-
-
-
-
-.. parsed-literal::
-
-    {'KodN': 1,
-     'KodParlimen': 1,
-     'KodKawasan': 1,
-     'JenisKawasan': 'PARLIMEN',
-     'susunan': 2,
-     'NamaCalon': 'DATUK ZAHIDI BIN ZAINUL ABIDIN',
-     'parti': 'BN'}
-
-
-
-Train fuzzy text similarity
----------------------------
-
-I want to train topics related when given a string. You can give any
-corpus, the format is,
-
-.. code:: python
-
-   {'left':['right1','right2']}
-
-.. code:: ipython3
-
-    fuzzy = malaya.similarity.fuzzy(malaya.topic.topic)
-
-.. code:: ipython3
-
-    fuzzy.get_similarity(news,fuzzy_ratio = 60)
-
-
-
-
-.. parsed-literal::
-
-    ['tan sri mokhzani mahathir', 'masalah air', 'mahathir', 'najib razak']
-
-
-
-.. code:: ipython3
-
-    fuzzy.get_similarity(second_news,fuzzy_ratio = 90)
-
-
-
-
-.. parsed-literal::
-
-    ['pendidikan',
-     'sosial media',
-     'politik',
-     'kerajaan',
-     'telekom malaysia',
-     'twitter',
-     'teknologi',
-     'internet']
-
-
-
-Train bag-of-word text similarity
----------------------------------
-
-I want to train topics related when given a string. You can give any
-corpus, the format is,
-
-.. code:: python
-
-   {'left':['right1','right2']}
-
-bag-of-word text similarity fitted by using character wised n-gram.
-
-``vectorizer`` supported ``['tfidf','count','skip-gram']``.
-
-.. code:: ipython3
-
-    tfidf = malaya.similarity.bow(malaya.topic.topic,vectorizer = 'tfidf')
-
-.. code:: ipython3
-
-    tfidf.get_similarity(second_news)
-
-
-
-
-.. parsed-literal::
-
-    ['perkhidmatan awam', 'kkmm', 'universiti islam antarabangsa', 'twitter']
-
-
-
-.. code:: ipython3
-
-    count = malaya.similarity.bow(malaya.topic.topic,vectorizer = 'count')
-
-.. code:: ipython3
-
-    count.get_similarity(second_news)
-
-
-
-
-.. parsed-literal::
-
-    ['timbalan perdana menteri',
-     'parti islam semalaysia',
-     'pendidikan',
-     '1malaysia',
-     'gaji menteri',
-     'mic',
-     'bebas tahanan',
-     'twitter',
-     'infrastruktur',
-     'suruhanjaya pilihan raya malaysia',
-     'perkasa',
-     'pakatan harapan',
-     'kerajaan',
-     'datuk seri ti lian ker',
-     'tentera malaysia',
-     'gerakan',
-     'universiti islam antarabangsa',
-     'ptptn',
-     'rela',
-     'ahli dewan undangan negeri',
-     'teknologi',
-     'politik',
-     'telekom malaysia',
-     'kkmm',
-     'kementerian dalam negeri',
-     'perkhidmatan awam',
-     'bursa malaysia',
-     'parti pribumi bersatu malaysia',
-     'ppbm',
-     'hutang negara',
-     'menyiasat skandal',
-     'majlis pakatan harapan',
-     'perdana menteri',
-     'menteri pertahanan']
-
-
-
-.. code:: ipython3
-
-    skip = malaya.similarity.bow(malaya.topic.topic,vectorizer = 'skip-gram')
-
-.. code:: ipython3
-
-    skip.get_similarity(second_news)
-
-
-
-
-.. parsed-literal::
-
-    []
-
-
-
-Train siamese network text similarity
--------------------------------------
-
-All parameters supported,
-
-.. code:: python
-
-       """
-       Train a deep siamese network for text similarity
-
-       Parameters
-       ----------
-       dictionary: dict
-           format {'left':['right']}
-       epoch: int, (default=5)
-           iteration numbers
-       batch_size: int, (default=32)
-           batch size for every feed, batch size must <= size of corpus
-       embedding_size: int, (default=256)
-           vector size representation for a word
-       output_size: int, (default=100)
-           encoder output size, bigger means more vector definition
-       maxlen: int, (default=100)
-           max length of a string to be train
-       ngram: tuple, (default=(1,4))
-           n-grams size to train a corpus
-       num_layers: int, (default=100)
-           number of bidirectional rnn layers
-
-       Returns
-       -------
-       _DEEP_SIAMESE_SIMILARITY: malaya.similarity._DEEP_SIAMESE_SIMILARITY class
-       """
-
-.. code:: ipython3
-
-    siamese = malaya.similarity.deep_siamese(malaya.topic.topic,epoch=3)
-    siamese.get_similarity(news)
-
-
-.. parsed-literal::
-
-    minibatch loop: 100%|██████████| 137/137 [01:42<00:00,  1.53it/s, accuracy=0.5, cost=0.129]  
-    minibatch loop: 100%|██████████| 137/137 [01:40<00:00,  1.52it/s, accuracy=0.833, cost=0.108]
-    minibatch loop: 100%|██████████| 137/137 [01:40<00:00,  1.54it/s, accuracy=1, cost=0.0514]    
-
-
-
-
-.. parsed-literal::
-
-    ['parti islam semalaysia',
-     'pusat transformasi bandar',
-     'malaysia baru',
-     'mic',
-     'bridge city park',
-     'suruhanjaya pilihan raya malaysia',
-     'kotak undi',
-     'lgbt',
-     'tentera malaysia',
-     'dewan rakyat',
-     'isu kemiskinan',
-     'undi rosak',
-     'produk berbahaya',
-     'politik',
-     'telekom malaysia',
-     'bank negara',
-     'kertas undi',
-     'malay mail',
-     'gaji minimum',
-     'donald trump',
-     'najib razak',
-     'bank malaysia',
-     'humanoid',
-     'perkhidmatan awam',
-     'rosmah mansur',
-     'isu dadah',
-     'stock market malaysia',
-     'bursa malaysia',
-     'pusat daerah mangundi',
-     'undi pos',
-     'universiti teknologi malaysia',
-     'hutang negara',
-     'makro-ekonomi',
-     'rtm',
-     'pengangkutan awam']
-
-
-
-You can speed up your training iteration by using
-`malaya-gpu <https://pypi.org/project/malaya-gpu/>`__
-
-After you trained, actually you save that model by using method
-``save_model``. Just provide directory you want to save.
-
-.. code:: ipython3
-
-    siamese.save_model('siamese')
-
-.. code:: ipython3
-
-    !ls siamese
-
-
-.. parsed-literal::
-
-    checkpoint                     model.ckpt.meta
-    model.ckpt.data-00000-of-00001 model.json
-    model.ckpt.index
-
-
-You can load your model but need to use interface provided by malaya,
-``malaya.similarity.load_siamese``
-
-.. code:: ipython3
-
-    siamese = malaya.similarity.load_siamese('siamese')
-
-
-.. parsed-literal::
-
-    INFO:tensorflow:Restoring parameters from siamese/model.ckpt
-
-
-.. code:: ipython3
-
-    siamese.get_similarity(news)
-
-
-
-
-.. parsed-literal::
-
-    ['pilihan raya umum ke-14',
-     'parti islam semalaysia',
-     'malaysia baru',
-     'pengedar dadah',
-     'suruhanjaya pilihan raya malaysia',
-     'kotak undi',
-     'lgbt',
-     'makanan',
-     'tentera malaysia',
-     'gerakan',
-     'isu kemiskinan',
-     'undi rosak',
-     'produk berbahaya',
-     'bloomberg',
-     'telekom malaysia',
-     'bank negara',
-     'kertas undi',
-     'malay mail',
-     'gaji minimum',
-     '1mdb',
-     'najib razak',
-     'bank malaysia',
-     'humanoid',
-     'perkhidmatan awam',
-     'rosmah mansur',
-     'isu dadah',
-     'stock market malaysia',
-     'bursa malaysia',
-     'undi pos',
-     'universiti teknologi malaysia',
-     'hutang negara',
-     'makro-ekonomi',
-     'rtm',
-     'pengangkutan awam']
-
-
-
-Train skipthought text similarity
----------------------------------
-
-All parameters supported,
-
-.. code:: python
-
-       """
-       Train a deep skip-thought network for text similarity
-
-       Parameters
-       ----------
-       dictionary: dict
-           format {'left':['right']}
-       epoch: int, (default=5)
-           iteration numbers
-       batch_size: int, (default=32)
-           batch size for every feed, batch size must <= size of corpus
-       embedding_size: int, (default=256)
-           vector size representation for a word
-       maxlen: int, (default=100)
-           max length of a string to be train
-       ngram: tuple, (default=(1,4))
-           n-grams size to train a corpus
-
-       Returns
-       -------
-       _DEEP_SIMILARITY: malaya.similarity._DEEP_SIMILARITY class
-       """
-
-.. code:: ipython3
-
-    skipthought = malaya.similarity.deep_skipthought(malaya.topic.topic,epoch=3)
-    skipthought.get_similarity(news)
-
-
-.. parsed-literal::
-
-    minibatch loop: 100%|██████████| 137/137 [01:20<00:00,  1.93it/s, cost=3.4] 
-    minibatch loop: 100%|██████████| 137/137 [01:17<00:00,  1.91it/s, cost=0.793]
-    minibatch loop: 100%|██████████| 137/137 [01:17<00:00,  1.90it/s, cost=0.342] 
-
-
-
-
-.. parsed-literal::
-
-    ['pilihan raya umum ke-14',
-     'pusat transformasi bandar',
-     'hari raya',
-     'nga kor ming',
-     'programming language',
-     '#fakenews',
-     'mikro-ekonomi',
-     'datuk seri azmin ali',
-     'recep tayyip erdogan',
-     'k-pop',
-     'malaysia-indonesia',
-     'tengku razaleigh hamzah',
-     'anthony loke siew fook',
-     'lee kuan yew',
-     'rais yatim',
-     'undi rosak',
-     'kkmm',
-     'inisiatif peduli rakyat',
-     'tunku ismail idris',
-     'pusat daerah mangundi',
-     'makro-ekonomi',
-     'new straits times']
-
-
-
-You can speed up your training iteration by using
-`malaya-gpu <https://pypi.org/project/malaya-gpu/>`__
-
-After you trained, actually you save that model by using method
-``save_model``. Just provide directory you want to save.
-
-.. code:: ipython3
-
-    skipthought.save_model('skipthought')
-
-.. code:: ipython3
-
-    !ls skipthought
-
-
-.. parsed-literal::
-
-    checkpoint                     model.ckpt.meta
-    model.ckpt.data-00000-of-00001 model.json
-    model.ckpt.index
-
-
-You can load your model but need to use interface provided by malaya,
-``malaya.similarity.load_skipthought``
-
-.. code:: ipython3
-
-    skipthought = malaya.similarity.load_skipthought('skipthought')
-
-
-.. parsed-literal::
-
-    INFO:tensorflow:Restoring parameters from skipthought/model.ckpt
-
-
-.. code:: ipython3
-
-    skipthought.get_similarity(news)
-
-
-
-
-.. parsed-literal::
-
-    ['pilihan raya umum ke-14',
-     'pusat transformasi bandar',
-     'hari raya',
-     'nga kor ming',
-     'programming language',
-     '#fakenews',
-     'mikro-ekonomi',
-     'datuk seri azmin ali',
-     'recep tayyip erdogan',
-     'k-pop',
-     'malaysia-indonesia',
-     'tengku razaleigh hamzah',
-     'anthony loke siew fook',
-     'lee kuan yew',
-     'rais yatim',
-     'undi rosak',
-     'kkmm',
-     'inisiatif peduli rakyat',
-     'tunku ismail idris',
-     'pusat daerah mangundi',
-     'makro-ekonomi',
-     'new straits times']
-
-
-
-Using fuzzy for location
-------------------------
-
-.. code:: ipython3
-
-    malaya.similarity.fuzzy_location('saya suka makan sate di sungai petani')
-
-
-
-
-.. parsed-literal::
-
-    {'negeri': [], 'parlimen': ['sungai petani'], 'dun': []}
-
-
-
-Check location from a string
-----------------------------
-
-.. code:: ipython3
-
-    malaya.similarity.is_location('sungai petani')
-
-
-
-
-.. parsed-literal::
-
-    True
-
-

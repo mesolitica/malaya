@@ -86,12 +86,7 @@ class fast_text:
         )
 
     def tree_plot(
-        self,
-        labels,
-        notebook_mode = False,
-        figsize = (7, 7),
-        annotate = True,
-        figname = 'fig.png',
+        self, labels, visualize = True, figsize = (7, 7), annotate = True
     ):
         """
         plot a tree plot based on output from calculator / n_closest / analogy.
@@ -100,25 +95,16 @@ class fast_text:
         ----------
         labels : list
             output from calculator / n_closest / analogy.
-        notebook_mode : bool
-            if True, it will render plt.show, else plt.savefig.
+        visualize : bool
+            if True, it will render plt.show, else return data.
         figsize : tuple, (default=(7, 7))
             figure size for plot.
-        figname : str, (default='fig.png')
 
         Returns
         -------
         list_dictionaries: list of results
         """
-        try:
-            import matplotlib.pyplot as plt
-            import seaborn as sns
 
-            sns.set()
-        except:
-            raise Exception(
-                'matplotlib and seaborn not installed. Please install it and try again.'
-            )
         idx = [e[0] if isinstance(e, list) else e for e in labels]
         embed = self.to_vector(idx)
         embed = embed.dot(embed.T)
@@ -131,6 +117,20 @@ class fast_text:
                 else label
             )
             labelled.append(label)
+
+        if not visualize:
+            return embed, labelled, labelled
+
+        try:
+            import matplotlib.pyplot as plt
+            import seaborn as sns
+
+            sns.set()
+        except:
+            raise Exception(
+                'matplotlib and seaborn not installed. Please install it and try again.'
+            )
+
         plt.figure(figsize = figsize)
         g = sns.clustermap(
             embed,
@@ -139,18 +139,14 @@ class fast_text:
             yticklabels = labelled,
             annot = annotate,
         )
-        if notebook_mode:
-            plt.show()
-        else:
-            plt.savefig(figname, bbox_inches = 'tight')
+        plt.show()
 
     def scatter_plot(
         self,
         labels,
         centre = None,
-        notebook_mode = False,
+        visualize = True,
         figsize = (7, 7),
-        figname = 'fig.png',
         handoff = 5e-5,
     ):
         """
@@ -162,11 +158,10 @@ class fast_text:
             output from calculator / n_closest / analogy.
         centre : str, (default=None)
             centre label, if a str, it will annotate in a red color.
-        notebook_mode : bool
-            if True, it will render plt.show, else plt.savefig.
+        visualize : bool
+            if True, it will render plt.show, else return data.
         figsize : tuple, (default=(7, 7))
             figure size for plot
-        figname : str, (default='fig.png').
 
         Returns
         -------
@@ -174,21 +169,11 @@ class fast_text:
         """
         if not isinstance(labels, list):
             raise ValueError('input must be a list')
-        if not isinstance(notebook_mode, bool):
-            raise ValueError('notebook_mode must be a boolean')
+        if not isinstance(visualize, bool):
+            raise ValueError('visualize must be a boolean')
         if not isinstance(figsize, tuple):
             raise ValueError('figsize must be a tuple')
-        if not isinstance(figname, str):
-            raise ValueError('figname must be a string')
-        try:
-            import matplotlib.pyplot as plt
-            import seaborn as sns
 
-            sns.set()
-        except:
-            raise Exception(
-                'matplotlib and seaborn not installed. Please install it and try again.'
-            )
         idx = [e[0] if isinstance(e, list) else e for e in labels]
         if centre:
             if not isinstance(centre, str):
@@ -198,6 +183,20 @@ class fast_text:
         tsne = TSNE(n_components = 2, random_state = 0).fit_transform(
             embed_matrix
         )
+
+        if not visualize:
+            return tsne
+
+        try:
+            import matplotlib.pyplot as plt
+            import seaborn as sns
+
+            sns.set()
+        except:
+            raise Exception(
+                'matplotlib and seaborn not installed. Please install it and try again.'
+            )
+
         plt.figure(figsize = figsize)
         plt.scatter(tsne[:, 0], tsne[:, 1])
         for label, x, y in zip(labels, tsne[:, 0], tsne[:, 1]):
@@ -230,10 +229,7 @@ class fast_text:
         )
         plt.xticks([])
         plt.yticks([])
-        if notebook_mode:
-            plt.show()
-        else:
-            plt.savefig(figname, bbox_inches = 'tight')
+        plt.show()
 
     def calculator(
         self,
