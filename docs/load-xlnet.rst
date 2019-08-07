@@ -28,7 +28,7 @@ Why XLNET
    BERT, you can read more about the benchmark
    `here <https://github.com/zihangdai/xlnet#results-on-reading-comprehension>`__.
 
-.. code:: ipython3
+.. code:: python
 
     %%time
     import malaya
@@ -43,7 +43,7 @@ Why XLNET
 list XLNET-Bahasa available
 ---------------------------
 
-.. code:: ipython3
+.. code:: python
 
     malaya.xlnet.available_xlnet_model()
 
@@ -64,7 +64,7 @@ list XLNET-Bahasa available
 load XLNET-Bahasa
 -----------------
 
-.. code:: ipython3
+.. code:: python
 
     %%time
     model = malaya.xlnet.xlnet(model = 'base')
@@ -74,17 +74,17 @@ load XLNET-Bahasa
 
     WARNING: Logging before flag parsing goes to stderr.
     W0806 19:02:47.416335 4414723520 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_xlnet/xlnet.py:70: The name tf.gfile.Open is deprecated. Please use tf.io.gfile.GFile instead.
-    
+
     W0806 19:02:47.421904 4414723520 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/xlnet.py:62: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
-    
+
     W0806 19:02:47.439782 4414723520 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_xlnet/xlnet.py:253: The name tf.variable_scope is deprecated. Please use tf.compat.v1.variable_scope instead.
-    
+
     W0806 19:02:47.441549 4414723520 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_xlnet/xlnet.py:253: The name tf.AUTO_REUSE is deprecated. Please use tf.compat.v1.AUTO_REUSE instead.
-    
+
     W0806 19:02:47.449923 4414723520 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_xlnet/modeling.py:686: The name tf.logging.info is deprecated. Please use tf.compat.v1.logging.info instead.
-    
+
     W0806 19:02:47.453914 4414723520 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_xlnet/modeling.py:693: The name tf.get_variable is deprecated. Please use tf.compat.v1.get_variable instead.
-    
+
     W0806 19:02:47.568154 4414723520 deprecation.py:323] From /Users/huseinzol/Documents/Malaya/malaya/_xlnet/modeling.py:797: dropout (from tensorflow.python.layers.core) is deprecated and will be removed in a future version.
     Instructions for updating:
     Use keras.layers.dropout instead.
@@ -92,9 +92,9 @@ load XLNET-Bahasa
     Instructions for updating:
     Use keras.layers.dense instead.
     W0806 19:02:59.735135 4414723520 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/xlnet.py:75: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
-    
+
     W0806 19:03:01.226956 4414723520 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/xlnet.py:81: The name tf.train.Saver is deprecated. Please use tf.compat.v1.train.Saver instead.
-    
+
     W0806 19:03:01.715428 4414723520 deprecation.py:323] From /usr/local/lib/python3.6/site-packages/tensorflow/python/training/saver.py:1276: checkpoint_exists (from tensorflow.python.training.checkpoint_management) is deprecated and will be removed in a future version.
     Instructions for updating:
     Use standard file APIs to check for files with this prefix.
@@ -106,7 +106,7 @@ load XLNET-Bahasa
     Wall time: 17.2 s
 
 
-.. code:: ipython3
+.. code:: python
 
     strings = ['Kerajaan galakkan rakyat naik public transport tapi parking kat lrt ada 15. Reserved utk staff rapid je dah berpuluh. Park kereta tepi jalan kang kene saman dgn majlis perbandaran. Kereta pulak senang kene curi. Cctv pun tak ada. Naik grab dah 5-10 ringgit tiap hari. Gampang juga',
                'Alaa Tun lek ahhh npe muka masam cmni kn agong kata usaha kerajaan terdahulu sejak selepas merdeka',
@@ -118,7 +118,7 @@ keyword.
 Vectorization
 ^^^^^^^^^^^^^
 
-.. code:: ipython3
+.. code:: python
 
     v = model.vectorize(strings)
     v.shape
@@ -148,7 +148,7 @@ available for attention,
 You can give list of strings or a string to get the attention, in this
 documentation, I just want to use a string.
 
-.. code:: ipython3
+.. code:: python
 
     model.attention(strings[1], method = 'last')
 
@@ -177,7 +177,7 @@ documentation, I just want to use a string.
 
 
 
-.. code:: ipython3
+.. code:: python
 
     model.attention(strings[1], method = 'first')
 
@@ -206,7 +206,7 @@ documentation, I just want to use a string.
 
 
 
-.. code:: ipython3
+.. code:: python
 
     model.attention(strings[1], method = 'mean')
 
@@ -232,5 +232,3 @@ documentation, I just want to use a string.
       ('sejak', 0.06337146),
       ('selepas', 0.05514585),
       ('merdeka', 0.054879967)]]
-
-
