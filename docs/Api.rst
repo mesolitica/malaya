@@ -15,6 +15,9 @@ malaya.bert
 .. automodule:: malaya.bert
     :members:
 
+.. autoclass:: malaya.bert._Model()
+    :members:
+
 malaya.cluster
 -----------------
 
@@ -151,10 +154,19 @@ malaya.summarize
 .. autoclass:: malaya.summarize._DEEP_SUMMARIZER()
     :members:
 
+.. autoclass:: malaya.summarize._DEEP_SKIPTHOUGHT()
+    :members:
+
 malaya.similarity
 -------------------------
 
 .. automodule:: malaya.similarity
+    :members:
+
+.. autoclass:: malaya.similarity._VECTORIZER_SIMILARITY()
+    :members:
+
+.. autoclass:: malaya.similarity._DOC2VEC_SIMILARITY()
     :members:
 
 malaya.topic_model
@@ -197,4 +209,46 @@ malaya.xlnet
 -----------------
 
 .. automodule:: malaya.xlnet
+    :members:
+
+.. autoclass:: malaya.xlnet._Model()
+    :members:
+
+malaya._models._tensorflow_model
+----------------------------------
+
+.. autoclass:: malaya._models._tensorflow_model._SPARSE_SOFTMAX_MODEL()
+    :members:
+
+.. autoclass:: malaya._models._tensorflow_model.DEPENDENCY()
+    :members:
+
+.. autoclass:: malaya._models._tensorflow_model.TAGGING()
+    :members:
+
+.. autoclass:: malaya._models._tensorflow_model.BINARY_SOFTMAX()
+    :members:
+
+.. autoclass:: malaya._models._tensorflow_model.MULTICLASS_SOFTMAX()
+    :members:
+
+.. autoclass:: malaya._models._tensorflow_model.SIGMOID()
+    :members:
+
+malaya._models._bert_model
+----------------------------------
+
+.. autoclass:: malaya._models._bert_model.BINARY_BERT()
+    :members:
+
+.. autoclass:: malaya._models._bert_model.MULTICLASS_BERT()
+    :members:
+
+.. autoclass:: malaya._models._bert_model.SIGMOID_BERT()
+    :members:
+
+.. autoclass:: malaya._models._bert_model.SIAMESE_BERT()
+    :members:
+
+.. autoclass:: malaya._models._bert_model.TAGGING_BERT()
     :members:

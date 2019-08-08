@@ -121,7 +121,7 @@ Predict batch of strings
 
 Problem with ``predict_batch``, short string need to pad with empty
 token to make sure the length is same with longer text. This can lead to
-overfeat, so, beware.
+overfit, so, beware.
 
 Open relevancy visualization dashboard
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
