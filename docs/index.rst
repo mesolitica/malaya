@@ -17,7 +17,6 @@ Contents:
 
    Installation
    Dataset
-   Contribution
    Crawler
    Translator-malaya
    Accuracy
