@@ -1,13 +1,12 @@
 # XLNET-Bahasa
 
-**_Last update 5-July-2019, release new pretrained checkpoint._**
-
 Thanks to [zihangdai](https://github.com/zihangdai) for opensourcing XLNET, https://github.com/zihangdai/xlnet
 
 ## Table of contents
   * [Objective](https://github.com/huseinzol05/Malaya/tree/master/xlnet#objective)
   * [Acknowledgement](https://github.com/huseinzol05/Malaya/tree/master/xlnet#acknowledgement)
   * [How-to](https://github.com/huseinzol05/Malaya/tree/master/xlnet#how-to)
+    * [Multigpus](#multigpus)
   * [Download](https://github.com/huseinzol05/Malaya/tree/master/xlnet#download)
   * [Comparison using Subjectivity Dataset](https://github.com/huseinzol05/Malaya/tree/master/xlnet#comparison-using-subjectivity-dataset)
   * [Comparison using Emotion Dataset](https://github.com/huseinzol05/Malaya/tree/master/xlnet#comparison-using-emotion-dataset)
@@ -19,7 +18,7 @@ Thanks to [zihangdai](https://github.com/zihangdai) for opensourcing XLNET, http
 
 1. There is no multilanguage implementation of XLNET, and obviously no Bahasa Malaysia implemented. So we decided to train XLNET from scratch and finetune using available dataset we have. [Dataset we use for pretraining](https://github.com/huseinzol05/Malaya-Dataset#dumping).
 
-2. Provide **SMALL** and **BASE** XLNet for Bahasa. Sorry we cannot provide **LARGE** size, we got hardware limitation.
+2. Provide **SMALL**, **BASE** and **LARGE** XLNet for Bahasa.
 
 ## Acknowledgement
 
@@ -94,7 +93,7 @@ spm_train \
 ```bash
 mkdir save-location
 python3 data_utils.py \
-  --bsz_per_host=4 \
+  --bsz_per_host=20 \
   --seq_len=512 \
   --reuse_len=256 \
   --input_glob=test.txt \
@@ -116,7 +115,7 @@ python3 data_utils.py \
 python3 train_gpu.py \
   --corpus_info_path=save-location/corpus_info.json \
   --record_info_dir=save-location/tfrecords \
-  --train_batch_size=4 \
+  --train_batch_size=20 \
   --seq_len=512 \
   --reuse_len=256 \
   --mem_len=384 \
@@ -134,7 +133,8 @@ python3 train_gpu.py \
   --model_dir=output-model \
   --uncased=False \
   --num_core_per_host=1 \
-  --train_steps=2000000  --iterations=10 --learning_rate=5e-5
+  --train_steps=2000000  --iterations=10 --learning_rate=5e-5 \
+  --num_gpu_cores=2
 ```
 
 **SMALL**,
@@ -163,17 +163,28 @@ python3 train_gpu.py \
   --train_steps=700000  --iterations=10 --learning_rate=5e-5
 ```
 
+#### Multigpus
+
+I really not suggest to use multi-gpus from original XL-NET implementation, not optimized and can lead to huge memory leak. Here I created MirroredStrategy to pretrain using multi-gpus.
+
+1. Run [multigpu_pretraining.py](multigpu_pretraining.py),
+
+Run multigpus using MirroredStrategy,
+```bash
+python3 multigpu_pretraining.py   --corpus_info_path=save-location/corpus_info.json   --record_info_dir=save-location/tfrecords   --train_batch_size=40   --seq_len=512   --reuse_len=256   --mem_len=384   --perm_size=256   --n_layer=12   --d_model=512   --d_embed=512   --n_head=16   --d_head=64   --d_inner=2048   --untie_r=True   --mask_alpha=6   --mask_beta=1   --num_predict=85   --model_dir=output-model2   --uncased=False   --num_core_per_host=1   --train_steps=2000000  --iterations=10 --learning_rate=5e-5   --num_gpu_cores=2 --save_steps=10000
+```
+
+- `num_gpu_cores`: Number of gpus.
+- `train_batch_size`: If `bsz_per_host` during `data_utils.py` is 20, so `train_batch_size` must `bsz_per_host` * `num_gpu_cores`. Make sure `train_batch_size` % `num_gpu_cores` is 0 and the batch will automatically distribute among gpus. If `num_gpu_cores` is 60 and `num_gpu_cores` is 2, so each gpus will get 30 batch size.
+
+
 ## Download
 
-1.  8th July 2019, [xlnet-8-july-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/xlnet-8-july-2019.tar.gz).
-
-**Vocab size 32k, Case Insensitive, Train on 500MB dataset, 700k steps, BASE size (878MB)**.
-
-2.  9th July 2019, [xlnet-9-july-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/xlnet-9-july-2019-v2.tar.gz).
+1.  9th July 2019, [xlnet-9-july-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/xlnet-9-july-2019-v2.tar.gz).
 
 **Vocab size 32k, Case Sensitive, Train on 1.21GB dataset, 700k steps, BASE size (878MB)**.
 
-3. 15 July 2019, [xlnet-15-july-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/xlnet-bahasa-small.tar.gz)
+2. 15 July 2019, [xlnet-15-july-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/xlnet-bahasa-small.tar.gz)
 
 **Vocab size 32k, Case Sensitive, Train on 1.21GB dataset, 700k steps, SMALL size (231MB)**.
 

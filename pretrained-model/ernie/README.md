@@ -1,7 +1,5 @@
 # ERNIE-Bahasa
 
-**_Last update 30-July-2019, still developing._**
-
 Thanks to Google for opensourcing most of the source code BERT to develop ERNIE, https://github.com/google-research/ernie
 
 ## Table of contents

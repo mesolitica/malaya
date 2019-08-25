@@ -1,13 +1,12 @@
 # BERT-Bahasa
 
-**_Last update 5-July-2019, release new pretrained checkpoint._**
-
 Thanks to Google for opensourcing most of the source code to develop BERT, https://github.com/google-research/bert
 
 ## Table of contents
   * [Objective](https://github.com/huseinzol05/Malaya/tree/master/bert#objective)
   * [Acknowledgement](https://github.com/huseinzol05/Malaya/tree/master/bert#acknowledgement)
   * [How-to](https://github.com/huseinzol05/Malaya/tree/master/bert#how-to)
+    * [Multigpus](#multigpus)
   * [Download](https://github.com/huseinzol05/Malaya/tree/master/bert#download)
   * [Comparison using Subjectivity Dataset](https://github.com/huseinzol05/Malaya/tree/master/bert#comparison-using-subjectivity-dataset)
   * [Comparison using Emotion Dataset](https://github.com/huseinzol05/Malaya/tree/master/bert#comparison-using-emotion-dataset)
@@ -30,17 +29,16 @@ Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://w
 
 1. Run [dumping.ipynb](dumping.ipynb) to create text dataset for pretraining.
 
-You need to download `sp10m.cased.v4.model`, you can get this tokenizer from any checkpoints below after extract.
+You need to download [sp10m.cased.v4.model](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/v27/sp10m.cased.v4.model) and [sp10m.cased.v4.vocab](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/v27/sp10m.cased.v4.vocab) first.
 
 **_We implemented our own tokenizer because Google not open source WordPiece tokenizer, [stated here](https://github.com/google-research/bert#learning-a-new-wordpiece-vocabulary)._**
 
-2. git clone https://github.com/google-research/bert, and copy [create-pretraining-data.py](create-pretraining-data.py), [prepro_utils.py](prepro_utils.py) inside bert folder,
+2. git clone https://github.com/google-research/bert, and,
 
 ```bash
 git clone https://github.com/google-research/bert.git
 cd bert
-cp create-pretraining-data.py
-cp prepro_utils.py
+cp create-pretraining-data.py prepro_utils.py multigpu_pretraining.py custom_optimization.py
 ```
 
 3. Create pretraining dataset,
@@ -50,12 +48,34 @@ python3 create-pretraining-data.py
 
 4. Execute pretraining,
 ```bash
-mkdir pretraining_output
-python3 run_pretraining.py --input_file=tests_output.tfrecord --output_dir=pretraining_output --do_train=True --do_eval=True --bert_config_file=checkpoint/bert_config.json --train_batch_size=50 --max_seq_length=128 --max_predictions_per_seq=20 --num_train_steps=3000000 --num_warmup_steps=10 --learning_rate=2e-5 --save_checkpoints_steps=500000
+python3 run_pretraining.py --input_file=tests_output.tfrecord --output_dir=pretraining_output --do_train=True --do_eval=True --bert_config_file=bert_config.json --train_batch_size=50 --max_seq_length=128 --max_predictions_per_seq=20 --num_train_steps=3000000 --num_warmup_steps=10 --learning_rate=2e-5 --save_checkpoints_steps=500000
+```
+
+**LARGE** size, [LARGE_config.json](config/LARGE_config.json),
+```json
+{
+  "attention_probs_dropout_prob": 0.1,
+  "directionality": "bidi",
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 1024,
+  "initializer_range": 0.02,
+  "intermediate_size": 4096,
+  "max_position_embeddings": 512,
+  "num_attention_heads": 16,
+  "num_hidden_layers": 24,
+  "pooler_fc_size": 768,
+  "pooler_num_attention_heads": 12,
+  "pooler_num_fc_layers": 3,
+  "pooler_size_per_head": 128,
+  "pooler_type": "first_token_transform",
+  "type_vocab_size": 2,
+  "vocab_size": 40000
+}
+
 ```
 
 **BASE** size, [BASE_config.json](config/BASE_config.json),
-
 ```json
 {
   "attention_probs_dropout_prob": 0.1,
@@ -79,7 +99,6 @@ python3 run_pretraining.py --input_file=tests_output.tfrecord --output_dir=pretr
 ```
 
 **SMALL** size, [SMALL_config.json](config/SMALL_config,json),
-
 ```json
 {
   "attention_probs_dropout_prob": 0.1,
@@ -103,34 +122,34 @@ python3 run_pretraining.py --input_file=tests_output.tfrecord --output_dir=pretr
 ```
 
 To open tensorboard,
-```
+```bash
 tensorboard --logdir=tensorboard --host=0.0.0.0
 ```
 
+#### Multigpus
+
+Original BERT implementation not support multi-gpus, only single gpu. Here I created MirroredStrategy to pretrain using multi-gpus.
+
+1. Run [multigpu_pretraining.py](multigpu_pretraining.py),
+
+Run multigpus using MirroredStrategy,
+```bash
+python3 multigpu_pretraining.py --input_file=../tests_output.tfrecord --output_dir=pretraining_output --do_train=True --do_eval=True --bert_config_file=bert_config.json --train_batch_size=90 --max_seq_length=128 --max_predictions_per_seq=20 --num_train_steps=1000000 --num_warmup_steps=10 --learning_rate=2e-5 --save_checkpoints_steps=500000 --use_gpu=True --num_gpu_cores=3 --eval_batch_size=12
+```
+
+- `num_gpu_cores`: Number of gpus.
+- `train_batch_size`: Make sure `train_batch_size` % `num_gpu_cores` is 0 and the batch will automatically distribute among gpus. If `num_gpu_cores` is 60 and `num_gpu_cores` is 2, so each gpus will get 30 batch size.
+
 ## Download
 
-_**Size calculated after saved trainable variables not included optimizer momentum variables. Size of tar.gz not an actual size.**_
-
-1.  6th July 2019, [bert-bahasa-6-july-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-bahasa-6-july-2019.tar.gz)
-
-**Vocab size 32k, Case Sensitive, Train on 500MB dataset, 1M steps, BASE size (410MB)**.
-
-2. 9th July 2019, [bert-bahasa-9-july-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-bahasa-9-july-2019.tar.gz)
-
-**Vocab size 40k, Case Sensitive, Train on 1.21GB dataset, 1M steps, BASE size (467MB)**.
-
-3. 12th July 2019, [bert-bahasa-12-july-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-bahasa-12-july-2019.tar.gz)
-
-**Vocab size 40k, Case Sensitive, Train on 1.21GB dataset, 1M steps, SMALL size (184MB)**.
-
-4. 30th July 2019, [bert-base-30-july-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-base-30-july-2019.tar.gz)
+1. **BASE**, last update 30th July 2019, [bert-bahasa-base.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-bahasa-base.tar.gz)
 
 [Tensorboard data](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-base-30-july-2019-tensorboard.instance-3)
 
 **Vocab size 40k, Case Sensitive, Train on 1.51GB dataset, 1.5M steps, BASE size (467MB)**.
 
-5. 2nd August 2019,
-[bert-small-2-august-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-small-2-august-2019.tar.gz)
+2. **SMALL**, last update 2nd August 2019,
+[bert-bahasa-small.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-bahasa-small.tar.gz)
 
 [Tensorboard data](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/events.out.tfevents.1564477991.instance-3)
 

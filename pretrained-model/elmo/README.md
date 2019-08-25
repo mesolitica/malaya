@@ -1,7 +1,5 @@
 # ELMO-Bahasa
 
-**_Last update 1-August-2019, release new pretrained checkpoint._**
-
 ## Table of contents
   * [Objective](https://github.com/huseinzol05/Malaya/tree/master/elmo#objective)
   * [Acknowledgement](https://github.com/huseinzol05/Malaya/tree/master/elmo#acknowledgement)
@@ -20,9 +18,9 @@ Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://w
 
 ## How-to
 
-1. Download dumped wikipedia, [this one, 240.2 MB, 1663373 sentences](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/dumping-wiki-6-july-2019.json) and [this one, 255.1 MB, 1303844 sentences]( download link).
+1. Run [cleaning-wiki.ipynb](cleaning-wiki.ipynb) to prepare dataset.
 
-2. Run [elmo-128.ipynb](elmo-128.ipynb), make sure you tune parameters as you wanted,
+2. Run [elmo-128.py](elmo-128.py), make sure you tune parameters as you wanted,
 
 ```python
 batch_size = 256
@@ -68,13 +66,13 @@ options = {
 
 ## Download
 
-1.  1st August 2019, [elmo-128.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/elmo-128.tar.gz).
+1.  Elmo-128, 25th August 2019.
 
-**Vocab size 678833, Case Sensitive, 66k steps batch size 256, 256 lstm.dim 128 projection_dim (430MB)**.
+**Vocab size 340755, Case Sensitive, 66k steps batch size 128, 256 lstm.dim 128 projection_dim (430MB)**.
 
-1.  1st August 2019, [elmo-256.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/elmo-256.tar.gz).
+1.  Elmo-256, 25th August 2019.
 
-**Vocab size 678833, Case Sensitive, 132.5k steps batch size 128, 512 lstm.dim 256 projection_dim (792MB)**.
+**Vocab size 340755, Case Sensitive, 132.5k steps batch size 128, 512 lstm.dim 256 projection_dim (792MB)**.
 
 ## Citation
 

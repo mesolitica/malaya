@@ -15,9 +15,8 @@ setuptools.setup(
     download_url = 'https://github.com/huseinzol05/Malaya/archive/master.zip',
     keywords = ['nlp', 'bm'],
     install_requires = [
-        'xgboost==0.80',
+        'xgboost',
         'sklearn',
-        'sklearn_crfsuite',
         'scikit-learn',
         'requests',
         'fuzzywuzzy',

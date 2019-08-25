@@ -6,9 +6,9 @@ import sentencepiece as spm
 from prepro_utils import preprocess_text, encode_ids, encode_pieces
 
 sp_model = spm.SentencePieceProcessor()
-sp_model.Load('sp10m.cased.v3.model')
+sp_model.Load('sp10m.cased.v4.model')
 
-with open('sp10m.cased.v3.vocab') as fopen:
+with open('sp10m.cased.v4.vocab') as fopen:
     v = fopen.read().split('\n')[:-1]
 v = [i.split('\t') for i in v]
 v = {i[0]: i[1] for i in v}
