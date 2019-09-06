@@ -11,8 +11,8 @@ from shutil import rmtree
 from pathlib import Path
 
 home = os.path.join(str(Path.home()), 'Malaya')
-version = '2.7'
-bump_version = '2.7.0.1'
+version = '2.8'
+bump_version = '2.8.0.0'
 version_path = os.path.join(home, 'version')
 
 
@@ -287,10 +287,8 @@ def describe_dependency():
 from . import bert
 from . import cluster
 from . import dependency
-from . import elmo
 from . import emotion
 from . import entity
-from . import fast_text
 from . import language_detection
 from . import normalize
 from . import num2word
@@ -308,6 +306,6 @@ from . import topic_model
 from . import toxic
 from . import word_mover
 from . import word2num
-from . import word2vec
+from . import wordvector
 from .texts import vectorizer
 from . import xlnet

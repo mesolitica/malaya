@@ -20,7 +20,6 @@ setuptools.setup(
         'scikit-learn',
         'requests',
         'fuzzywuzzy',
-        'tqdm',
         'unidecode',
         'tensorflow-gpu',
         'numpy',

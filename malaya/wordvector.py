@@ -56,7 +56,25 @@ def load_news(size = 256):
         return pickle.load(fopen)
 
 
-class word2vec:
+def load(embed_matrix, dictionary):
+
+    """
+    Return malaya.wordvector._wordvector object.
+
+    Parameters
+    ----------
+    embed_matrix: numpy array
+    dictionary: dictionary
+
+    Returns
+    -------
+    _wordvector: malaya.wordvector._wordvector object
+    """
+
+    return _wordvector(embed_matrix = embed_matrix, dictionary = dictionary)
+
+
+class _wordvector:
     def __init__(self, embed_matrix, dictionary):
         self._embed_matrix = embed_matrix
         self._dictionary = dictionary
@@ -101,9 +119,7 @@ class word2vec:
             )
         return self._embed_matrix[self._dictionary[word]]
 
-    def tree_plot(
-        self, labels, visualize = True, figsize = (7, 7), annotate = True
-    ):
+    def tree_plot(self, labels, figsize = (7, 7), annotate = True):
         """
         plot a tree plot based on output from calculator / n_closest / analogy.
 
@@ -118,12 +134,21 @@ class word2vec:
 
         Returns
         -------
-        list_dictionaries: list of results
+        results: [embed, labelled]
         """
+
+        try:
+            import matplotlib.pyplot as plt
+            import seaborn as sns
+
+            sns.set()
+        except:
+            raise Exception(
+                'matplotlib and seaborn not installed. Please install it and try again.'
+            )
+
         if not isinstance(labels, list):
             raise ValueError('input must be a list')
-        if not isinstance(notebook_mode, bool):
-            raise ValueError('notebook_mode must be a boolean')
         if not isinstance(figsize, tuple):
             raise ValueError('figsize must be a tuple')
         if not isinstance(annotate, bool):
@@ -144,19 +169,6 @@ class word2vec:
             )
             labelled.append(label)
 
-        if not visualize:
-            return embed, labelled, labelled
-
-        try:
-            import matplotlib.pyplot as plt
-            import seaborn as sns
-
-            sns.set()
-        except:
-            raise Exception(
-                'matplotlib and seaborn not installed. Please install it and try again.'
-            )
-
         plt.figure(figsize = figsize)
         g = sns.clustermap(
             embed,
@@ -166,12 +178,12 @@ class word2vec:
             annot = annotate,
         )
         plt.show()
+        return embed, labelled
 
     def scatter_plot(
         self,
         labels,
         centre = None,
-        visualize = True,
         figsize = (7, 7),
         plus_minus = 25,
         handoff = 5e-5,
@@ -185,8 +197,6 @@ class word2vec:
             output from calculator / n_closest / analogy
         centre : str, (default=None)
             centre label, if a str, it will annotate in a red color.
-        visualize : bool
-            if True, it will render plt.show, else return data.
         figsize : tuple, (default=(7, 7))
             figure size for plot.
 
@@ -194,10 +204,19 @@ class word2vec:
         -------
         list_dictionaries: list of results
         """
+
+        try:
+            import matplotlib.pyplot as plt
+            import seaborn as sns
+
+            sns.set()
+        except:
+            raise Exception(
+                'matplotlib and seaborn not installed. Please install it and try again.'
+            )
+
         if not isinstance(labels, list):
             raise ValueError('input must be a list')
-        if not isinstance(notebook_mode, bool):
-            raise ValueError('notebook_mode must be a boolean')
         if not isinstance(figsize, tuple):
             raise ValueError('figsize must be a tuple')
         if not isinstance(plus_minus, int):
@@ -217,18 +236,6 @@ class word2vec:
         tsne = TSNE(n_components = 2, random_state = 0).fit_transform(
             self._embed_matrix[cp_idx]
         )
-        if not visualize:
-            return tsne
-
-        try:
-            import matplotlib.pyplot as plt
-            import seaborn as sns
-
-            sns.set()
-        except:
-            raise Exception(
-                'matplotlib and seaborn not installed. Please install it and try again.'
-            )
 
         plt.figure(figsize = figsize)
         plt.scatter(tsne[:, 0], tsne[:, 1])
@@ -265,6 +272,7 @@ class word2vec:
         plt.xticks([])
         plt.yticks([])
         plt.show()
+        return tsne
 
     def _calculate(self, equation):
         tokens, temp = [], ''
@@ -578,3 +586,153 @@ class word2vec:
         for i in range(start, end):
             word_list.append(self._reverse_dictionary[i])
         return embed_2d, word_list
+
+    def network(
+        self,
+        word,
+        num_closest = 8,
+        depth = 4,
+        min_distance = 0.5,
+        iteration = 300,
+        figsize = (15, 15),
+        node_color = '#72bbd0',
+        node_factor = 50,
+    ):
+
+        """
+        plot a social network based on word given
+
+        Parameters
+        ----------
+        word : str
+            centre of social network.
+        num_closest: int, (default=8)
+            number of words closest to the node.
+        depth: int, (default=4)
+            depth of social network. More deeper more expensive to calculate, big^O(num_closest ** depth).
+        min_distance: float, (default=0.5)
+            minimum distance among nodes. Increase the value to increase the distance among nodes.
+        iteration: int, (default=300)
+            number of loops to train the social network to fit min_distace.
+        figsize: tuple, (default=(15, 15))
+            figure size for plot.
+        node_color: str, (default='#72bbd0')
+            color for nodes.
+        node_factor: int, (default=10)
+            size factor for depth nodes. Increase this value will increase nodes sizes based on depth.
+
+        Returns
+        -------
+        g: networkx graph object
+        """
+
+        try:
+            import pandas as pd
+            import networkx as nx
+            import matplotlib.pyplot as plt
+        except:
+            raise Exception(
+                'matplotlib, networkx and pandas not installed. Please install it and try again.'
+            )
+
+        if not isinstance(word, str):
+            raise ValueError('input must be a string')
+        if not isinstance(num_closest, int):
+            raise ValueError('num_closest must be an integer')
+        if not isinstance(depth, int):
+            raise ValueError('depth must be an integer')
+        if not isinstance(min_distance, float):
+            raise ValueError('min_distance must be a float')
+        if not isinstance(iteration, int):
+            raise ValueError('iteration must be an integer')
+        if not isinstance(figsize, tuple):
+            raise ValueError('figsize must be a tuple')
+        n_closest = self.n_closest
+
+        def get_follower(
+            centre,
+            top,
+            max_depth = depth,
+            current_depth = 0,
+            accepted_list = [],
+            data = [],
+        ):
+            if current_depth == max_depth:
+                return data, accepted_list
+            if centre in accepted_list:
+                return data, accepted_list
+            else:
+                accepted_list.append(centre)
+
+            closest = n_closest(
+                centre, num_closest = num_closest, return_similarity = False
+            )
+
+            d = {
+                'name': centre,
+                'followers_ids': closest,
+                'centre': top,
+                'power': max_depth - current_depth,
+            }
+
+            data.append(d)
+
+            cd = current_depth
+
+            if cd + 1 < max_depth:
+                for fid in closest:
+                    data, accepted_list = get_follower(
+                        fid,
+                        fid,
+                        max_depth = max_depth,
+                        current_depth = cd + 1,
+                        accepted_list = accepted_list,
+                        data = data,
+                    )
+
+            return data, accepted_list
+
+        data, accepted_list = get_follower(word, word)
+        df = pd.DataFrame(data)
+        id_unique = np.unique(df['centre']).tolist()
+
+        followers = []
+        for i in range(df.shape[0]):
+            followers += df.followers_ids.iloc[i]
+        followers = list(set(followers))
+
+        followers = [i for i in followers if i in id_unique]
+        true_followers = []
+        for i in range(df.shape[0]):
+            follows = df.followers_ids.iloc[i]
+            follows = [k for k in follows if k in followers]
+            true_followers.append(follows)
+
+        df['true_followers'] = true_followers
+
+        G = nx.Graph()
+
+        for i in range(df.shape[0]):
+            size = df.power.iloc[i] * node_factor
+            G.add_node(df.centre.iloc[i], name = df.centre.iloc[i], size = size)
+
+        for i in range(df.shape[0]):
+            for k in df.true_followers.iloc[i]:
+                G.add_edge(df.centre.iloc[i], k)
+
+        sizes = [G.node[node]['size'] for node in G]
+        names = [G.node[node]['name'] for node in G]
+
+        labeldict = dict(zip(G.nodes(), names))
+        plt.figure(figsize = figsize)
+        plt.axis('equal')
+        nx.draw(
+            G,
+            node_color = node_color,
+            labels = labeldict,
+            with_labels = 1,
+            node_size = sizes,
+            pos = nx.spring_layout(G, k = min_distance, iterations = iteration),
+        )
+        plt.show()
+        return G

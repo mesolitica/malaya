@@ -121,7 +121,7 @@ python3 run_pretraining.py --input_file=tests_output.tfrecord --output_dir=pretr
 }
 ```
 
-To open tensorboard,
+**All training session will be recorded in Tensorboard**, to open tensorboard,
 ```bash
 tensorboard --logdir=tensorboard --host=0.0.0.0
 ```
@@ -134,7 +134,22 @@ Original BERT implementation not support multi-gpus, only single gpu. Here I cre
 
 Run multigpus using MirroredStrategy,
 ```bash
-python3 multigpu_pretraining.py --input_file=../tests_output.tfrecord --output_dir=pretraining_output --do_train=True --do_eval=True --bert_config_file=bert_config.json --train_batch_size=90 --max_seq_length=128 --max_predictions_per_seq=20 --num_train_steps=1000000 --num_warmup_steps=10 --learning_rate=2e-5 --save_checkpoints_steps=500000 --use_gpu=True --num_gpu_cores=3 --eval_batch_size=12
+python3 multigpu_pretraining.py \
+--input_file=../tests_output.tfrecord \
+--output_dir=pretraining_output \
+--do_train=True \
+--do_eval=False \
+--bert_config_file=bert_config.json \
+--train_batch_size=90 \
+--max_seq_length=128 \
+--max_predictions_per_seq=20 \
+--num_train_steps=1000000 \
+--num_warmup_steps=10 \
+--learning_rate=2e-5 \
+--save_checkpoints_steps=500000 \
+--use_gpu=True \
+--num_gpu_cores=3 \
+--eval_batch_size=12
 ```
 
 - `num_gpu_cores`: Number of gpus.
@@ -142,16 +157,12 @@ python3 multigpu_pretraining.py --input_file=../tests_output.tfrecord --output_d
 
 ## Download
 
-1. **BASE**, last update 30th July 2019, [bert-bahasa-base.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-bahasa-base.tar.gz)
-
-[Tensorboard data](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-base-30-july-2019-tensorboard.instance-3)
+1. **BASE**, last update 30th July 2019, [bert-bahasa-base.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-bahasa-base.tar.gz) [Tensorboard data](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-base-30-july-2019-tensorboard.instance-3)
 
 **Vocab size 40k, Case Sensitive, Train on 1.51GB dataset, 1.5M steps, BASE size (467MB)**.
 
 2. **SMALL**, last update 2nd August 2019,
-[bert-bahasa-small.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-bahasa-small.tar.gz)
-
-[Tensorboard data](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/events.out.tfevents.1564477991.instance-3)
+[bert-bahasa-small.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-bahasa-small.tar.gz) [Tensorboard data](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/events.out.tfevents.1564477991.instance-3)
 
 **Vocab size 40k, Case Sensitive, Train on 1.51GB dataset, 1.5M steps, SMALL size (184MB)**.
 

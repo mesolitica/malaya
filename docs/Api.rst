@@ -30,15 +30,6 @@ malaya.dependency
 .. automodule:: malaya.dependency
     :members:
 
-malaya.elmo
-------------------
-
-.. automodule:: malaya.elmo
-    :members:
-
-.. autoclass:: malaya.elmo.ELMO()
-    :members:
-
 malaya.emotion
 -----------------
 
@@ -49,15 +40,6 @@ malaya.entity
 ---------------
 
 .. automodule:: malaya.entity
-    :members:
-
-malaya.fast_text
------------------
-
-.. automodule:: malaya.fast_text
-    :members:
-
-.. autoclass:: malaya.fast_text.fast_text()
     :members:
 
 malaya.generator
@@ -196,13 +178,13 @@ malaya.word_mover
 .. autoclass:: malaya.word_mover._DEEP_CONTRACTION()
     :members:
 
-malaya.word2vec
+malaya.wordvector
 -------------------------
 
-.. automodule:: malaya.word2vec
+.. automodule:: malaya.wordvector
     :members:
 
-.. autoclass:: malaya.word2vec.word2vec()
+.. autoclass:: malaya.wordvector._wordvector()
     :members:
 
 malaya.xlnet

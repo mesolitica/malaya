@@ -5,7 +5,7 @@ from __future__ import print_function
 
 import os, sys
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '0,3'
+os.environ['CUDA_VISIBLE_DEVICES'] = '1,2,3'
 import math
 import json
 import time
@@ -343,12 +343,13 @@ def main(_):
         log_step_count_steps = log_every_n_steps,
         model_dir = FLAGS.model_dir,
         save_checkpoints_steps = FLAGS.save_steps,
+        save_summary_steps = None,
     )
     model_fn = get_model_fn()
     tf.logging.info('Use normal Estimator')
     estimator = Estimator(
         model_fn = model_fn,
-        params = {'batch_size': bsz_per_core, 'cache': train_cache_fn},
+        params = {'batch_size': bsz_per_core, 'cache': None},
         config = run_config,
     )
 

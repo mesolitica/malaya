@@ -24,10 +24,8 @@ Contents:
    Bert
    Cluster
    Dependency
-   Elmo
    Emotion
    Entities
-   Fasttext
    Generator
    Language
    Normalizer
@@ -45,7 +43,7 @@ Contents:
    Topic
    Toxic
    Word2num
-   Word2vec
+   Wordvector
    Xlnet
    Mover
    Cluster
