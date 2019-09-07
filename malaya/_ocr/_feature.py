@@ -12,9 +12,16 @@ def histogram_norm(img):
     import cv2
 
     img = bilateral_norm(img)
-    add_img = (
-        255 - cv2.threshold(img, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
-    )
+    threshold = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[
+        1
+    ]
+    unique, counts = np.unique(threshold, return_counts = True)
+    dict_color = dict(zip(unique, counts))
+    if dict_color[0] > dict_color[255]:
+        minus = 0
+    else:
+        minus = 255
+    add_img = minus - threshold
     return add_img
 
 
@@ -86,6 +93,8 @@ def get_hog_features(
 
 
 def bin_spatial(img, size = (16, 16)):
+    import cv2
+
     return cv2.resize(img, size).ravel()
 
 
@@ -100,23 +109,16 @@ def img_features(
     return features
 
 
-def extract_features(
-    imgs,
-    spatial_size = (32, 32),
-    hist_bins = 32,
-    orient = 8,
-    pix_per_cell = 8,
-    cell_per_block = 2,
-):
-    features = []
-    for img in imgs:
-        file_features = img_features(
-            feature_image,
-            hist_bins,
-            orient,
-            pix_per_cell,
-            cell_per_block,
-            spatial_size,
-        )
-        features.append(np.concatenate(file_features))
-    return features
+def extract_features(img):
+    import cv2
+
+    img = cv2.resize(img, (350, 125))
+    file_features = img_features(
+        img,
+        hist_bins = 32,
+        orient = 8,
+        pix_per_cell = 8,
+        cell_per_block = 2,
+        spatial_size = (32, 32),
+    )
+    return np.concatenate(file_features)

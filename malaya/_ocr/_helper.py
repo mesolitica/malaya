@@ -1,4 +1,5 @@
 import numpy as np
+from ._feature import histogram_norm
 
 SMALL_HEIGHT = 800
 
@@ -247,5 +248,39 @@ def detect_bounding_boxes(image, y_sensitivity = 5, x_sensitivity = 10):
         np.ones((y_sensitivity, x_sensitivity), np.uint8),
     )
     boxes = text_detect(bw_image, image)
-    sorted_boxes = sort_words(boxes)
-    return sorted_boxes
+    return boxes
+
+
+def get_image(image):
+    import cv2
+
+    if isinstance(image, np.ndarray):
+        if len(image.shape) > 2:
+            image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+    if isinstance(image, str):
+        image = cv2.cvtColor(cv2.imread(image), cv2.COLOR_BGR2GRAY)
+
+    return histogram_norm(image)
+
+
+def get_image_color(image):
+    import cv2
+
+    if isinstance(image, np.ndarray):
+        if len(image.shape) > 2:
+            image = cv2.cvtColor(cv2.imread(image), cv2.COLOR_RGB2BGR)
+    if isinstance(image, str):
+        image = cv2.imread(image)
+
+    return image
+
+
+def feature_ocr(img, image_height = 60, image_width = 240, image_channel = 1):
+    from skimage.transform import resize as imresize
+    import cv2
+
+    im = imresize(
+        cv2.flip((img.astype(np.float32) / 255.0), 1),
+        (image_height, image_width, image_channel),
+    )[:, :, 0]
+    return im

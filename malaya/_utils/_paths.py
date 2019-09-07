@@ -818,3 +818,21 @@ S3_PATH_XLNET = {
     'base': {'model': 'bert-bahasa/xlnet-9-july-2019-v2.tar.gz'},
     'small': {'model': 'bert-bahasa/xlnet-bahasa-small.tar.gz'},
 }
+
+PATH_OCR = {
+    'logistic': {
+        'model': home + '/ocr/logistic/logistic.pkl',
+        'version': 'v28',
+    },
+    'svm': {'model': home + '/ocr/svm/svm.pkl', 'version': 'v28'},
+    'jawi-to-malay': {
+        'model': home + '/ocr/jawi-to-malay/model.pb',
+        'version': 'v28',
+    },
+}
+
+S3_PATH_OCR = {
+    'logistic': {'model': 'v28/ocr/logistic.pkl'},
+    'svm': {'model': 'v28/ocr/sgd.pkl'},
+    'jawi-to-malay': {'model': 'v28/ocr/im2latex-jawi-to-malay.pb'},
+}

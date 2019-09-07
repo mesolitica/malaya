@@ -292,6 +292,7 @@ from . import entity
 from . import language_detection
 from . import normalize
 from . import num2word
+from . import ocr
 from . import pos
 from . import preprocessing
 from . import relevancy

@@ -135,7 +135,7 @@ Original BERT implementation not support multi-gpus, only single gpu. Here I cre
 Run multigpus using MirroredStrategy,
 ```bash
 python3 multigpu_pretraining.py \
---input_file=../tests_output.tfrecord \
+--input_file=tests_output.tfrecord \
 --output_dir=pretraining_output \
 --do_train=True \
 --do_eval=False \
@@ -143,10 +143,10 @@ python3 multigpu_pretraining.py \
 --train_batch_size=90 \
 --max_seq_length=128 \
 --max_predictions_per_seq=20 \
---num_train_steps=1000000 \
+--num_train_steps=500000 \
 --num_warmup_steps=10 \
 --learning_rate=2e-5 \
---save_checkpoints_steps=500000 \
+--save_checkpoints_steps=20000 \
 --use_gpu=True \
 --num_gpu_cores=3 \
 --eval_batch_size=12

@@ -40,6 +40,12 @@ Create a new issue in [Github issue](https://github.com/huseinzol05/Malaya/issue
 
 Or, you can simply email your data if you do not want to expose the data to public. Malaya will not exposed your data, but we will exposed our trained models based on your data.
 
+Thanks to,
+
+1. [Fake news](https://github.com/huseinzol05/Malaya-Dataset#fake-news), contributed by [syazanihussin](https://github.com/syazanihussin/FLUX/tree/master/data)
+2. [Speech voice](https://github.com/huseinzol05/Malaya-Dataset#tolong-sebut), contributed by [Khalil Nooh](https://www.linkedin.com/in/khalilnooh/)
+3. [Speech voice](https://github.com/huseinzol05/Malaya-Dataset#tolong-sebut), contributed by [Mas Aisyah Ahmad](https://www.linkedin.com/in/mas-aisyah-ahmad-b46508a9/)
+
 ## Improve Documentation
 
 Malaya could always use better documentation, might have some typos or uncorrect object names.
