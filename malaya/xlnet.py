@@ -216,7 +216,6 @@ class _Model:
             }
         }
         _attention(results)
-        return attentions, s_tokens
 
 
 def available_xlnet_model():

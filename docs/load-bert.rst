@@ -5,15 +5,15 @@ called it
 This interface not able us to use it to do custom training.
 
 If you want to download pretrained model for
-`BERT-Bahasa <https://github.com/huseinzol05/Malaya/tree/master/bert>`__
+`BERT-Bahasa <https://github.com/huseinzol05/Malaya/tree/master/pretrained-model/bert>`__
 and use it for custom transfer-learning, you can download it here,
-https://github.com/huseinzol05/Malaya/tree/master/bert, some notebooks
-to help you get started,
+https://github.com/huseinzol05/Malaya/tree/master/pretrained-model/bert,
+some notebooks to help you get started,
 
 1. `Text
-   classification <https://github.com/huseinzol05/Malaya/tree/master/bert/finetune-subjectivity>`__.
+   classification <https://github.com/huseinzol05/Malaya/tree/master/pretrained-model/bert/finetune/finetune-subjectivity>`__.
 2. `Text
-   similarity <https://github.com/huseinzol05/Malaya/tree/master/bert/finetune-similarity>`__.
+   similarity <https://github.com/huseinzol05/Malaya/tree/master/pretrained-model/bert/finetune/finetune-similarity>`__.
 
 Why BERT
 --------
@@ -37,8 +37,8 @@ Why BERT
 
 .. parsed-literal::
 
-    CPU times: user 5.87 s, sys: 2.4 s, total: 8.27 s
-    Wall time: 14.9 s
+    CPU times: user 5.42 s, sys: 953 ms, total: 6.37 s
+    Wall time: 7.69 s
 
 
 list BERT-Bahasa available
@@ -76,32 +76,32 @@ load BERT-Bahasa
 .. parsed-literal::
 
     WARNING: Logging before flag parsing goes to stderr.
-    W0806 18:44:29.301498 4570277312 deprecation_wrapper.py:119] From /usr/local/lib/python3.6/site-packages/bert/modeling.py:93: The name tf.gfile.GFile is deprecated. Please use tf.io.gfile.GFile instead.
+    W0908 23:12:58.925322 4632950208 deprecation_wrapper.py:119] From /usr/local/lib/python3.6/site-packages/bert/modeling.py:93: The name tf.gfile.GFile is deprecated. Please use tf.io.gfile.GFile instead.
 
-    W0806 18:44:29.313080 4570277312 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/bert.py:49: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
+    W0908 23:12:58.929401 4632950208 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/bert.py:50: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
 
-    W0806 18:44:29.376143 4570277312 deprecation_wrapper.py:119] From /usr/local/lib/python3.6/site-packages/bert/modeling.py:171: The name tf.variable_scope is deprecated. Please use tf.compat.v1.variable_scope instead.
+    W0908 23:12:58.949140 4632950208 deprecation_wrapper.py:119] From /usr/local/lib/python3.6/site-packages/bert/modeling.py:171: The name tf.variable_scope is deprecated. Please use tf.compat.v1.variable_scope instead.
 
-    W0806 18:44:29.382241 4570277312 deprecation_wrapper.py:119] From /usr/local/lib/python3.6/site-packages/bert/modeling.py:409: The name tf.get_variable is deprecated. Please use tf.compat.v1.get_variable instead.
+    W0908 23:12:58.953647 4632950208 deprecation_wrapper.py:119] From /usr/local/lib/python3.6/site-packages/bert/modeling.py:409: The name tf.get_variable is deprecated. Please use tf.compat.v1.get_variable instead.
 
-    W0806 18:44:29.442945 4570277312 deprecation_wrapper.py:119] From /usr/local/lib/python3.6/site-packages/bert/modeling.py:490: The name tf.assert_less_equal is deprecated. Please use tf.compat.v1.assert_less_equal instead.
+    W0908 23:12:59.016011 4632950208 deprecation_wrapper.py:119] From /usr/local/lib/python3.6/site-packages/bert/modeling.py:490: The name tf.assert_less_equal is deprecated. Please use tf.compat.v1.assert_less_equal instead.
 
-    W0806 18:44:29.535451 4570277312 deprecation.py:323] From /usr/local/lib/python3.6/site-packages/bert/modeling.py:671: dense (from tensorflow.python.layers.core) is deprecated and will be removed in a future version.
+    W0908 23:12:59.100100 4632950208 deprecation.py:323] From /usr/local/lib/python3.6/site-packages/bert/modeling.py:671: dense (from tensorflow.python.layers.core) is deprecated and will be removed in a future version.
     Instructions for updating:
     Use keras.layers.dense instead.
-    W0806 18:44:33.142968 4570277312 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/bert.py:61: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
+    W0908 23:13:03.390677 4632950208 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/bert.py:62: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
 
-    W0806 18:44:36.040175 4570277312 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/bert.py:66: The name tf.train.Saver is deprecated. Please use tf.compat.v1.train.Saver instead.
+    W0908 23:13:05.371360 4632950208 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/bert.py:67: The name tf.train.Saver is deprecated. Please use tf.compat.v1.train.Saver instead.
 
-    W0806 18:44:36.316101 4570277312 deprecation.py:323] From /usr/local/lib/python3.6/site-packages/tensorflow/python/training/saver.py:1276: checkpoint_exists (from tensorflow.python.training.checkpoint_management) is deprecated and will be removed in a future version.
+    W0908 23:13:05.747210 4632950208 deprecation.py:323] From /usr/local/lib/python3.6/site-packages/tensorflow/python/training/saver.py:1276: checkpoint_exists (from tensorflow.python.training.checkpoint_management) is deprecated and will be removed in a future version.
     Instructions for updating:
     Use standard file APIs to check for files with this prefix.
 
 
 .. parsed-literal::
 
-    CPU times: user 10 s, sys: 2.55 s, total: 12.6 s
-    Wall time: 11.5 s
+    CPU times: user 10.1 s, sys: 1.72 s, total: 11.9 s
+    Wall time: 8.94 s
 
 
 .. code:: python
@@ -231,3 +231,67 @@ documentation, I just want to use a string.
       ('sejak', 0.047204666),
       ('selepas', 0.050263014),
       ('merdeka', 0.055318326)]]
+
+
+
+Visualize Attention
+^^^^^^^^^^^^^^^^^^^
+
+Before using attention visualization, we need to load D3 into our
+jupyter notebook first.
+
+.. code:: javascript
+
+    %%javascript
+    require.config({
+      paths: {
+          d3: '//cdnjs.cloudflare.com/ajax/libs/d3/3.4.8/d3.min',
+          jquery: '//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min',
+      }
+    });
+
+
+
+.. parsed-literal::
+
+    <IPython.core.display.Javascript object>
+
+
+.. code:: python
+
+    model.visualize_attention('nak makan ayam dgn husein')
+
+
+
+.. raw:: html
+
+
+              <span style="user-select:none">
+                Layer: <select id="layer"></select>
+              </span>
+              <div id='vis'></div>
+
+
+
+
+.. parsed-literal::
+
+    <IPython.core.display.Javascript object>
+
+
+
+.. parsed-literal::
+
+    <IPython.core.display.Javascript object>
+
+
+.. code:: python
+
+    from IPython.core.display import Image, display
+
+    display(Image('bert-attention.png', width=300))
+
+
+
+.. image:: load-bert_files/load-bert_20_0.png
+   :width: 300px

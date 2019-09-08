@@ -71,7 +71,8 @@ class _SPELL:
         """
         if not (isinstance(word, str)):
             raise ValueError('word must be a string')
-
+        if word in ENGLISH_WORDS:
+            return word
         if self._corpus.get(word, 0) > 5000:
             return word
         if word in MALAY_WORDS:
@@ -373,8 +374,8 @@ def distance(distancer = JaroWinkler, validate = True):
     ----------
     distancer: object
         string matching object, default is malaya.texts._distance.JaroWinkler
-    corpus : list of strings
-        Prefer to feed with malaya.load_malay_dictionary().
+    validate: bool, optional (default=True)
+        if True, malaya will check model availability and download if not available.
 
     Returns
     -------

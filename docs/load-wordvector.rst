@@ -35,7 +35,7 @@ To load that pickle file,
 But If you don’t know what to do with malaya word2vec, Malaya provided
 some useful functions for you!
 
-.. code:: ipython3
+.. code:: python
 
     %%time
     import malaya
@@ -51,14 +51,14 @@ some useful functions for you!
 Load malaya news word2vec
 -------------------------
 
-.. code:: ipython3
+.. code:: python
 
     embedded_news = malaya.wordvector.load_news(256)
 
 Load malaya wikipedia word2vec
 ------------------------------
 
-.. code:: ipython3
+.. code:: python
 
     embedded_wiki = malaya.wordvector.load_wiki()
 
@@ -82,7 +82,7 @@ Load word vector interface
        -------
        _wordvector: malaya.wordvector._wordvector object
        """
-       
+
 
 1. ``embed_matrix`` must be a 2d,
 
@@ -124,23 +124,23 @@ https://dl.fbaipublicfiles.com/fasttext/vectors-wiki/wiki.ms.vec
 
 We need to parse the data to get ``embed_matrix`` and ``dictionary``.
 
-.. code:: ipython3
+.. code:: python
 
     import io
     import numpy as np
-    
+
     fin = io.open('wiki.ms.vec', 'r', encoding='utf-8', newline='\n', errors='ignore')
     n, d = map(int, fin.readline().split())
-    
+
     data, vectors = {}, []
     for no, line in enumerate(fin):
         tokens = line.rstrip().split(' ')
         data[tokens[0]] = no
         vectors.append(list(map(float, tokens[1:])))
-        
+
     vectors = np.array(vectors)
 
-.. code:: ipython3
+.. code:: python
 
     fast_text = malaya.wordvector.load(vectors, data)
     word_vector_wiki = malaya.wordvector.load(embedded_wiki['nce_weights'], embedded_wiki['dictionary'])
@@ -149,13 +149,13 @@ We need to parse the data to get ``embed_matrix`` and ``dictionary``.
 .. parsed-literal::
 
     W0908 23:24:56.546383 4481250752 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/wordvector.py:96: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
-    
+
 
 
 Check top-k similar semantics based on a word
 ---------------------------------------------
 
-.. code:: ipython3
+.. code:: python
 
     word = 'anwar'
     print("Embedding layer: 8 closest words to: '%s' using fast-text"%(word))
@@ -168,7 +168,7 @@ Check top-k similar semantics based on a word
     [['anwari', 0.7751702635797655], ['anwa', 0.7415013831727038], ['anwardi', 0.6817634761631164], ['dhanwar', 0.6797479885269004], ['ibrahim', 0.633790291910495], ['sanwan', 0.5990863002536039], ['ibrahimi', 0.5783653188698719], ['ibrahimiah', 0.5573087618004475]]
 
 
-.. code:: ipython3
+.. code:: python
 
     word = 'anwar'
     print("Embedding layer: 8 closest words to: '%s' using malaya wiki word2vec"%(word))
@@ -184,7 +184,7 @@ Check top-k similar semantics based on a word
 Check batch top-k similar semantics based on a word
 ---------------------------------------------------
 
-.. code:: ipython3
+.. code:: python
 
     words = ['anwar', 'mahathir']
     fast_text.batch_n_closest(words, num_closest=8,
@@ -225,7 +225,7 @@ JaroWrinkler ratio.
 if ``False``, it will throw an exception if a word not in the
 dictionary.
 
-.. code:: ipython3
+.. code:: python
 
     words = ['anwar', 'mahathir','husein-comel']
     word_vector_wiki.batch_n_closest(words, num_closest=8,
@@ -243,7 +243,7 @@ dictionary.
           1 words = ['anwar', 'mahathir','husein-comel']
           2 word_vector_wiki.batch_n_closest(words, num_closest=8,
     ----> 3                                  return_similarity=False,soft=False)
-    
+
 
     ~/Documents/Malaya/malaya/wordvector.py in batch_n_closest(self, words, num_closest, return_similarity, soft)
         475                     raise Exception(
@@ -256,7 +256,7 @@ dictionary.
     Exception: husein-comel not in dictionary, please use another word or set `soft` = True
 
 
-.. code:: ipython3
+.. code:: python
 
     words = ['anwar', 'mahathir','husein-comel']
     word_vector_wiki.batch_n_closest(words, num_closest=8,
@@ -297,7 +297,7 @@ dictionary.
 Calculate vb - va + vc
 ----------------------
 
-.. code:: ipython3
+.. code:: python
 
     print(fast_text.analogy('anwar', 'penjara', 'kerajaan', 5))
 
@@ -307,7 +307,7 @@ Calculate vb - va + vc
     ['penjara', 'kerajaan', ',kerajaan', '#kerajaan', '\xa0kerajaan']
 
 
-.. code:: ipython3
+.. code:: python
 
     print(word_vector_wiki.analogy('anwar', 'penjara', 'kerajaan', 5))
 
@@ -322,7 +322,7 @@ Word2vec calculator
 
 You can put any equation you wanted.
 
-.. code:: ipython3
+.. code:: python
 
     fast_text.calculator('anwar + amerika + mahathir', num_closest=8, metric='cosine',
                           return_similarity=False)
@@ -344,7 +344,7 @@ You can put any equation you wanted.
 
 
 
-.. code:: ipython3
+.. code:: python
 
     word_vector_wiki.calculator('anwar + amerika + mahathir', num_closest=8, metric='cosine',
                           return_similarity=False)
@@ -369,7 +369,7 @@ You can put any equation you wanted.
 Visualize scatter-plot
 ----------------------
 
-.. code:: ipython3
+.. code:: python
 
     word = 'anwar'
     result = fast_text.n_closest(word=word, num_closest=8, metric='cosine')
@@ -380,7 +380,7 @@ Visualize scatter-plot
 .. image:: load-wordvector_files/load-wordvector_26_0.png
 
 
-.. code:: ipython3
+.. code:: python
 
     word = 'anwar'
     result = word_vector_wiki.n_closest(word=word, num_closest=8, metric='cosine')
@@ -394,7 +394,7 @@ Visualize scatter-plot
 Visualize tree-plot
 -------------------
 
-.. code:: ipython3
+.. code:: python
 
     word = 'anwar'
     result = fast_text.n_closest(word=word, num_closest=8, metric='cosine')
@@ -411,7 +411,7 @@ Visualize tree-plot
 .. image:: load-wordvector_files/load-wordvector_29_1.png
 
 
-.. code:: ipython3
+.. code:: python
 
     word = 'anwar'
     result = word_vector_wiki.n_closest(word=word, num_closest=8, metric='cosine')
@@ -467,9 +467,9 @@ Visualize social-network
            color for nodes.
        node_factor: int, (default=10)
            size factor for depth nodes. Increase this value will increase nodes sizes based on depth.
-           
 
-.. code:: ipython3
+
+.. code:: python
 
     g = fast_text.network('mahathir', figsize = (10, 10), node_factor = 50, depth = 3)
 
@@ -478,7 +478,7 @@ Visualize social-network
 .. image:: load-wordvector_files/load-wordvector_32_0.png
 
 
-.. code:: ipython3
+.. code:: python
 
     g = word_vector_wiki.network('mahathir', figsize = (10, 10), node_factor = 50, depth = 3)
 
@@ -493,6 +493,6 @@ Get embedding from a word
 If a word not found in the vocabulary, it will throw an exception with
 top-5 nearest words
 
-.. code:: ipython3
+.. code:: python
 
     word_vector_wiki.get_vector_by_name('husein-comel')

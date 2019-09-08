@@ -114,7 +114,7 @@ def clear_cache(location):
 
 def load_malay_dictionary():
     """
-    load Pustaka dictionary for Spelling Corrector and Normalizer.
+    load 20k Pustaka dictionary.
 
     Returns
     -------
@@ -142,7 +142,7 @@ def load_malay_dictionary():
 
 def load_200k_malay_dictionary():
     """
-    load 200k words dictionary for Spelling Corrector and Normalizer.
+    load 200k words dictionary.
 
     Returns
     -------

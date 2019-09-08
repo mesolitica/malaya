@@ -3,17 +3,17 @@
 Thanks to Google for opensourcing most of the source code to develop BERT, https://github.com/google-research/bert
 
 ## Table of contents
-  * [Objective](https://github.com/huseinzol05/Malaya/tree/master/bert#objective)
-  * [Acknowledgement](https://github.com/huseinzol05/Malaya/tree/master/bert#acknowledgement)
-  * [How-to](https://github.com/huseinzol05/Malaya/tree/master/bert#how-to)
+  * [Objective](#objective)
+  * [Acknowledgement](#acknowledgement)
+  * [How-to](#how-to)
     * [Multigpus](#multigpus)
-  * [Download](https://github.com/huseinzol05/Malaya/tree/master/bert#download)
-  * [Comparison using Subjectivity Dataset](https://github.com/huseinzol05/Malaya/tree/master/bert#comparison-using-subjectivity-dataset)
-  * [Comparison using Emotion Dataset](https://github.com/huseinzol05/Malaya/tree/master/bert#comparison-using-emotion-dataset)
-  * [Comparison using Text Similarity Dataset](https://github.com/huseinzol05/Malaya/tree/master/bert#comparison-using-text-similarity-dataset)
-  * [Feedbacks](https://github.com/huseinzol05/Malaya/tree/master/bert#feedbacks)
-  * [Citation](https://github.com/huseinzol05/Malaya/tree/master/bert#citation)
-  * [Donation](https://github.com/huseinzol05/Malaya/tree/master/bert#donation)
+  * [Download](#download)
+  * [Comparison using Subjectivity Dataset](#comparison-using-subjectivity-dataset)
+  * [Comparison using Emotion Dataset](#comparison-using-emotion-dataset)
+  * [Comparison using Text Similarity Dataset](#comparison-using-text-similarity-dataset)
+  * [Feedbacks](#feedbacks)
+  * [Citation](#citation)
+  * [Donation](#donation)
 
 ## Objective
 

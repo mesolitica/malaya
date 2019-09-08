@@ -105,6 +105,8 @@ malaya.spell
 .. autoclass:: malaya.spell._SPELL()
     :members:
 
+.. autoclass:: malaya.spell._SpellCorrector()
+    :members:
 
 malaya.stack
 -----------------
@@ -167,15 +169,6 @@ malaya.toxic
 -------------------------
 
 .. automodule:: malaya.toxic
-    :members:
-
-malaya.word_mover
--------------------------
-
-.. automodule:: malaya.word_mover
-    :members:
-
-.. autoclass:: malaya.word_mover._DEEP_CONTRACTION()
     :members:
 
 malaya.wordvector

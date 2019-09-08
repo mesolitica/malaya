@@ -61,9 +61,6 @@ Features
 -  **Dependency Parsing**
 
    Latest state-of-art CRF deep learning models to do analyzes the grammatical structure of a sentence, establishing relationships between words.
--  **ELMO (biLM)**
-
-   Provide pretrained bahasa wikipedia and bahasa news ELMO, with easy interface and visualization.
 -  **Relevancy Analysis**
 
    From fine-tuning BERT, Dilated Convolutional Neural Network and Self-Attention to build deep relevancy analysis models.
@@ -94,9 +91,6 @@ Features
 -  **Word2Vec**
 
    Provide pretrained bahasa wikipedia and bahasa news Word2Vec, with easy interface and visualization.
--  **Fast-text**
-
-   Provide pretrained bahasa wikipedia Fast-text, with easy interface and visualization.
 -  **BERT and XLNET**
 
    Provide easy interface to load BERT and XLNET Bahasa.

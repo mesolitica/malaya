@@ -3,16 +3,16 @@
 Thanks to [zihangdai](https://github.com/zihangdai) for opensourcing XLNET, https://github.com/zihangdai/xlnet
 
 ## Table of contents
-  * [Objective](https://github.com/huseinzol05/Malaya/tree/master/xlnet#objective)
-  * [Acknowledgement](https://github.com/huseinzol05/Malaya/tree/master/xlnet#acknowledgement)
-  * [How-to](https://github.com/huseinzol05/Malaya/tree/master/xlnet#how-to)
+  * [Objective](#objective)
+  * [Acknowledgement](#acknowledgement)
+  * [How-to](#how-to)
     * [Multigpus](#multigpus)
-  * [Download](https://github.com/huseinzol05/Malaya/tree/master/xlnet#download)
-  * [Comparison using Subjectivity Dataset](https://github.com/huseinzol05/Malaya/tree/master/xlnet#comparison-using-subjectivity-dataset)
-  * [Comparison using Emotion Dataset](https://github.com/huseinzol05/Malaya/tree/master/xlnet#comparison-using-emotion-dataset)
-  * [Feedbacks](https://github.com/huseinzol05/Malaya/tree/master/xlnet#feedbacks)
-  * [Citation](https://github.com/huseinzol05/Malaya/tree/master/xlnet#citation)
-  * [Donation](https://github.com/huseinzol05/Malaya/tree/master/xlnet#donation)
+  * [Download](#download)
+  * [Comparison using Subjectivity Dataset](#comparison-using-subjectivity-dataset)
+  * [Comparison using Emotion Dataset](#comparison-using-emotion-dataset)
+  * [Feedbacks](#feedbacks)
+  * [Citation](#citation)
+  * [Donation](#donation)
 
 ## Objective
 

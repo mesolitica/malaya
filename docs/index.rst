@@ -17,8 +17,6 @@ Contents:
 
    Installation
    Dataset
-   Crawler
-   Translator-malaya
    Accuracy
    Cache
    Bert
@@ -45,7 +43,9 @@ Contents:
    Word2num
    Wordvector
    Xlnet
-   Mover
    Cluster
    Api
+   Contributing
+   Crawler
+   Translator-malaya
    Reference
