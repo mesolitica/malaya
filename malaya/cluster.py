@@ -4,9 +4,12 @@ from sklearn.manifold import MDS
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from .texts.vectorizer import SkipGramVectorizer
 from .stem import sastrawi
-from .texts._text_functions import simple_textcleaning, split_by_dot, STOPWORDS
-from scipy.cluster.hierarchy import ward, dendrogram
-from fuzzywuzzy import fuzz
+from .texts._text_functions import (
+    simple_textcleaning,
+    split_into_sentences,
+    STOPWORDS,
+)
+
 import numpy as np
 import re
 import random
@@ -446,6 +449,7 @@ def cluster_dendogram(
     try:
         import matplotlib.pyplot as plt
         import seaborn as sns
+        from scipy.cluster.hierarchy import ward, dendrogram
 
         sns.set()
     except:
@@ -809,11 +813,12 @@ def cluster_entity_linking(
         import seaborn as sns
         import networkx as nx
         import networkx.drawing.layout as nxlayout
+        from fuzzywuzzy import fuzz
 
         sns.set()
     except:
         raise Exception(
-            'matplotlib, seaborn, networkx not installed. Please install it and try again.'
+            'matplotlib, seaborn, networkx, fuzzywuzzy not installed. Please install it and try again.'
         )
 
     if vectorizer == 'tfidf':
@@ -826,12 +831,11 @@ def cluster_entity_linking(
         raise ValueError("vectorizer must be in  ['tfidf', 'bow', 'skip-gram']")
 
     if isinstance(corpus, str):
-        corpus = corpus.replace('\n', '.')
-        corpus = split_by_dot(corpus)
+        corpus = split_into_sentences(corpus)
     else:
-        corpus = [c + '.' for c in corpus]
-        corpus = ' '.join(corpus)
-        corpus = re.findall('(?=\S)[^.\n]+(?<=\S)', corpus)
+        corpus = '. '.join(corpus)
+        corpus = split_into_sentences(corpus)
+
     corpus = [string for string in corpus if len(string) > 5]
 
     if not colors:

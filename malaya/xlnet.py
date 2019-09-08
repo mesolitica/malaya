@@ -8,6 +8,7 @@ from .texts._text_functions import (
 )
 from ._utils._utils import check_file, check_available
 import collections
+from collections import defaultdict
 import re
 import os
 import numpy as np
@@ -123,6 +124,22 @@ class _Model:
             },
         )
 
+    def _attention(self, strings):
+        input_ids, input_masks, segment_ids, s_tokens = xlnet_tokenization(
+            self._tokenizer, strings
+        )
+        maxlen = max([len(s) for s in s_tokens])
+        s_tokens = padding_sequence(s_tokens, maxlen, pad_int = '<cls>')
+        attentions = self._sess.run(
+            self.attention_nodes,
+            feed_dict = {
+                self.X: input_ids,
+                self.segment_ids: segment_ids,
+                self.input_masks: input_masks,
+            },
+        )
+        return attentions, s_tokens
+
     def attention(self, strings, method = 'last', **kwargs):
         """
         Get attention string inputs from xlnet attention.
@@ -156,20 +173,7 @@ class _Model:
             raise Exception(
                 "method not supported, only support ['last', 'first', 'mean']"
             )
-
-        input_ids, input_masks, segment_ids, s_tokens = xlnet_tokenization(
-            self._tokenizer, strings
-        )
-        maxlen = max([len(s) for s in s_tokens])
-        s_tokens = padding_sequence(s_tokens, maxlen, pad_int = '<cls>')
-        attentions = self._sess.run(
-            self.attention_nodes,
-            feed_dict = {
-                self.X: input_ids,
-                self.segment_ids: segment_ids,
-                self.input_masks: input_masks,
-            },
-        )
+        attentions, s_tokens = self._attention(strings)
 
         if method == 'first':
             cls_attn = np.transpose(attentions[0][:, 0], (1, 0, 2))
@@ -191,6 +195,28 @@ class _Model:
                 merge_sentencepiece_tokens(list(zip(s_tokens[i], attn[i])))
             )
         return output
+
+    def visualize_attention(self, string):
+        from ._utils._html import _attention
+
+        if not isinstance(string, str):
+            raise ValueError('input must be a string')
+        strings = [string]
+        attentions, s_tokens = self._attention(strings)
+        attn_dict = defaultdict(list)
+        for layer, attn_data in enumerate(attentions):
+            attn = attn_data[:, :, 0]
+            attn_dict['all'].append(attn.tolist())
+
+        results = {
+            'all': {
+                'attn': attn_dict['all'],
+                'left_text': s_tokens[0],
+                'right_text': s_tokens[0],
+            }
+        }
+        _attention(results)
+        return attentions, s_tokens
 
 
 def available_xlnet_model():

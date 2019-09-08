@@ -355,6 +355,26 @@ def _render_emotion(data, notebook_mode = False):
         serve(template)
 
 
+def _attention(attn_data):
+    from IPython.core.display import display, HTML, Javascript
+
+    vis_html = """
+          <span style="user-select:none">
+            Layer: <select id="layer"></select>
+          </span>
+          <div id='vis'></div>
+        """
+
+    display(HTML(vis_html))
+    this_dir = os.path.dirname(__file__)
+    vis_js = open(
+        os.path.join(this_dir, 'web', 'static', 'head_view.js')
+    ).read()
+    params = {'attention': attn_data, 'default_filter': 'all'}
+    display(Javascript('window.params = %s' % json.dumps(params)))
+    display(Javascript(vis_js))
+
+
 def _upload_jupyter():
     location = os.getcwd()
 

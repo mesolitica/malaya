@@ -1,4 +1,6 @@
 _english_words = {
+    'semenjak',
+    'hiring',
     'lamentational',
     'hinterland',
     'neofetus',
@@ -203477,7 +203479,6 @@ _english_words = {
     'biometrician',
     'lunaria',
     'parquet',
-    'skit',
     'kerogen',
     'mutilla',
     'chickasaw',
@@ -216986,7 +216987,6 @@ _english_words = {
     'corder',
     'valetudinariness',
     'augend',
-    'tau',
     'implastic',
     'autoloading',
     'boulterer',

@@ -1,8 +1,7 @@
 import pickle
 import os
 import numpy as np
-from fuzzywuzzy import fuzz
-from sklearn.manifold import TSNE
+from .texts._distance import JaroWinkler
 from scipy.spatial.distance import cdist
 from sklearn.neighbors import NearestNeighbors
 import tensorflow as tf
@@ -80,6 +79,7 @@ class _wordvector:
         self._dictionary = dictionary
         self._reverse_dictionary = {v: k for k, v in dictionary.items()}
         self.words = list(dictionary.keys())
+        self._jarowinkler = JaroWinkler()
         _graph = tf.Graph()
         with _graph.as_default():
             self._embedding = tf.placeholder(
@@ -110,7 +110,9 @@ class _wordvector:
         if not isinstance(word, str):
             raise ValueError('input must be a string')
         if word not in self._dictionary:
-            arr = np.array([fuzz.ratio(word, k) for k in self.words])
+            arr = np.array(
+                [self._jarowinkler.similarity(word, k) for k in self.words]
+            )
             idx = (-arr).argsort()[:5]
             strings = ', '.join([self.words[i] for i in idx])
             raise Exception(
@@ -206,6 +208,7 @@ class _wordvector:
         """
 
         try:
+            from sklearn.manifold import TSNE
             import matplotlib.pyplot as plt
             import seaborn as sns
 
@@ -285,7 +288,12 @@ class _wordvector:
                 if len(temp):
                     row = self._dictionary[
                         self.words[
-                            np.argmax([fuzz.ratio(temp, k) for k in self.words])
+                            np.argmax(
+                                [
+                                    self._jarowinkler.similarity(temp, k)
+                                    for k in self.words
+                                ]
+                            )
                         ]
                     ]
                     tokens.append(
@@ -297,7 +305,14 @@ class _wordvector:
                 tokens.append(char)
         if len(temp):
             row = self._dictionary[
-                self.words[np.argmax([fuzz.ratio(temp, k) for k in self.words])]
+                self.words[
+                    np.argmax(
+                        [
+                            self._jarowinkler.similarity(temp, k)
+                            for k in self.words
+                        ]
+                    )
+                ]
             ]
             tokens.append(
                 ','.join(self._embed_matrix[row, :].astype('str').tolist())
@@ -447,7 +462,12 @@ class _wordvector:
             for i in range(len(words)):
                 if words[i] not in self.words:
                     words[i] = self.words[
-                        np.argmax([fuzz.ratio(words[i], k) for k in self.words])
+                        np.argmax(
+                            [
+                                self._jarowinkler.similarity(words[i], k)
+                                for k in self.words
+                            ]
+                        )
                     ]
         else:
             for i in range(len(words)):

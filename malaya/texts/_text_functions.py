@@ -7,6 +7,7 @@ from unidecode import unidecode
 from .._utils._utils import download_file
 from ._tatabahasa import stopword_tatabahasa, stopwords, stopwords_calon
 from ._english_words import _english_words
+from ._malay_words import _malay_words
 from .._xlnet.prepro_utils import preprocess_text, encode_ids, encode_pieces
 from .. import home
 import json
@@ -16,6 +17,7 @@ STOPWORD_CALON = set(stopwords_calon)
 VOWELS = 'aeiou'
 PHONES = ['sh', 'ch', 'ph', 'sz', 'cz', 'sch', 'rz', 'dz']
 ENGLISH_WORDS = _english_words
+MALAY_WORDS = _malay_words
 
 
 class SentencePieceTokenizer:

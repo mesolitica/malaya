@@ -111,12 +111,12 @@ def naive(word):
     """
     if not isinstance(word, str):
         raise ValueError('input must be a string')
-    hujung_result = [e for e in hujung if word.endswith(e)]
+    hujung_result = [v for k, v in hujung.items() if word.endswith(k)]
     if len(hujung_result):
         hujung_result = max(hujung_result, key = len)
         if len(hujung_result):
             word = word[: -len(hujung_result)]
-    permulaan_result = [e for e in permulaan if word.startswith(e)]
+    permulaan_result = [v for k, v in permulaan.items() if word.startswith(k)]
     if len(permulaan_result):
         permulaan_result = max(permulaan_result, key = len)
         if len(permulaan_result):

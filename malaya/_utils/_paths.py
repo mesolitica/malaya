@@ -4,7 +4,7 @@ MALAY_TEXT = home + '/dictionary/malay-text.txt'
 MALAY_TEXT_200K = home + '/dictionary-200k/malay-text.txt'
 
 PATH_NGRAM = {
-    1: {'model': home + '/preprocessing/bm_1grams.json', 'version': 'v23'},
+    1: {'model': home + '/preprocessing/bm_1grams.json', 'version': 'v28'},
     2: {'model': home + '/preprocessing/bm_2grams.json', 'version': 'v23'},
 }
 

@@ -8,6 +8,7 @@ from .texts._text_functions import (
 )
 from ._utils._paths import PATH_BERT, S3_PATH_BERT
 from ._utils._utils import check_file, check_available
+from collections import defaultdict
 import numpy as np
 import os
 
@@ -97,6 +98,15 @@ class _Model:
         )
         return self._sess.run(self.logits, feed_dict = {self.X: batch_x})
 
+    def _attention(self, strings):
+        batch_x, _, _, s_tokens = bert_tokenization(
+            self._tokenizer, strings, cls = self._cls, sep = self._sep
+        )
+        maxlen = max([len(s) for s in s_tokens])
+        s_tokens = padding_sequence(s_tokens, maxlen, pad_int = self._sep)
+        attentions = self._sess.run(self.attns, feed_dict = {self.X: batch_x})
+        return attentions, s_tokens
+
     def attention(self, strings, method = 'last', **kwargs):
         """
         Get attention string inputs from bert attention.
@@ -130,13 +140,8 @@ class _Model:
             raise Exception(
                 "method not supported, only support 'last', 'first' and 'mean'"
             )
+        attentions, s_tokens = self._attention(strings)
 
-        batch_x, _, _, s_tokens = bert_tokenization(
-            self._tokenizer, strings, cls = self._cls, sep = self._sep
-        )
-        maxlen = max([len(s) for s in s_tokens])
-        s_tokens = padding_sequence(s_tokens, maxlen, pad_int = self._sep)
-        attentions = self._sess.run(self.attns, feed_dict = {self.X: batch_x})
         if method == 'first':
             cls_attn = list(attentions[0].values())[0][:, :, 0, :]
 
@@ -163,6 +168,27 @@ class _Model:
                     merge_sentencepiece_tokens(list(zip(s_tokens[i], attn[i])))
                 )
         return output
+
+    def visualize_attention(self, string):
+        from ._utils._html import _attention
+
+        if not isinstance(string, str):
+            raise ValueError('input must be a string')
+        strings = [string]
+        attentions, s_tokens = self._attention(strings)
+        attn_dict = defaultdict(list)
+        for layer, attn_data in enumerate(attentions):
+            attn = list(attn_data.values())[0][0]
+            attn_dict['all'].append(attn.tolist())
+
+        results = {
+            'all': {
+                'attn': attn_dict['all'],
+                'left_text': s_tokens[0],
+                'right_text': s_tokens[0],
+            }
+        }
+        _attention(results)
 
 
 def available_bert_model():

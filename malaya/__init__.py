@@ -292,7 +292,6 @@ from . import entity
 from . import language_detection
 from . import normalize
 from . import num2word
-from . import ocr
 from . import pos
 from . import preprocessing
 from . import relevancy
@@ -305,7 +304,6 @@ from . import subjective
 from . import summarize
 from . import topic_model
 from . import toxic
-from . import word_mover
 from . import word2num
 from . import wordvector
 from .texts import vectorizer
