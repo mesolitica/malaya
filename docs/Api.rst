@@ -63,9 +63,6 @@ malaya.normalize
 .. autoclass:: malaya.normalize._SPELL_NORMALIZE()
     :members:
 
-.. autoclass:: malaya.normalize._FUZZY_NORMALIZE()
-    :members:
-
 malaya.num2word
 -----------------
 

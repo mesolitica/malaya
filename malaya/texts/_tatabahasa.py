@@ -297,6 +297,7 @@ stopword_tatabahasa = list(
 )
 
 rules_normalizer = {
+    'mkan': 'makan',
     'sye': 'saya',
     'saye': 'saya',
     'camtu': 'macam itu',

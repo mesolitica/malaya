@@ -86,7 +86,7 @@ def spell(blocks):
     first_block = blocks[0]
     if len(first_block[0]) == 1:
         if first_block[0] == '0':
-            spelling = ['nol']
+            spelling = ['kosong']
         else:
             spelling = BASE[int(first_block[0])]
     elif len(first_block[0]) == 2:
@@ -105,7 +105,7 @@ def spell_float(float_part):
     word_list = []
     for n in float_part:
         if n == '0':
-            word_list += ['nol']
+            word_list += ['kosong']
             continue
         word_list += BASE[int(n)]
     return ' '.join(['', 'perpuluhan'] + word_list)

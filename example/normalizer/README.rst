@@ -7,41 +7,18 @@
 
 .. parsed-literal::
 
-    CPU times: user 12.4 s, sys: 1.57 s, total: 14 s
-    Wall time: 17.9 s
+    CPU times: user 5.85 s, sys: 1.41 s, total: 7.26 s
+    Wall time: 11.9 s
 
 
 .. code:: ipython3
 
-    string1 = 'xjdi ke, y u xsuke makan HUSEIN kt situ tmpt, i hate it. pelikle'
+    string1 = 'xjdi ke, y u xsuke makan HUSEIN kt situ tmpt, i hate it. pelikle, pada'
     string2 = 'i mmg xske mknn HUSEIN kampng tmpat, i love them. pelikle saye'
-    string3 = 'perdana menteri ke11 sgt suka mkan ayam, harganya cuma rm15.50'
-    string4 = 'pada 10/4, kementerian mengumumkan'
+    string3 = 'perdana menteri ke11 sgt suka makn ayam, harganya cuma rm15.50'
+    string4 = 'pada 10/4, kementerian mengumumkan, 1/100'
     string5 = 'Husein Zolkepli dapat tempat ke-12 lumba lari hari ni'
-    string6 = 'Husein Zolkepli (2011 - 2019) adalah ketua kampng di kedah'
-
-Load basic normalizer
----------------------
-
-.. code:: ipython3
-
-    print(malaya.normalize.basic(string1))
-    print(malaya.normalize.basic(string2))
-    print(malaya.normalize.basic(string3))
-    print(malaya.normalize.basic(string4))
-    print(malaya.normalize.basic(string5))
-    print(malaya.normalize.basic(string6))
-
-
-.. parsed-literal::
-
-    xjdi ke kenapa awak xsuke makan Husein kt situ tmpt saya hate it pelikle
-    saya mmg xske mknn Husein kampng tmpat saya love them pelikle saye
-    perdana menteri ke sgt suka mkan ayam harganya cuma rm
-    pada kementerian mengumumkan
-    Husein Zolkepli dapat tempat ke lumba lari hari ni
-    Husein Zolkepli adalah ketua kampng di kedah
-
+    string6 = 'Husein Zolkepli (2011 - 2019) adalah ketua kampng di kedah sekolah King Edward ke-IV'
 
 Load spell normalizer
 ---------------------
@@ -63,122 +40,315 @@ Load spell normalizer
 
 .. parsed-literal::
 
-    tak jadi ke , kenapa awak tak suka makan HUSEIN kat itu mpt , saya hate it . pelik lah
-    saya memang tak suka makanan HUSEIN kampung tempat , saya love them . pelik lah sama
-    perdana menteri ke-sebelas sangat suka makan awam , harganya cuma lima belas perpuluhan lima ringgit
-    pada sepuluh hari bulan empat , kementerian mengumumkan
-    Husein Zolkepli dapat tempat ke-dua belas lumba lari hari ni
-    Husein Zolkepli ( dua ribu sebelas hingga dua ribu sembilan belas ) adalah ketua kampung di kedai
+    tak jadi ke , kenapa awak tak suka makan HUSEIN kat situ tmpat , saya hate it . pelik lah , pada
+    saya memang tak suka makanan HUSEIN kampung tempat , saya love them . pelik lah saya
+    perdana menteri kesebelas sangat suka makan ayam , harganya cuma lima belas perpuluhan lima ringgit
+    pada sepuluh hari bulan empat , kementerian mengumumkan , satu per seratus
+    Husein Zolkepli dapat tempat kedua belas lumba lari hari ni
+    Husein Zolkepli ( dua ribu sebelas hingga dua ribu sembilan belas ) adalah ketua kampung di kedah sekolah King Edward keempat
 
 
-We can see that our normalizer normalize ``ayam`` become ``awam``, this
-is because we force our spelling correction to predict correct word, to
-disable that, simply ``assume_wrong = False``.
+Normalizing rules
+-----------------
 
-.. code:: ipython3
+1. Normalize title,
+^^^^^^^^^^^^^^^^^^^
 
-    %%time
-    normalizer.normalize(string3, assume_wrong = False)
-
-
-.. parsed-literal::
-
-    CPU times: user 505 µs, sys: 1e+03 ns, total: 506 µs
-    Wall time: 513 µs
+.. code:: python
 
 
-
-
-.. parsed-literal::
-
-    'perdana menteri ke-sebelas sangat suka makan ayam , harganya cuma lima belas perpuluhan lima ringgit'
-
-
+   {
+       'dr': 'Doktor',
+       'yb': 'Yang Berhormat',
+       'hj': 'Haji',
+       'ybm': 'Yang Berhormat Mulia',
+       'tyt': 'Tuan Yang Terutama',
+       'yab': 'Yang Berhormat',
+       'ybm': 'Yang Berhormat Mulia',
+       'yabhg': 'Yang Amat Berbahagia',
+       'ybhg': 'Yang Berbahagia',
+       'miss': 'Cik',
+   }
 
 .. code:: ipython3
 
-    %%time
-    normalizer.normalize(string2, assume_wrong = False)
-
-
-.. parsed-literal::
-
-    CPU times: user 1.54 ms, sys: 27 µs, total: 1.57 ms
-    Wall time: 1.59 ms
+    normalizer.normalize('Dr yahaya')
 
 
 
 
 .. parsed-literal::
 
-    'saya memang tak ska makanan HUSEIN kampung tempat , saya love them . pelik lah saya'
+    'Doktor yahaya'
 
 
+
+2. expand ``x``
+^^^^^^^^^^^^^^^
 
 .. code:: ipython3
 
-    %%time
-    normalizer.normalize(string6, assume_wrong = False)
-
-
-.. parsed-literal::
-
-    CPU times: user 450 µs, sys: 15 µs, total: 465 µs
-    Wall time: 482 µs
+    normalizer.normalize('xtahu')
 
 
 
 
 .. parsed-literal::
 
-    'Husein Zolkepli ( dua ribu sebelas hingga dua ribu sembilan belas ) adalah ketua kampung di kedah'
+    'tak tahu'
 
 
 
-Load fuzzy normalizer
----------------------
+3. normalize ``ke -``
+^^^^^^^^^^^^^^^^^^^^^
 
 .. code:: ipython3
 
-    malays = malaya.load_malay_dictionary()
-    normalizer = malaya.normalize.fuzzy(malays)
-
-.. code:: ipython3
-
-    %%time
-    normalizer.normalize(string3)
-
-
-.. parsed-literal::
-
-    CPU times: user 7.54 s, sys: 83 ms, total: 7.63 s
-    Wall time: 7.9 s
+    normalizer.normalize('ke-12')
 
 
 
 
 .. parsed-literal::
 
-    'perdana menteri ke-sebelas sangat suka makan ayam , harganya cuma lima belas perpuluhan lima ringgit'
+    'kedua belas'
 
 
 
 .. code:: ipython3
 
-    %%time
-    normalizer.normalize(string2)
-
-
-.. parsed-literal::
-
-    CPU times: user 7.43 s, sys: 65.9 ms, total: 7.49 s
-    Wall time: 7.7 s
+    normalizer.normalize('ke - 12')
 
 
 
 
 .. parsed-literal::
 
-    'saya memang tak saka makanan HUSEIN kampung tempat , saya love them . pelik lah saya'
+    'kedua belas'
+
+
+
+4. normalize ``ke - roman``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    normalizer.normalize('ke-XXI')
+
+
+
+
+.. parsed-literal::
+
+    'kedua puluh satu'
+
+
+
+.. code:: ipython3
+
+    normalizer.normalize('ke - XXI')
+
+
+
+
+.. parsed-literal::
+
+    'kedua puluh satu'
+
+
+
+5. normalize ``NUM - NUM``
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    normalizer.normalize('2011 - 2019')
+
+
+
+
+.. parsed-literal::
+
+    'dua ribu sebelas hingga dua ribu sembilan belas'
+
+
+
+.. code:: ipython3
+
+    normalizer.normalize('2011.01-2019')
+
+
+
+
+.. parsed-literal::
+
+    'dua ribu sebelas perpuluhan kosong satu hingga dua ribu sembilan belas'
+
+
+
+6. normalize ``pada NUM (/ | -) NUM``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    normalizer.normalize('pada 10/4')
+
+
+
+
+.. parsed-literal::
+
+    'pada sepuluh hari bulan empat'
+
+
+
+.. code:: ipython3
+
+    normalizer.normalize('PADA 10 -4')
+
+
+
+
+.. parsed-literal::
+
+    'pada sepuluh hari bulan empat'
+
+
+
+7. normalize ``NUM / NUM``
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    normalizer.normalize('10 /4')
+
+
+
+
+.. parsed-literal::
+
+    'sepuluh per empat'
+
+
+
+8. normalize ``rm NUM``
+^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    normalizer.normalize('RM 10.5')
+
+
+
+
+.. parsed-literal::
+
+    'sepuluh perpuluhan lima ringgit'
+
+
+
+9. normalize ``rm NUM sen``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    normalizer.normalize('rm 10.5 sen')
+
+
+
+
+.. parsed-literal::
+
+    'sepuluh perpuluhan lima ringgit'
+
+
+
+10. normalize ``NUM sen``
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    normalizer.normalize('10.5 sen')
+
+
+
+
+.. parsed-literal::
+
+    'sepuluh perpuluhan lima sen'
+
+
+
+11. normalize money
+^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    normalizer.normalize('rm10.4m')
+
+
+
+
+.. parsed-literal::
+
+    'sepuluh perpuluhan empat juta ringgit'
+
+
+
+.. code:: ipython3
+
+    normalizer.normalize('$10.4M')
+
+
+
+
+.. parsed-literal::
+
+    'sepuluh perpuluhan empat juta dollar'
+
+
+
+.. code:: ipython3
+
+    normalizer.normalize('rm10.4b')
+
+
+
+
+.. parsed-literal::
+
+    'sepuluh perpuluhan empat billion ringgit'
+
+
+
+12. normalize cardinal
+^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    normalizer.normalize('123')
+
+
+
+
+.. parsed-literal::
+
+    'seratus dua puluh tiga'
+
+
+
+13. normalize ordinal
+^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    normalizer.normalize('ke123')
+
+
+
+
+.. parsed-literal::
+
+    'keseratus dua puluh tiga'
 
 
