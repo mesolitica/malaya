@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 4.24 s, sys: 633 ms, total: 4.88 s
-    Wall time: 4.87 s
+    CPU times: user 7.02 s, sys: 2.35 s, total: 9.37 s
+    Wall time: 15.7 s
 
 
 .. code:: ipython3
@@ -50,10 +50,20 @@ wikipedia much more accurate.
 
 .. code:: ipython3
 
-    embedded_news = malaya.word2vec.load_news(256)
-    w2v_wiki = malaya.word2vec.word2vec(embedded_news['nce_weights'],
+    embedded_news = malaya.wordvector.load_news(256)
+    w2v_wiki = malaya.wordvector.load(embedded_news['nce_weights'],
                                         embedded_news['dictionary'])
     doc2vec = malaya.similarity.doc2vec(w2v_wiki)
+
+
+.. parsed-literal::
+
+    WARNING: Logging before flag parsing goes to stderr.
+    W0911 18:39:35.259301 4561462720 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/wordvector.py:85: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
+    
+    W0911 18:39:35.311326 4561462720 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/wordvector.py:96: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
+    
+
 
 predict for 2 strings
 ^^^^^^^^^^^^^^^^^^^^^
@@ -106,8 +116,6 @@ visualize tree plot
 
 
 Different similarity function different percentage.
-
-**So you can try use fast-text and elmo to do the similarity study.**
 
 Calculate similarity using deep encoder
 ---------------------------------------
@@ -189,7 +197,7 @@ visualize tree plot
 
 
 
-.. image:: load-similarity_files/load-similarity_21_1.png
+.. image:: load-similarity_files/load-similarity_20_1.png
 
 
 BERT model

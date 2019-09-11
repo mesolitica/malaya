@@ -1,14 +1,11 @@
 import numpy as np
 import re
-import random
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.decomposition import TruncatedSVD, NMF, LatentDirichletAllocation
-from sklearn.utils import shuffle
-from fuzzywuzzy import fuzz
+from .texts._distance import JaroWinkler
 from sklearn.metrics.pairwise import cosine_similarity
 from .texts._text_functions import (
     summary_textcleaning,
-    classification_textcleaning,
     STOPWORDS,
     split_into_sentences,
     simple_textcleaning,
@@ -473,7 +470,10 @@ def doc2vec(vectorizer, corpus, top_k = 3, aggregation = 'mean', soft = True):
                     pass
                 else:
                     arr = np.array(
-                        [fuzz.ratio(token, k) for k in vectorizer.words]
+                        [
+                            self._jarowinkler.similarity(token, k)
+                            for k in vectorizer.words
+                        ]
                     )
                     idx = (-arr).argsort()[0]
                     inside.append(

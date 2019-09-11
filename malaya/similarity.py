@@ -2,7 +2,7 @@ import re
 import os
 import random
 import numpy as np
-from fuzzywuzzy import fuzz
+from .texts._distance import JaroWinkler
 import json
 from sklearn.metrics.pairwise import (
     cosine_similarity,
@@ -180,6 +180,7 @@ class _VECTORIZER_SIMILARITY:
 class _DOC2VEC_SIMILARITY:
     def __init__(self, vectorizer):
         self._vectorizer = vectorizer
+        self._jarowinkler = JaroWinkler()
 
     def _predict(
         self,
@@ -260,7 +261,7 @@ class _DOC2VEC_SIMILARITY:
                     else:
                         arr = np.array(
                             [
-                                fuzz.ratio(token, k)
+                                self._jarowinkler.similarity(token, k)
                                 for k in self._vectorizer.words
                             ]
                         )
@@ -285,7 +286,7 @@ class _DOC2VEC_SIMILARITY:
                         else:
                             arr = np.array(
                                 [
-                                    fuzz.ratio(token, k)
+                                    self._jarowinkler.similarity(token, k)
                                     for k in self._vectorizer.words
                                 ]
                             )

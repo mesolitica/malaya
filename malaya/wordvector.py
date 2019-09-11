@@ -443,7 +443,7 @@ class _wordvector:
         return_similarity: bool, (default=True)
             if True, will return between 0-1 represents the distance.
         soft: bool, (default=True)
-            if True, a word not in the dictionary will be replaced with nearest fuzzywuzzy ratio.
+            if True, a word not in the dictionary will be replaced with nearest JaroWinkler ratio.
             if False, it will throw an exception if a word not in the dictionary.
 
         Returns

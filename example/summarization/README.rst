@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 12.3 s, sys: 1.62 s, total: 13.9 s
-    Wall time: 18.3 s
+    CPU times: user 6.17 s, sys: 1.52 s, total: 7.69 s
+    Wall time: 12.3 s
 
 
 .. code:: ipython3
@@ -388,13 +388,24 @@ accumulate word vectors. Default is ``mean``.
 Using word2vec
 ^^^^^^^^^^^^^^
 
-I will use ``load_news``, word2vec from wikipedia took a very long time.
+I will use ``load_news``, word2vec from wikipedia took a very long time
+for my noob laptop,
 
 .. code:: ipython3
 
-    embedded_news = malaya.word2vec.load_news(256)
-    w2v_wiki = malaya.word2vec.word2vec(embedded_news['nce_weights'],
+    embedded_news = malaya.wordvector.load_news(256)
+    w2v_wiki = malaya.wordvector.load(embedded_news['nce_weights'],
                                         embedded_news['dictionary'])
+
+
+.. parsed-literal::
+
+    WARNING: Logging before flag parsing goes to stderr.
+    W0911 18:42:53.304655 4598130112 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/wordvector.py:85: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
+    
+    W0911 18:42:53.326112 4598130112 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/wordvector.py:96: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
+    
+
 
 .. code:: ipython3
 
@@ -406,26 +417,5 @@ I will use ``load_news``, word2vec from wikipedia took a very long time.
 .. parsed-literal::
 
     'Timbalan Presiden UMNO, Datuk Seri Mohamad Hasan berkata, kenyataan tersebut tidak mewakili pendirian serta pandangan UMNO   kerana parti itu menghormati serta memahami keperluan sekolah vernakular dalam negara. Mohamad yang menjalankan tugas-tugas Presiden UMNO berkata, UMNO konsisten dengan pendirian itu dalam mengiktiraf kepelbagaian bangsa dan etnik termasuk hak untuk beragama serta mendapat pendidikan. Kata Nazri dalam kenyataannya itu, beliau menekankan bahawa semua pihak perlu menghormati hak orang Melayu dan bumiputera. Kata beliau, komitmen UMNO dan BN berhubung perkara itu dapat dilihat dengan jelas dalam bentuk sokongan infrastruktur, pengiktirafan dan pemberian peruntukan yang diperlukan. "Kedua UMNO sebagai sebuah parti sangat menghormati dan memahami keperluan sekolah vernakular di Malaysia.'
-
-
-
-Using fast-text
-^^^^^^^^^^^^^^^
-
-.. code:: ipython3
-
-    wiki, ngrams = malaya.fast_text.load_wiki()
-    fast_text_embed = malaya.fast_text.fast_text(wiki['embed_weights'],wiki['dictionary'], ngrams)
-
-.. code:: ipython3
-
-    malaya.summarize.doc2vec(fast_text_embed, isu_kerajaan, soft = False, top_k = 5)
-
-
-
-
-.. parsed-literal::
-
-    'Timbalan Presiden UMNO, Datuk Seri Mohamad Hasan berkata, kenyataan tersebut tidak mewakili pendirian serta pandangan UMNO   kerana parti itu menghormati serta memahami keperluan sekolah vernakular dalam negara. Mohamad yang menjalankan tugas-tugas Presiden UMNO berkata, UMNO konsisten dengan pendirian itu dalam mengiktiraf kepelbagaian bangsa dan etnik termasuk hak untuk beragama serta mendapat pendidikan. Kata Nazri dalam kenyataannya itu, beliau menekankan bahawa semua pihak perlu menghormati hak orang Melayu dan bumiputera. "Saya berharap isu ini tidak dipolitikkan secara tidak bertanggungjawab oleh mana-mana pihak terutama dengan cara yang tidak menggambarkan pendirian sebenar UMNO dan BN," katanya. Kata beliau, komitmen UMNO dan BN berhubung perkara itu dapat dilihat dengan jelas dalam bentuk sokongan infrastruktur, pengiktirafan dan pemberian peruntukan yang diperlukan.'
 
 
