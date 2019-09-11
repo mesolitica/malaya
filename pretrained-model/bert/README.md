@@ -126,6 +126,28 @@ python3 run_pretraining.py --input_file=tests_output.tfrecord --output_dir=pretr
 tensorboard --logdir=tensorboard --host=0.0.0.0
 ```
 
+5. Execute validation,
+```bash
+python3 validation.py --input_file=tests_output.tfrecord --output_dir=pretraining_output --bert_config_file=bert_config.json --train_batch_size=50 --max_seq_length=128 --max_predictions_per_seq=20 --num_train_steps=3000000 --num_warmup_steps=10 --learning_rate=2e-5
+```
+
+```text
+INFO:tensorflow:***** Eval results *****
+I0910 11:20:31.561826 140220436277056 validation.py:595] ***** Eval results *****
+INFO:tensorflow:  global_step = 480048
+I0910 11:20:31.561924 140220436277056 validation.py:597]   global_step = 480048
+INFO:tensorflow:  loss = 3.5268908
+I0910 11:20:31.562081 140220436277056 validation.py:597]   loss = 3.5268908
+INFO:tensorflow:  masked_lm_accuracy = 0.46958354
+I0910 11:20:31.562179 140220436277056 validation.py:597]   masked_lm_accuracy = 0.46958354
+INFO:tensorflow:  masked_lm_loss = 3.1709714
+I0910 11:20:31.562261 140220436277056 validation.py:597]   masked_lm_loss = 3.1709714
+INFO:tensorflow:  next_sentence_accuracy = 0.7625
+I0910 11:20:31.562338 140220436277056 validation.py:597]   next_sentence_accuracy = 0.7625
+INFO:tensorflow:  next_sentence_loss = 0.3507687
+I0910 11:20:31.562414 140220436277056 validation.py:597]   next_sentence_loss = 0.3507687
+```
+
 #### Multigpus
 
 Original BERT implementation not support multi-gpus, only single gpu. Here I created MirroredStrategy to pretrain using multi-gpus.

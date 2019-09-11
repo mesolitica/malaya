@@ -190,6 +190,35 @@ python3 train_gpu.py \
   --train_steps=700000  --iterations=10 --learning_rate=5e-5
 ```
 
+7. Run validation,
+```bash
+python3 validation.py \
+  --corpus_info_path=save-location2/corpus_info.json \
+  --record_info_dir=save-location2/tfrecords \
+  --train_batch_size=60 \
+  --seq_len=512 \
+  --reuse_len=256 \
+  --mem_len=384 \
+  --perm_size=256 \
+  --n_layer=12 \
+  --d_model=512 \
+  --d_embed=512 \
+  --n_head=16 \
+  --d_head=64 \
+  --d_inner=2048 \
+  --untie_r=True \
+  --mask_alpha=6 \
+  --mask_beta=1 \
+  --num_predict=85 \
+  --model_dir=output-model2 \
+  --uncased=False \
+  --num_core_per_host=1 \
+  --train_steps=300000 \
+  --iterations=10 \
+  --learning_rate=5e-5 \
+  --save_steps=15000
+```
+
 #### Multigpus
 
 I really not suggest to use multi-gpus from original XL-NET implementation, not optimized and can lead to huge memory leak. Here I created MirroredStrategy to pretrain using multi-gpus.
