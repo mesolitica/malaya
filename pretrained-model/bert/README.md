@@ -181,12 +181,43 @@ python3 multigpu_pretraining.py \
 
 1. **BASE**, last update 30th July 2019, [bert-bahasa-base.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-bahasa-base.tar.gz) [Tensorboard data](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-base-30-july-2019-tensorboard.instance-3)
 
-**Vocab size 40k, Case Sensitive, Train on 1.51GB dataset, 1.5M steps, BASE size (467MB)**.
+  1. Vocab size 40k.
+  2. Trained on cleaned wikipedia, raw twitter, raw instagram, raw parliament, raw news.
+  3. 1.5M steps, single GPU.
+  4. BASE size (467MB).
 
 2. **SMALL**, last update 2nd August 2019,
 [bert-bahasa-small.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-bahasa-small.tar.gz) [Tensorboard data](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/events.out.tfevents.1564477991.instance-3)
 
-**Vocab size 40k, Case Sensitive, Train on 1.51GB dataset, 1.5M steps, SMALL size (184MB)**.
+  1. Vocab size 40k.
+  2. Trained on cleaned wikipedia, raw twitter, raw instagram, raw parliament, raw news.
+  3. 1.5M steps, single GPU.
+  4. SMALL size (184MB).
+
+3. **BASE**, last update 13th September 2019,
+[bert-bahasa-base-13-9-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-base-13-9-2019.tar.gz)
+
+  1. Vocab size 40k.
+  2. Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news.
+  3. 1.0M steps, 3 GPUs.
+  4. BASE size (467MB).
+
+```text
+INFO:tensorflow:***** Eval results *****
+I0913 04:02:36.334070 140621913737024 validation.py:595] ***** Eval results *****
+INFO:tensorflow:  global_step = 1000002
+I0913 04:02:36.334207 140621913737024 validation.py:597]   global_step = 1000002
+INFO:tensorflow:  loss = 3.2660308
+I0913 04:02:36.334458 140621913737024 validation.py:597]   loss = 3.2660308
+INFO:tensorflow:  masked_lm_accuracy = 0.49669307
+I0913 04:02:36.334600 140621913737024 validation.py:597]   masked_lm_accuracy = 0.49669307
+INFO:tensorflow:  masked_lm_loss = 2.9214077
+I0913 04:02:36.334724 140621913737024 validation.py:597]   masked_lm_loss = 2.9214077
+INFO:tensorflow:  next_sentence_accuracy = 0.78
+I0913 04:02:36.334844 140621913737024 validation.py:597]   next_sentence_accuracy = 0.78
+INFO:tensorflow:  next_sentence_loss = 0.33995274
+I0913 04:02:36.334962 140621913737024 validation.py:597]   next_sentence_loss = 0.33995274
+```
 
 ## Comparison using Subjectivity Dataset
 

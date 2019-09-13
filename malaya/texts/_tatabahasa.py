@@ -296,8 +296,55 @@ stopword_tatabahasa = list(
     )
 )
 
+date_replace = {
+    'awk': 'awak',
+    'ngkau': 'engkau',
+    'lps': 'lalu',
+    'lepas': 'lalu',
+    'mnggu': 'minggu',
+    'bln': 'bulan',
+    'skrg': 'sekarang',
+    'thun': 'tahun',
+    'hri': 'hari',
+    'minute': 'minit',
+    'mnit': 'minit',
+    'sec': 'saat',
+    'second': 'saat',
+    'yesterday': 'semalam',
+    'kelmarin': 'kelmarin',
+    'smalam': 'semalam',
+    'dpan': 'depan',
+    'dpn': 'depan',
+    'esk': 'esok',
+}
 rules_normalizer = {
+    'january': 'januari',
+    'february': 'februari',
+    'march': 'mac',
+    'may': 'mei',
+    'june': 'jun',
+    'july': 'julai',
+    'august': 'ogos',
+    'october': 'oktober',
+    'december': 'disember',
+    'dec': 'dis',
+    'oct': 'okt',
+    'monday': 'isnin',
+    'mon': 'isn',
+    'tuesday': 'selasa',
+    'tues': 'sel',
+    'wednesday': 'rabu',
+    'wed': 'rab',
+    'thursday': 'khamis',
+    'thurs': 'kha',
+    'friday': 'jumaat',
+    'fri': 'jum',
+    'saturday': 'sabtu',
+    'sat': 'sab',
+    'sunday': 'ahad',
+    'sun': 'ahd',
     'mkan': 'makan',
+    'skrg': 'sekarang',
     'sye': 'saya',
     'saye': 'saya',
     'camtu': 'macam itu',
@@ -2347,10 +2394,20 @@ _fd2 = '(?:{})'.format(
     )
 )
 _date = '(?:' + '(?:' + _fd1 + '|' + _fd2 + ')' + '|' + _short_date + ')'
+_past_date_string = '(?:\s|\d+)\s*(?:minggu|bulan|tahun|hari|thun|hri|mnggu|jam|minit|saat)\s*(?:lalu|lepas|lps)'
+_now_date_string = '(?:sekarang|skrg|jam|tahun|thun|saat|minit) (?:ini|ni)\\b'
+_yesterday_date_string = '(?:yesterday|semalam|kelmarin|smalam)'
+_tomorrow_date_string = '(?:esok|esk)\\b'
+_future_date_string = '(?:dlm|dalam)\s*\d+(?:minggu|bulan|tahun|hari|thun|hri|mnggu|jam|minit|saat)'
+_depan_date_string = '(?:\s|\d+)\s*(?:minggu|bulan|tahun|hari|thun|hri|mnggu|jam|minit|saat)\s*(?:depan|dpan|dpn)'
 
 _number = r"\b\d+(?:[\.,']\d+)?\b"
 _percentage = _number + '%'
-_money = r"(?:(?:[$€£¢]|RM|rm)\d+(?:[\.,']\d+)?(?:[MmKkBb](?:n|(?:il(?:lion)?))?)?)|(?:\d+(?:[\.,']\d+)?(?:[$€£¢]|sen))"
+_money = r"(?:(?:[$€£¢]|RM|rm)\s*\d+(?:[\.,']\d+)?(?:[MmKkBb](?:n|(?:il(?:lion)?))?)?)|(?:\d+(?:[\.,']\d+)?(?:[MmKkBb](?:n|(?:il(?:lion)?))?)?\s*(?:[$€£¢]|sen|ringgit))"
+_temperature = "-?\d+(?:[\.,']\d+)?\s*(?:K|Kelvin|kelvin|Kvin|F|f|Farenheit|farenheit|C|c|Celcius|celcius|clcius)\\b"
+_distance = "-?\d+(?:[\.,']\d+)?\s*(?:kaki|mtrs|metres|meters|feet|km|m|cm|feet|feets|miles|batu|inch|inches|feets)\\b"
+_volume = "-?\d+(?:[\.,']\d+)?\s*(?:ml|ML|liters|gallon|gallons|galon)\\b"
+_duration = '\d+\s*(?:jam|minit|hari|minggu|tahun|hours|hour)\\b|(?:sejam|sehari|setahun|sesaat|seminit)\\b'
 
 _expressions = {
     'hashtag': r'\#\b[\w\-\_]+\b',
@@ -2374,6 +2431,8 @@ _expressions = {
     'money': _money,
     'email': r'(?:^|(?<=[^\w@.)]))(?:[\w+-](?:\.(?!\.))?)*?[\w+-]@(?:\w-?)*?\w+(?:\.(?:[a-z]{2,})){1,3}(?:$|(?=\b))',
     'phone': r'(?<![0-9])(?:\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}(?![0-9])',
+    # 'temperature': _temperature,
+    # 'distance': _distance,
     'number': _number,
     'allcaps': r'(?<![#@$])\b([A-Z][A-Z ]{1,}[A-Z])\b',
     'url': r'(?:https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})',

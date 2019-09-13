@@ -77509,7 +77509,6 @@ _english_words = {
     'mycocecidium',
     'melezitase',
     'entosphere',
-    'ko',
     'actinomyxidiida',
     'rocker',
     'salinoterreous',

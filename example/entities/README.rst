@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 5.92 s, sys: 1.4 s, total: 7.32 s
-    Wall time: 11.7 s
+    CPU times: user 9 µs, sys: 1 µs, total: 10 µs
+    Wall time: 17.2 µs
 
 
 BERT model
@@ -266,6 +266,130 @@ Load BERT models
        'score': 1.0,
        'beginOffset': 43,
        'endOffset': 44}]}
+
+
+
+Load general Malaya entity model
+--------------------------------
+
+This model required external entity tagging model like bert or deep
+learning, and this model able to classify,
+
+1.  date
+2.  money
+3.  temperature
+4.  distance
+5.  volume
+6.  duration
+7.  phone
+8.  email
+9.  url
+10. time
+
+.. code:: ipython3
+
+    model = malaya.entity.bert(model = 'small')
+    entity = malaya.entity.general_entity(model = model)
+
+
+.. parsed-literal::
+
+    WARNING: Logging before flag parsing goes to stderr.
+    W0914 01:36:43.574370 4646454720 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:45: The name tf.gfile.GFile is deprecated. Please use tf.io.gfile.GFile instead.
+    
+    W0914 01:36:43.575525 4646454720 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:46: The name tf.GraphDef is deprecated. Please use tf.compat.v1.GraphDef instead.
+    
+    W0914 01:36:48.098227 4646454720 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:41: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
+    
+
+
+.. code:: ipython3
+
+    entity.predict('Husein baca buku Perlembagaan yang berharga 3k ringgit dekat kfc sungai petani minggu lepas, pukul 2 petang , suhu 32 celcius')
+
+
+
+
+.. parsed-literal::
+
+    {'OTHER': ['baca buku',
+      'yang berharga 3k ringgit dekat',
+      'minggu lepas pukul',
+      'suhu 32 celcius'],
+     'law': ['Perlembagaan'],
+     'location': ['sungai petani'],
+     'organization': ['kfc'],
+     'person': ['Husein'],
+     'quantity': [],
+     'time': ['2 petang'],
+     'event': [],
+     'date': {'minggu lalu': datetime.datetime(2019, 9, 7, 1, 37, 1, 489575)},
+     'money': {'3k ringgit': 'RM3000'},
+     'temperature': ['32 celcius'],
+     'distance': [],
+     'volume': [],
+     'duration': [],
+     'phone': [],
+     'email': [],
+     'url': []}
+
+
+
+.. code:: ipython3
+
+    entity.predict('contact Husein at husein.zol05@gmail.com')
+
+
+
+
+.. parsed-literal::
+
+    {'OTHER': ['contact', 'at', 'gmail com'],
+     'law': [],
+     'location': [],
+     'organization': ['zol05'],
+     'person': ['Husein', 'husein'],
+     'quantity': [],
+     'time': [],
+     'event': [],
+     'date': {},
+     'money': {},
+     'temperature': [],
+     'distance': [],
+     'volume': [],
+     'duration': [],
+     'phone': [],
+     'email': ['husein.zol05@gmail.com'],
+     'url': []}
+
+
+
+.. code:: ipython3
+
+    entity.predict('tolong tempahkan meja makan esok dekat Restoran Sebulek')
+
+
+
+
+.. parsed-literal::
+
+    {'OTHER': ['tolong tempahkan meja makan esok dekat'],
+     'law': [],
+     'location': ['Restoran Sebulek'],
+     'organization': [],
+     'person': [],
+     'quantity': [],
+     'time': [],
+     'event': [],
+     'date': {'esok': datetime.datetime(2019, 9, 15, 1, 37, 30, 850860)},
+     'money': {},
+     'temperature': [],
+     'distance': [],
+     'volume': [],
+     'duration': [],
+     'phone': [],
+     'email': [],
+     'url': []}
 
 
 

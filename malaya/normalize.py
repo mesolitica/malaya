@@ -1,374 +1,54 @@
 import numpy as np
 import json
 import re
+import dateparser
 from unidecode import unidecode
-from .texts._text_functions import ENGLISH_WORDS, MALAY_WORDS
-from .texts._tatabahasa import (
-    rules_normalizer,
-    consonants,
-    vowels,
-    sounds,
-    hujung_malaysian,
-    calon_dictionary,
-)
 from .num2word import to_cardinal, to_ordinal
 from .word2num import word2num
+from .texts._text_functions import ENGLISH_WORDS, MALAY_WORDS, multireplace
+from .texts._tatabahasa import (
+    rules_normalizer,
+    date_replace,
+    consonants,
+    sounds,
+    hujung_malaysian,
+    _date,
+    _past_date_string,
+    _now_date_string,
+    _future_date_string,
+    _tomorrow_date_string,
+    _yesterday_date_string,
+    _depan_date_string,
+    _money,
+)
+from .texts._normalization import (
+    _remove_postfix,
+    _normalize_title,
+    _is_number_regex,
+    _string_to_num,
+    _normalize_money,
+    cardinal,
+    digit,
+    rom_to_int,
+    ordinal,
+    fraction,
+    money,
+    ignore_words,
+)
 from .preprocessing import _tokenizer
-
-ignore_words = ['ringgit', 'sen']
-ignore_postfix = ['adalah']
-
-
-def _remove_postfix(word):
-    if word in ignore_postfix:
-        return word, ''
-    for p in hujung_malaysian:
-        if word.endswith(p):
-            return word[: -len(p)], ' lah'
-    return word, ''
-
-
-def _normalize_title(word):
-    if word[0].isupper():
-        return calon_dictionary.get(word.lower(), word)
-    return word
-
-
-def _is_number_regex(s):
-    if re.match('^\d+?\.\d+?$', s) is None:
-        return s.isdigit()
-    return True
-
-
-def _string_to_num(word):
-    if '.' in word:
-        return float(word)
-    else:
-        return int(word)
-
-
-def cardinal(x):
-    try:
-        if re.match('.*[A-Za-z]+.*', x):
-            return x
-        x = re.sub(',', '', x, count = 10)
-
-        if re.match('.+\..*', x):
-            x = to_cardinal(float(x))
-        elif re.match('\..*', x):
-            x = to_cardinal(float(x))
-        else:
-            x = to_cardinal(int(x))
-        x = x.replace('kosong', 'o')
-        x = re.sub('-', ' ', x, count = 10)
-        x = re.sub(' dan', '', x, count = 10)
-        return x
-    except:
-        return x
-
-
-def digit(x):
-    try:
-        x = re.sub('[^0-9]', '', x)
-        result_string = ''
-        for i in x:
-            result_string = result_string + cardinal(i) + ' '
-        result_string = result_string.strip()
-        return result_string
-    except:
-        return x
-
-
-def letters(x):
-    try:
-        x = re.sub('[^a-zA-Z]', '', x)
-        x = x.lower()
-        result_string = ''
-        for i in range(len(x)):
-            result_string = result_string + x[i] + ' '
-        return result_string.strip()
-    except:
-        return x
-
-
-def rom_to_int(string):
-
-    table = [
-        ['M', 1000],
-        ['CM', 900],
-        ['D', 500],
-        ['CD', 400],
-        ['C', 100],
-        ['XC', 90],
-        ['L', 50],
-        ['XL', 40],
-        ['X', 10],
-        ['IX', 9],
-        ['V', 5],
-        ['IV', 4],
-        ['I', 1],
-    ]
-    returnint = 0
-    for pair in table:
-
-        continueyes = True
-
-        while continueyes:
-            if len(string) >= len(pair[0]):
-
-                if string[0 : len(pair[0])] == pair[0]:
-                    returnint += pair[1]
-                    string = string[len(pair[0]) :]
-
-                else:
-                    continueyes = False
-            else:
-                continueyes = False
-
-    return returnint
-
-
-def ordinal(x):
-    try:
-        result_string = ''
-        x = x.replace(',', '')
-        x = x.replace('[\.]$', '')
-        if re.match('^[0-9]+$', x):
-            x = to_ordinal(int(x))
-            return x
-        if re.match('.*(V|X|I|L|D)', x):
-            x = x.replace('-', '')
-            if re.match('^ke.*', x):
-                x = x[2:]
-                x = rom_to_int(x)
-                result_string = to_ordinal(x)
-            else:
-                x = rom_to_int(x)
-                result_string = to_ordinal(x)
-                result_string = 'yang ' + result_string
-        elif re.match('^ke.*', x):
-            x = x.replace('-', '')
-            x = x[2:]
-            result_string = to_ordinal(int(x))
-        else:
-            result_string = to_ordinal(int(x))
-        return result_string
-    except Exception as e:
-        return x
-
-
-def telephone(x):
-    try:
-        result_string = ''
-        for i in range(0, len(x)):
-            if re.match('[0-9]+', x[i]):
-                result_string = result_string + cardinal(x[i]) + ' '
-            else:
-                result_string = result_string + 'sil '
-        return result_string.strip()
-    except:
-        return x
-
-
-def electronic(x):
-    try:
-        replacement = {
-            '.': 'dot',
-            ':': 'colon',
-            '/': 'slash',
-            '-': 'dash',
-            '#': 'hash tag',
-        }
-        result_string = ''
-        if re.match('.*[A-Za-z].*', x):
-            for char in x:
-                if re.match('[A-Za-z]', char):
-                    result_string = result_string + letters(char) + ' '
-                elif char in replacement:
-                    result_string = result_string + replacement[char] + ' '
-                elif re.match('[0-9]', char):
-                    if char == 0:
-                        result_string = result_string + 'o '
-                    else:
-                        number = cardinal(char)
-                        for n in number:
-                            result_string = result_string + n + ' '
-            return result_string.strip()
-        else:
-            return x
-    except:
-        return x
-
-
-def fraction(x):
-    try:
-        y = x.split('/')
-        result_string = ''
-        y[0] = cardinal(y[0])
-        y[1] = cardinal(y[1])
-        return '%s per %s' % (y[0], y[1])
-    except:
-        return x
-
-
-def money(x):
-    try:
-        if re.match('^\$', x):
-            x = x.replace('$', '')
-            if len(x.split(' ')) == 1:
-                if re.match('.*(M|m)$', x):
-                    x = x.replace('M', '')
-                    x = x.replace('m', '')
-                    text = cardinal(x)
-                    x = text + ' juta dollar'
-                elif re.match('.*(b|B)$', x):
-                    x = x.replace('B', '')
-                    x = x.replace('b', '')
-                    text = cardinal(x)
-                    x = text + ' billion dollar'
-                else:
-                    text = cardinal(x)
-                    x = text + ' dollar'
-                return x.lower()
-            elif len(x.split(' ')) == 2:
-                text = cardinal(x.split(' ')[0])
-                if x.split(' ')[1].lower() == 'million':
-                    x = text + ' juta dollar'
-                elif x.split(' ')[1].lower() == 'juta':
-                    x = text + ' juta dollar'
-                elif x.split(' ')[1].lower() == 'billion':
-                    x = text + ' billion dollar'
-                return x.lower()
-
-        if re.match('^US\$', x):
-            x = x.replace('US$', '')
-            if len(x.split(' ')) == 1:
-                if re.match('.*(M|m)$', x):
-                    x = x.replace('M', '')
-                    x = x.replace('m', '')
-                    text = cardinal(x)
-                    x = text + ' juta dollar'
-                elif re.match('.*(b|B)$', x):
-                    x = x.replace('b', '')
-                    x = x.replace('B', '')
-                    text = cardinal(x)
-                    x = text + ' billion dollar'
-                else:
-                    text = cardinal(x)
-                    x = text + ' dollar'
-                return x.lower()
-            elif len(x.split(' ')) == 2:
-                text = cardinal(x.split(' ')[0])
-                if x.split(' ')[1].lower() == 'million':
-                    x = text + ' juta dollar'
-                elif x.split(' ')[1].lower() == 'juta':
-                    x = text + ' juta dollar'
-                elif x.split(' ')[1].lower() == 'billion':
-                    x = text + ' billion dollar'
-                return x.lower()
-
-        elif re.match('^£', x):
-            x = x.replace('£', '')
-            if len(x.split(' ')) == 1:
-                if re.match('.*(M|m)$', x):
-                    x = x.replace('M', '')
-                    x = x.replace('m', '')
-                    text = cardinal(x)
-                    x = text + ' juta pound'
-                elif re.match('.*(b|B)$', x):
-                    x = x.replace('b', '')
-                    x = x.replace('B', '')
-                    text = cardinal(x)
-                    x = text + ' billion pound'
-                else:
-                    text = cardinal(x)
-                    x = text + ' pound'
-                return x.lower()
-            elif len(x.split(' ')) == 2:
-                text = cardinal(x.split(' ')[0])
-                if x.split(' ')[1].lower() == 'million':
-                    x = text + ' juta pound'
-                elif x.split(' ')[1].lower() == 'juta':
-                    x = text + ' juta pound'
-                elif x.split(' ')[1].lower() == 'billion':
-                    x = text + ' billion pound'
-                return x.lower()
-
-        elif re.match('^€', x):
-            x = x.replace('€', '')
-            if len(x.split(' ')) == 1:
-                if re.match('.*(M|m)$', x):
-                    x = x.replace('M', '')
-                    x = x.replace('m', '')
-                    text = cardinal(x)
-                    x = text + ' juta euro'
-                elif re.match('.*(b|B)$', x):
-                    x = x.replace('B', '')
-                    x = x.replace('b', '')
-                    text = cardinal(x)
-                    x = text + ' billion euro'
-                else:
-                    text = cardinal(x)
-                    x = text + ' euro'
-                return x.lower()
-            elif len(x.split(' ')) == 2:
-                text = cardinal(x.split(' ')[0])
-                if x.split(' ')[1].lower() == 'million':
-                    x = text + ' juta euro'
-                elif x.split(' ')[1].lower() == 'juta':
-                    x = text + ' juta euro'
-                elif x.split(' ')[1].lower() == 'billion':
-                    x = text + ' billion euro'
-                return x.lower()
-
-        elif re.match('^RM', x) or re.match('^rm', x):
-            x = x.lower()
-            x = x.replace('rm', '')
-            if len(x.split(' ')) == 1:
-                if re.match('.*(M|m)$', x):
-                    x = x.replace('M', '')
-                    x = x.replace('m', '')
-                    text = cardinal(x)
-                    x = text + ' juta ringgit'
-                elif re.match('.*(b|B)$', x):
-                    x = x.replace('B', '')
-                    x = x.replace('b', '')
-                    text = cardinal(x)
-                    x = text + ' billion ringgit'
-                else:
-                    text = cardinal(x)
-                    x = text + ' ringgit'
-                return x.lower()
-            elif len(x.split(' ')) == 2:
-                text = cardinal(x.split(' ')[0])
-                if x.split(' ')[1].lower() == 'million':
-                    x = text + ' juta ringgit'
-                elif x.split(' ')[1].lower() == 'juta':
-                    x = text + ' juta ringgit'
-                elif x.split(' ')[1].lower() == 'billion':
-                    x = text + ' billion ringgit'
-                return x.lower()
-
-        elif word[-3:] == 'sen':
-            return to_cardinal(_string_to_num(word[:-3])) + ' sen'
-
-    except:
-        return x
 
 
 class _SPELL_NORMALIZE:
     def __init__(self, speller):
         self._speller = speller
 
-    def normalize(self, string, assume_wrong = True, check_english = True):
+    def normalize(self, string, check_english = True):
         """
         Normalize a string
 
         Parameters
         ----------
         string : str
-        assume_wrong: bool, (default=True)
-            force speller to predict.
         check_english: bool, (default=True)
             check a word in english dictionary.
 
@@ -380,10 +60,8 @@ class _SPELL_NORMALIZE:
             raise ValueError('input must be a string')
         if not isinstance(check_english, bool):
             raise ValueError('check_english must be a boolean')
-        if not isinstance(assume_wrong, bool):
-            raise ValueError('assume_wrong must be a boolean')
 
-        result = []
+        result, normalized = [], []
         tokenized = _tokenizer(string)
         index = 0
         while index < len(tokenized):
@@ -392,6 +70,7 @@ class _SPELL_NORMALIZE:
                 result.append(word)
                 index += 1
                 continue
+            normalized.append(rules_normalizer.get(word.lower(), word.lower()))
             if word.lower() in ignore_words:
                 result.append(word)
                 index += 1
@@ -492,29 +171,9 @@ class _SPELL_NORMALIZE:
                     )
                     index += 3
                     continue
-            if word.lower() == 'rm' and index < (len(tokenized) - 2):
-                if (
-                    _is_number_regex(tokenized[index + 1])
-                    and tokenized[index + 2].lower() == 'sen'
-                ):
-                    result.append(money('rm' + tokenized[index + 1]))
-                    index += 3
-                    continue
 
-            if word.lower() == 'rm' and index < (len(tokenized) - 1):
-                if _is_number_regex(tokenized[index + 1]):
-                    result.append(money('rm' + tokenized[index + 1]))
-                    index += 2
-                    continue
-
-            if _is_number_regex(word) and index < (len(tokenized) - 1):
-                if tokenized[index + 1].lower() == 'sen':
-                    result.append(cardinal(word) + ' sen')
-                    index += 2
-                    continue
-
-            money_ = money(word)
-            if money_ != word:
+            if re.findall(_money, word.lower()):
+                money_ = money(word)
                 result.append(money_)
                 index += 1
                 continue
@@ -542,12 +201,35 @@ class _SPELL_NORMALIZE:
                 )
                 index += 1
                 continue
-            selected = self._speller.correct(
-                word, debug = False, assume_wrong = assume_wrong
-            )
+            selected = self._speller.correct(word, debug = False)
             result.append(result_string + selected + end_result_string)
             index += 1
-        return ' '.join(result)
+
+        result = ' '.join(result)
+        normalized = ' '.join(normalized)
+        money_ = re.findall(_money, normalized)
+        money_ = [(s, money(s)) for s in money_]
+        dates_ = re.findall(_date, normalized)
+        past_date_string_ = re.findall(_past_date_string, normalized)
+        now_date_string_ = re.findall(_now_date_string, normalized)
+        future_date_string_ = re.findall(_future_date_string, normalized)
+        yesterday_date_string_ = re.findall(_yesterday_date_string, normalized)
+        depan_date_string_ = re.findall(_depan_date_string, normalized)
+        tomorrow_date_string_ = re.findall(_tomorrow_date_string, normalized)
+        dates_ = (
+            dates_
+            + past_date_string_
+            + now_date_string_
+            + future_date_string_
+            + yesterday_date_string_
+            + depan_date_string_
+            + tomorrow_date_string_
+        )
+        dates_ = [multireplace(s, date_replace) for s in dates_]
+        dates_ = [re.sub(r'[ ]+', ' ', s).strip() for s in dates_]
+        dates_ = {s: dateparser.parse(s) for s in dates_}
+        money_ = {s[0]: _normalize_money(s[1]) for s in money_}
+        return {'normalize': result, 'date': dates_, 'money': money_}
 
 
 def spell(speller):

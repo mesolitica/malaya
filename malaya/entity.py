@@ -1,5 +1,6 @@
 from ._utils import _tag_class
 from ._utils._paths import PATH_ENTITIES, S3_PATH_ENTITIES
+from .texts._entity import _Entity_regex
 
 
 def available_deep_model():
@@ -57,7 +58,6 @@ def deep_model(model = 'bahdanau', validate = True):
 
 
 def bert(model = 'base', validate = True):
-
     """
     Load BERT NER model.
 
@@ -95,3 +95,21 @@ def bert(model = 'base', validate = True):
         model = model,
         validate = validate,
     )
+
+
+def general_entity(model):
+    """
+    Load Regex based general entities tagging along with another supervised entity tagging model.
+
+    Parameters
+    ----------
+    model : object
+        model must has `predict` method.
+
+    Returns
+    -------
+    _Entity_regex: malaya.texts._entity._Entity_regex class
+    """
+    if not hasattr(model, 'predict'):
+        raise ValueError('model must has `predict` method')
+    return _Entity_regex(model = model)

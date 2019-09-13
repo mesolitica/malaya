@@ -132,6 +132,7 @@ def cluster_pos(result):
             if not last_label:
                 last_label = label
             words.append(word)
+    output[last_label].append(' '.join(words))
     return output
 
 
@@ -180,6 +181,7 @@ def cluster_entities(result):
             if not last_label:
                 last_label = label
             words.append(word)
+    output[last_label].append(' '.join(words))
     return output
 
 

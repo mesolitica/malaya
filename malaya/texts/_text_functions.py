@@ -378,6 +378,12 @@ def build_dataset(words, n_words, included_prefix = True):
     return data, count, dictionary, reversed_dictionary
 
 
+def multireplace(string, replacements):
+    substrs = sorted(replacements, key = len, reverse = True)
+    regexp = re.compile('|'.join(map(re.escape, substrs)))
+    return regexp.sub(lambda match: replacements[match.group(0)], string)
+
+
 alphabets = '([A-Za-z])'
 prefixes = (
     '(Mr|St|Mrs|Ms|Dr|Prof|Capt|Cpt|Lt|Mt|Puan|puan|Tuan|tuan|sir|Sir)[.]'

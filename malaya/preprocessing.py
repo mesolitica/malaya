@@ -156,6 +156,7 @@ class SocialTokenizer:
         censored = kwargs.get('censored', True)
         emphasis = kwargs.get('emphasis', True)
         numbers = kwargs.get('numbers', True)
+        temperature = kwargs.get('temperature', False)
 
         if urls:
             pipeline.append(self.regexes['url'])
@@ -189,6 +190,9 @@ class SocialTokenizer:
 
         if time:
             pipeline.append(self.wrap_non_matching(self.regexes['time']))
+
+        if temperature:
+            pipeline.append(self.wrap_non_matching(self.regexes['temperature']))
 
         if acronyms:
             pipeline.append(self.wrap_non_matching(self.regexes['acronym']))
@@ -338,6 +342,7 @@ class _Preprocessing:
             'time',
             'date',
             'number',
+            #'temperature',
         ],
         annotate = [
             'allcaps',
