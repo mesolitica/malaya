@@ -78,6 +78,7 @@ MOCK_MODULES = [
     'ftfy',
     'networkx',
     'bert',
+    'dateparser',
 ]
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
