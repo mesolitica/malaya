@@ -6,7 +6,8 @@ import itertools
 from functools import lru_cache
 from math import log10
 from unidecode import unidecode
-from .texts._tatabahasa import _expressions, rules_normalizer, hujung
+from .texts._tatabahasa import rules_normalizer, hujung
+from .texts._regex import _expressions
 from .texts._english_words import _english_words
 from ._utils._paths import PATH_PREPROCESSING, S3_PATH_PREPROCESSING
 from ._utils._utils import check_file, check_available
@@ -156,7 +157,6 @@ class SocialTokenizer:
         censored = kwargs.get('censored', True)
         emphasis = kwargs.get('emphasis', True)
         numbers = kwargs.get('numbers', True)
-        temperature = kwargs.get('temperature', False)
 
         if urls:
             pipeline.append(self.regexes['url'])
@@ -190,9 +190,6 @@ class SocialTokenizer:
 
         if time:
             pipeline.append(self.wrap_non_matching(self.regexes['time']))
-
-        if temperature:
-            pipeline.append(self.wrap_non_matching(self.regexes['temperature']))
 
         if acronyms:
             pipeline.append(self.wrap_non_matching(self.regexes['acronym']))
@@ -342,7 +339,6 @@ class _Preprocessing:
             'time',
             'date',
             'number',
-            #'temperature',
         ],
         annotate = [
             'allcaps',

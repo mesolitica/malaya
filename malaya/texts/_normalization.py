@@ -218,8 +218,7 @@ def fraction(x):
 def money(x):
     try:
         if (
-            re.match('^$', x)
-            or re.match('^$', x)
+            re.match('^\$', x)
             or x.lower().endswith('dollar')
             or x.lower().endswith('cent')
         ):
@@ -231,28 +230,29 @@ def money(x):
             x = x.replace('$', '').replace('dollar', '').replace('cent', '')
             x = re.sub(r'[ ]+', ' ', x).strip()
             x, n = re.split("(\d+(?:[\.,']\d+)?)", x)[1:]
+            x = re.sub(',', '', x, count = 10)
             labels = []
             for c in n:
                 if re.match('.*(M|m)$', c):
-                    labels.append('juta')
+                    labels.append(1e6)
                 elif re.match('.*(b|B)$', c):
-                    labels.append('billion')
+                    labels.append(1e9)
                 elif re.match('.*(k|K)$', c):
-                    labels.append('ribu')
+                    labels.append(1e3)
 
+            x = float(x)
             if cent:
-                x = str(float(x) / 100)
-            text = cardinal(x)
-            if 'perpuluhan' in text:
-                l, r = text.split('perpuluhan ')
-                x = '%s %s perpuluhan %s dollar' % (l, ' '.join(labels), r)
-            else:
-                x = '%s %s dollar' % (text, ' '.join(labels))
-            return x.lower()
+                x = x / 100
+            for l in labels:
+                x = x * l
+
+            text = cardinal(str(x))
+            c = '$%s' % (str(x))
+            x = '%s dollar' % (text)
+            return re.sub(r'[ ]+', ' ', x.lower()).strip(), c
 
         elif (
             re.match('^US', x)
-            or re.match('^US', x)
             or x.lower().endswith('dollar')
             or x.lower().endswith('cent')
         ):
@@ -264,28 +264,29 @@ def money(x):
             x = x.replace('US', '').replace('dollar', '').replace('cent', '')
             x = re.sub(r'[ ]+', ' ', x).strip()
             x, n = re.split("(\d+(?:[\.,']\d+)?)", x)[1:]
+            x = re.sub(',', '', x, count = 10)
             labels = []
             for c in n:
                 if re.match('.*(M|m)$', c):
-                    labels.append('juta')
+                    labels.append(1e6)
                 elif re.match('.*(b|B)$', c):
-                    labels.append('billion')
+                    labels.append(1e9)
                 elif re.match('.*(k|K)$', c):
-                    labels.append('ribu')
+                    labels.append(1e3)
 
+            x = float(x)
             if cent:
-                x = str(float(x) / 100)
-            text = cardinal(x)
-            if 'perpuluhan' in text:
-                l, r = text.split('perpuluhan ')
-                x = '%s %s perpuluhan %s dollar' % (l, ' '.join(labels), r)
-            else:
-                x = '%s %s dollar' % (text, ' '.join(labels))
-            return x.lower()
+                x = x / 100
+            for l in labels:
+                x = x * l
+
+            text = cardinal(str(x))
+            c = '$%s' % (str(x))
+            x = '%s dollar' % (text)
+            return re.sub(r'[ ]+', ' ', x.lower()).strip(), c
 
         elif (
-            re.match('^£', x)
-            or re.match('^£', x)
+            re.match('^\£', x)
             or x.lower().endswith('pound')
             or x.lower().endswith('penny')
         ):
@@ -297,28 +298,29 @@ def money(x):
             x = x.replace('£', '').replace('pound', '').replace('penny', '')
             x = re.sub(r'[ ]+', ' ', x).strip()
             x, n = re.split("(\d+(?:[\.,']\d+)?)", x)[1:]
+            x = re.sub(',', '', x, count = 10)
             labels = []
             for c in n:
                 if re.match('.*(M|m)$', c):
-                    labels.append('juta')
+                    labels.append(1e6)
                 elif re.match('.*(b|B)$', c):
-                    labels.append('billion')
+                    labels.append(1e9)
                 elif re.match('.*(k|K)$', c):
-                    labels.append('ribu')
+                    labels.append(1e3)
 
+            x = float(x)
             if cent:
-                x = str(float(x) / 100)
-            text = cardinal(x)
-            if 'perpuluhan' in text:
-                l, r = text.split('perpuluhan ')
-                x = '%s %s perpuluhan %s pound' % (l, ' '.join(labels), r)
-            else:
-                x = '%s %s pound' % (text, ' '.join(labels))
-            return x.lower()
+                x = x / 100
+            for l in labels:
+                x = x * l
+
+            text = cardinal(str(x))
+            c = '£%s' % (str(x))
+            x = '%s pound' % (text)
+            return re.sub(r'[ ]+', ' ', x.lower()).strip(), c
 
         elif (
-            re.match('^€', x)
-            or re.match('^€', x)
+            re.match('^\€', x)
             or x.lower().endswith('euro')
             or x.lower().endswith('cent')
         ):
@@ -330,24 +332,26 @@ def money(x):
             x = x.replace('€', '').replace('euro', '').replace('cent', '')
             x = re.sub(r'[ ]+', ' ', x).strip()
             x, n = re.split("(\d+(?:[\.,']\d+)?)", x)[1:]
+            x = re.sub(',', '', x, count = 10)
             labels = []
             for c in n:
                 if re.match('.*(M|m)$', c):
-                    labels.append('juta')
+                    labels.append(1e6)
                 elif re.match('.*(b|B)$', c):
-                    labels.append('billion')
+                    labels.append(1e9)
                 elif re.match('.*(k|K)$', c):
-                    labels.append('ribu')
+                    labels.append(1e3)
 
+            x = float(x)
             if cent:
-                x = str(float(x) / 100)
-            text = cardinal(x)
-            if 'perpuluhan' in text:
-                l, r = text.split('perpuluhan ')
-                x = '%s %s perpuluhan %s euro' % (l, ' '.join(labels), r)
-            else:
-                x = '%s %s euro' % (text, ' '.join(labels))
-            return x.lower()
+                x = x / 100
+            for l in labels:
+                x = x * l
+
+            text = cardinal(str(x))
+            c = '€%s' % (str(x))
+            x = '%s euro' % (text)
+            return re.sub(r'[ ]+', ' ', x.lower()).strip(), c
 
         elif (
             re.match('^RM', x)
@@ -363,25 +367,27 @@ def money(x):
             x = x.replace('rm', '').replace('ringgit', '').replace('sen', '')
             x = re.sub(r'[ ]+', ' ', x).strip()
             x, n = re.split("(\d+(?:[\.,']\d+)?)", x)[1:]
+            x = re.sub(',', '', x, count = 10)
             labels = []
             for c in n:
                 if re.match('.*(M|m)$', c):
-                    labels.append('juta')
+                    labels.append(1e6)
                 elif re.match('.*(b|B)$', c):
-                    labels.append('billion')
+                    labels.append(1e9)
                 elif re.match('.*(k|K)$', c):
-                    labels.append('ribu')
+                    labels.append(1e3)
 
+            x = float(x)
             if cent:
-                x = str(float(x) / 100)
-            text = cardinal(x)
-            if 'perpuluhan' in text and len(labels):
-                l, r = text.split('perpuluhan ')
-                x = '%s %s perpuluhan %s ringgit' % (l, ' '.join(labels), r)
-            else:
-                x = '%s %s ringgit' % (text, ' '.join(labels))
-            return re.sub(r'[ ]+', ' ', x.lower()).strip()
-        return x
+                x = x / 100
+            for l in labels:
+                x = x * l
+
+            text = cardinal(str(x))
+            c = 'RM%s' % (str(x))
+            x = '%s ringgit' % (text)
+            return re.sub(r'[ ]+', ' ', x.lower()).strip(), c
+        return x, None
 
     except Exception as e:
-        return x
+        return x, None

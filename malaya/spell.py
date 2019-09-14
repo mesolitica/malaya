@@ -258,6 +258,8 @@ class _SpellCorrector:
             )
         ttt = {i for i in ttt if len(i) > 3 and i not in ENGLISH_WORDS}
         ttt = self.known([word]) | ttt
+        if not len(ttt):
+            ttt = {word}
         return ttt
 
     def correct(self, word, fast = False, **kwargs):

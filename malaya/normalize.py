@@ -6,12 +6,7 @@ from unidecode import unidecode
 from .num2word import to_cardinal, to_ordinal
 from .word2num import word2num
 from .texts._text_functions import ENGLISH_WORDS, MALAY_WORDS, multireplace
-from .texts._tatabahasa import (
-    rules_normalizer,
-    date_replace,
-    consonants,
-    sounds,
-    hujung_malaysian,
+from .texts._regex import (
     _date,
     _past_date_string,
     _now_date_string,
@@ -20,6 +15,19 @@ from .texts._tatabahasa import (
     _yesterday_date_string,
     _depan_date_string,
     _money,
+    _expressions,
+    _left_datetime,
+    _right_datetime,
+    _today_time,
+    _today_left_datetime,
+    _today_right_datetime,
+)
+from .texts._tatabahasa import (
+    rules_normalizer,
+    date_replace,
+    consonants,
+    sounds,
+    hujung_malaysian,
 )
 from .texts._normalization import (
     _remove_postfix,
@@ -173,7 +181,7 @@ class _SPELL_NORMALIZE:
                     continue
 
             if re.findall(_money, word.lower()):
-                money_ = money(word)
+                money_, _ = money(word)
                 result.append(money_)
                 index += 1
                 continue
@@ -189,7 +197,6 @@ class _SPELL_NORMALIZE:
                 result.append(normalized_ke)
                 index += 1
                 continue
-
             word, end_result_string = _remove_postfix(word)
             if word in sounds:
                 result.append(result_string + sounds[word] + end_result_string)
@@ -208,7 +215,7 @@ class _SPELL_NORMALIZE:
         result = ' '.join(result)
         normalized = ' '.join(normalized)
         money_ = re.findall(_money, normalized)
-        money_ = [(s, money(s)) for s in money_]
+        money_ = [(s, money(s)[1]) for s in money_]
         dates_ = re.findall(_date, normalized)
         past_date_string_ = re.findall(_past_date_string, normalized)
         now_date_string_ = re.findall(_now_date_string, normalized)
@@ -216,6 +223,24 @@ class _SPELL_NORMALIZE:
         yesterday_date_string_ = re.findall(_yesterday_date_string, normalized)
         depan_date_string_ = re.findall(_depan_date_string, normalized)
         tomorrow_date_string_ = re.findall(_tomorrow_date_string, normalized)
+        today_time_ = re.findall(_today_time, normalized)
+        time_ = re.findall(_expressions['time'], normalized)
+        left_datetime_ = [
+            '%s %s' % (i[0], i[1])
+            for i in re.findall(_left_datetime, normalized)
+        ]
+        right_datetime_ = [
+            '%s %s' % (i[0], i[1])
+            for i in re.findall(_right_datetime, normalized)
+        ]
+        today_left_datetime_ = [
+            '%s %s' % (i[0], i[1])
+            for i in re.findall(_today_left_datetime, normalized)
+        ]
+        today_right_datetime_ = [
+            '%s %s' % (i[0], i[1])
+            for i in re.findall(_today_right_datetime, normalized)
+        ]
         dates_ = (
             dates_
             + past_date_string_
@@ -224,11 +249,17 @@ class _SPELL_NORMALIZE:
             + yesterday_date_string_
             + depan_date_string_
             + tomorrow_date_string_
+            + time_
+            + today_time_
+            + left_datetime_
+            + right_datetime_
+            + today_left_datetime_
+            + today_right_datetime_
         )
         dates_ = [multireplace(s, date_replace) for s in dates_]
         dates_ = [re.sub(r'[ ]+', ' ', s).strip() for s in dates_]
         dates_ = {s: dateparser.parse(s) for s in dates_}
-        money_ = {s[0]: _normalize_money(s[1]) for s in money_}
+        money_ = {s[0]: s[1] for s in money_}
         return {'normalize': result, 'date': dates_, 'money': money_}
 
 

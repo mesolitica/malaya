@@ -16,8 +16,8 @@ BASE = {
 TENS_TO = {
     3: 'ribu',
     6: 'juta',
-    9: 'billion',
-    12: 'trillion',
+    9: 'bilion',
+    12: 'trilion',
     15: 'quadrillion',
     18: 'quintillion',
     21: 'sextillion',

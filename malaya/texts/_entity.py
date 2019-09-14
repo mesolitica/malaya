@@ -1,6 +1,6 @@
 from ._text_functions import multireplace
-from ._tatabahasa import (
-    date_replace,
+from ._tatabahasa import date_replace
+from ._regex import (
     _money,
     _temperature,
     _distance,
@@ -14,6 +14,11 @@ from ._tatabahasa import (
     _yesterday_date_string,
     _depan_date_string,
     _expressions,
+    _left_datetime,
+    _right_datetime,
+    _today_time,
+    _today_left_datetime,
+    _today_right_datetime,
 )
 from ._normalization import money, _normalize_money
 from ..cluster import cluster_entities
@@ -43,7 +48,7 @@ class _Entity_regex:
         else:
             result = {}
         money_ = re.findall(_money, string)
-        money_ = [(s, money(s)) for s in money_]
+        money_ = [(s, money(s)[1]) for s in money_]
         dates_ = re.findall(_date, string)
         past_date_string_ = re.findall(_past_date_string, string)
         now_date_string_ = re.findall(_now_date_string, string)
@@ -63,7 +68,7 @@ class _Entity_regex:
         dates_ = [multireplace(s, date_replace) for s in dates_]
         dates_ = [re.sub(r'[ ]+', ' ', s).strip() for s in dates_]
         dates_ = {s: dateparser.parse(s) for s in dates_}
-        money_ = {s[0]: _normalize_money(s[1]) for s in money_}
+        money_ = {s[0]: s[1] for s in money_}
         temperature_ = re.findall(_temperature, string)
         temperature_ = [re.sub(r'[ ]+', ' ', s).strip() for s in temperature_]
         distance_ = re.findall(_distance, string)
@@ -80,6 +85,39 @@ class _Entity_regex:
         url_ = [re.sub(r'[ ]+', ' ', s).strip() for s in url_]
         time_ = re.findall(_expressions['time'], string)
         time_ = [re.sub(r'[ ]+', ' ', s).strip() for s in time_]
+        today_time_ = re.findall(_today_time, string)
+        today_time_ = [re.sub(r'[ ]+', ' ', s).strip() for s in today_time_]
+        time_ = time_ + today_time_
+
+        if 'time' in result:
+            time_ = list(set(time_ + result['time']))
+
+        time_ = [multireplace(s, date_replace) for s in time_]
+        time_ = [re.sub(r'[ ]+', ' ', s).strip() for s in time_]
+        time_ = {s: dateparser.parse(s) for s in time_}
+
+        left_datetime_ = [
+            '%s %s' % (i[0], i[1]) for i in re.findall(_left_datetime, string)
+        ]
+        right_datetime_ = [
+            '%s %s' % (i[0], i[1]) for i in re.findall(_right_datetime, string)
+        ]
+        today_left_datetime_ = [
+            '%s %s' % (i[0], i[1])
+            for i in re.findall(_today_left_datetime, string)
+        ]
+        today_right_datetime_ = [
+            '%s %s' % (i[0], i[1])
+            for i in re.findall(_today_right_datetime, string)
+        ]
+        datetime_ = (
+            left_datetime_
+            + right_datetime_
+            + today_left_datetime_
+            + today_right_datetime_
+        )
+        datetime_ = [re.sub(r'[ ]+', ' ', s).strip() for s in datetime_]
+        datetime_ = {s: dateparser.parse(s) for s in datetime_}
 
         result['date'] = dates_
         result['money'] = money_
@@ -90,8 +128,6 @@ class _Entity_regex:
         result['phone'] = phone_
         result['email'] = email_
         result['url'] = url_
-        if 'time' in result:
-            result['time'].extend(time_)
-        else:
-            result['time'] = time_
+        result['time'] = time_
+        result['datetime'] = datetime_
         return result

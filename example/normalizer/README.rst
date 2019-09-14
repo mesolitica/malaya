@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 4.88 s, sys: 778 ms, total: 5.66 s
-    Wall time: 5.41 s
+    CPU times: user 6.5 s, sys: 1.7 s, total: 8.2 s
+    Wall time: 13.2 s
 
 
 .. code:: ipython3
@@ -30,17 +30,20 @@ Load spell normalizer
 
 .. code:: ipython3
 
-    normalizer.normalize('jgn lupa byar hutang Husein minggu depan, 3k ringgit, thun depan jumpa lagi')
+    normalizer.normalize('boleh dtg 8pagi esok tak? 2 oktober 2019 2pm, tlong bayar rm 3.2k sekali tau')
 
 
 
 
 .. parsed-literal::
 
-    {'normalize': 'jangan lupa bayar hutang Husein minggu depan , tiga ribu ringgit , tahun depan jumpa lagi',
-     'date': {'minggu depan': datetime.datetime(2019, 9, 21, 1, 33, 18, 985139),
-      'tahun depan': datetime.datetime(2020, 9, 14, 1, 33, 18, 989180)},
-     'money': {'3k ringgit': 'RM3000'}}
+    {'normalize': 'boleh dtg lapan pagi esok tak ? 2 oktober 2019 2pm , tolong bayar tiga ribu dua ratus perpuluhan kosong ringgit sekali tahu',
+     'date': {'2 oktober 2019': datetime.datetime(2019, 10, 2, 0, 0),
+      'esok': datetime.datetime(2019, 9, 15, 16, 9, 1, 141534),
+      '2pm': datetime.datetime(2019, 9, 14, 14, 0),
+      '8 AM': datetime.datetime(2019, 9, 14, 8, 0),
+      '2 oktober 2019 2pm': datetime.datetime(2019, 10, 2, 14, 0)},
+     'money': {'rm 3.2k': 'RM3200.0'}}
 
 
 
@@ -318,37 +321,24 @@ Normalizing rules
 
 .. parsed-literal::
 
-    {'normalize': 'sepuluh juta perpuluhan empat ringgit',
+    {'normalize': 'satu juta empat ratus ribu perpuluhan kosong ringgit',
      'date': {},
-     'money': {'rm10.4m': 'RM10000000.4'}}
+     'money': {'rm10.4m': 'RM10400000.0'}}
 
 
 
 .. code:: ipython3
 
-    normalizer.normalize('$10.4M')
+    normalizer.normalize('$10.4K')
 
 
 
 
 .. parsed-literal::
 
-    {'normalize': '$10.4M', 'date': {}, 'money': {'$10.4m': '$10.4m'}}
-
-
-
-.. code:: ipython3
-
-    normalizer.normalize('rm10.4b')
-
-
-
-
-.. parsed-literal::
-
-    {'normalize': 'sepuluh billion perpuluhan empat ringgit',
+    {'normalize': 'seribu empat ratus perpuluhan kosong dollar',
      'date': {},
-     'money': {'rm10.4b': 'RM10.4'}}
+     'money': {'$10.4k': '$10400.0'}}
 
 
 
@@ -384,8 +374,8 @@ Normalizing rules
 
 
 
-14. normalize date string to datetime.datetime
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+14. normalize date / time / datetime string to datetime.datetime
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code:: ipython3
 
@@ -397,7 +387,7 @@ Normalizing rules
 .. parsed-literal::
 
     {'normalize': 'dua hari lepas',
-     'date': {'2 hari lalu': datetime.datetime(2019, 9, 12, 1, 33, 19, 295848)},
+     'date': {'2 hari lalu': datetime.datetime(2019, 9, 12, 16, 9, 1, 590144)},
      'money': {}}
 
 
@@ -412,7 +402,7 @@ Normalizing rules
 .. parsed-literal::
 
     {'normalize': 'esok',
-     'date': {'esok': datetime.datetime(2019, 9, 15, 1, 33, 19, 833131)},
+     'date': {'esok': datetime.datetime(2019, 9, 15, 16, 9, 1, 611619)},
      'money': {}}
 
 
@@ -427,7 +417,71 @@ Normalizing rules
 .. parsed-literal::
 
     {'normalize': 'okt 2019',
-     'date': {'okt 2019': datetime.datetime(2019, 10, 13, 0, 0)},
+     'date': {'okt 2019': datetime.datetime(2019, 10, 14, 0, 0)},
+     'money': {}}
+
+
+
+.. code:: ipython3
+
+    normalizer.normalize('2pgi')
+
+
+
+
+.. parsed-literal::
+
+    {'normalize': 'dua pagi',
+     'date': {'2 AM': datetime.datetime(2019, 9, 14, 2, 0)},
+     'money': {}}
+
+
+
+.. code:: ipython3
+
+    normalizer.normalize('pukul 8 malam')
+
+
+
+
+.. parsed-literal::
+
+    {'normalize': 'pukul lapan malam',
+     'date': {'pukul 8': datetime.datetime(2019, 9, 8, 0, 0)},
+     'money': {}}
+
+
+
+.. code:: ipython3
+
+    normalizer.normalize('jan 2 2019 12:01pm')
+
+
+
+
+.. parsed-literal::
+
+    {'normalize': 'jan 2 2019 12:01pm',
+     'date': {'jan 2 2019': datetime.datetime(2019, 1, 2, 0, 0),
+      '12:01pm': datetime.datetime(2019, 9, 14, 12, 1),
+      'jan 2 2019 12:01pm': datetime.datetime(2019, 1, 2, 12, 1)},
+     'money': {}}
+
+
+
+.. code:: ipython3
+
+    normalizer.normalize('2 ptg jan 2 2019')
+
+
+
+
+.. parsed-literal::
+
+    {'normalize': 'dua ptg jan 2 2019',
+     'date': {'jan 2 2019': datetime.datetime(2019, 1, 2, 0, 0),
+      '2 PM': datetime.datetime(2019, 9, 14, 14, 0),
+      '2 PM jan 2 2019': datetime.datetime(2019, 1, 2, 14, 0)},
      'money': {}}
 
 
@@ -474,8 +528,23 @@ Normalizing rules
 
 .. parsed-literal::
 
-    {'normalize': 'dua puluh juta ringgit',
+    {'normalize': 'dua juta perpuluhan kosong ringgit',
      'date': {},
-     'money': {'20m ringgit': 'RM20000000'}}
+     'money': {'20m ringgit': 'RM20000000.0'}}
+
+
+
+.. code:: ipython3
+
+    normalizer.normalize('22.5123334k ringgit')
+
+
+
+
+.. parsed-literal::
+
+    {'normalize': 'dua ribu lima ratus dua belas perpuluhan tiga tiga tiga empat ringgit',
+     'date': {},
+     'money': {'22.5123334k ringgit': 'RM22512.3334'}}
 
 
