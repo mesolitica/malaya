@@ -23,6 +23,8 @@
 # 22. word replacement for local slang, rules_normalizer
 # 23. calon dictionary, calon_dictionary
 # 24. stopwords, stopwords
+# 25. bi_vowels, bivowels, example, `aa`
+# 26. group_compound, group for biconsonant, example, `ng`
 
 GO = 0
 PAD = 1
@@ -352,7 +354,6 @@ date_replace = {
     'malam': 'PM',
 }
 rules_normalizer = {
-    'kls': 'kelas',
     'january': 'januari',
     'february': 'februari',
     'march': 'mac',
@@ -378,14 +379,10 @@ rules_normalizer = {
     'sat': 'sab',
     'sunday': 'ahad',
     'sun': 'ahd',
-    'mkan': 'makan',
-    'skrg': 'sekarang',
-    'sye': 'saya',
-    'saye': 'saya',
+    'gemen': 'kerajaan',
     'camtu': 'macam itu',
     'experience': 'pengalaman',
     'kpd': 'kepada',
-    'tlong': 'tolong',
     'bengng': 'bengang',
     'mntak': 'minta',
     'bagasi': 'bagasi',
@@ -2383,3 +2380,36 @@ stopwords = [
     'yakni',
     'yang',
 ]
+
+group_compound = ['ng', 'nt', 'mp', 'gs', 'rb']
+
+bi_vowels = [
+    'aa',
+    'ai',
+    'au',
+    'ea',
+    'ee',
+    'ei',
+    'eo',
+    'eu',
+    'ia',
+    'ii',
+    'oa',
+    'oo',
+    'ua',
+    'ui',
+    'uu',
+]
+"""
+aa is top 12 bi-vowels combination. how to get aa,
+mw = []
+for w in malaya.texts._malay_words._malay_words:
+    mw.append(''.join([v for v in w if v in vowels]))
+subwords = []
+for w in mw:
+    for i in range(0, len(w), 2):
+        subwords.append(w[i: i + 2])
+subwords = [w for w in subwords if len(w) == 2]
+u, c = np.unique(subwords, return_counts = True)
+aa = u[np.argsort(c)[::-1]][:12]
+"""

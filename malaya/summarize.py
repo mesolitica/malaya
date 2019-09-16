@@ -2,7 +2,7 @@ import numpy as np
 import re
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.decomposition import TruncatedSVD, NMF, LatentDirichletAllocation
-from .texts._distance import JaroWinkler
+from .texts._jarowrinkler import JaroWinkler
 from sklearn.metrics.pairwise import cosine_similarity
 from .texts._text_functions import (
     summary_textcleaning,

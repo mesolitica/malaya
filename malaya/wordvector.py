@@ -1,7 +1,7 @@
 import pickle
 import os
 import numpy as np
-from .texts._distance import JaroWinkler
+from .texts._jarowrinkler import JaroWinkler
 from scipy.spatial.distance import cdist
 from sklearn.neighbors import NearestNeighbors
 import tensorflow as tf

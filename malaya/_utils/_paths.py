@@ -6,11 +6,16 @@ MALAY_TEXT_200K = home + '/dictionary-200k/malay-text.txt'
 PATH_NGRAM = {
     1: {'model': home + '/preprocessing/bm_1grams.json', 'version': 'v28'},
     2: {'model': home + '/preprocessing/bm_2grams.json', 'version': 'v23'},
+    'symspell': {
+        'model': home + '/preprocessing/bm_1grams.txt',
+        'version': 'v28',
+    },
 }
 
 S3_PATH_NGRAM = {
-    1: {'model': 'v23/preprocessing/bm_1grams.json'},
+    1: {'model': 'v27/preprocessing/bm_1grams.json'},
     2: {'model': 'v23/preprocessing/bm_2grams.json'},
+    'symspell': {'model': 'v27/preprocessing/bm_1grams.txt'},
 }
 
 PATH_PREPROCESSING = {

@@ -2,7 +2,7 @@ import re
 import os
 import random
 import numpy as np
-from .texts._distance import JaroWinkler
+from .texts._jarowrinkler import JaroWinkler
 import json
 from sklearn.metrics.pairwise import (
     cosine_similarity,

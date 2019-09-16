@@ -1,8 +1,9 @@
 from collections import Counter, defaultdict
-from .texts._distance import JaroWinkler
+from itertools import product
 import numpy as np
 import json
 import re
+from .texts._jarowrinkler import JaroWinkler
 from .texts._text_functions import ENGLISH_WORDS, MALAY_WORDS
 from .texts._tatabahasa import (
     alphabet,
@@ -11,6 +12,9 @@ from .texts._tatabahasa import (
     rules_normalizer,
     permulaan,
     hujung,
+    stopword_tatabahasa,
+    bi_vowels,
+    group_compound,
 )
 from ._utils._paths import PATH_NGRAM, S3_PATH_NGRAM
 from ._utils._utils import check_file, check_available
@@ -23,6 +27,82 @@ def _build_dicts(words):
     for word in words:
         occurences[word[0]][word] += 1
     return occurences
+
+
+def _get_indices(string, c = 'a'):
+    return [i for i in range(len(string)) if string[i] == c]
+
+
+def _permutate(string, indices):
+    p = [''.join(_set) for _set in product(list(vowels), repeat = len(indices))]
+    # p = [p_ for p_ in p if not all([a in p_ for a in bi_vowels])]
+    mutate = []
+    for p_ in p:
+        s = list(string[:])
+        for i in range(len(indices)):
+            s[indices[i]] = p_[i]
+        mutate.append(''.join(s))
+    return mutate
+
+
+def _augment_vowel_alternate(string):
+    r = []
+    # a flag to not duplicate
+    last_time = False
+    for i, c in enumerate(string[:-1], 1):
+
+        # we only want to put a vowel after consonant if next that consonant if not a wovel
+        if c in consonants and string[i] not in vowels:
+            if c + string[i] in group_compound and not last_time:
+                r.append(c + string[i])
+                last_time = True
+            elif string[i - 2] + c in group_compound and not last_time:
+                r.append(string[i - 2] + c)
+                last_time = True
+            else:
+                last_time = False
+                if len(r):
+                    # ['ng'] gg
+                    if (
+                        r[-1] in group_compound
+                        and c + string[i] == r[-1][-1] * 2
+                    ):
+                        r.append('^')
+                        continue
+                    elif r[-1] in group_compound and c == r[-1][-1]:
+                        if c + string[i] in group_compound:
+                            continue
+                        else:
+                            r.append('a')
+                            continue
+                r.append(c + 'a')
+
+        else:
+            if len(r):
+                if r[-1] in group_compound and c == r[-1][-1]:
+                    continue
+            r.append(c)
+
+    if r[-1][-1] in vowels and string[-1] in consonants:
+        r.append(string[-1])
+
+    elif (
+        r[-1] in group_compound
+        and string[-2] in vowels
+        and string[-1] in consonants
+    ):
+        r.append(string[-2:])
+
+    left = ''.join(r).replace('^', '')
+    right = left + 'a'
+    return left, right
+
+
+def _augment_vowel_prob(word):
+    l, r = _augment_vowel_alternate(word)
+    return list(
+        set(_permutate(l, _get_indices(l)) + _permutate(r, _get_indices(r)))
+    )
 
 
 def _augment_vowel(
@@ -46,108 +126,13 @@ def _return_known(word, dicts):
     return set(w for w in word if w in dicts)
 
 
-class _SPELL:
-    def __init__(self, corpus, distancer):
-        self._corpus = corpus
-        self.WORDS = Counter(self._corpus)
-        self.N = sum(self.WORDS.values())
-        self._distancer = distancer()
-
-    def correct(self, word, min_distance = 0.9, **kwargs):
-        """
-        Correct a word.
-
-        Parameters
-        ----------
-        string: str
-        first_char: bool, optional (default=True)
-            If True, it will only pulled nearest words based on first character, faster but less accurate.
-        debug : bool, optional (default=True)
-            If true, it will print character similarity distances.
-
-        Returns
-        -------
-        string: corrected string
-        """
-        if not (isinstance(word, str)):
-            raise ValueError('word must be a string')
-        if word in ENGLISH_WORDS:
-            return word
-        if self._corpus.get(word, 0) > 5000:
-            return word
-        if word in MALAY_WORDS:
-            return word
-        hujung_result = [v for k, v in hujung.items() if word.endswith(k)]
-        if len(hujung_result):
-            hujung_result = max(hujung_result, key = len)
-            if len(hujung_result):
-                word = word[: -len(hujung_result)]
-        permulaan_result = [
-            v for k, v in permulaan.items() if word.startswith(k)
-        ]
-        if len(permulaan_result):
-            permulaan_result = max(permulaan_result, key = len)
-            if len(permulaan_result):
-                word = word[len(permulaan_result) :]
-        if len(word):
-            if word in rules_normalizer:
-                word = rules_normalizer[word]
-            elif self._corpus.get(word, 0) > 1000:
-                pass
-            else:
-                candidates = (
-                    _return_known(_SpellCorrector.edit_step(word), self.WORDS)
-                    or _return_possible(
-                        word, self.WORDS, _SpellCorrector.edit_step
-                    )
-                    or {word}
-                )
-                candidates = {
-                    i
-                    for i in candidates
-                    if len(i) > 3 and i not in ENGLISH_WORDS
-                }
-                candidates = list(candidates)
-                strings = [
-                    self._distancer.similarity(word, k) for k in candidates
-                ]
-                if np.where(np.array(strings) > min_distance)[0].shape[0]:
-                    descending_sort = np.argsort(strings)[::-1]
-                    word = candidates[descending_sort[0]]
-                else:
-                    return word
-        if len(hujung_result) and not word.endswith(hujung_result):
-            word = word + hujung_result
-        if len(permulaan_result) and not word.startswith(permulaan_result):
-            word = permulaan_result + word
-        return word
-
-    def correct_text(self, text):
-        """
-        Correct all the words within a text, returning the corrected text."""
-
-        if not isinstance(text, str):
-            raise ValueError('text must be a string')
-
-        return re.sub('[a-zA-Z]+', self.correct_match, text)
-
-    def correct_match(self, match):
-        """
-        Spell-correct word in match, and preserve proper upper/lower/title case.
-        """
-
-        word = match.group()
-        if word[0].isupper():
-            return word
-        return _SpellCorrector.case_of(word)(self.correct(word.lower()))
-
-
 class _SpellCorrector:
     """
     The SpellCorrector extends the functionality of the Peter Norvig's
     spell-corrector in http://norvig.com/spell-correct.html
     And improve it using some algorithms from Normalization of noisy texts in Malaysian online reviews,
     https://www.researchgate.net/publication/287050449_Normalization_of_noisy_texts_in_Malaysian_online_reviews
+    Added custom vowels augmentation
     """
 
     def __init__(self, corpus):
@@ -182,40 +167,29 @@ class _SpellCorrector:
         transposes = [L + R[1] + R[0] + R[2:] for L, R in splits if len(R) > 1]
         inserts = [L + c + R for L, R in splits for c in alphabet]
         pseudo = _augment_vowel(word)
+        pseudo.extend(_augment_vowel_prob(word))
         fuzziness = []
         if len(word):
+
             # berape -> berapa, mne -> mna
             if word[-1] == 'e':
                 inner = word[:-1] + 'a'
                 fuzziness.append(inner)
-                pseudo.extend(_augment_vowel(inner, included_end = False))
+                pseudo.extend(_augment_vowel_prob(inner))
+
             # pikir -> fikir
             if word[0] == 'p':
                 inner = 'f' + word[1:]
                 fuzziness.append(inner)
-                pseudo.extend(_augment_vowel(inner))
+                pseudo.extend(_augment_vowel_prob(inner))
 
         if len(word) > 2:
             # bapak -> bapa, mintak -> minta, mntak -> mnta
             if word[-2:] == 'ak':
                 fuzziness.append(word[:-1])
-                pseudo.extend(_augment_vowel(word[:-1], included_end = False))
+                pseudo.extend(_augment_vowel_prob(word[:-1]))
 
-            if (
-                word[0] in consonants
-                and word[1] in consonants
-                and word[2] in vowels
-            ):
-                inner = word[0] + word[2] + word[1:]
-                fuzziness.append(inner)
-            if (
-                word[0] in vowels
-                and word[-1] in consonants
-                and word[2] in consonants
-            ):
-                inner = word[:-2] + word[0] + word[-1]
-                fuzziness.append(inner)
-
+            # hnto -> hantar, bako -> bkar, sabo -> sabar
             if (
                 word[-1] == 'o'
                 and word[-3] in vowels
@@ -223,11 +197,30 @@ class _SpellCorrector:
             ):
                 inner = word[:-1] + 'ar'
                 fuzziness.append(inner)
+                pseudo.extend(_augment_vowel_prob(inner))
 
+            # antu -> hantu, antar -> hantar
             if word[0] == 'a' and word[1] in consonants:
                 inner = 'h' + word
                 fuzziness.append(inner)
                 pseudo.extend(_augment_vowel(inner))
+                pseudo.extend(_augment_vowel_prob(inner))
+
+            # ptg -> ptng, dtg -> dtng
+            if (
+                word[-3] in consonants
+                and word[-2] in consonants
+                and word[-1] == 'g'
+            ):
+                inner = word[:-1] + 'ng'
+                fuzziness.append(inner)
+                pseudo.extend(_augment_vowel_prob(inner))
+
+            # igt -> ingt
+            if word[1] == 'g' and word[2] in consonants:
+                inner = word[0] + 'n' + word[1:]
+                fuzziness.append(inner)
+                pseudo.extend(_augment_vowel_prob(inner))
 
         return set(deletes + transposes + inserts + fuzziness + pseudo)
 
@@ -277,6 +270,8 @@ class _SpellCorrector:
         if self._corpus.get(word, 0) > 5000:
             return word
         if word in MALAY_WORDS:
+            return word
+        if word in stopword_tatabahasa:
             return word
         hujung_result = [v for k, v in hujung.items() if word.endswith(k)]
         if len(hujung_result):
@@ -368,31 +363,170 @@ class _SpellCorrector:
         return self.case_of(word)(self.best_elong_candidate(word.lower()))
 
 
-def distance(distancer = JaroWinkler, validate = True):
+class _SymspellCorrector:
     """
-    Train a String matching Spell Corrector.
-
-    Parameters
-    ----------
-    distancer: object
-        string matching object, default is malaya.texts._distance.JaroWinkler
-    validate: bool, optional (default=True)
-        if True, malaya will check model availability and download if not available.
-
-    Returns
-    -------
-    _SPELL: Trained malaya.spell._SPELL class
+    The SymspellCorrector extends the functionality of symspeller, https://github.com/mammothb/symspellpy
+    And improve it using some algorithms from Normalization of noisy texts in Malaysian online reviews,
+    https://www.researchgate.net/publication/287050449_Normalization_of_noisy_texts_in_Malaysian_online_reviews
+    Added custom vowels augmentation
     """
-    if validate:
-        check_file(PATH_NGRAM[1], S3_PATH_NGRAM[1])
-    else:
-        if not check_available(PATH_NGRAM[1]):
-            raise Exception(
-                'preprocessing is not available, please `validate = True`'
-            )
-    with open(PATH_NGRAM[1]['model']) as fopen:
-        corpus = json.load(fopen)
-    return _SPELL(corpus, distancer = distancer)
+
+    def __init__(self, model, verbosity, corpus, k = 10):
+        self._model = model
+        self._verbosity = verbosity
+        self._corpus = corpus
+        self.k = k
+
+    def predict(self, word):
+        max_edit_distance_lookup = 2
+        suggestion_verbosity = self._verbosity
+        suggestions = self._model.lookup(
+            input_term, suggestion_verbosity, max_edit_distance_lookup
+        )[: self.k]
+        return suggestions
+
+    def edit_step(self, word):
+        words = {}
+        result = _augment_vowel_alternate(word)
+
+        if len(word):
+
+            # berape -> berapa, mne -> mna
+            if word[-1] == 'e':
+                inner = word[:-1] + 'a'
+                result.extend(_augment_vowel_alternate(inner))
+
+            # pikir -> fikir
+            if word[0] == 'p':
+                inner = 'f' + word[1:]
+                result.extend(_augment_vowel_alternate(inner))
+
+        if len(word) > 2:
+            # bapak -> bapa, mintak -> minta, mntak -> mnta
+            if word[-2:] == 'ak':
+                fuzziness.append(word[:-1])
+                result.extend(_augment_vowel_alternate(word[:-1]))
+
+            # hnto -> hantar, bako -> bkar, sabo -> sabar
+            if (
+                word[-1] == 'o'
+                and word[-3] in vowels
+                and word[-2] in consonants
+            ):
+                inner = word[:-1] + 'ar'
+                result.extend(_augment_vowel_alternate(inner))
+
+            # antu -> hantu, antar -> hantar
+            if word[0] == 'a' and word[1] in consonants:
+                inner = 'h' + word
+                result.extend(_augment_vowel_alternate(inner))
+
+            # ptg -> ptng, dtg -> dtng
+            if (
+                word[-3] in consonants
+                and word[-2] in consonants
+                and word[-1] == 'g'
+            ):
+                inner = word[:-1] + 'ng'
+                result.extend(_augment_vowel_alternate(inner))
+
+            # igt -> ingt
+            if word[1] == 'g' and word[2] in consonants:
+                inner = word[0] + 'n' + word[1:]
+                result.extend(_augment_vowel_alternate(inner))
+
+            for r in result:
+                suggestions = self.predict(r)
+                for s in suggestions:
+                    words[s.term] = words.get(s.term, 0) + s.count
+
+        return words
+
+    def edit_candidates(self, word):
+        ttt = self.edit_step(word) or {word: 10}
+        ttt = {
+            k: v
+            for k, v in ttt.items()
+            if len(k) > 3 and k not in ENGLISH_WORDS
+        }
+        ttt[word] = ttt.get(word, 0) + 10
+        if not len(ttt):
+            ttt = {word: 10}
+        return ttt
+
+    def correct(self, word, **kwargs):
+        """
+        Most probable spelling correction for word.
+        """
+        if not isinstance(word, str):
+            raise ValueError('word must be a string')
+
+        if word in ENGLISH_WORDS:
+            return word
+        if self._corpus.get(word, 0) > 5000:
+            return word
+        if word in MALAY_WORDS:
+            return word
+        if word in stopword_tatabahasa:
+            return word
+        hujung_result = [v for k, v in hujung.items() if word.endswith(k)]
+        if len(hujung_result):
+            hujung_result = max(hujung_result, key = len)
+            if len(hujung_result):
+                word = word[: -len(hujung_result)]
+        permulaan_result = [
+            v for k, v in permulaan.items() if word.startswith(k)
+        ]
+        if len(permulaan_result):
+            permulaan_result = max(permulaan_result, key = len)
+            if len(permulaan_result):
+                word = word[len(permulaan_result) :]
+        if len(word):
+            if word in rules_normalizer:
+                word = rules_normalizer[word]
+            else:
+                stats = self.edit_candidates(word)
+                word = max(stats, key = stats.get)
+        if len(hujung_result) and not word.endswith(hujung_result):
+            word = word + hujung_result
+        if len(permulaan_result) and not word.startswith(permulaan_result):
+            word = permulaan_result + word
+        return word
+
+    def correct_text(self, text):
+        """
+        Correct all the words within a text, returning the corrected text."""
+
+        if not isinstance(text, str):
+            raise ValueError('text must be a string')
+
+        return re.sub('[a-zA-Z]+', self.correct_match, text)
+
+    def correct_match(self, match):
+        """
+        Spell-correct word in match, and preserve proper upper/lower/title case.
+        """
+
+        word = match.group()
+        if word[0].isupper():
+            return word
+        return self.case_of(word)(self.correct(word.lower()))
+
+    @staticmethod
+    def case_of(text):
+        """
+        Return the case-function appropriate for text: upper, lower, title, or just str.
+        """
+
+        return (
+            str.upper
+            if text.isupper()
+            else str.lower
+            if text.islower()
+            else str.title
+            if text.istitle()
+            else str
+        )
 
 
 def probability(validate = True):
@@ -406,8 +540,12 @@ def probability(validate = True):
 
     Returns
     -------
-    _SpellCorrector: Trained malaya.spell._SpellCorrector class
+    _SpellCorrector: malaya.spell._SpellCorrector class
     """
+
+    if not isinstance(validate, bool):
+        raise ValueError('validate must be a boolean')
+
     if validate:
         check_file(PATH_NGRAM[1], S3_PATH_NGRAM[1])
     else:
@@ -418,3 +556,60 @@ def probability(validate = True):
     with open(PATH_NGRAM[1]['model']) as fopen:
         corpus = json.load(fopen)
     return _SpellCorrector(corpus)
+
+
+def symspell(
+    validate = True,
+    max_edit_distance_dictionary = 2,
+    prefix_length = 7,
+    term_index = 0,
+    count_index = 1,
+    top_k = 10,
+):
+    """
+    Train a symspell Spell Corrector.
+
+    Parameters
+    ----------
+    validate: bool, optional (default=True)
+        if True, malaya will check model availability and download if not available.
+
+    Returns
+    -------
+    _SpellCorrector: malaya.spell._SymspellCorrector class
+    """
+    if not isinstance(validate, bool):
+        raise ValueError('validate must be a boolean')
+    if not isinstance(max_edit_distance_dictionary, int):
+        raise ValueError('max_edit_distance_dictionary must be an integer')
+    if not isinstance(prefix_length, int):
+        raise ValueError('prefix_length must be an integer')
+    if not isinstance(term_index, int):
+        raise ValueError('term_index must be an integer')
+    if not isinstance(count_index, int):
+        raise ValueError('count_index must be an integer')
+
+    if validate:
+        check_file(PATH_NGRAM['symspell'], S3_PATH_NGRAM['symspell'])
+        check_file(PATH_NGRAM[1], S3_PATH_NGRAM[1])
+    else:
+        if not check_available(PATH_NGRAM['symspell']):
+            raise Exception(
+                'preprocessing is not available, please `validate = True`'
+            )
+        if not check_available(PATH_NGRAM[1]):
+            raise Exception(
+                'preprocessing is not available, please `validate = True`'
+            )
+    try:
+        from symspellpy.symspellpy import SymSpell, Verbosity
+    except:
+        raise Exception(
+            'symspellpy not installed. Please install it and try again.'
+        )
+    sym_spell = SymSpell(max_edit_distance_dictionary, prefix_length)
+    dictionary_path = PATH_NGRAM['symspell']['model']
+    sym_spell.load_dictionary(dictionary_path, term_index, count_index)
+    with open(PATH_NGRAM[1]['model']) as fopen:
+        corpus = json.load(fopen)
+    return _SymspellCorrector(sym_spell, Verbosity.ALL, corpus, k = top_k)
