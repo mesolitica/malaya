@@ -4,10 +4,16 @@ MALAY_TEXT = home + '/dictionary/malay-text.txt'
 MALAY_TEXT_200K = home + '/dictionary-200k/malay-text.txt'
 
 PATH_NGRAM = {
-    1: {'model': home + '/preprocessing/bm_1grams.json', 'version': 'v28'},
-    2: {'model': home + '/preprocessing/bm_2grams.json', 'version': 'v23'},
+    1: {
+        'model': home + '/preprocessing/ngram1/bm_1grams.json',
+        'version': 'v28',
+    },
+    2: {
+        'model': home + '/preprocessing/ngram2/bm_2grams.json',
+        'version': 'v23',
+    },
     'symspell': {
-        'model': home + '/preprocessing/bm_1grams.txt',
+        'model': home + '/preprocessing/symspell/bm_1grams.txt',
         'version': 'v28',
     },
 }
@@ -19,10 +25,16 @@ S3_PATH_NGRAM = {
 }
 
 PATH_PREPROCESSING = {
-    1: {'model': home + '/preprocessing/counts_1grams.json', 'version': 'v23'},
-    2: {'model': home + '/preprocessing/counts_2grams.json', 'version': 'v23'},
+    1: {
+        'model': home + '/preprocessing/count1/1counts_1grams.json',
+        'version': 'v23',
+    },
+    2: {
+        'model': home + '/preprocessing/count2/counts_2grams.json',
+        'version': 'v23',
+    },
     'english-malay': {
-        'model': home + '/preprocessing/english-malay-200k.json',
+        'model': home + '/preprocessing/english-malay/english-malay-200k.json',
         'version': 'v23',
     },
 }

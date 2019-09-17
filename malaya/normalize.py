@@ -186,6 +186,30 @@ class _SPELL_NORMALIZE:
                 index += 1
                 continue
 
+            if re.findall(_date, word.lower()):
+                word = word.lower()
+                word = multireplace(word, date_replace)
+                word = re.sub(r'[ ]+', ' ', word).strip()
+                parsed = dateparser.parse(word)
+                if parsed:
+                    result.append(parsed.strftime('%d/%m/%Y'))
+                else:
+                    result.append(word)
+                index += 1
+                continue
+
+            if re.findall(_expressions['time'], word.lower()):
+                word = word.lower()
+                word = multireplace(word, date_replace)
+                word = re.sub(r'[ ]+', ' ', word).strip()
+                parsed = dateparser.parse(word)
+                if parsed:
+                    result.append(parsed.strftime('%H:%M:%S'))
+                else:
+                    result.append(word)
+                index += 1
+                continue
+
             cardinal_ = cardinal(word)
             if cardinal_ != word:
                 result.append(cardinal_)
@@ -217,6 +241,7 @@ class _SPELL_NORMALIZE:
         money_ = re.findall(_money, normalized)
         money_ = [(s, money(s)[1]) for s in money_]
         dates_ = re.findall(_date, normalized)
+
         past_date_string_ = re.findall(_past_date_string, normalized)
         now_date_string_ = re.findall(_now_date_string, normalized)
         future_date_string_ = re.findall(_future_date_string, normalized)

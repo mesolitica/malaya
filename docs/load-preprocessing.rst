@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 12.4 s, sys: 2.01 s, total: 14.4 s
-    Wall time: 20.4 s
+    CPU times: user 4.83 s, sys: 755 ms, total: 5.58 s
+    Wall time: 5.38 s
 
 
 Preprocessing
@@ -138,8 +138,8 @@ english to bahasa malaysia.
 
 .. parsed-literal::
 
-    CPU times: user 16.3 s, sys: 3.81 s, total: 20.2 s
-    Wall time: 24.3 s
+    CPU times: user 15.5 s, sys: 3.12 s, total: 18.6 s
+    Wall time: 21.6 s
 
 
 .. code:: python
@@ -150,8 +150,8 @@ english to bahasa malaysia.
 
 .. parsed-literal::
 
-    CPU times: user 15.7 ms, sys: 9.26 ms, total: 25 ms
-    Wall time: 24.4 ms
+    CPU times: user 78.1 ms, sys: 1.63 ms, total: 79.7 ms
+    Wall time: 81.6 ms
 
 
 
@@ -170,8 +170,8 @@ english to bahasa malaysia.
 
 .. parsed-literal::
 
-    CPU times: user 2.7 ms, sys: 1.62 ms, total: 4.31 ms
-    Wall time: 4.11 ms
+    CPU times: user 2.03 ms, sys: 43 µs, total: 2.07 ms
+    Wall time: 2.11 ms
 
 
 
@@ -190,8 +190,8 @@ english to bahasa malaysia.
 
 .. parsed-literal::
 
-    CPU times: user 2.38 ms, sys: 707 µs, total: 3.09 ms
-    Wall time: 3.25 ms
+    CPU times: user 1.58 ms, sys: 24 µs, total: 1.61 ms
+    Wall time: 1.72 ms
 
 
 
@@ -210,15 +210,15 @@ english to bahasa malaysia.
 
 .. parsed-literal::
 
-    CPU times: user 4.43 ms, sys: 1.54 ms, total: 5.98 ms
-    Wall time: 5.76 ms
+    CPU times: user 4.12 ms, sys: 759 µs, total: 4.88 ms
+    Wall time: 4.26 ms
 
 
 
 
 .. parsed-literal::
 
-    'aahh <elongated> , malas nak pergi kerja hari ini <hashtag> Isnin blues </hashtag>'
+    'aahh <elongated> , malas nak pergi kerja hari ini <hashtag> isnin blues </hashtag>'
 
 
 
@@ -230,8 +230,8 @@ english to bahasa malaysia.
 
 .. parsed-literal::
 
-    CPU times: user 13.1 ms, sys: 4.36 ms, total: 17.4 ms
-    Wall time: 18.4 ms
+    CPU times: user 7.58 ms, sys: 855 µs, total: 8.43 ms
+    Wall time: 7.82 ms
 
 
 
@@ -260,8 +260,8 @@ original words, so we can use spelling correction to normalize it.
 
 .. parsed-literal::
 
-    CPU times: user 15.2 s, sys: 3.64 s, total: 18.8 s
-    Wall time: 21.3 s
+    CPU times: user 14.4 s, sys: 2.17 s, total: 16.6 s
+    Wall time: 17.5 s
 
 
 .. code:: python
@@ -272,8 +272,8 @@ original words, so we can use spelling correction to normalize it.
 
 .. parsed-literal::
 
-    CPU times: user 219 ms, sys: 505 ms, total: 724 ms
-    Wall time: 864 ms
+    CPU times: user 71.5 ms, sys: 14.9 ms, total: 86.4 ms
+    Wall time: 88.1 ms
 
 
 
@@ -292,8 +292,8 @@ original words, so we can use spelling correction to normalize it.
 
 .. parsed-literal::
 
-    CPU times: user 3.58 ms, sys: 2.23 ms, total: 5.81 ms
-    Wall time: 6.66 ms
+    CPU times: user 2.01 ms, sys: 451 µs, total: 2.46 ms
+    Wall time: 2.47 ms
 
 
 
@@ -312,8 +312,8 @@ original words, so we can use spelling correction to normalize it.
 
 .. parsed-literal::
 
-    CPU times: user 1.12 ms, sys: 329 µs, total: 1.45 ms
-    Wall time: 1.46 ms
+    CPU times: user 969 µs, sys: 319 µs, total: 1.29 ms
+    Wall time: 1.3 ms
 
 
 
@@ -332,15 +332,15 @@ original words, so we can use spelling correction to normalize it.
 
 .. parsed-literal::
 
-    CPU times: user 3.74 ms, sys: 1.35 ms, total: 5.1 ms
-    Wall time: 6.45 ms
+    CPU times: user 4.05 ms, sys: 731 µs, total: 4.78 ms
+    Wall time: 4.77 ms
 
 
 
 
 .. parsed-literal::
 
-    'ah <elongated> , malas nak pergi kerja hari ini <hashtag> Isnin blues </hashtag>'
+    'ah <elongated> , malas nak pergi kerja hari ini <hashtag> isnin blues </hashtag>'
 
 
 
@@ -352,8 +352,8 @@ original words, so we can use spelling correction to normalize it.
 
 .. parsed-literal::
 
-    CPU times: user 7.66 ms, sys: 1.74 ms, total: 9.4 ms
-    Wall time: 12.2 ms
+    CPU times: user 9.05 ms, sys: 619 µs, total: 9.67 ms
+    Wall time: 9.72 ms
 
 
 
@@ -378,8 +378,8 @@ frequencies.
 
 .. parsed-literal::
 
-    CPU times: user 180 ms, sys: 51.6 ms, total: 232 ms
-    Wall time: 253 ms
+    CPU times: user 163 ms, sys: 36.4 ms, total: 199 ms
+    Wall time: 206 ms
 
 
 .. code:: python
@@ -390,8 +390,8 @@ frequencies.
 
 .. parsed-literal::
 
-    CPU times: user 1.26 ms, sys: 71 µs, total: 1.33 ms
-    Wall time: 1.34 ms
+    CPU times: user 1.25 ms, sys: 28 µs, total: 1.28 ms
+    Wall time: 1.29 ms
 
 
 
@@ -410,8 +410,8 @@ frequencies.
 
 .. parsed-literal::
 
-    CPU times: user 1.13 ms, sys: 730 µs, total: 1.86 ms
-    Wall time: 1.64 ms
+    CPU times: user 595 µs, sys: 24 µs, total: 619 µs
+    Wall time: 628 µs
 
 
 
@@ -438,8 +438,8 @@ normalizations at
 
 .. parsed-literal::
 
-    CPU times: user 16 s, sys: 3.51 s, total: 19.5 s
-    Wall time: 22.7 s
+    CPU times: user 15 s, sys: 2.64 s, total: 17.6 s
+    Wall time: 19.5 s
 
 
 .. code:: python
@@ -450,8 +450,8 @@ normalizations at
 
 .. parsed-literal::
 
-    CPU times: user 91.7 ms, sys: 102 ms, total: 194 ms
-    Wall time: 259 ms
+    CPU times: user 85.9 ms, sys: 2.74 ms, total: 88.7 ms
+    Wall time: 92 ms
 
 
 
@@ -470,8 +470,8 @@ normalizations at
 
 .. parsed-literal::
 
-    CPU times: user 5.73 ms, sys: 4.85 ms, total: 10.6 ms
-    Wall time: 18.4 ms
+    CPU times: user 4.07 ms, sys: 942 µs, total: 5.01 ms
+    Wall time: 4.66 ms
 
 
 
@@ -490,8 +490,8 @@ normalizations at
 
 .. parsed-literal::
 
-    CPU times: user 958 µs, sys: 126 µs, total: 1.08 ms
-    Wall time: 1.18 ms
+    CPU times: user 1.38 ms, sys: 74 µs, total: 1.46 ms
+    Wall time: 1.48 ms
 
 
 
@@ -621,7 +621,8 @@ Segmentation
 ------------
 
 sometime when we want to clean social media texts or crawled texts, it
-lack of spaces, example, ``sayanakmakan nasi``, ``DrMahathir berjalan``.
+lack of spaces, example, ``sayanakmakannasiayam``,
+``DrMahathir berjalan``.
 
 We provide segmentation to split those sentences using Viterbi
 algorithm.
@@ -632,14 +633,14 @@ algorithm.
 
 .. code:: python
 
-    segmenter.segment('sayanakmakan nasiayam')
+    segmenter.segment('sayanakmakannasiayam')
 
 
 
 
 .. parsed-literal::
 
-    'saya nak makan   nasi ayam'
+    'saya nak makan nasi ayam'
 
 
 

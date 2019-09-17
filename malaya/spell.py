@@ -13,7 +13,7 @@ from .texts._tatabahasa import (
     permulaan,
     hujung,
     stopword_tatabahasa,
-    bi_vowels,
+    quad_vowels,
     group_compound,
 )
 from ._utils._paths import PATH_NGRAM, S3_PATH_NGRAM
@@ -35,7 +35,7 @@ def _get_indices(string, c = 'a'):
 
 def _permutate(string, indices):
     p = [''.join(_set) for _set in product(list(vowels), repeat = len(indices))]
-    # p = [p_ for p_ in p if not all([a in p_ for a in bi_vowels])]
+    p = [p_ for p_ in p if not all([a in p_ for a in quad_vowels])]
     mutate = []
     for p_ in p:
         s = list(string[:])
@@ -50,14 +50,17 @@ def _augment_vowel_alternate(string):
     # a flag to not duplicate
     last_time = False
     for i, c in enumerate(string[:-1], 1):
+        last = i - 2
+        if last < 0:
+            last = 0
 
         # we only want to put a vowel after consonant if next that consonant if not a wovel
         if c in consonants and string[i] not in vowels:
             if c + string[i] in group_compound and not last_time:
                 r.append(c + string[i])
                 last_time = True
-            elif string[i - 2] + c in group_compound and not last_time:
-                r.append(string[i - 2] + c)
+            elif string[last] + c in group_compound and not last_time:
+                r.append(string[last] + c)
                 last_time = True
             else:
                 last_time = False
@@ -236,34 +239,24 @@ class _SpellCorrector:
         """
         return set(w for w in words if w in self.WORDS)
 
-    def edit_candidates(self, word, fast = True):
+    def edit_candidates(self, word):
         """
         Generate possible spelling corrections for word.
         """
 
-        if fast:
-            ttt = self.known(self.edit_step(word)) or {word}
-        else:
-            ttt = (
-                self.known(self.edit_step(word))
-                or self.known(self.edits2(word))
-                or {word}
-            )
+        ttt = self.known(self.edit_step(word)) or {word}
         ttt = {i for i in ttt if len(i) > 3 and i not in ENGLISH_WORDS}
         ttt = self.known([word]) | ttt
         if not len(ttt):
             ttt = {word}
         return ttt
 
-    def correct(self, word, fast = False, **kwargs):
+    def correct(self, word, **kwargs):
         """
         Most probable spelling correction for word.
         """
         if not isinstance(word, str):
             raise ValueError('word must be a string')
-
-        if not isinstance(fast, bool):
-            raise ValueError('fast must be a boolean')
 
         if word in ENGLISH_WORDS:
             return word
@@ -291,9 +284,7 @@ class _SpellCorrector:
             elif self._corpus.get(word, 0) > 1000:
                 pass
             else:
-                word = max(
-                    self.edit_candidates(word, fast = fast), key = self.P
-                )
+                word = max(self.edit_candidates(word), key = self.P)
         if len(hujung_result) and not word.endswith(hujung_result):
             word = word + hujung_result
         if len(permulaan_result) and not word.startswith(permulaan_result):
@@ -319,12 +310,12 @@ class _SpellCorrector:
             return word
         return self.case_of(word)(self.correct(word.lower()))
 
-    def correct_word(self, word, fast = False):
+    def correct_word(self, word):
         """
         Spell-correct word in match, and preserve proper upper/lower/title case.
         """
 
-        return self.case_of(word)(self.correct(word.lower(), fast = fast))
+        return self.case_of(word)(self.correct(word.lower()))
 
     @staticmethod
     def case_of(text):
@@ -381,31 +372,30 @@ class _SymspellCorrector:
         max_edit_distance_lookup = 2
         suggestion_verbosity = self._verbosity
         suggestions = self._model.lookup(
-            input_term, suggestion_verbosity, max_edit_distance_lookup
+            word, suggestion_verbosity, max_edit_distance_lookup
         )[: self.k]
         return suggestions
 
     def edit_step(self, word):
-        words = {}
-        result = _augment_vowel_alternate(word)
+        result = list(_augment_vowel_alternate(word))
 
         if len(word):
 
             # berape -> berapa, mne -> mna
             if word[-1] == 'e':
                 inner = word[:-1] + 'a'
-                result.extend(_augment_vowel_alternate(inner))
+                result.extend(list(_augment_vowel_alternate(inner)))
 
             # pikir -> fikir
             if word[0] == 'p':
                 inner = 'f' + word[1:]
-                result.extend(_augment_vowel_alternate(inner))
+                result.extend(list(_augment_vowel_alternate(inner)))
 
         if len(word) > 2:
             # bapak -> bapa, mintak -> minta, mntak -> mnta
             if word[-2:] == 'ak':
                 fuzziness.append(word[:-1])
-                result.extend(_augment_vowel_alternate(word[:-1]))
+                result.extend(list(_augment_vowel_alternate(word[:-1])))
 
             # hnto -> hantar, bako -> bkar, sabo -> sabar
             if (
@@ -414,12 +404,12 @@ class _SymspellCorrector:
                 and word[-2] in consonants
             ):
                 inner = word[:-1] + 'ar'
-                result.extend(_augment_vowel_alternate(inner))
+                result.extend(list(_augment_vowel_alternate(inner)))
 
             # antu -> hantu, antar -> hantar
             if word[0] == 'a' and word[1] in consonants:
                 inner = 'h' + word
-                result.extend(_augment_vowel_alternate(inner))
+                result.extend(list(_augment_vowel_alternate(inner)))
 
             # ptg -> ptng, dtg -> dtng
             if (
@@ -428,17 +418,20 @@ class _SymspellCorrector:
                 and word[-1] == 'g'
             ):
                 inner = word[:-1] + 'ng'
-                result.extend(_augment_vowel_alternate(inner))
+                result.extend(list(_augment_vowel_alternate(inner)))
 
             # igt -> ingt
             if word[1] == 'g' and word[2] in consonants:
                 inner = word[0] + 'n' + word[1:]
-                result.extend(_augment_vowel_alternate(inner))
+                result.extend(list(_augment_vowel_alternate(inner)))
 
-            for r in result:
-                suggestions = self.predict(r)
-                for s in suggestions:
-                    words[s.term] = words.get(s.term, 0) + s.count
+        words = {}
+        for r in result:
+            suggestions = self.predict(r)
+            for s in suggestions:
+                words[s.term] = words.get(s.term, 0) + (
+                    s.count / (s.distance + 1)
+                )
 
         return words
 
