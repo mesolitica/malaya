@@ -6,7 +6,7 @@ __packagename__ = 'malaya-gpu'
 setuptools.setup(
     name = __packagename__,
     packages = setuptools.find_packages(),
-    version = '2.7.6.0',
+    version = '2.7.7.0',
     python_requires = '>=3.6.*',
     description = 'Natural-Language-Toolkit for bahasa Malaysia, powered by Deep Learning Tensorflow. GPU Version',
     author = 'huseinzol05',

@@ -97,19 +97,19 @@ def bert(model = 'base', validate = True):
     )
 
 
-def general_entity(model):
+def general_entity(model = None):
     """
     Load Regex based general entities tagging along with another supervised entity tagging model.
 
     Parameters
     ----------
     model : object
-        model must has `predict` method.
+        model must has `predict` method. Make sure the `predict` method returned [(string, label), (string, label)].
 
     Returns
     -------
     _Entity_regex: malaya.texts._entity._Entity_regex class
     """
-    if not hasattr(model, 'predict'):
+    if not hasattr(model, 'predict') and model is not None:
         raise ValueError('model must has `predict` method')
     return _Entity_regex(model = model)

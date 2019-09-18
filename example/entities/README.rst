@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 6.17 s, sys: 1.43 s, total: 7.61 s
-    Wall time: 11.5 s
+    CPU times: user 6.53 s, sys: 1.66 s, total: 8.19 s
+    Wall time: 13.1 s
 
 
 BERT model
@@ -272,8 +272,7 @@ Load BERT models
 Load general Malaya entity model
 --------------------------------
 
-This model required external entity tagging model like bert or deep
-learning, and this model able to classify,
+This model able to classify,
 
 1.  date
 2.  money
@@ -286,6 +285,15 @@ learning, and this model able to classify,
 9.  url
 10. time
 11. datetime
+12. local and generic foods, can check available rules in
+    malaya.texts._food
+13. local and generic drinks, can check available rules in
+    malaya.texts._food
+
+We can insert BERT or any deep learning model by passing
+``malaya.entity.general_entity(model = model)``, as long the model has
+``predict`` method and return ``[(string, label), (string, label)]``.
+This is an optional.
 
 .. code:: ipython3
 
@@ -296,37 +304,34 @@ learning, and this model able to classify,
 .. parsed-literal::
 
     WARNING: Logging before flag parsing goes to stderr.
-    W0914 16:11:11.231632 4569368000 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:45: The name tf.gfile.GFile is deprecated. Please use tf.io.gfile.GFile instead.
+    W0918 23:50:03.469161 4506924480 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:45: The name tf.gfile.GFile is deprecated. Please use tf.io.gfile.GFile instead.
     
-    W0914 16:11:11.232839 4569368000 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:46: The name tf.GraphDef is deprecated. Please use tf.compat.v1.GraphDef instead.
+    W0918 23:50:03.470440 4506924480 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:46: The name tf.GraphDef is deprecated. Please use tf.compat.v1.GraphDef instead.
     
-    W0914 16:11:14.984100 4569368000 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:41: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
+    W0918 23:50:06.818366 4506924480 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:41: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
     
 
 
 .. code:: ipython3
 
-    entity.predict('Husein baca buku Perlembagaan yang berharga 3k ringgit dekat kfc sungai petani minggu lepas, 2 ptg 2 oktober 2019 , suhu 32 celcius')
+    entity.predict('Husein baca buku Perlembagaan yang berharga 3k ringgit dekat kfc sungai petani minggu lepas, 2 ptg 2 oktober 2019 , suhu 32 celcius, sambil makan ayam goreng dan milo o ais')
 
 
 
 
 .. parsed-literal::
 
-    {'OTHER': ['baca buku',
+    {'person': ['Husein', 'Perlembagaan'],
+     'OTHER': ['baca buku',
       'yang berharga 3k ringgit dekat',
       'minggu lepas',
-      'suhu 32 celcius'],
-     'law': [],
+      'suhu 32 celcius sambil makan ayam goreng dan milo o ais'],
+     'organization': ['kfc'],
      'location': ['sungai petani'],
-     'organization': ['Perlembagaan', 'kfc'],
-     'person': ['Husein'],
-     'quantity': [],
      'time': {'2 PM 2 oktober 2019': datetime.datetime(2019, 10, 2, 14, 0),
-      '2 PM': datetime.datetime(2019, 9, 14, 14, 0)},
-     'event': [],
+      '2 PM': datetime.datetime(2019, 9, 18, 14, 0)},
      'date': {'2 oktober 2019': datetime.datetime(2019, 10, 2, 0, 0),
-      'minggu lalu': datetime.datetime(2019, 9, 7, 16, 11, 18, 459877)},
+      'minggu lalu': datetime.datetime(2019, 9, 11, 23, 50, 9, 945045)},
      'money': {'3k ringgit': 'RM3000.0'},
      'temperature': ['32 celcius'],
      'distance': [],
@@ -335,7 +340,9 @@ learning, and this model able to classify,
      'phone': [],
      'email': [],
      'url': [],
-     'datetime': {'2 ptg 2 oktober 2019': datetime.datetime(2019, 10, 2, 14, 0)}}
+     'datetime': {'2 ptg 2 oktober 2019': datetime.datetime(2019, 10, 2, 14, 0)},
+     'food': ['ayam goreng'],
+     'drink': ['milo o ais']}
 
 
 
@@ -348,14 +355,8 @@ learning, and this model able to classify,
 
 .. parsed-literal::
 
-    {'OTHER': ['contact', 'at', 'gmail com'],
-     'law': [],
-     'location': [],
-     'organization': ['zol05'],
+    {'OTHER': ['contact', 'at', 'zol05 gmail com'],
      'person': ['Husein', 'husein'],
-     'quantity': [],
-     'time': [],
-     'event': [],
      'date': {},
      'money': {},
      'temperature': [],
@@ -364,28 +365,28 @@ learning, and this model able to classify,
      'duration': [],
      'phone': [],
      'email': ['husein.zol05@gmail.com'],
-     'url': []}
+     'url': [],
+     'time': {},
+     'datetime': {},
+     'food': [],
+     'drink': []}
 
 
 
 .. code:: ipython3
 
-    entity.predict('tolong tempahkan meja makan esok dekat Restoran Sebulek')
+    entity.predict('tolong tempahkan meja makan makan nasi dagang dan jus apple, milo tarik esok dekat Restoran Sebulek')
 
 
 
 
 .. parsed-literal::
 
-    {'OTHER': ['tolong tempahkan meja makan esok dekat'],
-     'law': [],
+    {'OTHER': ['tolong tempahkan meja makan makan nasi dagang dan jus',
+      'milo tarik esok dekat'],
+     'organization': ['apple'],
      'location': ['Restoran Sebulek'],
-     'organization': [],
-     'person': [],
-     'quantity': [],
-     'time': [],
-     'event': [],
-     'date': {'esok': datetime.datetime(2019, 9, 15, 1, 37, 30, 850860)},
+     'date': {'esok': datetime.datetime(2019, 9, 19, 23, 51, 38, 859305)},
      'money': {},
      'temperature': [],
      'distance': [],
@@ -393,7 +394,11 @@ learning, and this model able to classify,
      'duration': [],
      'phone': [],
      'email': [],
-     'url': []}
+     'url': [],
+     'time': {},
+     'datetime': {},
+     'food': ['nasi dagang'],
+     'drink': ['milo tarik', 'jus apple']}
 
 
 

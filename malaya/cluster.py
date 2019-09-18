@@ -136,6 +136,44 @@ def cluster_pos(result):
     return output
 
 
+def cluster_tagging(result):
+    """
+    cluster any tagging results, as long the data passed `[(string, label), (string, label)]`.
+
+    Parameters
+    ----------
+    result: list
+
+    Returns
+    -------
+    result: list
+    """
+    if not isinstance(result, list):
+        raise ValueError('result must be a list')
+    if not isinstance(result[0], tuple):
+        raise ValueError('result must be a list of tuple')
+
+    _, labels = list(zip(*result))
+
+    output = {l: [] for l in labels}
+    last_label, words = None, []
+    for word, label in result:
+        if last_label != label and last_label:
+            joined = ' '.join(words)
+            if joined not in output[last_label]:
+                output[last_label].append(joined)
+            words = []
+            last_label = label
+            words.append(word)
+
+        else:
+            if not last_label:
+                last_label = label
+            words.append(word)
+    output[last_label].append(' '.join(words))
+    return output
+
+
 def cluster_entities(result):
     """
     cluster similar Entities.

@@ -1,3 +1,5 @@
+import dateparser
+import re
 from ._text_functions import multireplace
 from ._tatabahasa import date_replace
 from ._regex import (
@@ -20,10 +22,14 @@ from ._regex import (
     _today_left_datetime,
     _today_right_datetime,
 )
+from ._food import (
+    hot_ice_beverage_regex,
+    fruit_juice_regex,
+    unique_beverage_regex,
+    total_foods_regex,
+)
 from ._normalization import money, _normalize_money
-from ..cluster import cluster_entities
-import dateparser
-import re
+from ..cluster import cluster_tagging
 
 
 class _Entity_regex:
@@ -44,7 +50,7 @@ class _Entity_regex:
 
         if self._model:
             result_model = self._model.predict(string)
-            result = cluster_entities(result_model)
+            result = cluster_tagging(result_model)
         else:
             result = {}
         money_ = re.findall(_money, string)
@@ -119,6 +125,14 @@ class _Entity_regex:
         datetime_ = [re.sub(r'[ ]+', ' ', s).strip() for s in datetime_]
         datetime_ = {s: dateparser.parse(s) for s in datetime_}
 
+        foods_ = re.findall(total_foods_regex, string)
+        foods_ = [re.sub(r'[ ]+', ' ', s).strip() for s in foods_]
+
+        drinks_ = re.findall(unique_beverage_regex, string)
+        drinks_.extend(re.findall(hot_ice_beverage_regex, string))
+        drinks_.extend(re.findall(fruit_juice_regex, string))
+        drinks_ = [re.sub(r'[ ]+', ' ', s).strip() for s in drinks_]
+
         result['date'] = dates_
         result['money'] = money_
         result['temperature'] = temperature_
@@ -130,4 +144,6 @@ class _Entity_regex:
         result['url'] = url_
         result['time'] = time_
         result['datetime'] = datetime_
+        result['food'] = foods_
+        result['drink'] = drinks_
         return result
