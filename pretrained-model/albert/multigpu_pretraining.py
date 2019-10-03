@@ -225,6 +225,7 @@ def model_fn_builder(
             bert_config,
             model.get_sequence_output(),
             model.get_embedding_table(),
+            model.get_embedding_table_2(),
             masked_lm_positions,
             masked_lm_ids,
             masked_lm_weights,
@@ -402,6 +403,7 @@ def get_masked_lm_output(
     bert_config,
     input_tensor,
     output_weights,
+    project_weights,
     positions,
     label_ids,
     label_weights,
@@ -430,7 +432,14 @@ def get_masked_lm_output(
             shape = [bert_config.vocab_size],
             initializer = tf.zeros_initializer(),
         )
-        logits = tf.matmul(input_tensor, output_weights, transpose_b = True)
+        # logits = tf.matmul(input_tensor, output_weights, transpose_b=True)
+        # input_tensor=[-1,hidden_size], project_weights=[embedding_size, hidden_size], project_weights_transpose=[hidden_size, embedding_size]--->[-1, embedding_size]
+        input_project = tf.matmul(
+            input_tensor, project_weights, transpose_b = True
+        )
+        logits = tf.matmul(input_project, output_weights, transpose_b = True)
+        #  # input_project=[-1, embedding_size], output_weights=[vocab_size, embedding_size], output_weights_transpose=[embedding_size, vocab_size] ---> [-1, vocab_size]
+
         logits = tf.nn.bias_add(logits, output_bias)
         log_probs = tf.nn.log_softmax(logits, axis = -1)
 

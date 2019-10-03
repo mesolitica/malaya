@@ -199,7 +199,7 @@ python3 multigpu_pretraining.py \
 
   1. Vocab size 40k.
   2. Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news.
-  3. 1.0M steps, 3 GPUs.
+  3. 1.0M steps, 3 GPUs TESLA V100.
   4. BASE size (467MB).
 
 ```text
@@ -217,6 +217,31 @@ INFO:tensorflow:  next_sentence_accuracy = 0.78
 I0913 04:02:36.334844 140621913737024 validation.py:597]   next_sentence_accuracy = 0.78
 INFO:tensorflow:  next_sentence_loss = 0.33995274
 I0913 04:02:36.334962 140621913737024 validation.py:597]   next_sentence_loss = 0.33995274
+```
+
+4. **SMALL**, last update 19th September 2019,
+[bert-small-19-9-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-small-19-9-2019.tar.gz)
+
+  1. Vocab size 40k.
+  2. Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news.
+  3. 1.0M steps, 3 GPUs.
+  4. BASE size (467MB).
+
+```text
+INFO:tensorflow:***** Eval results *****
+I0919 16:04:24.180380 139907485054784 validation.py:595] ***** Eval results *****
+INFO:tensorflow:  global_step = 1000002
+I0919 16:04:24.180476 139907485054784 validation.py:597]   global_step = 1000002
+INFO:tensorflow:  loss = 3.6021976
+I0919 16:04:24.180624 139907485054784 validation.py:597]   loss = 3.6021976
+INFO:tensorflow:  masked_lm_accuracy = 0.45817283
+I0919 16:04:24.180718 139907485054784 validation.py:597]   masked_lm_accuracy = 0.45817283
+INFO:tensorflow:  masked_lm_loss = 3.2453835
+I0919 16:04:24.180800 139907485054784 validation.py:597]   masked_lm_loss = 3.2453835
+INFO:tensorflow:  next_sentence_accuracy = 0.76
+I0919 16:04:24.180881 139907485054784 validation.py:597]   next_sentence_accuracy = 0.76
+INFO:tensorflow:  next_sentence_loss = 0.35221446
+I0919 16:04:24.180958 139907485054784 validation.py:597]   next_sentence_loss = 0.35221446
 ```
 
 ## Comparison using Subjectivity Dataset

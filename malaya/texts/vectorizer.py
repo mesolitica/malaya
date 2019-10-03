@@ -5,7 +5,6 @@ if not sys.warnoptions:
     warnings.simplefilter('ignore')
 
 from itertools import combinations
-from toolz import compose
 import random
 from sklearn.feature_extraction.text import CountVectorizer
 
@@ -16,6 +15,8 @@ class SkipGramVectorizer(CountVectorizer):
         self.skip = skip
 
     def build_sent_analyzer(self, preprocess, stop_words, tokenize):
+        from toolz import compose
+
         return lambda sent: self._word_skip_grams(
             compose(tokenize, preprocess, self.decode)(sent), stop_words
         )

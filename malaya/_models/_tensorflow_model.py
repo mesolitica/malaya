@@ -441,6 +441,7 @@ class BINARY_SOFTMAX(SOFTMAX):
             class_name,
             label,
         )
+        self._softmax = tf.nn.softmax(self._logits)
 
     def predict(self, string, get_proba = False, add_neutral = True):
         """
@@ -475,8 +476,7 @@ class BINARY_SOFTMAX(SOFTMAX):
             [' '.join(splitted)], self._dictionary, len(splitted), UNK = 3
         )
         result, alphas = self._sess.run(
-            [tf.nn.softmax(self._logits), self._alphas],
-            feed_dict = {self._X: batch_x},
+            [self._softmax, self._alphas], feed_dict = {self._X: batch_x}
         )
         if add_neutral:
             result = neutral(result)

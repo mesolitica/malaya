@@ -77,15 +77,15 @@ class BINARY_BERT(BERT):
         self._attns = attns
         self._logits_seq = logits_seq
         self._class_name = class_name
+        self._softmax = tf.nn.softmax(self._logits)
+        self._softmax_seq = tf.nn.softmax(self._logits_seq)
 
     def _predict(self, strings, add_neutral):
         input_ids, _, _, _ = bert_tokenization(
             self._tokenizer, strings, self._cls, self._sep
         )
 
-        result = self._sess.run(
-            tf.nn.softmax(self._logits), feed_dict = {self._X: input_ids}
-        )
+        result = self._sess.run(self._softmax, feed_dict = {self._X: input_ids})
         if add_neutral:
             result = neutral(result)
         return result
@@ -201,11 +201,7 @@ class BINARY_BERT(BERT):
             self._tokenizer, [string], cls = self._cls, sep = self._sep
         )
         result, attentions, words = self._sess.run(
-            [
-                tf.nn.softmax(self._logits),
-                self._attns,
-                tf.nn.softmax(self._logits_seq),
-            ],
+            [self._softmax, self._attns, self._softmax_seq],
             feed_dict = {self._X: batch_x},
         )
         if method == 'first':
@@ -306,15 +302,15 @@ class MULTICLASS_BERT(BERT):
         self._attns = attns
         self._logits_seq = logits_seq
         self._class_name = class_name
+        self._softmax = tf.nn.softmax(self._logits)
+        self._softmax_seq = tf.nn.softmax(self._logits_seq)
 
     def _predict(self, strings):
         input_ids, _, _, _ = bert_tokenization(
             self._tokenizer, strings, self._cls, self._sep
         )
 
-        result = self._sess.run(
-            tf.nn.softmax(self._logits), feed_dict = {self._X: input_ids}
-        )
+        result = self._sess.run(self._softmax, feed_dict = {self._X: input_ids})
         return result
 
     def predict(self, string, get_proba = False):
@@ -413,11 +409,7 @@ class MULTICLASS_BERT(BERT):
             self._tokenizer, [string], cls = self._cls, sep = self._sep
         )
         result, attentions, words = self._sess.run(
-            [
-                tf.nn.softmax(self._logits),
-                self._attns,
-                tf.nn.softmax(self._logits_seq),
-            ],
+            [self._softmax, self._attns, self._softmax_seq],
             feed_dict = {self._X: batch_x},
         )
         if method == 'first':
@@ -520,15 +512,15 @@ class SIGMOID_BERT(BERT):
         self._attns = attns
         self._logits_seq = logits_seq
         self._class_name = class_name
+        self._sigmoid = tf.nn.sigmoid(self._logits)
+        self._sigmoid_seq = tf.nn.sigmoid(self._logits_seq)
 
     def _predict(self, strings):
         input_ids, _, _, _ = bert_tokenization(
             self._tokenizer, strings, self._cls, self._sep
         )
 
-        result = self._sess.run(
-            tf.nn.sigmoid(self._logits), feed_dict = {self._X: input_ids}
-        )
+        result = self._sess.run(self._sigmoid, feed_dict = {self._X: input_ids})
         return result
 
     def predict(self, string, get_proba = False):
@@ -631,11 +623,7 @@ class SIGMOID_BERT(BERT):
             self._tokenizer, [string], cls = self._cls, sep = self._sep
         )
         result, attentions, words = self._sess.run(
-            [
-                tf.nn.sigmoid(self._logits),
-                self._attns,
-                tf.nn.sigmoid(self._logits_seq),
-            ],
+            [self._sigmoid, self._attns, self._sigmoid_seq],
             feed_dict = {self._X: batch_x},
         )
         if method == 'first':
@@ -729,6 +717,7 @@ class SIAMESE_BERT(BERT):
             sep = sep,
             label = label,
         )
+        self._softmax = tf.nn.softmax(self._logits)
 
     def _base(self, strings_left, strings_right):
         input_ids, input_masks, segment_ids = bert_tokenization_siamese(
@@ -740,7 +729,7 @@ class SIAMESE_BERT(BERT):
         )
 
         return self._sess.run(
-            tf.nn.softmax(self._logits),
+            self._softmax,
             feed_dict = {
                 self._X: input_ids,
                 self._segment_ids: segment_ids,

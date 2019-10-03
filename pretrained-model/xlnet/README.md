@@ -193,9 +193,9 @@ python3 train_gpu.py \
 7. Run validation,
 ```bash
 python3 validation.py \
-  --corpus_info_path=save-location2/corpus_info.json \
-  --record_info_dir=save-location2/tfrecords \
-  --train_batch_size=60 \
+  --corpus_info_path=save-location/corpus_info.json \
+  --record_info_dir=save-location/tfrecords \
+  --train_batch_size=20 \
   --seq_len=512 \
   --reuse_len=256 \
   --mem_len=384 \
@@ -210,13 +210,9 @@ python3 validation.py \
   --mask_alpha=6 \
   --mask_beta=1 \
   --num_predict=85 \
-  --model_dir=output-model2 \
+  --model_dir=output-model \
   --uncased=False \
-  --num_core_per_host=1 \
-  --train_steps=300000 \
-  --iterations=10 \
-  --learning_rate=5e-5 \
-  --save_steps=15000
+  --num_core_per_host=1
 ```
 
 #### Multigpus
@@ -228,8 +224,8 @@ I really not suggest to use multi-gpus from original XL-NET implementation, not 
 Run multigpus using MirroredStrategy,
 ```bash
 python3 multigpu_pretraining.py \
-  --corpus_info_path=save-location2/corpus_info.json \
-  --record_info_dir=save-location2/tfrecords \
+  --corpus_info_path=save-location/corpus_info.json \
+  --record_info_dir=save-location/tfrecords \
   --train_batch_size=60 \
   --seq_len=512 \
   --reuse_len=256 \
@@ -245,14 +241,14 @@ python3 multigpu_pretraining.py \
   --mask_alpha=6 \
   --mask_beta=1 \
   --num_predict=85 \
-  --model_dir=output-model2 \
+  --model_dir=output-model \
   --uncased=False \
   --num_core_per_host=1 \
   --train_steps=300000 \
   --iterations=10 \
   --learning_rate=5e-5 \
   --num_gpu_cores=3 \
-  --save_steps=15000
+  --save_steps=30000 \
 ```
 
 - `num_gpu_cores`: Number of gpus.
@@ -267,11 +263,33 @@ tensorboard --logdir=tensorboard --host=0.0.0.0
 
 1.  9th July 2019, [xlnet-9-july-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/xlnet-9-july-2019-v2.tar.gz).
 
-**Vocab size 32k, Case Sensitive, Train on 1.21GB dataset, 700k steps, BASE size (878MB)**.
+  1. Vocab size 32k.
+  2. Trained on cleaned wikipedia, raw twitter, raw instagram, raw parliament, raw news.
+  3. 700k steps, single GPU.
+  4. BASE size (878MB).
+  5. test loss, 4.XX (last remember).
 
 2. 15 July 2019, [xlnet-15-july-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/xlnet-bahasa-small.tar.gz)
 
-**Vocab size 32k, Case Sensitive, Train on 1.21GB dataset, 700k steps, SMALL size (231MB)**.
+  1. Vocab size 32k.
+  2. Trained on cleaned wikipedia, raw twitter, raw instagram, raw parliament, raw news.
+  3. 700k steps, single GPU.
+  4. BASE size (231MB).
+  5. test loss, 4.XX (last remember).
+
+3. 30 September 2019, [xlnet-base-30-september-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/xlnet-base-30-9-2019.tar.gz)
+
+  1. Vocab size 32k.
+  2. Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news.
+  3. 270k steps, 3 GPUs TESLA V100.
+  4. BASE size (878MB).
+
+```text
+I0930 13:31:34.584934 140152603084608 evaluation.py:275] Finished evaluation at 2019-09-30-13:31:34
+INFO:tensorflow:Saving dict for global step 270000: accuracy = 0.53644705, global_step = 270000, loss = 2.6062012
+I0930 13:31:34.585190 140152603084608 estimator.py:2039] Saving dict for global step 270000: accuracy = 0.53644705, global_step = 270000, loss = 2.6062012
+```
+
 
 ## Comparison using Subjectivity Dataset
 

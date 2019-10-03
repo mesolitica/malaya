@@ -118,11 +118,13 @@ def two_stream_loss(FLAGS, features, labels, mems, is_training):
     if FLAGS.use_bfloat16:
         tgt_mask = tf.cast(tgt_mask, tf.float32)
         lm_loss = tf.cast(lm_loss, tf.float32)
+    print(tgt_mask, lm_loss, accuracy)
 
     total_loss = tf.reduce_sum(lm_loss * tgt_mask) / tf.reduce_sum(tgt_mask)
-    total_accuracy = tf.reduce_sum(accuracy * tgt_mask) / tf.reduce_sum(
-        accuracy
-    )
+    #     total_accuracy = tf.reduce_sum(accuracy * tgt_mask) / tf.reduce_sum(
+    #         accuracy
+    #     )
+    total_accuracy = accuracy
     monitor_dict['total_loss'] = total_loss
     monitor_dict['total_accuracy'] = total_accuracy
 

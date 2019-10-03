@@ -5,7 +5,7 @@ from __future__ import print_function
 
 import os, sys
 
-os.environ['CUDA_VISIBLE_DEVICES'] = ''
+os.environ['CUDA_VISIBLE_DEVICES'] = '3'
 import math
 import json
 import time
@@ -247,10 +247,16 @@ def get_model_fn():
             FLAGS, global_vars = True
         )
 
+        # def metric_fn(accuracy):
+        #     return
+        #
+        # eval_metrics = (metric_fn, [total_accuracy])
+
         output_spec = tf.estimator.EstimatorSpec(
             mode = mode,
             loss = total_loss,
             train_op = train_op,
+            eval_metric_ops = {'accuracy': total_accuracy},
             scaffold = scaffold_fn,
         )
 

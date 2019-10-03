@@ -1,6 +1,6 @@
 ## How-to-Translate
 
-**_Last update 3-July-2019, still usable._**
+**_Last update 30-September-2019, still usable._**
 
 Some of us want to translate a dataset, like Malaya itself, to find a bahasa based dataset is very hard, so one way to do it, we use translator to translate from a specific language dataset to bahasa based dataset. Everyone agreed that, Google Translate is the best online translator in this world, and to use it massively, we need to pay the service, the API. It is very expensive, really really expensive.
 

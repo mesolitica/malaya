@@ -1036,10 +1036,9 @@ def lm_accuracy(
         next_sentence_predictions = tf.argmax(
             logits, axis = -1, output_type = tf.int32
         )
-        target = tf.reshape(target, [-1])
+        print(target, next_sentence_predictions)
         next_sentence_accuracy = tf.metrics.accuracy(
-            labels = next_sentence_labels,
-            predictions = next_sentence_predictions,
+            labels = target, predictions = next_sentence_predictions
         )
 
         if use_tpu:
