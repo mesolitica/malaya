@@ -66,7 +66,7 @@ def create_optimizer(
     # It is recommended that you use this optimizer for fine tuning, since this
     # is how the model was trained (note that the Adam m/v variables are NOT
     # loaded from init_checkpoint.)
-    optimizer = AdamWeightDecayOptimizer(
+    optimizer = LAMBOptimizer(
         learning_rate = learning_rate,
         weight_decay_rate = 0.01,
         beta_1 = 0.9,

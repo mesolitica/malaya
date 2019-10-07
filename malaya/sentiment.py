@@ -1,58 +1,14 @@
 from ._utils import _softmax_class
 from ._utils._paths import PATH_SENTIMENT, S3_PATH_SENTIMENT
 
+_availability = {'model': ['bert', 'xlnet'], 'size': ['base', 'small']}
 
-def available_deep_model():
+
+def available_transformer_model():
     """
-    List available deep learning sentiment analysis models.
+    List available transformer sentiment analysis models.
     """
-    return ['self-attention', 'bahdanau', 'luong']
-
-
-def available_bert_model():
-    """
-    List available bert sentiment analysis models.
-    """
-    return ['multilanguage', 'base', 'small']
-
-
-def deep_model(model = 'luong', validate = True):
-    """
-    Load deep learning sentiment analysis model.
-
-    Parameters
-    ----------
-    model : str, optional (default='luong')
-        Model architecture supported. Allowed values:
-
-        * ``'self-attention'`` - Fast-text architecture, embedded and logits layers only with self attention.
-        * ``'bahdanau'`` - LSTM with bahdanau attention architecture.
-        * ``'luong'`` - LSTM with luong attention architecture.
-    validate: bool, optional (default=True)
-        if True, malaya will check model availability and download if not available.
-
-    Returns
-    -------
-    SOFTMAX: malaya._models._tensorflow_model.SOFTMAX class
-    """
-    if not isinstance(model, str):
-        raise ValueError('model must be a string')
-    if not isinstance(validate, bool):
-        raise ValueError('validate must be a boolean')
-    model = model.lower()
-    if model not in available_deep_model():
-        raise Exception(
-            'model is not supported, please check supported models from malaya.sentiment.available_deep_model()'
-        )
-
-    return _softmax_class.deep_model(
-        PATH_SENTIMENT,
-        S3_PATH_SENTIMENT,
-        'sentiment',
-        ['negative', 'positive'],
-        model = model,
-        validate = validate,
-    )
+    return _availability
 
 
 def multinomial(validate = True):
@@ -77,40 +33,22 @@ def multinomial(validate = True):
     )
 
 
-def xgb(validate = True):
+def transformer(model = 'xlnet', size = 'base', validate = True):
     """
-    Load XGB sentiment model.
+    Load Transformer sentiment model.
 
     Parameters
     ----------
-    validate: bool, optional (default=True)
-        if True, malaya will check model availability and download if not available.
-
-    Returns
-    -------
-    XGB : malaya._models._sklearn_model.XGB class
-    """
-    return _softmax_class.xgb(
-        PATH_SENTIMENT,
-        S3_PATH_SENTIMENT,
-        'sentiment',
-        ['negative', 'positive'],
-        validate = validate,
-    )
-
-
-def bert(model = 'base', validate = True):
-    """
-    Load BERT sentiment model.
-
-    Parameters
-    ----------
-    model : str, optional (default='base')
+    model : str, optional (default='bert')
         Model architecture supported. Allowed values:
 
-        * ``'multilanguage'`` - bert multilanguage released by Google, trained on sentiment analysis.
-        * ``'base'`` - base bert-bahasa released by Malaya, trained on sentiment analysis.
-        * ``'small'`` - small bert-bahasa released by Malaya, trained on sentiment analysis.
+        * ``'bert'`` - BERT architecture from google.
+        * ``'xlnet'`` - XLNET architecture from google.
+    size : str, optional (default='base')
+        Model size supported. Allowed values:
+
+        * ``'base'`` - BASE size.
+        * ``'small'`` - SMALL size.
     validate: bool, optional (default=True)
         if True, malaya will check model availability and download if not available.
 
@@ -120,13 +58,20 @@ def bert(model = 'base', validate = True):
     """
     if not isinstance(model, str):
         raise ValueError('model must be a string')
+    if not isinstance(size, str):
+        raise ValueError('size must be a string')
     if not isinstance(validate, bool):
         raise ValueError('validate must be a boolean')
 
     model = model.lower()
-    if model not in available_bert_model():
+    size = size.lower()
+    if model not in _availability['model']:
         raise Exception(
-            'model is not supported, please check supported models from malaya.sentiment.available_bert_model()'
+            'model not supported, please check supported models from malaya.sentiment.available_transformer_model()'
+        )
+    if size not in _availability['size']:
+        raise Exception(
+            'size not supported, please check supported models from malaya.sentiment.available_transformer_model()'
         )
     return _softmax_class.bert(
         PATH_SENTIMENT,

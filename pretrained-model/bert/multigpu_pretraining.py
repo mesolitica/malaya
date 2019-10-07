@@ -704,6 +704,7 @@ def main(_):
             log_step_count_steps = log_every_n_steps,
             model_dir = FLAGS.output_dir,
             save_checkpoints_steps = FLAGS.save_checkpoints_steps,
+            save_summary_steps = None,
         )
     else:
         run_config = tf.contrib.tpu.RunConfig(

@@ -3,95 +3,61 @@ from ._utils._paths import PATH_ENTITIES, S3_PATH_ENTITIES
 from .texts._entity import _Entity_regex
 
 
-def available_deep_model():
-    """
-    List available deep learning entities models, ['concat', 'bahdanau', 'luong']
-    """
-    return ['concat', 'bahdanau', 'luong']
+_availability = {'model': ['bert', 'xlnet'], 'size': ['base', 'small']}
 
 
-def available_bert_model():
+def available_transformer_model():
     """
-    List available bert entities models, ['multilanguage', 'base', 'small']
+    List available transformer Entity Tagging models.
     """
-    return ['multilanguage', 'base', 'small']
+    return _availability
 
 
-def deep_model(model = 'bahdanau', validate = True):
+def transformer(model = 'xlnet', size = 'base', validate = True):
     """
-    Load deep learning NER model.
+    Load Transformer Entity Tagging model, transfer learning Transformer + CRF.
 
     Parameters
     ----------
-    model : str, optional (default='bahdanau')
+    model : str, optional (default='bert')
         Model architecture supported. Allowed values:
 
-        * ``'concat'`` - Concating character and word embedded for BiLSTM.
-        * ``'bahdanau'`` - Concating character and word embedded including Bahdanau Attention for BiLSTM.
-        * ``'luong'`` - Concating character and word embedded including Luong Attention for BiLSTM.
+        * ``'bert'`` - BERT architecture from google.
+        * ``'xlnet'`` - XLNET architecture from google.
+    size : str, optional (default='base')
+        Model size supported. Allowed values:
+
+        * ``'base'`` - BASE size.
+        * ``'small'`` - SMALL size.
     validate: bool, optional (default=True)
         if True, malaya will check model availability and download if not available.
 
     Returns
     -------
-    TAGGING: malaya._models._tensorflow_model.TAGGING class
+    BERT : malaya._models._bert_model.BINARY_BERT class
     """
-
     if not isinstance(model, str):
         raise ValueError('model must be a string')
+    if not isinstance(size, str):
+        raise ValueError('size must be a string')
     if not isinstance(validate, bool):
         raise ValueError('validate must be a boolean')
 
     model = model.lower()
-    if model not in available_deep_model():
+    size = size.lower()
+    if model not in _availability['model']:
         raise Exception(
-            'model not supported, please check supported models from malaya.entity.available_deep_model()'
+            'model not supported, please check supported models from malaya.sentiment.available_transformer_model()'
         )
-
-    return _tag_class.deep_model(
-        PATH_ENTITIES,
-        S3_PATH_ENTITIES,
-        'entity',
-        model = model,
-        validate = validate,
-    )
-
-
-def bert(model = 'base', validate = True):
-    """
-    Load BERT NER model.
-
-    Parameters
-    ----------
-    model : str, optional (default='base')
-        Model architecture supported. Allowed values:
-
-        * ``'multilanguage'`` - bert multilanguage released by Google, trained on NER.
-        * ``'base'`` - base bert-bahasa released by Malaya, trained on NER.
-        * ``'small'`` - small bert-bahasa released by Malaya, trained on NER.
-    validate: bool, optional (default=True)
-        if True, malaya will check model availability and download if not available.
-
-    Returns
-    -------
-    TAGGING_BERT: malaya._models._tensorflow_model.TAGGING_BERT class
-    """
-
-    if not isinstance(model, str):
-        raise ValueError('model must be a string')
-    if not isinstance(validate, bool):
-        raise ValueError('validate must be a boolean')
-
-    model = model.lower()
-    if model not in available_bert_model():
+    if size not in _availability['size']:
         raise Exception(
-            'model not supported, please check supported models from malaya.entity.available_bert_model()'
+            'size not supported, please check supported models from malaya.sentiment.available_transformer_model()'
         )
-
-    return _tag_class.bert(
-        PATH_ENTITIES,
-        S3_PATH_ENTITIES,
-        'entity',
+    return _softmax_class.bert(
+        PATH_SENTIMENT,
+        S3_PATH_SENTIMENT,
+        'sentiment',
+        ['negative', 'positive'],
         model = model,
         validate = validate,
     )

@@ -46,13 +46,14 @@ _fd2 = '(?:{})'.format(
 )
 _date = '(?:' + '(?:' + _fd1 + '|' + _fd2 + ')' + '|' + _short_date + ')'
 _time = r'(?:(?:\d+)?\.?\d+(?:AM|PM|am|pm|a\.m\.|p\.m\.))|(?:(?:[0-2]?[0-9]|[2][0-3]):(?:[0-5][0-9])(?::(?:[0-5][0-9]))?(?: ?(?:AM|PM|am|pm|a\.m\.|p\.m\.))?)'
-_today_time = '\d+\s*(?:pagi|pgi|morning|tengahari|tngahari|petang|ptg|malam)\\b|(?:pkul|pukul)\s*(?:\s|\d+)'
-_past_date_string = '(?:\s|\d+)\s*(?:minggu|bulan|tahun|hari|thun|hri|mnggu|jam|minit|saat)\s*(?:lalu|lepas|lps)'
+_today_time = '\d+\s*(?:pagi|pgi|morning|tengahari|tngahari|petang|ptg|malam)\\b|(?:pkul|pukul|kul)\s*(?:\s|\d+)\\b'
+_past_date_string = '(?:\s|\d+)\s*(?:minggu|bulan|tahun|hari|thun|hri|mnggu|jam|minit|saat)\s*(?:lalu|lepas|lps)\\b'
 _now_date_string = '(?:sekarang|skrg|jam|tahun|thun|saat|minit) (?:ini|ni)\\b'
-_yesterday_date_string = '(?:yesterday|semalam|kelmarin|smalam)'
-_tomorrow_date_string = '(?:esok|esk)\\b'
-_future_date_string = '(?:dlm|dalam)\s*\d+(?:minggu|bulan|tahun|hari|thun|hri|mnggu|jam|minit|saat)'
-_depan_date_string = '(?:\s|\d+)\s*(?:minggu|bulan|tahun|hari|thun|hri|mnggu|jam|minit|saat)\s*(?:depan|dpan|dpn)'
+_yesterday_tomorrow_date_string = (
+    '(?:yesterday|semalam|kelmarin|smalam|esok|esk)\\b'
+)
+_future_date_string = '(?:dlm|dalam)\s*\d+(?:minggu|bulan|tahun|hari|thun|hri|mnggu|jam|minit|saat)\\b'
+_depan_date_string = '(?:\s|\d+)\s*(?:minggu|bulan|tahun|hari|thun|hri|mnggu|jam|minit|saat)\s*(?:depan|dpan|dpn)\\b'
 
 _number = r"\b\d+(?:[\.,']\d+)?\b"
 _percentage = _number + '%'
@@ -64,8 +65,21 @@ _duration = '\d+\s*(?:jam|minit|hari|minggu|tahun|hours|hour)\\b|(?:sejam|sehari
 
 _left_datetime = '(%s) (%s)' % (_time, _date)
 _right_datetime = '(%s) (%s)' % (_date, _time)
-_today_left_datetime = '(%s) (%s)' % (_today_time, _date)
-_today_right_datetime = '(%s) (%s)' % (_date, _today_time)
+_left_datetodaytime = '(%s) (%s)' % (_today_time, _date)
+_right_datetodaytime = '(%s) (%s)' % (_date, _today_time)
+_left_yesterdaydatetime = '(%s) (%s)' % (_time, _yesterday_tomorrow_date_string)
+_right_yesterdaydatetime = '(%s) (%s)' % (
+    _yesterday_tomorrow_date_string,
+    _time,
+)
+_left_yesterdaydatetodaytime = '(%s) (%s)' % (
+    _today_time,
+    _yesterday_tomorrow_date_string,
+)
+_right_yesterdaydatetodaytime = '(%s) (%s)' % (
+    _yesterday_tomorrow_date_string,
+    _today_time,
+)
 
 _expressions = {
     'hashtag': r'\#\b[\w\-\_]+\b',

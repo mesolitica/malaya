@@ -1,6 +1,6 @@
 # XLNET-Bahasa
 
-Thanks to [zihangdai](https://github.com/zihangdai) for opensourcing XLNET, https://github.com/zihangdai/xlnet
+Thanks to [zihangdai](https://github.com/zihangdai) for opensourcing XLNET, https://github.com/zihangdai/xlnet. Malaya just create custom pretraining and optimizer to support multigpus.
 
 ## Table of contents
   * [Objective](#objective)
@@ -10,7 +10,6 @@ Thanks to [zihangdai](https://github.com/zihangdai) for opensourcing XLNET, http
   * [Download](#download)
   * [Comparison using Subjectivity Dataset](#comparison-using-subjectivity-dataset)
   * [Comparison using Emotion Dataset](#comparison-using-emotion-dataset)
-  * [Feedbacks](#feedbacks)
   * [Citation](#citation)
   * [Donation](#donation)
 
@@ -18,7 +17,7 @@ Thanks to [zihangdai](https://github.com/zihangdai) for opensourcing XLNET, http
 
 1. There is no multilanguage implementation of XLNET, and obviously no Bahasa Malaysia implemented. So we decided to train XLNET from scratch and finetune using available dataset we have. [Dataset we use for pretraining](https://github.com/huseinzol05/Malaya-Dataset#dumping).
 
-2. Provide **SMALL**, **BASE** and **LARGE** XLNet for Bahasa.
+2. Provide **SMALL** and **BASE** XLNet for Bahasa.
 
 ## Acknowledgement
 
@@ -110,34 +109,8 @@ python3 data_utils.py \
 
 6. Run pretained,
 
-**LARGE**,
-```bash
-python3 train_gpu.py \
-  --corpus_info_path=save-location/corpus_info.json \
-  --record_info_dir=save-location/tfrecords \
-  --train_batch_size=20 \
-  --seq_len=512 \
-  --reuse_len=256 \
-  --mem_len=384 \
-  --perm_size=256 \
-  --n_layer=24 \
-  --d_model=1024 \
-  --d_embed=1024 \
-  --n_head=16 \
-  --d_head=64 \
-  --d_inner=4096 \
-  --untie_r=True \
-  --mask_alpha=6 \
-  --mask_beta=1 \
-  --num_predict=85 \
-  --model_dir=output-model \
-  --uncased=False \
-  --num_core_per_host=1 \
-  --train_steps=2000000  --iterations=10 --learning_rate=5e-5 \
-  --num_gpu_cores=2
-```
-
 **BASE**,
+
 ```bash
 python3 train_gpu.py \
   --corpus_info_path=save-location/corpus_info.json \
@@ -165,6 +138,7 @@ python3 train_gpu.py \
 ```
 
 **SMALL**,
+
 ```bash
 python3 train_gpu.py \
   --corpus_info_path=save-location/corpus_info.json \
@@ -175,11 +149,11 @@ python3 train_gpu.py \
   --mem_len=384 \
   --perm_size=256 \
   --n_layer=6 \
-  --d_model=256 \
-  --d_embed=256 \
+  --d_model=512 \
+  --d_embed=512 \
   --n_head=16 \
   --d_head=64 \
-  --d_inner=1024 \
+  --d_inner=2048 \
   --untie_r=True \
   --mask_alpha=6 \
   --mask_beta=1 \
@@ -191,6 +165,7 @@ python3 train_gpu.py \
 ```
 
 7. Run validation,
+
 ```bash
 python3 validation.py \
   --corpus_info_path=save-location/corpus_info.json \
@@ -222,6 +197,7 @@ I really not suggest to use multi-gpus from original XL-NET implementation, not 
 1. Run [multigpu_pretraining.py](multigpu_pretraining.py),
 
 Run multigpus using MirroredStrategy,
+
 ```bash
 python3 multigpu_pretraining.py \
   --corpus_info_path=save-location/corpus_info.json \
@@ -255,6 +231,7 @@ python3 multigpu_pretraining.py \
 - `train_batch_size`: If `bsz_per_host` during `data_utils.py` is 20, so `train_batch_size` must `bsz_per_host` * `num_gpu_cores`. Make sure `train_batch_size` % `num_gpu_cores` is 0 and the batch will automatically distribute among gpus. If `num_gpu_cores` is 60 and `num_gpu_cores` is 2, so each gpus will get 30 batch size.
 
 **All training session will be recorded in Tensorboard if use multigpu training**, to open tensorboard,
+
 ```bash
 tensorboard --logdir=tensorboard --host=0.0.0.0
 ```
@@ -306,12 +283,6 @@ Link to [emotion dataset](https://github.com/huseinzol05/Malaya-Dataset#emotion)
 Link to [notebooks](finetune-emotion).
 
 <img src="barplot/emotion-new.png" width="70%" align="">
-
-## Feedbacks
-
-1. Feel free to suggest me to add more any kind of finetune, like, QA, Neural Machine Translation and etc.
-
-2. Some of models still on training, so you might want to keep check updates from here. Every tensorflow checkpoints will auto push to S3 and override.
 
 ## Citation
 

@@ -10,7 +10,10 @@ from .._models._sklearn_model import (
 )
 from .._models._tensorflow_model import BINARY_SOFTMAX, MULTICLASS_SOFTMAX
 from .._models._bert_model import MULTICLASS_BERT, BINARY_BERT
-from ..bert import _extract_attention_weights_import, bert_num_layers
+from .._transformer._bert import (
+    _extract_attention_weights_import,
+    bert_num_layers,
+)
 
 
 def deep_model(

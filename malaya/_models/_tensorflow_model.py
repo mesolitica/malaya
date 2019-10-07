@@ -416,6 +416,8 @@ class SOFTMAX:
         self._dictionary = dictionary
         self._label = label
         self._class_name = class_name
+        self._softmax = tf.nn.softmax(self._logits)
+        self._softmax_seq = tf.nn.softmax(self._logits_seq)
 
 
 class BINARY_SOFTMAX(SOFTMAX):
@@ -441,7 +443,6 @@ class BINARY_SOFTMAX(SOFTMAX):
             class_name,
             label,
         )
-        self._softmax = tf.nn.softmax(self._logits)
 
     def predict(self, string, get_proba = False, add_neutral = True):
         """
@@ -519,11 +520,7 @@ class BINARY_SOFTMAX(SOFTMAX):
             [' '.join(splitted)], self._dictionary, len(splitted), UNK = 3
         )
         result, alphas, words = self._sess.run(
-            [
-                tf.nn.softmax(self._logits),
-                self._alphas,
-                tf.nn.softmax(self._logits_seq),
-            ],
+            [self._softmax, self._alphas, self._softmax_seq],
             feed_dict = {self._X: batch_x},
         )
         result = neutral(result)
@@ -599,9 +596,7 @@ class BINARY_SOFTMAX(SOFTMAX):
         ]
         maxlen = max([len(i.split()) for i in strings])
         batch_x = str_idx(strings, self._dictionary, maxlen, UNK = 3)
-        results = self._sess.run(
-            tf.nn.softmax(self._logits), feed_dict = {self._X: batch_x}
-        )
+        results = self._sess.run(self._softmax, feed_dict = {self._X: batch_x})
         if add_neutral:
             results = neutral(results)
 
@@ -664,8 +659,7 @@ class MULTICLASS_SOFTMAX(SOFTMAX):
             [' '.join(splitted)], self._dictionary, len(splitted), UNK = 3
         )
         result, alphas = self._sess.run(
-            [tf.nn.softmax(self._logits), self._alphas],
-            feed_dict = {self._X: batch_x},
+            [self._softmax, self._alphas], feed_dict = {self._X: batch_x}
         )
         result = result[0]
 
@@ -706,11 +700,7 @@ class MULTICLASS_SOFTMAX(SOFTMAX):
             [' '.join(splitted)], self._dictionary, len(splitted), UNK = 3
         )
         result, alphas, words = self._sess.run(
-            [
-                tf.nn.softmax(self._logits),
-                self._alphas,
-                tf.nn.softmax(self._logits_seq),
-            ],
+            [self._softmax, self._alphas, self._softmax_seq],
             feed_dict = {self._X: batch_x},
         )
         result = result[0]
@@ -970,6 +960,7 @@ class DEEP_LANG:
             saver.restore(self._sess, path + '/model.ckpt')
         self._vectorizer = vectorizer
         self._label = label
+        self._softmax = tf.nn.softmax(self._model.logits)
 
     def predict(self, string, get_proba = False):
         """
@@ -992,7 +983,7 @@ class DEEP_LANG:
         transformed = self._vectorizer.transform([string])
         batch_x = _convert_sparse_matrix_to_sparse_tensor(transformed)
         probs = self._sess.run(
-            tf.nn.softmax(self._model.logits),
+            self._softmax,
             feed_dict = {self._model.X: batch_x[0], self._model.W: batch_x[1]},
         )[0]
         if get_proba:
@@ -1023,7 +1014,7 @@ class DEEP_LANG:
         transformed = self._vectorizer.transform(strings)
         batch_x = _convert_sparse_matrix_to_sparse_tensor(transformed)
         probs = self._sess.run(
-            tf.nn.softmax(self._model.logits),
+            self._softmax,
             feed_dict = {self._model.X: batch_x[0], self._model.W: batch_x[1]},
         )
         dicts = []

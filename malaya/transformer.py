@@ -1,19 +1,20 @@
-from ._utils import _softmax_class
-from ._utils._paths import PATH_RELEVANCY, S3_PATH_RELEVANCY
+from ._transformer import _bert
+from ._transformer import _xlnet
 
 _availability = {'model': ['bert', 'xlnet'], 'size': ['base', 'small']}
 
 
-def available_transformer_model():
+def available_model():
     """
-    List available transformer sentiment analysis models.
+    List available transformer models.
     """
     return _availability
 
 
-def transformer(model = 'xlnet', size = 'base', validate = True):
+def load(size = 'base', model = 'bert', pool_mode = 'last', validate = True):
+
     """
-    Load Transformer emotion model.
+    Load transformer model.
 
     Parameters
     ----------
@@ -27,17 +28,27 @@ def transformer(model = 'xlnet', size = 'base', validate = True):
 
         * ``'base'`` - BASE size.
         * ``'small'`` - SMALL size.
+    pool_mode : str, optional (default='last')
+        Model logits architecture supported. Only usable if model = 'xlnet'. Allowed values:
+
+        * ``'last'`` - last of the sequence.
+        * ``'first'`` - first of the sequence.
+        * ``'mean'`` - mean of the sequence.
+        * ``'attn'`` - attention of the sequence.
     validate: bool, optional (default=True)
         if True, malaya will check model availability and download if not available.
 
     Returns
     -------
-    BERT : malaya._models._bert_model.BINARY_BERT class
+    TRANSFORMER: malaya.transformer class
     """
+
     if not isinstance(model, str):
         raise ValueError('model must be a string')
     if not isinstance(size, str):
         raise ValueError('size must be a string')
+    if not isinstance(pool_mode, str):
+        raise ValueError('pool_mode must be a string')
     if not isinstance(validate, bool):
         raise ValueError('validate must be a boolean')
 
@@ -45,17 +56,15 @@ def transformer(model = 'xlnet', size = 'base', validate = True):
     size = size.lower()
     if model not in _availability['model']:
         raise Exception(
-            'model not supported, please check supported models from malaya.sentiment.available_transformer_model()'
+            'model not supported, please check supported models from malaya.transformer.available_model()'
         )
     if size not in _availability['size']:
         raise Exception(
-            'size not supported, please check supported models from malaya.sentiment.available_transformer_model()'
+            'size not supported, please check supported models from malaya.transformer.available_model()'
         )
-    return _softmax_class.bert(
-        PATH_SENTIMENT,
-        S3_PATH_SENTIMENT,
-        'sentiment',
-        ['negative', 'positive'],
-        model = model,
-        validate = validate,
-    )
+    if model == 'bert':
+        return _bert.bert(model = size, validate = validate)
+    if model == 'xlnet':
+        return _xlnet.xlnet(
+            model = size, pool_mode = pool_mode, validate = validate
+        )

@@ -1,13 +1,13 @@
 import tensorflow as tf
 from bert import modeling
-from .texts._text_functions import (
+from ..texts._text_functions import (
     bert_tokenization,
     padding_sequence,
     merge_sentencepiece_tokens,
     merge_wordpiece_tokens,
 )
-from ._utils._paths import PATH_BERT, S3_PATH_BERT
-from ._utils._utils import check_file, check_available
+from .._utils._paths import PATH_BERT, S3_PATH_BERT
+from .._utils._utils import check_file, check_available
 from collections import defaultdict
 import numpy as np
 import os
@@ -170,7 +170,7 @@ class _Model:
         return output
 
     def visualize_attention(self, string):
-        from ._utils._html import _attention
+        from .._utils._html import _attention
 
         if not isinstance(string, str):
             raise ValueError('input must be a string')
@@ -207,7 +207,6 @@ def bert(model = 'base', validate = True):
     model : str, optional (default='base')
         Model architecture supported. Allowed values:
 
-        * ``'multilanguage'`` - bert multilanguage released by Google.
         * ``'base'`` - base bert-bahasa released by Malaya.
         * ``'small'`` - small bert-bahasa released by Malaya.
     validate: bool, optional (default=True)

@@ -20,18 +20,11 @@ from __future__ import print_function
 
 import os
 
-os.environ[
-    'CUDA_VISIBLE_DEVICES'
-] = '1,2,3'  # I want to use second GPU and above
+os.environ['CUDA_VISIBLE_DEVICES'] = ''
 import modeling
 import optimization
 import custom_optimization
-from tensorflow.python.distribute.cross_device_ops import (
-    AllReduceCrossDeviceOps,
-)
 import tensorflow as tf
-from tensorflow.python.estimator.run_config import RunConfig
-from tensorflow.python.estimator.estimator import Estimator
 
 flags = tf.flags
 
@@ -81,7 +74,7 @@ flags.DEFINE_integer(
 
 flags.DEFINE_bool('do_train', False, 'Whether to run training.')
 
-flags.DEFINE_bool('do_eval', False, 'Whether to run eval on the dev set.')
+flags.DEFINE_bool('do_eval', True, 'Whether to run eval on the dev set.')
 
 flags.DEFINE_integer('train_batch_size', 32, 'Total batch size for training.')
 
@@ -138,42 +131,6 @@ flags.DEFINE_integer(
     8,
     'Only used if `use_tpu` is True. Total number of TPU cores to use.',
 )
-
-flags.DEFINE_bool('use_gpu', False, 'Whether to use GPU.')
-
-flags.DEFINE_integer(
-    'num_gpu_cores',
-    0,
-    'Only used if `use_gpu` is True. Total number of GPU cores to use.',
-)
-
-
-def per_device_batch_size(batch_size, num_gpus):
-    """For multi-gpu, batch-size must be a multiple of the number of GPUs.
-  Note that this should eventually be handled by DistributionStrategies
-  directly. Multi-GPU support is currently experimental, however,
-  so doing the work here until that feature is in place.
-  Args:
-    batch_size: Global batch size to be divided among devices. This should be
-      equal to num_gpus times the single-GPU batch_size for multi-gpu training.
-    num_gpus: How many GPUs are used with DistributionStrategies.
-  Returns:
-    Batch size per device.
-  Raises:
-    ValueError: if batch_size is not divisible by number of devices
-  """
-    if num_gpus <= 1:
-        return batch_size
-
-    remainder = batch_size % num_gpus
-    if remainder:
-        err = (
-            'When running with multiple GPUs, batch size '
-            'must be a multiple of the number of available GPUs. Found {} '
-            'GPUs with a batch size of {}; try --batch_size={} instead.'
-        ).format(num_gpus, batch_size, batch_size - remainder)
-        raise ValueError(err)
-    return int(batch_size / num_gpus)
 
 
 def model_fn_builder(
@@ -275,39 +232,20 @@ def model_fn_builder(
 
         output_spec = None
         if mode == tf.estimator.ModeKeys.TRAIN:
-            if FLAGS.use_gpu and int(FLAGS.num_gpu_cores) >= 2:
-                train_op = custom_optimization.create_optimizer(
-                    total_loss, learning_rate, num_train_steps, num_warmup_steps
-                )
-                # train_op = optimization.create_optimizer(
-                #     total_loss,
-                #     learning_rate,
-                #     num_train_steps,
-                #     num_warmup_steps,
-                #     use_tpu,
-                # )
-            else:
-                train_op = optimization.create_optimizer(
-                    total_loss,
-                    learning_rate,
-                    num_train_steps,
-                    num_warmup_steps,
-                    use_tpu,
-                )
-            if FLAGS.use_gpu and int(FLAGS.num_gpu_cores) >= 2:
-                output_spec = tf.estimator.EstimatorSpec(
-                    mode = mode,
-                    loss = total_loss,
-                    train_op = train_op,
-                    scaffold = scaffold_fn,
-                )
-            else:
-                output_spec = tf.contrib.tpu.TPUEstimatorSpec(
-                    mode = mode,
-                    loss = total_loss,
-                    train_op = train_op,
-                    scaffold_fn = scaffold_fn,
-                )
+            train_op = optimization.create_optimizer(
+                total_loss,
+                learning_rate,
+                num_train_steps,
+                num_warmup_steps,
+                use_tpu,
+            )
+
+            output_spec = tf.contrib.tpu.TPUEstimatorSpec(
+                mode = mode,
+                loss = total_loss,
+                train_op = train_op,
+                scaffold_fn = scaffold_fn,
+            )
         elif mode == tf.estimator.ModeKeys.EVAL:
 
             def metric_fn(
@@ -375,20 +313,12 @@ def model_fn_builder(
                     next_sentence_labels,
                 ],
             )
-            if FLAGS.use_gpu and int(FLAGS.num_gpu_cores) >= 2:
-                output_spec = tf.estimator.EstimatorSpec(
-                    mode = mode,
-                    loss = total_loss,
-                    eval_metrics = eval_metrics,
-                    scaffold = scaffold_fn,
-                )
-            else:
-                output_spec = tf.contrib.tpu.TPUEstimatorSpec(
-                    mode = mode,
-                    loss = total_loss,
-                    eval_metrics = eval_metrics,
-                    scaffold_fn = scaffold_fn,
-                )
+            output_spec = tf.contrib.tpu.TPUEstimatorSpec(
+                mode = mode,
+                loss = total_loss,
+                eval_metrics = eval_metrics,
+                scaffold_fn = scaffold_fn,
+            )
         else:
             raise ValueError(
                 'Only TRAIN and EVAL modes are supported: %s' % (mode)
@@ -581,77 +511,6 @@ def input_fn_builder(
     return input_fn
 
 
-def input_fn_builder_gpu(
-    input_files,
-    max_seq_length,
-    max_predictions_per_seq,
-    is_training,
-    batch_size,
-    num_cpu_threads = 4,
-):
-    """Creates an `input_fn` closure to be passed to TPUEstimator."""
-
-    def input_fn(params):
-
-        name_to_features = {
-            'input_ids': tf.FixedLenFeature([max_seq_length], tf.int64),
-            'input_mask': tf.FixedLenFeature([max_seq_length], tf.int64),
-            'segment_ids': tf.FixedLenFeature([max_seq_length], tf.int64),
-            'masked_lm_positions': tf.FixedLenFeature(
-                [max_predictions_per_seq], tf.int64
-            ),
-            'masked_lm_ids': tf.FixedLenFeature(
-                [max_predictions_per_seq], tf.int64
-            ),
-            'masked_lm_weights': tf.FixedLenFeature(
-                [max_predictions_per_seq], tf.float32
-            ),
-            'next_sentence_labels': tf.FixedLenFeature([1], tf.int64),
-        }
-
-        # For training, we want a lot of parallel reading and shuffling.
-        # For eval, we want no shuffling and parallel reading doesn't matter.
-        if is_training:
-            d = tf.data.Dataset.from_tensor_slices(tf.constant(input_files))
-            d = d.repeat()
-            d = d.shuffle(buffer_size = len(input_files))
-
-            # `cycle_length` is the number of parallel files that get read.
-            cycle_length = min(num_cpu_threads, len(input_files))
-
-            # `sloppy` mode means that the interleaving is not exact. This adds
-            # even more randomness to the training pipeline.
-            d = d.apply(
-                tf.contrib.data.parallel_interleave(
-                    tf.data.TFRecordDataset,
-                    sloppy = is_training,
-                    cycle_length = cycle_length,
-                )
-            )
-            d = d.shuffle(buffer_size = 100)
-        else:
-            d = tf.data.TFRecordDataset(input_files)
-            # Since we evaluate for a fixed number of steps we don't want to encounter
-            # out-of-range exceptions.
-            d = d.repeat()
-
-        # We must `drop_remainder` on training because the TPU requires fixed
-        # size dimensions. For eval, we assume we are evaluating on the CPU or GPU
-        # and we *don't* want to drop the remainder, otherwise we wont cover
-        # every sample.
-        d = d.apply(
-            tf.contrib.data.map_and_batch(
-                lambda record: _decode_record(record, name_to_features),
-                batch_size = batch_size,
-                num_parallel_batches = num_cpu_threads,
-                drop_remainder = True,
-            )
-        )
-        return d
-
-    return input_fn
-
-
 def _decode_record(record, name_to_features):
     """Decodes a record to a TensorFlow example."""
     example = tf.parse_single_example(record, name_to_features)
@@ -694,39 +553,17 @@ def main(_):
         )
 
     is_per_host = tf.contrib.tpu.InputPipelineConfig.PER_HOST_V2
-
-    if FLAGS.use_gpu and int(FLAGS.num_gpu_cores) >= 2:
-        tf.logging.info('Use normal RunConfig')
-        tf.logging.info(FLAGS.num_gpu_cores)
-        dist_strategy = tf.contrib.distribute.MirroredStrategy(
-            num_gpus = FLAGS.num_gpu_cores,
-            auto_shard_dataset = True,
-            cross_device_ops = AllReduceCrossDeviceOps(
-                'nccl', num_packs = FLAGS.num_gpu_cores
-            ),
-            # cross_device_ops=AllReduceCrossDeviceOps('hierarchical_copy'),
-        )
-        log_every_n_steps = 10
-        run_config = RunConfig(
-            train_distribute = dist_strategy,
-            eval_distribute = dist_strategy,
-            log_step_count_steps = log_every_n_steps,
-            model_dir = FLAGS.output_dir,
-            save_checkpoints_steps = FLAGS.save_checkpoints_steps,
-            save_summary_steps = None,
-        )
-    else:
-        run_config = tf.contrib.tpu.RunConfig(
-            cluster = tpu_cluster_resolver,
-            master = FLAGS.master,
-            model_dir = FLAGS.output_dir,
-            save_checkpoints_steps = FLAGS.save_checkpoints_steps,
-            tpu_config = tf.contrib.tpu.TPUConfig(
-                iterations_per_loop = FLAGS.iterations_per_loop,
-                num_shards = FLAGS.num_tpu_cores,
-                per_host_input_for_training = is_per_host,
-            ),
-        )
+    run_config = tf.contrib.tpu.RunConfig(
+        cluster = tpu_cluster_resolver,
+        master = FLAGS.master,
+        model_dir = FLAGS.output_dir,
+        save_checkpoints_steps = FLAGS.save_checkpoints_steps,
+        tpu_config = tf.contrib.tpu.TPUConfig(
+            iterations_per_loop = FLAGS.iterations_per_loop,
+            num_shards = FLAGS.num_tpu_cores,
+            per_host_input_for_training = is_per_host,
+        ),
+    )
 
     model_fn = model_fn_builder(
         bert_config = bert_config,
@@ -740,66 +577,24 @@ def main(_):
 
     # If TPU is not available, this will fall back to normal Estimator on CPU
     # or GPU.
-
-    if FLAGS.use_gpu and int(FLAGS.num_gpu_cores) >= 2:
-        tf.logging.info('Use normal Estimator')
-        estimator = Estimator(
-            model_fn = model_fn, params = {}, config = run_config
-        )
-
-    else:
-        estimator = tf.contrib.tpu.TPUEstimator(
-            use_tpu = FLAGS.use_tpu,
-            model_fn = model_fn,
-            config = run_config,
-            train_batch_size = FLAGS.train_batch_size,
-            eval_batch_size = FLAGS.eval_batch_size,
-        )
-
-    if FLAGS.do_train:
-        tf.logging.info('***** Running training *****')
-        tf.logging.info('  Batch size = %d', FLAGS.train_batch_size)
-
-        if FLAGS.use_gpu and int(FLAGS.num_gpu_cores) >= 2:
-            train_input_fn = input_fn_builder_gpu(
-                input_files = input_files,
-                max_seq_length = FLAGS.max_seq_length,
-                max_predictions_per_seq = FLAGS.max_predictions_per_seq,
-                is_training = True,
-                batch_size = per_device_batch_size(
-                    FLAGS.train_batch_size, FLAGS.num_gpu_cores
-                ),
-            )
-        else:
-            train_input_fn = input_fn_builder(
-                input_files = input_files,
-                max_seq_length = FLAGS.max_seq_length,
-                max_predictions_per_seq = FLAGS.max_predictions_per_seq,
-                is_training = True,
-            )
-        estimator.train(
-            input_fn = train_input_fn, max_steps = FLAGS.num_train_steps
-        )
+    estimator = tf.contrib.tpu.TPUEstimator(
+        use_tpu = FLAGS.use_tpu,
+        model_fn = model_fn,
+        config = run_config,
+        train_batch_size = FLAGS.train_batch_size,
+        eval_batch_size = FLAGS.eval_batch_size,
+    )
 
     if FLAGS.do_eval:
         tf.logging.info('***** Running evaluation *****')
         tf.logging.info('  Batch size = %d', FLAGS.eval_batch_size)
 
-        if FLAGS.use_gpu and int(FLAGS.num_gpu_cores) >= 2:
-            train_input_fn = input_fn_builder_gpu(
-                input_files = input_files,
-                max_seq_length = FLAGS.max_seq_length,
-                max_predictions_per_seq = FLAGS.max_predictions_per_seq,
-                is_training = False,
-                batch_size = FLAGS.eval_batch_size,
-            )
-        else:
-            eval_input_fn = input_fn_builder(
-                input_files = input_files,
-                max_seq_length = FLAGS.max_seq_length,
-                max_predictions_per_seq = FLAGS.max_predictions_per_seq,
-                is_training = False,
-            )
+        eval_input_fn = input_fn_builder(
+            input_files = input_files,
+            max_seq_length = FLAGS.max_seq_length,
+            max_predictions_per_seq = FLAGS.max_predictions_per_seq,
+            is_training = False,
+        )
 
         result = estimator.evaluate(
             input_fn = eval_input_fn, steps = FLAGS.max_eval_steps

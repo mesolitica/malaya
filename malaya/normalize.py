@@ -11,16 +11,19 @@ from .texts._regex import (
     _past_date_string,
     _now_date_string,
     _future_date_string,
-    _tomorrow_date_string,
-    _yesterday_date_string,
+    _yesterday_tomorrow_date_string,
     _depan_date_string,
     _money,
     _expressions,
     _left_datetime,
     _right_datetime,
     _today_time,
-    _today_left_datetime,
-    _today_right_datetime,
+    _left_datetodaytime,
+    _right_datetodaytime,
+    _left_yesterdaydatetime,
+    _right_yesterdaydatetime,
+    _left_yesterdaydatetodaytime,
+    _right_yesterdaydatetodaytime,
 )
 from .texts._tatabahasa import (
     rules_normalizer,
@@ -43,6 +46,7 @@ from .texts._normalization import (
     money,
     ignore_words,
 )
+from .cluster import cluster_words
 from .preprocessing import _tokenizer
 
 
@@ -245,9 +249,10 @@ class _SPELL_NORMALIZE:
         past_date_string_ = re.findall(_past_date_string, normalized)
         now_date_string_ = re.findall(_now_date_string, normalized)
         future_date_string_ = re.findall(_future_date_string, normalized)
-        yesterday_date_string_ = re.findall(_yesterday_date_string, normalized)
+        yesterday_date_string_ = re.findall(
+            _yesterday_tomorrow_date_string, normalized
+        )
         depan_date_string_ = re.findall(_depan_date_string, normalized)
-        tomorrow_date_string_ = re.findall(_tomorrow_date_string, normalized)
         today_time_ = re.findall(_today_time, normalized)
         time_ = re.findall(_expressions['time'], normalized)
         left_datetime_ = [
@@ -260,12 +265,29 @@ class _SPELL_NORMALIZE:
         ]
         today_left_datetime_ = [
             '%s %s' % (i[0], i[1])
-            for i in re.findall(_today_left_datetime, normalized)
+            for i in re.findall(_left_datetodaytime, normalized)
         ]
         today_right_datetime_ = [
             '%s %s' % (i[0], i[1])
-            for i in re.findall(_today_right_datetime, normalized)
+            for i in re.findall(_right_datetodaytime, normalized)
         ]
+        left_yesterdaydatetime_ = [
+            '%s %s' % (i[0], i[1])
+            for i in re.findall(_left_yesterdaydatetime, normalized)
+        ]
+        right_yesterdaydatetime_ = [
+            '%s %s' % (i[0], i[1])
+            for i in re.findall(_right_yesterdaydatetime, normalized)
+        ]
+        left_yesterdaydatetodaytime_ = [
+            '%s %s' % (i[0], i[1])
+            for i in re.findall(_left_yesterdaydatetodaytime, normalized)
+        ]
+        right_yesterdaydatetodaytime_ = [
+            '%s %s' % (i[0], i[1])
+            for i in re.findall(_right_yesterdaydatetodaytime, normalized)
+        ]
+
         dates_ = (
             dates_
             + past_date_string_
@@ -273,16 +295,20 @@ class _SPELL_NORMALIZE:
             + future_date_string_
             + yesterday_date_string_
             + depan_date_string_
-            + tomorrow_date_string_
             + time_
             + today_time_
             + left_datetime_
             + right_datetime_
             + today_left_datetime_
             + today_right_datetime_
+            + left_yesterdaydatetime_
+            + right_yesterdaydatetime_
+            + left_yesterdaydatetodaytime_
+            + right_yesterdaydatetodaytime_
         )
         dates_ = [multireplace(s, date_replace) for s in dates_]
         dates_ = [re.sub(r'[ ]+', ' ', s).strip() for s in dates_]
+        dates_ = cluster_words(dates_)
         dates_ = {s: dateparser.parse(s) for s in dates_}
         money_ = {s[0]: s[1] for s in money_}
         return {'normalize': result, 'date': dates_, 'money': money_}

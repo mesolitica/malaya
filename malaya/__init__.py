@@ -280,11 +280,10 @@ def describe_dependency():
     print('root - root')
     print('xcomp - open clausal complement')
     print(
-        'you can read more from https://universaldependencies.org/en/dep/xcomp.html'
+        'you can read more from https://universaldependencies.org/treebanks/id_pud/index.html'
     )
 
 
-from . import bert
 from . import cluster
 from . import dependency
 from . import emotion
@@ -304,7 +303,7 @@ from . import subjective
 from . import summarize
 from . import topic_model
 from . import toxic
+from . import transformer
 from . import word2num
 from . import wordvector
 from .texts import vectorizer
-from . import xlnet

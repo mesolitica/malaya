@@ -341,7 +341,8 @@ indonesian = {
     'soto mie',
     'tahu goreng',
     'telur pindang',
-    'tempeh',
+    'tempeh goreng',
+    'tempe goreng',
     'tumis kangkung',
 }
 

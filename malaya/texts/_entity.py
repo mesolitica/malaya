@@ -12,15 +12,18 @@ from ._regex import (
     _past_date_string,
     _now_date_string,
     _future_date_string,
-    _tomorrow_date_string,
-    _yesterday_date_string,
+    _yesterday_tomorrow_date_string,
     _depan_date_string,
     _expressions,
     _left_datetime,
     _right_datetime,
     _today_time,
-    _today_left_datetime,
-    _today_right_datetime,
+    _left_datetodaytime,
+    _right_datetodaytime,
+    _left_yesterdaydatetime,
+    _right_yesterdaydatetime,
+    _left_yesterdaydatetodaytime,
+    _right_yesterdaydatetodaytime,
 )
 from ._food import (
     hot_ice_beverage_regex,
@@ -59,9 +62,10 @@ class _Entity_regex:
         past_date_string_ = re.findall(_past_date_string, string)
         now_date_string_ = re.findall(_now_date_string, string)
         future_date_string_ = re.findall(_future_date_string, string)
-        yesterday_date_string_ = re.findall(_yesterday_date_string, string)
+        yesterday_date_string_ = re.findall(
+            _yesterday_tomorrow_date_string, string
+        )
         depan_date_string_ = re.findall(_depan_date_string, string)
-        tomorrow_date_string_ = re.findall(_tomorrow_date_string, string)
         dates_ = (
             dates_
             + past_date_string_
@@ -69,7 +73,6 @@ class _Entity_regex:
             + future_date_string_
             + yesterday_date_string_
             + depan_date_string_
-            + tomorrow_date_string_
         )
         dates_ = [multireplace(s, date_replace) for s in dates_]
         dates_ = [re.sub(r'[ ]+', ' ', s).strip() for s in dates_]
@@ -110,17 +113,38 @@ class _Entity_regex:
         ]
         today_left_datetime_ = [
             '%s %s' % (i[0], i[1])
-            for i in re.findall(_today_left_datetime, string)
+            for i in re.findall(_left_datetodaytime, string)
         ]
         today_right_datetime_ = [
             '%s %s' % (i[0], i[1])
-            for i in re.findall(_today_right_datetime, string)
+            for i in re.findall(_right_datetodaytime, string)
         ]
+        left_yesterdaydatetime_ = [
+            '%s %s' % (i[0], i[1])
+            for i in re.findall(_left_yesterdaydatetime, string)
+        ]
+        right_yesterdaydatetime_ = [
+            '%s %s' % (i[0], i[1])
+            for i in re.findall(_right_yesterdaydatetime, string)
+        ]
+        left_yesterdaydatetodaytime_ = [
+            '%s %s' % (i[0], i[1])
+            for i in re.findall(_left_yesterdaydatetodaytime, string)
+        ]
+        right_yesterdaydatetodaytime_ = [
+            '%s %s' % (i[0], i[1])
+            for i in re.findall(_right_yesterdaydatetodaytime, string)
+        ]
+
         datetime_ = (
             left_datetime_
             + right_datetime_
             + today_left_datetime_
             + today_right_datetime_
+            + left_yesterdaydatetime_
+            + right_yesterdaydatetime_
+            + left_yesterdaydatetodaytime_
+            + right_yesterdaydatetodaytime_
         )
         datetime_ = [re.sub(r'[ ]+', ' ', s).strip() for s in datetime_]
         datetime_ = {s: dateparser.parse(s) for s in datetime_}

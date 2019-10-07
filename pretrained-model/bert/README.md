@@ -1,6 +1,6 @@
 # BERT-Bahasa
 
-Thanks to Google for opensourcing most of the source code to develop BERT, https://github.com/google-research/bert
+Thanks to Google for opensourcing most of the source code to develop BERT, https://github.com/google-research/bert. Malaya just create custom pretraining and optimizer to support multigpus.
 
 ## Table of contents
   * [Objective](#objective)
@@ -11,7 +11,6 @@ Thanks to Google for opensourcing most of the source code to develop BERT, https
   * [Comparison using Subjectivity Dataset](#comparison-using-subjectivity-dataset)
   * [Comparison using Emotion Dataset](#comparison-using-emotion-dataset)
   * [Comparison using Text Similarity Dataset](#comparison-using-text-similarity-dataset)
-  * [Feedbacks](#feedbacks)
   * [Citation](#citation)
   * [Donation](#donation)
 
@@ -19,7 +18,7 @@ Thanks to Google for opensourcing most of the source code to develop BERT, https
 
 1. We saw tokenization process from original BERT Multilanguage is not really targeted to Malaysia language landscape, and pretrained provided only trained on Wikipedia dataset, no social media texts (bahasa pasar). So we decided to train BERT from scratch and finetune using available dataset we have. [Dataset we use for pretraining](https://github.com/huseinzol05/Malaya-Dataset#dumping).
 
-2. Provide **SMALL**, **BASE** and **LARGE** BERT for Bahasa.
+2. Provide **SMALL** and **BASE** BERT for Bahasa.
 
 ## Acknowledgement
 
@@ -42,40 +41,19 @@ cp create-pretraining-data.py prepro_utils.py multigpu_pretraining.py custom_opt
 ```
 
 3. Create pretraining dataset,
+
 ```bash
 python3 create-pretraining-data.py
 ```
 
 4. Execute pretraining,
+
 ```bash
 python3 run_pretraining.py --input_file=tests_output.tfrecord --output_dir=pretraining_output --do_train=True --do_eval=True --bert_config_file=bert_config.json --train_batch_size=50 --max_seq_length=128 --max_predictions_per_seq=20 --num_train_steps=3000000 --num_warmup_steps=10 --learning_rate=2e-5 --save_checkpoints_steps=500000
 ```
 
-**LARGE** size, [LARGE_config.json](config/LARGE_config.json),
-```json
-{
-  "attention_probs_dropout_prob": 0.1,
-  "directionality": "bidi",
-  "hidden_act": "gelu",
-  "hidden_dropout_prob": 0.1,
-  "hidden_size": 1024,
-  "initializer_range": 0.02,
-  "intermediate_size": 4096,
-  "max_position_embeddings": 512,
-  "num_attention_heads": 16,
-  "num_hidden_layers": 24,
-  "pooler_fc_size": 768,
-  "pooler_num_attention_heads": 12,
-  "pooler_num_fc_layers": 3,
-  "pooler_size_per_head": 128,
-  "pooler_type": "first_token_transform",
-  "type_vocab_size": 2,
-  "vocab_size": 40000
-}
-
-```
-
 **BASE** size, [BASE_config.json](config/BASE_config.json),
+
 ```json
 {
   "attention_probs_dropout_prob": 0.1,
@@ -99,6 +77,7 @@ python3 run_pretraining.py --input_file=tests_output.tfrecord --output_dir=pretr
 ```
 
 **SMALL** size, [SMALL_config.json](config/SMALL_config,json),
+
 ```json
 {
   "attention_probs_dropout_prob": 0.1,
@@ -122,11 +101,13 @@ python3 run_pretraining.py --input_file=tests_output.tfrecord --output_dir=pretr
 ```
 
 **All training session will be recorded in Tensorboard**, to open tensorboard,
+
 ```bash
 tensorboard --logdir=tensorboard --host=0.0.0.0
 ```
 
 5. Execute validation,
+
 ```bash
 python3 validation.py --input_file=tests_output.tfrecord --output_dir=pretraining_output --bert_config_file=bert_config.json --train_batch_size=50 --max_seq_length=128 --max_predictions_per_seq=20 --num_train_steps=3000000 --num_warmup_steps=10 --learning_rate=2e-5
 ```
@@ -155,6 +136,7 @@ Original BERT implementation not support multi-gpus, only single gpu. Here I cre
 1. Run [multigpu_pretraining.py](multigpu_pretraining.py),
 
 Run multigpus using MirroredStrategy,
+
 ```bash
 python3 multigpu_pretraining.py \
 --input_file=tests_output.tfrecord \
@@ -267,10 +249,6 @@ Link to [text similarity dataset](https://github.com/huseinzol05/Malaya-Dataset#
 Link to [notebooks](finetune-similarity).
 
 <img src="barplot/similarity.png" width="70%" align="">
-
-## Feedbacks
-
-1. Feel free to suggest me to add more any kind of finetune, like, QA, Neural Machine Translation and etc.
 
 ## Citation
 

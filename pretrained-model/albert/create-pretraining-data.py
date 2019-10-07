@@ -6,9 +6,9 @@ import sentencepiece as spm
 from prepro_utils import preprocess_text, encode_ids, encode_pieces
 
 sp_model = spm.SentencePieceProcessor()
-sp_model.Load('sp10m.cased.v5.model')
+sp_model.Load('sp10m.cased.v6.model')
 
-with open('sp10m.cased.v5.vocab') as fopen:
+with open('sp10m.cased.v6.vocab') as fopen:
     v = fopen.read().split('\n')[:-1]
 v = [i.split('\t') for i in v]
 v = {i[0]: i[1] for i in v}
@@ -32,7 +32,7 @@ class Tokenizer:
 
 
 tokenizer = Tokenizer(v)
-files = 'texts.txt'
+files = 'test.txt'
 
 input_files = []
 for input_pattern in files.split(','):
@@ -46,8 +46,8 @@ import random
 
 max_seq_length = 512
 dupe_factor = 5
-max_predictions_per_seq = 76
-masked_lm_prob = 0.15
+max_predictions_per_seq = 51
+masked_lm_prob = 0.10
 short_seq_prob = 0.1
 rng = random.Random(12345)
 instances = create_training_instances(

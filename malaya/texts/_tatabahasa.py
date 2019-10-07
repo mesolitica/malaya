@@ -352,8 +352,11 @@ date_replace = {
     'petang': 'PM',
     'ptg': 'PM',
     'malam': 'PM',
+    'semalam': 'semalam',
+    'pkul': 'pukul',
 }
 rules_normalizer = {
+    'ty': 'terima kasih',
     'january': 'januari',
     'february': 'februari',
     'march': 'mac',

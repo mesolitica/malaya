@@ -8,7 +8,11 @@ from .._utils._utils import download_file
 from ._tatabahasa import stopword_tatabahasa, stopwords, stopwords_calon
 from ._english_words import _english_words
 from ._malay_words import _malay_words
-from .._xlnet.prepro_utils import preprocess_text, encode_ids, encode_pieces
+from .._transformer._xlnet.prepro_utils import (
+    preprocess_text,
+    encode_ids,
+    encode_pieces,
+)
 from .. import home
 import json
 
