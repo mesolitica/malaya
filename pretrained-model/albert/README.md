@@ -7,7 +7,7 @@ Thanks to brightmart for opensourcing most of the source code to develop ALBERT,
   * [Acknowledgement](#acknowledgement)
   * [How-to](#how-to)
   * [Download](#download)
-  * [Comparison using Subjectivity Dataset](#comparison-using-subjectivity-dataset)
+  * [Comparison using Emotion Dataset](#comparison-using-emotion-dataset)
   * [Citation](#citation)
   * [Donation](#donation)
 
@@ -17,13 +17,18 @@ Thanks to brightmart for opensourcing most of the source code to develop ALBERT,
 
 2. Provide **BASE** and **LARGE** ALBERT for Bahasa.
 
+## Acknowledgement
+
+Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://www.facebook.com/ligblou), [Mesolitica](https://mesolitica.com/) and [KeyReply](https://www.keyreply.com/) for sponsoring AWS, Google and GPU clouds to train XLNET for Bahasa.
+
 ## How-to
 
-1. Git clone https://github.com/brightmart/albert_zh,
+1. Create a folder and copy these python scripts,
 
 ```bash
-git clone https://github.com/brightmart/albert_zh.git
-cd albert_zh
+mkdir albert
+cd albert
+cp modeling.py multigpu_pretraining.py optimization.py custom_optimization.py prepo_utils.py tokenization.py validation.py albert
 ```
 
 2. Run [dumping.ipynb](dumping.ipynb) to create text dataset for pretraining.
@@ -66,7 +71,7 @@ python3 multigpu_pretraining.py \
 5. Execute validation,
 
 ```bash
-python3 validation.py --input_file=tests_output3.tfrecord --output_dir=pretraining_output2 --bert_config_file=albert_config/albert_config_base.json --train_batch_size=60 --max_seq_length=512 --max_predictions_per_seq=51 --num_train_steps=1000000 --learning_rate=2e-5
+python3 validation.py --input_file=tests_output.tfrecord --output_dir=pretraining_output --bert_config_file=albert_config_base.json --train_batch_size=60 --max_seq_length=512 --max_predictions_per_seq=51 --num_train_steps=1000000 --learning_rate=2e-5
 ```
 
 ```text
@@ -85,6 +90,41 @@ I1007 22:35:07.644736 139954652473152 validation.py:607]   next_sentence_accurac
 INFO:tensorflow:  next_sentence_loss = 0.58434385
 I1007 22:35:07.644812 139954652473152 validation.py:607]   next_sentence_loss = 0.58434385
 ```
+
+## Download
+
+3. **BASE**, last update 11th October 2019,
+[albert-bahasa-base-11-10-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/albert-base-11-10-2019.tar.gz)
+
+  1. Vocab size 20k.
+  2. Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news.
+  3. 1.0M steps, 3 GPUs TESLA V100.
+  4. BASE size (43MB).
+
+```text
+INFO:tensorflow:***** Eval results *****
+I1011 07:04:45.377109 139622928910144 validation.py:605] ***** Eval results *****
+INFO:tensorflow:  global_step = 1000002
+I1011 07:04:45.377210 139622928910144 validation.py:607]   global_step = 1000002
+INFO:tensorflow:  loss = 3.6847372
+I1011 07:04:45.377379 139622928910144 validation.py:607]   loss = 3.6847372
+INFO:tensorflow:  masked_lm_accuracy = 0.47363773
+I1011 07:04:45.377480 139622928910144 validation.py:607]   masked_lm_accuracy = 0.47363773
+INFO:tensorflow:  masked_lm_loss = 3.199521
+I1011 07:04:45.377568 139622928910144 validation.py:607]   masked_lm_loss = 3.199521
+INFO:tensorflow:  next_sentence_accuracy = 0.73875
+I1011 07:04:45.377651 139622928910144 validation.py:607]   next_sentence_accuracy = 0.73875
+INFO:tensorflow:  next_sentence_loss = 0.48904538
+I1011 07:04:45.377733 139622928910144 validation.py:607]   next_sentence_loss = 0.48904538
+```
+
+## Comparison using Emotion Dataset
+
+Link to [emotion dataset](https://github.com/huseinzol05/Malaya-Dataset#emotion).
+
+Link to [notebooks](transfer-learning-emotion-base.ipynb).
+
+<img src="barplot/emotion.png" width="70%" align="">
 
 ## Citation
 

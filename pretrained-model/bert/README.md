@@ -8,9 +8,7 @@ Thanks to Google for opensourcing most of the source code to develop BERT, https
   * [How-to](#how-to)
     * [Multigpus](#multigpus)
   * [Download](#download)
-  * [Comparison using Subjectivity Dataset](#comparison-using-subjectivity-dataset)
   * [Comparison using Emotion Dataset](#comparison-using-emotion-dataset)
-  * [Comparison using Text Similarity Dataset](#comparison-using-text-similarity-dataset)
   * [Citation](#citation)
   * [Donation](#donation)
 
@@ -22,7 +20,7 @@ Thanks to Google for opensourcing most of the source code to develop BERT, https
 
 ## Acknowledgement
 
-Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://www.facebook.com/ligblou) and [Mesolitica](https://mesolitica.com/) for sponsoring AWS and Google cloud to train BERT for Bahasa.
+Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://www.facebook.com/ligblou), [Mesolitica](https://mesolitica.com/) and [KeyReply](https://www.keyreply.com/) for sponsoring AWS, Google and GPU clouds to train XLNET for Bahasa.
 
 ## How-to
 
@@ -226,29 +224,13 @@ INFO:tensorflow:  next_sentence_loss = 0.35221446
 I0919 16:04:24.180958 139907485054784 validation.py:597]   next_sentence_loss = 0.35221446
 ```
 
-## Comparison using Subjectivity Dataset
-
-Link to [subjectivity dataset](https://github.com/huseinzol05/Malaya-Dataset#subjectivity).
-
-Link to [notebooks](finetune-subjectivity).
-
-<img src="barplot/subjective.png" width="70%" align="">
-
 ## Comparison using Emotion Dataset
 
 Link to [emotion dataset](https://github.com/huseinzol05/Malaya-Dataset#emotion).
 
-Link to [notebooks](finetune-emotion).
+Link to [notebooks](transfer-learning-emotion-base.ipynb).
 
 <img src="barplot/emotion.png" width="70%" align="">
-
-## Comparison using Text Similarity Dataset
-
-Link to [text similarity dataset](https://github.com/huseinzol05/Malaya-Dataset#text-similarity).
-
-Link to [notebooks](finetune-similarity).
-
-<img src="barplot/similarity.png" width="70%" align="">
 
 ## Citation
 

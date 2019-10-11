@@ -8,7 +8,6 @@ Thanks to [zihangdai](https://github.com/zihangdai) for opensourcing XLNET, http
   * [How-to](#how-to)
     * [Multigpus](#multigpus)
   * [Download](#download)
-  * [Comparison using Subjectivity Dataset](#comparison-using-subjectivity-dataset)
   * [Comparison using Emotion Dataset](#comparison-using-emotion-dataset)
   * [Citation](#citation)
   * [Donation](#donation)
@@ -21,7 +20,7 @@ Thanks to [zihangdai](https://github.com/zihangdai) for opensourcing XLNET, http
 
 ## Acknowledgement
 
-Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://www.facebook.com/ligblou) and [Mesolitica](https://mesolitica.com/) for sponsoring AWS and Google cloud to train XLNET for Bahasa.
+Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://www.facebook.com/ligblou), [Mesolitica](https://mesolitica.com/) and [KeyReply](https://www.keyreply.com/) for sponsoring AWS, Google and GPU clouds to train XLNET for Bahasa.
 
 ## How-to
 
@@ -259,7 +258,7 @@ tensorboard --logdir=tensorboard --host=0.0.0.0
   1. Vocab size 32k.
   2. Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news.
   3. 270k steps, 3 GPUs TESLA V100.
-  4. BASE size (878MB).
+  4. BASE size (231MB).
 
 ```text
 I0930 13:31:34.584934 140152603084608 evaluation.py:275] Finished evaluation at 2019-09-30-13:31:34
@@ -267,22 +266,13 @@ INFO:tensorflow:Saving dict for global step 270000: accuracy = 0.53644705, globa
 I0930 13:31:34.585190 140152603084608 estimator.py:2039] Saving dict for global step 270000: accuracy = 0.53644705, global_step = 270000, loss = 2.6062012
 ```
 
-
-## Comparison using Subjectivity Dataset
-
-Link to [subjectivity dataset](https://github.com/huseinzol05/Malaya-Dataset#subjectivity).
-
-Link to [notebooks](finetune-subjectivity).
-
-<img src="barplot/subjective-new.png" width="70%" align="">
-
 ## Comparison using Emotion Dataset
 
 Link to [emotion dataset](https://github.com/huseinzol05/Malaya-Dataset#emotion).
 
-Link to [notebooks](finetune-emotion).
+Link to [notebooks](transfer-learning-emotion-base.ipynb).
 
-<img src="barplot/emotion-new.png" width="70%" align="">
+<img src="barplot/emotion.png" width="70%" align="">
 
 ## Citation
 
