@@ -239,26 +239,26 @@ tensorboard --logdir=tensorboard --host=0.0.0.0
 
 1.  9th July 2019, [xlnet-9-july-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/xlnet-9-july-2019-v2.tar.gz).
 
-  1. Vocab size 32k.
-  2. Trained on cleaned wikipedia, raw twitter, raw instagram, raw parliament, raw news.
-  3. 700k steps, single GPU.
-  4. BASE size (878MB).
-  5. test loss, 4.XX (last remember).
+  - Vocab size 32k.
+  - Trained on cleaned wikipedia, raw twitter, raw instagram, raw parliament, raw news.
+  - 700k steps, single GPU.
+  - BASE size (878MB).
+  - test loss, 4.XX (last remember).
 
 2. 15 July 2019, [xlnet-15-july-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/xlnet-bahasa-small.tar.gz)
 
-  1. Vocab size 32k.
-  2. Trained on cleaned wikipedia, raw twitter, raw instagram, raw parliament, raw news.
-  3. 700k steps, single GPU.
-  4. BASE size (231MB).
-  5. test loss, 4.XX (last remember).
+  - Vocab size 32k.
+  - Trained on cleaned wikipedia, raw twitter, raw instagram, raw parliament, raw news.
+  - 700k steps, single GPU.
+  - BASE size (231MB).
+  - test loss, 4.XX (last remember).
 
 3. 30 September 2019, [xlnet-base-30-september-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/xlnet-base-30-9-2019.tar.gz)
 
-  1. Vocab size 32k.
-  2. Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news.
-  3. 270k steps, 3 GPUs TESLA V100.
-  4. BASE size (231MB).
+  - Vocab size 32k.
+  - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news.
+  - 270k steps, 3 GPUs TESLA V100.
+  - BASE size (231MB).
 
 ```text
 I0930 13:31:34.584934 140152603084608 evaluation.py:275] Finished evaluation at 2019-09-30-13:31:34

@@ -19,7 +19,7 @@ Thanks to brightmart for opensourcing most of the source code to develop ALBERT,
 
 ## Acknowledgement
 
-Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://www.facebook.com/ligblou), [Mesolitica](https://mesolitica.com/) and [KeyReply](https://www.keyreply.com/) for sponsoring AWS, Google and GPU clouds to train XLNET for Bahasa.
+Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://www.facebook.com/ligblou), [Mesolitica](https://mesolitica.com/) and [KeyReply](https://www.keyreply.com/) for sponsoring AWS, Google and GPU clouds to train ALBERT for Bahasa.
 
 ## How-to
 
@@ -93,13 +93,13 @@ I1007 22:35:07.644812 139954652473152 validation.py:607]   next_sentence_loss = 
 
 ## Download
 
-3. **BASE**, last update 11th October 2019,
+1. **BASE**, last update 11th October 2019,
 [albert-bahasa-base-11-10-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/albert-base-11-10-2019.tar.gz)
 
-  1. Vocab size 20k.
-  2. Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news.
-  3. 1.0M steps, 3 GPUs TESLA V100.
-  4. BASE size (43MB).
+  - Vocab size 20k.
+  - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news.
+  - 1.0M steps, 3 GPUs TESLA V100.
+  - BASE size (43MB).
 
 ```text
 INFO:tensorflow:***** Eval results *****

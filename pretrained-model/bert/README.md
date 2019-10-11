@@ -20,7 +20,7 @@ Thanks to Google for opensourcing most of the source code to develop BERT, https
 
 ## Acknowledgement
 
-Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://www.facebook.com/ligblou), [Mesolitica](https://mesolitica.com/) and [KeyReply](https://www.keyreply.com/) for sponsoring AWS, Google and GPU clouds to train XLNET for Bahasa.
+Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://www.facebook.com/ligblou), [Mesolitica](https://mesolitica.com/) and [KeyReply](https://www.keyreply.com/) for sponsoring AWS, Google and GPU clouds to train BERT for Bahasa.
 
 ## How-to
 
@@ -161,26 +161,26 @@ python3 multigpu_pretraining.py \
 
 1. **BASE**, last update 30th July 2019, [bert-bahasa-base.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-bahasa-base.tar.gz) [Tensorboard data](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-base-30-july-2019-tensorboard.instance-3)
 
-  1. Vocab size 40k.
-  2. Trained on cleaned wikipedia, raw twitter, raw instagram, raw parliament, raw news.
-  3. 1.5M steps, single GPU.
-  4. BASE size (467MB).
+  - Vocab size 40k.
+  - Trained on cleaned wikipedia, raw twitter, raw instagram, raw parliament, raw news.
+  - 1.5M steps, single GPU.
+  - BASE size (467MB).
 
 2. **SMALL**, last update 2nd August 2019,
 [bert-bahasa-small.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-bahasa-small.tar.gz) [Tensorboard data](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/events.out.tfevents.1564477991.instance-3)
 
-  1. Vocab size 40k.
-  2. Trained on cleaned wikipedia, raw twitter, raw instagram, raw parliament, raw news.
-  3. 1.5M steps, single GPU.
-  4. SMALL size (184MB).
+  - Vocab size 40k.
+  - Trained on cleaned wikipedia, raw twitter, raw instagram, raw parliament, raw news.
+  - 1.5M steps, single GPU.
+  - SMALL size (184MB).
 
 3. **BASE**, last update 13th September 2019,
 [bert-bahasa-base-13-9-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-base-13-9-2019.tar.gz)
 
-  1. Vocab size 40k.
-  2. Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news.
-  3. 1.0M steps, 3 GPUs TESLA V100.
-  4. BASE size (467MB).
+  - Vocab size 40k.
+  - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news.
+  - 1.0M steps, 3 GPUs TESLA V100.
+  - BASE size (467MB).
 
 ```text
 INFO:tensorflow:***** Eval results *****
@@ -202,10 +202,10 @@ I0913 04:02:36.334962 140621913737024 validation.py:597]   next_sentence_loss = 
 4. **SMALL**, last update 19th September 2019,
 [bert-small-19-9-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-small-19-9-2019.tar.gz)
 
-  1. Vocab size 40k.
-  2. Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news.
-  3. 1.0M steps, 3 GPUs.
-  4. BASE size (467MB).
+  - Vocab size 40k.
+  - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news.
+  - 1.0M steps, 3 GPUs.
+  - BASE size (467MB).
 
 ```text
 INFO:tensorflow:***** Eval results *****
