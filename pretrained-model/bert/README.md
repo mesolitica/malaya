@@ -205,7 +205,7 @@ I0913 04:02:36.334962 140621913737024 validation.py:597]   next_sentence_loss = 
   - Vocab size 40k.
   - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news.
   - 1.0M steps, 3 GPUs.
-  - BASE size (467MB).
+  - SMALL size (184MB).
 
 ```text
 INFO:tensorflow:***** Eval results *****
