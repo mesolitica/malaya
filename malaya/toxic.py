@@ -28,12 +28,16 @@ _label_toxic = [
 ]
 
 
-_availability = {'model': ['bert', 'xlnet'], 'size': ['base', 'small']}
+_availability = {
+    'bert': ['base', 'small'],
+    'xlnet': ['base'],
+    'albert': ['base'],
+}
 
 
 def available_transformer_model():
     """
-    List available transformer sentiment analysis models.
+    List available transformer toxicity analysis models.
     """
     return _availability
 
@@ -64,6 +68,7 @@ def transformer(model = 'xlnet', size = 'base', validate = True):
 
         * ``'bert'`` - BERT architecture from google.
         * ``'xlnet'`` - XLNET architecture from google.
+        * ``'albert'`` - ALBERT architecture from google.
     size : str, optional (default='base')
         Model size supported. Allowed values:
 

@@ -45,24 +45,6 @@ S3_PATH_PREPROCESSING = {
     'english-malay': {'model': 'v23/preprocessing/english-malay-200k.json'},
 }
 
-PATH_ELMO = {
-    128: {
-        'model': home + '/elmo-wiki/elmo-128.pb',
-        'setting': home + '/elmo-wiki/elmo-128.pkl',
-        'version': 'v27',
-    },
-    256: {
-        'model': home + '/elmo-wiki/elmo-256.pb',
-        'setting': home + '/elmo-wiki/elmo-256.pkl',
-        'version': 'v27',
-    },
-}
-
-S3_PATH_ELMO = {
-    128: {'model': 'v27/elmo/elmo-128.pb', 'setting': 'v27/elmo/elmo-128.pkl'},
-    256: {'model': 'v20/elmo/elmo-256.pb', 'setting': 'v20/elmo/elmo-256.pkl'},
-}
-
 PATH_STEM = {
     'lstm': {
         'model': home + '/stem/lstm/lstm-stem.pb',
@@ -124,164 +106,83 @@ PATH_TOXIC = {
     'multinomial': {
         'model': home + '/toxic/multinomial/multinomials-toxic.pkl',
         'vector': home + '/toxic/multinomial/vectorizer-toxic.pkl',
-        'version': 'v6',
+        'version': 'v30',
     },
-    'logistic': {
-        'model': home + '/toxic/logistic/logistics-toxic.pkl',
-        'vector': home + '/toxic/logistic/vectorizer-toxic.pkl',
-        'version': 'v6',
-    },
-    'luong': {
-        'model': home + '/toxic/luong/luong-toxic.pb',
-        'setting': home + '/toxic/toxicity-dictionary.json',
-        'version': 'v24',
-    },
-    'bahdanau': {
-        'model': home + '/toxic/bahdanau/bahdanau-toxic.pb',
-        'setting': home + '/toxic/toxicity-dictionary.json',
-        'version': 'v24',
-    },
-    'self-attention': {
-        'model': home + '/toxic/self-attention/self-attention-toxic.pb',
-        'setting': home + '/toxic/toxicity-dictionary.json',
-        'version': 'v24',
-    },
-    'multilanguage': {
-        'model': home + '/toxic/multilanguage/bert-toxic.pb',
-        'vocab': home + '/bert/multilanguage-vocab.txt',
-        'version': 'v27',
-    },
-    'base': {
-        'model': home + '/toxic/base/bert-toxic.pb',
-        'vocab': home + '/bert/sp10m.cased.v4.vocab',
-        'tokenizer': home + '/bert/sp10m.cased.v4.model',
-        'version': 'v27',
-    },
-    'small': {
-        'model': home + '/toxic/small/bert-toxic.pb',
-        'vocab': home + '/bert/sp10m.cased.v4.vocab',
-        'tokenizer': home + '/bert/sp10m.cased.v4.model',
-        'version': 'v27',
+    'bert': {
+        'base': {
+            'model': home + '/toxic/base/bert-toxic.pb',
+            'vocab': home + '/bert/sp10m.cased.v4.vocab',
+            'tokenizer': home + '/bert/sp10m.cased.v4.model',
+            'version': 'v30',
+        },
+        'small': {
+            'model': home + '/toxic/small/bert-toxic.pb',
+            'vocab': home + '/bert/sp10m.cased.v4.vocab',
+            'tokenizer': home + '/bert/sp10m.cased.v4.model',
+            'version': 'v30',
+        },
     },
 }
 
 S3_PATH_TOXIC = {
     'multinomial': {
-        'model': 'v6/multinomials-toxic.pkl',
-        'vector': 'v6/vectorizer-toxic.pkl',
+        'model': 'v30/multinomials-toxic.pkl',
+        'vector': 'v30/vectorizer-toxic.pkl',
     },
-    'logistic': {
-        'model': 'v6/logistics-toxic.pkl',
-        'vector': 'v6/vectorizer-toxic.pkl',
-    },
-    'luong': {
-        'model': 'v24/toxicity/luong-toxic.pb',
-        'setting': 'v24/toxicity/toxicity-dictionary.json',
-    },
-    'bahdanau': {
-        'model': 'v24/toxicity/bahdanau-toxic.pb',
-        'setting': 'v24/toxicity/toxicity-dictionary.json',
-    },
-    'self-attention': {
-        'model': 'v24/toxicity/self-attention-toxic.pb',
-        'setting': 'v24/toxicity/toxicity-dictionary.json',
-    },
-    'multilanguage': {
-        'model': 'v27/toxicity/bert-multilanguage-toxicity.pb',
-        'vocab': 'v24/multilanguage-vocab.txt',
-    },
-    'base': {
-        'model': 'v27/toxicity/bert-base-toxicity.pb',
-        'vocab': 'v27/sp10m.cased.v4.vocab',
-        'tokenizer': 'v27/sp10m.cased.v4.model',
-    },
-    'small': {
-        'model': 'v27/toxicity/bert-small-toxicity.pb',
-        'vocab': 'v27/sp10m.cased.v4.vocab',
-        'tokenizer': 'v27/sp10m.cased.v4.model',
+    'bert': {
+        'base': {
+            'model': 'v27/toxicity/bert-base-toxicity.pb',
+            'vocab': 'v27/sp10m.cased.v4.vocab',
+            'tokenizer': 'v27/sp10m.cased.v4.model',
+        },
+        'small': {
+            'model': 'v27/toxicity/bert-small-toxicity.pb',
+            'vocab': 'v27/sp10m.cased.v4.vocab',
+            'tokenizer': 'v27/sp10m.cased.v4.model',
+        },
     },
 }
 
 PATH_POS = {
-    'concat': {
-        'model': home + '/pos/concat/concat-pos.pb',
-        'setting': home + '/pos/dictionary-pos.json',
-        'version': 'v27',
-    },
-    'luong': {
-        'model': home + '/pos/luong/luong-pos.pb',
-        'setting': home + '/pos/dictionary-pos.json',
-        'version': 'v27',
-    },
-    'bahdanau': {
-        'model': home + '/pos/bahdanau/bahdanau-pos.pb',
-        'setting': home + '/pos/dictionary-pos.json',
-        'version': 'v27',
-    },
-    'multilanguage': {
-        'model': home + '/pos/multilanguage/bert-multilanguage-pos.pb',
-        'vocab': home + '/bert/multilanguage-vocab.txt',
-        'setting': home + '/entity/dictionary-pos.json',
-        'version': 'v27',
-    },
-    'base': {
-        'model': home + '/pos/base/bert-pos.pb',
-        'vocab': home + '/bert/sp10m.cased.v4.vocab',
-        'tokenizer': home + '/bert/sp10m.cased.v4.model',
-        'setting': home + '/pos/dictionary-pos.json',
-        'version': 'v27',
-    },
-    'small': {
-        'model': home + '/pos/small/bert-pos.pb',
-        'vocab': home + '/bert/sp10m.cased.v4.vocab',
-        'tokenizer': home + '/bert/sp10m.cased.v4.model',
-        'setting': home + '/pos/dictionary-pos.json',
-        'version': 'v27',
-    },
+    'bert': {
+        'base': {
+            'model': home + '/pos/base/bert-pos.pb',
+            'vocab': home + '/bert/sp10m.cased.v4.vocab',
+            'tokenizer': home + '/bert/sp10m.cased.v4.model',
+            'setting': home + '/pos/dictionary-pos.json',
+            'version': 'v30',
+        },
+        'small': {
+            'model': home + '/pos/small/bert-pos.pb',
+            'vocab': home + '/bert/sp10m.cased.v4.vocab',
+            'tokenizer': home + '/bert/sp10m.cased.v4.model',
+            'setting': home + '/pos/dictionary-pos.json',
+            'version': 'v30',
+        },
+    }
 }
 
 S3_PATH_POS = {
-    'concat': {
-        'model': 'v27/pos/concat-pos.pb',
-        'setting': 'bert-bahasa/dictionary-pos.json',
-    },
-    'luong': {
-        'model': 'v27/pos/luong-pos.pb',
-        'setting': 'bert-bahasa/dictionary-pos.json',
-    },
-    'bahdanau': {
-        'model': 'v27/pos/bahdanau-pos.pb',
-        'setting': 'bert-bahasa/dictionary-pos.json',
-    },
-    'multilanguage': {
-        'model': 'v27/pos/bert-multilanguage-pos.pb',
-        'vocab': 'v24/multilanguage-vocab.txt',
-        'setting': 'bert-bahasa/dictionary-pos.json',
-    },
-    'base': {
-        'model': 'v27/pos/bert-base-pos.pb',
-        'vocab': 'v27/sp10m.cased.v4.vocab',
-        'tokenizer': 'v27/sp10m.cased.v4.model',
-        'setting': 'bert-bahasa/dictionary-pos.json',
-    },
-    'small': {
-        'model': 'v27/pos/bert-small-pos.pb',
-        'vocab': 'v27/sp10m.cased.v4.vocab',
-        'tokenizer': 'v27/sp10m.cased.v4.model',
-        'setting': 'bert-bahasa/dictionary-pos.json',
-    },
+    'bert': {
+        'base': {
+            'model': 'v27/pos/bert-base-pos.pb',
+            'vocab': 'v27/sp10m.cased.v4.vocab',
+            'tokenizer': 'v27/sp10m.cased.v4.model',
+            'setting': 'bert-bahasa/dictionary-pos.json',
+        },
+        'small': {
+            'model': 'v27/pos/bert-small-pos.pb',
+            'vocab': 'v27/sp10m.cased.v4.vocab',
+            'tokenizer': 'v27/sp10m.cased.v4.model',
+            'setting': 'bert-bahasa/dictionary-pos.json',
+        },
+    }
 }
 
 PATH_LANG_DETECTION = {
     'multinomial': {
         'model': home
         + '/language-detection/multinomial/multinomial-language-detection.pkl',
-        'vector': home
-        + '/language-detection/multinomial/vectorizer-language-detection.pkl',
-        'version': 'v10.2',
-    },
-    'xgb': {
-        'model': home + '/language-detection/xgb/xgb-language-detection.pkl',
         'vector': home
         + '/language-detection/multinomial/vectorizer-language-detection.pkl',
         'version': 'v10.2',
@@ -308,10 +209,6 @@ S3_PATH_LANG_DETECTION = {
         'model': 'v10/language-detection/multinomial-language-detection.pkl',
         'vector': 'v10/language-detection/language-detection-vectorizer.pkl',
     },
-    'xgb': {
-        'model': 'v10/language-detection/xgboost-language-detection.pkl',
-        'vector': 'v10/language-detection/language-detection-vectorizer.pkl',
-    },
     'sgd': {
         'model': 'v10/language-detection/sgd-language-detection.pkl',
         'vector': 'v10/language-detection/language-detection-vectorizer.pkl',
@@ -325,119 +222,61 @@ S3_PATH_LANG_DETECTION = {
 }
 
 PATH_ENTITIES = {
-    'concat': {
-        'model': home + '/entity/concat/concat-entities.pb',
-        'setting': home + '/entity/dictionary-entities.json',
-        'version': 'v27',
-    },
-    'luong': {
-        'model': home + '/entity/luong/luong-entities.pb',
-        'setting': home + '/entity/dictionary-entities.json',
-        'version': 'v27',
-    },
-    'bahdanau': {
-        'model': home + '/entity/bahdanau/bahdanau-entities.pb',
-        'setting': home + '/entity/dictionary-entities.json',
-        'version': 'v27',
-    },
-    'multilanguage': {
-        'model': home + '/entity/multilanguage/bert-multilanguage-entity.pb',
-        'vocab': home + '/bert/multilanguage-vocab.txt',
-        'setting': home + '/entity/dictionary-entities.json',
-        'version': 'v27',
-    },
-    'base': {
-        'model': home + '/entity/base/bert-entity.pb',
-        'vocab': home + '/bert/sp10m.cased.v4.vocab',
-        'tokenizer': home + '/bert/sp10m.cased.v4.model',
-        'setting': home + '/entity/dictionary-entities.json',
-        'version': 'v27',
-    },
-    'small': {
-        'model': home + '/entity/small/bert-entity.pb',
-        'vocab': home + '/bert/sp10m.cased.v4.vocab',
-        'tokenizer': home + '/bert/sp10m.cased.v4.model',
-        'setting': home + '/entity/dictionary-entities.json',
-        'version': 'v27',
-    },
+    'bert': {
+        'base': {
+            'model': home + '/entity/base/bert-entity.pb',
+            'vocab': home + '/bert/sp10m.cased.v4.vocab',
+            'tokenizer': home + '/bert/sp10m.cased.v4.model',
+            'setting': home + '/entity/dictionary-entities.json',
+            'version': 'v27',
+        },
+        'small': {
+            'model': home + '/entity/small/bert-entity.pb',
+            'vocab': home + '/bert/sp10m.cased.v4.vocab',
+            'tokenizer': home + '/bert/sp10m.cased.v4.model',
+            'setting': home + '/entity/dictionary-entities.json',
+            'version': 'v27',
+        },
+    }
 }
 
 S3_PATH_ENTITIES = {
-    'concat': {
-        'model': 'v27/entities/concat-entities.pb',
-        'setting': 'bert-bahasa/dictionary-entities.json',
-    },
-    'luong': {
-        'model': 'v27/entities/luong-entities.pb',
-        'setting': 'bert-bahasa/dictionary-entities.json',
-    },
-    'bahdanau': {
-        'model': 'v27/entities/bahdanau-entities.pb',
-        'setting': 'bert-bahasa/dictionary-entities.json',
-    },
-    'multilanguage': {
-        'model': 'v27/entities/bert-multilanguage-entities.pb',
-        'vocab': 'v24/multilanguage-vocab.txt',
-        'setting': 'bert-bahasa/dictionary-entities.json',
-    },
-    'base': {
-        'model': 'v27/entities/bert-base-entities.pb',
-        'vocab': 'v27/sp10m.cased.v4.vocab',
-        'tokenizer': 'v27/sp10m.cased.v4.model',
-        'setting': 'bert-bahasa/dictionary-entities.json',
-    },
-    'small': {
-        'model': 'v27/entities/bert-small-entities.pb',
-        'vocab': 'v27/sp10m.cased.v4.vocab',
-        'tokenizer': 'v27/sp10m.cased.v4.model',
-        'setting': 'bert-bahasa/dictionary-entities.json',
-    },
+    'bert': {
+        'base': {
+            'model': 'v27/entities/bert-base-entities.pb',
+            'vocab': 'v27/sp10m.cased.v4.vocab',
+            'tokenizer': 'v27/sp10m.cased.v4.model',
+            'setting': 'bert-bahasa/dictionary-entities.json',
+        },
+        'small': {
+            'model': 'v27/entities/bert-small-entities.pb',
+            'vocab': 'v27/sp10m.cased.v4.vocab',
+            'tokenizer': 'v27/sp10m.cased.v4.model',
+            'setting': 'bert-bahasa/dictionary-entities.json',
+        },
+    }
 }
 
 PATH_SENTIMENT = {
-    'bahdanau': {
-        'model': home + '/sentiment/bahdanau/bahdanau-sentiment.pb',
-        'setting': home + '/sentiment/sentiment-dictionary.json',
-        'version': 'v24',
-    },
-    'luong': {
-        'model': home + '/sentiment/luong/luong-sentiment.pb',
-        'setting': home + '/sentiment/sentiment-dictionary.json',
-        'version': 'v24',
-    },
-    'self-attention': {
-        'model': home + '/sentiment/self-attention/self-attention-sentiment.pb',
-        'setting': home + '/sentiment/sentiment-dictionary.json',
-        'version': 'v24',
-    },
     'multinomial': {
         'model': home + '/sentiment/multinomial/multinomial-sentiment.pkl',
         'vector': home
         + '/sentiment/multinomial/multinomial-sentiment-tfidf.pkl',
         'version': 'v17',
     },
-    'xgb': {
-        'model': home + '/sentiment/xgb/xgboost-sentiment.pkl',
-        'vector': home + '/sentiment/xgb/xgboost-sentiment-tfidf.pkl',
-        'version': 'v17',
-    },
-    'multilanguage': {
-        'model': home
-        + '/sentiment/multilanguage/bert-multilanguage-sentiment.pb',
-        'vocab': home + '/bert/multilanguage-vocab.txt',
-        'version': 'v27',
-    },
-    'base': {
-        'model': home + '/sentiment/base/bert-sentiment.pb',
-        'vocab': home + '/bert/sp10m.cased.v4.vocab',
-        'tokenizer': home + '/bert/sp10m.cased.v4.model',
-        'version': 'v27',
-    },
-    'small': {
-        'model': home + '/sentiment/small/bert-sentiment.pb',
-        'vocab': home + '/bert/sp10m.cased.v4.vocab',
-        'tokenizer': home + '/bert/sp10m.cased.v4.model',
-        'version': 'v27',
+    'bert': {
+        'base': {
+            'model': home + '/sentiment/base/bert-sentiment.pb',
+            'vocab': home + '/bert/sp10m.cased.v4.vocab',
+            'tokenizer': home + '/bert/sp10m.cased.v4.model',
+            'version': 'v27',
+        },
+        'small': {
+            'model': home + '/sentiment/small/bert-sentiment.pb',
+            'vocab': home + '/bert/sp10m.cased.v4.vocab',
+            'tokenizer': home + '/bert/sp10m.cased.v4.model',
+            'version': 'v27',
+        },
     },
 }
 

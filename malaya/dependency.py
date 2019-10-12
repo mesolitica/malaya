@@ -22,12 +22,16 @@ def dependency_graph(tagging, indexing):
     return DependencyGraph('\n'.join(result), top_relation_label = 'root')
 
 
-_availability = {'model': ['bert', 'xlnet'], 'size': ['base', 'small']}
+_availability = {
+    'bert': ['base', 'small'],
+    'xlnet': ['base'],
+    'albert': ['base'],
+}
 
 
 def available_transformer_model():
     """
-    List available transformer sentiment analysis models.
+    List available transformer dependency parsing models.
     """
     return _availability
 
@@ -43,6 +47,7 @@ def transformer(model = 'xlnet', size = 'base', validate = True):
 
         * ``'bert'`` - BERT architecture from google.
         * ``'xlnet'`` - XLNET architecture from google.
+        * ``'albert'`` - ALBERT architecture from google.
     size : str, optional (default='base')
         Model size supported. Allowed values:
 
@@ -61,3 +66,14 @@ def transformer(model = 'xlnet', size = 'base', validate = True):
         raise ValueError('size must be a string')
     if not isinstance(validate, bool):
         raise ValueError('validate must be a boolean')
+
+    model = model.lower()
+    size = size.lower()
+    if model not in _availability:
+        raise Exception(
+            'model not supported, please check supported models from malaya.dependency.available_transformer_model()'
+        )
+    if size not in _availability[model]:
+        raise Exception(
+            'size not supported, please check supported models from malaya.dependency.available_transformer_model()'
+        )

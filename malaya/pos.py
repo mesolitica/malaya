@@ -4,12 +4,16 @@ from ._utils import _tag_class
 from ._utils._paths import PATH_POS, S3_PATH_POS
 
 
-_availability = {'model': ['bert', 'xlnet'], 'size': ['base', 'small']}
+_availability = {
+    'bert': ['base', 'small'],
+    'xlnet': ['base'],
+    'albert': ['base'],
+}
 
 
 def available_transformer_model():
     """
-    List available transformer Entity Tagging models.
+    List available transformer Part-Of-Speech Tagging models.
     """
     return _availability
 
@@ -69,6 +73,7 @@ def transformer(model = 'xlnet', size = 'base', validate = True):
 
         * ``'bert'`` - BERT architecture from google.
         * ``'xlnet'`` - XLNET architecture from google.
+        * ``'albert'`` - ALBERT architecture from google.
     size : str, optional (default='base')
         Model size supported. Allowed values:
 
@@ -92,16 +97,16 @@ def transformer(model = 'xlnet', size = 'base', validate = True):
     size = size.lower()
     if model not in _availability['model']:
         raise Exception(
-            'model not supported, please check supported models from malaya.sentiment.available_transformer_model()'
+            'model not supported, please check supported models from malaya.pos.available_transformer_model()'
         )
     if size not in _availability['size']:
         raise Exception(
-            'size not supported, please check supported models from malaya.sentiment.available_transformer_model()'
+            'size not supported, please check supported models from malaya.pos.available_transformer_model()'
         )
     return _softmax_class.bert(
         PATH_SENTIMENT,
         S3_PATH_SENTIMENT,
-        'sentiment',
+        'pos',
         ['negative', 'positive'],
         model = model,
         validate = validate,
