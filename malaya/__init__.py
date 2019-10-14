@@ -11,8 +11,8 @@ from shutil import rmtree
 from pathlib import Path
 
 home = os.path.join(str(Path.home()), 'Malaya')
-version = '2.7'
-bump_version = '2.7.7.0'
+version = '3.0'
+bump_version = '3.0'
 version_path = os.path.join(home, 'version')
 
 
@@ -28,9 +28,6 @@ def _delete_macos():
         rmtree(macos)
 
 
-from ._utils._paths import MALAY_TEXT, MALAY_TEXT_200K
-from ._utils._utils import DisplayablePath, download_file
-
 try:
     if not os.path.exists(home):
         os.makedirs(home)
@@ -41,9 +38,9 @@ except:
     )
 
 _delete_macos()
+from ._utils._utils import DisplayablePath, download_file
 
 if not os.path.isfile(version_path):
-    print('not found any version, deleting previous version models..')
     _delete_folder(home)
     with open(version_path, 'w') as fopen:
         fopen.write(version)
@@ -52,14 +49,10 @@ else:
         cached_version = fopen.read()
     try:
         if float(cached_version) < 1:
-            print(
-                'Found old version of Malaya, deleting previous version models..'
-            )
             _delete_folder(home)
             with open(version_path, 'w') as fopen:
                 fopen.write(version)
     except:
-        print('Found old version of Malaya, deleting previous version models..')
         _delete_folder(home)
         with open(version_path, 'w') as fopen:
             fopen.write(version)
@@ -87,7 +80,7 @@ def clear_all_cache():
             fopen.write(version)
         return True
     except:
-        print(
+        raise Exception(
             'failed to clear cached models. Please make sure %s is able to overwrite from Malaya'
             % (home)
         )
@@ -120,6 +113,8 @@ def load_malay_dictionary():
     -------
     list: list of strings
     """
+    from ._utils._paths import MALAY_TEXT
+
     if not os.path.isfile(MALAY_TEXT):
         print('downloading Malay texts')
         download_file('v6/malay-text.txt', MALAY_TEXT)
@@ -148,6 +143,7 @@ def load_200k_malay_dictionary():
     -------
     list: list of strings
     """
+    from ._utils._paths import MALAY_TEXT_200K
 
     if not os.path.isfile(MALAY_TEXT_200K):
         print('downloading 200k Malay texts')
@@ -170,7 +166,9 @@ def describe_pos_malaya():
     """
     Describe Malaya Part-Of-Speech supported (deprecated, use describe_pos() instead)
     """
-    print(
+    import warnings
+
+    warnings.warn(
         'This classes are deprecated, we prefer to use `malaya.describe_pos()`'
     )
     print('KT - Kata Tanya')
@@ -221,7 +219,9 @@ def describe_entities_malaya():
     """
     Describe Malaya Entities supported (deprecated, use describe_entities() instead)
     """
-    print(
+    import warnings
+
+    warnings.warn(
         'This classes are deprecated, we prefer to use `malaya.describe_entities()`'
     )
     print('PRN - person, group of people, believes, etc')

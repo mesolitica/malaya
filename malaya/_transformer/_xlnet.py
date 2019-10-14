@@ -1,12 +1,10 @@
 import tensorflow as tf
 from ._xlnet import xlnet as xlnet_lib
-from ._utils._paths import PATH_XLNET, S3_PATH_XLNET
 from .texts._text_functions import (
     xlnet_tokenization,
     padding_sequence,
     merge_sentencepiece_tokens,
 )
-from ._utils._utils import check_file, check_available
 import collections
 from collections import defaultdict
 import re
@@ -218,13 +216,6 @@ class _Model:
         _attention(results)
 
 
-def available_xlnet_model():
-    """
-    List available xlnet models.
-    """
-    return ['base', 'small']
-
-
 def xlnet(model = 'base', pool_mode = 'last', validate = True):
     """
     Load xlnet model.
@@ -248,7 +239,7 @@ def xlnet(model = 'base', pool_mode = 'last', validate = True):
 
     Returns
     -------
-    XLNET_MODEL: malaya.xlnet._Model class
+    XLNET_MODEL: malaya._transformer._xlnet._Model class
     """
 
     if not isinstance(model, str):
@@ -260,10 +251,10 @@ def xlnet(model = 'base', pool_mode = 'last', validate = True):
 
     model = model.lower()
     pool_mode = pool_mode.lower()
-    if model not in available_xlnet_model():
-        raise Exception(
-            'model not supported, please check supported models from malaya.xlnet.available_xlnet_model()'
-        )
+
+    from ._utils._paths import PATH_XLNET, S3_PATH_XLNET
+    from ._utils._utils import check_file, check_available
+
     if pool_mode not in ['last', 'first', 'mean', 'attn']:
         raise Exception(
             "pool_mode not supported, only support ['last', 'first', 'mean', 'attn']"
@@ -274,7 +265,7 @@ def xlnet(model = 'base', pool_mode = 'last', validate = True):
     else:
         if not check_available(PATH_XLNET[model]['model']):
             raise Exception(
-                'bert-model/%s is not available, please `validate = True`'
+                'xlnet-model/%s is not available, please `validate = True`'
                 % (model)
             )
 

@@ -8,7 +8,7 @@ from ._utils._utils import (
 )
 from . import home
 from ._utils._paths import PATH_TOXIC, S3_PATH_TOXIC
-from ._models._sklearn_model import TOXIC
+from ._models._sklearn_model import MULTILABEL_BAYES
 from ._models._tensorflow_model import SIGMOID
 from ._models._bert_model import SIGMOID_BERT
 
@@ -55,6 +55,33 @@ def multinomial(validate = True):
     -------
     BAYES : malaya._models._sklearn_model.MULTILABEL_BAYES class
     """
+    import pickle
+
+    if validate:
+        check_file(PATH_TOXIC['multinomial'], S3_PATH_TOXIC['multinomial'])
+    else:
+        if not check_available(PATH_TOXIC['multinomial']):
+            raise Exception(
+                'toxic/multinomial is not available, please `validate = True`'
+                % (class_name)
+            )
+    try:
+        with open(PATH_TOXIC['multinomial']['model'], 'rb') as fopen:
+            multinomial = pickle.load(fopen)
+        with open(PATH_TOXIC['multinomial']['vector'], 'rb') as fopen:
+            vectorize = pickle.load(fopen)
+    except:
+        raise Exception(
+            "model corrupted due to some reasons, please run malaya.clear_cache('toxic/multinomial') and try again"
+            % (class_name)
+        )
+    from ..stem import _classification_textcleaning_stemmer
+
+    return MULTILABEL_BAYES(
+        models = multinomial,
+        vectors = vectorize,
+        cleaning = _classification_textcleaning_stemmer,
+    )
 
 
 def transformer(model = 'xlnet', size = 'base', validate = True):

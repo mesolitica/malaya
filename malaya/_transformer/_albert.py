@@ -1,5 +1,5 @@
 import tensorflow as tf
-from bert import modeling
+from ._albert import modeling
 from ..texts._text_functions import (
     bert_tokenization,
     padding_sequence,
@@ -10,29 +10,13 @@ from collections import defaultdict
 import numpy as np
 import os
 
-bert_num_layers = {'multilanguage': 12, 'base': 12, 'small': 6}
-
 
 def _extract_attention_weights(num_layers, tf_graph):
     attns = [
         {
             'layer_%s'
             % i: tf_graph.get_tensor_by_name(
-                'bert/encoder/layer_%s/attention/self/Softmax:0' % i
-            )
-        }
-        for i in range(num_layers)
-    ]
-
-    return attns
-
-
-def _extract_attention_weights_import(num_layers, tf_graph):
-    attns = [
-        {
-            'layer_%s'
-            % i: tf_graph.get_tensor_by_name(
-                'import/bert/encoder/layer_%s/attention/self/Softmax:0' % i
+                'bert/encoder/layer_shared_%s/attention/self/Softmax:0' % i
             )
         }
         for i in range(num_layers)
@@ -196,23 +180,22 @@ def available_bert_model():
     return ['multilanguage', 'base', 'small']
 
 
-def bert(model = 'base', lite = False, validate = True):
+def albert(model = 'base', validate = True):
     """
-    Load bert model.
+    Load albert model.
 
     Parameters
     ----------
     model : str, optional (default='base')
         Model architecture supported. Allowed values:
 
-        * ``'base'`` - base bert-bahasa released by Malaya.
-        * ``'small'`` - small bert-bahasa released by Malaya.
+        * ``'base'`` - base albert-bahasa released by Malaya.
     validate: bool, optional (default=True)
         if True, malaya will check model availability and download if not available.
 
     Returns
     -------
-    BERT_MODEL: malaya._transformer._bert._Model class
+    ALBERT_MODEL: malaya._transformer._albert._Model class
     """
 
     if not isinstance(model, str):
@@ -220,31 +203,31 @@ def bert(model = 'base', lite = False, validate = True):
     if not isinstance(validate, bool):
         raise ValueError('validate must be a boolean')
 
-    from .._utils._paths import PATH_BERT, S3_PATH_BERT
+    from .._utils._paths import PATH_ALBERT, S3_PATH_ALBERT
     from .._utils._utils import check_file, check_available
 
     model = model.lower()
     if validate:
-        check_file(PATH_BERT[model]['model'], S3_PATH_BERT[model])
+        check_file(PATH_ALBERT[model]['model'], S3_PATH_ALBERT[model])
     else:
-        if not check_available(PATH_BERT[model]['model']):
+        if not check_available(PATH_ALBERT[model]['model']):
             raise Exception(
-                'bert-model/%s is not available, please `validate = True`'
+                'albert-model/%s is not available, please `validate = True`'
                 % (model)
             )
-    if not os.path.exists(PATH_BERT[model]['directory']):
+    if not os.path.exists(PATH_ALBERT[model]['directory']):
         import tarfile
 
-        with tarfile.open(PATH_BERT[model]['model']['model']) as tar:
-            tar.extractall(path = PATH_BERT[model]['path'])
+        with tarfile.open(PATH_ALBERT[model]['model']['model']) as tar:
+            tar.extractall(path = PATH_ALBERT[model]['path'])
 
     import sentencepiece as spm
     from .texts._text_functions import SentencePieceTokenizer
 
-    bert_checkpoint = PATH_BERT[model]['directory'] + 'model.ckpt'
-    vocab_model = PATH_BERT[model]['directory'] + 'sp10m.cased.v4.model'
-    vocab = PATH_BERT[model]['directory'] + 'sp10m.cased.v4.vocab'
-    bert_config = PATH_BERT[model]['directory'] + 'bert_config.json'
+    bert_checkpoint = PATH_ALBERT[model]['directory'] + 'model.ckpt'
+    vocab_model = PATH_ALBERT[model]['directory'] + 'sp10m.cased.v6.model'
+    vocab = PATH_ALBERT[model]['directory'] + 'sp10m.cased.v6.vocab'
+    bert_config = PATH_ALBERT[model]['directory'] + 'bert_config.json'
 
     sp_model = spm.SentencePieceProcessor()
     sp_model.Load(vocab_model)

@@ -2,12 +2,7 @@ import json
 import os
 import pickle
 from ._utils import check_file, load_graph, check_available, generate_session
-from .._models._sklearn_model import (
-    BINARY_XGB,
-    BINARY_BAYES,
-    MULTICLASS_XGB,
-    MULTICLASS_BAYES,
-)
+from .._models._sklearn_model import BINARY_BAYES, MULTICLASS_BAYES
 from .._models._tensorflow_model import BINARY_SOFTMAX, MULTICLASS_SOFTMAX
 from .._models._bert_model import MULTICLASS_BERT, BINARY_BERT
 from .._transformer._bert import (
@@ -81,41 +76,6 @@ def multinomial(path, s3_path, class_name, label, validate = True):
         selected_class = BINARY_BAYES
     return selected_class(
         multinomial = multinomial,
-        label = label,
-        vectorize = vectorize,
-        cleaning = _classification_textcleaning_stemmer,
-    )
-
-
-def xgb(path, s3_path, class_name, label, validate = True):
-    if validate:
-        check_file(path['xgb'], s3_path['xgb'])
-    else:
-        if not check_available(path['xgb']):
-            raise Exception(
-                '%s/xgb is not available, please `validate = True`'
-                % (class_name)
-            )
-    try:
-        with open(path['xgb']['model'], 'rb') as fopen:
-            xgb = pickle.load(fopen)
-        with open(path['xgb']['vector'], 'rb') as fopen:
-            vectorize = pickle.load(fopen)
-    except:
-        raise Exception(
-            "model corrupted due to some reasons, please run malaya.clear_cache('%s/xgb') and try again"
-            % (class_name)
-        )
-
-    from ..stem import _classification_textcleaning_stemmer
-
-    if len(label) > 2:
-        selected_class = MULTICLASS_XGB
-    else:
-        selected_class = BINARY_XGB
-
-    return selected_class(
-        xgb = xgb,
         label = label,
         vectorize = vectorize,
         cleaning = _classification_textcleaning_stemmer,

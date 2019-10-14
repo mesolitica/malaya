@@ -83,6 +83,16 @@ _list_laughing = {
 }
 
 
+def remove_links_alias(string):
+    string = unidecode(string)
+    string = re.sub(
+        r'\w+:\/{2}[\d\w-]+(\.[\d\w-]+)*(?:(?:\/[^\s/]*))*', '', string
+    )
+    string = re.sub(r'[ ]+', ' ', string).strip().split()
+    string = [w for w in string if w[0] != '@']
+    return ' '.join(string)
+
+
 def malaya_textcleaning(string):
     """
     use by normalizer, spell
@@ -497,6 +507,7 @@ def bert_tokenization(tokenizer, texts, cls = '[CLS]', sep = '[SEP]'):
 
     input_ids, input_masks, segment_ids, s_tokens = [], [], [], []
     for text in texts:
+        text = remove_links_alias(text)
         tokens_a = tokenizer.tokenize(text)
         tokens = [cls] + tokens_a + [sep]
         segment_id = [0] * len(tokens)
@@ -607,6 +618,7 @@ def tokenize_fn(text, sp_model):
 def xlnet_tokenization(tokenizer, texts):
     input_ids, input_masks, segment_ids, s_tokens = [], [], [], []
     for text in texts:
+        text = remove_links_alias(text)
         tokens_a = tokenize_fn(text, tokenizer)
         tokens = []
         segment_id = []
@@ -725,6 +737,7 @@ def merge_sentencepiece_tokens(paired_tokens, weighted = True):
 
 
 def parse_bert_tagging(left, tokenizer, cls = '[CLS]', sep = '[SEP]'):
+    left = remove_links_alias(left)
     bert_tokens = [cls]
     for no, orig_token in enumerate(left):
         t = tokenizer.tokenize(orig_token)

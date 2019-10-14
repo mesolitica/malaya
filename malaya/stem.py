@@ -1,8 +1,6 @@
 import re
 import json
-import tensorflow as tf
 from unidecode import unidecode
-from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 from .texts._tatabahasa import permulaan, hujung, rules_normalizer
 from ._utils._utils import (
     load_graph,
@@ -27,6 +25,8 @@ UNK = 3
 
 
 def _load_sastrawi():
+    from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
+
     global factory, sastrawi_stemmer
     factory = StemmerFactory()
     sastrawi_stemmer = factory.create_stemmer()

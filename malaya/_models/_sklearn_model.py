@@ -1,6 +1,4 @@
 import numpy as np
-from collections import Counter
-from scipy.sparse import hstack
 from ..texts._text_functions import (
     simple_textcleaning,
     classification_textcleaning,

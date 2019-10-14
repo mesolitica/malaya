@@ -1,6 +1,3 @@
-from ._transformer import _bert
-from ._transformer import _xlnet
-
 _availability = {
     'bert': ['base', 'small'],
     'xlnet': ['base'],
@@ -15,7 +12,7 @@ def available_model():
     return _availability
 
 
-def load(size = 'base', model = 'bert', pool_mode = 'last', validate = True):
+def load(size = 'base', model = 'xlnet', pool_mode = 'last', validate = True):
 
     """
     Load transformer model.
@@ -68,8 +65,16 @@ def load(size = 'base', model = 'bert', pool_mode = 'last', validate = True):
             'size not supported, please check supported models from malaya.transformer.available_model()'
         )
     if model == 'bert':
+        from ._transformer import _bert
+
         return _bert.bert(model = size, validate = validate)
+    if model == 'albert':
+        from ._transformer import _albert
+
+        return _albert.albert(model = size, validate = validate)
     if model == 'xlnet':
+        from ._transformer import _xlnet
+
         return _xlnet.xlnet(
             model = size, pool_mode = pool_mode, validate = validate
         )

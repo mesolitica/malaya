@@ -22,11 +22,7 @@ def dependency_graph(tagging, indexing):
     return DependencyGraph('\n'.join(result), top_relation_label = 'root')
 
 
-_availability = {
-    'bert': ['base', 'small'],
-    'xlnet': ['base'],
-    'albert': ['base'],
-}
+_availability = {'bert': ['base'], 'xlnet': ['base'], 'albert': ['base']}
 
 
 def available_transformer_model():

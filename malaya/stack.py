@@ -59,6 +59,16 @@ def voting_stack(models, text):
         return output
 
 
+dict_function = {
+    'gmean': gmean,
+    'hmean': hmean,
+    'mean': np.mean,
+    'min': np.amin,
+    'max': np.amax,
+    'median': hmedian,
+}
+
+
 def predict_stack(models, strings, mode = 'gmean'):
     """
     Stacking for predictive models.
@@ -96,22 +106,12 @@ def predict_stack(models, strings, mode = 'gmean'):
         strings = [strings]
     if not isinstance(mode, str):
         raise ValueError('mode must be a string')
-    if mode.lower() == 'gmean':
-        mode = gmean
-    elif mode.lower() == 'hmean':
-        mode = hmean
-    elif mode.lower() == 'mean':
-        mode = np.mean
-    elif mode.lower() == 'min':
-        mode = np.amin
-    elif mode.lower() == 'max':
-        mode = np.amax
-    elif mode.lower() == 'median':
-        mode = hdmedian
-    else:
+    if mode.lower() not in dict_function:
         raise Exception(
             "mode not supported, only support ['gmean','hmean','mean','min','max','median']"
         )
+    mode = dict_function[mode.lower()]
+
     for i in range(len(models)):
         if not 'predict_batch' in dir(models[i]):
             raise ValueError('all models must able to predict_batch')

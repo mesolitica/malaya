@@ -617,60 +617,51 @@ S3_PATH_SIMILARITY = {
 PATH_BERT = {
     'base': {
         'path': home + '/bert-model/base',
-        'directory': home + '/bert-model/base/bert-bahasa-base/',
+        'directory': home + '/bert-model/base/model/',
         'model': {
             'model': home + '/bert-model/base/bert-bahasa-base.tar.gz',
-            'version': 'v27',
+            'version': 'v30',
         },
     },
     'small': {
         'path': home + '/bert-model/small',
-        'directory': home + '/bert-model/small/bert-bahasa-small/',
+        'directory': home + '/bert-model/small/model/',
         'model': {
             'model': home + '/bert-model/small/bert-bahasa-small.tar.gz',
-            'version': 'v27',
-        },
-    },
-    'multilanguage': {
-        'path': home + '/bert-model/multilanguage',
-        'directory': home
-        + '/bert-model/multilanguage/multi_cased_L-12_H-768_A-12/',
-        'model': {
-            'model': home
-            + '/bert-model/multilanguage/multi_cased_L-12_H-768_A-12.zip',
-            'version': 'v27',
+            'version': 'v30',
         },
     },
 }
 
 S3_PATH_BERT = {
-    'base': {'model': 'bert-bahasa/bert-bahasa-base.tar.gz'},
-    'small': {'model': 'bert-bahasa/bert-bahasa-small.tar.gz'},
-    'multilanguage': {
-        'model': 'https://storage.googleapis.com/bert_models/2018_11_23/multi_cased_L-12_H-768_A-12.zip'
-    },
+    'base': {'model': 'bert-bahasa/bert-base-13-9-2019.tar.gz'},
+    'small': {'model': 'bert-bahasa/bert-small-19-9-2019.tar.gz'},
 }
 
 PATH_XLNET = {
     'base': {
         'path': home + '/xlnet-model/base',
-        'directory': home + '/xlnet-model/base/9-july-2019/',
+        'directory': home + '/xlnet-model/base/model/',
         'model': {
-            'model': home + '/xlnet-model/base/xlnet-9-july-2019-v2.tar.gz',
-            'version': 'v27',
+            'model': home + '/xlnet-model/base/xlnet-base.tar.gz',
+            'version': 'v30',
         },
-    },
-    'small': {
-        'path': home + '/xlnet-model/small',
-        'directory': home + '/xlnet-model/small/xlnet-bahasa-small/',
-        'model': {
-            'model': home + '/xlnet-model/small/xlnet-bahasa-small.tar.gz',
-            'version': 'v27',
-        },
-    },
+    }
 }
 
-S3_PATH_XLNET = {
-    'base': {'model': 'bert-bahasa/xlnet-9-july-2019-v2.tar.gz'},
-    'small': {'model': 'bert-bahasa/xlnet-bahasa-small.tar.gz'},
+S3_PATH_XLNET = {'base': {'model': 'bert-bahasa/xlnet-base-30-9-2019.tar.gz'}}
+
+PATH_ALBERT = {
+    'base': {
+        'path': home + '/albert-model/base',
+        'directory': home + '/albert-model/base/model/',
+        'model': {
+            'model': home + '/albert-model/base/albert-base.tar.gz',
+            'version': 'v30',
+        },
+    }
+}
+
+S3_PATH_ALBERT = {
+    'base': {'model': 'bert-bahasa/albert-base-11-10-2019.tar.gz'}
 }
