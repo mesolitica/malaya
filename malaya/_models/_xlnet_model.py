@@ -10,7 +10,7 @@ from ..texts._text_functions import (
     tag_chunk,
 )
 from .._utils._utils import add_neutral as neutral
-from ..preprocessing import preprocessing_tagging
+from .._utils._parse_dependency import DependencyGraph
 from .._utils._html import (
     _render_binary,
     _render_toxic,
@@ -29,8 +29,6 @@ class XLNET:
         input_masks,
         sess,
         tokenizer,
-        cls,
-        sep,
         label = ['negative', 'positive'],
     ):
         self._X = X
@@ -39,8 +37,6 @@ class XLNET:
         self._input_masks = input_masks
         self._sess = sess
         self._tokenizer = tokenizer
-        self._cls = cls
-        self._sep = sep
         self._label = label
 
 
@@ -54,8 +50,6 @@ class BINARY_XLNET(XLNET):
         logits_seq,
         sess,
         tokenizer,
-        cls,
-        sep,
         attns,
         class_name,
         label = ['negative', 'positive'],
@@ -68,8 +62,6 @@ class BINARY_XLNET(XLNET):
             logits = logits,
             sess = sess,
             tokenizer = tokenizer,
-            cls = cls,
-            sep = sep,
             label = label,
         )
         self._attns = attns
@@ -79,11 +71,18 @@ class BINARY_XLNET(XLNET):
         self._softmax_seq = tf.nn.softmax(self._logits_seq)
 
     def _predict(self, strings, add_neutral):
-        input_ids, _, _, _ = bert_tokenization(
-            self._tokenizer, strings, self._cls, self._sep
+        input_ids, input_masks, segment_ids, _ = xlnet_tokenization(
+            self._tokenizer, strings
         )
 
-        result = self._sess.run(self._softmax, feed_dict = {self._X: input_ids})
+        result = self._sess.run(
+            self._softmax,
+            feed_dict = {
+                self._X: input_ids,
+                self._segment_ids: segment_ids,
+                self._input_masks: input_masks,
+            },
+        )
         if add_neutral:
             result = neutral(result)
         return result
@@ -195,24 +194,25 @@ class BINARY_XLNET(XLNET):
             )
         label = self._label + ['neutral']
 
-        batch_x, _, _, s_tokens = bert_tokenization(
-            self._tokenizer, [string], cls = self._cls, sep = self._sep
+        batch_x, input_masks, segment_ids, s_tokens = xlnet_tokenization(
+            self._tokenizer, [string]
         )
         result, attentions, words = self._sess.run(
             [self._softmax, self._attns, self._softmax_seq],
-            feed_dict = {self._X: batch_x},
+            feed_dict = {
+                self._X: batch_x,
+                self._segment_ids: segment_ids,
+                self._input_masks: input_masks,
+            },
         )
         if method == 'first':
-            cls_attn = list(attentions[0].values())[0][:, :, 0, :]
+            cls_attn = attentions[0][:, :, 0, :]
 
         if method == 'last':
-            cls_attn = list(attentions[-1].values())[0][:, :, 0, :]
+            cls_attn = attentions[-1][:, :, 0, :]
 
         if method == 'mean':
-            combined_attentions = []
-            for a in attentions:
-                combined_attentions.append(list(a.values())[0])
-            cls_attn = np.mean(combined_attentions, axis = 0).mean(axis = 2)
+            cls_attn = np.mean(attentions, axis = 0).mean(axis = 2)
 
         cls_attn = np.mean(cls_attn, axis = 1)
         total_weights = np.sum(cls_attn, axis = -1, keepdims = True)
@@ -221,22 +221,13 @@ class BINARY_XLNET(XLNET):
         result = result[0]
         words = neutral(words[0])
         weights = []
-        if '[' in self._cls:
-            merged = merge_wordpiece_tokens(list(zip(s_tokens[0], attn[0])))
-            for i in range(words.shape[1]):
-                m = merge_wordpiece_tokens(
-                    list(zip(s_tokens[0], words[:, i])), weighted = False
-                )
-                _, weight = zip(*m)
-                weights.append(weight)
-        else:
-            merged = merge_sentencepiece_tokens(list(zip(s_tokens[0], attn[0])))
-            for i in range(words.shape[1]):
-                m = merge_sentencepiece_tokens(
-                    list(zip(s_tokens[0], words[:, i])), weighted = False
-                )
-                _, weight = zip(*m)
-                weights.append(weight)
+        merged = merge_sentencepiece_tokens(list(zip(s_tokens[0], attn[0])))
+        for i in range(words.shape[1]):
+            m = merge_sentencepiece_tokens(
+                list(zip(s_tokens[0], words[:, i])), weighted = False
+            )
+            _, weight = zip(*m)
+            weights.append(weight)
         w, a = zip(*merged)
         words = np.array(weights).T
         distribution_words = words[:, np.argmax(words.sum(axis = 0))]
@@ -279,8 +270,6 @@ class MULTICLASS_XLNET(XLNET):
         logits_seq,
         sess,
         tokenizer,
-        cls,
-        sep,
         attns,
         class_name,
         label = ['negative', 'positive'],
@@ -293,8 +282,6 @@ class MULTICLASS_XLNET(XLNET):
             logits = logits,
             sess = sess,
             tokenizer = tokenizer,
-            cls = cls,
-            sep = sep,
             label = label,
         )
         self._attns = attns
@@ -304,11 +291,18 @@ class MULTICLASS_XLNET(XLNET):
         self._softmax_seq = tf.nn.softmax(self._logits_seq)
 
     def _predict(self, strings):
-        input_ids, _, _, _ = bert_tokenization(
-            self._tokenizer, strings, self._cls, self._sep
+        input_ids, input_masks, segment_ids, _ = xlnet_tokenization(
+            self._tokenizer, strings
         )
 
-        result = self._sess.run(self._softmax, feed_dict = {self._X: input_ids})
+        result = self._sess.run(
+            self._softmax,
+            feed_dict = {
+                self._X: input_ids,
+                self._segment_ids: segment_ids,
+                self._input_masks: input_masks,
+            },
+        )
         return result
 
     def predict(self, string, get_proba = False):
@@ -403,24 +397,25 @@ class MULTICLASS_XLNET(XLNET):
                 "method not supported, only support 'last', 'first' and 'mean'"
             )
 
-        batch_x, _, _, s_tokens = bert_tokenization(
-            self._tokenizer, [string], cls = self._cls, sep = self._sep
+        batch_x, input_masks, segment_ids, s_tokens = xlnet_tokenization(
+            self._tokenizer, [string]
         )
         result, attentions, words = self._sess.run(
             [self._softmax, self._attns, self._softmax_seq],
-            feed_dict = {self._X: batch_x},
+            feed_dict = {
+                self._X: batch_x,
+                self._segment_ids: segment_ids,
+                self._input_masks: input_masks,
+            },
         )
         if method == 'first':
-            cls_attn = list(attentions[0].values())[0][:, :, 0, :]
+            cls_attn = attentions[0][:, :, 0, :]
 
         if method == 'last':
-            cls_attn = list(attentions[-1].values())[0][:, :, 0, :]
+            cls_attn = attentions[-1][:, :, 0, :]
 
         if method == 'mean':
-            combined_attentions = []
-            for a in attentions:
-                combined_attentions.append(list(a.values())[0])
-            cls_attn = np.mean(combined_attentions, axis = 0).mean(axis = 2)
+            cls_attn = np.mean(attentions, axis = 0).mean(axis = 2)
 
         cls_attn = np.mean(cls_attn, axis = 1)
         total_weights = np.sum(cls_attn, axis = -1, keepdims = True)
@@ -428,22 +423,13 @@ class MULTICLASS_XLNET(XLNET):
         result = result[0]
         words = words[0]
         weights = []
-        if '[' in self._cls:
-            merged = merge_wordpiece_tokens(list(zip(s_tokens[0], attn[0])))
-            for i in range(words.shape[1]):
-                m = merge_wordpiece_tokens(
-                    list(zip(s_tokens[0], words[:, i])), weighted = False
-                )
-                _, weight = zip(*m)
-                weights.append(weight)
-        else:
-            merged = merge_sentencepiece_tokens(list(zip(s_tokens[0], attn[0])))
-            for i in range(words.shape[1]):
-                m = merge_sentencepiece_tokens(
-                    list(zip(s_tokens[0], words[:, i])), weighted = False
-                )
-                _, weight = zip(*m)
-                weights.append(weight)
+        merged = merge_sentencepiece_tokens(list(zip(s_tokens[0], attn[0])))
+        for i in range(words.shape[1]):
+            m = merge_sentencepiece_tokens(
+                list(zip(s_tokens[0], words[:, i])), weighted = False
+            )
+            _, weight = zip(*m)
+            weights.append(weight)
         w, a = zip(*merged)
         words = np.array(weights).T
         distribution_words = words[:, np.argmax(words.sum(axis = 0))]
@@ -514,7 +500,7 @@ class SIGMOID_XLNET(XLNET):
         self._sigmoid_seq = tf.nn.sigmoid(self._logits_seq)
 
     def _predict(self, strings):
-        input_ids, _, _, _ = bert_tokenization(
+        input_ids, _, _, _ = xlnet_tokenization(
             self._tokenizer, strings, self._cls, self._sep
         )
 
@@ -617,7 +603,7 @@ class SIGMOID_XLNET(XLNET):
                 "method not supported, only support 'last', 'first' and 'mean'"
             )
 
-        batch_x, _, _, s_tokens = bert_tokenization(
+        batch_x, _, _, s_tokens = xlnet_tokenization(
             self._tokenizer, [string], cls = self._cls, sep = self._sep
         )
         result, attentions, words = self._sess.run(
@@ -782,16 +768,7 @@ class SIAMESE_XLNET(XLNET):
 
 class TAGGING_XLNET(XLNET):
     def __init__(
-        self,
-        X,
-        segment_ids,
-        input_masks,
-        logits,
-        sess,
-        tokenizer,
-        cls,
-        sep,
-        settings,
+        self, X, segment_ids, input_masks, logits, sess, tokenizer, settings
     ):
         XLNET.__init__(
             self,
@@ -801,8 +778,6 @@ class TAGGING_XLNET(XLNET):
             logits = logits,
             sess = sess,
             tokenizer = tokenizer,
-            cls = cls,
-            sep = sep,
             label = None,
         )
 
@@ -842,20 +817,103 @@ class TAGGING_XLNET(XLNET):
         if not isinstance(string, str):
             raise ValueError('input must be a string')
 
-        if self._pos:
-            string = preprocessing_tagging(string)
-        else:
-            _, string = entities_textcleaning(string, lowering = False)
-
-        parsed_sequence, bert_sequence = parse_bert_tagging(
-            string, self._tokenizer, self._cls, self._sep
+        input_ids, input_masks, segment_ids, s_tokens = xlnet_tokenization(
+            self._tokenizer, [string]
         )
+        s_tokens = s_tokens[0]
+
         predicted = self._sess.run(
-            self._logits, feed_dict = {self._X: [parsed_sequence]}
+            self._logits,
+            feed_dict = {
+                self._X: input_ids,
+                self._segment_ids: segment_ids,
+                self._input_masks: input_masks,
+            },
         )[0]
         t = [self._settings['idx2tag'][d] for d in predicted]
-        if '[' in self._cls:
-            merged = merge_wordpiece_tokens_tagging(bert_sequence, t)
-        else:
-            merged = merge_sentencepiece_tokens_tagging(bert_sequence, t)
-        return list(zip(merged[0], merged[1]))
+
+        merged = merge_sentencepiece_tokens_tagging(s_tokens, t)
+        return list(zip(*merged))
+
+
+class DEPENDENCY_XLNET(XLNET):
+    def __init__(
+        self,
+        X,
+        segment_ids,
+        input_masks,
+        logits,
+        sess,
+        tokenizer,
+        settings,
+        heads_seq,
+    ):
+        XLNET.__init__(
+            self,
+            X = X,
+            segment_ids = segment_ids,
+            input_masks = input_masks,
+            logits = logits,
+            sess = sess,
+            tokenizer = tokenizer,
+            label = None,
+        )
+
+        self._tag2idx = settings
+        self._idx2tag = {int(v): k for k, v in self._tag2idx.items()}
+        self._heads_seq = heads_seq
+
+    def predict(self, string):
+        """
+        Tag a string.
+
+        Parameters
+        ----------
+        string : str
+
+        Returns
+        -------
+        string: tagged string
+        """
+        if not isinstance(string, str):
+            raise ValueError('input must be a string')
+
+        input_ids, input_masks, segment_ids, s_tokens = xlnet_tokenization(
+            self._tokenizer, [string]
+        )
+        s_tokens = s_tokens[0]
+
+        tagging, depend = self._sess.run(
+            [self._logits, self._heads_seq],
+            feed_dict = {
+                self._X: input_ids,
+                self._segment_ids: segment_ids,
+                self._input_masks: input_masks,
+            },
+        )
+        tagging = [self._idx2tag[i] for i in tagging[0]]
+        depend = depend[0] - 1
+
+        for i in range(len(depend)):
+            if depend[i] == 0 and tagging[i] != 'root':
+                tagging[i] = 'root'
+            elif depend[i] != 0 and tagging[i] == 'root':
+                depend[i] = 0
+
+        tagging = merge_sentencepiece_tokens_tagging(s_tokens, tagging)
+        tagging = list(zip(*tagging))
+        indexing = merge_sentencepiece_tokens_tagging(s_tokens, depend)
+        indexing = list(zip(*indexing))
+
+        result = []
+        for i in range(len(tagging)):
+            index = int(indexing[i][1])
+            if index > len(tagging):
+                index = len(tagging)
+            result.append(
+                '%d\t%s\t_\t_\t_\t_\t%d\t%s\t_\t_'
+                % (i + 1, tagging[i][0], index, tagging[i][1])
+            )
+        print(result)
+        d = DependencyGraph('\n'.join(result), top_relation_label = 'root')
+        return d, tagging, indexing

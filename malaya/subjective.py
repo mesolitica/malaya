@@ -59,7 +59,7 @@ def transformer(model = 'xlnet', size = 'base', validate = True):
 
     Returns
     -------
-    BERT : malaya._models._bert_model.BINARY_BERT class
+    MODEL : Transformer class
     """
     if not isinstance(model, str):
         raise ValueError('model must be a string')

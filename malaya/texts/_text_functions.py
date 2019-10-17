@@ -8,7 +8,7 @@ from .._utils._utils import download_file
 from ._tatabahasa import stopword_tatabahasa, stopwords, stopwords_calon
 from ._english_words import _english_words
 from ._malay_words import _malay_words
-from .._transformer._xlnet.prepro_utils import (
+from .._transformer._xlnet_model.prepro_utils import (
     preprocess_text,
     encode_ids,
     encode_pieces,
@@ -90,6 +90,7 @@ def remove_links_alias(string):
     )
     string = re.sub(r'[ ]+', ' ', string).strip().split()
     string = [w for w in string if w[0] != '@']
+    string = [w.title() if w[0].isupper() else w for w in string]
     return ' '.join(string)
 
 
@@ -738,11 +739,7 @@ def merge_sentencepiece_tokens(paired_tokens, weighted = True):
 
 def parse_bert_tagging(left, tokenizer, cls = '[CLS]', sep = '[SEP]'):
     left = remove_links_alias(left)
-    bert_tokens = [cls]
-    for no, orig_token in enumerate(left):
-        t = tokenizer.tokenize(orig_token)
-        bert_tokens.extend(t)
-    bert_tokens.append(sep)
+    bert_tokens = [cls] + tokenizer.tokenize(left) + [sep]
     return tokenizer.convert_tokens_to_ids(bert_tokens), bert_tokens
 
 

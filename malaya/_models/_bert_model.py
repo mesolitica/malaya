@@ -12,7 +12,7 @@ from ..texts._text_functions import (
     tag_chunk,
 )
 from .._utils._utils import add_neutral as neutral
-from ..preprocessing import preprocessing_tagging
+from .._utils._parse_dependency import DependencyGraph
 from .._utils._html import (
     _render_binary,
     _render_toxic,
@@ -844,11 +844,6 @@ class TAGGING_BERT(BERT):
         if not isinstance(string, str):
             raise ValueError('input must be a string')
 
-        if self._pos:
-            string = preprocessing_tagging(string)
-        else:
-            _, string = entities_textcleaning(string, lowering = False)
-
         parsed_sequence, bert_sequence = parse_bert_tagging(
             string, self._tokenizer, self._cls, self._sep
         )
@@ -861,3 +856,85 @@ class TAGGING_BERT(BERT):
         else:
             merged = merge_sentencepiece_tokens_tagging(bert_sequence, t)
         return list(zip(merged[0], merged[1]))
+
+
+class DEPENDENCY_BERT(BERT):
+    def __init__(
+        self,
+        X,
+        segment_ids,
+        input_masks,
+        logits,
+        sess,
+        tokenizer,
+        cls,
+        sep,
+        settings,
+        heads_seq,
+    ):
+        BERT.__init__(
+            self,
+            X = X,
+            segment_ids = segment_ids,
+            input_masks = input_masks,
+            logits = logits,
+            sess = sess,
+            tokenizer = tokenizer,
+            cls = cls,
+            sep = sep,
+            label = None,
+        )
+
+        self._tag2idx = settings
+        self._idx2tag = {int(v): k for k, v in self._tag2idx.items()}
+        self._heads_seq = heads_seq
+
+    def predict(self, string):
+        """
+        Tag a string.
+
+        Parameters
+        ----------
+        string : str
+
+        Returns
+        -------
+        string: tagged string
+        """
+        if not isinstance(string, str):
+            raise ValueError('input must be a string')
+
+        parsed_sequence, bert_sequence = parse_bert_tagging(
+            string, self._tokenizer, self._cls, self._sep
+        )
+        print(bert_sequence)
+        tagging, depend = self._sess.run(
+            [self._logits, self._heads_seq],
+            feed_dict = {self._X: [parsed_sequence]},
+        )
+        tagging = [self._idx2tag[i] for i in tagging[0]]
+        depend = depend[0] - 1
+
+        for i in range(len(depend)):
+            if depend[i] == 0 and tagging[i] != 'root':
+                tagging[i] = 'root'
+            elif depend[i] != 0 and tagging[i] == 'root':
+                depend[i] = 0
+
+        tagging = merge_sentencepiece_tokens_tagging(bert_sequence, tagging)
+        tagging = list(zip(*tagging))
+        indexing = merge_sentencepiece_tokens_tagging(bert_sequence, depend)
+        indexing = list(zip(*indexing))
+
+        result = []
+        for i in range(len(tagging)):
+            index = int(indexing[i][1])
+            if index > len(tagging):
+                index = len(tagging)
+            result.append(
+                '%d\t%s\t_\t_\t_\t_\t%d\t%s\t_\t_'
+                % (i + 1, tagging[i][0], index, tagging[i][1])
+            )
+        print(result)
+        d = DependencyGraph('\n'.join(result), top_relation_label = 'root')
+        return d, tagging, indexing

@@ -59,7 +59,7 @@ def transformer(model = 'xlnet', size = 'base', validate = True):
 
     Returns
     -------
-    BERT : malaya._models._bert_model.BINARY_BERT class
+    MODEL : Transformer class
     """
     if not isinstance(model, str):
         raise ValueError('model must be a string')
@@ -78,11 +78,12 @@ def transformer(model = 'xlnet', size = 'base', validate = True):
         raise Exception(
             'size not supported, please check supported models from malaya.sentiment.available_transformer_model()'
         )
-    return _softmax_class.bert(
+    return _softmax_class.transformer(
         PATH_SENTIMENT,
         S3_PATH_SENTIMENT,
         'sentiment',
         ['negative', 'positive'],
         model = model,
+        size = size,
         validate = validate,
     )

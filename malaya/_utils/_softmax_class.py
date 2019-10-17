@@ -1,52 +1,18 @@
 import json
 import os
 import pickle
-from ._utils import check_file, load_graph, check_available, generate_session
-from .._models._sklearn_model import BINARY_BAYES, MULTICLASS_BAYES
-from .._models._tensorflow_model import BINARY_SOFTMAX, MULTICLASS_SOFTMAX
-from .._models._bert_model import MULTICLASS_BERT, BINARY_BERT
-from .._transformer._bert import (
-    _extract_attention_weights_import,
-    bert_num_layers,
+from ._utils import (
+    check_file,
+    load_graph,
+    check_available,
+    generate_session,
+    sentencepiece_tokenizer_bert,
+    sentencepiece_tokenizer_xlnet,
 )
-
-
-def deep_model(
-    path, s3_path, class_name, label, model = 'luong', validate = True
-):
-    if validate:
-        check_file(path[model], s3_path[model])
-    else:
-        if not check_available(path[model]):
-            raise Exception(
-                '%s/%s is not available, please `validate = True`'
-                % (class_name, model)
-            )
-    try:
-        with open(path[model]['setting'], 'r') as fopen:
-            dictionary = json.load(fopen)['dictionary']
-        g = load_graph(path[model]['model'])
-    except:
-        raise Exception(
-            "model corrupted due to some reasons, please run malaya.clear_cache('%s/%s') and try again"
-            % (class_name, model)
-        )
-
-    if len(label) > 2 or class_name == 'relevancy':
-        selected_class = MULTICLASS_SOFTMAX
-    else:
-        selected_class = BINARY_SOFTMAX
-
-    return selected_class(
-        X = g.get_tensor_by_name('import/Placeholder:0'),
-        logits = g.get_tensor_by_name('import/logits:0'),
-        logits_seq = g.get_tensor_by_name('import/logits_seq:0'),
-        alphas = g.get_tensor_by_name('import/alphas:0'),
-        sess = generate_session(graph = g),
-        dictionary = dictionary,
-        class_name = class_name,
-        label = label,
-    )
+from .._models._sklearn_model import BINARY_BAYES, MULTICLASS_BAYES
+from .._models._bert_model import MULTICLASS_BERT, BINARY_BERT
+from .._models._xlnet_model import MULTICLASS_XLNET, BINARY_XLNET
+from .._transformer._bert import bert_num_layers
 
 
 def multinomial(path, s3_path, class_name, label, validate = True):
@@ -82,63 +48,84 @@ def multinomial(path, s3_path, class_name, label, validate = True):
     )
 
 
-def bert(path, s3_path, class_name, label, model = 'base', validate = True):
+def transformer(
+    path,
+    s3_path,
+    class_name,
+    label,
+    model = 'bert',
+    size = 'base',
+    validate = True,
+):
     if validate:
-        check_file(path[model], s3_path[model])
+        check_file(path[model][size], s3_path[model][size])
     else:
-        if not check_available(path[model]):
+        if not check_available(path[model][size]):
             raise Exception(
-                '%s/%s is not available, please `validate = True`'
-                % (class_name, model)
+                '%s/%s/%s is not available, please `validate = True`'
+                % (class_name, model, size)
             )
-    if model == 'multilanguage':
-        from bert import tokenization
-
-        tokenizer = tokenization.FullTokenizer(
-            vocab_file = path[model]['vocab'], do_lower_case = False
-        )
-        cls = '[CLS]'
-        sep = '[SEP]'
-    else:
-
-        import sentencepiece as spm
-        from ..texts._text_functions import SentencePieceTokenizer
-
-        sp_model = spm.SentencePieceProcessor()
-        sp_model.Load(path[model]['tokenizer'])
-
-        with open(path[model]['vocab']) as fopen:
-            v = fopen.read().split('\n')[:-1]
-        v = [i.split('\t') for i in v]
-        v = {i[0]: i[1] for i in v}
-        tokenizer = SentencePieceTokenizer(v, sp_model)
-        cls = '<cls>'
-        sep = '<sep>'
 
     try:
-        g = load_graph(path[model]['model'])
+        g = load_graph(path[model][size]['model'])
     except:
         raise Exception(
-            "model corrupted due to some reasons, please run malaya.clear_cache('%s/%s') and try again"
-            % (class_name, model)
+            "model corrupted due to some reasons, please run malaya.clear_cache('%s/%s/%s') and try again"
+            % (class_name, model, size)
         )
 
     if len(label) > 2 or class_name == 'relevancy':
-        selected_class = MULTICLASS_BERT
-    else:
-        selected_class = BINARY_BERT
+        if model in ['albert', 'bert']:
+            selected_class = MULTICLASS_BERT
+        if model in ['xlnet']:
+            selected_class = MULTICLASS_XLNET
 
-    return selected_class(
-        X = g.get_tensor_by_name('import/Placeholder:0'),
-        segment_ids = None,
-        input_masks = None,
-        logits = g.get_tensor_by_name('import/logits:0'),
-        logits_seq = g.get_tensor_by_name('import/logits_seq:0'),
-        sess = generate_session(graph = g),
-        tokenizer = tokenizer,
-        label = label,
-        cls = cls,
-        sep = sep,
-        attns = _extract_attention_weights_import(bert_num_layers[model], g),
-        class_name = class_name,
-    )
+    else:
+        if model in ['albert', 'bert']:
+            selected_class = BINARY_BERT
+        if model in ['xlnet']:
+            selected_class = BINARY_XLNET
+
+    if model in ['albert', 'bert']:
+        if model == 'bert':
+            from .._transformer._bert import _extract_attention_weights_import
+        if model == 'albert':
+            from .._transformer._albert import _extract_attention_weights_import
+
+        tokenizer, cls, sep = sentencepiece_tokenizer_bert(
+            path[model][size]['tokenizer'], path[model][size]['vocab']
+        )
+
+        return selected_class(
+            X = g.get_tensor_by_name('import/Placeholder:0'),
+            segment_ids = None,
+            input_masks = None,
+            logits = g.get_tensor_by_name('import/logits:0'),
+            logits_seq = g.get_tensor_by_name('import/logits_seq:0'),
+            sess = generate_session(graph = g),
+            tokenizer = tokenizer,
+            label = label,
+            cls = cls,
+            sep = sep,
+            attns = _extract_attention_weights_import(bert_num_layers[size], g),
+            class_name = class_name,
+        )
+    if model in ['xlnet']:
+        from .._transformer._xlnet import _extract_attention_weights_import
+
+        tokenizer = sentencepiece_tokenizer_xlnet(
+            path[model][size]['tokenizer']
+        )
+
+        return selected_class(
+            X = g.get_tensor_by_name('import/Placeholder:0'),
+            segment_ids = g.get_tensor_by_name('import/Placeholder_1:0'),
+            input_masks = g.get_tensor_by_name('import/Placeholder_2:0'),
+            logits = g.get_tensor_by_name('import/logits:0'),
+            logits_seq = g.get_tensor_by_name('import/logits_seq:0'),
+            sess = generate_session(graph = g),
+            tokenizer = tokenizer,
+            label = label,
+            attns = _extract_attention_weights_import(g),
+            class_name = class_name,
+        )

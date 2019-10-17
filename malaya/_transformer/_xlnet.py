@@ -1,6 +1,6 @@
 import tensorflow as tf
-from ._xlnet import xlnet as xlnet_lib
-from .texts._text_functions import (
+from ._xlnet_model import xlnet as xlnet_lib
+from ..texts._text_functions import (
     xlnet_tokenization,
     padding_sequence,
     merge_sentencepiece_tokens,
@@ -36,6 +36,16 @@ def get_assignment_map_from_checkpoint(tvars, init_checkpoint):
         initialized_variable_names[name + ':0'] = 1
 
     return (assignment_map, initialized_variable_names)
+
+
+def _extract_attention_weights_import(tf_graph):
+    attentions = [
+        n.name
+        for n in tf_graph.as_graph_def().node
+        if 'rel_attn/Softmax' in n.name
+    ]
+
+    return [tf_graph.get_tensor_by_name('%s:0' % (a)) for a in attentions]
 
 
 class _Model:
@@ -195,7 +205,7 @@ class _Model:
         return output
 
     def visualize_attention(self, string):
-        from ._utils._html import _attention
+        from .._utils._html import _attention
 
         if not isinstance(string, str):
             raise ValueError('input must be a string')
@@ -252,8 +262,8 @@ def xlnet(model = 'base', pool_mode = 'last', validate = True):
     model = model.lower()
     pool_mode = pool_mode.lower()
 
-    from ._utils._paths import PATH_XLNET, S3_PATH_XLNET
-    from ._utils._utils import check_file, check_available
+    from .._utils._paths import PATH_XLNET, S3_PATH_XLNET
+    from .._utils._utils import check_file, check_available
 
     if pool_mode not in ['last', 'first', 'mean', 'attn']:
         raise Exception(

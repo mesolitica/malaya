@@ -239,7 +239,7 @@ def bert(model = 'base', lite = False, validate = True):
             tar.extractall(path = PATH_BERT[model]['path'])
 
     import sentencepiece as spm
-    from .texts._text_functions import SentencePieceTokenizer
+    from ..texts._text_functions import SentencePieceTokenizer
 
     bert_checkpoint = PATH_BERT[model]['directory'] + 'model.ckpt'
     vocab_model = PATH_BERT[model]['directory'] + 'sp10m.cased.v4.model'

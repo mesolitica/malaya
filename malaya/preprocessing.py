@@ -677,3 +677,6 @@ def segmenter(max_split_length = 20, validate = True):
                 'preprocessing is not available, please `validate = True`'
             )
     return _Segmenter(max_split_length = max_split_length)
+
+
+_tokenizer = SocialTokenizer().tokenize

@@ -65,7 +65,7 @@ dict_function = {
     'mean': np.mean,
     'min': np.amin,
     'max': np.amax,
-    'median': hmedian,
+    'median': hdmedian,
 }
 
 

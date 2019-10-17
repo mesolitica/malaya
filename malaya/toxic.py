@@ -9,7 +9,6 @@ from ._utils._utils import (
 from . import home
 from ._utils._paths import PATH_TOXIC, S3_PATH_TOXIC
 from ._models._sklearn_model import MULTILABEL_BAYES
-from ._models._tensorflow_model import SIGMOID
 from ._models._bert_model import SIGMOID_BERT
 
 from ._transformer._bert import (

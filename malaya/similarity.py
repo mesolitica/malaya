@@ -522,7 +522,7 @@ def encoder(vectorizer):
 
 
 _availability = {
-    'bert': ['base', 'multilanguage', 'small'],
+    'bert': ['base', 'multilanguage'],
     'xlnet': ['base'],
     'albert': ['base'],
 }

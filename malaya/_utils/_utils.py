@@ -1,11 +1,34 @@
 from tqdm import tqdm
 import tensorflow as tf
-from tensorflow.contrib.seq2seq.python.ops import beam_search_ops
+import sentencepiece as spm
 import numpy as np
 import requests
 import os
 from pathlib import Path
 from .. import _delete_folder
+from tensorflow.contrib.seq2seq.python.ops import beam_search_ops
+
+
+def sentencepiece_tokenizer_xlnet(path_tokenizer):
+    sp_model = spm.SentencePieceProcessor()
+    sp_model.Load(path_tokenizer)
+    return sp_model
+
+
+def sentencepiece_tokenizer_bert(path_tokenizer, path_vocab):
+    from ..texts._text_functions import SentencePieceTokenizer
+
+    sp_model = spm.SentencePieceProcessor()
+    sp_model.Load(path_tokenizer)
+
+    with open(path_vocab) as fopen:
+        v = fopen.read().split('\n')[:-1]
+    v = [i.split('\t') for i in v]
+    v = {i[0]: i[1] for i in v}
+    tokenizer = SentencePieceTokenizer(v, sp_model)
+    cls = '<cls>'
+    sep = '<sep>'
+    return tokenizer, cls, sep
 
 
 def add_neutral(x, alpha = 1e-2):

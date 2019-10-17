@@ -1,5 +1,5 @@
 import tensorflow as tf
-from ._albert import modeling
+from ._albert_model import modeling
 from ..texts._text_functions import (
     bert_tokenization,
     padding_sequence,
@@ -17,6 +17,26 @@ def _extract_attention_weights(num_layers, tf_graph):
             'layer_%s'
             % i: tf_graph.get_tensor_by_name(
                 'bert/encoder/layer_shared_%s/attention/self/Softmax:0' % i
+                if i
+                else 'bert/encoder/layer_shared/attention/self/Softmax:0'
+            )
+        }
+        for i in range(num_layers)
+    ]
+
+    return attns
+
+
+def _extract_attention_weights_import(num_layers, tf_graph):
+
+    attns = [
+        {
+            'layer_%s'
+            % i: tf_graph.get_tensor_by_name(
+                'import/bert/encoder/layer_shared_%s/attention/self/Softmax:0'
+                % i
+                if i
+                else 'import/bert/encoder/layer_shared/attention/self/Softmax:0'
             )
         }
         for i in range(num_layers)
@@ -47,8 +67,10 @@ class _Model:
                 tf.GraphKeys.TRAINABLE_VARIABLES, scope = 'bert'
             )
             self._saver = tf.train.Saver(var_list = var_lists)
+            graph = tf.get_default_graph()
+            list_of_tuples = [n.name for n in graph.as_graph_def().node]
             attns = _extract_attention_weights(
-                bert_config.num_hidden_layers, tf.get_default_graph()
+                bert_config.num_hidden_layers, graph
             )
             self.attns = attns
 
@@ -222,12 +244,13 @@ def albert(model = 'base', validate = True):
             tar.extractall(path = PATH_ALBERT[model]['path'])
 
     import sentencepiece as spm
-    from .texts._text_functions import SentencePieceTokenizer
+    from ..texts._text_functions import SentencePieceTokenizer
+    from glob import glob
 
     bert_checkpoint = PATH_ALBERT[model]['directory'] + 'model.ckpt'
     vocab_model = PATH_ALBERT[model]['directory'] + 'sp10m.cased.v6.model'
     vocab = PATH_ALBERT[model]['directory'] + 'sp10m.cased.v6.vocab'
-    bert_config = PATH_ALBERT[model]['directory'] + 'bert_config.json'
+    bert_config = glob(PATH_ALBERT[model]['directory'] + 'albert_config*')[0]
 
     sp_model = spm.SentencePieceProcessor()
     sp_model.Load(vocab_model)
