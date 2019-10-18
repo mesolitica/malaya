@@ -588,6 +588,8 @@ class SIGMOID_BERT(BERT):
                         list_result.append(label)
                 results.append(list_result)
 
+        return results
+
     def predict_words(self, string, method = 'last', visualization = True):
         """
         classify words.
@@ -907,7 +909,6 @@ class DEPENDENCY_BERT(BERT):
         parsed_sequence, bert_sequence = parse_bert_tagging(
             string, self._tokenizer, self._cls, self._sep
         )
-        print(bert_sequence)
         tagging, depend = self._sess.run(
             [self._logits, self._heads_seq],
             feed_dict = {self._X: [parsed_sequence]},
@@ -926,15 +927,15 @@ class DEPENDENCY_BERT(BERT):
         indexing = merge_sentencepiece_tokens_tagging(bert_sequence, depend)
         indexing = list(zip(*indexing))
 
-        result = []
+        result, indexing_ = [], []
         for i in range(len(tagging)):
             index = int(indexing[i][1])
             if index > len(tagging):
                 index = len(tagging)
+            indexing_.append((indexing[i][0], index))
             result.append(
                 '%d\t%s\t_\t_\t_\t_\t%d\t%s\t_\t_'
                 % (i + 1, tagging[i][0], index, tagging[i][1])
             )
-        print(result)
         d = DependencyGraph('\n'.join(result), top_relation_label = 'root')
-        return d, tagging, indexing
+        return d, tagging, indexing_

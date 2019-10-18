@@ -9,15 +9,6 @@ malaya
 .. automodule:: malaya
     :members:
 
-malaya.bert
------------------
-
-.. automodule:: malaya.bert
-    :members:
-
-.. autoclass:: malaya.bert._Model()
-    :members:
-
 malaya.cluster
 -----------------
 
@@ -99,10 +90,10 @@ malaya.spell
 .. automodule:: malaya.spell
     :members:
 
-.. autoclass:: malaya.spell._SPELL()
+.. autoclass:: malaya.spell._SpellCorrector()
     :members:
 
-.. autoclass:: malaya.spell._SpellCorrector()
+.. autoclass:: malaya.spell._SymspellCorrector()
     :members:
 
 malaya.stack
@@ -168,6 +159,12 @@ malaya.toxic
 .. automodule:: malaya.toxic
     :members:
 
+malaya.transformer
+-------------------------
+
+.. automodule:: malaya.transformer
+    :members:
+
 malaya.wordvector
 -------------------------
 
@@ -177,34 +174,37 @@ malaya.wordvector
 .. autoclass:: malaya.wordvector._wordvector()
     :members:
 
-malaya.xlnet
------------------
+malaya._transformer._bert
+-----------------------------
 
-.. automodule:: malaya.xlnet
+.. automodule:: malaya._transformer._bert
     :members:
 
-.. autoclass:: malaya.xlnet._Model()
+.. autoclass:: malaya._transformer._bert._Model()
+    :members:
+
+malaya._transformer._albert
+-----------------------------
+
+.. automodule:: malaya._transformer._albert
+    :members:
+
+.. autoclass:: malaya._transformer._albert._Model()
+    :members:
+
+malaya._transformer._xlnet
+-----------------------------
+
+.. automodule:: malaya._transformer._xlnet
+    :members:
+
+.. autoclass:: malaya._transformer._xlnet._Model()
     :members:
 
 malaya._models._tensorflow_model
 ----------------------------------
 
 .. autoclass:: malaya._models._tensorflow_model._SPARSE_SOFTMAX_MODEL()
-    :members:
-
-.. autoclass:: malaya._models._tensorflow_model.DEPENDENCY()
-    :members:
-
-.. autoclass:: malaya._models._tensorflow_model.TAGGING()
-    :members:
-
-.. autoclass:: malaya._models._tensorflow_model.BINARY_SOFTMAX()
-    :members:
-
-.. autoclass:: malaya._models._tensorflow_model.MULTICLASS_SOFTMAX()
-    :members:
-
-.. autoclass:: malaya._models._tensorflow_model.SIGMOID()
     :members:
 
 malaya._models._bert_model
@@ -223,4 +223,28 @@ malaya._models._bert_model
     :members:
 
 .. autoclass:: malaya._models._bert_model.TAGGING_BERT()
+    :members:
+
+.. autoclass:: malaya._models._bert_model.DEPENDENCY_BERT()
+    :members:
+
+malaya._models._xlnet_model
+----------------------------------
+
+.. autoclass:: malaya._models._xlnet_model.BINARY_XLNET()
+    :members:
+
+.. autoclass:: malaya._models._xlnet_model.MULTICLASS_XLNET()
+    :members:
+
+.. autoclass:: malaya._models._xlnet_model.SIGMOID_XLNET()
+    :members:
+
+.. autoclass:: malaya._models._xlnet_model.SIAMESE_XLNET()
+    :members:
+
+.. autoclass:: malaya._models._xlnet_model.TAGGING_XLNET()
+    :members:
+
+.. autoclass:: malaya._models._xlnet_model.DEPENDENCY_XLNET()
     :members:

@@ -1,6 +1,6 @@
 import tensorflow as tf
 from ..texts._text_functions import (
-    bert_tokenization_siamese,
+    xlnet_tokenization_siamese,
     xlnet_tokenization,
     padding_sequence,
     merge_sentencepiece_tokens,
@@ -475,8 +475,6 @@ class SIGMOID_XLNET(XLNET):
         logits_seq,
         sess,
         tokenizer,
-        cls,
-        sep,
         attns,
         class_name,
         label = ['negative', 'positive'],
@@ -489,8 +487,6 @@ class SIGMOID_XLNET(XLNET):
             logits = logits,
             sess = sess,
             tokenizer = tokenizer,
-            cls = cls,
-            sep = sep,
             label = label,
         )
         self._attns = attns
@@ -500,11 +496,19 @@ class SIGMOID_XLNET(XLNET):
         self._sigmoid_seq = tf.nn.sigmoid(self._logits_seq)
 
     def _predict(self, strings):
-        input_ids, _, _, _ = xlnet_tokenization(
-            self._tokenizer, strings, self._cls, self._sep
+
+        input_ids, input_masks, segment_ids, _ = xlnet_tokenization(
+            self._tokenizer, strings
         )
 
-        result = self._sess.run(self._sigmoid, feed_dict = {self._X: input_ids})
+        result = self._sess.run(
+            self._sigmoid,
+            feed_dict = {
+                self._X: input_ids,
+                self._segment_ids: segment_ids,
+                self._input_masks: input_masks,
+            },
+        )
         return result
 
     def predict(self, string, get_proba = False):
@@ -571,6 +575,7 @@ class SIGMOID_XLNET(XLNET):
                     if prob[no]:
                         list_result.append(label)
                 results.append(list_result)
+        return results
 
     def predict_words(self, string, method = 'last', visualization = True):
         """
@@ -603,24 +608,25 @@ class SIGMOID_XLNET(XLNET):
                 "method not supported, only support 'last', 'first' and 'mean'"
             )
 
-        batch_x, _, _, s_tokens = xlnet_tokenization(
-            self._tokenizer, [string], cls = self._cls, sep = self._sep
+        batch_x, input_masks, segment_ids, s_tokens = xlnet_tokenization(
+            self._tokenizer, [string]
         )
         result, attentions, words = self._sess.run(
             [self._sigmoid, self._attns, self._sigmoid_seq],
-            feed_dict = {self._X: batch_x},
+            feed_dict = {
+                self._X: batch_x,
+                self._segment_ids: segment_ids,
+                self._input_masks: input_masks,
+            },
         )
         if method == 'first':
-            cls_attn = list(attentions[0].values())[0][:, :, 0, :]
+            cls_attn = attentions[0][:, :, 0, :]
 
         if method == 'last':
-            cls_attn = list(attentions[-1].values())[0][:, :, 0, :]
+            cls_attn = attentions[-1][:, :, 0, :]
 
         if method == 'mean':
-            combined_attentions = []
-            for a in attentions:
-                combined_attentions.append(list(a.values())[0])
-            cls_attn = np.mean(combined_attentions, axis = 0).mean(axis = 2)
+            cls_attn = np.mean(attentions, axis = 0).mean(axis = 2)
 
         cls_attn = np.mean(cls_attn, axis = 1)
         total_weights = np.sum(cls_attn, axis = -1, keepdims = True)
@@ -628,22 +634,13 @@ class SIGMOID_XLNET(XLNET):
         result = result[0]
         words = words[0]
         weights = []
-        if '[' in self._cls:
-            merged = merge_wordpiece_tokens(list(zip(s_tokens[0], attn[0])))
-            for i in range(words.shape[1]):
-                m = merge_wordpiece_tokens(
-                    list(zip(s_tokens[0], words[:, i])), weighted = False
-                )
-                _, weight = zip(*m)
-                weights.append(weight)
-        else:
-            merged = merge_sentencepiece_tokens(list(zip(s_tokens[0], attn[0])))
-            for i in range(words.shape[1]):
-                m = merge_sentencepiece_tokens(
-                    list(zip(s_tokens[0], words[:, i])), weighted = False
-                )
-                _, weight = zip(*m)
-                weights.append(weight)
+        merged = merge_sentencepiece_tokens(list(zip(s_tokens[0], attn[0])))
+        for i in range(words.shape[1]):
+            m = merge_sentencepiece_tokens(
+                list(zip(s_tokens[0], words[:, i])), weighted = False
+            )
+            _, weight = zip(*m)
+            weights.append(weight)
         w, a = zip(*merged)
         words = np.array(weights).T
         distribution_words = words[:, np.argmax(words.sum(axis = 0))]
@@ -685,8 +682,6 @@ class SIAMESE_XLNET(XLNET):
         logits,
         sess,
         tokenizer,
-        cls,
-        sep,
         label = ['not similar', 'similar'],
     ):
         XLNET.__init__(
@@ -697,19 +692,13 @@ class SIAMESE_XLNET(XLNET):
             logits = logits,
             sess = sess,
             tokenizer = tokenizer,
-            cls = cls,
-            sep = sep,
             label = label,
         )
         self._softmax = tf.nn.softmax(self._logits)
 
     def _base(self, strings_left, strings_right):
-        input_ids, input_masks, segment_ids = bert_tokenization_siamese(
-            self._tokenizer,
-            strings_left,
-            strings_right,
-            cls = self._cls,
-            sep = self._sep,
+        input_ids, input_masks, segment_ids = xlnet_tokenization_siamese(
+            self._tokenizer, strings_left, strings_right
         )
 
         return self._sess.run(
@@ -905,15 +894,15 @@ class DEPENDENCY_XLNET(XLNET):
         indexing = merge_sentencepiece_tokens_tagging(s_tokens, depend)
         indexing = list(zip(*indexing))
 
-        result = []
+        result, indexing_ = [], []
         for i in range(len(tagging)):
             index = int(indexing[i][1])
             if index > len(tagging):
                 index = len(tagging)
+            indexing_.append((indexing[i][0], index))
             result.append(
                 '%d\t%s\t_\t_\t_\t_\t%d\t%s\t_\t_'
                 % (i + 1, tagging[i][0], index, tagging[i][1])
             )
-        print(result)
         d = DependencyGraph('\n'.join(result), top_relation_label = 'root')
-        return d, tagging, indexing
+        return d, tagging, indexing_

@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 6.17 s, sys: 1.52 s, total: 7.69 s
-    Wall time: 12.3 s
+    CPU times: user 6.39 s, sys: 1.44 s, total: 7.82 s
+    Wall time: 11.9 s
 
 
 .. code:: ipython3
@@ -78,6 +78,34 @@ Use skip-thought
     lstm = malaya.summarize.deep_skipthought(model = 'lstm')
     encoder = malaya.summarize.encoder(lstm)
 
+
+.. parsed-literal::
+
+    downloading SUMMARIZE news frozen model
+
+
+.. parsed-literal::
+
+    56.0MB [00:13, 4.18MB/s]                          
+      0%|          | 0.00/0.98 [00:00<?, ?MB/s]
+
+.. parsed-literal::
+
+    downloading SUMMARIZE news dictionary
+
+
+.. parsed-literal::
+
+    1.00MB [00:00, 3.55MB/s]                   
+    WARNING: Logging before flag parsing goes to stderr.
+    W1018 00:37:31.562124 4502980032 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:68: The name tf.gfile.GFile is deprecated. Please use tf.io.gfile.GFile instead.
+    
+    W1018 00:37:31.563504 4502980032 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:69: The name tf.GraphDef is deprecated. Please use tf.compat.v1.GraphDef instead.
+    
+    W1018 00:37:32.268280 4502980032 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_models/_skip_thought.py:136: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
+    
+
+
 .. code:: ipython3
 
     encoder.summarize(isu_kerajaan, important_words = 10)
@@ -98,16 +126,16 @@ Use skip-thought
       'chusus',
       'mempunya',
       'diharap'],
-     'cluster-top-words': ['seliakekurangan',
-      'sakailah',
-      'diharap',
-      'pembikin',
+     'cluster-top-words': ['sakailah',
       'chusus',
-      'kepulangan',
-      'mempunya',
-      'sharmini',
       'bersabdabarangsiapa',
-      'poupart']}
+      'sharmini',
+      'seliakekurangan',
+      'kepulangan',
+      'pembikin',
+      'poupart',
+      'mempunya',
+      'diharap']}
 
 
 
@@ -117,15 +145,33 @@ level. How about XLNET or BERT? Lets we try XLNET.
 
 .. code:: ipython3
 
-    xlnet = malaya.xlnet.xlnet()
+    xlnet = malaya.transformer.load(model = 'xlnet', size = 'base')
     encoder = malaya.summarize.encoder(xlnet)
 
 
 .. parsed-literal::
 
-    INFO:tensorflow:memory input None
-    INFO:tensorflow:Use float type <dtype: 'float32'>
-    INFO:tensorflow:Restoring parameters from /Users/huseinzol/Malaya/xlnet-model/base/9-july-2019/model.ckpt
+    W1018 00:38:15.394328 4502980032 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet_model/xlnet.py:70: The name tf.gfile.Open is deprecated. Please use tf.io.gfile.GFile instead.
+    
+    W1018 00:38:15.397522 4502980032 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet.py:71: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
+    
+    W1018 00:38:15.409126 4502980032 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet_model/xlnet.py:253: The name tf.variable_scope is deprecated. Please use tf.compat.v1.variable_scope instead.
+    
+    W1018 00:38:15.411124 4502980032 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet_model/xlnet.py:253: The name tf.AUTO_REUSE is deprecated. Please use tf.compat.v1.AUTO_REUSE instead.
+    
+    W1018 00:38:15.415867 4502980032 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet_model/modeling.py:686: The name tf.logging.info is deprecated. Please use tf.compat.v1.logging.info instead.
+    
+    W1018 00:38:15.514928 4502980032 deprecation.py:323] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet_model/modeling.py:797: dropout (from tensorflow.python.layers.core) is deprecated and will be removed in a future version.
+    Instructions for updating:
+    Use keras.layers.dropout instead.
+    W1018 00:38:16.088240 4502980032 deprecation.py:323] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet_model/modeling.py:99: dense (from tensorflow.python.layers.core) is deprecated and will be removed in a future version.
+    Instructions for updating:
+    Use keras.layers.dense instead.
+    W1018 00:38:24.365406 4502980032 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet.py:90: The name tf.train.Saver is deprecated. Please use tf.compat.v1.train.Saver instead.
+    
+    W1018 00:38:24.663450 4502980032 deprecation.py:323] From /usr/local/lib/python3.6/site-packages/tensorflow/python/training/saver.py:1276: checkpoint_exists (from tensorflow.python.training.checkpoint_management) is deprecated and will be removed in a future version.
+    Instructions for updating:
+    Use standard file APIs to check for files with this prefix.
 
 
 .. code:: ipython3
@@ -137,27 +183,27 @@ level. How about XLNET or BERT? Lets we try XLNET.
 
 .. parsed-literal::
 
-    {'summary': 'Timbalan Presiden UMNO, Datuk Seri Mohamad Hasan berkata, kenyataan tersebut tidak mewakili pendirian serta pandangan UMNO   kerana parti itu menghormati serta memahami keperluan sekolah vernakular dalam negara. Kata beliau, komitmen UMNO dan BN berhubung perkara itu dapat dilihat dengan jelas dalam bentuk sokongan infrastruktur, pengiktirafan dan pemberian peruntukan yang diperlukan. Kata Nazri dalam kenyataannya itu, beliau menekankan bahawa semua pihak perlu menghormati hak orang Melayu dan bumiputera.',
-     'top-words': ['vernakular',
-      'umno',
+    {'summary': 'Kata Nazri dalam kenyataannya itu, beliau menekankan bahawa semua pihak perlu menghormati hak orang Melayu dan bumiputera. Mohamad yang menjalankan tugas-tugas Presiden UMNO berkata, UMNO konsisten dengan pendirian itu dalam mengiktiraf kepelbagaian bangsa dan etnik termasuk hak untuk beragama serta mendapat pendidikan. Mohamed Nazri semalam menjelaskan, kenyataannya mengenai sekolah jenis kebangsaan Cina dan Tamil baru-baru ini disalah petik pihak media.',
+     'top-words': ['umno',
       'pendirian',
+      'vernakular',
       'pandangan',
+      'menghormati',
+      'sekolah',
+      'nazri',
+      'kenyataan',
+      'hak',
+      'peribadi'],
+     'cluster-top-words': ['pendirian',
+      'kenyataan',
+      'umno',
+      'vernakular',
+      'hak',
+      'nazri',
+      'sekolah',
       'peribadi',
       'menghormati',
-      'melayu',
-      'malaysia',
-      'kenyataan',
-      'bumiputera'],
-     'cluster-top-words': ['kenyataan',
-      'melayu',
-      'umno',
-      'malaysia',
-      'bumiputera',
-      'pendirian',
-      'pandangan',
-      'vernakular',
-      'menghormati',
-      'peribadi']}
+      'pandangan']}
 
 
 
@@ -198,13 +244,13 @@ Important parameters,
       'nazri',
       'hormat paham',
       'hak'],
-     'cluster-top-words': ['nyata',
-      'pandang',
+     'cluster-top-words': ['sekolah vernakular',
       'umno',
-      'nazri',
+      'nyata',
       'hak',
-      'sekolah vernakular',
-      'hormat paham']}
+      'nazri',
+      'hormat paham',
+      'pandang']}
 
 
 
@@ -232,11 +278,11 @@ We can use ``tfidf`` as vectorizer.
       'pandang peribadi'],
      'cluster-top-words': ['wakil pandang umno',
       'mohamed nazri',
-      'mohamad',
       'pandang peribadi',
+      'mohamad',
+      'paham sekolah vernakular',
       'nazri nyata',
-      'negara',
-      'paham sekolah vernakular']}
+      'negara']}
 
 
 
@@ -251,7 +297,7 @@ We can use ``skip-gram`` as vectorizer, and can override ``skip`` value.
 
 .. parsed-literal::
 
-    {'summary': '"Saya ingin menegaskan dua perkara penting. Timbalan Presiden UMNO, Datuk Seri Mohamad Hasan berkata, kenyataan tersebut tidak mewakili pendirian serta pandangan UMNO   kerana parti itu menghormati serta memahami keperluan sekolah vernakular dalam negara. "Saya berharap isu ini tidak dipolitikkan secara tidak bertanggungjawab oleh mana-mana pihak terutama dengan cara yang tidak menggambarkan pendirian sebenar UMNO dan BN," katanya.',
+    {'summary': 'Timbalan Presiden UMNO, Datuk Seri Mohamad Hasan berkata, kenyataan tersebut tidak mewakili pendirian serta pandangan UMNO   kerana parti itu menghormati serta memahami keperluan sekolah vernakular dalam negara. "Saya berharap isu ini tidak dipolitikkan secara tidak bertanggungjawab oleh mana-mana pihak terutama dengan cara yang tidak menggambarkan pendirian sebenar UMNO dan BN," katanya. Mohamad yang menjalankan tugas-tugas Presiden UMNO berkata, UMNO konsisten dengan pendirian itu dalam mengiktiraf kepelbagaian bangsa dan etnik termasuk hak untuk beragama serta mendapat pendidikan.',
      'top-words': ['umno',
       'sekolah',
       'nyata',
@@ -262,12 +308,12 @@ We can use ``skip-gram`` as vectorizer, and can override ``skip`` value.
       'pandang umno',
       'sekolah vernakular',
       'presiden umno'],
-     'cluster-top-words': ['nyata',
-      'hormat',
+     'cluster-top-words': ['sekolah vernakular',
       'pandang umno',
-      'nazri',
-      'sekolah vernakular',
-      'presiden umno']}
+      'nyata',
+      'presiden umno',
+      'hormat',
+      'nazri']}
 
 
 
@@ -291,16 +337,16 @@ We can use ``skip-gram`` as vectorizer, and can override ``skip`` value.
       'jamm',
       'kl',
       'babit'],
-     'cluster-top-words': ['sheila',
-      'jamm',
-      'sembah',
+     'cluster-top-words': ['muzik',
+      'babit',
       'konsert',
       'nyanyi',
-      'babit',
+      'jamm',
       'artis',
-      'festival',
       'kl',
-      'muzik']}
+      'sheila',
+      'sembah',
+      'festival']}
 
 
 
@@ -316,7 +362,7 @@ Train LDA model
 
 .. parsed-literal::
 
-    {'summary': '"Saya berharap isu ini tidak dipolitikkan secara tidak bertanggungjawab oleh mana-mana pihak terutama dengan cara yang tidak menggambarkan pendirian sebenar UMNO dan BN," katanya. "Saya ingin menegaskan dua perkara penting. Menurut beliau, persefahaman dan keupayaan meraikan kepelbagaian itu menjadi kelebihan dan kekuatan UMNO dan BN selama ini.',
+    {'summary': '"Saya ingin menegaskan dua perkara penting. "Saya berharap isu ini tidak dipolitikkan secara tidak bertanggungjawab oleh mana-mana pihak terutama dengan cara yang tidak menggambarkan pendirian sebenar UMNO dan BN," katanya. Menurut beliau, persefahaman dan keupayaan meraikan kepelbagaian itu menjadi kelebihan dan kekuatan UMNO dan BN selama ini.',
      'top-words': ['umno',
       'nyata',
       'sekolah',
@@ -327,13 +373,13 @@ Train LDA model
       'nazri',
       'hormat paham',
       'hak'],
-     'cluster-top-words': ['nyata',
-      'pandang',
+     'cluster-top-words': ['sekolah vernakular',
       'umno',
-      'nazri',
+      'nyata',
       'hak',
-      'sekolah vernakular',
-      'hormat paham']}
+      'nazri',
+      'hormat paham',
+      'pandang']}
 
 
 
@@ -346,7 +392,7 @@ Train LDA model
 
 .. parsed-literal::
 
-    {'summary': '"Sedangkan artis juga menyanyi untuk kerjaya dan ia juga punca pendapatan bagi menyara hidup," katanya. Festival KL Jamm bakal menghimpunkan barisan artis tempatan baru dan nama besar dalam konsert iaitu Datuk Ramli Sarip, Datuk Afdlin Shauki, Zamani, Amelina, Radhi OAG, Dr Burn, Santesh, Rabbit Mac, Sheezy, kumpulan Bunkface, Ruffedge, Pot Innuendo, artis dari Kartel (Joe Flizzow, Sona One, Ila Damia, Yung Raja, Faris Jabba dan Abu Bakarxli) dan Malaysia Pasangge (artis India tempatan). "Kami pernah terbabit dengan showcase dan majlis korporat sebelum ini.',
+    {'summary': '"Sedangkan artis juga menyanyi untuk kerjaya dan ia juga punca pendapatan bagi menyara hidup," katanya. Penyanyi yang popular dengan lagu Hijau dan Ikhlas Tapi Jauh itu mengakui mereka memang ada keserasian ketika bergandingan kerana membesar pada era muzik yang sama. "Kami memang meminati bidang muzik dan saling memahami antara satu sama lain.',
      'top-words': ['artis',
       'sheila',
       'konsert',
@@ -357,14 +403,14 @@ Train LDA model
       'kl',
       'kl jamm',
       'jamm'],
-     'cluster-top-words': ['sheila',
-      'sembah',
+     'cluster-top-words': ['muzik',
       'konsert',
       'nyanyi',
       'artis',
+      'sheila',
+      'sembah',
       'festival',
-      'kl jamm',
-      'muzik']}
+      'kl jamm']}
 
 
 
@@ -396,16 +442,6 @@ for my noob laptop,
     embedded_news = malaya.wordvector.load_news(256)
     w2v_wiki = malaya.wordvector.load(embedded_news['nce_weights'],
                                         embedded_news['dictionary'])
-
-
-.. parsed-literal::
-
-    WARNING: Logging before flag parsing goes to stderr.
-    W0911 18:42:53.304655 4598130112 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/wordvector.py:85: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
-    
-    W0911 18:42:53.326112 4598130112 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/wordvector.py:96: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
-    
-
 
 .. code:: ipython3
 

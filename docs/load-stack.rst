@@ -13,16 +13,27 @@ models to get a better result! It called stacking.
 
 .. parsed-literal::
 
-    CPU times: user 9.68 s, sys: 747 ms, total: 10.4 s
-    Wall time: 10.5 s
+    CPU times: user 6.46 s, sys: 1.65 s, total: 8.11 s
+    Wall time: 13.1 s
 
 
 .. code:: python
 
-    bahdanau = malaya.sentiment.deep_model('bahdanau')
-    luong = malaya.sentiment.deep_model('luong')
-    entity = malaya.sentiment.deep_model('entity-network')
+    albert = malaya.sentiment.transformer('albert')
     multinomial = malaya.sentiment.multinomial()
+    bert = malaya.sentiment.transformer('bert')
+
+
+.. parsed-literal::
+
+    WARNING: Logging before flag parsing goes to stderr.
+    W1018 00:55:00.259906 4631889344 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:68: The name tf.gfile.GFile is deprecated. Please use tf.io.gfile.GFile instead.
+
+    W1018 00:55:00.263756 4631889344 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:69: The name tf.GraphDef is deprecated. Please use tf.compat.v1.GraphDef instead.
+
+    W1018 00:55:04.845674 4631889344 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:64: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
+
+
 
 Stack multiple sentiment models
 -------------------------------
@@ -61,10 +72,7 @@ models can use ``malaya.stack.predict_stack``.
 
 .. code:: python
 
-    malaya.stack.predict_stack([bahdanau,
-                                luong,
-                                entity,
-                                multinomial],
+    malaya.stack.predict_stack([albert, multinomial, bert],
                               'harga minyak tak menentu')
 
 
@@ -72,86 +80,9 @@ models can use ``malaya.stack.predict_stack``.
 
 .. parsed-literal::
 
-    {'negative': 0.506150402587375, 'positive': 0.4045639078752239}
-
-
-
-Stack multiple toxic models
----------------------------
-
-.. code:: python
-
-    bahdanau = malaya.toxic.deep_model('bahdanau')
-    luong = malaya.toxic.deep_model('luong')
-    entity = malaya.toxic.deep_model('entity-network')
-    malaya.stack.predict_stack([bahdanau,
-                                luong,
-                                entity],
-                              'harga minyak tak menentu')
-
-
-
-
-.. parsed-literal::
-
-    {'toxic': 0.21490112,
-     'severe_toxic': 0.07022426,
-     'obscene': 0.17856258,
-     'threat': 0.15631571,
-     'insult': 0.16029277,
-     'identity_hate': 0.1327232}
-
-
-
-Stack language detection models
--------------------------------
-
-.. code:: python
-
-    xgb = malaya.language_detection.xgb()
-    multinomial = malaya.language_detection.multinomial()
-    sgd = malaya.language_detection.sgd()
-    malaya.stack.predict_stack([xgb,
-                                multinomial,
-                                sgd],
-                              'didukungi secara natifnya')
-
-
-
-
-.. parsed-literal::
-
-    {'OTHER': 1.5017138319820553e-05,
-     'ENGLISH': 0.0,
-     'INDONESIA': 0.0,
-     'MALAY': 0.0}
-
-
-
-Stack emotion detection models
-------------------------------
-
-.. code:: python
-
-    xgb = malaya.emotion.xgb()
-    multinomial = malaya.emotion.multinomial()
-    bahdanau = malaya.emotion.deep_model('bahdanau')
-    malaya.stack.predict_stack([xgb,
-                                multinomial,
-                                bahdanau],
-                              'aku benci betul dekat budak gemuk tu')
-
-
-
-
-.. parsed-literal::
-
-    {'anger': 0.6324093751385098,
-     'fear': 0.06528178211644504,
-     'joy': 0.008890118694162983,
-     'love': 0.011420978246531412,
-     'sadness': 0.058377601127569685,
-     'surprise': 0.004896366282692069}
+    [{'negative': 0.5924219508044609,
+      'positive': 0.0008248967143827066,
+      'neutral': 0.0816649405431678}]
 
 
 
@@ -185,88 +116,101 @@ and Dependency Parsing recognition.**
 .. code:: python
 
     string = 'KUALA LUMPUR: Sempena sambutan Aidilfitri minggu depan, Perdana Menteri Tun Dr Mahathir Mohamad dan Menteri Pengangkutan Anthony Loke Siew Fook menitipkan pesanan khas kepada orang ramai yang mahu pulang ke kampung halaman masing-masing. Dalam video pendek terbitan Jabatan Keselamatan Jalan Raya (JKJR) itu, Dr Mahathir menasihati mereka supaya berhenti berehat dan tidur sebentar  sekiranya mengantuk ketika memandu.'
-    entity_network = malaya.entity.deep_model('entity-network')
-    bahdanau = malaya.entity.deep_model('bahdanau')
-    luong = malaya.entity.deep_model('luong')
-    malaya.stack.voting_stack([entity_network, bahdanau, luong], string)
+
+    albert = malaya.pos.transformer('albert')
+    bert = malaya.pos.transformer('bert')
+    malaya.stack.voting_stack([albert, bert], string)
 
 
 
 
 .. parsed-literal::
 
-    [('kuala', 'location'),
-     ('lumpur', 'location'),
-     ('sempena', 'OTHER'),
-     ('sambutan', 'event'),
-     ('aidilfitri', 'event'),
-     ('minggu', 'time'),
-     ('depan', 'time'),
-     ('perdana', 'person'),
-     ('menteri', 'person'),
-     ('tun', 'person'),
-     ('dr', 'person'),
-     ('mahathir', 'person'),
-     ('mohamad', 'person'),
-     ('dan', 'OTHER'),
-     ('menteri', 'person'),
-     ('pengangkutan', 'organization'),
-     ('anthony', 'person'),
-     ('loke', 'person'),
-     ('siew', 'person'),
-     ('fook', 'person'),
-     ('menitipkan', 'OTHER'),
-     ('pesanan', 'OTHER'),
-     ('khas', 'OTHER'),
-     ('kepada', 'OTHER'),
-     ('orang', 'OTHER'),
-     ('ramai', 'OTHER'),
-     ('yang', 'OTHER'),
-     ('mahu', 'OTHER'),
-     ('pulang', 'OTHER'),
-     ('ke', 'OTHER'),
-     ('kampung', 'OTHER'),
-     ('halaman', 'time'),
-     ('masing-masing', 'OTHER'),
-     ('dalam', 'OTHER'),
-     ('video', 'OTHER'),
-     ('pendek', 'OTHER'),
-     ('terbitan', 'OTHER'),
-     ('jabatan', 'organization'),
-     ('keselamatan', 'organization'),
-     ('jalan', 'organization'),
-     ('raya', 'organization'),
-     ('jkjr', 'law'),
-     ('itu', 'OTHER'),
-     ('dr', 'person'),
-     ('mahathir', 'person'),
-     ('menasihati', 'OTHER'),
-     ('mereka', 'OTHER'),
-     ('supaya', 'OTHER'),
-     ('berhenti', 'OTHER'),
-     ('berehat', 'OTHER'),
-     ('dan', 'OTHER'),
-     ('tidur', 'OTHER'),
-     ('sebentar', 'OTHER'),
-     ('sekiranya', 'OTHER'),
-     ('mengantuk', 'OTHER'),
-     ('ketika', 'OTHER'),
-     ('memandu', 'OTHER')]
+    [('Kuala', 'PROPN'),
+     ('Lumpur:', 'PROPN'),
+     ('Sempena', 'ADP'),
+     ('sambutan', 'NOUN'),
+     ('Aidilfitri', 'PROPN'),
+     ('minggu', 'NOUN'),
+     ('depan,', 'ADJ'),
+     ('Perdana', 'PROPN'),
+     ('Menteri', 'PROPN'),
+     ('Tun', 'PROPN'),
+     ('Dr', 'PROPN'),
+     ('Mahathir', 'PROPN'),
+     ('Mohamad', 'PROPN'),
+     ('dan', 'CCONJ'),
+     ('Menteri', 'PROPN'),
+     ('Pengangkutan', 'PROPN'),
+     ('Anthony', 'PROPN'),
+     ('Loke', 'PROPN'),
+     ('Siew', 'PROPN'),
+     ('Fook', 'PROPN'),
+     ('menitipkan', 'VERB'),
+     ('pesanan', 'NOUN'),
+     ('khas', 'ADJ'),
+     ('kepada', 'ADP'),
+     ('orang', 'NOUN'),
+     ('ramai', 'ADJ'),
+     ('yang', 'PRON'),
+     ('mahu', 'ADV'),
+     ('pulang', 'VERB'),
+     ('ke', 'ADP'),
+     ('kampung', 'NOUN'),
+     ('halaman', 'NOUN'),
+     ('masing-masing.', 'DET'),
+     ('Dalam', 'ADP'),
+     ('video', 'NOUN'),
+     ('pendek', 'ADJ'),
+     ('terbitan', 'NOUN'),
+     ('Jabatan', 'PROPN'),
+     ('Keselamatan', 'PROPN'),
+     ('Jalan', 'PROPN'),
+     ('Raya', 'PROPN'),
+     ('(JKJR)', 'PUNCT'),
+     ('itu,', 'DET'),
+     ('Dr', 'PROPN'),
+     ('Mahathir', 'PROPN'),
+     ('menasihati', 'VERB'),
+     ('mereka', 'PRON'),
+     ('supaya', 'SCONJ'),
+     ('berhenti', 'VERB'),
+     ('berehat', 'VERB'),
+     ('dan', 'CCONJ'),
+     ('tidur', 'VERB'),
+     ('sebentar', 'ADV'),
+     ('sekiranya', 'SCONJ'),
+     ('mengantuk', 'NOUN'),
+     ('ketika', 'SCONJ'),
+     ('memandu.', 'VERB')]
 
 
 
 .. code:: python
 
-    bahdanau = malaya.dependency.deep_model('bahdanau')
-    luong = malaya.dependency.deep_model('luong')
-    concat = malaya.dependency.deep_model('concat')
-    tagging, indexing = malaya.stack.voting_stack([concat, bahdanau, luong], string)
+    string = 'KUALA LUMPUR: Sempena sambutan Aidilfitri minggu depan, Perdana Menteri Tun Dr Mahathir Mohamad dan Menteri Pengangkutan Anthony Loke Siew Fook menitipkan pesanan khas kepada orang ramai yang mahu pulang ke kampung halaman masing-masing. Dalam video pendek terbitan Jabatan Keselamatan Jalan Raya (JKJR) itu, Dr Mahathir menasihati mereka supaya berhenti berehat dan tidur sebentar  sekiranya mengantuk ketika memandu.'
+
+    xlnet = malaya.dependency.transformer(model = 'xlnet')
+    bert = malaya.dependency.transformer(model = 'bert')
+
+
+.. parsed-literal::
+
+    WARNING: Logging before flag parsing goes to stderr.
+    W1018 01:10:28.652161 4692850112 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:68: The name tf.gfile.GFile is deprecated. Please use tf.io.gfile.GFile instead.
+
+    W1018 01:10:28.656165 4692850112 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:69: The name tf.GraphDef is deprecated. Please use tf.compat.v1.GraphDef instead.
+
+    W1018 01:10:33.700295 4692850112 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:64: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
+
+
 
 .. code:: python
 
+    tagging, indexing = malaya.stack.voting_stack([xlnet, xlnet, bert], string)
     malaya.dependency.dependency_graph(tagging, indexing).to_graphvis()
 
 
 
 
-.. image:: load-stack_files/load-stack_16_0.svg
+.. image:: load-stack_files/load-stack_10_0.svg

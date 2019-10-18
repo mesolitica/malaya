@@ -179,8 +179,8 @@ class MULTICLASS_BAYES(BAYES):
 
 class MULTILABEL_BAYES:
     def __init__(self, models, vectors, cleaning = simple_textcleaning):
-        self._models = models
-        self._vectors = vectors
+        self._multinomial = models
+        self._vectorize = vectors
         self._class_names = [
             'toxic',
             'severe_toxic',

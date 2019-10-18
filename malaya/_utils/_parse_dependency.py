@@ -1,6 +1,7 @@
 from collections import defaultdict
 from itertools import chain
 from six import string_types
+import warnings
 
 
 class DependencyGraph(object):

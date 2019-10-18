@@ -64,7 +64,7 @@ def naive(string):
 
 def transformer(model = 'xlnet', size = 'base', validate = True):
     """
-    Load Transformer Entity Tagging model, transfer learning Transformer + CRF.
+    Load Transformer POS Tagging model, transfer learning Transformer + CRF.
 
     Parameters
     ----------

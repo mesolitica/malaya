@@ -616,6 +616,38 @@ def tokenize_fn(text, sp_model):
     return encode_ids(sp_model, text)
 
 
+def xlnet_tokenization_siamese(tokenizer, left, right):
+    input_ids, input_mask, all_seg_ids = [], [], []
+    for i in range(len(left)):
+        tokens = tokenize_fn(remove_links_alias(left[i]), tokenizer)
+        tokens_right = tokenize_fn(remove_links_alias(right[i]), tokenizer)
+        segment_ids = [SEG_ID_A] * len(tokens)
+        tokens.append(SEP_ID)
+        segment_ids.append(SEG_ID_A)
+
+        tokens.extend(tokens_right)
+        segment_ids.extend([SEG_ID_B] * len(tokens_right))
+        tokens.append(SEP_ID)
+        segment_ids.append(SEG_ID_B)
+
+        tokens.append(CLS_ID)
+        segment_ids.append(SEG_ID_CLS)
+
+        cur_input_ids = tokens
+        cur_input_mask = [0] * len(cur_input_ids)
+        assert len(tokens) == len(cur_input_mask)
+        assert len(tokens) == len(segment_ids)
+        input_ids.append(tokens)
+        input_mask.append(cur_input_mask)
+        all_seg_ids.append(segment_ids)
+
+    maxlen = max([len(i) for i in input_ids])
+    input_ids = padding_sequence(input_ids, maxlen)
+    input_mask = padding_sequence(input_mask, maxlen, pad_int = 1)
+    all_seg_ids = padding_sequence(all_seg_ids, maxlen, pad_int = SEG_ID_PAD)
+    return input_ids, input_mask, all_seg_ids
+
+
 def xlnet_tokenization(tokenizer, texts):
     input_ids, input_masks, segment_ids, s_tokens = [], [], [], []
     for text in texts:
@@ -641,13 +673,9 @@ def xlnet_tokenization(tokenizer, texts):
         s_tokens.append([tokenizer.IdToPiece(i) for i in tokens])
 
     maxlen = max([len(i) for i in input_ids])
-    input_ids = padding_sequence(input_ids, maxlen, padding = 'pre')
-    input_masks = padding_sequence(
-        input_masks, maxlen, padding = 'pre', pad_int = 1
-    )
-    segment_ids = padding_sequence(
-        segment_ids, maxlen, padding = 'pre', pad_int = SEG_ID_PAD
-    )
+    input_ids = padding_sequence(input_ids, maxlen)
+    input_masks = padding_sequence(input_masks, maxlen, pad_int = 1)
+    segment_ids = padding_sequence(segment_ids, maxlen, pad_int = SEG_ID_PAD)
 
     return input_ids, input_masks, segment_ids, s_tokens
 

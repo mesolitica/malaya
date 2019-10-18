@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 7.02 s, sys: 2.35 s, total: 9.37 s
-    Wall time: 15.7 s
+    CPU times: user 6.07 s, sys: 1.3 s, total: 7.38 s
+    Wall time: 10.4 s
 
 
 .. code:: python
@@ -139,15 +139,38 @@ using xlnet
 
 .. code:: python
 
-    xlnet = malaya.xlnet.xlnet(model = 'small')
+    xlnet = malaya.transformer.load(model = 'xlnet')
     encoder = malaya.similarity.encoder(xlnet)
 
 
 .. parsed-literal::
 
-    INFO:tensorflow:memory input None
-    INFO:tensorflow:Use float type <dtype: 'float32'>
-    INFO:tensorflow:Restoring parameters from /Users/huseinzol/Malaya/xlnet-model/small/xlnet-bahasa-small/model.ckpt
+    WARNING: Logging before flag parsing goes to stderr.
+    W1018 09:43:51.760437 4592133568 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet_model/xlnet.py:70: The name tf.gfile.Open is deprecated. Please use tf.io.gfile.GFile instead.
+
+    W1018 09:43:51.773338 4592133568 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet.py:71: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
+
+    W1018 09:43:51.808459 4592133568 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet_model/xlnet.py:253: The name tf.variable_scope is deprecated. Please use tf.compat.v1.variable_scope instead.
+
+    W1018 09:43:51.810034 4592133568 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet_model/xlnet.py:253: The name tf.AUTO_REUSE is deprecated. Please use tf.compat.v1.AUTO_REUSE instead.
+
+    W1018 09:43:51.811383 4592133568 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet_model/modeling.py:686: The name tf.logging.info is deprecated. Please use tf.compat.v1.logging.info instead.
+
+    W1018 09:43:51.813071 4592133568 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet_model/modeling.py:693: The name tf.get_variable is deprecated. Please use tf.compat.v1.get_variable instead.
+
+    W1018 09:43:51.921389 4592133568 deprecation.py:323] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet_model/modeling.py:797: dropout (from tensorflow.python.layers.core) is deprecated and will be removed in a future version.
+    Instructions for updating:
+    Use keras.layers.dropout instead.
+    W1018 09:43:52.719312 4592133568 deprecation.py:323] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet_model/modeling.py:99: dense (from tensorflow.python.layers.core) is deprecated and will be removed in a future version.
+    Instructions for updating:
+    Use keras.layers.dense instead.
+    W1018 09:43:59.544004 4592133568 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet.py:84: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
+
+    W1018 09:44:00.761409 4592133568 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet.py:90: The name tf.train.Saver is deprecated. Please use tf.compat.v1.train.Saver instead.
+
+    W1018 09:44:01.053367 4592133568 deprecation.py:323] From /usr/local/lib/python3.6/site-packages/tensorflow/python/training/saver.py:1276: checkpoint_exists (from tensorflow.python.training.checkpoint_management) is deprecated and will be removed in a future version.
+    Instructions for updating:
+    Use standard file APIs to check for files with this prefix.
 
 
 predict for 2 strings
@@ -162,7 +185,7 @@ predict for 2 strings
 
 .. parsed-literal::
 
-    0.9589016
+    0.88778234
 
 
 
@@ -200,41 +223,38 @@ visualize tree plot
 .. image:: load-similarity_files/load-similarity_20_1.png
 
 
-BERT model
-----------
-
-BERT is the best similarity model in term of accuracy, you can check
-similarity accuracy here,
-https://malaya.readthedocs.io/en/latest/Accuracy.html#similarity.
-Question is, why BERT?
-
-1. Transformer model learn the context of a word based on all of its
-   surroundings (live string), bidirectionally. So it much better
-   understand left and right hand side relationships.
-2. Because of transformer able to leverage to context during live
-   string, we dont need to capture available words in this world,
-   instead capture substrings and build the attention after that. BERT
-   will never have Out-Of-Vocab problem.
-
-List available BERT models
---------------------------
+List available Transformer models
+---------------------------------
 
 .. code:: python
 
-    malaya.similarity.available_bert_model()
+    malaya.similarity.available_transformer_model()
 
 
 
 
 .. parsed-literal::
 
-    ['multilanguage', 'base', 'small']
+    {'bert': ['base'], 'xlnet': ['base'], 'albert': ['base']}
 
 
+
+Make sure you can check accuracy chart from here first before select a
+model, https://malaya.readthedocs.io/en/latest/Accuracy.html#similarity
+
+**You might want to use ALBERT, a very small size, 43MB, but the
+accuracy is still on the top notch.**
 
 .. code:: python
 
-    model = malaya.similarity.bert(model = 'base')
+    model = malaya.similarity.transformer(model = 'albert')
+
+
+.. parsed-literal::
+
+    W1018 09:45:25.593791 4592133568 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:68: The name tf.gfile.GFile is deprecated. Please use tf.io.gfile.GFile instead.
+
+
 
 .. code:: python
 
@@ -245,7 +265,43 @@ List available BERT models
 
 .. parsed-literal::
 
-    0.6755152
+    0.043411437
+
+
+
+predict batch
+^^^^^^^^^^^^^
+
+you need to give list of left strings, and list of right strings.
+
+first left string will compare will first right string and so on.
+
+.. code:: python
+
+    model.predict_batch([string1, string2], [string3, string4])
+
+
+
+
+.. parsed-literal::
+
+    array([0.07098369, 0.0001071 ], dtype=float32)
+
+
+
+.. code:: python
+
+    model = malaya.similarity.transformer(model = 'xlnet')
+
+
+.. parsed-literal::
+
+    WARNING: Logging before flag parsing goes to stderr.
+    W1018 09:52:34.326930 4583105984 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:68: The name tf.gfile.GFile is deprecated. Please use tf.io.gfile.GFile instead.
+
+    W1018 09:52:34.332230 4583105984 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:69: The name tf.GraphDef is deprecated. Please use tf.compat.v1.GraphDef instead.
+
+    W1018 09:52:39.548710 4583105984 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:64: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
 
 
 
@@ -258,8 +314,4 @@ List available BERT models
 
 .. parsed-literal::
 
-    array([0.03622618, 0.03146545], dtype=float32)
-
-
-
-**BERT is the best!**
+    array([0.99143314, 0.96505105], dtype=float32)

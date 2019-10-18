@@ -57,6 +57,10 @@ def cluster_words(list_words):
     """
     if not isinstance(list_words, list):
         raise ValueError('list_words must be a list')
+
+    if not len(list_words):
+        return []
+
     if not isinstance(list_words[0], str):
         raise ValueError('list_words must be a list of strings')
 

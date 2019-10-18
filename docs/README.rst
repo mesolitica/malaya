@@ -42,13 +42,13 @@ Features
 
 -  **Emotion Analysis**
 
-   From fine-tuning BERT, Attention-Recurrent model, and Self-Attention to build deep emotion analysis models.
+   From transfer-learning BERT-Bahasa, XLNET-Bahasa and ALBERT-Bahasa to build deep emotion analysis models.
 -  **Entities Recognition**
 
-   Latest state-of-art CRF deep learning and BERT models to do Naming Entity Recognition.
+   From transfer-learning BERT-Bahasa, XLNET-Bahasa and ALBERT-Bahasa to do Naming Entity Recognition.
 -  **Language Detection**
 
-   using Multinomial, SGD, XGB, Fast-text N-grams deep learning to distinguish Malay, English, and Indonesian.
+   using Multinomial, SGD, and Fast-text N-grams deep learning to distinguish Malay, English, and Indonesian.
 -  **Normalizer**
 
    using local Malaysia NLP researches to normalize any bahasa texts.
@@ -57,16 +57,16 @@ Features
    Convert from numbers to cardinal or ordinal representation.
 -  **Part-of-Speech Recognition**
 
-   Latest state-of-art CRF deep learning models to do Part-of-Speech Recognition.
+   From transfer-learning BERT-Bahasa, XLNET-Bahasa and ALBERT-Bahasa to do Part-of-Speech Recognition.
 -  **Dependency Parsing**
 
-   Latest state-of-art CRF deep learning models to do analyzes the grammatical structure of a sentence, establishing relationships between words.
+   From transfer-learning BERT-Bahasa, XLNET-Bahasa and ALBERT-Bahasa to do Dependency Parsing.
 -  **Relevancy Analysis**
 
-   From fine-tuning BERT, Dilated Convolutional Neural Network and Self-Attention to build deep relevancy analysis models.
+   From transfer-learning BERT-Bahasa, XLNET-Bahasa and ALBERT-Bahasa to build deep relevancy analysis models.
 -  **Sentiment Analysis**
 
-   From fine-tuning BERT, Attention-Recurrent model, and Self-Attention to build deep sentiment analysis models.
+   From transfer-learning BERT-Bahasa, XLNET-Bahasa and ALBERT-Bahasa to build deep sentiment analysis models.
 -  **Spell Correction**
 
    Using local Malaysia NLP researches to auto-correct any bahasa words.
@@ -75,25 +75,25 @@ Features
    Use Character LSTM Seq2Seq with attention state-of-art to do Bahasa stemming.
 -  **Subjectivity Analysis**
 
-   From fine-tuning BERT, Attention-Recurrent model, and Self-Attention to build deep subjectivity analysis models.
+   From transfer-learning BERT-Bahasa, XLNET-Bahasa and ALBERT-Bahasa to build deep subjectivity analysis models.
 -  **Similarity**
 
-   Use deep Encoder, Doc2Vec and BERT to build deep semantic similarity models.
+   Use deep Encoder, Doc2Vec, BERT, XLNET and ALBERT to build deep semantic similarity models.
 -  **Summarization**
 
-   Using BERT, XLNET, skip-thought, LDA, LSA and Doc2Vec to give precise unsupervised summarization, and TextRank as scoring algorithm.
+   Using BERT, XLNET, ALBERT, skip-thought, LDA, LSA and Doc2Vec to give precise unsupervised summarization, and TextRank as scoring algorithm.
 -  **Topic Modelling**
 
    Provide Attention, LDA2Vec, LDA, NMF and LSA interface for easy topic modelling with topics visualization.
 -  **Toxicity Analysis**
 
-   From fine-tuning BERT, Attention-Recurrent model, Self-Attention to build deep toxicity analysis models.
+   From transfer-learning BERT-Bahasa, XLNET-Bahasa and ALBERT-Bahasa to build deep toxicity analysis models.
 -  **Word2Vec**
 
    Provide pretrained bahasa wikipedia and bahasa news Word2Vec, with easy interface and visualization.
--  **BERT and XLNET**
+-  **Transformer**
 
-   Provide easy interface to load BERT and XLNET Bahasa.
+   Provide easy interface to load BERT-Bahasa, XLNET-Bahasa and ALBERT-Bahasa.
 
 
 References

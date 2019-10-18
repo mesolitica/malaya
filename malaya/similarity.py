@@ -2,8 +2,8 @@ import re
 import os
 import random
 import numpy as np
-from .texts._jarowrinkler import JaroWinkler
 import json
+from .texts._jarowrinkler import JaroWinkler
 from sklearn.metrics.pairwise import (
     cosine_similarity,
     euclidean_distances,
@@ -14,10 +14,13 @@ from ._utils._utils import (
     load_graph,
     check_available,
     generate_session,
+    sentencepiece_tokenizer_bert,
+    sentencepiece_tokenizer_xlnet,
 )
 from .preprocessing import _tokenizer
-from ._utils._paths import PATH_SIMILARITY, S3_PATH_SIMILARITY
 from ._models._bert_model import SIAMESE_BERT
+from ._models._xlnet_model import SIAMESE_XLNET
+from ._utils._paths import PATH_SIMILARITY, S3_PATH_SIMILARITY
 
 
 class _VECTORIZER_SIMILARITY:
@@ -521,11 +524,7 @@ def encoder(vectorizer):
     return _VECTORIZER_SIMILARITY(vectorizer)
 
 
-_availability = {
-    'bert': ['base', 'multilanguage'],
-    'xlnet': ['base'],
-    'albert': ['base'],
-}
+_availability = {'bert': ['base'], 'xlnet': ['base'], 'albert': ['base']}
 
 
 def available_transformer_model():
@@ -535,7 +534,7 @@ def available_transformer_model():
     return _availability
 
 
-def transformer(model = 'xlnet', size = 'base', validate = True):
+def transformer(model = 'bert', size = 'base', validate = True):
     """
     Load Transformer sentiment model.
 
@@ -577,85 +576,61 @@ def transformer(model = 'xlnet', size = 'base', validate = True):
             'size not supported, please check supported models from malaya.sentiment.available_transformer_model()'
         )
 
-
-def bert(model = 'base', validate = True):
-    """
-    Load BERT similarity model.
-
-    Parameters
-    ----------
-    model : str, optional (default='base')
-        Model architecture supported. Allowed values:
-
-        * ``'multilanguage'`` - bert multilanguage released by Google, trained on cross-entropy similarity.
-        * ``'base'`` - base bert-bahasa released by Malaya, trained on cross-entropy similarity.
-        * ``'small'`` - small bert-bahasa released by Malaya, trained on cross-entropy similarity.
-    validate: bool, optional (default=True)
-        if True, malaya will check model availability and download if not available.
-
-    Returns
-    -------
-    SIMILARITY_BERT : malaya._models._tensorflow_model.SIAMESE_BERT class
-    """
-    if not isinstance(model, str):
-        raise ValueError('model must be a string')
-    if not isinstance(validate, bool):
-        raise ValueError('validate must be a boolean')
-
-    model = model.lower()
-    if model not in available_bert_model():
-        raise Exception(
-            'model not supported, please check supported models from malaya.similarity.available_bert_model()'
-        )
-
     if validate:
-        check_file(PATH_SIMILARITY[model], S3_PATH_SIMILARITY[model])
+        check_file(
+            PATH_SIMILARITY[model][size], S3_PATH_SIMILARITY[model][size]
+        )
     else:
-        if not check_available(PATH_SIMILARITY[model]):
+        if not check_available(PATH_SIMILARITY[model][size]):
             raise Exception(
-                'similarity/%s is not available, please `validate = True`'
-                % (model)
+                'similarity/%s/%s is not available, please `validate = True`'
+                % (model, size)
             )
 
-    if model == 'multilanguage':
-        from bert import tokenization
-
-        tokenizer = tokenization.FullTokenizer(
-            vocab_file = PATH_SIMILARITY[model]['vocab'], do_lower_case = False
-        )
-        cls = '[CLS]'
-        sep = '[SEP]'
-    else:
-
-        import sentencepiece as spm
-        from .texts._text_functions import SentencePieceTokenizer
-
-        sp_model = spm.SentencePieceProcessor()
-        sp_model.Load(PATH_SIMILARITY[model]['tokenizer'])
-
-        with open(PATH_SIMILARITY[model]['vocab']) as fopen:
-            v = fopen.read().split('\n')[:-1]
-        v = [i.split('\t') for i in v]
-        v = {i[0]: i[1] for i in v}
-        tokenizer = SentencePieceTokenizer(v, sp_model)
-        cls = '<cls>'
-        sep = '<sep>'
     try:
-        g = load_graph(PATH_SIMILARITY[model]['model'])
+        g = load_graph(PATH_SIMILARITY[model][size]['model'])
     except:
         raise Exception(
-            "model corrupted due to some reasons, please run malaya.clear_cache('similarity/%s') and try again"
-            % (model)
+            "model corrupted due to some reasons, please run malaya.clear_cache('similarity/%s/%s') and try again"
+            % (model, size)
         )
 
-    return SIAMESE_BERT(
-        X = g.get_tensor_by_name('import/Placeholder:0'),
-        segment_ids = g.get_tensor_by_name('import/Placeholder_1:0'),
-        input_masks = g.get_tensor_by_name('import/Placeholder_2:0'),
-        logits = g.get_tensor_by_name('import/logits:0'),
-        sess = generate_session(graph = g),
-        tokenizer = tokenizer,
-        cls = cls,
-        sep = sep,
-        label = ['not similar', 'similar'],
-    )
+    if model in ['albert', 'bert']:
+        if model == 'bert':
+            from ._transformer._bert import _extract_attention_weights_import
+        if model == 'albert':
+            from ._transformer._albert import _extract_attention_weights_import
+
+        tokenizer, cls, sep = sentencepiece_tokenizer_bert(
+            PATH_SIMILARITY[model][size]['tokenizer'],
+            PATH_SIMILARITY[model][size]['vocab'],
+        )
+
+        return SIAMESE_BERT(
+            X = g.get_tensor_by_name('import/Placeholder:0'),
+            segment_ids = g.get_tensor_by_name('import/Placeholder_1:0'),
+            input_masks = g.get_tensor_by_name('import/Placeholder_2:0'),
+            logits = g.get_tensor_by_name('import/logits:0'),
+            sess = generate_session(graph = g),
+            tokenizer = tokenizer,
+            label = ['not similar', 'similar'],
+            cls = cls,
+            sep = sep,
+        )
+
+    if model in ['xlnet']:
+        from ._transformer._xlnet import _extract_attention_weights_import
+
+        tokenizer = sentencepiece_tokenizer_xlnet(
+            PATH_SIMILARITY[model][size]['tokenizer']
+        )
+
+        return SIAMESE_XLNET(
+            X = g.get_tensor_by_name('import/Placeholder:0'),
+            segment_ids = g.get_tensor_by_name('import/Placeholder_1:0'),
+            input_masks = g.get_tensor_by_name('import/Placeholder_2:0'),
+            logits = g.get_tensor_by_name('import/logits:0'),
+            sess = generate_session(graph = g),
+            tokenizer = tokenizer,
+            label = ['not similar', 'similar'],
+        )

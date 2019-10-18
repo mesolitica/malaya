@@ -19,15 +19,38 @@ have, the power of attention!
 
 .. code:: ipython3
 
-    xlnet = malaya.xlnet.xlnet(model = 'small')
+    xlnet = malaya.transformer.load(model = 'xlnet', size = 'base')
     attention = malaya.topic_model.attention(corpus, n_topics = 10, vectorizer = xlnet)
 
 
 .. parsed-literal::
 
-    INFO:tensorflow:memory input None
-    INFO:tensorflow:Use float type <dtype: 'float32'>
-    INFO:tensorflow:Restoring parameters from /Users/huseinzol/Malaya/xlnet-model/small/xlnet-bahasa-small/model.ckpt
+    WARNING: Logging before flag parsing goes to stderr.
+    W1018 00:42:06.978917 4487972288 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet_model/xlnet.py:70: The name tf.gfile.Open is deprecated. Please use tf.io.gfile.GFile instead.
+    
+    W1018 00:42:06.981930 4487972288 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet.py:71: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
+    
+    W1018 00:42:06.992113 4487972288 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet_model/xlnet.py:253: The name tf.variable_scope is deprecated. Please use tf.compat.v1.variable_scope instead.
+    
+    W1018 00:42:06.993095 4487972288 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet_model/xlnet.py:253: The name tf.AUTO_REUSE is deprecated. Please use tf.compat.v1.AUTO_REUSE instead.
+    
+    W1018 00:42:06.995229 4487972288 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet_model/modeling.py:686: The name tf.logging.info is deprecated. Please use tf.compat.v1.logging.info instead.
+    
+    W1018 00:42:06.997777 4487972288 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet_model/modeling.py:693: The name tf.get_variable is deprecated. Please use tf.compat.v1.get_variable instead.
+    
+    W1018 00:42:07.099963 4487972288 deprecation.py:323] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet_model/modeling.py:797: dropout (from tensorflow.python.layers.core) is deprecated and will be removed in a future version.
+    Instructions for updating:
+    Use keras.layers.dropout instead.
+    W1018 00:42:07.776345 4487972288 deprecation.py:323] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet_model/modeling.py:99: dense (from tensorflow.python.layers.core) is deprecated and will be removed in a future version.
+    Instructions for updating:
+    Use keras.layers.dense instead.
+    W1018 00:42:15.209581 4487972288 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet.py:84: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
+    
+    W1018 00:42:16.381231 4487972288 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet.py:90: The name tf.train.Saver is deprecated. Please use tf.compat.v1.train.Saver instead.
+    
+    W1018 00:42:16.752380 4487972288 deprecation.py:323] From /usr/local/lib/python3.6/site-packages/tensorflow/python/training/saver.py:1276: checkpoint_exists (from tensorflow.python.training.checkpoint_management) is deprecated and will be removed in a future version.
+    Instructions for updating:
+    Use standard file APIs to check for files with this prefix.
 
 
 Get topics
@@ -70,83 +93,83 @@ Get topics
       <tbody>
         <tr>
           <th>0</th>
-          <td>kapal</td>
-          <td>jalan</td>
-          <td>tumbuh</td>
-          <td>negara</td>
+          <td>ambil</td>
+          <td>nyata</td>
           <td>rana</td>
+          <td>menteri</td>
+          <td>malaysia</td>
         </tr>
         <tr>
           <th>1</th>
-          <td>raja</td>
-          <td>undi</td>
-          <td>nyata</td>
-          <td>malaysia</td>
-          <td>islam</td>
+          <td>putus</td>
+          <td>dasar</td>
+          <td>negara</td>
+          <td>laku</td>
+          <td>negara</td>
         </tr>
         <tr>
           <th>2</th>
-          <td>pilih</td>
-          <td>ros</td>
-          <td>putus</td>
-          <td>rakyat</td>
-          <td>hadap</td>
+          <td>undi</td>
+          <td>tulis</td>
+          <td>laksana</td>
+          <td>jalan</td>
+          <td>pimpin</td>
         </tr>
         <tr>
           <th>3</th>
-          <td>tangguh</td>
           <td>rakyat</td>
-          <td>malaysia</td>
-          <td>projek</td>
-          <td>program</td>
+          <td>laksana</td>
+          <td>menteri</td>
+          <td>gaji</td>
+          <td>sasar</td>
         </tr>
         <tr>
           <th>4</th>
-          <td>jerman</td>
-          <td>bayar</td>
+          <td>raja</td>
           <td>parti</td>
-          <td>asli</td>
-          <td>laksana</td>
+          <td>mdb</td>
+          <td>perdana</td>
+          <td>jalan</td>
         </tr>
         <tr>
           <th>5</th>
-          <td>kapal tahan</td>
-          <td>sokong</td>
-          <td>mdb</td>
-          <td>masyarakat</td>
+          <td>lembaga</td>
+          <td>rana</td>
           <td>terima</td>
+          <td>perdana menteri</td>
+          <td>antarabangsa</td>
         </tr>
         <tr>
           <th>6</th>
-          <td>malaysia</td>
-          <td>laku</td>
-          <td>terima</td>
-          <td>bangun</td>
-          <td>lihat</td>
-        </tr>
-        <tr>
-          <th>7</th>
-          <td>rakyat</td>
-          <td>jalan lancar</td>
-          <td>tutup</td>
-          <td>raja</td>
-          <td>ahli</td>
-        </tr>
-        <tr>
-          <th>8</th>
           <td>ros</td>
-          <td>lancar</td>
-          <td>mca</td>
-          <td>rakyat malaysia</td>
+          <td>catat</td>
+          <td>urus</td>
+          <td>tingkat</td>
           <td>hidup</td>
         </tr>
         <tr>
-          <th>9</th>
-          <td>laku</td>
+          <th>7</th>
+          <td>kerja</td>
+          <td>pas</td>
+          <td>dakwa</td>
+          <td>usaha</td>
+          <td>undang</td>
+        </tr>
+        <tr>
+          <th>8</th>
           <td>teknikal</td>
-          <td>wajar</td>
-          <td>kembang</td>
-          <td>dana</td>
+          <td>tangguh</td>
+          <td>tuntut</td>
+          <td>raja</td>
+          <td>menteri</td>
+        </tr>
+        <tr>
+          <th>9</th>
+          <td>jalan</td>
+          <td>umno</td>
+          <td>sivil</td>
+          <td>rakyat</td>
+          <td>serius</td>
         </tr>
       </tbody>
     </table>
@@ -166,18 +189,19 @@ Get topics as string
 
 .. parsed-literal::
 
-    [(0, 'kapal raja pilih tangguh jerman kapal tahan malaysia rakyat ros laku'),
-     (1, 'jalan undi ros rakyat bayar sokong laku jalan lancar lancar teknikal'),
-     (2, 'tumbuh nyata putus malaysia parti mdb terima tutup mca wajar'),
+    [(0, 'ambil putus undi rakyat raja lembaga ros kerja teknikal jalan'),
+     (1, 'nyata dasar tulis laksana parti rana catat pas tangguh umno'),
+     (2, 'rana negara laksana menteri mdb terima urus dakwa tuntut sivil'),
      (3,
-      'negara malaysia rakyat projek asli masyarakat bangun raja rakyat malaysia kembang'),
-     (4, 'rana islam hadap program laksana terima lihat ahli hidup dana'),
-     (5,
-      'menteri perdana perdana menteri isu kena cakap serah malaysia rakyat gembira'),
-     (6, 'parti negara politik idea bangun tindak faktor rakyat main umno'),
-     (7, 'ambil rana umno putus positif dasar dar raja undi daftar'),
-     (8, 'negara wang mdb hutang doj tempoh ekonomi dakwa urus syarikat'),
-     (9, 'selesai jppm pilih ambil ppsmi laksana ajar projek pilih raya raya')]
+      'menteri laku jalan gaji perdana perdana menteri tingkat usaha raja rakyat'),
+     (4,
+      'malaysia negara pimpin sasar jalan antarabangsa hidup undang menteri serius'),
+     (5, 'malaysia bangun raja negara laku kongsi niaga pelbagai bina tumbuh'),
+     (6,
+      'jppm mdb tangguh daftar selesai selesai jppm tutup mdb bayar tutup mdb pimpin sokong'),
+     (7, 'mdb selesai laku hutang rana projek pendek wang tempoh pelbagai'),
+     (8, 'negara punca mca malaysia pilih percaya malu kebaji jaga kebaji jaga'),
+     (9, 'malaysia rakyat parti negara bangun program alam ajar raja resolusi')]
 
 
 

@@ -39,7 +39,7 @@ def multinomial(validate = True):
 
 def transformer(model = 'xlnet', size = 'base', validate = True):
     """
-    Load Transformer emotion model.
+    Load Transformer subjectivity model.
 
     Parameters
     ----------
@@ -78,11 +78,12 @@ def transformer(model = 'xlnet', size = 'base', validate = True):
         raise Exception(
             'size not supported, please check supported models from malaya.subjective.available_transformer_model()'
         )
-    return _softmax_class.bert(
-        PATH_SENTIMENT,
-        S3_PATH_SENTIMENT,
+    return _softmax_class.transformer(
+        PATH_SUBJECTIVE,
+        S3_PATH_SUBJECTIVE,
         'subjective',
         ['negative', 'positive'],
         model = model,
+        size = size,
         validate = validate,
     )

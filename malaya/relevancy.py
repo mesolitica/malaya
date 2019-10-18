@@ -13,7 +13,7 @@ def available_transformer_model():
 
 def transformer(model = 'xlnet', size = 'base', validate = True):
     """
-    Load Transformer emotion model.
+    Load Transformer relevancy model.
 
     Parameters
     ----------

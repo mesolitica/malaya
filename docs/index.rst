@@ -19,7 +19,7 @@ Contents:
    Dataset
    Accuracy
    Cache
-   Bert
+   Transformer
    Cluster
    Dependency
    Emotion
@@ -42,7 +42,6 @@ Contents:
    Toxic
    Word2num
    Wordvector
-   Xlnet
    Cluster
    Api
    Contributing

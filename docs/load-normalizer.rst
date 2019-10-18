@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 4.81 s, sys: 746 ms, total: 5.55 s
-    Wall time: 5.36 s
+    CPU times: user 4.72 s, sys: 714 ms, total: 5.44 s
+    Wall time: 5.25 s
 
 
 .. code:: python
@@ -38,12 +38,9 @@ Load spell normalizer
 .. parsed-literal::
 
     {'normalize': 'boleh datang lapan pagi esok tak atau minggu depan ? 02/10/2019 14:00:00 , tolong bayar tiga ribu dua ratus perpuluhan kosong ringgit sekali tahu',
-     'date': {'2 oktober 2019': datetime.datetime(2019, 10, 2, 0, 0),
-      'minggu depan': datetime.datetime(2019, 9, 23, 21, 25, 15, 683770),
-      'esok': datetime.datetime(2019, 9, 17, 21, 25, 16, 168306),
-      '2pm': datetime.datetime(2019, 9, 16, 14, 0),
-      '8 AM': datetime.datetime(2019, 9, 16, 8, 0),
-      '2 oktober 2019 2pm': datetime.datetime(2019, 10, 2, 14, 0)},
+     'date': {'minggu depan': datetime.datetime(2019, 10, 25, 1, 15, 50, 630486),
+      '2 oktober 2019 2pm': datetime.datetime(2019, 10, 2, 14, 0),
+      '8 AM esok': datetime.datetime(2019, 10, 19, 8, 0)},
      'money': {'rm 3.2k': 'RM3200.0'}}
 
 
@@ -388,7 +385,7 @@ Normalizing rules
 .. parsed-literal::
 
     {'normalize': 'dua hari lepas',
-     'date': {'2 hari lalu': datetime.datetime(2019, 9, 14, 21, 25, 16, 526464)},
+     'date': {'2 hari lalu': datetime.datetime(2019, 10, 16, 1, 15, 51, 656170)},
      'money': {}}
 
 
@@ -403,7 +400,7 @@ Normalizing rules
 .. parsed-literal::
 
     {'normalize': 'esok',
-     'date': {'esok': datetime.datetime(2019, 9, 17, 21, 25, 16, 548083)},
+     'date': {'esok': datetime.datetime(2019, 10, 19, 1, 15, 51, 675221)},
      'money': {}}
 
 
@@ -417,8 +414,8 @@ Normalizing rules
 
 .. parsed-literal::
 
-    {'normalize': '16/10/2019',
-     'date': {'okt 2019': datetime.datetime(2019, 10, 16, 0, 0)},
+    {'normalize': '17/10/2019',
+     'date': {'okt 2019': datetime.datetime(2019, 10, 17, 0, 0)},
      'money': {}}
 
 
@@ -433,7 +430,7 @@ Normalizing rules
 .. parsed-literal::
 
     {'normalize': 'dua pagi',
-     'date': {'2 AM': datetime.datetime(2019, 9, 16, 2, 0)},
+     'date': {'2 AM': datetime.datetime(2019, 10, 17, 2, 0)},
      'money': {}}
 
 
@@ -448,7 +445,7 @@ Normalizing rules
 .. parsed-literal::
 
     {'normalize': 'pukul lapan malam',
-     'date': {'pukul 8': datetime.datetime(2019, 9, 8, 0, 0)},
+     'date': {'pukul 8': datetime.datetime(2019, 10, 8, 0, 0)},
      'money': {}}
 
 
@@ -463,9 +460,7 @@ Normalizing rules
 .. parsed-literal::
 
     {'normalize': '02/01/2019 12:01:00',
-     'date': {'jan 2 2019': datetime.datetime(2019, 1, 2, 0, 0),
-      '12:01pm': datetime.datetime(2019, 9, 16, 12, 1),
-      'jan 2 2019 12:01pm': datetime.datetime(2019, 1, 2, 12, 1)},
+     'date': {'jan 2 2019 12:01pm': datetime.datetime(2019, 1, 2, 12, 1)},
      'money': {}}
 
 
@@ -480,9 +475,7 @@ Normalizing rules
 .. parsed-literal::
 
     {'normalize': 'dua petang 02/01/2019',
-     'date': {'jan 2 2019': datetime.datetime(2019, 1, 2, 0, 0),
-      '2 PM': datetime.datetime(2019, 9, 16, 14, 0),
-      '2 PM jan 2 2019': datetime.datetime(2019, 1, 2, 14, 0)},
+     'date': {'2 PM jan 2 2019': datetime.datetime(2019, 1, 2, 14, 0)},
      'money': {}}
 
 
@@ -592,8 +585,8 @@ Normalizing rules
 
 .. parsed-literal::
 
-    {'normalize': '16/01/2019',
-     'date': {'januari 2019': datetime.datetime(2019, 1, 16, 0, 0)},
+    {'normalize': '17/01/2019',
+     'date': {'januari 2019': datetime.datetime(2019, 1, 17, 0, 0)},
      'money': {}}
 
 
@@ -611,7 +604,7 @@ Normalizing rules
 .. parsed-literal::
 
     {'normalize': '14:00:00',
-     'date': {'2pm': datetime.datetime(2019, 9, 16, 14, 0)},
+     'date': {'2pm': datetime.datetime(2019, 10, 17, 14, 0)},
      'money': {}}
 
 
@@ -626,7 +619,7 @@ Normalizing rules
 .. parsed-literal::
 
     {'normalize': '14:01:00',
-     'date': {'2:01pm': datetime.datetime(2019, 9, 16, 14, 1)},
+     'date': {'2:01pm': datetime.datetime(2019, 10, 17, 14, 1)},
      'money': {}}
 
 
@@ -641,5 +634,5 @@ Normalizing rules
 .. parsed-literal::
 
     {'normalize': '02:00:00',
-     'date': {'2am': datetime.datetime(2019, 9, 16, 2, 0)},
+     'date': {'2am': datetime.datetime(2019, 10, 17, 2, 0)},
      'money': {}}
