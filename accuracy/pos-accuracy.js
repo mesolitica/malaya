@@ -5,18 +5,20 @@ option = {
             interval: 0,
             rotate: 30
         },
-        data: ['concat', 'bahdanau', 'luong', 'bert-multilanguage',
-        'bert-base', 'bert-small']
+        data: ['bert-base (467MB)',
+        'bert-small (185MB)', 'xlnet-base (231MB)', 'albert-base (43MB)']
     },
     yAxis: {
         type: 'value',
-        min:0.9,
-        max:0.97
+        min:0.945,
+        max:0.96
+    },
+    grid:{
+      bottom: 100
     },
     backgroundColor:'rgb(252,252,252)',
     series: [{
-        data: [0.913031, 0.903527, 0.901504,
-        0.966343, 0.964343, 0.963971],
+        data: [0.95174, 0.95006, 0.95581, 0.95280],
         type: 'bar',
         label: {
                 normal: {

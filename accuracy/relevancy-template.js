@@ -5,16 +5,20 @@ option = {
             interval: 0,
             rotate: 30
         },
-        data: ['bert-multilanguage','bert-base']
+        data: ['bert-base (467MB)',
+        'xlnet-base (231MB)', 'albert-base (43MB)']
     },
     yAxis: {
         type: 'value',
-        min:0.84,
-        max:0.88
+        min:0.89,
+        max:0.903
+    },
+    grid:{
+      bottom: 100
     },
     backgroundColor:'rgb(252,252,252)',
     series: [{
-        data: [0.85, 0.87],
+        data: [0.89459, 0.90125, 0.89673],
         type: 'bar',
         label: {
                 normal: {
