@@ -32,7 +32,7 @@ Look through the [Github issue](https://github.com/huseinzol05/Malaya/issues/new
 
 Look through the [Github issue](https://github.com/huseinzol05/Malaya/issues/new) or [Malaya-project](https://github.com/huseinzol05/Malaya/projects/1) for features. Any unassigned `improvement` issue is open to whoever wants to implement it.
 
-Remember, **100% Tensorflow, no Keras**.
+Remember, **100% Tensorflow (version 1.10 and above, not 2.0, yet), no Keras**.
 
 ## Dataset
 
@@ -45,6 +45,8 @@ Thanks to,
 1. [Fake news](https://github.com/huseinzol05/Malaya-Dataset#fake-news), contributed by [syazanihussin](https://github.com/syazanihussin/FLUX/tree/master/data)
 2. [Speech voice](https://github.com/huseinzol05/Malaya-Dataset#tolong-sebut), contributed by [Khalil Nooh](https://www.linkedin.com/in/khalilnooh/)
 3. [Speech voice](https://github.com/huseinzol05/Malaya-Dataset#tolong-sebut), contributed by [Mas Aisyah Ahmad](https://www.linkedin.com/in/mas-aisyah-ahmad-b46508a9/)
+4. [Singlish text dump](https://github.com/huseinzol05/malaya-dataset#singlish-text), contributed by [brytjy](https://github.com/brytjy)
+5. [Singapore news](https://github.com/huseinzol05/malaya-dataset#singapore-news), contributed by [brytjy](https://github.com/brytjy)
 
 ## Improve Documentation
 
