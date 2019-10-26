@@ -145,9 +145,11 @@ I1026 08:13:07.753678 140201609799488 validation.py:607]   next_sentence_loss = 
 
 Link to [emotion dataset](https://github.com/huseinzol05/Malaya-Dataset#emotion).
 
-Link to [notebooks](transfer-learning-emotion-base.ipynb).
+Link to [notebooks-base](transfer-learning-emotion-base.ipynb).
 
-<img src="barplot/emotion.png" width="70%" align="">
+Link to [notebooks-large](transfer-learning-emotion-large.ipynb).
+
+<img src="barplot/emotion-2.png" width="70%" align="">
 
 ## Citation
 

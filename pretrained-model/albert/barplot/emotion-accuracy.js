@@ -8,7 +8,8 @@ option = {
         data: ['multinomial-tfidf (73MB)',
         'BERT-Bahasa-base (467MB)',
         'XLNET-Bahasa-base (231MB)',
-        'ALBERT-Bahasa-base (43MB)']
+        'ALBERT-Bahasa-base (43MB)',
+        'ALBERT-Bahasa-large (67.5MB)']
     },
     yAxis: {
         type: 'value',
@@ -24,7 +25,7 @@ option = {
     },
     backgroundColor:'rgb(252,252,252)',
     series: [{
-        data: [0.77725, 0.86970, 0.87029, 0.86506],
+        data: [0.77725, 0.86970, 0.87029, 0.86506, 0.86866],
         type: 'bar',
         label: {
                 normal: {
