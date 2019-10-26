@@ -33,7 +33,7 @@ list Transformer-Bahasa available
 
 .. parsed-literal::
 
-    {'bert': ['base', 'small'], 'xlnet': ['base'], 'albert': ['base']}
+    {'bert': ['base', 'small'], 'xlnet': ['base'], 'albert': ['base', 'large']}
 
 
 
@@ -43,7 +43,7 @@ list Transformer-Bahasa available
 2. ``xlnet`` is original XLNET google architecture with ``base`` size.
 
 3. ``albert`` is A-Lite BERT google + toyota architecture with ``base``
-   size.
+   and ``large`` sizes.
 
 Load XLNET-Bahasa
 -----------------

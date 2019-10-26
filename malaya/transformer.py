@@ -1,7 +1,7 @@
 _availability = {
     'bert': ['base', 'small'],
     'xlnet': ['base'],
-    'albert': ['base'],
+    'albert': ['base', 'large'],
 }
 
 

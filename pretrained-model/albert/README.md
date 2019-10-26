@@ -118,6 +118,29 @@ INFO:tensorflow:  next_sentence_loss = 0.48904538
 I1011 07:04:45.377733 139622928910144 validation.py:607]   next_sentence_loss = 0.48904538
 ```
 
+2. **LARGE**, last update 26th October 2019, [albert-bahasa-large-26-10-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/albert-large-26-10-2019.tar.gz)
+
+  - Vocab size 20k.
+  - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news.
+  - 1.0M steps, 3 GPUs TESLA V100.
+  - LARGE size (67MB).
+
+```text
+I1026 08:13:07.752892 140201609799488 validation.py:605] ***** Eval results *****
+INFO:tensorflow:  global_step = 1000002
+I1026 08:13:07.753000 140201609799488 validation.py:607]   global_step = 1000002
+INFO:tensorflow:  loss = 3.6535444
+I1026 08:13:07.753302 140201609799488 validation.py:607]   loss = 3.6535444
+INFO:tensorflow:  masked_lm_accuracy = 0.48277542
+I1026 08:13:07.753419 140201609799488 validation.py:607]   masked_lm_accuracy = 0.48277542
+INFO:tensorflow:  masked_lm_loss = 3.155771
+I1026 08:13:07.753515 140201609799488 validation.py:607]   masked_lm_loss = 3.155771
+INFO:tensorflow:  next_sentence_accuracy = 0.70125
+I1026 08:13:07.753599 140201609799488 validation.py:607]   next_sentence_accuracy = 0.70125
+INFO:tensorflow:  next_sentence_loss = 0.501724
+I1026 08:13:07.753678 140201609799488 validation.py:607]   next_sentence_loss = 0.501724
+```
+
 ## Comparison using Emotion Dataset
 
 Link to [emotion dataset](https://github.com/huseinzol05/Malaya-Dataset#emotion).
