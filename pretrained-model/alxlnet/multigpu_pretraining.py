@@ -18,7 +18,6 @@ import tensorflow as tf
 
 import data_utils
 import model_utils
-from gpu_utils import assign_to_gpu, average_grads_and_vars
 from tensorflow.python.distribute.cross_device_ops import (
     AllReduceCrossDeviceOps,
 )
@@ -222,7 +221,7 @@ def get_model_fn():
             mems['mems'] = params['cache']
 
         #### Get loss from inputs
-        total_loss, new_mems, monitor_dict = custom_function_builder.get_loss(
+        total_loss, total_accuracy, new_mems, monitor_dict = custom_function_builder.get_loss(
             FLAGS, features, labels, mems, is_training
         )
 
@@ -318,6 +317,7 @@ def main(_):
     bsz_per_core = per_device_batch_size(
         FLAGS.train_batch_size, FLAGS.num_gpu_cores
     )
+    tf.logging.info('size of batch {}'.format(bsz_per_core))
 
     train_input_fn, train_record_info_dict = get_input_fn('train', bsz_per_core)
     tf.logging.info(

@@ -782,7 +782,8 @@ def transformer_xl(
         word_emb_k, lookup_table = embedding_lookup(
             x = inp_k,
             n_token = n_token,
-            d_embed = d_model,
+            d_embed = 128,
+            hidden_size = d_model,
             initializer = initializer,
             use_tpu = use_tpu,
             dtype = tf_float,

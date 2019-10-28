@@ -46,7 +46,7 @@ def embedding_lookup(
         project_variable = tf.get_variable(  # [embedding_size, hidden_size]
             name = 'lookup_table_2',
             shape = [d_embed, hidden_size],
-            initializer = create_initializer(initializer_range),
+            initializer = initializer,
         )
 
         if use_tpu:
@@ -312,9 +312,10 @@ def relative_positional_encoding(
             fwd_pos_seq = tf.clip_by_value(fwd_pos_seq, -clamp_len, clamp_len)
             bwd_pos_seq = tf.clip_by_value(bwd_pos_seq, -clamp_len, clamp_len)
 
+        tf.logging.info('bsz here', bsz)
         if bsz is not None:
             # With bi_data, the batch size should be divisible by 2.
-            assert bsz % 2 == 0
+            # assert bsz % 2 == 0
             fwd_pos_emb = positional_embedding(fwd_pos_seq, inv_freq, bsz // 2)
             bwd_pos_emb = positional_embedding(bwd_pos_seq, inv_freq, bsz // 2)
         else:
@@ -782,7 +783,8 @@ def transformer_xl(
         word_emb_k, lookup_table, lookup_table_2 = embedding_lookup(
             x = inp_k,
             n_token = n_token,
-            d_embed = d_model,
+            d_embed = 128,
+            hidden_size = d_model,
             initializer = initializer,
             use_tpu = use_tpu,
             dtype = tf_float,
@@ -881,7 +883,7 @@ def transformer_xl(
                 seg_embed_i = seg_embed[i]
 
             with tf.variable_scope(
-                name_variable_scope, reuse = True if layer_idx > 0 else False
+                name_variable_scope, reuse = True if i > 0 else False
             ):
                 if inp_q is not None:
                     output_h, output_g = two_stream_rel_attn(
@@ -1019,6 +1021,7 @@ def lm_accuracy(
     d_model,
     initializer,
     lookup_table = None,
+    lookup_table_2 = None,
     tie_weight = False,
     bi_data = True,
     use_tpu = False,
@@ -1045,6 +1048,7 @@ def lm_accuracy(
             dtype = hidden.dtype,
             initializer = tf.zeros_initializer(),
         )
+        softmax_w = tf.matmul(softmax_w, lookup_table_2)
 
         logits = tf.einsum('ibd,nd->ibn', hidden, softmax_w) + softmax_b
         next_sentence_predictions = tf.argmax(

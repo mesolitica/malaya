@@ -1,4 +1,3 @@
-
 Dependency parsing
 ------------------
 
@@ -852,6 +851,7 @@ sessions stored in
 
 **Graph based on F1-score.**
 
+
 multinomial
 ^^^^^^^^^^^
 
@@ -942,7 +942,7 @@ sessions stored in
 
 
 
-.. image:: models-accuracy_files/models-accuracy_54_0.png
+.. image:: models-accuracy_files/models-accuracy_55_0.png
    :width: 500px
 
 
@@ -1050,3 +1050,4 @@ albert-bahasa-base
     weighted avg    0.69740   0.69369   0.69216      8426
      samples avg    0.06495   0.06556   0.06256      8426
      
+

@@ -95,6 +95,7 @@ def two_stream_loss(FLAGS, features, labels, mems, is_training):
     output = xlnet_model.get_sequence_output()
     new_mems = {mem_name: xlnet_model.get_new_memory()}
     lookup_table = xlnet_model.get_embedding_table()
+    lookup_table_2 = xlnet_model.get_embedding_table2()
 
     initializer = xlnet_model.get_initializer()
 
@@ -107,6 +108,7 @@ def two_stream_loss(FLAGS, features, labels, mems, is_training):
             d_model = xlnet_config.d_model,
             initializer = initializer,
             lookup_table = lookup_table,
+            lookup_table_2 = lookup_table_2,
             tie_weight = True,
             bi_data = run_config.bi_data,
             use_tpu = run_config.use_tpu,

@@ -1,4 +1,3 @@
-
 Dependency parsing
 ------------------
 
@@ -852,6 +851,7 @@ sessions stored in
 
 **Graph based on F1-score.**
 
+
 multinomial
 ^^^^^^^^^^^
 
@@ -942,7 +942,7 @@ sessions stored in
 
 
 
-.. image:: models-accuracy_files/models-accuracy_54_0.png
+.. image:: models-accuracy_files/models-accuracy_55_0.png
    :width: 500px
 
 
