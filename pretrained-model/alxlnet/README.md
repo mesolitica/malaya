@@ -1,11 +1,14 @@
-# XLNET-Bahasa
+# ALXLNET-Bahasa
 
-Thanks to brightmart for opensourcing most of the source code to develop ALBERT, https://github.com/brightmart/albert_zh. Malaya just change from BERT to XLNET after that create custom pretraining and optimizer to support multigpus.
+Thanks to Google and Toyota research for released [ALBERT paper](https://arxiv.org/abs/1909.11942). Malaya just change from BERT to XLNET after that create custom pretraining and optimizer to support multigpus.
 
 ## Table of contents
   * [Objective](#objective)
   * [Acknowledgement](#acknowledgement)
   * [How-to](#how-to)
+  * [Download](#download)
+  * [Comparison using Emotion Dataset](#comparison-using-emotion-dataset)
+  * [Comparison using POS Dataset](#comparison-using-pos-dataset)
   * [Citation](#citation)
   * [Donation](#donation)
 
@@ -15,7 +18,7 @@ Thanks to brightmart for opensourcing most of the source code to develop ALBERT,
 
 ## Acknowledgement
 
-Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://www.facebook.com/ligblou), [Mesolitica](https://mesolitica.com/) and [KeyReply](https://www.keyreply.com/) for sponsoring AWS, Google and GPU clouds to train XLNET for Bahasa.
+Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://www.facebook.com/ligblou), [Mesolitica](https://mesolitica.com/) and [KeyReply](https://www.keyreply.com/) for sponsoring AWS, Google and GPU clouds to train ALXLNET for Bahasa.
 
 ## How-to
 
@@ -164,6 +167,32 @@ python3 validation.py \
   --uncased=False \
   --num_core_per_host=1
 ```
+
+## Download
+
+1. **BASE**, last update 6th November 2019,
+[alxlnet-base-6-11-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/alxlnet-base-6-11-2019.tar.gz)
+
+  - Vocab size 32k.
+  - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news.
+  - 1.0M steps, 3 GPUs TESLA V100.
+  - BASE size (34MB).
+
+## Comparison using Emotion Dataset
+
+Link to [emotion dataset](https://github.com/huseinzol05/Malaya-Dataset#emotion).
+
+Link to [notebooks-base](transfer-learning-emotion-base.ipynb).
+
+<img src="barplot/emotion.png" width="70%" align="">
+
+## Comparison using POS Dataset
+
+Link to [POS dataset](https://github.com/huseinzol05/malaya-dataset#part-of-speech).
+
+Link to [notebooks-base](transfer-learning-pos-base.ipynb).
+
+<img src="barplot/pos.png" width="70%" align="">
 
 ## Citation
 

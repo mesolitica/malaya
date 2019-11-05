@@ -8,6 +8,7 @@ Thanks to brightmart for opensourcing most of the source code to develop ALBERT,
   * [How-to](#how-to)
   * [Download](#download)
   * [Comparison using Emotion Dataset](#comparison-using-emotion-dataset)
+  * [Comparison using POS Dataset](#comparison-using-pos-dataset)
   * [Citation](#citation)
   * [Donation](#donation)
 
@@ -150,6 +151,12 @@ Link to [notebooks-base](transfer-learning-emotion-base.ipynb).
 Link to [notebooks-large](transfer-learning-emotion-large.ipynb).
 
 <img src="barplot/emotion-2.png" width="70%" align="">
+
+## Comparison using POS Dataset
+
+Link to [POS dataset](https://github.com/huseinzol05/malaya-dataset#part-of-speech).
+
+<img src="barplot/pos.png" width="70%" align="">
 
 ## Citation
 
