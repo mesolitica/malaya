@@ -510,6 +510,7 @@ def bert_tokenization(tokenizer, texts, cls = '[CLS]', sep = '[SEP]'):
     for text in texts:
         text = remove_links_alias(text)
         tokens_a = tokenizer.tokenize(text)
+        tokens_a = tokens_a if len(tokens_a)<=510 else tokens_a[:510]
         tokens = [cls] + tokens_a + [sep]
         segment_id = [0] * len(tokens)
         input_id = tokenizer.convert_tokens_to_ids(tokens)
