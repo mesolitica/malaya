@@ -7,41 +7,9 @@
 
 .. parsed-literal::
 
-    CPU times: user 12.5 s, sys: 1.77 s, total: 14.3 s
-    Wall time: 19.5 s
+    CPU times: user 6.07 s, sys: 1.3 s, total: 7.38 s
+    Wall time: 10.4 s
 
-
-Deep Siamese network
---------------------
-
-Purpose of deep siamese network to study semantic similarity between 2
-strings, near to 1.0 means more similar. Deep Siamese leverage the power
-of word-vector, and we also implemented BERT to study semantic
-similarity and BERT leverage the power of attention!
-
-List deep siamese models
-------------------------
-
-.. code:: python
-
-    malaya.similarity.available_deep_siamese()
-
-
-
-
-.. parsed-literal::
-
-    ['self-attention', 'bahdanau', 'dilated-cnn']
-
-
-
--  ``'self-attention'`` - Fast-text architecture, embedded and logits
-   layers only with self attention.
--  ``'bahdanau'`` - LSTM with bahdanau attention architecture.
--  ``'dilated-cnn'`` - Pyramid Dilated CNN architecture.
-
-Load deep siamese models
-------------------------
 
 .. code:: python
 
@@ -50,107 +18,11 @@ Load deep siamese models
     string3 = 'kerajaan perlu kisah isu iklim, pemuda mogok lapar'
     string4 = 'Kerajaan dicadang tubuh jawatankuasa khas tangani isu alam sekitar'
 
-Load bahdanau model
-^^^^^^^^^^^^^^^^^^^
-
-.. code:: python
-
-    model = malaya.similarity.deep_siamese('bahdanau')
-
-Calculate similarity between 2 strings
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-``predict`` need to give 2 strings, left and right string
-
-.. code:: python
-
-    model.predict(string1, string2)
-
-
-
-
-.. parsed-literal::
-
-    0.4267301
-
-
-
-.. code:: python
-
-    model.predict(string1, string3)
-
-
-
-
-.. parsed-literal::
-
-    0.28711933
-
-
-
-Calculate similarity more than 2 strings
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-``predict_batch`` need to give 2 lists of strings, left and right
-strings
-
-.. code:: python
-
-    model.predict_batch([string1, string2], [string3, string4])
-
-
-
-
-.. parsed-literal::
-
-    array([0.39504164, 0.33375728], dtype=float32)
-
-
-
-Load self-attention model
-^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. code:: python
-
-    model = malaya.similarity.deep_siamese('self-attention')
-
-.. code:: python
-
-    model.predict_batch([string1, string2], [string3, string4])
-
-
-
-
-.. parsed-literal::
-
-    array([0.08130383, 0.09907728], dtype=float32)
-
-
-
-Load dilated-cnn model
-^^^^^^^^^^^^^^^^^^^^^^
-
-.. code:: python
-
-    model = malaya.similarity.deep_siamese('dilated-cnn')
-
-.. code:: python
-
-    model.predict_batch([string1, string2], [string3, string4])
-
-
-
-
-.. parsed-literal::
-
-    array([0.1886251 , 0.00937402], dtype=float32)
-
-
-
 Calculate similarity using doc2vec
 ----------------------------------
 
-We need to load word vector provided by Malaya.
+We can use any word vector interface provided by Malaya to use doc2vec
+similarity interface.
 
 Important parameters, 1. ``aggregation``, aggregation function to
 accumulate word vectors. Default is ``mean``.
@@ -178,89 +50,211 @@ wikipedia much more accurate.
 
 .. code:: python
 
-    embedded_news = malaya.word2vec.load_news(64)
-    w2v_wiki = malaya.word2vec.word2vec(embedded_news['nce_weights'],
+    embedded_news = malaya.wordvector.load_news(256)
+    w2v_wiki = malaya.wordvector.load(embedded_news['nce_weights'],
                                         embedded_news['dictionary'])
+    doc2vec = malaya.similarity.doc2vec(w2v_wiki)
+
+
+.. parsed-literal::
+
+    WARNING: Logging before flag parsing goes to stderr.
+    W0911 18:39:35.259301 4561462720 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/wordvector.py:85: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
+
+    W0911 18:39:35.311326 4561462720 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/wordvector.py:96: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
+
+
+
+predict for 2 strings
+^^^^^^^^^^^^^^^^^^^^^
 
 .. code:: python
 
-    malaya.similarity.doc2vec(w2v_wiki, string1, string2)
+    doc2vec.predict(string1, string2, aggregation = 'mean', soft = False)
 
 
 
 
 .. parsed-literal::
 
-    0.9181415736675262
+    0.8368814
 
 
+
+predict batch of strings
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code:: python
 
-    malaya.similarity.doc2vec(w2v_wiki, string1, string4)
+    doc2vec.predict_batch([string1, string2], [string3, string4])
 
 
 
 
 .. parsed-literal::
 
-    0.9550771713256836
+    array([0.9507282 , 0.88227606], dtype=float32)
 
 
+
+visualize tree plot
+^^^^^^^^^^^^^^^^^^^
 
 .. code:: python
 
-    malaya.similarity.doc2vec(w2v_wiki, string1, string4, similarity = 'euclidean')
-
+    doc2vec.tree_plot([string1, string2, string3, string4])
 
 
 
 .. parsed-literal::
 
-    0.4642694249990522
+    <Figure size 504x504 with 0 Axes>
 
+
+
+.. image:: load-similarity_files/load-similarity_10_1.png
 
 
 Different similarity function different percentage.
 
-**So you can try use fast-text and elmo to do the similarity study.**
+Calculate similarity using deep encoder
+---------------------------------------
 
-Calculate similarity using summarizer
--------------------------------------
+We can use any encoder models provided by Malaya to use encoder
+similarity interface, example, BERT, XLNET, and skip-thought. Again,
+these encoder models not trained to do similarity classification, it
+just encode the strings into vector representation.
 
-We can use extractive summarization model
-``malaya.summarize.deep_extractive()`` to get strings embedded and
-calculate similarity between the vectors.
+Important parameters,
+
+1. ``similarity`` distance function to calculate similarity. Default is
+   ``cosine``.
+
+   -  ``'cosine'`` - cosine similarity.
+   -  ``'euclidean'`` - euclidean similarity.
+   -  ``'manhattan'`` - manhattan similarity.
+
+using xlnet
+^^^^^^^^^^^
 
 .. code:: python
 
-    deep_summary = malaya.summarize.deep_extractive(model = 'skip-thought')
+    xlnet = malaya.transformer.load(model = 'xlnet')
+    encoder = malaya.similarity.encoder(xlnet)
+
+
+.. parsed-literal::
+
+    WARNING: Logging before flag parsing goes to stderr.
+    W1018 09:43:51.760437 4592133568 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet_model/xlnet.py:70: The name tf.gfile.Open is deprecated. Please use tf.io.gfile.GFile instead.
+
+    W1018 09:43:51.773338 4592133568 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet.py:71: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
+
+    W1018 09:43:51.808459 4592133568 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet_model/xlnet.py:253: The name tf.variable_scope is deprecated. Please use tf.compat.v1.variable_scope instead.
+
+    W1018 09:43:51.810034 4592133568 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet_model/xlnet.py:253: The name tf.AUTO_REUSE is deprecated. Please use tf.compat.v1.AUTO_REUSE instead.
+
+    W1018 09:43:51.811383 4592133568 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet_model/modeling.py:686: The name tf.logging.info is deprecated. Please use tf.compat.v1.logging.info instead.
+
+    W1018 09:43:51.813071 4592133568 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet_model/modeling.py:693: The name tf.get_variable is deprecated. Please use tf.compat.v1.get_variable instead.
+
+    W1018 09:43:51.921389 4592133568 deprecation.py:323] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet_model/modeling.py:797: dropout (from tensorflow.python.layers.core) is deprecated and will be removed in a future version.
+    Instructions for updating:
+    Use keras.layers.dropout instead.
+    W1018 09:43:52.719312 4592133568 deprecation.py:323] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet_model/modeling.py:99: dense (from tensorflow.python.layers.core) is deprecated and will be removed in a future version.
+    Instructions for updating:
+    Use keras.layers.dense instead.
+    W1018 09:43:59.544004 4592133568 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet.py:84: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
+
+    W1018 09:44:00.761409 4592133568 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet.py:90: The name tf.train.Saver is deprecated. Please use tf.compat.v1.train.Saver instead.
+
+    W1018 09:44:01.053367 4592133568 deprecation.py:323] From /usr/local/lib/python3.6/site-packages/tensorflow/python/training/saver.py:1276: checkpoint_exists (from tensorflow.python.training.checkpoint_management) is deprecated and will be removed in a future version.
+    Instructions for updating:
+    Use standard file APIs to check for files with this prefix.
+
+
+predict for 2 strings
+^^^^^^^^^^^^^^^^^^^^^
 
 .. code:: python
 
-    malaya.similarity.summarizer(deep_summary, string1, string3)
+    encoder.predict(string1, string2)
 
 
 
 
 .. parsed-literal::
 
-    0.8722701370716095
+    0.88778234
 
 
 
-BERT model
-----------
-
-BERT is the best similarity model in term of accuracy, you can check
-similarity accuracy here,
-https://malaya.readthedocs.io/en/latest/Accuracy.html#similarity. But
-warning, the model size is 700MB! Make sure you have enough resources to
-use BERT, and installed bert-tensorflow first,
+predict batch of strings
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code:: python
 
-    model = malaya.similarity.bert()
+    encoder.predict_batch([string1, string2], [string3, string4])
+
+
+
+
+.. parsed-literal::
+
+    array([0.97005975, 0.9447437 ], dtype=float32)
+
+
+
+visualize tree plot
+^^^^^^^^^^^^^^^^^^^
+
+.. code:: python
+
+    encoder.tree_plot([string1, string2, string3, string4])
+
+
+
+.. parsed-literal::
+
+    <Figure size 504x504 with 0 Axes>
+
+
+
+.. image:: load-similarity_files/load-similarity_20_1.png
+
+
+List available Transformer models
+---------------------------------
+
+.. code:: python
+
+    malaya.similarity.available_transformer_model()
+
+
+
+
+.. parsed-literal::
+
+    {'bert': ['base'], 'xlnet': ['base'], 'albert': ['base']}
+
+
+
+Make sure you can check accuracy chart from here first before select a
+model, https://malaya.readthedocs.io/en/latest/Accuracy.html#similarity
+
+**You might want to use ALBERT, a very small size, 43MB, but the
+accuracy is still on the top notch.**
+
+.. code:: python
+
+    model = malaya.similarity.transformer(model = 'albert')
+
+
+.. parsed-literal::
+
+    W1018 09:45:25.593791 4592133568 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:68: The name tf.gfile.GFile is deprecated. Please use tf.io.gfile.GFile instead.
+
+
 
 .. code:: python
 
@@ -271,7 +265,43 @@ use BERT, and installed bert-tensorflow first,
 
 .. parsed-literal::
 
-    0.97767043
+    0.043411437
+
+
+
+predict batch
+^^^^^^^^^^^^^
+
+you need to give list of left strings, and list of right strings.
+
+first left string will compare will first right string and so on.
+
+.. code:: python
+
+    model.predict_batch([string1, string2], [string3, string4])
+
+
+
+
+.. parsed-literal::
+
+    array([0.07098369, 0.0001071 ], dtype=float32)
+
+
+
+.. code:: python
+
+    model = malaya.similarity.transformer(model = 'xlnet')
+
+
+.. parsed-literal::
+
+    WARNING: Logging before flag parsing goes to stderr.
+    W1018 09:52:34.326930 4583105984 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:68: The name tf.gfile.GFile is deprecated. Please use tf.io.gfile.GFile instead.
+
+    W1018 09:52:34.332230 4583105984 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:69: The name tf.GraphDef is deprecated. Please use tf.compat.v1.GraphDef instead.
+
+    W1018 09:52:39.548710 4583105984 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:64: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
 
 
 
@@ -284,586 +314,4 @@ use BERT, and installed bert-tensorflow first,
 
 .. parsed-literal::
 
-    array([0.9253927, 0.0317315], dtype=float32)
-
-
-
-**BERT is the best!**
-
-Topics similarity
------------------
-
-If you are interested in multiple topics searching inside a string when
-giving set of topics to supervised, Malaya provided some interface and
-topics related to political landscape in Malaysia
-
-.. code:: python
-
-    news = 'najib razak dan mahathir mengalami masalah air di kemamam terengganu'
-    second_news = 'ikat penyedia perkhidmatan jalur lebar Telekom Malaysia (TM) perlu mencari jalan penyelesaian bagi meningkatkan akses capaian Internet ke seluruh negara, kata Menteri Komunikasi dan Multimedia, Gobind Singh Deo. Beliau berkata menjadi dasar kerajaan untuk membekalkan akses Internet jalur lebar kepada semua dan memberi penekanan kepada kualiti perkhidmatan yang terbaik. "Dasar kerajaan untuk bekalkan akses kepada semua bukan sekadar pembekalan sahaja tetapi beri penekanan kepada kualiti perkhidmatan yang baik dan dapat bersaing dengan negara lain pada tahap antarabangsa," kata Gobind Singh menerusi catatan di laman rasmi Twitter beliau, malam tadi. Beliau berkata demikian sebagai respons terhadap aduan beberapa pengguna Twitter berhubung akses Internet yang masih tidak stabil serta harga yang tidak berpatutan di beberapa lokasi di seluruh negara.'
-
-Topics provided by malaya
--------------------------
-
-Topics
-^^^^^^
-
-.. code:: python
-
-    malaya.topic.topic['sosial']
-
-
-
-
-.. parsed-literal::
-
-    ['sosial', 'kehidupan', 'taraf hidup', 'sosiologi', 'keusahawan', 'masyarakat']
-
-
-
-Influencer
-^^^^^^^^^^
-
-.. code:: python
-
-    malaya.topic.influencer['mahathir']
-
-
-
-
-.. parsed-literal::
-
-    ['tun mahathir',
-     'madey',
-     'dr mahathir',
-     'tun m',
-     'mahathir',
-     'madir',
-     'dr m',
-     'mahathir muhamad']
-
-
-
-location
-^^^^^^^^
-
-.. code:: python
-
-    malaya.topic.location[0]
-
-
-
-
-.. parsed-literal::
-
-    {'negeri': 'JOHOR', 'parlimen': 'SEGAMAT', 'dun': 'BULOH KASAP'}
-
-
-
-wakil rakyat
-^^^^^^^^^^^^
-
-.. code:: python
-
-    malaya.topic.calon[0]
-
-
-
-
-.. parsed-literal::
-
-    {'KodN': 1,
-     'KodParlimen': 1,
-     'KodKawasan': 1,
-     'JenisKawasan': 'PARLIMEN',
-     'susunan': 2,
-     'NamaCalon': 'DATUK ZAHIDI BIN ZAINUL ABIDIN',
-     'parti': 'BN'}
-
-
-
-Train fuzzy text similarity
----------------------------
-
-I want to train topics related when given a string. You can give any
-corpus, the format is,
-
-.. code:: python
-
-   {'left':['right1','right2']}
-
-.. code:: python
-
-    fuzzy = malaya.similarity.fuzzy(malaya.topic.topic)
-
-.. code:: python
-
-    fuzzy.get_similarity(news,fuzzy_ratio = 60)
-
-
-
-
-.. parsed-literal::
-
-    ['tan sri mokhzani mahathir', 'masalah air', 'mahathir', 'najib razak']
-
-
-
-.. code:: python
-
-    fuzzy.get_similarity(second_news,fuzzy_ratio = 90)
-
-
-
-
-.. parsed-literal::
-
-    ['pendidikan',
-     'sosial media',
-     'politik',
-     'kerajaan',
-     'telekom malaysia',
-     'twitter',
-     'teknologi',
-     'internet']
-
-
-
-Train bag-of-word text similarity
----------------------------------
-
-I want to train topics related when given a string. You can give any
-corpus, the format is,
-
-.. code:: python
-
-   {'left':['right1','right2']}
-
-bag-of-word text similarity fitted by using character wised n-gram.
-
-``vectorizer`` supported ``['tfidf','count','skip-gram']``.
-
-.. code:: python
-
-    tfidf = malaya.similarity.bow(malaya.topic.topic,vectorizer = 'tfidf')
-
-.. code:: python
-
-    tfidf.get_similarity(second_news)
-
-
-
-
-.. parsed-literal::
-
-    ['perkhidmatan awam', 'kkmm', 'universiti islam antarabangsa', 'twitter']
-
-
-
-.. code:: python
-
-    count = malaya.similarity.bow(malaya.topic.topic,vectorizer = 'count')
-
-.. code:: python
-
-    count.get_similarity(second_news)
-
-
-
-
-.. parsed-literal::
-
-    ['timbalan perdana menteri',
-     'parti islam semalaysia',
-     'pendidikan',
-     '1malaysia',
-     'gaji menteri',
-     'mic',
-     'bebas tahanan',
-     'twitter',
-     'infrastruktur',
-     'suruhanjaya pilihan raya malaysia',
-     'perkasa',
-     'pakatan harapan',
-     'kerajaan',
-     'datuk seri ti lian ker',
-     'tentera malaysia',
-     'gerakan',
-     'universiti islam antarabangsa',
-     'ptptn',
-     'rela',
-     'ahli dewan undangan negeri',
-     'teknologi',
-     'politik',
-     'telekom malaysia',
-     'kkmm',
-     'kementerian dalam negeri',
-     'perkhidmatan awam',
-     'bursa malaysia',
-     'parti pribumi bersatu malaysia',
-     'ppbm',
-     'hutang negara',
-     'menyiasat skandal',
-     'majlis pakatan harapan',
-     'perdana menteri',
-     'menteri pertahanan']
-
-
-
-.. code:: python
-
-    skip = malaya.similarity.bow(malaya.topic.topic,vectorizer = 'skip-gram')
-
-.. code:: python
-
-    skip.get_similarity(second_news)
-
-
-
-
-.. parsed-literal::
-
-    []
-
-
-
-Train siamese network text similarity
--------------------------------------
-
-All parameters supported,
-
-.. code:: python
-
-       """
-       Train a deep siamese network for text similarity
-
-       Parameters
-       ----------
-       dictionary: dict
-           format {'left':['right']}
-       epoch: int, (default=5)
-           iteration numbers
-       batch_size: int, (default=32)
-           batch size for every feed, batch size must <= size of corpus
-       embedding_size: int, (default=256)
-           vector size representation for a word
-       output_size: int, (default=100)
-           encoder output size, bigger means more vector definition
-       maxlen: int, (default=100)
-           max length of a string to be train
-       ngram: tuple, (default=(1,4))
-           n-grams size to train a corpus
-       num_layers: int, (default=100)
-           number of bidirectional rnn layers
-
-       Returns
-       -------
-       _DEEP_SIAMESE_SIMILARITY: malaya.similarity._DEEP_SIAMESE_SIMILARITY class
-       """
-
-.. code:: python
-
-    siamese = malaya.similarity.deep_siamese(malaya.topic.topic,epoch=3)
-    siamese.get_similarity(news)
-
-
-.. parsed-literal::
-
-    minibatch loop: 100%|██████████| 137/137 [01:42<00:00,  1.53it/s, accuracy=0.5, cost=0.129]
-    minibatch loop: 100%|██████████| 137/137 [01:40<00:00,  1.52it/s, accuracy=0.833, cost=0.108]
-    minibatch loop: 100%|██████████| 137/137 [01:40<00:00,  1.54it/s, accuracy=1, cost=0.0514]
-
-
-
-
-.. parsed-literal::
-
-    ['parti islam semalaysia',
-     'pusat transformasi bandar',
-     'malaysia baru',
-     'mic',
-     'bridge city park',
-     'suruhanjaya pilihan raya malaysia',
-     'kotak undi',
-     'lgbt',
-     'tentera malaysia',
-     'dewan rakyat',
-     'isu kemiskinan',
-     'undi rosak',
-     'produk berbahaya',
-     'politik',
-     'telekom malaysia',
-     'bank negara',
-     'kertas undi',
-     'malay mail',
-     'gaji minimum',
-     'donald trump',
-     'najib razak',
-     'bank malaysia',
-     'humanoid',
-     'perkhidmatan awam',
-     'rosmah mansur',
-     'isu dadah',
-     'stock market malaysia',
-     'bursa malaysia',
-     'pusat daerah mangundi',
-     'undi pos',
-     'universiti teknologi malaysia',
-     'hutang negara',
-     'makro-ekonomi',
-     'rtm',
-     'pengangkutan awam']
-
-
-
-You can speed up your training iteration by using
-`malaya-gpu <https://pypi.org/project/malaya-gpu/>`__
-
-After you trained, actually you save that model by using method
-``save_model``. Just provide directory you want to save.
-
-.. code:: python
-
-    siamese.save_model('siamese')
-
-.. code:: python
-
-    !ls siamese
-
-
-.. parsed-literal::
-
-    checkpoint                     model.ckpt.meta
-    model.ckpt.data-00000-of-00001 model.json
-    model.ckpt.index
-
-
-You can load your model but need to use interface provided by malaya,
-``malaya.similarity.load_siamese``
-
-.. code:: python
-
-    siamese = malaya.similarity.load_siamese('siamese')
-
-
-.. parsed-literal::
-
-    INFO:tensorflow:Restoring parameters from siamese/model.ckpt
-
-
-.. code:: python
-
-    siamese.get_similarity(news)
-
-
-
-
-.. parsed-literal::
-
-    ['pilihan raya umum ke-14',
-     'parti islam semalaysia',
-     'malaysia baru',
-     'pengedar dadah',
-     'suruhanjaya pilihan raya malaysia',
-     'kotak undi',
-     'lgbt',
-     'makanan',
-     'tentera malaysia',
-     'gerakan',
-     'isu kemiskinan',
-     'undi rosak',
-     'produk berbahaya',
-     'bloomberg',
-     'telekom malaysia',
-     'bank negara',
-     'kertas undi',
-     'malay mail',
-     'gaji minimum',
-     '1mdb',
-     'najib razak',
-     'bank malaysia',
-     'humanoid',
-     'perkhidmatan awam',
-     'rosmah mansur',
-     'isu dadah',
-     'stock market malaysia',
-     'bursa malaysia',
-     'undi pos',
-     'universiti teknologi malaysia',
-     'hutang negara',
-     'makro-ekonomi',
-     'rtm',
-     'pengangkutan awam']
-
-
-
-Train skipthought text similarity
----------------------------------
-
-All parameters supported,
-
-.. code:: python
-
-       """
-       Train a deep skip-thought network for text similarity
-
-       Parameters
-       ----------
-       dictionary: dict
-           format {'left':['right']}
-       epoch: int, (default=5)
-           iteration numbers
-       batch_size: int, (default=32)
-           batch size for every feed, batch size must <= size of corpus
-       embedding_size: int, (default=256)
-           vector size representation for a word
-       maxlen: int, (default=100)
-           max length of a string to be train
-       ngram: tuple, (default=(1,4))
-           n-grams size to train a corpus
-
-       Returns
-       -------
-       _DEEP_SIMILARITY: malaya.similarity._DEEP_SIMILARITY class
-       """
-
-.. code:: python
-
-    skipthought = malaya.similarity.deep_skipthought(malaya.topic.topic,epoch=3)
-    skipthought.get_similarity(news)
-
-
-.. parsed-literal::
-
-    minibatch loop: 100%|██████████| 137/137 [01:20<00:00,  1.93it/s, cost=3.4]
-    minibatch loop: 100%|██████████| 137/137 [01:17<00:00,  1.91it/s, cost=0.793]
-    minibatch loop: 100%|██████████| 137/137 [01:17<00:00,  1.90it/s, cost=0.342]
-
-
-
-
-.. parsed-literal::
-
-    ['pilihan raya umum ke-14',
-     'pusat transformasi bandar',
-     'hari raya',
-     'nga kor ming',
-     'programming language',
-     '#fakenews',
-     'mikro-ekonomi',
-     'datuk seri azmin ali',
-     'recep tayyip erdogan',
-     'k-pop',
-     'malaysia-indonesia',
-     'tengku razaleigh hamzah',
-     'anthony loke siew fook',
-     'lee kuan yew',
-     'rais yatim',
-     'undi rosak',
-     'kkmm',
-     'inisiatif peduli rakyat',
-     'tunku ismail idris',
-     'pusat daerah mangundi',
-     'makro-ekonomi',
-     'new straits times']
-
-
-
-You can speed up your training iteration by using
-`malaya-gpu <https://pypi.org/project/malaya-gpu/>`__
-
-After you trained, actually you save that model by using method
-``save_model``. Just provide directory you want to save.
-
-.. code:: python
-
-    skipthought.save_model('skipthought')
-
-.. code:: python
-
-    !ls skipthought
-
-
-.. parsed-literal::
-
-    checkpoint                     model.ckpt.meta
-    model.ckpt.data-00000-of-00001 model.json
-    model.ckpt.index
-
-
-You can load your model but need to use interface provided by malaya,
-``malaya.similarity.load_skipthought``
-
-.. code:: python
-
-    skipthought = malaya.similarity.load_skipthought('skipthought')
-
-
-.. parsed-literal::
-
-    INFO:tensorflow:Restoring parameters from skipthought/model.ckpt
-
-
-.. code:: python
-
-    skipthought.get_similarity(news)
-
-
-
-
-.. parsed-literal::
-
-    ['pilihan raya umum ke-14',
-     'pusat transformasi bandar',
-     'hari raya',
-     'nga kor ming',
-     'programming language',
-     '#fakenews',
-     'mikro-ekonomi',
-     'datuk seri azmin ali',
-     'recep tayyip erdogan',
-     'k-pop',
-     'malaysia-indonesia',
-     'tengku razaleigh hamzah',
-     'anthony loke siew fook',
-     'lee kuan yew',
-     'rais yatim',
-     'undi rosak',
-     'kkmm',
-     'inisiatif peduli rakyat',
-     'tunku ismail idris',
-     'pusat daerah mangundi',
-     'makro-ekonomi',
-     'new straits times']
-
-
-
-Using fuzzy for location
-------------------------
-
-.. code:: python
-
-    malaya.similarity.fuzzy_location('saya suka makan sate di sungai petani')
-
-
-
-
-.. parsed-literal::
-
-    {'negeri': [], 'parlimen': ['sungai petani'], 'dun': []}
-
-
-
-Check location from a string
-----------------------------
-
-.. code:: python
-
-    malaya.similarity.is_location('sungai petani')
-
-
-
-
-.. parsed-literal::
-
-    True
+    array([0.99143314, 0.96505105], dtype=float32)

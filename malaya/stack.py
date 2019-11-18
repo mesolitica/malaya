@@ -59,7 +59,17 @@ def voting_stack(models, text):
         return output
 
 
-def predict_stack(models, text, mode = 'gmean'):
+dict_function = {
+    'gmean': gmean,
+    'hmean': hmean,
+    'mean': np.mean,
+    'min': np.amin,
+    'max': np.amax,
+    'median': hdmedian,
+}
+
+
+def predict_stack(models, strings, mode = 'gmean'):
     """
     Stacking for predictive models.
 
@@ -67,8 +77,8 @@ def predict_stack(models, text, mode = 'gmean'):
     ----------
     models: list
         list of models.
-    text: str
-        string to predict.
+    strings: str or list of str
+        strings to predict.
     mode : str, optional (default='gmean')
         Model architecture supported. Allowed values:
 
@@ -86,42 +96,45 @@ def predict_stack(models, text, mode = 'gmean'):
     """
     if not isinstance(models, list):
         raise ValueError('models must be a list')
-    if not isinstance(text, str):
-        raise ValueError('text must be a string')
+    if isinstance(strings, list):
+        if not isinstance(strings[0], str):
+            raise ValueError('input must be a list of strings or a string')
+    else:
+        if not isinstance(strings, str):
+            raise ValueError('input must be a list of strings or a string')
+    if isinstance(strings, str):
+        strings = [strings]
     if not isinstance(mode, str):
         raise ValueError('mode must be a string')
-    if mode.lower() == 'gmean':
-        mode = gmean
-    elif mode.lower() == 'hmean':
-        mode = hmean
-    elif mode.lower() == 'mean':
-        mode = np.mean
-    elif mode.lower() == 'min':
-        mode = np.amin
-    elif mode.lower() == 'max':
-        mode = np.amax
-    elif mode.lower() == 'median':
-        mode = hdmedian
-    else:
+    if mode.lower() not in dict_function:
         raise Exception(
             "mode not supported, only support ['gmean','hmean','mean','min','max','median']"
         )
-    labels, results = [], []
+    mode = dict_function[mode.lower()]
+
+    for i in range(len(models)):
+        if not 'predict_batch' in dir(models[i]):
+            raise ValueError('all models must able to predict_batch')
+
+    labels, results = None, []
     for i in range(len(models)):
         nested_results = []
-        if not 'predict' in dir(models[i]):
-            raise ValueError('all models must able to predict')
         result = (
-            models[i].predict(text)
+            models[i].predict_batch(strings)
             if models[i].predict.__defaults__ is None
-            else models[i].predict(text, get_proba = True)
+            else models[i].predict_batch(strings, get_proba = True)
         )
-        for key, item in result.items():
-            if 'attention' in key:
-                continue
-            if key not in labels:
-                labels.append(key)
-            nested_results.append(item)
+        for r in result:
+            l = list(r.keys())
+            if not labels:
+                labels = l
+            else:
+                if l != labels:
+                    raise ValueError('domain classification must be same!')
+            nested_results.append(list(r.values()))
         results.append(nested_results)
     results = mode(np.array(results), axis = 0)
-    return {label: results[no] for no, label in enumerate(labels)}
+    outputs = []
+    for result in results:
+        outputs.append({label: result[no] for no, label in enumerate(labels)})
+    return outputs

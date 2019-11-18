@@ -1,20 +1,21 @@
-import sys
-import warnings
-
-if not sys.warnoptions:
-    warnings.simplefilter('ignore')
-
 import re
 from .texts._tatabahasa import tatabahasa_dict, hujung, permulaan
 from ._utils import _tag_class
 from ._utils._paths import PATH_POS, S3_PATH_POS
 
 
-def available_deep_model():
+_availability = {
+    'bert': ['base', 'small'],
+    'xlnet': ['base'],
+    'albert': ['base'],
+}
+
+
+def available_transformer_model():
     """
-    List available deep learning entities models, ['concat', 'bahdanau', 'luong', 'entity-network', 'attention'].
+    List available transformer Part-Of-Speech Tagging models.
     """
-    return ['concat', 'bahdanau', 'luong', 'entity-network', 'attention']
+    return _availability
 
 
 def _naive_POS_word(word):
@@ -61,50 +62,52 @@ def naive(string):
     return results
 
 
-def crf(validate = True):
+def transformer(model = 'xlnet', size = 'base', validate = True):
     """
-    Load CRF POS Recognition model.
+    Load Transformer POS Tagging model, transfer learning Transformer + CRF.
 
     Parameters
     ----------
-    validate: bool, optional (default=True)
-        if True, malaya will check model availability and download if not available.
-
-    Returns
-    -------
-    CRF : malaya.sklearn_model.CRF class
-    """
-    return _tag_class.crf(
-        PATH_POS, S3_PATH_POS, 'pos', is_lower = False, validate = validate
-    )
-
-
-def deep_model(model = 'concat', validate = True):
-    """
-    Load deep learning POS Recognition model.
-
-    Parameters
-    ----------
-    model : str, optional (default='bahdanau')
+    model : str, optional (default='bert')
         Model architecture supported. Allowed values:
 
-        * ``'concat'`` - Concating character and word embedded for BiLSTM.
-        * ``'bahdanau'`` - Concating character and word embedded including Bahdanau Attention for BiLSTM.
-        * ``'luong'`` - Concating character and word embedded including Luong Attention for BiLSTM.
-        * ``'entity-network'`` - Concating character and word embedded on hybrid Entity-Network and RNN.
-        * ``'attention'`` - Concating character and word embedded with self-attention for BiLSTM.
+        * ``'bert'`` - BERT architecture from google.
+        * ``'xlnet'`` - XLNET architecture from google.
+        * ``'albert'`` - ALBERT architecture from google.
+    size : str, optional (default='base')
+        Model size supported. Allowed values:
+
+        * ``'base'`` - BASE size.
+        * ``'small'`` - SMALL size.
     validate: bool, optional (default=True)
         if True, malaya will check model availability and download if not available.
 
     Returns
     -------
-    TAGGING: malaya.tensorflow_model.TAGGING class
+    MODEL : Transformer class
     """
-    return _tag_class.deep_model(
+    if not isinstance(model, str):
+        raise ValueError('model must be a string')
+    if not isinstance(size, str):
+        raise ValueError('size must be a string')
+    if not isinstance(validate, bool):
+        raise ValueError('validate must be a boolean')
+
+    model = model.lower()
+    size = size.lower()
+    if model not in _availability:
+        raise Exception(
+            'model not supported, please check supported models from malaya.pos.available_transformer_model()'
+        )
+    if size not in _availability[model]:
+        raise Exception(
+            'size not supported, please check supported models from malaya.pos.available_transformer_model()'
+        )
+    return _tag_class.transformer(
         PATH_POS,
         S3_PATH_POS,
         'pos',
         model = model,
-        is_lower = False,
+        size = size,
         validate = validate,
     )

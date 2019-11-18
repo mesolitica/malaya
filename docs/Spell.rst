@@ -1,4 +1,4 @@
-Speller
+Spelling Correction
 ==========================
 
 .. note::

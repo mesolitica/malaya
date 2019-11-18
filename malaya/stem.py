@@ -1,14 +1,6 @@
-import sys
-import warnings
-
-if not sys.warnoptions:
-    warnings.simplefilter('ignore')
-
 import re
 import json
-import tensorflow as tf
 from unidecode import unidecode
-from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 from .texts._tatabahasa import permulaan, hujung, rules_normalizer
 from ._utils._utils import (
     load_graph,
@@ -33,6 +25,8 @@ UNK = 3
 
 
 def _load_sastrawi():
+    from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
+
     global factory, sastrawi_stemmer
     factory = StemmerFactory()
     sastrawi_stemmer = factory.create_stemmer()
@@ -117,12 +111,12 @@ def naive(word):
     """
     if not isinstance(word, str):
         raise ValueError('input must be a string')
-    hujung_result = [e for e in hujung if word.endswith(e)]
+    hujung_result = [v for k, v in hujung.items() if word.endswith(k)]
     if len(hujung_result):
         hujung_result = max(hujung_result, key = len)
         if len(hujung_result):
             word = word[: -len(hujung_result)]
-    permulaan_result = [e for e in permulaan if word.startswith(e)]
+    permulaan_result = [v for k, v in permulaan.items() if word.startswith(k)]
     if len(permulaan_result):
         permulaan_result = max(permulaan_result, key = len)
         if len(permulaan_result):

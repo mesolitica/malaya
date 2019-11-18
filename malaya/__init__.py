@@ -6,19 +6,13 @@
 # URL: <https://malaya.readthedocs.io/>
 # For license information, see https://github.com/huseinzol05/Malaya/blob/master/LICENSE
 
-import sys
-import warnings
-
-if not sys.warnoptions:
-    warnings.simplefilter('ignore')
-
 import os
 from shutil import rmtree
 from pathlib import Path
 
 home = os.path.join(str(Path.home()), 'Malaya')
-version = '2.6'
-bump_version = '2.6.1'
+version = '3.0'
+bump_version = '3.0'
 version_path = os.path.join(home, 'version')
 
 
@@ -34,9 +28,6 @@ def _delete_macos():
         rmtree(macos)
 
 
-from ._utils._paths import MALAY_TEXT, MALAY_TEXT_200K
-from ._utils._utils import DisplayablePath, download_file
-
 try:
     if not os.path.exists(home):
         os.makedirs(home)
@@ -47,9 +38,9 @@ except:
     )
 
 _delete_macos()
+from ._utils._utils import DisplayablePath, download_file
 
 if not os.path.isfile(version_path):
-    print('not found any version, deleting previous version models..')
     _delete_folder(home)
     with open(version_path, 'w') as fopen:
         fopen.write(version)
@@ -58,14 +49,10 @@ else:
         cached_version = fopen.read()
     try:
         if float(cached_version) < 1:
-            print(
-                'Found old version of Malaya, deleting previous version models..'
-            )
             _delete_folder(home)
             with open(version_path, 'w') as fopen:
                 fopen.write(version)
     except:
-        print('Found old version of Malaya, deleting previous version models..')
         _delete_folder(home)
         with open(version_path, 'w') as fopen:
             fopen.write(version)
@@ -93,7 +80,7 @@ def clear_all_cache():
             fopen.write(version)
         return True
     except:
-        print(
+        raise Exception(
             'failed to clear cached models. Please make sure %s is able to overwrite from Malaya'
             % (home)
         )
@@ -120,12 +107,14 @@ def clear_cache(location):
 
 def load_malay_dictionary():
     """
-    load Pustaka dictionary for Spelling Corrector and Normalizer.
+    load 20k Pustaka dictionary.
 
     Returns
     -------
     list: list of strings
     """
+    from ._utils._paths import MALAY_TEXT
+
     if not os.path.isfile(MALAY_TEXT):
         print('downloading Malay texts')
         download_file('v6/malay-text.txt', MALAY_TEXT)
@@ -148,12 +137,13 @@ def load_malay_dictionary():
 
 def load_200k_malay_dictionary():
     """
-    load 200k words dictionary for Spelling Corrector and Normalizer.
+    load 200k words dictionary.
 
     Returns
     -------
     list: list of strings
     """
+    from ._utils._paths import MALAY_TEXT_200K
 
     if not os.path.isfile(MALAY_TEXT_200K):
         print('downloading 200k Malay texts')
@@ -176,7 +166,9 @@ def describe_pos_malaya():
     """
     Describe Malaya Part-Of-Speech supported (deprecated, use describe_pos() instead)
     """
-    print(
+    import warnings
+
+    warnings.warn(
         'This classes are deprecated, we prefer to use `malaya.describe_pos()`'
     )
     print('KT - Kata Tanya')
@@ -227,7 +219,9 @@ def describe_entities_malaya():
     """
     Describe Malaya Entities supported (deprecated, use describe_entities() instead)
     """
-    print(
+    import warnings
+
+    warnings.warn(
         'This classes are deprecated, we prefer to use `malaya.describe_entities()`'
     )
     print('PRN - person, group of people, believes, etc')
@@ -286,16 +280,14 @@ def describe_dependency():
     print('root - root')
     print('xcomp - open clausal complement')
     print(
-        'you can read more from https://universaldependencies.org/en/dep/xcomp.html'
+        'you can read more from https://universaldependencies.org/treebanks/id_pud/index.html'
     )
 
 
 from . import cluster
 from . import dependency
-from . import elmo
 from . import emotion
 from . import entity
-from . import fast_text
 from . import language_detection
 from . import normalize
 from . import num2word
@@ -311,7 +303,7 @@ from . import subjective
 from . import summarize
 from . import topic_model
 from . import toxic
-from . import word_mover
+from . import transformer
 from . import word2num
-from . import word2vec
+from . import wordvector
 from .texts import vectorizer

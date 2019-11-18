@@ -1,7 +1,6 @@
 import itertools
 import random
 import inspect
-from .texts._text_functions import simple_textcleaning
 
 _accepted_pos = [
     'ADJ',
@@ -30,6 +29,33 @@ _accepted_entities = [
     'time',
     'event',
 ]
+
+
+def _check_digit(string):
+    return any(i.isdigit() for i in string)
+
+
+def _make_upper(p, o):
+    p_split = p.split()
+    o_split = o.split()
+    return ' '.join(
+        [
+            s.title() if o_split[no][0].isupper() else s
+            for no, s in enumerate(p_split)
+        ]
+    )
+
+
+def _simple_textcleaning(string, lowering = True):
+    """
+    use by topic modelling
+    only accept A-Z, a-z
+    """
+    string = unidecode(string)
+    string = re.sub(
+        '[^A-Za-z0-9\-\\/\'"!@#$%^&*()-+={}\[\];:<>,.? ]+', ' ', string
+    )
+    return re.sub(r'[ ]+', ' ', string.lower() if lowering else string).strip()
 
 
 def _pad_sequence(
@@ -189,7 +215,7 @@ def w2v_augmentation(
     random_select = True,
     augment_counts = 1,
     top_n = 5,
-    cleaning_function = simple_textcleaning,
+    cleaning_function = _simple_textcleaning,
 ):
     """
     augmenting a string using word2vec
@@ -211,7 +237,7 @@ def w2v_augmentation(
         augmentation count for a string.
     top_n: int, (default=5)
         number of nearest neighbors returned.
-    cleaning_function: function, (default=simple_textcleaning)
+    cleaning_function: function, (default=malaya.generator._simple_textcleaning)
 
 
     Returns
@@ -228,6 +254,8 @@ def w2v_augmentation(
         raise ValueError('soft must be a boolean')
     if not hasattr(w2v, 'batch_n_closest'):
         raise ValueError('word2vec must has `batch_n_closest` method')
+    if not hasattr(w2v, '_dictionary'):
+        raise ValueError('word2vec must has `_dictionary` attribute')
     if not isinstance(random_select, bool):
         raise ValueError('random_select must be a boolean')
     if not isinstance(top_n, int):
@@ -239,6 +267,7 @@ def w2v_augmentation(
             raise ValueError(
                 'if random_select is False, augment_counts need to be less than or equal to top_n'
             )
+    original_string = string
     if cleaning_function:
         string = cleaning_function(string)
     string = string.split()
@@ -266,5 +295,5 @@ def w2v_augmentation(
             else:
                 index = i
             string_[indices[no]] = results[no][index]
-        augmented.append(' '.join(string_))
+        augmented.append(_make_upper(' '.join(string_), original_string))
     return augmented

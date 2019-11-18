@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 10.9 s, sys: 920 ms, total: 11.8 s
-    Wall time: 12.1 s
+    CPU times: user 6.32 s, sys: 1.43 s, total: 7.76 s
+    Wall time: 11.6 s
 
 
 Explanation
@@ -42,6 +42,26 @@ Load multinomial model
 
 .. parsed-literal::
 
+    downloading frozen /Users/huseinzol/Malaya/subjective/multinomial model
+
+
+.. parsed-literal::
+
+    1.00MB [00:00, 3.75MB/s]                   
+      0%|          | 0.00/7.13 [00:00<?, ?MB/s]
+
+.. parsed-literal::
+
+    downloading frozen /Users/huseinzol/Malaya/subjective/multinomial vector
+
+
+.. parsed-literal::
+
+    8.00MB [00:01, 5.21MB/s]                          
+
+
+.. parsed-literal::
+
     {'negative': 0.009240767162200498, 'positive': 0.0759232837799535, 'neutral': 0.914835949057846}
     {'negative': 0.7214589553228845, 'positive': 0.0027854104467711456, 'neutral': 0.2757556342303443}
 
@@ -59,88 +79,46 @@ Load multinomial model
 
 
 
-Load xgb model
---------------
+List available Transformer models
+---------------------------------
 
 .. code:: ipython3
 
-    model = malaya.subjective.xgb()
-    print(model.predict(positive_text,get_proba=True))
-    print(model.predict(negative_text,get_proba=True))
-    model.predict_batch([negative_text,negative_text],get_proba=True)
-
-
-.. parsed-literal::
-
-    {'negative': 0.0085689435, 'positive': 0.14310563, 'neutral': 0.84832543}
-    {'negative': 0.84999824, 'positive': 0.0015000176, 'neutral': 0.14850175}
+    malaya.subjective.available_transformer_model()
 
 
 
 
 .. parsed-literal::
 
-    [{'negative': 0.84999824, 'positive': 0.0015000176, 'neutral': 0.14850175},
-     {'negative': 0.84999824, 'positive': 0.0015000176, 'neutral': 0.14850175}]
+    {'bert': ['base', 'small'], 'xlnet': ['base'], 'albert': ['base']}
 
 
 
-List available deep learning models
------------------------------------
+Make sure you can check accuracy chart from here first before select a
+model,
+https://malaya.readthedocs.io/en/latest/Accuracy.html#subjectivity-analysis
+
+**You might want to use ALBERT, a very small size, 43MB, but the
+accuracy is still on the top notch.**
+
+Load BERT model
+---------------
 
 .. code:: ipython3
 
-    malaya.subjective.available_deep_model()
-
-
-
-
-.. parsed-literal::
-
-    ['self-attention', 'bahdanau', 'luong']
-
-
-
-Load deep learning models
--------------------------
-
-Good thing about deep learning models from Malaya, it returns
-``Attention`` result, means, which part of words give the high impact to
-the results. But to get ``Attention``, you need to set
-``get_proba=True``.
-
-.. code:: ipython3
-
-    import matplotlib.pyplot as plt
-    import seaborn as sns
-    sns.set()
-
-Load bahdanau model
-~~~~~~~~~~~~~~~~~~~
-
-.. code:: ipython3
-
-    model = malaya.subjective.deep_model('bahdanau')
+    model = malaya.subjective.transformer(model = 'bert', size = 'base')
 
 
 .. parsed-literal::
 
-    downloading frozen /Users/huseinzol/Malaya/subjective/bahdanau model
-
-
-.. parsed-literal::
-
-    20.0MB [00:07, 2.85MB/s]                          
-      0%|          | 0.00/0.45 [00:00<?, ?MB/s]
-
-.. parsed-literal::
-
-    downloading frozen /Users/huseinzol/Malaya/subjective/bahdanau setting
-
-
-.. parsed-literal::
-
-    1.00MB [00:00, 5.75MB/s]                   
+    WARNING: Logging before flag parsing goes to stderr.
+    W1018 00:30:10.522279 4461032896 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:68: The name tf.gfile.GFile is deprecated. Please use tf.io.gfile.GFile instead.
+    
+    W1018 00:30:10.524765 4461032896 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:69: The name tf.GraphDef is deprecated. Please use tf.compat.v1.GraphDef instead.
+    
+    W1018 00:30:18.999648 4461032896 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:64: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
+    
 
 
 Predict single string
@@ -148,123 +126,16 @@ Predict single string
 
 .. code:: ipython3
 
-    model.predict(positive_text)
+    model.predict(positive_text,get_proba=True)
 
 
 
 
 .. parsed-literal::
 
-    'neutral'
+    {'negative': 0.998701, 'positive': 1.2991321e-05, 'neutral': 0.0012860298}
 
 
-
-.. code:: ipython3
-
-    result = model.predict(positive_text,get_proba=True,add_neutral=False)
-    result
-
-
-
-
-.. parsed-literal::
-
-    {'negative': 0.3413489,
-     'positive': 0.6586511,
-     'attention': {'kerajaan': 0.02428512,
-      'sebenarnya': 0.05316463,
-      'sangat': 0.7279027,
-      'bencikan': 0.07460431,
-      'rakyatnya': 0.026773913,
-      ',': 0.0,
-      'minyak': 0.048565686,
-      'naik': 0.023328593,
-      'dan': 0.0,
-      'segalanya': 0.021375034}}
-
-
-
-.. code:: ipython3
-
-    plt.figure(figsize = (15, 5))
-    keys = result['attention'].keys()
-    values = result['attention'].values()
-    aranged = [i for i in range(len(keys))]
-    plt.bar(aranged, values)
-    plt.xticks(aranged, keys, rotation = 'vertical')
-    plt.show()
-
-
-
-.. image:: load-subjectivity_files/load-subjectivity_17_0.png
-
-
-Open subjectivity visualization dashboard
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Default when you call ``predict_words`` it will open a browser with
-visualization dashboard, you can disable by ``visualization=False``.
-
-.. code:: ipython3
-
-    model.predict_words(negative_text)
-
-
-.. parsed-literal::
-
-    Serving to http://127.0.0.1:8889/    [Ctrl-C to exit]
-
-
-.. parsed-literal::
-
-    127.0.0.1 - - [01/Jun/2019 12:16:49] "GET / HTTP/1.1" 200 -
-    127.0.0.1 - - [01/Jun/2019 12:16:49] "GET /static/admin-materialize.min.css HTTP/1.1" 200 -
-    127.0.0.1 - - [01/Jun/2019 12:16:49] "GET /static/echarts.min.js HTTP/1.1" 200 -
-    127.0.0.1 - - [01/Jun/2019 12:16:49] "GET /favicon.ico HTTP/1.1" 200 -
-    ----------------------------------------
-    Exception happened during processing of request from ('127.0.0.1', 61989)
-    Traceback (most recent call last):
-      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/socketserver.py", line 317, in _handle_request_noblock
-        self.process_request(request, client_address)
-      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/socketserver.py", line 348, in process_request
-        self.finish_request(request, client_address)
-      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/socketserver.py", line 361, in finish_request
-        self.RequestHandlerClass(request, client_address, self)
-      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/socketserver.py", line 696, in __init__
-        self.handle()
-      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/http/server.py", line 418, in handle
-        self.handle_one_request()
-      File "/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/http/server.py", line 406, in handle_one_request
-        method()
-      File "/Users/huseinzol/Documents/Malaya/malaya/_utils/_server.py", line 32, in do_GET
-        with open(filepath, 'rb') as fh:
-    FileNotFoundError: [Errno 2] No such file or directory: '/Users/huseinzol/Documents/Malaya/malaya/_utils/web/favicon.ico'
-    ----------------------------------------
-
-
-.. parsed-literal::
-
-    
-    stopping Server...
-
-
-.. code:: ipython3
-
-    from IPython.core.display import Image, display
-    
-    display(Image('subjective-bahdanau.png', width=800))
-
-
-
-.. image:: load-subjectivity_files/load-subjectivity_20_0.png
-   :width: 800px
-
-
-I tried to put the html and javascript inside a notebook cell, pretty
-hard you know and a lot of weird bugs. Let stick to HTTP serving ya.
-
-``predict_words`` only accept a single string. You can’t predict
-multiple texts.
 
 Predict batch of strings
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -278,51 +149,31 @@ Predict batch of strings
 
 .. parsed-literal::
 
-    [{'negative': 0.83364284, 'positive': 0.0016635716, 'neutral': 0.1646936},
-     {'negative': 0.003325577, 'positive': 0.6674423, 'neutral': 0.3292321}]
+    [{'negative': 0.99980426, 'positive': 1.9581228e-06, 'neutral': 0.0001937747},
+     {'negative': 0.9975145, 'positive': 2.4854015e-05, 'neutral': 0.0024606586}]
 
 
 
-**You might want to try ``luong`` and ``self-attention`` by yourself.**
+Open subjectivity visualization dashboard
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-BERT model
-----------
-
-BERT is the best subjectivity model in term of accuracy, you can check
-subjectivity accuracy here,
-https://malaya.readthedocs.io/en/latest/Accuracy.html#subjectivity-analysis.
-But warning, the model size is 700MB! Make sure you have enough
-resources to use BERT, and installed ``bert-tensorflow`` first,
-
-.. code:: bash
-
-   pip3 install bert-tensorflow
+Default when you call ``predict_words`` it will open a browser with
+visualization dashboard, you can disable by ``visualization=False``.
 
 .. code:: ipython3
 
-    model = malaya.subjective.bert()
-    model.predict_batch([negative_text, positive_text],get_proba=True)
+    model.predict_words(negative_text)
 
+.. code:: ipython3
 
-.. parsed-literal::
-
-    Found old version of /Users/huseinzol/Malaya/subjective/bert, deleting..
-    Done.
-    downloading frozen /Users/huseinzol/Malaya/subjective/bert model
-
-
-.. parsed-literal::
-
-    679MB [03:17, 4.01MB/s]                          
+    from IPython.core.display import Image, display
+    
+    display(Image('bert-subjective.png', width=800))
 
 
 
-
-.. parsed-literal::
-
-    [{'negative': 0.9999628, 'positive': 3.7092312e-07, 'neutral': 3.683567e-05},
-     {'negative': 0.99188435, 'positive': 8.11561e-05, 'neutral': 0.008034468}]
-
+.. image:: load-subjectivity_files/load-subjectivity_17_0.png
+   :width: 800px
 
 
 Stacking models
@@ -334,109 +185,19 @@ https://malaya.readthedocs.io/en/latest/Stack.html
 .. code:: ipython3
 
     multinomial = malaya.subjective.multinomial()
-    xgb = malaya.subjective.xgb()
-    bahdanau = malaya.subjective.deep_model('bahdanau')
+    xlnet = malaya.subjective.transformer(model = 'xlnet', size = 'base')
 
 .. code:: ipython3
 
-    malaya.stack.predict_stack([multinomial, xgb, bahdanau], positive_text)
+    malaya.stack.predict_stack([multinomial, model, xlnet], positive_text)
 
 
 
 
 .. parsed-literal::
 
-    {'negative': 0.008627402242055781,
-     'positive': 0.12711225500695544,
-     'neutral': 0.8541128287159148}
+    [{'negative': 0.20977346055707108,
+      'positive': 3.634771278019363e-05,
+      'neutral': 0.0017738667822587307}]
 
 
-
-Load Sparse deep learning models
---------------------------------
-
-What happen if a word not included in the dictionary of the models? like
-``setan``, what if ``setan`` appeared in text we want to classify? We
-found this problem when classifying social media texts / posts. Words
-used not really a vocabulary-based contextual.
-
-Malaya will treat **unknown words** as ``<UNK>``, so, to solve this
-problem, we need to use N-grams character based. Malaya chose tri-grams
-until fifth-grams.
-
-.. code:: python
-
-   setan = ['set', 'eta', 'tan']
-
-Sklearn provided easy interface to use n-grams, problem is, it is very
-sparse, a lot of zeros and not memory efficient. Sklearn returned sparse
-matrix for the result, lucky Tensorflow already provided some sparse
-function.
-
-.. code:: ipython3
-
-    malaya.subjective.available_sparse_deep_model()
-
-
-
-
-.. parsed-literal::
-
-    ['fast-text-char']
-
-
-
-Right now Malaya only provide 1 sparse model, ``fast-text-char``. We
-will try to evolve it.
-
-.. code:: ipython3
-
-    sparse_model = malaya.subjective.sparse_deep_model()
-
-
-.. parsed-literal::
-
-    INFO:tensorflow:Restoring parameters from /Users/huseinzol/Malaya/subjective/fast-text-char/model.ckpt
-
-
-.. code:: ipython3
-
-    sparse_model.predict(positive_text)
-
-
-
-
-.. parsed-literal::
-
-    'positive'
-
-
-
-.. code:: ipython3
-
-    sparse_model.predict_batch([positive_text, negative_text])
-
-
-
-
-.. parsed-literal::
-
-    ['positive', 'negative']
-
-
-
-.. code:: ipython3
-
-    sparse_model.predict_batch([positive_text, negative_text], get_proba=True)
-
-
-
-
-.. parsed-literal::
-
-    [{'negative': 0.054842573, 'positive': 0.94515747},
-     {'negative': 0.95071983, 'positive': 0.04928014}]
-
-
-
-Right now sparse models does not have ``neutral`` class.

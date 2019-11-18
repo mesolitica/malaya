@@ -1,11 +1,5 @@
 from __future__ import print_function, unicode_literals
 
-import sys
-import warnings
-
-if not sys.warnoptions:
-    warnings.simplefilter('ignore')
-
 malaysian_number_system = {
     'kosong': 0,
     'satu': 1,

@@ -49,6 +49,13 @@ def _sentiment_mark(text, negative, positive, neutral, attention, label):
     )
 
 
+def _relevancy_mark(text, negative, positive, attention, label):
+    return (
+        "<mark style='background-color:%s' class='tooltipped' data-position='bottom' data-tooltip=\"Relevant <i class='em em-information_source'></i> %.3f<br>Not relevant <i class='em em-lying_face'></i> %.3f<br>Attention <i class='em em-warning'></i> %.3f\">%s</mark>"
+        % (_color_sentiment[label], positive, negative, attention, text)
+    )
+
+
 def _toxic_mark(
     text,
     toxic,
@@ -131,6 +138,56 @@ def _render_binary(data, notebook_mode = False):
         ),
         barplot_neutral = escape(
             json.dumps(int(data['barplot']['y'][index_neutral]))
+        ),
+        barplot_negative = escape(
+            json.dumps(int(data['barplot']['y'][index_negative]))
+        ),
+        histogram_x = escape(json.dumps(data['histogram']['x'].tolist())),
+        histogram_y = escape(json.dumps(data['histogram']['y'].tolist())),
+        attention_x = escape(json.dumps(data['attention']['x'].tolist())),
+        attention_y = escape(json.dumps(data['attention']['y'].tolist())),
+        css_location = css_location,
+        js_location = js_location,
+    )
+    if notebook_mode:
+        from IPython.display import display, HTML
+
+        display(HTML(template))
+    else:
+        serve(template)
+
+
+def _render_relevancy(data, notebook_mode = False):
+    index_negative = data['barplot']['x'].index('negative')
+    index_positive = data['barplot']['x'].index('positive')
+    relevancy_mark = []
+    for k, v in data['word'].items():
+        relevancy_mark.append(
+            _relevancy_mark(
+                k,
+                v[index_negative],
+                v[index_positive],
+                data['alphas'][k],
+                data['barplot']['x'][np.argmax(v)],
+            )
+        )
+    relevancy_mark = ' '.join(relevancy_mark)
+    this_dir = os.path.dirname(__file__)
+
+    if notebook_mode:
+        js_location, css_location = _upload_jupyter()
+    else:
+        js_location = 'static/echarts.min.js'
+        css_location = 'static/admin-materialize.min.css'
+
+    with open(os.path.join(this_dir, 'web', 'index_relevancy.html')) as _file:
+        template = string.Template(_file.read())
+
+    template = template.substitute(
+        label = escape(data['class_name']),
+        p = relevancy_mark,
+        barplot_positive = escape(
+            json.dumps(int(data['barplot']['y'][index_positive]))
         ),
         barplot_negative = escape(
             json.dumps(int(data['barplot']['y'][index_negative]))
@@ -296,6 +353,26 @@ def _render_emotion(data, notebook_mode = False):
         display(HTML(template))
     else:
         serve(template)
+
+
+def _attention(attn_data):
+    from IPython.core.display import display, HTML, Javascript
+
+    vis_html = """
+          <span style="user-select:none">
+            Layer: <select id="layer"></select>
+          </span>
+          <div id='vis'></div>
+        """
+
+    display(HTML(vis_html))
+    this_dir = os.path.dirname(__file__)
+    vis_js = open(
+        os.path.join(this_dir, 'web', 'static', 'head_view.js')
+    ).read()
+    params = {'attention': attn_data, 'default_filter': 'all'}
+    display(Javascript('window.params = %s' % json.dumps(params)))
+    display(Javascript(vis_js))
 
 
 def _upload_jupyter():

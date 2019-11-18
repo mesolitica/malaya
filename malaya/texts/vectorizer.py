@@ -5,7 +5,6 @@ if not sys.warnoptions:
     warnings.simplefilter('ignore')
 
 from itertools import combinations
-from toolz import compose
 import random
 from sklearn.feature_extraction.text import CountVectorizer
 
@@ -16,6 +15,8 @@ class SkipGramVectorizer(CountVectorizer):
         self.skip = skip
 
     def build_sent_analyzer(self, preprocess, stop_words, tokenize):
+        from toolz import compose
+
         return lambda sent: self._word_skip_grams(
             compose(tokenize, preprocess, self.decode)(sent), stop_words
         )
@@ -61,91 +62,6 @@ class SkipGramVectorizer(CountVectorizer):
                     ):
                         tokens_append(space_join(head + list(skip_tail)))
         return tokens
-
-
-def features_crf(sentence, index):
-    return {
-        'word': sentence[index],
-        'is_first': index == 0,
-        'is_last': index == len(sentence) - 1,
-        'prefix-1': sentence[index][0],
-        'prefix-2': sentence[index][:2],
-        'prefix-3': sentence[index][:3],
-        'suffix-1': sentence[index][-1],
-        'suffix-2': sentence[index][-2:],
-        'suffix-3': sentence[index][-3:],
-        'prev_word': '' if index == 0 else sentence[index - 1],
-        'prev_word-prefix-1': '' if index == 0 else sentence[index - 1][0],
-        'prev_word-prefix-2': '' if index == 0 else sentence[index - 1][:2],
-        'prev_word-prefix-3': '' if index == 0 else sentence[index - 1][:3],
-        'prev_word-suffix-1': '' if index == 0 else sentence[index - 1][-1],
-        'prev_word-suffix-2': '' if index == 0 else sentence[index - 1][-2:],
-        'prev_word-suffix-3': '' if index == 0 else sentence[index - 1][-3:],
-        'next_word-prefix-1': ''
-        if index == len(sentence) - 1
-        else sentence[index + 1][0],
-        'next_word-prefix-2': ''
-        if index == len(sentence) - 1
-        else sentence[index + 1][:2],
-        'next_word-prefix-3': ''
-        if index == len(sentence) - 1
-        else sentence[index + 1][:3],
-        'next_word-suffix-1': ''
-        if index == len(sentence) - 1
-        else sentence[index + 1][-1],
-        'next_word-suffix-2': ''
-        if index == len(sentence) - 1
-        else sentence[index + 1][-2:],
-        'next_word-suffix-3': ''
-        if index == len(sentence) - 1
-        else sentence[index + 1][-3:],
-        'next_word': '' if index == len(sentence) - 1 else sentence[index + 1],
-        'has_hyphen': '-' in sentence[index],
-        'is_numeric': sentence[index].isdigit(),
-    }
-
-
-def features_crf_dependency(sentence, tag, index):
-    return {
-        'word': sentence[index],
-        'tag': tag[index],
-        'is_first': index == 0,
-        'is_last': index == len(sentence) - 1,
-        'prefix-1': sentence[index][0],
-        'prefix-2': sentence[index][:2],
-        'prefix-3': sentence[index][:3],
-        'suffix-1': sentence[index][-1],
-        'suffix-2': sentence[index][-2:],
-        'suffix-3': sentence[index][-3:],
-        'prev_word': '' if index == 0 else sentence[index - 1],
-        'prev_word-prefix-1': '' if index == 0 else sentence[index - 1][0],
-        'prev_word-prefix-2': '' if index == 0 else sentence[index - 1][:2],
-        'prev_word-prefix-3': '' if index == 0 else sentence[index - 1][:3],
-        'prev_word-suffix-1': '' if index == 0 else sentence[index - 1][-1],
-        'prev_word-suffix-2': '' if index == 0 else sentence[index - 1][-2:],
-        'prev_word-suffix-3': '' if index == 0 else sentence[index - 1][-3:],
-        'next_word-prefix-1': ''
-        if index == len(sentence) - 1
-        else sentence[index + 1][0],
-        'next_word-prefix-2': ''
-        if index == len(sentence) - 1
-        else sentence[index + 1][:2],
-        'next_word-prefix-3': ''
-        if index == len(sentence) - 1
-        else sentence[index + 1][:3],
-        'next_word-suffix-1': ''
-        if index == len(sentence) - 1
-        else sentence[index + 1][-1],
-        'next_word-suffix-2': ''
-        if index == len(sentence) - 1
-        else sentence[index + 1][-2:],
-        'next_word-suffix-3': ''
-        if index == len(sentence) - 1
-        else sentence[index + 1][-3:],
-        'next_word': '' if index == len(sentence) - 1 else sentence[index + 1],
-        'has_hyphen': '-' in sentence[index],
-        'is_numeric': sentence[index].isdigit(),
-    }
 
 
 def skipgrams(

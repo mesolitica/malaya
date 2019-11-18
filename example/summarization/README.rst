@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 12.3 s, sys: 1.53 s, total: 13.8 s
-    Wall time: 17.8 s
+    CPU times: user 6.39 s, sys: 1.44 s, total: 7.82 s
+    Wall time: 11.9 s
 
 
 .. code:: ipython3
@@ -41,72 +41,74 @@ Important parameters,
 1. ``top_k``, number of summarized strings.
 2. ``important_words``, number of important words.
 
-List available deep extractive models
--------------------------------------
+List available skip-thought models
+----------------------------------
 
 .. code:: ipython3
 
-    malaya.summarize.available_deep_extractive()
+    malaya.summarize.available_skipthought()
 
 
 
 
 .. parsed-literal::
 
-    ['skip-thought', 'residual-network']
+    ['lstm', 'residual-network']
 
 
 
--  ``'skip-thought'`` - skip-thought summarization deep learning model
-   trained on news dataset. Hopefully we can train on wikipedia dataset.
--  ``'residual-network'`` - residual network with Bahdanau Attention
-   summarization deep learning model trained on wikipedia dataset.
+-  ``'lstm'`` - LSTM skip-thought deep learning model trained on news
+   dataset. Hopefully we can train on wikipedia dataset.
+-  ``'residual-network'`` - CNN residual network with Bahdanau Attention
+   skip-thought deep learning model trained on wikipedia dataset.
 
 We use TextRank for scoring algorithm.
 
-Load Pretrained extractive skip-thought summarization
------------------------------------------------------
+Encoder summarization
+---------------------
+
+We leverage the power of deep encoder models like skip-thought, BERT and
+XLNET to do extractive summarization for us.
+
+Use skip-thought
+^^^^^^^^^^^^^^^^
 
 .. code:: ipython3
 
-    deep_summary = malaya.summarize.deep_extractive(model = 'skip-thought')
-
-.. code:: ipython3
-
-    deep_summary.summarize(isu_string,important_words=10)
-
-
+    lstm = malaya.summarize.deep_skipthought(model = 'lstm')
+    encoder = malaya.summarize.encoder(lstm)
 
 
 .. parsed-literal::
 
-    {'summary': 'Bagi Sheila pula, dia memang ada terbabit dengan beberapa persembahan bersama Zainal cuma tiada publisiti ketika itu. "Sebab itu, saya sukar menolak untuk bekerjasama dengannya dalam Festival KL Jamm yang dianjurkan buat julung kali dan berkongsi pentas dalam satu konsert bertaraf antarabangsa," katanya. "Saya bersama Sheila serta Datuk Afdlin Shauki akan terbabit dalam satu segmen yang ditetapkan.',
-     'top-words': ['dumex',
-      'unchallenged',
-      'yussoffkaunsel',
-      'sharmini',
-      'merotan',
-      'vienna',
-      'pancaroba',
-      'kepulangan',
-      'mandat',
-      'kelembaban'],
-     'cluster-top-words': ['unchallenged',
-      'kelembaban',
-      'yussoffkaunsel',
-      'dumex',
-      'sharmini',
-      'merotan',
-      'pancaroba',
-      'kepulangan',
-      'mandat',
-      'vienna']}
+    downloading SUMMARIZE news frozen model
 
+
+.. parsed-literal::
+
+    56.0MB [00:13, 4.18MB/s]                          
+      0%|          | 0.00/0.98 [00:00<?, ?MB/s]
+
+.. parsed-literal::
+
+    downloading SUMMARIZE news dictionary
+
+
+.. parsed-literal::
+
+    1.00MB [00:00, 3.55MB/s]                   
+    WARNING: Logging before flag parsing goes to stderr.
+    W1018 00:37:31.562124 4502980032 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:68: The name tf.gfile.GFile is deprecated. Please use tf.io.gfile.GFile instead.
+    
+    W1018 00:37:31.563504 4502980032 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:69: The name tf.GraphDef is deprecated. Please use tf.compat.v1.GraphDef instead.
+    
+    W1018 00:37:32.268280 4502980032 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_models/_skip_thought.py:136: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
+    
 
 
 .. code:: ipython3
 
-    deep_summary.summarize(isu_kerajaan,important_words=10)
+    encoder.summarize(isu_kerajaan, important_words = 10)
 
 
 
@@ -124,149 +126,88 @@ Load Pretrained extractive skip-thought summarization
       'chusus',
       'mempunya',
       'diharap'],
-     'cluster-top-words': ['bersabdabarangsiapa',
+     'cluster-top-words': ['sakailah',
+      'chusus',
+      'bersabdabarangsiapa',
       'sharmini',
-      'poupart',
-      'diharap',
+      'seliakekurangan',
       'kepulangan',
       'pembikin',
-      'seliakekurangan',
-      'sakailah',
+      'poupart',
       'mempunya',
-      'chusus']}
+      'diharap']}
 
 
 
-You also can change sentences to vector representation using
-``vectorize()``.
+Problem with skip-thought models, ``top-words`` suggested are really not
+good, because skip-thought trained to leverage sentence level, not word
+level. How about XLNET or BERT? Lets we try XLNET.
 
 .. code:: ipython3
 
-    deep_summary.vectorize(isu_kerajaan).shape
+    xlnet = malaya.transformer.load(model = 'xlnet', size = 'base')
+    encoder = malaya.summarize.encoder(xlnet)
+
+
+.. parsed-literal::
+
+    W1018 00:38:15.394328 4502980032 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet_model/xlnet.py:70: The name tf.gfile.Open is deprecated. Please use tf.io.gfile.GFile instead.
+    
+    W1018 00:38:15.397522 4502980032 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet.py:71: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
+    
+    W1018 00:38:15.409126 4502980032 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet_model/xlnet.py:253: The name tf.variable_scope is deprecated. Please use tf.compat.v1.variable_scope instead.
+    
+    W1018 00:38:15.411124 4502980032 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet_model/xlnet.py:253: The name tf.AUTO_REUSE is deprecated. Please use tf.compat.v1.AUTO_REUSE instead.
+    
+    W1018 00:38:15.415867 4502980032 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet_model/modeling.py:686: The name tf.logging.info is deprecated. Please use tf.compat.v1.logging.info instead.
+    
+    W1018 00:38:15.514928 4502980032 deprecation.py:323] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet_model/modeling.py:797: dropout (from tensorflow.python.layers.core) is deprecated and will be removed in a future version.
+    Instructions for updating:
+    Use keras.layers.dropout instead.
+    W1018 00:38:16.088240 4502980032 deprecation.py:323] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet_model/modeling.py:99: dense (from tensorflow.python.layers.core) is deprecated and will be removed in a future version.
+    Instructions for updating:
+    Use keras.layers.dense instead.
+    W1018 00:38:24.365406 4502980032 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet.py:90: The name tf.train.Saver is deprecated. Please use tf.compat.v1.train.Saver instead.
+    
+    W1018 00:38:24.663450 4502980032 deprecation.py:323] From /usr/local/lib/python3.6/site-packages/tensorflow/python/training/saver.py:1276: checkpoint_exists (from tensorflow.python.training.checkpoint_management) is deprecated and will be removed in a future version.
+    Instructions for updating:
+    Use standard file APIs to check for files with this prefix.
+
+
+.. code:: ipython3
+
+    encoder.summarize(isu_kerajaan, important_words = 10, method = 'mean')
 
 
 
 
 .. parsed-literal::
 
-    (12, 128)
+    {'summary': 'Kata Nazri dalam kenyataannya itu, beliau menekankan bahawa semua pihak perlu menghormati hak orang Melayu dan bumiputera. Mohamad yang menjalankan tugas-tugas Presiden UMNO berkata, UMNO konsisten dengan pendirian itu dalam mengiktiraf kepelbagaian bangsa dan etnik termasuk hak untuk beragama serta mendapat pendidikan. Mohamed Nazri semalam menjelaskan, kenyataannya mengenai sekolah jenis kebangsaan Cina dan Tamil baru-baru ini disalah petik pihak media.',
+     'top-words': ['umno',
+      'pendirian',
+      'vernakular',
+      'pandangan',
+      'menghormati',
+      'sekolah',
+      'nazri',
+      'kenyataan',
+      'hak',
+      'peribadi'],
+     'cluster-top-words': ['pendirian',
+      'kenyataan',
+      'umno',
+      'vernakular',
+      'hak',
+      'nazri',
+      'sekolah',
+      'peribadi',
+      'menghormati',
+      'pandangan']}
 
 
 
-.. code:: ipython3
-
-    deep_summary.vectorize(isu_string).shape
-
-
-
-
-.. parsed-literal::
-
-    (34, 128)
-
-
-
-Load Pretrained extractive residual-network summarization
----------------------------------------------------------
-
-.. code:: ipython3
-
-    deep_summary = malaya.summarize.deep_extractive(model = 'residual-network')
-
-.. code:: ipython3
-
-    deep_summary.summarize(isu_string,important_words=10)
-
-
-
-
-.. parsed-literal::
-
-    {'summary': "Manakala, artis antarabangsa pula membabitkan J Arie (Hong Kong), NCT Dream (Korea Selatan) dan DJ Sura (Korea Selatan). DUA legenda hebat dan 'The living legend' ini sudah memartabatkan bidang muzik sejak lebih tiga dekad lalu. Bagi Sheila pula, dia memang ada terbabit dengan beberapa persembahan bersama Zainal cuma tiada publisiti ketika itu.",
-     'top-words': ['jagaannya',
-      'ferdy',
-      'hoe',
-      'laksmi',
-      'zulkifli',
-      'televisyen',
-      'lanun',
-      'ongr',
-      'sharidake',
-      'kawan'],
-     'cluster-top-words': ['sharidake',
-      'hoe',
-      'ferdy',
-      'lanun',
-      'zulkifli',
-      'laksmi',
-      'televisyen',
-      'ongr',
-      'jagaannya',
-      'kawan']}
-
-
-
-.. code:: ipython3
-
-    deep_summary.summarize(isu_kerajaan,important_words=10)
-
-
-
-
-.. parsed-literal::
-
-    {'summary': 'Timbalan Presiden UMNO, Datuk Seri Mohamad Hasan berkata, kenyataan tersebut tidak mewakili pendirian serta pandangan UMNO   kerana parti itu menghormati serta memahami keperluan sekolah vernakular dalam negara. "Saya ingin menegaskan dua perkara penting. "Saya berharap isu ini tidak dipolitikkan secara tidak bertanggungjawab oleh mana-mana pihak terutama dengan cara yang tidak menggambarkan pendirian sebenar UMNO dan BN," katanya.',
-     'top-words': ['jagaannya',
-      'ferdy',
-      'hoe',
-      'zulkifli',
-      'lanun',
-      'laksmi',
-      'ongr',
-      'televisyen',
-      'kawan',
-      'sharidake'],
-     'cluster-top-words': ['sharidake',
-      'hoe',
-      'ferdy',
-      'lanun',
-      'zulkifli',
-      'laksmi',
-      'televisyen',
-      'ongr',
-      'jagaannya',
-      'kawan']}
-
-
-
-You also can change sentences to vector representation using
-``vectorize()``.
-
-.. code:: ipython3
-
-    deep_summary.vectorize(isu_kerajaan).shape
-
-
-
-
-.. parsed-literal::
-
-    (12, 64)
-
-
-
-.. code:: ipython3
-
-    deep_summary.vectorize(isu_string).shape
-
-
-
-
-.. parsed-literal::
-
-    (34, 64)
-
-
+Much much better!
 
 Train LSA model
 ---------------
@@ -303,13 +244,13 @@ Important parameters,
       'nazri',
       'hormat paham',
       'hak'],
-     'cluster-top-words': ['hak',
-      'pandang',
-      'sekolah vernakular',
-      'hormat paham',
+     'cluster-top-words': ['sekolah vernakular',
       'umno',
+      'nyata',
+      'hak',
       'nazri',
-      'nyata']}
+      'hormat paham',
+      'pandang']}
 
 
 
@@ -324,7 +265,7 @@ We can use ``tfidf`` as vectorizer.
 
 .. parsed-literal::
 
-    {'summary': 'Timbalan Presiden UMNO, Datuk Seri Mohamad Hasan berkata, kenyataan tersebut tidak mewakili pendirian serta pandangan UMNO   kerana parti itu menghormati serta memahami keperluan sekolah vernakular dalam negara. Mohamad yang menjalankan tugas-tugas Presiden UMNO berkata, UMNO konsisten dengan pendirian itu dalam mengiktiraf kepelbagaian bangsa dan etnik termasuk hak untuk beragama serta mendapat pendidikan. UMNO berpendirian sekolah jenis ini perlu terus wujud di negara kita," katanya dalam satu kenyataan akhbar malam ini.',
+    {'summary': 'Timbalan Presiden UMNO, Datuk Seri Mohamad Hasan berkata, kenyataan tersebut tidak mewakili pendirian serta pandangan UMNO   kerana parti itu menghormati serta memahami keperluan sekolah vernakular dalam negara. Mohamad yang menjalankan tugas-tugas Presiden UMNO berkata, UMNO konsisten dengan pendirian itu dalam mengiktiraf kepelbagaian bangsa dan etnik termasuk hak untuk beragama serta mendapat pendidikan. "Saya berharap isu ini tidak dipolitikkan secara tidak bertanggungjawab oleh mana-mana pihak terutama dengan cara yang tidak menggambarkan pendirian sebenar UMNO dan BN," katanya.',
      'top-words': ['wakil pandang umno',
       'mohamed',
       'paham sekolah vernakular',
@@ -335,13 +276,13 @@ We can use ``tfidf`` as vectorizer.
       'mohamed nazri',
       'mohamad',
       'pandang peribadi'],
-     'cluster-top-words': ['pandang peribadi',
-      'wakil pandang umno',
-      'nazri nyata',
-      'negara',
-      'paham sekolah vernakular',
+     'cluster-top-words': ['wakil pandang umno',
+      'mohamed nazri',
+      'pandang peribadi',
       'mohamad',
-      'mohamed nazri']}
+      'paham sekolah vernakular',
+      'nazri nyata',
+      'negara']}
 
 
 
@@ -356,7 +297,7 @@ We can use ``skip-gram`` as vectorizer, and can override ``skip`` value.
 
 .. parsed-literal::
 
-    {'summary': 'Mohamed Nazri semalam menjelaskan, kenyataannya mengenai sekolah jenis kebangsaan Cina dan Tamil baru-baru ini disalah petik pihak media. UMNO berpendirian sekolah jenis ini perlu terus wujud di negara kita," katanya dalam satu kenyataan akhbar malam ini. Kata Nazri dalam kenyataannya itu, beliau menekankan bahawa semua pihak perlu menghormati hak orang Melayu dan bumiputera.',
+    {'summary': 'Timbalan Presiden UMNO, Datuk Seri Mohamad Hasan berkata, kenyataan tersebut tidak mewakili pendirian serta pandangan UMNO   kerana parti itu menghormati serta memahami keperluan sekolah vernakular dalam negara. "Saya berharap isu ini tidak dipolitikkan secara tidak bertanggungjawab oleh mana-mana pihak terutama dengan cara yang tidak menggambarkan pendirian sebenar UMNO dan BN," katanya. Mohamad yang menjalankan tugas-tugas Presiden UMNO berkata, UMNO konsisten dengan pendirian itu dalam mengiktiraf kepelbagaian bangsa dan etnik termasuk hak untuk beragama serta mendapat pendidikan.',
      'top-words': ['umno',
       'sekolah',
       'nyata',
@@ -367,12 +308,12 @@ We can use ``skip-gram`` as vectorizer, and can override ``skip`` value.
       'pandang umno',
       'sekolah vernakular',
       'presiden umno'],
-     'cluster-top-words': ['pandang umno',
-      'sekolah vernakular',
-      'nazri',
+     'cluster-top-words': ['sekolah vernakular',
+      'pandang umno',
       'nyata',
       'presiden umno',
-      'hormat']}
+      'hormat',
+      'nazri']}
 
 
 
@@ -398,14 +339,14 @@ We can use ``skip-gram`` as vectorizer, and can override ``skip`` value.
       'babit'],
      'cluster-top-words': ['muzik',
       'babit',
-      'sheila',
       'konsert',
-      'jamm',
       'nyanyi',
+      'jamm',
       'artis',
-      'festival',
       'kl',
-      'sembah']}
+      'sheila',
+      'sembah',
+      'festival']}
 
 
 
@@ -421,7 +362,7 @@ Train LDA model
 
 .. parsed-literal::
 
-    {'summary': '"Saya ingin menegaskan dua perkara penting. "Saya berharap isu ini tidak dipolitikkan secara tidak bertanggungjawab oleh mana-mana pihak terutama dengan cara yang tidak menggambarkan pendirian sebenar UMNO dan BN," katanya. Mohamad yang menjalankan tugas-tugas Presiden UMNO berkata, UMNO konsisten dengan pendirian itu dalam mengiktiraf kepelbagaian bangsa dan etnik termasuk hak untuk beragama serta mendapat pendidikan.',
+    {'summary': '"Saya ingin menegaskan dua perkara penting. "Saya berharap isu ini tidak dipolitikkan secara tidak bertanggungjawab oleh mana-mana pihak terutama dengan cara yang tidak menggambarkan pendirian sebenar UMNO dan BN," katanya. Menurut beliau, persefahaman dan keupayaan meraikan kepelbagaian itu menjadi kelebihan dan kekuatan UMNO dan BN selama ini.',
      'top-words': ['umno',
       'nyata',
       'sekolah',
@@ -432,13 +373,13 @@ Train LDA model
       'nazri',
       'hormat paham',
       'hak'],
-     'cluster-top-words': ['nazri',
+     'cluster-top-words': ['sekolah vernakular',
       'umno',
-      'pandang',
-      'hak',
       'nyata',
+      'hak',
+      'nazri',
       'hormat paham',
-      'sekolah vernakular']}
+      'pandang']}
 
 
 
@@ -451,7 +392,7 @@ Train LDA model
 
 .. parsed-literal::
 
-    {'summary': 'Namun, ada satu persamaan yang mengeratkan hubungan mereka kerana sama-sama mencintai bidang muzik sejak dulu. "Kami memang meminati bidang muzik dan saling memahami antara satu sama lain. DUA legenda hebat dan \'The living legend\' ini sudah memartabatkan bidang muzik sejak lebih tiga dekad lalu.',
+    {'summary': '"Sedangkan artis juga menyanyi untuk kerjaya dan ia juga punca pendapatan bagi menyara hidup," katanya. Penyanyi yang popular dengan lagu Hijau dan Ikhlas Tapi Jauh itu mengakui mereka memang ada keserasian ketika bergandingan kerana membesar pada era muzik yang sama. "Kami memang meminati bidang muzik dan saling memahami antara satu sama lain.',
      'top-words': ['artis',
       'sheila',
       'konsert',
@@ -462,14 +403,14 @@ Train LDA model
       'kl',
       'kl jamm',
       'jamm'],
-     'cluster-top-words': ['kl jamm',
-      'sheila',
+     'cluster-top-words': ['muzik',
+      'konsert',
       'nyanyi',
-      'sembah',
-      'muzik',
       'artis',
+      'sheila',
+      'sembah',
       'festival',
-      'konsert']}
+      'kl jamm']}
 
 
 
@@ -493,12 +434,13 @@ accumulate word vectors. Default is ``mean``.
 Using word2vec
 ^^^^^^^^^^^^^^
 
-I will use ``load_news``, word2vec from wikipedia took a very long time.
+I will use ``load_news``, word2vec from wikipedia took a very long time
+for my noob laptop,
 
 .. code:: ipython3
 
-    embedded_news = malaya.word2vec.load_news(64)
-    w2v_wiki = malaya.word2vec.word2vec(embedded_news['nce_weights'],
+    embedded_news = malaya.wordvector.load_news(256)
+    w2v_wiki = malaya.wordvector.load(embedded_news['nce_weights'],
                                         embedded_news['dictionary'])
 
 .. code:: ipython3
@@ -510,27 +452,6 @@ I will use ``load_news``, word2vec from wikipedia took a very long time.
 
 .. parsed-literal::
 
-    'Timbalan Presiden UMNO, Datuk Seri Mohamad Hasan berkata, kenyataan tersebut tidak mewakili pendirian serta pandangan UMNO   kerana parti itu menghormati serta memahami keperluan sekolah vernakular dalam negara. Mohamad yang menjalankan tugas-tugas Presiden UMNO berkata, UMNO konsisten dengan pendirian itu dalam mengiktiraf kepelbagaian bangsa dan etnik termasuk hak untuk beragama serta mendapat pendidikan. Kata Nazri dalam kenyataannya itu, beliau menekankan bahawa semua pihak perlu menghormati hak orang Melayu dan bumiputera. Mohamed Nazri semalam menjelaskan, kenyataannya mengenai sekolah jenis kebangsaan Cina dan Tamil baru-baru ini disalah petik pihak media. "Kedua UMNO sebagai sebuah parti sangat menghormati dan memahami keperluan sekolah vernakular di Malaysia.'
-
-
-
-Using fast-text
-^^^^^^^^^^^^^^^
-
-.. code:: ipython3
-
-    wiki, ngrams = malaya.fast_text.load_wiki()
-    fast_text_embed = malaya.fast_text.fast_text(wiki['embed_weights'],wiki['dictionary'],ngrams)
-
-.. code:: ipython3
-
-    malaya.summarize.doc2vec(fast_text_embed, isu_kerajaan, soft = False, top_k = 5)
-
-
-
-
-.. parsed-literal::
-
-    'Timbalan Presiden UMNO, Datuk Seri Mohamad Hasan berkata, kenyataan tersebut tidak mewakili pendirian serta pandangan UMNO   kerana parti itu menghormati serta memahami keperluan sekolah vernakular dalam negara. Mohamad yang menjalankan tugas-tugas Presiden UMNO berkata, UMNO konsisten dengan pendirian itu dalam mengiktiraf kepelbagaian bangsa dan etnik termasuk hak untuk beragama serta mendapat pendidikan. Kata Nazri dalam kenyataannya itu, beliau menekankan bahawa semua pihak perlu menghormati hak orang Melayu dan bumiputera. "Saya berharap isu ini tidak dipolitikkan secara tidak bertanggungjawab oleh mana-mana pihak terutama dengan cara yang tidak menggambarkan pendirian sebenar UMNO dan BN," katanya. Kata beliau, komitmen UMNO dan BN berhubung perkara itu dapat dilihat dengan jelas dalam bentuk sokongan infrastruktur, pengiktirafan dan pemberian peruntukan yang diperlukan.'
+    'Timbalan Presiden UMNO, Datuk Seri Mohamad Hasan berkata, kenyataan tersebut tidak mewakili pendirian serta pandangan UMNO   kerana parti itu menghormati serta memahami keperluan sekolah vernakular dalam negara. Mohamad yang menjalankan tugas-tugas Presiden UMNO berkata, UMNO konsisten dengan pendirian itu dalam mengiktiraf kepelbagaian bangsa dan etnik termasuk hak untuk beragama serta mendapat pendidikan. Kata Nazri dalam kenyataannya itu, beliau menekankan bahawa semua pihak perlu menghormati hak orang Melayu dan bumiputera. Kata beliau, komitmen UMNO dan BN berhubung perkara itu dapat dilihat dengan jelas dalam bentuk sokongan infrastruktur, pengiktirafan dan pemberian peruntukan yang diperlukan. "Kedua UMNO sebagai sebuah parti sangat menghormati dan memahami keperluan sekolah vernakular di Malaysia.'
 
 

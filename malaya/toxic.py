@@ -1,22 +1,20 @@
-import sys
-import warnings
-
-if not sys.warnoptions:
-    warnings.simplefilter('ignore')
-
 import json
-import pickle
 import os
 from ._utils._utils import (
     check_file,
     load_graph,
     check_available,
     generate_session,
+    sentencepiece_tokenizer_bert,
+    sentencepiece_tokenizer_xlnet,
 )
 from . import home
 from ._utils._paths import PATH_TOXIC, S3_PATH_TOXIC
-from ._models._sklearn_model import TOXIC
-from ._models._tensorflow_model import SIGMOID, SPARSE_SIGMOID, SIGMOID_BERT
+from ._models._sklearn_model import MULTILABEL_BAYES
+from ._models._bert_model import SIGMOID_BERT
+from ._models._xlnet_model import SIGMOID_XLNET
+
+from ._transformer._bert import bert_num_layers
 
 
 _label_toxic = [
@@ -29,23 +27,23 @@ _label_toxic = [
 ]
 
 
-def available_sparse_deep_model():
-    """
-    List available sparse deep learning toxicity analysis models.
-    """
-    return ['fast-text-char']
+_availability = {
+    'bert': ['base', 'small'],
+    'xlnet': ['base'],
+    'albert': ['base'],
+}
 
 
-def available_deep_model():
+def available_transformer_model():
     """
-    List available deep learning toxicity analysis models.
+    List available transformer toxicity analysis models.
     """
-    return ['self-attention', 'bahdanau', 'luong']
+    return _availability
 
 
 def multinomial(validate = True):
     """
-    Load multinomial toxic model.
+    Load multinomial toxicity model.
 
     Parameters
     ----------
@@ -54,8 +52,10 @@ def multinomial(validate = True):
 
     Returns
     -------
-    TOXIC : malaya._models._sklearn_model.TOXIC class
+    BAYES : malaya._models._sklearn_model.MULTILABEL_BAYES class
     """
+    import pickle
+
     if validate:
         check_file(PATH_TOXIC['multinomial'], S3_PATH_TOXIC['multinomial'])
     else:
@@ -72,195 +72,115 @@ def multinomial(validate = True):
         raise Exception(
             "model corrupted due to some reasons, please run malaya.clear_cache('toxic/multinomial') and try again"
         )
-    return TOXIC(multinomial, vectorize)
+    from .stem import _classification_textcleaning_stemmer
+
+    return MULTILABEL_BAYES(
+        models = multinomial,
+        vectors = vectorize,
+        cleaning = _classification_textcleaning_stemmer,
+    )
 
 
-def logistic(validate = True):
+def transformer(model = 'xlnet', size = 'base', validate = True):
     """
-    Load logistic toxic model.
+    Load Transformer emotion model.
 
     Parameters
     ----------
-    validate: bool, optional (default=True)
-        if True, malaya will check model availability and download if not available.
-
-    Returns
-    -------
-    TOXIC : malaya._models._sklearn_model.TOXIC class
-    """
-    if validate:
-        check_file(PATH_TOXIC['logistic'], S3_PATH_TOXIC['logistic'])
-    else:
-        if not check_available(PATH_TOXIC['logistic']):
-            raise Exception(
-                'toxic/logistic is not available, please `validate = True`'
-            )
-    try:
-        with open(PATH_TOXIC['logistic']['model'], 'rb') as fopen:
-            logistic = pickle.load(fopen)
-        with open(PATH_TOXIC['logistic']['vector'], 'rb') as fopen:
-            vectorize = pickle.load(fopen)
-    except:
-        raise Exception(
-            "model corrupted due to some reasons, please run malaya.clear_cache('toxic/logistic') and try again"
-        )
-    return TOXIC(logistic, vectorize)
-
-
-def deep_model(model = 'luong', validate = True):
-    """
-    Load deep learning sentiment analysis model.
-
-    Parameters
-    ----------
-    model : str, optional (default='luong')
+    model : str, optional (default='bert')
         Model architecture supported. Allowed values:
 
-        * ``'self-attention'`` - Fast-text architecture, embedded and logits layers only with self attention.
-        * ``'bahdanau'`` - LSTM with bahdanau attention architecture.
-        * ``'luong'`` - LSTM with luong attention architecture.
+        * ``'bert'`` - BERT architecture from google.
+        * ``'xlnet'`` - XLNET architecture from google.
+        * ``'albert'`` - ALBERT architecture from google.
+    size : str, optional (default='base')
+        Model size supported. Allowed values:
+
+        * ``'base'`` - BASE size.
+        * ``'small'`` - SMALL size.
     validate: bool, optional (default=True)
         if True, malaya will check model availability and download if not available.
 
     Returns
     -------
-    SIGMOID: malaya._models._tensorflow_model.SIGMOID class
+    BERT : malaya._models._bert_model.BINARY_BERT class
     """
     if not isinstance(model, str):
         raise ValueError('model must be a string')
+    if not isinstance(size, str):
+        raise ValueError('size must be a string')
     if not isinstance(validate, bool):
         raise ValueError('validate must be a boolean')
-    model = model.lower()
-    if model not in available_deep_model():
-        raise Exception(
-            'model is not supported, please check supported models from malaya.toxic.available_deep_model()'
-        )
-    if validate:
-        check_file(PATH_TOXIC[model], S3_PATH_TOXIC[model])
-    else:
-        if not check_available(PATH_TOXIC[model]):
-            raise Exception(
-                'toxic/%s is not available, please `validate = True`' % (model)
-            )
-    try:
-        with open(PATH_TOXIC[model]['setting'], 'r') as fopen:
-            dictionary = json.load(fopen)['dictionary']
-        g = load_graph(PATH_TOXIC[model]['model'])
-    except:
-        raise Exception(
-            "model corrupted due to some reasons, please run malaya.clear_cache('toxic/%s') and try again"
-            % (model)
-        )
-
-    return SIGMOID(
-        g.get_tensor_by_name('import/Placeholder:0'),
-        g.get_tensor_by_name('import/logits:0'),
-        g.get_tensor_by_name('import/logits_seq:0'),
-        g.get_tensor_by_name('import/alphas:0'),
-        generate_session(graph = g),
-        dictionary,
-    )
-
-
-def bert(validate = True):
-    """
-    Load BERT toxicity model.
-
-    Parameters
-    ----------
-    validate: bool, optional (default=True)
-        if True, malaya will check model availability and download if not available.
-
-    Returns
-    -------
-    SIGMOID_BERT : malaya._models._tensorflow_model.SIGMOID_BERT class
-    """
-    try:
-        from bert import tokenization
-    except:
-        raise Exception(
-            'bert-tensorflow not installed. Please install it using `pip3 install bert-tensorflow` and try again.'
-        )
-    if validate:
-        check_file(PATH_TOXIC['bert'], S3_PATH_TOXIC['bert'])
-    else:
-        if not check_available(PATH_TOXIC['bert']):
-            raise Exception(
-                'toxic/bert is not available, please `validate = True`'
-            )
-
-    tokenization.validate_case_matches_checkpoint(False, '')
-    tokenizer = tokenization.FullTokenizer(
-        vocab_file = PATH_TOXIC['bert']['vocab'], do_lower_case = False
-    )
-    try:
-        g = load_graph(PATH_TOXIC['bert']['model'])
-    except:
-        raise Exception(
-            "model corrupted due to some reasons, please run malaya.clear_cache('toxic/bert') and try again"
-        )
-
-    return SIGMOID_BERT(
-        X = g.get_tensor_by_name('import/Placeholder:0'),
-        segment_ids = g.get_tensor_by_name('import/Placeholder_1:0'),
-        input_masks = g.get_tensor_by_name('import/Placeholder_2:0'),
-        logits = g.get_tensor_by_name('import/logits:0'),
-        sess = generate_session(graph = g),
-        tokenizer = tokenizer,
-        maxlen = 100,
-        label = _label_toxic,
-    )
-
-
-def sparse_deep_model(model = 'fast-text-char', validate = True):
-    """
-    Load deep learning sentiment analysis model.
-
-    Parameters
-    ----------
-    model : str, optional (default='luong')
-        Model architecture supported. Allowed values:
-
-        * ``'fast-text-char'`` - Fast-text architecture for character based n-grams, embedded and logits layers only.
-    validate: bool, optional (default=True)
-        if True, malaya will check model availability and download if not available.
-
-    Returns
-    -------
-    SPARSE_SIGMOID: malaya._models._tensorflow_model.SPARSE_SIGMOID class
-    """
-
-    if not isinstance(model, str):
-        raise ValueError('model must be a string')
 
     model = model.lower()
-    if model == 'fast-text-char':
-        if validate:
-            check_file(PATH_TOXIC[model], S3_PATH_TOXIC[model])
-        else:
-            if not check_available(PATH_TOXIC[model]):
-                raise Exception(
-                    'toxic/%s is not available, please `validate = True`'
-                    % (model)
-                )
-        try:
-            with open(PATH_TOXIC[model]['vector'], 'rb') as fopen:
-                vector = pickle.load(fopen)
-
-            return SPARSE_SIGMOID(
-                path = os.path.dirname(PATH_TOXIC[model]['model']),
-                vectorizer = vector,
-                label = _label_toxic,
-                output_size = len(_label_toxic),
-                embedded_size = 128,
-                vocab_size = len(vector.vocabulary_),
-            )
-        except:
-            raise Exception(
-                "model corrupted due to some reasons, please run malaya.clear_cache('toxic/%s') and try again"
-                % (model)
-            )
-    else:
+    size = size.lower()
+    if model not in _availability:
         raise Exception(
-            'model subjectivity not supported, please check supported models from malaya.toxic.available_sparse_deep_model()'
+            'model not supported, please check supported models from malaya.sentiment.available_transformer_model()'
+        )
+    if size not in _availability[model]:
+        raise Exception(
+            'size not supported, please check supported models from malaya.sentiment.available_transformer_model()'
+        )
+
+    if validate:
+        check_file(PATH_TOXIC[model][size], S3_PATH_TOXIC[model][size])
+    else:
+        if not check_available(PATH_TOXIC[model][size]):
+            raise Exception(
+                'toxicity/%s/%s is not available, please `validate = True`'
+                % (model, size)
+            )
+
+    try:
+        g = load_graph(PATH_TOXIC[model][size]['model'])
+    except:
+        raise Exception(
+            "model corrupted due to some reasons, please run malaya.clear_cache('toxicity/%s/%s') and try again"
+            % (model, size)
+        )
+
+    if model in ['albert', 'bert']:
+        if model == 'bert':
+            from ._transformer._bert import _extract_attention_weights_import
+        if model == 'albert':
+            from ._transformer._albert import _extract_attention_weights_import
+
+        tokenizer, cls, sep = sentencepiece_tokenizer_bert(
+            PATH_TOXIC[model][size]['tokenizer'],
+            PATH_TOXIC[model][size]['vocab'],
+        )
+
+        return SIGMOID_BERT(
+            X = g.get_tensor_by_name('import/Placeholder:0'),
+            segment_ids = None,
+            input_masks = None,
+            logits = g.get_tensor_by_name('import/logits:0'),
+            logits_seq = g.get_tensor_by_name('import/logits_seq:0'),
+            sess = generate_session(graph = g),
+            tokenizer = tokenizer,
+            label = _label_toxic,
+            cls = cls,
+            sep = sep,
+            attns = _extract_attention_weights_import(bert_num_layers[size], g),
+            class_name = 'toxic',
+        )
+    if model in ['xlnet']:
+        from ._transformer._xlnet import _extract_attention_weights_import
+
+        tokenizer = sentencepiece_tokenizer_xlnet(
+            PATH_TOXIC[model][size]['tokenizer']
+        )
+
+        return SIGMOID_XLNET(
+            X = g.get_tensor_by_name('import/Placeholder:0'),
+            segment_ids = g.get_tensor_by_name('import/Placeholder_1:0'),
+            input_masks = g.get_tensor_by_name('import/Placeholder_2:0'),
+            logits = g.get_tensor_by_name('import/logits:0'),
+            logits_seq = g.get_tensor_by_name('import/logits_seq:0'),
+            sess = generate_session(graph = g),
+            tokenizer = tokenizer,
+            label = _label_toxic,
+            attns = _extract_attention_weights_import(g),
+            class_name = 'toxic',
         )

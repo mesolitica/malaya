@@ -1,91 +1,86 @@
-import sys
-import warnings
-
-if not sys.warnoptions:
-    warnings.simplefilter('ignore')
-
 from ._utils import _tag_class
-from ._utils._paths import (
-    PATH_ENTITIES,
-    S3_PATH_ENTITIES,
-    PATH_ENTITIES_SENSITIVE,
-    S3_PATH_ENTITIES_SENSITIVE,
-)
+from ._utils._paths import PATH_ENTITIES, S3_PATH_ENTITIES
+from .texts._entity import _Entity_regex
 
 
-def available_deep_model():
+_availability = {
+    'bert': ['base', 'small'],
+    'xlnet': ['base'],
+    'albert': ['base'],
+}
+
+
+def available_transformer_model():
     """
-    List available deep learning entities models, ['concat', 'bahdanau', 'luong', 'entity-network', 'attention']
+    List available transformer Entity Tagging models.
     """
-    return ['concat', 'bahdanau', 'luong', 'entity-network', 'attention']
+    return _availability
 
 
-def crf(validate = True, sensitive = False):
+def transformer(model = 'xlnet', size = 'base', validate = True):
     """
-    Load CRF Entities Recognition model.
+    Load Transformer Entity Tagging model, transfer learning Transformer + CRF.
 
     Parameters
     ----------
-    validate: bool, optional (default=True)
-        if True, malaya will check model availability and download if not available.
-    sensitive: bool, optional (default=False)
-        if True, the entities recognition model will become case sensitive.
-
-    Returns
-    -------
-    CRF : malaya._models._sklearn_model.CRF class
-    """
-    if sensitive:
-        return _tag_class.crf(
-            PATH_ENTITIES_SENSITIVE,
-            S3_PATH_ENTITIES_SENSITIVE,
-            'entity-sensitive',
-            is_lower = False,
-            validate = validate,
-        )
-    else:
-        return _tag_class.crf(
-            PATH_ENTITIES, S3_PATH_ENTITIES, 'entity', validate = validate
-        )
-
-
-def deep_model(model = 'bahdanau', sensitive = False, validate = True):
-    """
-    Load deep learning NER model.
-
-    Parameters
-    ----------
-    model : str, optional (default='bahdanau')
+    model : str, optional (default='bert')
         Model architecture supported. Allowed values:
 
-        * ``'concat'`` - Concating character and word embedded for BiLSTM.
-        * ``'bahdanau'`` - Concating character and word embedded including Bahdanau Attention for BiLSTM.
-        * ``'luong'`` - Concating character and word embedded including Luong Attention for BiLSTM.
-        * ``'entity-network'`` - Concating character and word embedded on hybrid Entity-Network and RNN.
-        * ``'attention'`` - Concating character and word embedded with self-attention for BiLSTM.
-    sensitive: bool, optional (default=False)
-        if True, the entities recognition model will become case sensitive.
+        * ``'bert'`` - BERT architecture from google.
+        * ``'xlnet'`` - XLNET architecture from google.
+        * ``'albert'`` - ALBERT architecture from google.
+    size : str, optional (default='base')
+        Model size supported. Allowed values:
+
+        * ``'base'`` - BASE size.
+        * ``'small'`` - SMALL size.
     validate: bool, optional (default=True)
         if True, malaya will check model availability and download if not available.
 
     Returns
     -------
-    TAGGING: malaya._models._tensorflow_model.TAGGING class
+    MODEL : Transformer class
     """
-    if sensitive:
-        return _tag_class.deep_model(
-            PATH_ENTITIES_SENSITIVE,
-            S3_PATH_ENTITIES_SENSITIVE,
-            'entity-sensitive',
-            model = model,
-            is_lower = False,
-            validate = validate,
+    if not isinstance(model, str):
+        raise ValueError('model must be a string')
+    if not isinstance(size, str):
+        raise ValueError('size must be a string')
+    if not isinstance(validate, bool):
+        raise ValueError('validate must be a boolean')
+
+    model = model.lower()
+    size = size.lower()
+    if model not in _availability:
+        raise Exception(
+            'model not supported, please check supported models from malaya.entity.available_transformer_model()'
         )
-    else:
-        return _tag_class.deep_model(
-            PATH_ENTITIES,
-            S3_PATH_ENTITIES,
-            'entity',
-            model = model,
-            validate = validate,
+    if size not in _availability[model]:
+        raise Exception(
+            'size not supported, please check supported models from malaya.entity.available_transformer_model()'
         )
+    return _tag_class.transformer(
+        PATH_ENTITIES,
+        S3_PATH_ENTITIES,
+        'entity',
+        model = model,
+        size = size,
+        validate = validate,
+    )
+
+
+def general_entity(model = None):
+    """
+    Load Regex based general entities tagging along with another supervised entity tagging model.
+
+    Parameters
+    ----------
+    model : object
+        model must has `predict` method. Make sure the `predict` method returned [(string, label), (string, label)].
+
+    Returns
+    -------
+    _Entity_regex: malaya.texts._entity._Entity_regex class
+    """
+    if not hasattr(model, 'predict') and model is not None:
+        raise ValueError('model must has `predict` method')
+    return _Entity_regex(model = model)

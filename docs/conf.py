@@ -77,6 +77,8 @@ MOCK_MODULES = [
     'pulp',
     'ftfy',
     'networkx',
+    'bert',
+    'dateparser',
 ]
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
@@ -156,12 +158,14 @@ source_suffix = '.rst'
 # a list of builtin themes.
 #
 html_theme = 'sphinx_rtd_theme'
+html_logo = 'malaya-only.png'
+
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
-# html_theme_options = {}
+html_theme_options = {'style_nav_header_background': 'black'}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

@@ -21,7 +21,7 @@ class Translate:
     def translate(self, string):
         assert isinstance(string, str), 'input must be a string'
         self.driver.find_element_by_id('source').clear()
-        self.driver.find_element_by_id('source').send_keys(string.lower())
+        self.driver.find_element_by_id('source').send_keys(string)
         time.sleep(2)
         text = [elem.text for elem in self.driver.find_elements_by_xpath(span)]
         return text[0]

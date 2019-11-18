@@ -21,15 +21,6 @@ malaya.dependency
 .. automodule:: malaya.dependency
     :members:
 
-malaya.elmo
-------------------
-
-.. automodule:: malaya.elmo
-    :members:
-
-.. autoclass:: malaya.elmo.ELMO()
-    :members:
-
 malaya.emotion
 -----------------
 
@@ -40,15 +31,6 @@ malaya.entity
 ---------------
 
 .. automodule:: malaya.entity
-    :members:
-
-malaya.fast_text
------------------
-
-.. automodule:: malaya.fast_text
-    :members:
-
-.. autoclass:: malaya.fast_text.fast_text()
     :members:
 
 malaya.generator
@@ -70,9 +52,6 @@ malaya.normalize
     :members:
 
 .. autoclass:: malaya.normalize._SPELL_NORMALIZE()
-    :members:
-
-.. autoclass:: malaya.normalize._FUZZY_NORMALIZE()
     :members:
 
 malaya.num2word
@@ -111,9 +90,11 @@ malaya.spell
 .. automodule:: malaya.spell
     :members:
 
-.. autoclass:: malaya.spell._SPELL()
+.. autoclass:: malaya.spell._SpellCorrector()
     :members:
 
+.. autoclass:: malaya.spell._SymspellCorrector()
+    :members:
 
 malaya.stack
 -----------------
@@ -145,22 +126,19 @@ malaya.summarize
 .. autoclass:: malaya.summarize._DEEP_SUMMARIZER()
     :members:
 
+.. autoclass:: malaya.summarize._DEEP_SKIPTHOUGHT()
+    :members:
+
 malaya.similarity
 -------------------------
 
 .. automodule:: malaya.similarity
     :members:
 
-.. autoclass:: malaya.similarity._DEEP_SIAMESE_SIMILARITY()
+.. autoclass:: malaya.similarity._VECTORIZER_SIMILARITY()
     :members:
 
-.. autoclass:: malaya.similarity._DEEP_SIMILARITY()
-    :members:
-
-.. autoclass:: malaya.similarity._FAST_SIMILARITY()
-    :members:
-
-.. autoclass:: malaya.similarity._FUZZY()
+.. autoclass:: malaya.similarity._DOC2VEC_SIMILARITY()
     :members:
 
 malaya.topic_model
@@ -181,92 +159,92 @@ malaya.toxic
 .. automodule:: malaya.toxic
     :members:
 
-malaya.word_mover
+malaya.transformer
 -------------------------
 
-.. automodule:: malaya.word_mover
+.. automodule:: malaya.transformer
     :members:
 
-.. autoclass:: malaya.word_mover._DEEP_CONTRACTION()
-    :members:
-
-malaya.word2vec
+malaya.wordvector
 -------------------------
 
-.. automodule:: malaya.word2vec
+.. automodule:: malaya.wordvector
     :members:
 
-.. autoclass:: malaya.word2vec.word2vec()
+.. autoclass:: malaya.wordvector._wordvector()
     :members:
 
-malaya._models._sklearn_model
----------------------------------
+malaya._transformer._bert
+-----------------------------
 
-.. autoclass:: malaya._models._sklearn_model.CRF()
+.. automodule:: malaya._transformer._bert
     :members:
 
-.. autoclass:: malaya._models._sklearn_model.DEPENDENCY()
+.. autoclass:: malaya._transformer._bert._Model()
     :members:
 
-.. autoclass:: malaya._models._sklearn_model.BINARY_XGB()
+malaya._transformer._albert
+-----------------------------
+
+.. automodule:: malaya._transformer._albert
     :members:
 
-.. autoclass:: malaya._models._sklearn_model.BINARY_BAYES()
+.. autoclass:: malaya._transformer._albert._Model()
     :members:
 
-.. autoclass:: malaya._models._sklearn_model.MULTICLASS_XGB()
+malaya._transformer._xlnet
+-----------------------------
+
+.. automodule:: malaya._transformer._xlnet
     :members:
 
-.. autoclass:: malaya._models._sklearn_model.MULTICLASS_BAYES()
-    :members:
-
-.. autoclass:: malaya._models._sklearn_model.TOXIC()
-    :members:
-
-.. autoclass:: malaya._models._sklearn_model.LANGUAGE_DETECTION()
+.. autoclass:: malaya._transformer._xlnet._Model()
     :members:
 
 malaya._models._tensorflow_model
----------------------------------
+----------------------------------
 
-.. autoclass:: malaya._models._tensorflow_model.DEPENDENCY()
+.. autoclass:: malaya._models._tensorflow_model._SPARSE_SOFTMAX_MODEL()
     :members:
 
-.. autoclass:: malaya._models._tensorflow_model.TAGGING()
+malaya._models._bert_model
+----------------------------------
+
+.. autoclass:: malaya._models._bert_model.BINARY_BERT()
     :members:
 
-.. autoclass:: malaya._models._tensorflow_model.BINARY_BERT()
+.. autoclass:: malaya._models._bert_model.MULTICLASS_BERT()
     :members:
 
-.. autoclass:: malaya._models._tensorflow_model.MULTICLASS_BERT()
+.. autoclass:: malaya._models._bert_model.SIGMOID_BERT()
     :members:
 
-.. autoclass:: malaya._models._tensorflow_model.SIGMOID_BERT()
+.. autoclass:: malaya._models._bert_model.SIAMESE_BERT()
     :members:
 
-.. autoclass:: malaya._models._tensorflow_model.SOFTMAX()
+.. autoclass:: malaya._models._bert_model.TAGGING_BERT()
     :members:
 
-.. autoclass:: malaya._models._tensorflow_model.BINARY_SOFTMAX()
+.. autoclass:: malaya._models._bert_model.DEPENDENCY_BERT()
     :members:
 
-.. autoclass:: malaya._models._tensorflow_model.MULTICLASS_SOFTMAX()
+malaya._models._xlnet_model
+----------------------------------
+
+.. autoclass:: malaya._models._xlnet_model.BINARY_XLNET()
     :members:
 
-.. autoclass:: malaya._models._tensorflow_model.SIGMOID()
+.. autoclass:: malaya._models._xlnet_model.MULTICLASS_XLNET()
     :members:
 
-.. autoclass:: malaya._models._tensorflow_model.DEEP_LANG()
+.. autoclass:: malaya._models._xlnet_model.SIGMOID_XLNET()
     :members:
 
-.. autoclass:: malaya._models._tensorflow_model.SPARSE_SOFTMAX()
+.. autoclass:: malaya._models._xlnet_model.SIAMESE_XLNET()
     :members:
 
-.. autoclass:: malaya._models._tensorflow_model.SPARSE_SIGMOID()
+.. autoclass:: malaya._models._xlnet_model.TAGGING_XLNET()
     :members:
 
-.. autoclass:: malaya._models._tensorflow_model.SIAMESE()
-    :members:
-
-.. autoclass:: malaya._models._tensorflow_model.SIAMESE_BERT()
+.. autoclass:: malaya._models._xlnet_model.DEPENDENCY_XLNET()
     :members:

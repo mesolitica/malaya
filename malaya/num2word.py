@@ -1,11 +1,5 @@
 from __future__ import print_function, unicode_literals
 
-import sys
-import warnings
-
-if not sys.warnoptions:
-    warnings.simplefilter('ignore')
-
 BASE = {
     0: [],
     1: ['satu'],
@@ -22,8 +16,8 @@ BASE = {
 TENS_TO = {
     3: 'ribu',
     6: 'juta',
-    9: 'billion',
-    12: 'trillion',
+    9: 'bilion',
+    12: 'trilion',
     15: 'quadrillion',
     18: 'quintillion',
     21: 'sextillion',
@@ -92,7 +86,7 @@ def spell(blocks):
     first_block = blocks[0]
     if len(first_block[0]) == 1:
         if first_block[0] == '0':
-            spelling = ['nol']
+            spelling = ['kosong']
         else:
             spelling = BASE[int(first_block[0])]
     elif len(first_block[0]) == 2:
@@ -111,7 +105,7 @@ def spell_float(float_part):
     word_list = []
     for n in float_part:
         if n == '0':
-            word_list += ['nol']
+            word_list += ['kosong']
             continue
         word_list += BASE[int(n)]
     return ' '.join(['', 'perpuluhan'] + word_list)

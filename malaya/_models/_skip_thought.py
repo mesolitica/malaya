@@ -1,9 +1,3 @@
-import sys
-import warnings
-
-if not sys.warnoptions:
-    warnings.simplefilter('ignore')
-
 import tensorflow as tf
 import numpy as np
 from tqdm import tqdm

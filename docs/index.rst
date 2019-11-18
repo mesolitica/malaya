@@ -17,17 +17,13 @@ Contents:
 
    Installation
    Dataset
-   Contribution
-   Crawler
-   Translator-malaya
    Accuracy
    Cache
+   Transformer
    Cluster
    Dependency
-   Elmo
    Emotion
    Entities
-   Fasttext
    Generator
    Language
    Normalizer
@@ -45,8 +41,10 @@ Contents:
    Topic
    Toxic
    Word2num
-   Word2vec
-   Mover
+   Wordvector
    Cluster
    Api
+   Contributing
+   Crawler
+   Translator-malaya
    Reference

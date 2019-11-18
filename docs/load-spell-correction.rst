@@ -7,231 +7,44 @@
 
 .. parsed-literal::
 
-    CPU times: user 11.9 s, sys: 1.55 s, total: 13.5 s
-    Wall time: 17.7 s
-
-
-Load fuzzy speller
-------------------
-
-.. code:: python
-
-    malays = malaya.load_malay_dictionary()
-    corrector = malaya.spell.fuzzy(malays)
-
-.. code:: python
-
-    corrector.correct('mknn')
-
-
-.. parsed-literal::
-
-    [(('makanan', False), 73)]
-
-
-
-
-
-.. parsed-literal::
-
-    'makanan'
-
-
-
-List similar words
-^^^^^^^^^^^^^^^^^^
-
-.. code:: python
-
-    corrector.correct('tmpat',debug=True)
-
-
-.. parsed-literal::
-
-    [(('tepat', False), 80), (('tempat', False), 91), (('tumpat', True), 91)]
-
-
-
-
-
-.. parsed-literal::
-
-    'tempat'
-
-
-
-Only pool based on first character
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. code:: python
-
-    %%time
-    corrector.correct('mknn',first_char=True)
-
-
-.. parsed-literal::
-
-    [(('makanan', False), 73)]
-
-    CPU times: user 22.4 ms, sys: 1.46 ms, total: 23.9 ms
-    Wall time: 24.5 ms
-
-
-
-
-.. parsed-literal::
-
-    'makanan'
-
-
-
-Pool on no condition
-^^^^^^^^^^^^^^^^^^^^
-
-.. code:: python
-
-    %%time
-    corrector.correct('mknn',first_char=False)
-
-
-.. parsed-literal::
-
-    [(('makanan', False), 73)]
-
-    CPU times: user 27.4 ms, sys: 2.68 ms, total: 30 ms
-    Wall time: 32.1 ms
-
-
-
-
-.. parsed-literal::
-
-    'makanan'
-
+    CPU times: user 5.37 s, sys: 841 ms, total: 6.21 s
+    Wall time: 6.97 s
 
 
 .. code:: python
 
-    corrector.correct('tempat')
+    # some text examples copied from Twitter
 
-
-.. parsed-literal::
-
-    [(('tempat', False), 100)]
-
-
-
-
-
-.. parsed-literal::
-
-    'tempat'
-
-
+    string1 = 'kerajaan patut bagi pencen awal skt kpd warga emas supaya emosi'
+    string2 = 'Husein ska mkn aym dkat kmpng Jawa'
+    string3 = 'Melayu malas ni narration dia sama je macam men are trash. True to some, false to some.'
+    string4 = 'Tapi tak pikir ke bahaya perpetuate myths camtu. Nanti kalau ada hiring discrimination despite your good qualifications because of your race tau pulak marah. Your kids will be victims of that too.'
+    string5 = 'DrM cerita Melayu malas semenjak saya kat University (early 1980s) and now as i am edging towards retirement in 4-5 years time after a career of being an Engineer, Project Manager, General Manager'
+    string6 = 'blh bntg dlm kls nlp sy, nnti intch'
 
 Load probability speller
 ------------------------
 
-.. code:: python
+The probability speller extends the functionality of the Peter Norvig’s,
+http://norvig.com/spell-correct.html.
 
-    corrector = malaya.spell.probability()
+And improve it using some algorithms from Normalization of noisy texts
+in Malaysian online reviews,
+https://www.researchgate.net/publication/287050449_Normalization_of_noisy_texts_in_Malaysian_online_reviews.
 
-.. code:: python
-
-    %%time
-    corrector.correct('mknn')
-
-
-.. parsed-literal::
-
-    CPU times: user 240 µs, sys: 17 µs, total: 257 µs
-    Wall time: 263 µs
-
-
-
-
-.. parsed-literal::
-
-    'makanan'
-
-
-
-Fast-mode
-^^^^^^^^^
-
-You can use fast mode, means we only search word pools from augmented
-user input.
+Also added custom vowels and consonant augmentation to adapt with our
+local shortform / typos.
 
 .. code:: python
 
-    %%time
-    corrector.correct('mknn',fast = True)
+    prob_corrector = malaya.spell.probability()
 
-
-.. parsed-literal::
-
-    CPU times: user 8 µs, sys: 1e+03 ns, total: 9 µs
-    Wall time: 14.1 µs
-
-
-
-
-.. parsed-literal::
-
-    'makanan'
-
-
-
-If want more pool size, simply ``fast = False``, default is ``False``.
+To correct a word
+^^^^^^^^^^^^^^^^^
 
 .. code:: python
 
-    %%time
-    corrector.correct('tmpat')
-
-
-.. parsed-literal::
-
-    CPU times: user 424 µs, sys: 6 µs, total: 430 µs
-    Wall time: 438 µs
-
-
-
-
-.. parsed-literal::
-
-    'tempat'
-
-
-
-Assume wrong
-^^^^^^^^^^^^
-
-Sometime words inside the dictionary is not really correct, like example
-below,
-
-.. code:: python
-
-    corrector.correct('saye')
-
-
-
-
-.. parsed-literal::
-
-    'saye'
-
-
-
-We got ``saye`` as output, because the algorithm assumed all words
-inside the dictionary is correct.
-
-So to solve this, you need to set ``assume_wrong`` parameter as
-``False``.
-
-.. code:: python
-
-    corrector.correct('saye', assume_wrong = True)
+    prob_corrector.correct('sy')
 
 
 
@@ -242,253 +55,323 @@ So to solve this, you need to set ``assume_wrong`` parameter as
 
 
 
-edit_step
-^^^^^^^^^
-
-You can check how augmented word been done, by simply
-``corrector.edit_step``
-
 .. code:: python
 
-    corrector.edit_step('mknn')
+    prob_corrector.correct('mhthir')
 
 
 
 
 .. parsed-literal::
 
-    {'aknn',
-     'amknn',
-     'bknn',
-     'bmknn',
-     'cknn',
-     'cmknn',
-     'dknn',
-     'dmknn',
-     'eknn',
-     'emknn',
-     'fknn',
-     'fmknn',
-     'gknn',
-     'gmknn',
-     'hknn',
-     'hmknn',
-     'iknn',
-     'imknn',
-     'jknn',
-     'jmknn',
-     'kknn',
-     'kmknn',
-     'kmnn',
-     'knn',
-     'lknn',
-     'lmknn',
-     'makanan',
-     'maknn',
-     'mann',
-     'mbknn',
-     'mbnn',
-     'mcknn',
-     'mcnn',
-     'mdknn',
-     'mdnn',
-     'meknn',
-     'menn',
-     'mfknn',
-     'mfnn',
-     'mgknn',
-     'mgnn',
-     'mhknn',
-     'mhnn',
-     'mikinin',
-     'miknn',
-     'minn',
-     'mjknn',
-     'mjnn',
-     'mkan',
-     'mkann',
-     'mkbn',
-     'mkbnn',
-     'mkcn',
-     'mkcnn',
-     'mkdn',
-     'mkdnn',
-     'mken',
-     'mkenn',
-     'mkfn',
-     'mkfnn',
-     'mkgn',
-     'mkgnn',
-     'mkhn',
-     'mkhnn',
-     'mkin',
-     'mkinn',
-     'mkjn',
-     'mkjnn',
-     'mkkn',
-     'mkknn',
-     'mkln',
-     'mklnn',
-     'mkmn',
-     'mkmnn',
-     'mkn',
-     'mkna',
-     'mknan',
-     'mknb',
-     'mknbn',
-     'mknc',
-     'mkncn',
-     'mknd',
-     'mkndn',
-     'mkne',
-     'mknen',
-     'mknf',
-     'mknfn',
-     'mkng',
-     'mkngn',
-     'mknh',
-     'mknhn',
-     'mkni',
-     'mknin',
-     'mknj',
-     'mknjn',
-     'mknk',
-     'mknkn',
-     'mknl',
-     'mknln',
-     'mknm',
-     'mknmn',
-     'mknn',
-     'mknna',
-     'mknnb',
-     'mknnc',
-     'mknnd',
-     'mknne',
-     'mknnf',
-     'mknng',
-     'mknnh',
-     'mknni',
-     'mknnj',
-     'mknnk',
-     'mknnl',
-     'mknnm',
-     'mknnn',
-     'mknno',
-     'mknnp',
-     'mknnq',
-     'mknnr',
-     'mknns',
-     'mknnt',
-     'mknnu',
-     'mknnv',
-     'mknnw',
-     'mknnx',
-     'mknny',
-     'mknnz',
-     'mkno',
-     'mknon',
-     'mknp',
-     'mknpn',
-     'mknq',
-     'mknqn',
-     'mknr',
-     'mknrn',
-     'mkns',
-     'mknsn',
-     'mknt',
-     'mkntn',
-     'mknu',
-     'mknun',
-     'mknv',
-     'mknvn',
-     'mknw',
-     'mknwn',
-     'mknx',
-     'mknxn',
-     'mkny',
-     'mknyn',
-     'mknz',
-     'mknzn',
-     'mkon',
-     'mkonn',
-     'mkpn',
-     'mkpnn',
-     'mkqn',
-     'mkqnn',
-     'mkrn',
-     'mkrnn',
-     'mksn',
-     'mksnn',
-     'mktn',
-     'mktnn',
-     'mkun',
-     'mkunn',
-     'mkvn',
-     'mkvnn',
-     'mkwn',
-     'mkwnn',
-     'mkxn',
-     'mkxnn',
-     'mkyn',
-     'mkynn',
-     'mkzn',
-     'mkznn',
-     'mlknn',
-     'mlnn',
-     'mmknn',
-     'mmnn',
-     'mnkn',
-     'mnknn',
-     'mnn',
-     'mnnn',
-     'moknn',
-     'monn',
-     'mpknn',
-     'mpnn',
-     'mqknn',
-     'mqnn',
-     'mrknn',
-     'mrnn',
-     'msknn',
-     'msnn',
-     'mtknn',
-     'mtnn',
-     'muknn',
-     'mukunun',
-     'munn',
-     'mvknn',
-     'mvnn',
-     'mwknn',
-     'mwnn',
-     'mxknn',
-     'mxnn',
-     'myknn',
-     'mynn',
-     'mzknn',
-     'mznn',
-     'nknn',
-     'nmknn',
-     'oknn',
-     'omknn',
-     'pknn',
-     'pmknn',
-     'qknn',
-     'qmknn',
-     'rknn',
-     'rmknn',
-     'sknn',
-     'smknn',
-     'tknn',
-     'tmknn',
-     'uknn',
-     'umknn',
-     'vknn',
-     'vmknn',
-     'wknn',
-     'wmknn',
-     'xknn',
-     'xmknn',
-     'yknn',
-     'ymknn',
-     'zknn',
-     'zmknn'}
+    'mahathir'
+
+
+
+.. code:: python
+
+    prob_corrector.correct('mknn')
+
+
+
+
+.. parsed-literal::
+
+    'makanan'
+
+
+
+List possible generated pool of words
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: python
+
+    prob_corrector.edit_candidates('mhthir')
+
+
+
+
+.. parsed-literal::
+
+    {'mahathir'}
+
+
+
+.. code:: python
+
+    prob_corrector.edit_candidates('smbng')
+
+
+
+
+.. parsed-literal::
+
+    {'sambang',
+     'sambong',
+     'sambung',
+     'sembang',
+     'sembong',
+     'sembung',
+     'simbang',
+     'smbg',
+     'sombong',
+     'sumbang',
+     'sumbing'}
+
+
+
+**So how does the model knows which words need to pick? highest counts
+from wikipedia!**
+
+To correct a sentence
+^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: python
+
+    prob_corrector.correct_text(string1)
+
+
+
+
+.. parsed-literal::
+
+    'kerajaan patut bagi pencen awal sakit kepada warga emas supaya emosi'
+
+
+
+.. code:: python
+
+    prob_corrector.correct_text(string2)
+
+
+
+
+.. parsed-literal::
+
+    'Husein suka makan ayam dekat kmpng Jawa'
+
+
+
+.. code:: python
+
+    prob_corrector.correct_text(string3)
+
+
+
+
+.. parsed-literal::
+
+    'Melayu malas ni narration dia sama sahaja macam men are trash. True to some, false to some.'
+
+
+
+.. code:: python
+
+    prob_corrector.correct_text(string4)
+
+
+
+
+.. parsed-literal::
+
+    'Tapi tak fikir ke bahaya perpetuate myths macam itu. Nanti kalau ada hiring discrimination despite your good qualifications because of your race tahu pula marah. Your kids will be victims of that too.'
+
+
+
+.. code:: python
+
+    prob_corrector.correct_text(string5)
+
+
+
+
+.. parsed-literal::
+
+    'DrM cerita Melayu malas semenjak saya kat University (early 1980s) and now as saya am edging towards retirement in 4-5 years time after a career of being an Engineer, Project Manager, General Manager'
+
+
+
+.. code:: python
+
+    prob_corrector.correct_text(string6)
+
+
+
+
+.. parsed-literal::
+
+    'boleh bintang dalam kelas nlp saya, nanti intch'
+
+
+
+Load symspeller speller
+-----------------------
+
+This spelling correction is an improvement version for
+`symspeller <https://github.com/mammothb/symspellpy>`__ to adapt with
+our local shortform / typos. Before you able to use this spelling
+correction, you need to install
+`symspeller <https://github.com/mammothb/symspellpy>`__,
+
+.. code:: bash
+
+   pip install symspellpy
+
+.. code:: python
+
+    symspell_corrector = malaya.spell.symspell()
+
+To correct a word
+^^^^^^^^^^^^^^^^^
+
+.. code:: python
+
+    symspell_corrector.correct('bntng')
+
+
+
+
+.. parsed-literal::
+
+    'bintang'
+
+
+
+.. code:: python
+
+    symspell_corrector.correct('kerajaan')
+
+
+
+
+.. parsed-literal::
+
+    'kerajaan'
+
+
+
+.. code:: python
+
+    symspell_corrector.correct('mknn')
+
+
+
+
+.. parsed-literal::
+
+    'makanan'
+
+
+
+List possible generated words
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: python
+
+    symspell_corrector.edit_step('mrh')
+
+
+
+
+.. parsed-literal::
+
+    {'marah': 12684.0,
+     'merah': 21448.5,
+     'arah': 15066.5,
+     'darah': 10003.0,
+     'mara': 7504.5,
+     'malah': 7450.0,
+     'zarah': 3753.5,
+     'murah': 3575.5,
+     'barah': 2707.5,
+     'march': 2540.5,
+     'martha': 390.0,
+     'marsha': 389.0,
+     'maratha': 88.5,
+     'marcha': 22.5,
+     'karaha': 13.5,
+     'maraba': 13.5,
+     'varaha': 11.5,
+     'marana': 4.5,
+     'marama': 4.5}
+
+
+
+To correct a sentence
+^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: python
+
+    symspell_corrector.correct_text(string1)
+
+
+
+
+.. parsed-literal::
+
+    'kerajaan patut bagi pencen awal saat kepada warga emas supaya emosi'
+
+
+
+.. code:: python
+
+    symspell_corrector.correct_text(string2)
+
+
+
+
+.. parsed-literal::
+
+    'Husein sama makan ayam dapat kompang Jawa'
+
+
+
+.. code:: python
+
+    symspell_corrector.correct_text(string3)
+
+
+
+
+.. parsed-literal::
+
+    'Melayu malas ni narration dia sama sahaja macam men are trash. True to some, false to some.'
+
+
+
+.. code:: python
+
+    symspell_corrector.correct_text(string4)
+
+
+
+
+.. parsed-literal::
+
+    'Tapi tak fikir ke bahaya perpetuate maathai macam itu. Nanti kalau ada hiring discrimination despite your good qualifications because of your race tahu pula marah. Your kids will be victims of that too.'
+
+
+
+.. code:: python
+
+    symspell_corrector.correct_text(string5)
+
+
+
+
+.. parsed-literal::
+
+    'DrM cerita Melayu malas semenjak saya kat University (early 1980s) and now as saya am edging towards retirement in 4-5 aras time after a career of being an Engineer, Project Manager, General Manager'
+
+
+
+.. code:: python
+
+    symspell_corrector.correct_text(string6)
+
+
+
+
+.. parsed-literal::
+
+    'ialah bintang dalam kelas malaya saya, nanti mintalah'

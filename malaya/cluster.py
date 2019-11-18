@@ -4,9 +4,12 @@ from sklearn.manifold import MDS
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from .texts.vectorizer import SkipGramVectorizer
 from .stem import sastrawi
-from .texts._text_functions import simple_textcleaning, split_by_dot, STOPWORDS
-from scipy.cluster.hierarchy import ward, dendrogram
-from fuzzywuzzy import fuzz
+from .texts._text_functions import (
+    simple_textcleaning,
+    split_into_sentences,
+    STOPWORDS,
+)
+
 import numpy as np
 import re
 import random
@@ -54,6 +57,10 @@ def cluster_words(list_words):
     """
     if not isinstance(list_words, list):
         raise ValueError('list_words must be a list')
+
+    if not len(list_words):
+        return []
+
     if not isinstance(list_words[0], str):
         raise ValueError('list_words must be a list of strings')
 
@@ -129,6 +136,45 @@ def cluster_pos(result):
             if not last_label:
                 last_label = label
             words.append(word)
+    output[last_label].append(' '.join(words))
+    return output
+
+
+def cluster_tagging(result):
+    """
+    cluster any tagging results, as long the data passed `[(string, label), (string, label)]`.
+
+    Parameters
+    ----------
+    result: list
+
+    Returns
+    -------
+    result: list
+    """
+    if not isinstance(result, list):
+        raise ValueError('result must be a list')
+    if not isinstance(result[0], tuple):
+        raise ValueError('result must be a list of tuple')
+
+    _, labels = list(zip(*result))
+
+    output = {l: [] for l in labels}
+    last_label, words = None, []
+    for word, label in result:
+        if last_label != label and last_label:
+            joined = ' '.join(words)
+            if joined not in output[last_label]:
+                output[last_label].append(joined)
+            words = []
+            last_label = label
+            words.append(word)
+
+        else:
+            if not last_label:
+                last_label = label
+            words.append(word)
+    output[last_label].append(' '.join(words))
     return output
 
 
@@ -177,6 +223,7 @@ def cluster_entities(result):
             if not last_label:
                 last_label = label
             words.append(word)
+    output[last_label].append(' '.join(words))
     return output
 
 
@@ -446,6 +493,7 @@ def cluster_dendogram(
     try:
         import matplotlib.pyplot as plt
         import seaborn as sns
+        from scipy.cluster.hierarchy import ward, dendrogram
 
         sns.set()
     except:
@@ -809,11 +857,12 @@ def cluster_entity_linking(
         import seaborn as sns
         import networkx as nx
         import networkx.drawing.layout as nxlayout
+        from fuzzywuzzy import fuzz
 
         sns.set()
     except:
         raise Exception(
-            'matplotlib, seaborn, networkx not installed. Please install it and try again.'
+            'matplotlib, seaborn, networkx, fuzzywuzzy not installed. Please install it and try again.'
         )
 
     if vectorizer == 'tfidf':
@@ -826,12 +875,11 @@ def cluster_entity_linking(
         raise ValueError("vectorizer must be in  ['tfidf', 'bow', 'skip-gram']")
 
     if isinstance(corpus, str):
-        corpus = corpus.replace('\n', '.')
-        corpus = split_by_dot(corpus)
+        corpus = split_into_sentences(corpus)
     else:
-        corpus = [c + '.' for c in corpus]
-        corpus = ' '.join(corpus)
-        corpus = re.findall('(?=\S)[^.\n]+(?<=\S)', corpus)
+        corpus = '. '.join(corpus)
+        corpus = split_into_sentences(corpus)
+
     corpus = [string for string in corpus if len(string) > 5]
 
     if not colors:

@@ -1,23 +1,16 @@
-import sys
-import warnings
-
-if not sys.warnoptions:
-    warnings.simplefilter('ignore')
-
 import numpy as np
 import re
-import random
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.decomposition import TruncatedSVD, NMF, LatentDirichletAllocation
-from sklearn.utils import shuffle
-from fuzzywuzzy import fuzz
+from .texts._jarowrinkler import JaroWinkler
 from sklearn.metrics.pairwise import cosine_similarity
 from .texts._text_functions import (
     summary_textcleaning,
-    classification_textcleaning,
     STOPWORDS,
     split_into_sentences,
+    simple_textcleaning,
 )
+import itertools
 import networkx as nx
 from .stem import sastrawi
 from ._models import _skip_thought
@@ -25,7 +18,7 @@ from .cluster import cluster_words
 from .texts.vectorizer import SkipGramVectorizer
 
 
-class _DEEP_SUMMARIZER:
+class _DEEP_SKIPTHOUGHT:
     def __init__(
         self, sess, x, logits, attention, dictionary, maxlen, model = None
     ):
@@ -38,19 +31,30 @@ class _DEEP_SUMMARIZER:
         self._rev_dictionary = {v: k for k, v in self.dictionary.items()}
         self._model = model
 
-    def vectorize(self, corpus):
-        if not isinstance(corpus, list) and not isinstance(corpus, str):
-            raise ValueError('corpus must be a list')
-        if isinstance(corpus, list):
-            if not isinstance(corpus[0], str):
-                raise ValueError('corpus must be list of strings')
-        if isinstance(corpus, str):
-            corpus = split_into_sentences(corpus)
-        else:
-            corpus = '. '.join(corpus)
-            corpus = split_into_sentences(corpus)
+    def vectorize(self, strings):
 
-        splitted_fullstop = [summary_textcleaning(i) for i in corpus]
+        """
+        Vectorize string inputs using bert attention.
+
+        Parameters
+        ----------
+        strings : str / list of str
+
+        Returns
+        -------
+        array: vectorized strings
+        """
+
+        if isinstance(strings, list):
+            if not isinstance(strings[0], str):
+                raise ValueError('input must be a list of strings or a string')
+        else:
+            if not isinstance(strings, str):
+                raise ValueError('input must be a list of strings or a string')
+        if isinstance(strings, str):
+            strings = [strings]
+
+        splitted_fullstop = [summary_textcleaning(i) for i in strings]
         original_strings = [i[0] for i in splitted_fullstop]
         cleaned_strings = [i[1] for i in splitted_fullstop]
         sequences = _skip_thought.batch_sequence(
@@ -60,7 +64,12 @@ class _DEEP_SUMMARIZER:
             self._logits, feed_dict = {self._X: np.array(sequences)}
         )
 
-    def summarize(self, corpus, top_k = 3, important_words = 3):
+
+class _DEEP_SUMMARIZER:
+    def __init__(self, vectorizer):
+        self._vectorizer = vectorizer
+
+    def summarize(self, corpus, top_k = 3, important_words = 3, **kwargs):
         """
         Summarize list of strings / corpus
 
@@ -86,6 +95,7 @@ class _DEEP_SUMMARIZER:
         if isinstance(corpus, list):
             if not isinstance(corpus[0], str):
                 raise ValueError('corpus must be list of strings')
+
         if isinstance(corpus, str):
             corpus = split_into_sentences(corpus)
         else:
@@ -95,19 +105,43 @@ class _DEEP_SUMMARIZER:
         splitted_fullstop = [summary_textcleaning(i) for i in corpus]
         original_strings = [i[0] for i in splitted_fullstop]
         cleaned_strings = [i[1] for i in splitted_fullstop]
-        sequences = _skip_thought.batch_sequence(
-            cleaned_strings, self.dictionary, maxlen = self._maxlen
-        )
-        vectors, attention = self._sess.run(
-            [self._logits, self._attention],
-            feed_dict = {self._X: np.array(sequences)},
-        )
-        attention = attention.sum(axis = 0)
-        indices = np.argsort(attention)[::-1]
-        top_words = [self._rev_dictionary[i] for i in indices[:important_words]]
+
+        if '_DEEP_SKIPTHOUGHT' in str(self._vectorizer):
+
+            sequences = _skip_thought.batch_sequence(
+                cleaned_strings,
+                self._vectorizer.dictionary,
+                maxlen = self._vectorizer._maxlen,
+            )
+            vectors, attention = self._vectorizer._sess.run(
+                [self._vectorizer._logits, self._vectorizer._attention],
+                feed_dict = {self._vectorizer._X: np.array(sequences)},
+            )
+            attention = attention.sum(axis = 0)
+            indices = np.argsort(attention)[::-1]
+            top_words = [
+                self._vectorizer._rev_dictionary[i]
+                for i in indices
+                if self._vectorizer._rev_dictionary[i] not in STOPWORDS
+            ][:important_words]
+
+        else:
+            vectors = self._vectorizer.vectorize(corpus)
+            attentions = self._vectorizer.attention(corpus, **kwargs)
+            flatten = list(itertools.chain(*attentions))
+            r = {}
+            for f in flatten:
+                c = simple_textcleaning(f[0])
+                if c in STOPWORDS:
+                    continue
+                if c not in r:
+                    r[c] = f[1]
+                else:
+                    r[c] += f[1]
+            top_words = sorted(r, key = r.get, reverse = True)[:important_words]
 
         similar = cosine_similarity(vectors, vectors)
-        similar[similar >= 0.999] = 0
+        similar[similar >= 0.99999] = 0
         nx_graph = nx.from_numpy_array(similar)
         scores = nx.pagerank(nx_graph, max_iter = 10000)
         ranked_sentences = sorted(
@@ -123,123 +157,59 @@ class _DEEP_SUMMARIZER:
         }
 
 
-def available_deep_extractive():
+def available_skipthought():
     """
-    List available deep extractive summarization models.
+    List available deep skip-thought models.
     """
-    return ['skip-thought', 'residual-network']
+    return ['lstm', 'residual-network']
 
 
-def deep_extractive(model = 'skip-thought'):
+def deep_skipthought(model = 'lstm'):
     """
-    Load deep learning subjectivity analysis model, scoring using TextRank.
+    Load deep learning skipthought model.
 
     Parameters
     ----------
     model : str, optional (default='skip-thought')
         Model architecture supported. Allowed values:
 
-        * ``'skip-thought'`` - skip-thought summarization deep learning model trained on news dataset. Hopefully we can train on wikipedia dataset.
-        * ``'residual-network'`` - residual network with Bahdanau Attention summarization deep learning model trained on wikipedia dataset.
+        * ``'lstm'`` - LSTM skip-thought deep learning model trained on news dataset. Hopefully we can train on wikipedia dataset.
+        * ``'residual-network'`` - residual network with Bahdanau Attention skip-thought deep learning model trained on wikipedia dataset.
 
     Returns
     -------
-    _DEEP_SUMMARIZER: malaya.summarize._DEEP_SUMMARIZER class
+    _DEEP_SKIPTHOUGHT: malaya.summarize._DEEP_SKIPTHOUGHT class
     """
     model = model.lower()
-    if model == 'skip-thought':
+    if model == 'lstm':
         model = _skip_thought.news_load_model
     elif model == 'residual-network':
         model = _skip_thought.wiki_load_model
     else:
         raise Exception(
-            'model is not supported, please check supported models from malaya.summarize.available_deep_extractive()'
+            'model is not supported, please check supported models from malaya.summarize.available_skipthought()'
         )
     sess, x, logits, attention, dictionary, maxlen = model()
-    return _DEEP_SUMMARIZER(sess, x, logits, attention, dictionary, maxlen)
+    return _DEEP_SKIPTHOUGHT(sess, x, logits, attention, dictionary, maxlen)
 
 
-def train_skip_thought(
-    corpus,
-    epoch = 5,
-    batch_size = 16,
-    embedding_size = 256,
-    maxlen = 50,
-    vocab_size = None,
-    stride = 1,
-):
+def encoder(vectorizer):
     """
-    Train a deep skip-thought network for summarization agent
+    Encoder interface for text similarity.
 
     Parameters
     ----------
-    corpus: str, list
-    epoch: int, (default=5)
-        iteration numbers
-    batch_size: int, (default=32)
-        batch size for every feed, batch size must <= size of corpus
-    embedding_size: int, (default=256)
-        vector size representation for a word
-    maxlen: int, (default=50)
-        max length of a string to be train
-    vocab_size: int, (default=None)
-        max vocabulary size, None for no limit
-    stride: int, (default=1)
-        stride size, skipping value for sentences
+    vectorizer : object
+        encoder interface object, BERT, skip-thought, XLNET.
 
     Returns
     -------
-    _DEEP_SUMMARIZER: malaya.skip_thought._DEEP_SUMMARIZER class
+    _DOC2VEC_SIMILARITY: malaya.similarity._DOC2VEC_SIMILARITY
     """
-    if not isinstance(epoch, int):
-        raise ValueError('epoch must be an integer')
-    if not isinstance(batch_size, int):
-        raise ValueError('batch_size must be an integer')
-    if not isinstance(embedding_size, int):
-        raise ValueError('embedding_size must be an integer')
-    if not isinstance(maxlen, int):
-        raise ValueError('maxlen must be an integer')
-    if not isinstance(corpus, list) and not isinstance(corpus, str):
-        raise ValueError('corpus must be a list')
-    if isinstance(corpus, list):
-        if not isinstance(corpus[0], str):
-            raise ValueError('corpus must be list of strings')
-    if isinstance(corpus, str):
-        corpus = split_into_sentences(corpus)
-    else:
-        corpus = '. '.join(corpus)
-        corpus = split_into_sentences(corpus)
 
-    corpus = [summary_textcleaning(i)[1] for i in corpus]
-    t_range = int((len(corpus) - 3) / stride + 1)
-    left, middle, right = [], [], []
-    for i in range(t_range):
-        slices = corpus[i * stride : i * stride + 3]
-        left.append(slices[0])
-        middle.append(slices[1])
-        right.append(slices[2])
-    if batch_size > len(left):
-        raise ValueError('batch size must smaller with corpus size')
-    left, middle, right = shuffle(left, middle, right)
-    sess, model, dictionary, _ = _skip_thought.train_model(
-        middle,
-        left,
-        right,
-        epoch = epoch,
-        batch_size = batch_size,
-        embedding_size = embedding_size,
-        maxlen = maxlen,
-        vocab_size = vocab_size,
-    )
-    return _DEEP_SUMMARIZER(
-        sess,
-        model.INPUT,
-        model.get_thought,
-        model.attention,
-        dictionary,
-        maxlen,
-        model = model,
-    )
+    if not hasattr(vectorizer, 'vectorize'):
+        raise ValueError('vectorizer must has `vectorize` method')
+    return _DEEP_SUMMARIZER(vectorizer)
 
 
 def _base_summarizer(
@@ -500,7 +470,10 @@ def doc2vec(vectorizer, corpus, top_k = 3, aggregation = 'mean', soft = True):
                     pass
                 else:
                     arr = np.array(
-                        [fuzz.ratio(token, k) for k in vectorizer.words]
+                        [
+                            self._jarowinkler.similarity(token, k)
+                            for k in vectorizer.words
+                        ]
                     )
                     idx = (-arr).argsort()[0]
                     inside.append(

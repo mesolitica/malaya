@@ -5,17 +5,20 @@ option = {
             interval: 0,
             rotate: 30
         },
-        data: ['bahdanau','fast-text-char', 'luong', 'multinomial',
-        'self-attention', 'xgboost', 'BERT']
+        data: ['multinomial', 'bert-base (467MB)',
+        'bert-small (185MB)', 'xlnet-base (231MB)', 'albert-base (43MB)']
     },
     yAxis: {
         type: 'value',
-        min:0.75,
-        max:0.82
+        min:0.80,
+        max:0.85
+    },
+    grid:{
+      bottom: 100
     },
     backgroundColor:'rgb(252,252,252)',
     series: [{
-        data: [0.79, 0.76, 0.79, 0.79, 0.78, 0.80, 0.82],
+        data: [0.80541, 0.84132, 0.84123, 0.83838, 0.81992],
         type: 'bar',
         label: {
                 normal: {
