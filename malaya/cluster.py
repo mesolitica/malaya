@@ -229,19 +229,17 @@ def cluster_entities(result):
 
 def cluster_scatter(
     corpus,
+    vectorizer,
     titles = None,
     colors = None,
     stemming = True,
-    max_df = 0.95,
-    min_df = 2,
-    ngram = (1, 3),
     cleaning = simple_textcleaning,
-    vectorizer = 'bow',
     stop_words = None,
     num_clusters = 5,
     clustering = KMeans,
     decomposition = MDS,
     figsize = (17, 9),
+    batch_size = 10,
 ):
     """
     plot scatter plot on similar text clusters.
@@ -258,22 +256,12 @@ def cluster_scatter(
         size of unsupervised clusters.
     stemming: bool, (default=True)
         If True, sastrawi_stemmer will apply.
-    max_df: float, (default=0.95)
-        maximum of a word selected based on document frequency.
-    min_df: int, (default=2)
-        minimum of a word selected on based on document frequency.
-    ngram: tuple, (default=(1,3))
-        n-grams size to train a corpus.
     cleaning: function, (default=simple_textcleaning)
         function to clean the corpus.
     stop_words: list, (default=None)
         list of stop words to remove. If None, default is malaya.texts._text_functions.STOPWORDS
-    vectorizer: str, (default='bow')
-        vectorizer technique. Allowed values:
-
-        * ``'bow'`` - Bag of Word.
-        * ``'tfidf'`` - Term frequency inverse Document Frequency.
-        * ``'skip-gram'`` - Bag of Word with skipping certain n-grams.
+    batch_size: int, (default=10)
+        size of strings for each vectorization and attention. Only useful if use transformer vectorizer.
 
     Returns
     -------
@@ -293,6 +281,8 @@ def cluster_scatter(
         raise ValueError('titles must be a list or None')
     if not isinstance(colors, list) and colors is not None:
         raise ValueError('colors must be a list or None')
+    if not isinstance(batch_size, int):
+        raise ValueError('batch_size must be an integer')
     if titles:
         if len(titles) != len(corpus):
             raise ValueError('length of titles must be same with corpus')
@@ -301,35 +291,13 @@ def cluster_scatter(
             raise ValueError(
                 'size of colors must be same with number of clusters'
             )
-    if not isinstance(vectorizer, str):
-        raise ValueError('vectorizer must be a string')
+    if not hasattr(vectorizer, 'vectorize') or not hasattr(vectorizer, 'fit'):
+        raise ValueError(
+            'vectorizer must has `fit_transform` and `vectorize` methods'
+        )
     if not isinstance(stemming, bool):
         raise ValueError('bool must be a boolean')
-    vectorizer = vectorizer.lower()
-    if not vectorizer in ['tfidf', 'bow', 'skip-gram']:
-        raise ValueError("vectorizer must be in  ['tfidf', 'bow', 'skip-gram']")
-    if not isinstance(ngram, tuple):
-        raise ValueError('ngram must be a tuple')
-    if not len(ngram) == 2:
-        raise ValueError('ngram size must equal to 2')
-    if not isinstance(min_df, int):
-        raise ValueError('min_df must be an integer')
-    if not isinstance(max_df, float):
-        raise ValueError('max_df must be a float')
-    if min_df < 1:
-        raise ValueError('min_df must be bigger than 0')
-    if not (max_df <= 1 and max_df > 0):
-        raise ValueError(
-            'max_df must be bigger than 0, less than or equal to 1'
-        )
-    if vectorizer == 'tfidf':
-        Vectorizer = TfidfVectorizer
-    elif vectorizer == 'bow':
-        Vectorizer = CountVectorizer
-    elif vectorizer == 'skip-gram':
-        Vectorizer = SkipGramVectorizer
-    else:
-        raise Exception("vectorizer must be in  ['tfidf', 'bow', 'skip-gram']")
+
     if stop_words is None:
         stop_words = STOPWORDS
 
@@ -342,13 +310,6 @@ def cluster_scatter(
         raise Exception(
             'matplotlib and seaborn not installed. Please install it and try again.'
         )
-
-    tf_vectorizer = Vectorizer(
-        ngram_range = ngram,
-        min_df = min_df,
-        max_df = max_df,
-        stop_words = stop_words,
-    )
     if cleaning is not None:
         for i in range(len(corpus)):
             corpus[i] = cleaning(corpus[i])
@@ -360,9 +321,22 @@ def cluster_scatter(
         text_clean.append(
             ' '.join([word for word in text.split() if word not in stop_words])
         )
-    tf_vectorizer.fit(text_clean)
-    transformed_text_clean = tf_vectorizer.transform(text_clean)
-    features = tf_vectorizer.get_feature_names()
+
+    if hasattr(vectorizer, 'fit'):
+        vectorizer.fit(text_clean)
+        transformed_text_clean = vectorizer.transform(text_clean)
+        features = vectorizer.get_feature_names()
+    else:
+        transformed_text_clean, attentions = [], []
+        for i in range(0, len(text_clean), batch_size):
+            index = min(i + batch_size, len(text_clean))
+            transformed_text_clean.append(
+                vectorizer.vectorize(text_clean[i:index])
+            )
+            attentions.extend(vectorizer.attention(text_clean[i:index]))
+        transformed_text_clean = np.concatenate(
+            transformed_text_clean, axis = 0
+        )
     km = clustering(n_clusters = num_clusters)
     dist = 1 - cosine_similarity(transformed_text_clean)
     km.fit(transformed_text_clean)
@@ -377,10 +351,20 @@ def cluster_scatter(
     if not titles:
         titles = []
         for i in range(transformed_text_clean.shape[0]):
-            indices = np.argsort(
-                np.array(transformed_text_clean[i].todense())[0]
-            )[::-1]
-            titles.append(' '.join([features[i] for i in indices[: ngram[1]]]))
+
+            if hasattr(vectorizer, 'fit'):
+                indices = np.argsort(
+                    np.array(transformed_text_clean[i].todense())[0]
+                )[::-1]
+                titles.append(
+                    ' '.join([features[i] for i in indices[: ngram[1]]])
+                )
+            else:
+                attentions[i].sort(key = lambda x: x[1])
+                titles.append(
+                    ' '.join([i[0] for i in attentions[i][-ngram[1] :]])
+                )
+
     if not colors:
         colors = sns.color_palette(n_colors = num_clusters)
     X, Y = pos[:, 0], pos[:, 1]

@@ -419,9 +419,7 @@ class _Preprocessing:
                     self._speller.normalize_elongated(text.lower())
                 )
             else:
-                text = _case_of(text)(
-                    self._speller.correct(text.lower(), debug = False)
-                )
+                text = _case_of(text)(self._speller.correct(text.lower()))
         if 'elongated' in self._annotate:
             text = self._add_special_tag(text, 'elongated')
         return text

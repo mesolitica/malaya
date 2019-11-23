@@ -1,5 +1,5 @@
 # coding=utf-8
-# Copyright 2019 The Google Research Authors.
+# Copyright 2018 The Google AI Language Team Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,9 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-# Lint as: python2, python3
-# coding=utf-8
 """Tokenization classes."""
 
 from __future__ import absolute_import
@@ -25,11 +22,7 @@ import collections
 import re
 import unicodedata
 import six
-from six.moves import range
 import tensorflow as tf
-import sentencepiece as spm
-
-SPIECE_UNDERLINE = u'▁'.encode('utf-8')
 
 
 def validate_case_matches_checkpoint(do_lower_case, init_checkpoint):
@@ -43,9 +36,7 @@ def validate_case_matches_checkpoint(do_lower_case, init_checkpoint):
     if not init_checkpoint:
         return
 
-    m = re.match(
-        '^.*?([A-Za-z0-9_-]+)/bert_model.ckpt', six.ensure_str(init_checkpoint)
-    )
+    m = re.match('^.*?([A-Za-z0-9_-]+)/bert_model.ckpt', init_checkpoint)
     if m is None:
         return
 
@@ -94,89 +85,19 @@ def validate_case_matches_checkpoint(do_lower_case, init_checkpoint):
         )
 
 
-def preprocess_text(inputs, remove_space = True, lower = False):
-    """preprocess data by removing extra space and normalize data."""
-    outputs = inputs
-    if remove_space:
-        outputs = ' '.join(inputs.strip().split())
-
-    if six.PY2 and isinstance(outputs, str):
-        try:
-            outputs = six.ensure_text(outputs, 'utf-8')
-        except UnicodeDecodeError:
-            outputs = six.ensure_text(outputs, 'latin-1')
-
-    outputs = unicodedata.normalize('NFKD', outputs)
-    outputs = ''.join([c for c in outputs if not unicodedata.combining(c)])
-    if lower:
-        outputs = outputs.lower()
-
-    return outputs
-
-
-def encode_pieces(sp_model, text, return_unicode = True, sample = False):
-    """turn sentences into word pieces."""
-
-    if six.PY2 and isinstance(text, six.text_type):
-        text = six.ensure_binary(text, 'utf-8')
-
-    if not sample:
-        pieces = sp_model.EncodeAsPieces(text)
-    else:
-        pieces = sp_model.SampleEncodeAsPieces(text, 64, 0.1)
-    new_pieces = []
-    for piece in pieces:
-        piece = printable_text(piece)
-        if len(piece) > 1 and piece[-1] == ',' and piece[-2].isdigit():
-            cur_pieces = sp_model.EncodeAsPieces(
-                six.ensure_binary(piece[:-1]).replace(SPIECE_UNDERLINE, b'')
-            )
-            if (
-                piece[0] != SPIECE_UNDERLINE
-                and cur_pieces[0][0] == SPIECE_UNDERLINE
-            ):
-                if len(cur_pieces[0]) == 1:
-                    cur_pieces = cur_pieces[1:]
-                else:
-                    cur_pieces[0] = cur_pieces[0][1:]
-            cur_pieces.append(piece[-1])
-            new_pieces.extend(cur_pieces)
-        else:
-            new_pieces.append(piece)
-
-    # note(zhiliny): convert back to unicode for py2
-    if six.PY2 and return_unicode:
-        ret_pieces = []
-        for piece in new_pieces:
-            if isinstance(piece, str):
-                piece = six.ensure_text(piece, 'utf-8')
-            ret_pieces.append(piece)
-        new_pieces = ret_pieces
-
-    return new_pieces
-
-
-def encode_ids(sp_model, text, sample = False):
-    pieces = encode_pieces(
-        sp_model, text, return_unicode = False, sample = sample
-    )
-    ids = [sp_model.PieceToId(piece) for piece in pieces]
-    return ids
-
-
 def convert_to_unicode(text):
     """Converts `text` to Unicode (if it's not already), assuming utf-8 input."""
     if six.PY3:
         if isinstance(text, str):
             return text
         elif isinstance(text, bytes):
-            return six.ensure_text(text, 'utf-8', 'ignore')
+            return text.decode('utf-8', 'ignore')
         else:
             raise ValueError('Unsupported string type: %s' % (type(text)))
     elif six.PY2:
         if isinstance(text, str):
-            return six.ensure_text(text, 'utf-8', 'ignore')
-        elif isinstance(text, six.text_type):
+            return text.decode('utf-8', 'ignore')
+        elif isinstance(text, unicode):
             return text
         else:
             raise ValueError('Unsupported string type: %s' % (type(text)))
@@ -193,14 +114,14 @@ def printable_text(text):
         if isinstance(text, str):
             return text
         elif isinstance(text, bytes):
-            return six.ensure_text(text, 'utf-8', 'ignore')
+            return text.decode('utf-8', 'ignore')
         else:
             raise ValueError('Unsupported string type: %s' % (type(text)))
     elif six.PY2:
         if isinstance(text, str):
             return text
-        elif isinstance(text, six.text_type):
-            return six.ensure_binary(text, 'utf-8')
+        elif isinstance(text, unicode):
+            return text.encode('utf-8')
         else:
             raise ValueError('Unsupported string type: %s' % (type(text)))
     else:
@@ -210,21 +131,24 @@ def printable_text(text):
 def load_vocab(vocab_file):
     """Loads a vocabulary file into a dictionary."""
     vocab = collections.OrderedDict()
+    index = 0
     with tf.gfile.GFile(vocab_file, 'r') as reader:
         while True:
             token = convert_to_unicode(reader.readline())
             if not token:
                 break
-            token = token.strip().split()[0]
-            if token not in vocab:
-                vocab[token] = len(vocab)
+            token = token.strip()
+            vocab[token] = index
+            index += 1
     return vocab
 
 
 def convert_by_vocab(vocab, items):
     """Converts a sequence of [tokens|ids] using the vocab."""
     output = []
-    for item in items:
+    # print("items:",items) #['[CLS]', '日', '##期', '，', '但', '被', '##告', '金', '##东', '##福', '载', '##明', '[MASK]', 'U', '##N', '##K', ']', '保', '##证', '本', '##月', '1', '##4', '[MASK]', '到', '##位', '，', '2', '##0', '##1', '##5', '年', '6', '[MASK]', '1', '##1', '日', '[', 'U', '##N', '##K', ']', '，', '原', '##告', '[MASK]', '认', '##可', '于', '2', '##0', '##1', '##5', '[MASK]', '6', '月', '[MASK]', '[MASK]', '日', '##向', '被', '##告', '主', '##张', '权', '##利', '。', '而', '[MASK]', '[MASK]', '自', '[MASK]', '[MASK]', '[MASK]', '[MASK]', '年', '6', '月', '1', '##1', '日', '[SEP]', '原', '##告', '于', '2', '##0', '##1', '##6', '[MASK]', '6', '[MASK]', '2', '##4', '日', '起', '##诉', '，', '主', '##张', '保', '##证', '责', '##任', '，', '已', '超', '##过', '保', '##证', '期', '##限', '[MASK]', '保', '##证', '人', '依', '##法', '不', '##再', '承', '##担', '保', '##证', '[MASK]', '[MASK]', '[MASK]', '[SEP]']
+    for i, item in enumerate(items):
+        # print(i,"item:",item) #  ##期
         output.append(vocab[item])
     return output
 
@@ -249,54 +173,25 @@ def whitespace_tokenize(text):
 class FullTokenizer(object):
     """Runs end-to-end tokenziation."""
 
-    def __init__(self, vocab_file, do_lower_case = True, spm_model_file = None):
-        self.vocab = None
-        self.sp_model = None
-        if spm_model_file:
-            self.sp_model = spm.SentencePieceProcessor()
-            tf.logging.info('loading sentence piece model')
-            self.sp_model.Load(spm_model_file)
-            # Note(mingdachen): For the purpose of consisent API, we are
-            # generating a vocabulary for the sentence piece tokenizer.
-            self.vocab = {
-                self.sp_model.IdToPiece(i): i
-                for i in range(self.sp_model.GetPieceSize())
-            }
-        else:
-            self.vocab = load_vocab(vocab_file)
-            self.basic_tokenizer = BasicTokenizer(do_lower_case = do_lower_case)
-            self.wordpiece_tokenizer = WordpieceTokenizer(vocab = self.vocab)
+    def __init__(self, vocab_file, do_lower_case = True):
+        self.vocab = load_vocab(vocab_file)
         self.inv_vocab = {v: k for k, v in self.vocab.items()}
+        self.basic_tokenizer = BasicTokenizer(do_lower_case = do_lower_case)
+        self.wordpiece_tokenizer = WordpieceTokenizer(vocab = self.vocab)
 
     def tokenize(self, text):
-        if self.sp_model:
-            split_tokens = encode_pieces(
-                self.sp_model, text, return_unicode = False
-            )
-        else:
-            split_tokens = []
-            for token in self.basic_tokenizer.tokenize(text):
-                for sub_token in self.wordpiece_tokenizer.tokenize(token):
-                    split_tokens.append(sub_token)
+        split_tokens = []
+        for token in self.basic_tokenizer.tokenize(text):
+            for sub_token in self.wordpiece_tokenizer.tokenize(token):
+                split_tokens.append(sub_token)
 
         return split_tokens
 
     def convert_tokens_to_ids(self, tokens):
-        if self.sp_model:
-            # tf.logging.info('using sentence piece tokenzier.')
-            return [
-                self.sp_model.PieceToId(printable_text(token))
-                for token in tokens
-            ]
-        else:
-            return convert_by_vocab(self.vocab, tokens)
+        return convert_by_vocab(self.vocab, tokens)
 
     def convert_ids_to_tokens(self, ids):
-        if self.sp_model:
-            # tf.logging.info('using sentence piece tokenzier.')
-            return [self.sp_model.IdToPiece(id_) for id_ in ids]
-        else:
-            return convert_by_vocab(self.inv_vocab, ids)
+        return convert_by_vocab(self.inv_vocab, ids)
 
 
 class BasicTokenizer(object):
@@ -462,7 +357,7 @@ class WordpieceTokenizer(object):
                 while start < end:
                     substr = ''.join(chars[start:end])
                     if start > 0:
-                        substr = '##' + six.ensure_str(substr)
+                        substr = '##' + substr
                     if substr in self.vocab:
                         cur_substr = substr
                         break
@@ -482,7 +377,7 @@ class WordpieceTokenizer(object):
 
 def _is_whitespace(char):
     """Checks whether `chars` is a whitespace character."""
-    # \t, \n, and \r are technically control characters but we treat them
+    # \t, \n, and \r are technically contorl characters but we treat them
     # as whitespace since they are generally considered as such.
     if char == ' ' or char == '\t' or char == '\n' or char == '\r':
         return True

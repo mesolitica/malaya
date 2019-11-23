@@ -16,12 +16,20 @@ PATH_NGRAM = {
         'model': home + '/preprocessing/symspell/bm_1grams.txt',
         'version': 'v28',
     },
+    'sentencepiece': {
+        'vocab': home + '/bert/sp10m.cased.v4.vocab',
+        'tokenizer': home + '/bert/sp10m.cased.v4.model',
+    },
 }
 
 S3_PATH_NGRAM = {
     1: {'model': 'v27/preprocessing/bm_1grams.json'},
     2: {'model': 'v23/preprocessing/bm_2grams.json'},
     'symspell': {'model': 'v27/preprocessing/bm_1grams.txt'},
+    'sentencepiece': {
+        'vocab': 'bert-bahasa/sp10m.cased.v4.vocab',
+        'tokenizer': 'bert-bahasa/sp10m.cased.v4.model',
+    },
 }
 
 PATH_PREPROCESSING = {

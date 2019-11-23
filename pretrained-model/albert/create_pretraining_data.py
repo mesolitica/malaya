@@ -1,5 +1,5 @@
 # coding=utf-8
-# Copyright 2018 The Google AI Language Team Authors.
+# Copyright 2019 The Google Research Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,7 +12,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Create masked LM/next sentence masked_lm TF examples for BERT."""
+
+# Lint as: python2, python3
+# coding=utf-8
+"""Create masked LM/next sentence masked_lm TF examples for ALBERT."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -21,10 +24,13 @@ from __future__ import print_function
 import collections
 import random
 
-import tokenization
+import numpy as np
+import six
+from six.moves import range
+from six.moves import zip
 import tensorflow as tf
-from tqdm import tqdm
-import jieba
+
+import tokenization
 
 flags = tf.flags
 
@@ -45,7 +51,11 @@ flags.DEFINE_string(
 flags.DEFINE_string(
     'vocab_file',
     None,
-    'The vocabulary file that the BERT model was trained on.',
+    'The vocabulary file that the ALBERT model was trained on.',
+)
+
+flags.DEFINE_string(
+    'spm_model_file', None, 'The model file for sentence piece tokenization.'
 )
 
 flags.DEFINE_bool(
@@ -55,7 +65,33 @@ flags.DEFINE_bool(
     'models and False for cased models.',
 )
 
-flags.DEFINE_integer('max_seq_length', 128, 'Maximum sequence length.')
+flags.DEFINE_bool(
+    'do_whole_word_mask',
+    True,
+    'Whether to use whole word masking rather than per-WordPiece masking.',
+)
+
+flags.DEFINE_bool(
+    'do_permutation', False, 'Whether to do the permutation training.'
+)
+
+flags.DEFINE_bool(
+    'favor_shorter_ngram',
+    False,
+    'Whether to set higher probabilities for sampling shorter ngrams.',
+)
+
+flags.DEFINE_bool(
+    'random_next_sentence',
+    False,
+    "Whether to use the sentence that's right before the current sentence "
+    'as the negative sample for next sentence prection, rather than using '
+    'sentences from other random documents.',
+)
+
+flags.DEFINE_integer('max_seq_length', 512, 'Maximum sequence length.')
+
+flags.DEFINE_integer('ngram', 3, 'Maximum number of ngrams to mask.')
 
 flags.DEFINE_integer(
     'max_predictions_per_seq',
@@ -67,7 +103,7 @@ flags.DEFINE_integer('random_seed', 12345, 'Random seed for data generation.')
 
 flags.DEFINE_integer(
     'dupe_factor',
-    10,
+    40,
     'Number of times to duplicate the input data (with different masks).',
 )
 
@@ -91,10 +127,12 @@ class TrainingInstance(object):
         masked_lm_positions,
         masked_lm_labels,
         is_random_next,
+        token_boundary,
     ):
         self.tokens = tokens
         self.segment_ids = segment_ids
         self.is_random_next = is_random_next
+        self.token_boundary = token_boundary
         self.masked_lm_positions = masked_lm_positions
         self.masked_lm_labels = masked_lm_labels
 
@@ -105,6 +143,9 @@ class TrainingInstance(object):
         )
         s += 'segment_ids: %s\n' % (
             ' '.join([str(x) for x in self.segment_ids])
+        )
+        s += 'token_boundary: %s\n' % (
+            ' '.join([str(x) for x in self.token_boundary])
         )
         s += 'is_random_next: %s\n' % self.is_random_next
         s += 'masked_lm_positions: %s\n' % (
@@ -137,12 +178,14 @@ def write_instance_to_example_files(
         input_ids = tokenizer.convert_tokens_to_ids(instance.tokens)
         input_mask = [1] * len(input_ids)
         segment_ids = list(instance.segment_ids)
+        token_boundary = list(instance.token_boundary)
         assert len(input_ids) <= max_seq_length
 
         while len(input_ids) < max_seq_length:
             input_ids.append(0)
             input_mask.append(0)
             segment_ids.append(0)
+            token_boundary.append(0)
 
         assert len(input_ids) == max_seq_length
         assert len(input_mask) == max_seq_length
@@ -154,24 +197,29 @@ def write_instance_to_example_files(
         )
         masked_lm_weights = [1.0] * len(masked_lm_ids)
 
-        while len(masked_lm_positions) < max_predictions_per_seq:
+        multiplier = 1 + int(FLAGS.do_permutation)
+        while len(masked_lm_positions) < max_predictions_per_seq * multiplier:
             masked_lm_positions.append(0)
             masked_lm_ids.append(0)
             masked_lm_weights.append(0.0)
 
-        next_sentence_label = 1 if instance.is_random_next else 0
+        sentence_order_label = 1 if instance.is_random_next else 0
 
         features = collections.OrderedDict()
         features['input_ids'] = create_int_feature(input_ids)
         features['input_mask'] = create_int_feature(input_mask)
         features['segment_ids'] = create_int_feature(segment_ids)
+        features['token_boundary'] = create_int_feature(token_boundary)
         features['masked_lm_positions'] = create_int_feature(
             masked_lm_positions
         )
         features['masked_lm_ids'] = create_int_feature(masked_lm_ids)
         features['masked_lm_weights'] = create_float_feature(masked_lm_weights)
+        # Note: We keep this feature name `next_sentence_labels` to be compatible
+        # with the original data created by lanzhzh@. However, in the ALBERT case
+        # it does contain sentence_order_label.
         features['next_sentence_labels'] = create_int_feature(
-            [next_sentence_label]
+            [sentence_order_label]
         )
 
         tf_example = tf.train.Example(
@@ -245,12 +293,18 @@ def create_training_instances(
     # that the "next sentence prediction" task doesn't span between documents.
     for input_file in input_files:
         with tf.gfile.GFile(input_file, 'r') as reader:
-            lines = reader.readlines()
-            for line in tqdm(lines):
-                line = tokenization.convert_to_unicode(line)
+            while True:
+                line = reader.readline()
+                if not FLAGS.spm_model_file:
+                    line = tokenization.convert_to_unicode(line)
                 if not line:
                     break
-                line = line.strip()
+                if FLAGS.spm_model_file:
+                    line = tokenization.preprocess_text(
+                        line, lower = FLAGS.do_lower_case
+                    )
+                else:
+                    line = line.strip()
 
                 # Empty lines are used as document delimiters
                 if not line:
@@ -258,7 +312,6 @@ def create_training_instances(
                 tokens = tokenizer.tokenize(line)
                 if tokens:
                     all_documents[-1].append(tokens)
-            del lines
 
     # Remove empty documents
     all_documents = [x for x in all_documents if x]
@@ -267,7 +320,7 @@ def create_training_instances(
     vocab_words = list(tokenizer.vocab.keys())
     instances = []
     for _ in range(dupe_factor):
-        for document_index in tqdm(range(len(all_documents))):
+        for document_index in range(len(all_documents)):
             instances.extend(
                 create_instances_from_document(
                     all_documents,
@@ -283,25 +336,6 @@ def create_training_instances(
 
     rng.shuffle(instances)
     return instances
-
-
-def get_word_signs(tokens):
-    signs = []
-    line = ''
-    for token in tokens:
-        if len(token) > 1:
-            line += ' '
-        else:
-            line += token
-
-    words = jieba.cut(line)
-    sign = 0
-    for word in words:
-        for i in word:
-            signs.append(sign)
-        sign = 1 if sign == 0 else 0
-    assert len(tokens) == len(signs)
-    return signs
 
 
 def create_instances_from_document(
@@ -340,7 +374,6 @@ def create_instances_from_document(
     current_chunk = []
     current_length = 0
     i = 0
-
     while i < len(document):
         segment = document[i]
         current_chunk.append(segment)
@@ -360,7 +393,9 @@ def create_instances_from_document(
                 tokens_b = []
                 # Random next
                 is_random_next = False
-                if len(current_chunk) == 1 or rng.random() < 0.5:
+                if len(current_chunk) == 1 or (
+                    FLAGS.random_next_sentence and rng.random() < 0.5
+                ):
                     is_random_next = True
                     target_b_length = target_seq_length - len(tokens_a)
 
@@ -385,6 +420,12 @@ def create_instances_from_document(
                     # they don't go to waste.
                     num_unused_segments = len(current_chunk) - a_end
                     i -= num_unused_segments
+                elif not FLAGS.random_next_sentence and rng.random() < 0.5:
+                    is_random_next = True
+                    for j in range(a_end, len(current_chunk)):
+                        tokens_b.extend(current_chunk[j])
+                    # Note(mingdachen): in this case, we just swap tokens_a and tokens_b
+                    tokens_a, tokens_b = tokens_b, tokens_a
                 # Actual next
                 else:
                     is_random_next = False
@@ -397,48 +438,38 @@ def create_instances_from_document(
 
                 tokens = []
                 segment_ids = []
-                word_ids = []
                 tokens.append('[CLS]')
                 segment_ids.append(0)
-                word_ids.append(-1)
-
                 for token in tokens_a:
                     tokens.append(token)
                     segment_ids.append(0)
-                for sign in get_word_signs(tokens_a):
-                    word_ids.append(sign)
 
                 tokens.append('[SEP]')
                 segment_ids.append(0)
-                word_ids.append(-1)
 
                 for token in tokens_b:
                     tokens.append(token)
                     segment_ids.append(1)
-                for sign in get_word_signs(tokens_b):
-                    word_ids.append(sign)
                 tokens.append('[SEP]')
                 segment_ids.append(1)
-                word_ids.append(-1)
-
-                assert len(tokens) == len(word_ids)
 
                 (
                     tokens,
                     masked_lm_positions,
                     masked_lm_labels,
+                    token_boundary,
                 ) = create_masked_lm_predictions(
                     tokens,
                     masked_lm_prob,
                     max_predictions_per_seq,
                     vocab_words,
                     rng,
-                    word_ids,
                 )
                 instance = TrainingInstance(
                     tokens = tokens,
                     segment_ids = segment_ids,
                     is_random_next = is_random_next,
+                    token_boundary = token_boundary,
                     masked_lm_positions = masked_lm_positions,
                     masked_lm_labels = masked_lm_labels,
                 )
@@ -450,57 +481,170 @@ def create_instances_from_document(
     return instances
 
 
+MaskedLmInstance = collections.namedtuple(
+    'MaskedLmInstance', ['index', 'label']
+)
+
+
+def _is_start_piece_sp(piece):
+    """Check if the current word piece is the starting piece (sentence piece)."""
+    special_pieces = set(list('!"#$%&"()*+,-./:;?@[\\]^_`{|}~'))
+    special_pieces.add(u'€'.encode('utf-8'))
+    special_pieces.add(u'£'.encode('utf-8'))
+    # Note(mingdachen):
+    # For foreign characters, we always treat them as a whole piece.
+    english_chars = set(list('abcdefghijklmnopqrstuvwhyz'))
+    if (
+        six.ensure_str(piece).startswith('▁')
+        or six.ensure_str(piece).startswith('<')
+        or piece in special_pieces
+        or not all(
+            [
+                str(i).lower() in english_chars.union(special_pieces)
+                for i in piece
+            ]
+        )
+    ):
+        return True
+    else:
+        return False
+
+
+def _is_start_piece_bert(piece):
+    """Check if the current word piece is the starting piece (BERT)."""
+    # When a word has been split into
+    # WordPieces, the first token does not have any marker and any subsequence
+    # tokens are prefixed with ##. So whenever we see the ## token, we
+    # append it to the previous set of word indexes.
+    return not six.ensure_str(piece).startswith('##')
+
+
+def is_start_piece(piece):
+    if FLAGS.spm_model_file:
+        return _is_start_piece_sp(piece)
+    else:
+        return _is_start_piece_bert(piece)
+
+
 def create_masked_lm_predictions(
-    tokens, masked_lm_prob, max_predictions_per_seq, vocab_words, rng, word_ids
+    tokens, masked_lm_prob, max_predictions_per_seq, vocab_words, rng
 ):
     """Creates the predictions for the masked LM objective."""
 
     cand_indexes = []
-    word_indexes = []
-    last_word_sign = 0
-    for (i, token) in enumerate(tokens):
-        if token == '[CLS]' or token == '[SEP]' or word_ids[i] == -1:
-            continue
-        if word_ids[i] == last_word_sign:
-            word_indexes.append(i)
-        else:
-            cand_indexes.append(word_indexes)
-            word_indexes = []
-            word_indexes.append(i)
-            last_word_sign = word_ids[i]
+    # Note(mingdachen): We create a list for recording if the piece is
+    # the starting piece of current token, where 1 means true, so that
+    # on-the-fly whole word masking is possible.
+    token_boundary = [0] * len(tokens)
 
-    rng.shuffle(cand_indexes)
+    for (i, token) in enumerate(tokens):
+        if token == '[CLS]' or token == '[SEP]':
+            token_boundary[i] = 1
+            continue
+        # Whole Word Masking means that if we mask all of the wordpieces
+        # corresponding to an original word.
+        #
+        # Note that Whole Word Masking does *not* change the training code
+        # at all -- we still predict each WordPiece independently, softmaxed
+        # over the entire vocabulary.
+        # tf.logging.info(token)
+        if (
+            FLAGS.do_whole_word_mask
+            and len(cand_indexes) >= 1
+            and not is_start_piece(token)
+        ):
+            cand_indexes[-1].append(i)
+        else:
+            cand_indexes.append([i])
+            if is_start_piece(token):
+                token_boundary[i] = 1
 
     output_tokens = list(tokens)
 
-    masked_lm = collections.namedtuple(
-        'masked_lm', ['index', 'label']
-    )  # pylint: disable=invalid-name
+    masked_lm_positions = []
+    masked_lm_labels = []
+
+    if masked_lm_prob == 0:
+        return (
+            output_tokens,
+            masked_lm_positions,
+            masked_lm_labels,
+            token_boundary,
+        )
 
     num_to_predict = min(
         max_predictions_per_seq,
         max(1, int(round(len(tokens) * masked_lm_prob))),
     )
 
+    # Note(mingdachen):
+    # By default, we set the probilities to favor longer ngram sequences.
+    ngrams = np.arange(1, FLAGS.ngram + 1, dtype = np.int64)
+    pvals = 1.0 / np.arange(1, FLAGS.ngram + 1)
+    pvals /= pvals.sum(keepdims = True)
+
+    if FLAGS.favor_shorter_ngram:
+        pvals = pvals[::-1]
+
+    ngram_indexes = []
+    for idx in range(len(cand_indexes)):
+        ngram_index = []
+        for n in ngrams:
+            ngram_index.append(cand_indexes[idx : idx + n])
+        ngram_indexes.append(ngram_index)
+
+    rng.shuffle(ngram_indexes)
+
     masked_lms = []
     covered_indexes = set()
-    for word_indexes in cand_indexes:
-        if str(word_indexes) in covered_indexes:
+    for cand_index_set in ngram_indexes:
+        if len(masked_lms) >= num_to_predict:
+            break
+        if not cand_index_set:
             continue
-        covered_indexes.add(str(word_indexes))
+        # Note(mingdachen):
+        # Skip current piece if they are covered in lm masking or previous ngrams.
+        for index_set in cand_index_set[0]:
+            for index in index_set:
+                if index in covered_indexes:
+                    continue
 
-        random1 = rng.random()
-        random2 = rng.random()
-        for index in word_indexes:
-            if len(masked_lms) >= num_to_predict:
+        n = np.random.choice(
+            ngrams[: len(cand_index_set)],
+            p = pvals[: len(cand_index_set)]
+            / pvals[: len(cand_index_set)].sum(keepdims = True),
+        )
+        index_set = sum(cand_index_set[n - 1], [])
+        n -= 1
+        # Note(mingdachen):
+        # Repeatedly looking for a candidate that does not exceed the
+        # maximum number of predictions by trying shorter ngrams.
+        while len(masked_lms) + len(index_set) > num_to_predict:
+            if n == 0:
                 break
+            index_set = sum(cand_index_set[n - 1], [])
+            n -= 1
+        # If adding a whole-word mask would exceed the maximum number of
+        # predictions, then just skip this candidate.
+        if len(masked_lms) + len(index_set) > num_to_predict:
+            continue
+        is_any_index_covered = False
+        for index in index_set:
+            if index in covered_indexes:
+                is_any_index_covered = True
+                break
+        if is_any_index_covered:
+            continue
+        for index in index_set:
+            covered_indexes.add(index)
+
             masked_token = None
             # 80% of the time, replace with [MASK]
-            if random1 < 0.8:
+            if rng.random() < 0.8:
                 masked_token = '[MASK]'
             else:
                 # 10% of the time, keep original
-                if random2 < 0.5:
+                if rng.random() < 0.5:
                     masked_token = tokens[index]
                 # 10% of the time, replace with random word
                 else:
@@ -510,17 +654,77 @@ def create_masked_lm_predictions(
 
             output_tokens[index] = masked_token
 
-            masked_lms.append(masked_lm(index = index, label = tokens[index]))
+            masked_lms.append(
+                MaskedLmInstance(index = index, label = tokens[index])
+            )
+    assert len(masked_lms) <= num_to_predict
+
+    rng.shuffle(ngram_indexes)
+
+    select_indexes = set()
+    if FLAGS.do_permutation:
+        for cand_index_set in ngram_indexes:
+            if len(select_indexes) >= num_to_predict:
+                break
+            if not cand_index_set:
+                continue
+            # Note(mingdachen):
+            # Skip current piece if they are covered in lm masking or previous ngrams.
+            for index_set in cand_index_set[0]:
+                for index in index_set:
+                    if index in covered_indexes or index in select_indexes:
+                        continue
+
+            n = np.random.choice(
+                ngrams[: len(cand_index_set)],
+                p = pvals[: len(cand_index_set)]
+                / pvals[: len(cand_index_set)].sum(keepdims = True),
+            )
+            index_set = sum(cand_index_set[n - 1], [])
+            n -= 1
+
+            while len(select_indexes) + len(index_set) > num_to_predict:
+                if n == 0:
+                    break
+                index_set = sum(cand_index_set[n - 1], [])
+                n -= 1
+            # If adding a whole-word mask would exceed the maximum number of
+            # predictions, then just skip this candidate.
+            if len(select_indexes) + len(index_set) > num_to_predict:
+                continue
+            is_any_index_covered = False
+            for index in index_set:
+                if index in covered_indexes or index in select_indexes:
+                    is_any_index_covered = True
+                    break
+            if is_any_index_covered:
+                continue
+            for index in index_set:
+                select_indexes.add(index)
+        assert len(select_indexes) <= num_to_predict
+
+        select_indexes = sorted(select_indexes)
+        permute_indexes = list(select_indexes)
+        rng.shuffle(permute_indexes)
+        orig_token = list(output_tokens)
+
+        for src_i, tgt_i in zip(select_indexes, permute_indexes):
+            output_tokens[src_i] = orig_token[tgt_i]
+            masked_lms.append(
+                MaskedLmInstance(index = src_i, label = orig_token[src_i])
+            )
 
     masked_lms = sorted(masked_lms, key = lambda x: x.index)
 
-    masked_lm_positions = []
-    masked_lm_labels = []
     for p in masked_lms:
         masked_lm_positions.append(p.index)
         masked_lm_labels.append(p.label)
-
-    return (output_tokens, masked_lm_positions, masked_lm_labels)
+    return (
+        output_tokens,
+        masked_lm_positions,
+        masked_lm_labels,
+        token_boundary,
+    )
 
 
 def truncate_seq_pair(tokens_a, tokens_b, max_num_tokens, rng):
@@ -545,7 +749,9 @@ def main(_):
     tf.logging.set_verbosity(tf.logging.INFO)
 
     tokenizer = tokenization.FullTokenizer(
-        vocab_file = FLAGS.vocab_file, do_lower_case = FLAGS.do_lower_case
+        vocab_file = FLAGS.vocab_file,
+        do_lower_case = FLAGS.do_lower_case,
+        spm_model_file = FLAGS.spm_model_file,
     )
 
     input_files = []
@@ -567,6 +773,8 @@ def main(_):
         FLAGS.max_predictions_per_seq,
         rng,
     )
+
+    tf.logging.info('number of instances: %i', len(instances))
 
     output_files = FLAGS.output_file.split(',')
     tf.logging.info('*** Writing to output files ***')

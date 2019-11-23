@@ -1,6 +1,6 @@
 # How-to-Crawl
 
-**_Last update 30-September-2019, still usable._**
+**_Last update 11-November-2019, still usable, as long not use GCP ip addresses._**
 
 1. Install dependencies
 

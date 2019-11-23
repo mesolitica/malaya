@@ -127,7 +127,7 @@ python3 multigpu_pretraining.py \
 --mask_alpha=6 \
 --mask_beta=1 \
 --num_predict=85 \
---model_dir=output-model \
+--model_dir=output-model2 \
 --uncased=False \
 --num_core_per_host=1 \
 --train_steps=300000 \
@@ -141,32 +141,6 @@ python3 multigpu_pretraining.py \
 
 - `num_gpu_cores`: Number of gpus.
 - `train_batch_size`: Make sure `train_batch_size` % `num_gpu_cores` is 0 and the batch will automatically distribute among gpus. If `num_gpu_cores` is 60 and `num_gpu_cores` is 2, so each gpus will get 30 batch size.
-
-7. Run validation,
-
-```bash
-python3 validation.py \
-  --corpus_info_path=save-location/corpus_info.json \
-  --record_info_dir=save-location/tfrecords \
-  --train_batch_size=20 \
-  --seq_len=512 \
-  --reuse_len=256 \
-  --mem_len=384 \
-  --perm_size=256 \
-  --n_layer=12 \
-  --d_model=512 \
-  --d_embed=512 \
-  --n_head=16 \
-  --d_head=64 \
-  --d_inner=2048 \
-  --untie_r=True \
-  --mask_alpha=6 \
-  --mask_beta=1 \
-  --num_predict=85 \
-  --model_dir=output-model \
-  --uncased=False \
-  --num_core_per_host=1
-```
 
 ## Download
 

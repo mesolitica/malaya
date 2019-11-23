@@ -852,6 +852,7 @@ def attention(
     cleaning = simple_textcleaning,
     stop_words = None,
     ngram = (1, 3),
+    batch_size = 10,
 ):
 
     """
@@ -871,6 +872,8 @@ def attention(
         list of stop words to remove. If None, default is malaya.texts._text_functions.STOPWORDS
     ngram: tuple, (default=(1,3))
         n-grams size to train a corpus.
+    batch_size: int, (default=10)
+        size of strings for each vectorization and attention.
 
     Returns
     -------
@@ -883,6 +886,8 @@ def attention(
         raise ValueError('corpus must be list of strings')
     if not isinstance(n_topics, int):
         raise ValueError('n_topics must be an integer')
+    if not isinstance(batch_size, int):
+        raise ValueError('batch_size must be an integer')
     if not isinstance(ngram, tuple):
         raise ValueError('ngram must be a tuple')
     if not len(ngram) == 2:
@@ -926,7 +931,6 @@ def attention(
             g.extend(list(ngrams_generator(seq, i)))
         return g
 
-    batch_size = 10
     rows, attentions = [], []
     for i in range(0, len(corpus), batch_size):
         index = min(i + batch_size, len(corpus))

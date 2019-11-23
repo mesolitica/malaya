@@ -20,6 +20,21 @@ from ._utils._paths import PATH_NGRAM, S3_PATH_NGRAM
 from ._utils._utils import check_file, check_available
 
 
+def _load_sentencepiece(vocab, vocab_model):
+    import sentencepiece as spm
+    from ..texts._text_functions import SentencePieceTokenizer
+
+    sp_model = spm.SentencePieceProcessor()
+    sp_model.Load(vocab_model)
+
+    with open(vocab) as fopen:
+        v = fopen.read().split('\n')[:-1]
+    v = [i.split('\t') for i in v]
+    v = {i[0]: i[1] for i in v}
+    tokenizer = SentencePieceTokenizer(v, sp_model)
+    return tokenizer
+
+
 def _build_dicts(words):
     occurences = {}
     for l in alphabet:
@@ -42,6 +57,21 @@ def _permutate(string, indices):
         for i in range(len(indices)):
             s[indices[i]] = p_[i]
         mutate.append(''.join(s))
+    return mutate
+
+
+def _permutate_sp(string, indices, sp_tokenizer):
+    p = [''.join(_set) for _set in product(list(vowels), repeat = len(indices))]
+    p = [p_ for p_ in p if not all([a in p_ for a in quad_vowels])]
+    mutate = []
+    for p_ in p:
+        s = list(string[:])
+        for i in range(len(indices)):
+            s[indices[i]] = p_[i]
+        s = ''.join(s)
+        if sp_tokenizer.tokenize(s)[0] == '▁':
+            continue
+        mutate.append(s)
     return mutate
 
 
@@ -101,10 +131,20 @@ def _augment_vowel_alternate(string):
     return left, right
 
 
-def _augment_vowel_prob(word):
+def _augment_vowel_prob(word, **kwargs):
     l, r = _augment_vowel_alternate(word)
     return list(
         set(_permutate(l, _get_indices(l)) + _permutate(r, _get_indices(r)))
+    )
+
+
+def _augment_vowel_prob_sp(word, sp_tokenizer):
+    l, r = _augment_vowel_alternate(word)
+    return list(
+        set(
+            _permutate_sp(l, _get_indices(l), sp_tokenizer)
+            + _permutate_sp(r, _get_indices(r), sp_tokenizer)
+        )
     )
 
 
@@ -129,48 +169,32 @@ def _return_known(word, dicts):
     return set(w for w in word if w in dicts)
 
 
-class _SpellCorrector:
-    """
-    The SpellCorrector extends the functionality of the Peter Norvig's
-    spell-corrector in http://norvig.com/spell-correct.html
-    And improve it using some algorithms from Normalization of noisy texts in Malaysian online reviews,
-    https://www.researchgate.net/publication/287050449_Normalization_of_noisy_texts_in_Malaysian_online_reviews
-    Added custom vowels augmentation
-    """
-
-    def __init__(self, corpus):
+class _Spell_augmentation:
+    def __init__(self, sp_tokenizer, corpus, add_norvig_method = True):
+        self._sp_tokenizer = sp_tokenizer
+        self._sp_tokenizer = sp_tokenizer
+        if self._sp_tokenizer:
+            self._augment = _augment_vowel_prob_sp
+        else:
+            self._augment = _augment_vowel_prob
+        self._add_norvig_method = add_norvig_method
         self._corpus = corpus
         self.WORDS = Counter(self._corpus)
         self.N = sum(self.WORDS.values())
 
-    @staticmethod
-    def tokens(text):
-        return REGEX_TOKEN.findall(text.lower())
-
-    def P(self, word):
-        """
-        Probability of `word`.
-        """
-        return self.WORDS[word] / self.N
-
-    def most_probable(self, words):
-        _known = self.known(words)
-        if _known:
-            return max(_known, key = self.P)
-        else:
-            return []
-
-    @staticmethod
-    def edit_step(word):
+    def edit_step(self, word):
         """
         All edits that are one edit away from `word`.
         """
-        splits = [(word[:i], word[i:]) for i in range(len(word) + 1)]
-        deletes = [L + R[1:] for L, R in splits if R]
-        transposes = [L + R[1] + R[0] + R[2:] for L, R in splits if len(R) > 1]
-        inserts = [L + c + R for L, R in splits for c in alphabet]
+        if self._add_norvig_method:
+            splits = [(word[:i], word[i:]) for i in range(len(word) + 1)]
+            deletes = [L + R[1:] for L, R in splits if R]
+            transposes = [
+                L + R[1] + R[0] + R[2:] for L, R in splits if len(R) > 1
+            ]
+            inserts = [L + c + R for L, R in splits for c in alphabet]
         pseudo = _augment_vowel(word)
-        pseudo.extend(_augment_vowel_prob(word))
+        pseudo.extend(self._augment(word, self._sp_tokenizer))
         fuzziness = []
         if len(word):
 
@@ -178,19 +202,19 @@ class _SpellCorrector:
             if word[-1] == 'e':
                 inner = word[:-1] + 'a'
                 fuzziness.append(inner)
-                pseudo.extend(_augment_vowel_prob(inner))
+                pseudo.extend(self._augment(inner, self._sp_tokenizer))
 
             # pikir -> fikir
             if word[0] == 'p':
                 inner = 'f' + word[1:]
                 fuzziness.append(inner)
-                pseudo.extend(_augment_vowel_prob(inner))
+                pseudo.extend(self._augment(inner, self._sp_tokenizer))
 
         if len(word) > 2:
             # bapak -> bapa, mintak -> minta, mntak -> mnta
             if word[-2:] == 'ak':
                 fuzziness.append(word[:-1])
-                pseudo.extend(_augment_vowel_prob(word[:-1]))
+                pseudo.extend(self._augment(word[:-1], self._sp_tokenizer))
 
             # hnto -> hantar, bako -> bkar, sabo -> sabar
             if (
@@ -200,14 +224,14 @@ class _SpellCorrector:
             ):
                 inner = word[:-1] + 'ar'
                 fuzziness.append(inner)
-                pseudo.extend(_augment_vowel_prob(inner))
+                pseudo.extend(self._augment(inner, self._sp_tokenizer))
 
             # antu -> hantu, antar -> hantar
             if word[0] == 'a' and word[1] in consonants:
                 inner = 'h' + word
                 fuzziness.append(inner)
                 pseudo.extend(_augment_vowel(inner))
-                pseudo.extend(_augment_vowel_prob(inner))
+                pseudo.extend(self._augment(inner, self._sp_tokenizer))
 
             # ptg -> ptng, dtg -> dtng
             if (
@@ -217,15 +241,18 @@ class _SpellCorrector:
             ):
                 inner = word[:-1] + 'ng'
                 fuzziness.append(inner)
-                pseudo.extend(_augment_vowel_prob(inner))
+                pseudo.extend(self._augment(inner, self._sp_tokenizer))
 
             # igt -> ingt
             if word[1] == 'g' and word[2] in consonants:
                 inner = word[0] + 'n' + word[1:]
                 fuzziness.append(inner)
-                pseudo.extend(_augment_vowel_prob(inner))
+                pseudo.extend(self._augment(inner, self._sp_tokenizer))
 
-        return set(deletes + transposes + inserts + fuzziness + pseudo)
+        if self._add_norvig_method:
+            return set(deletes + transposes + inserts + fuzziness + pseudo)
+        else:
+            return set(fuzziness + pseudo)
 
     def edits2(self, word):
         """
@@ -251,7 +278,120 @@ class _SpellCorrector:
             ttt = {word}
         return ttt
 
-    def correct(self, word, **kwargs):
+    def case_of(text):
+        """
+        Return the case-function appropriate for text: upper, lower, title, or just str.
+        """
+
+        return (
+            str.upper
+            if text.isupper()
+            else str.lower
+            if text.islower()
+            else str.title
+            if text.istitle()
+            else str
+        )
+
+    def elong_normalized_candidates(self, word, acc = None):
+        if acc is None:
+            acc = []
+        candidates = [w for w in set(word) if word.count(w) > 1]
+        for c in candidates:
+            _w = word.replace(c + c, c)
+            if _w in acc:
+                continue
+            acc.append(_w)
+            self.elong_normalized_candidates(_w, acc)
+        return acc + [word]
+
+
+class _TransformerCorrector(_Spell_augmentation):
+    def __init__(self, model, corpus, sp_tokenizer):
+        _Spell_augmentation.__init__(
+            self, self._sp_tokenizer, corpus, add_norvig_method = False
+        )
+        self._model = model
+
+    def _correct(self, word):
+        """
+        Most probable spelling correction for word.
+        """
+        if not isinstance(word, str):
+            raise ValueError('word must be a string')
+
+        if word in ENGLISH_WORDS:
+            return word
+        if word in MALAY_WORDS:
+            return word
+        if word in stopword_tatabahasa:
+            return word
+        hujung_result = [v for k, v in hujung.items() if word.endswith(k)]
+        if len(hujung_result):
+            hujung_result = max(hujung_result, key = len)
+            if len(hujung_result):
+                word = word[: -len(hujung_result)]
+        permulaan_result = [
+            v for k, v in permulaan.items() if word.startswith(k)
+        ]
+        if len(permulaan_result):
+            permulaan_result = max(permulaan_result, key = len)
+            if len(permulaan_result):
+                word = word[len(permulaan_result) :]
+        if len(word):
+            if word in rules_normalizer:
+                word = rules_normalizer[word]
+        if len(hujung_result) and not word.endswith(hujung_result):
+            word = word + hujung_result
+        if len(permulaan_result) and not word.startswith(permulaan_result):
+            word = permulaan_result + word
+        return word
+
+    def correct_text(self, text, batch_size = 20):
+        """
+        Correct all the words within a text, returning the corrected text."""
+
+        if not isinstance(text, str):
+            raise ValueError('text must be a string')
+        if not isinstance(batch_size, int):
+            raise ValueError('batch_size must be an integer')
+        if batch_size < 1:
+            raise ValueError('batch_size must be bigger than 0')
+
+        text = re.sub('[^a-zA-Z]+', ' ', text)
+        string = re.sub(r'[ ]+', ' ', text).strip().split()
+        words = [self._correct(word) for word in string]
+
+
+class _SpellCorrector(_Spell_augmentation):
+    """
+    The SpellCorrector extends the functionality of the Peter Norvig's
+    spell-corrector in http://norvig.com/spell-correct.html
+    And improve it using some algorithms from Normalization of noisy texts in Malaysian online reviews,
+    https://www.researchgate.net/publication/287050449_Normalization_of_noisy_texts_in_Malaysian_online_reviews
+    Added custom vowels augmentation
+    """
+
+    def __init__(self, corpus, sp_tokenizer = None):
+        _Spell_augmentation.__init__(self, sp_tokenizer, corpus)
+
+    def tokens(text):
+        return REGEX_TOKEN.findall(text.lower())
+
+    def P(self, word):
+        """
+        Probability of `word`.
+        """
+        return self.WORDS[word] / self.N
+
+    def most_probable(self, words):
+        _known = self.known(words)
+        if _known:
+            return max(_known, key = self.P)
+        else:
+            return []
+
+    def _correct(self, word):
         """
         Most probable spelling correction for word.
         """
@@ -316,42 +456,6 @@ class _SpellCorrector:
         """
 
         return self.case_of(word)(self.correct(word.lower()))
-
-    @staticmethod
-    def case_of(text):
-        """
-        Return the case-function appropriate for text: upper, lower, title, or just str.
-        """
-
-        return (
-            str.upper
-            if text.isupper()
-            else str.lower
-            if text.islower()
-            else str.title
-            if text.istitle()
-            else str
-        )
-
-    def elong_normalized_candidates(self, word, acc = None):
-        if acc is None:
-            acc = []
-        candidates = [w for w in set(word) if word.count(w) > 1]
-        for c in candidates:
-            _w = word.replace(c + c, c)
-            if _w in acc:
-                continue
-            acc.append(_w)
-            self.elong_normalized_candidates(_w, acc)
-        return acc + [word]
-
-    def best_elong_candidate(self, word):
-        candidates = self.elong_normalized_candidates(word)
-        best = self.most_probable(candidates)
-        return best or word
-
-    def normalize_elongated(self, word):
-        return self.case_of(word)(self.best_elong_candidate(word.lower()))
 
 
 class _SymspellCorrector:
@@ -447,7 +551,7 @@ class _SymspellCorrector:
             ttt = {word: 10}
         return ttt
 
-    def correct(self, word, **kwargs):
+    def correct(self, word):
         """
         Most probable spelling correction for word.
         """
@@ -505,8 +609,7 @@ class _SymspellCorrector:
             return word
         return self.case_of(word)(self.correct(word.lower()))
 
-    @staticmethod
-    def case_of(text):
+    def case_of(self, text):
         """
         Return the case-function appropriate for text: upper, lower, title, or just str.
         """
@@ -522,12 +625,14 @@ class _SymspellCorrector:
         )
 
 
-def probability(validate = True):
+def probability(sentence_piece = False, validate = True):
     """
     Train a Probability Spell Corrector.
 
     Parameters
     ----------
+    sentence_piece: bool, optional (default=False)
+        if True, reduce possible augmentation states using sentence piece.
     validate: bool, optional (default=True)
         if True, malaya will check model availability and download if not available.
 
@@ -535,6 +640,8 @@ def probability(validate = True):
     -------
     _SpellCorrector: malaya.spell._SpellCorrector class
     """
+    if not isinstance(sentence_piece, bool):
+        raise ValueError('sentence_piece must be a boolean')
 
     if not isinstance(validate, bool):
         raise ValueError('validate must be a boolean')
@@ -546,9 +653,27 @@ def probability(validate = True):
             raise Exception(
                 'preprocessing is not available, please `validate = True`'
             )
+
+    tokenizer = None
+
+    if sentence_piece:
+        if validate:
+            check_file(
+                PATH_NGRAM['sentencepiece'], S3_PATH_NGRAM['sentencepiece']
+            )
+        else:
+            if not check_available(PATH_NGRAM[1]):
+                raise Exception(
+                    'sentence piece is not available, please `validate = True`'
+                )
+
+        vocab = PATH_NGRAM['sentencepiece']['vocab']
+        vocab_model = PATH_NGRAM['sentencepiece']['tokenizer']
+        tokenizer = _load_sentencepiece(vocab, vocab_model)
+
     with open(PATH_NGRAM[1]['model']) as fopen:
         corpus = json.load(fopen)
-    return _SpellCorrector(corpus)
+    return _SpellCorrector(corpus, tokenizer)
 
 
 def symspell(
@@ -606,3 +731,18 @@ def symspell(
     with open(PATH_NGRAM[1]['model']) as fopen:
         corpus = json.load(fopen)
     return _SymspellCorrector(sym_spell, Verbosity.ALL, corpus, k = top_k)
+
+
+def transformer(model, validate = True):
+    """
+    Train a Transformer Spell Corrector.
+
+    Parameters
+    ----------
+    validate: bool, optional (default=True)
+        if True, malaya will check model availability and download if not available.
+
+    Returns
+    -------
+    _TransformerCorrector: malaya.spell._TransformerCorrector class
+    """

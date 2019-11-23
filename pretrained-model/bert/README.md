@@ -46,116 +46,29 @@ python3 create-pretraining-data.py
 
 4. Execute pretraining,
 
-```bash
-python3 run_pretraining.py --input_file=tests_output.tfrecord --output_dir=pretraining_output --do_train=True --do_eval=True --bert_config_file=bert_config.json --train_batch_size=50 --max_seq_length=128 --max_predictions_per_seq=20 --num_train_steps=3000000 --num_warmup_steps=10 --learning_rate=2e-5 --save_checkpoints_steps=500000
-```
-
-**BASE** size, [BASE_config.json](config/BASE_config.json),
-
-```json
-{
-  "attention_probs_dropout_prob": 0.1,
-  "directionality": "bidi",
-  "hidden_act": "gelu",
-  "hidden_dropout_prob": 0.1,
-  "hidden_size": 768,
-  "initializer_range": 0.02,
-  "intermediate_size": 3072,
-  "max_position_embeddings": 512,
-  "num_attention_heads": 12,
-  "num_hidden_layers": 12,
-  "pooler_fc_size": 768,
-  "pooler_num_attention_heads": 12,
-  "pooler_num_fc_layers": 3,
-  "pooler_size_per_head": 128,
-  "pooler_type": "first_token_transform",
-  "type_vocab_size": 2,
-  "vocab_size": 40000
-}
-```
-
-**SMALL** size, [SMALL_config.json](config/SMALL_config,json),
-
-```json
-{
-  "attention_probs_dropout_prob": 0.1,
-  "directionality": "bidi",
-  "hidden_act": "gelu",
-  "hidden_dropout_prob": 0.1,
-  "hidden_size": 512,
-  "initializer_range": 0.02,
-  "intermediate_size": 3072,
-  "max_position_embeddings": 256,
-  "num_attention_heads": 8,
-  "num_hidden_layers": 6,
-  "pooler_fc_size": 512,
-  "pooler_num_attention_heads": 12,
-  "pooler_num_fc_layers": 3,
-  "pooler_size_per_head": 128,
-  "pooler_type": "first_token_transform",
-  "type_vocab_size": 2,
-  "vocab_size": 40000
-}
-```
-
-**All training session will be recorded in Tensorboard**, to open tensorboard,
+Run pretraining on Wikipedia on parliament texts,
 
 ```bash
-tensorboard --logdir=tensorboard --host=0.0.0.0
+python3 multigpu_pretraining.py --input_file=bert-0.tfrecord,bert-1.tfrecord --output_dir=pretraining_output4 --do_train=True --do_eval=False --bert_config_file=BASE_config.json --train_batch_size=120 --max_seq_length=128 --max_predictions_per_seq=20 --num_train_steps=1000000 --num_warmup_steps=10 --learning_rate=2e-5 --save_checkpoints_steps=200000 --use_gpu=True --num_gpu_cores=3 --eval_batch_size=12
 ```
 
-5. Execute validation,
+Run pretraining on Wikipedia and local parliament texts,
 
 ```bash
-python3 validation.py --input_file=tests_output.tfrecord --output_dir=pretraining_output --bert_config_file=bert_config.json --train_batch_size=50 --max_seq_length=128 --max_predictions_per_seq=20 --num_train_steps=3000000 --num_warmup_steps=10 --learning_rate=2e-5
+python3 multigpu_pretraining.py --input_file=bert-0.tfrecord,bert-1.tfrecord --output_dir=pretraining_output4 --do_train=True --do_eval=False --bert_config_file=BASE_config.json --train_batch_size=120 --max_seq_length=128 --max_predictions_per_seq=20 --num_train_steps=1000000 --num_warmup_steps=10 --learning_rate=2e-5 --save_checkpoints_steps=200000 --use_gpu=True --num_gpu_cores=3 --eval_batch_size=12
 ```
 
-```text
-INFO:tensorflow:***** Eval results *****
-I0910 11:20:31.561826 140220436277056 validation.py:595] ***** Eval results *****
-INFO:tensorflow:  global_step = 480048
-I0910 11:20:31.561924 140220436277056 validation.py:597]   global_step = 480048
-INFO:tensorflow:  loss = 3.5268908
-I0910 11:20:31.562081 140220436277056 validation.py:597]   loss = 3.5268908
-INFO:tensorflow:  masked_lm_accuracy = 0.46958354
-I0910 11:20:31.562179 140220436277056 validation.py:597]   masked_lm_accuracy = 0.46958354
-INFO:tensorflow:  masked_lm_loss = 3.1709714
-I0910 11:20:31.562261 140220436277056 validation.py:597]   masked_lm_loss = 3.1709714
-INFO:tensorflow:  next_sentence_accuracy = 0.7625
-I0910 11:20:31.562338 140220436277056 validation.py:597]   next_sentence_accuracy = 0.7625
-INFO:tensorflow:  next_sentence_loss = 0.3507687
-I0910 11:20:31.562414 140220436277056 validation.py:597]   next_sentence_loss = 0.3507687
-```
-
-#### Multigpus
-
-Original BERT implementation not support multi-gpus, only single gpu. Here I created MirroredStrategy to pretrain using multi-gpus.
-
-1. Run [multigpu_pretraining.py](multigpu_pretraining.py),
-
-Run multigpus using MirroredStrategy,
+Run pretraining on Twitter and Instagram texts,
 
 ```bash
-python3 multigpu_pretraining.py \
---input_file=tests_output.tfrecord \
---output_dir=pretraining_output \
---do_train=True \
---do_eval=False \
---bert_config_file=bert_config.json \
---train_batch_size=90 \
---max_seq_length=128 \
---max_predictions_per_seq=20 \
---num_train_steps=1000000 \
---num_warmup_steps=10 \
---learning_rate=2e-5 \
---save_checkpoints_steps=200000 \
---use_gpu=True \
---num_gpu_cores=3 \
---eval_batch_size=12
+python3 multigpu_pretraining.py --input_file=bert-2.tfrecord,bert-4.tfrecord --output_dir=pretraining_output4 --do_train=True --do_eval=False --bert_config_file=BASE_config.json --train_batch_size=120 --max_seq_length=128 --max_predictions_per_seq=20 --num_train_steps=2000000 --num_warmup_steps=10 --learning_rate=2e-5 --save_checkpoints_steps=200000 --use_gpu=True --num_gpu_cores=3 --eval_batch_size=12
 ```
 
-- `num_gpu_cores`: Number of gpus.
-- `train_batch_size`: Make sure `train_batch_size` % `num_gpu_cores` is 0 and the batch will automatically distribute among gpus. If `num_gpu_cores` is 60 and `num_gpu_cores` is 2, so each gpus will get 30 batch size.
+Run pretraining on news texts,
+
+```bash
+python3 multigpu_pretraining.py --input_file=bert-3.tfrecord --output_dir=pretraining_output4 --do_train=True --do_eval=False --bert_config_file=BASE_config.json --train_batch_size=120 --max_seq_length=128 --max_predictions_per_seq=20 --num_train_steps=2400000 --num_warmup_steps=10 --learning_rate=2e-5 --save_checkpoints_steps=200000 --use_gpu=True --num_gpu_cores=3 --eval_batch_size=12
+```
 
 ## Download
 

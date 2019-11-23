@@ -26,9 +26,6 @@ from tensorflow.python.ops import math_ops
 from tensorflow.python.training.optimizer import Optimizer
 from tensorflow.python.ops import state_ops
 from tensorflow.python.ops import resource_variable_ops
-from tensorflow.python.ops import array_ops
-from tensorflow.python.ops import linalg_ops
-from tensorflow.python.ops import math_ops
 
 
 def create_optimizer(
@@ -133,7 +130,6 @@ class LAMBOptimizer(tf.train.Optimizer):
         beta_2 = 0.999,
         epsilon = 1e-6,
         exclude_from_weight_decay = None,
-        exclude_from_layer_adaptation = None,
         name = 'AdamWeightDecayOptimizer',
     ):
         """Constructs a AdamWeightDecayOptimizer."""
@@ -145,11 +141,6 @@ class LAMBOptimizer(tf.train.Optimizer):
         self.beta_2 = beta_2
         self.epsilon = epsilon
         self.exclude_from_weight_decay = exclude_from_weight_decay
-
-        if exclude_from_layer_adaptation:
-            self.exclude_from_layer_adaptation = exclude_from_layer_adaptation
-        else:
-            self.exclude_from_layer_adaptation = exclude_from_weight_decay
 
     def _prepare(self):
         self.learning_rate_t = ops.convert_to_tensor(
@@ -192,19 +183,19 @@ class LAMBOptimizer(tf.train.Optimizer):
         if self._do_use_weight_decay(var.name):
             update += weight_decay_rate_t * var
 
-        ratio = 1.0
-        if self._do_layer_adaptation(var.name):
-            w_norm = linalg_ops.norm(var, ord = 2)
-            g_norm = linalg_ops.norm(update, ord = 2)
-            ratio = array_ops.where(
-                math_ops.greater(w_norm, 0),
-                array_ops.where(
-                    math_ops.greater(g_norm, 0), (w_norm / g_norm), 1.0
-                ),
-                1.0,
-            )
+        r1 = tf.sqrt(tf.reduce_sum(tf.square(var)))
+        r2 = tf.sqrt(tf.reduce_sum(tf.square(update)))
 
-        update_with_lr = ratio * self.learning_rate * update
+        r = tf.where(
+            tf.greater(r1, 0.0),
+            tf.where(tf.greater(r2, 0.0), r1 / r2, 1.0),
+            1.0,
+        )
+
+        eta = self.learning_rate * r
+
+        update_with_lr = eta * update
+
         next_param = var - update_with_lr
 
         return control_flow_ops.group(
@@ -236,19 +227,8 @@ class LAMBOptimizer(tf.train.Optimizer):
         if self._do_use_weight_decay(var.name):
             update += weight_decay_rate_t * var
 
-        ratio = 1.0
-        if self._do_layer_adaptation(var.name):
-            w_norm = linalg_ops.norm(var, ord = 2)
-            g_norm = linalg_ops.norm(update, ord = 2)
-            ratio = array_ops.where(
-                math_ops.greater(w_norm, 0),
-                array_ops.where(
-                    math_ops.greater(g_norm, 0), (w_norm / g_norm), 1.0
-                ),
-                1.0,
-            )
+        update_with_lr = learning_rate_t * update
 
-        update_with_lr = ratio * self.learning_rate * update
         next_param = var - update_with_lr
 
         return control_flow_ops.group(
@@ -285,19 +265,7 @@ class LAMBOptimizer(tf.train.Optimizer):
         if self._do_use_weight_decay(var.name):
             update += weight_decay_rate_t * var
 
-        ratio = 1.0
-        if self._do_layer_adaptation(var.name):
-            w_norm = linalg_ops.norm(var, ord = 2)
-            g_norm = linalg_ops.norm(update, ord = 2)
-            ratio = array_ops.where(
-                math_ops.greater(w_norm, 0),
-                array_ops.where(
-                    math_ops.greater(g_norm, 0), (w_norm / g_norm), 1.0
-                ),
-                1.0,
-            )
-
-        update_with_lr = ratio * self.learning_rate * update
+        update_with_lr = learning_rate_t * update
 
         var_update = state_ops.assign_sub(
             var, update_with_lr, use_locking = self._use_locking
@@ -324,14 +292,6 @@ class LAMBOptimizer(tf.train.Optimizer):
         return self._apply_sparse_shared(
             grad, var, indices, self._resource_scatter_add
         )
-
-    def _do_layer_adaptation(self, param_name):
-        """Whether to do layer-wise learning rate adaptation for `param_name`."""
-        if self.exclude_from_layer_adaptation:
-            for r in self.exclude_from_layer_adaptation:
-                if re.search(r, param_name) is not None:
-                    return False
-        return True
 
     def _do_use_weight_decay(self, param_name):
         """Whether to use L2 weight decay for `param_name`."""
