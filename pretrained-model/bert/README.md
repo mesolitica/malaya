@@ -24,11 +24,7 @@ Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://w
 
 ## How-to
 
-1. Run [dumping.ipynb](dumping.ipynb) to create text dataset for pretraining.
-
-You need to download [sp10m.cased.v4.model](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/v27/sp10m.cased.v4.model) and [sp10m.cased.v4.vocab](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/v27/sp10m.cased.v4.vocab) first.
-
-**_We implemented our own tokenizer because Google not open source WordPiece tokenizer, [stated here](https://github.com/google-research/bert#learning-a-new-wordpiece-vocabulary)._**
+1. Run [preprocess](../preprocess).
 
 2. git clone https://github.com/google-research/bert, and,
 
@@ -46,12 +42,6 @@ python3 create-pretraining-data.py
 
 4. Execute pretraining,
 
-Run pretraining on Wikipedia on parliament texts,
-
-```bash
-python3 multigpu_pretraining.py --input_file=bert-0.tfrecord,bert-1.tfrecord --output_dir=pretraining_output4 --do_train=True --do_eval=False --bert_config_file=BASE_config.json --train_batch_size=120 --max_seq_length=128 --max_predictions_per_seq=20 --num_train_steps=1000000 --num_warmup_steps=10 --learning_rate=2e-5 --save_checkpoints_steps=200000 --use_gpu=True --num_gpu_cores=3 --eval_batch_size=12
-```
-
 Run pretraining on Wikipedia and local parliament texts,
 
 ```bash
@@ -67,7 +57,7 @@ python3 multigpu_pretraining.py --input_file=bert-2.tfrecord,bert-4.tfrecord --o
 Run pretraining on news texts,
 
 ```bash
-python3 multigpu_pretraining.py --input_file=bert-3.tfrecord --output_dir=pretraining_output4 --do_train=True --do_eval=False --bert_config_file=BASE_config.json --train_batch_size=120 --max_seq_length=128 --max_predictions_per_seq=20 --num_train_steps=2400000 --num_warmup_steps=10 --learning_rate=2e-5 --save_checkpoints_steps=200000 --use_gpu=True --num_gpu_cores=3 --eval_batch_size=12
+python3 multigpu_pretraining.py --input_file=bert-3.tfrecord --output_dir=pretraining_output4 --do_train=True --do_eval=False --bert_config_file=BASE_config.json --train_batch_size=120 --max_seq_length=128 --max_predictions_per_seq=20 --num_train_steps=2200000 --num_warmup_steps=10 --learning_rate=2e-5 --save_checkpoints_steps=200000 --use_gpu=True --num_gpu_cores=3 --eval_batch_size=12
 ```
 
 ## Download

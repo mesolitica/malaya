@@ -45,23 +45,7 @@ python3 create-pretraining-data.py
 4. Execute pretraining,
 
 ```bash
-python3 multigpu_pretraining.py \
---input_file=tests_output.tfrecord \
---output_dir=pretraining_output \
---do_train=True \
---do_eval=False \
---bert_config_file=albert_config_base.json \
---train_batch_size=60 \
---max_seq_length=512 \
---max_predictions_per_seq=51 \
---masked_lm_prob=0.10 \
---num_train_steps=1000000 \
---num_warmup_steps=10 \
---learning_rate=2e-5 \
---save_checkpoints_steps=100000 \
---use_gpu=True \
---num_gpu_cores=3 \
---eval_batch_size=12
+python3 multigpu_pretraining.py --input_file=albert-brightmart.tfrecord --output_dir=pretraining_output --do_train=True --do_eval=False --bert_config_file=albert_config/albert_config_base.json --train_batch_size=120 --max_seq_length=512 --max_predictions_per_seq=51 --masked_lm_prob=0.15 --num_train_steps=1000000 --num_warmup_steps=10 --learning_rate=2e-5 --save_checkpoints_steps=100000 --use_gpu=True --num_gpu_cores=3 --eval_batch_size=12
 ```
 
 **ALBERT required multiGPUs or multiTPUs to pretrain. I never had successful pretraining on single GPU even on a small dataset.**

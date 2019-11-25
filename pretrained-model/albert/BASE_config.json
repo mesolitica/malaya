@@ -16,5 +16,5 @@
   "inner_group_num": 1,
   "down_scale_factor": 1,
   "type_vocab_size": 2,
-  "vocab_size": 32000
+  "vocab_size": 30000
 }

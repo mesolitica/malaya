@@ -32,51 +32,44 @@ class Tokenizer:
 
 
 tokenizer = Tokenizer(v)
-files = '../parliament-text.txt,../wiki-text.txt,../dumping-twitter.txt,../news-text.txt,../dumping-instagram.txt'.split(
-    ','
+files = '../dumping-all.txt'.split(',')
+
+print('Reading from input files', files)
+
+output_files = ('bert-combined.tfrecord').split(',')
+print('Output filename', output_files)
+
+input_files = []
+for input_pattern in files:
+    input_files.extend(tf.gfile.Glob(input_pattern))
+
+tf.logging.info('*** Reading from input files ***')
+for input_file in input_files:
+    tf.logging.info('  %s', input_file)
+
+import random
+
+max_seq_length = 128
+dupe_factor = 5
+max_predictions_per_seq = 20
+masked_lm_prob = 0.15
+short_seq_prob = 0.1
+rng = random.Random(12345)
+instances = create_training_instances(
+    input_files,
+    tokenizer,
+    max_seq_length,
+    dupe_factor,
+    short_seq_prob,
+    masked_lm_prob,
+    max_predictions_per_seq,
+    rng,
 )
 
-for no, file in enumerate(files):
-    print('Reading from input files', file)
+tf.logging.info('*** Writing to output files ***')
+for output_file in output_files:
+    tf.logging.info('  %s', output_file)
 
-    output_files = ('bert-%d.tfrecord' % (no)).split(',')
-    print('Output filename', output_files)
-
-    input_files = []
-    for input_pattern in file.split(','):
-        input_files.extend(tf.gfile.Glob(input_pattern))
-
-    tf.logging.info('*** Reading from input files ***')
-    for input_file in input_files:
-        tf.logging.info('  %s', input_file)
-
-    import random
-
-    max_seq_length = 128
-    dupe_factor = 5
-    max_predictions_per_seq = 20
-    masked_lm_prob = 0.15
-    short_seq_prob = 0.1
-    rng = random.Random(12345)
-    instances = create_training_instances(
-        input_files,
-        tokenizer,
-        max_seq_length,
-        dupe_factor,
-        short_seq_prob,
-        masked_lm_prob,
-        max_predictions_per_seq,
-        rng,
-    )
-
-    tf.logging.info('*** Writing to output files ***')
-    for output_file in output_files:
-        tf.logging.info('  %s', output_file)
-
-    write_instance_to_example_files(
-        instances,
-        tokenizer,
-        max_seq_length,
-        max_predictions_per_seq,
-        output_files,
-    )
+write_instance_to_example_files(
+    instances, tokenizer, max_seq_length, max_predictions_per_seq, output_files
+)

@@ -43,8 +43,10 @@ python3 create_pretraining_data.py \
 
 4. Execute pretraining,
 
+Run pretraining on Wikipedia on parliament texts,
+
 ```bash
-python3 multigpu_pretraining.py --input_file=tests_output.tfrecord --output_dir=pretraining_output --do_train=True --do_eval=False --albert_config_file=BASE_config.json --train_batch_size=90 --num_train_steps=1000000 --learning_rate=2e-5 --save_checkpoints_steps=100000 --use_gpu=True --num_gpu_cores=3
+python3 multigpu_pretraining.py --input_file=../bert/bert-0.tfrecord,../bert/bert-1.tfrecord,../bert/bert-3.tfrecord --output_dir=pretraining_output --output_dir=pretraining_output --do_train=True --do_eval=False --albert_config_file=BASE_config.json --train_batch_size=300 --num_train_steps=2000000 --learning_rate=2e-5 --save_checkpoints_steps=100000 --use_gpu=True --num_gpu_cores=3 --max_seq_length=128
 ```
 
 **ALBERT required multiGPUs or multiTPUs to pretrain. I never had successful pretraining on single GPU even on a small dataset.**
