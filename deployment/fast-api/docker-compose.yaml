@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  model:
+    build:
+      context: .
+    container_name: model
+    command: bash /app/start.sh
+    ports:
+      - "8080:80"

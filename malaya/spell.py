@@ -35,6 +35,23 @@ def _load_sentencepiece(vocab, vocab_model):
     return tokenizer
 
 
+def tokens_to_masked_ids(tokens, mask_ind, tokenizer):
+    masked_tokens = tokens[:]
+    masked_tokens[mask_ind] = '<mask>'
+    masked_tokens = ['<cls>'] + masked_tokens + ['<sep>']
+    masked_ids = tokenizer.convert_tokens_to_ids(masked_tokens)
+    return masked_ids
+
+
+def generate_ids(mask, tokenizer):
+    tokens = tokenizer.tokenize(mask)
+    input_ids = [
+        tokens_to_masked_ids(tokens, i, tokenizer) for i in range(len(tokens))
+    ]
+    tokens_ids = tokenizer.convert_tokens_to_ids(tokens)
+    return tokens, input_ids, tokens_ids
+
+
 def _build_dicts(words):
     occurences = {}
     for l in alphabet:
@@ -313,12 +330,69 @@ class _TransformerCorrector(_Spell_augmentation):
         )
         self._model = model
 
-    def _correct(self, word):
+        import tensorflow as tf
+
+        self._padding = tf.keras.preprocessing.sequence.pad_sequences
+
+    def _correct(self, word, string, index, batch_size = 20):
+        possible_states = self.edit_step(word)
+        replaced_masks = []
+        for state in possible_states:
+            mask = string[:]
+            mask[index] = state
+            replaced_masks.append(' '.join(mask))
+        ids = [
+            generate_ids(mask, self._model._tokenizer)
+            for mask in replaced_masks
+        ]
+        tokens, input_ids, tokens_ids = list(zip(*ids))
+
+        indices, ids = [], []
+        for i in range(len(input_ids)):
+            indices.extend([i] * len(input_ids[i]))
+            ids.extend(input_ids[i])
+
+        masked_padded = self._padding(ids, padding = 'post')
+        preds = []
+        for i in range(0, len(masked_padded), batch_size):
+            idx = min(i + batch_size, len(masked_padded))
+            batch = masked_padded[i:idx]
+            preds.append(self._model._log_vectorize(batch))
+
+        preds = np.concatenate(preds, axis = 0)
+        indices = np.array(indices)
+        scores = []
+        for i in range(len(tokens)):
+            filter_preds = preds[indices == i]
+            total = np.sum(
+                [filter_preds[k, k + 1, x] for k, x in enumerate(tokens_ids[i])]
+            )
+            scores.append(total)
+
+        prob_scores = np.array(scores) / np.sum(scores)
+        probs = list(zip(possible_states, prob_scores))
+        probs.sort(key = lambda x: x[1])
+        return probs[0][0]
+
+    def correct(self, word, string, index = -1, batch_size = 20):
         """
-        Most probable spelling correction for word.
+        Correct a word within a text, returning the corrected word.
         """
         if not isinstance(word, str):
             raise ValueError('word must be a string')
+        if not isinstance(string, str):
+            raise ValueError('string must be a string')
+        if not isinstance(batch_size, int):
+            raise ValueError('batch_size must be an integer')
+        if batch_size < 1:
+            raise ValueError('batch_size must be bigger than 0')
+        if not isinstance(index, int):
+            raise ValueError('index must be an integer')
+        string = string.split()
+        if word not in string:
+            raise ValueError('word not in string after split by spaces')
+        if index < 0:
+            index = string.index(word)
 
         if word in ENGLISH_WORDS:
             return word
@@ -341,6 +415,10 @@ class _TransformerCorrector(_Spell_augmentation):
         if len(word):
             if word in rules_normalizer:
                 word = rules_normalizer[word]
+            else:
+                word = self._correct(
+                    word, string, index, batch_size = batch_size
+                )
         if len(hujung_result) and not word.endswith(hujung_result):
             word = word + hujung_result
         if len(permulaan_result) and not word.startswith(permulaan_result):
@@ -359,8 +437,12 @@ class _TransformerCorrector(_Spell_augmentation):
             raise ValueError('batch_size must be bigger than 0')
 
         text = re.sub('[^a-zA-Z]+', ' ', text)
-        string = re.sub(r'[ ]+', ' ', text).strip().split()
-        words = [self._correct(word) for word in string]
+        string = re.sub(r'[ ]+', ' ', text).strip()
+        string = [
+            self.correct(word, string, no, batch_size = batch_size)
+            for no, word in string.split()
+        ]
+        return ' '.join(string)
 
 
 class _SpellCorrector(_Spell_augmentation):
@@ -551,7 +633,7 @@ class _SymspellCorrector:
             ttt = {word: 10}
         return ttt
 
-    def correct(self, word):
+    def correct(self, word, **kwargs):
         """
         Most probable spelling correction for word.
         """
@@ -733,9 +815,9 @@ def symspell(
     return _SymspellCorrector(sym_spell, Verbosity.ALL, corpus, k = top_k)
 
 
-def transformer(model, validate = True):
+def transformer(model, sentence_piece = False, validate = True):
     """
-    Train a Transformer Spell Corrector.
+    Load a Transformer Spell Corrector. Right now only supported BERT and ALBERT.
 
     Parameters
     ----------
@@ -746,3 +828,40 @@ def transformer(model, validate = True):
     -------
     _TransformerCorrector: malaya.spell._TransformerCorrector class
     """
+    if not hasattr(model, 'log_vectorize'):
+        raise ValueError('model must has `log_vectorize` method')
+
+    if not isinstance(sentence_piece, bool):
+        raise ValueError('sentence_piece must be a boolean')
+
+    if not isinstance(validate, bool):
+        raise ValueError('validate must be a boolean')
+
+    if validate:
+        check_file(PATH_NGRAM[1], S3_PATH_NGRAM[1])
+    else:
+        if not check_available(PATH_NGRAM[1]):
+            raise Exception(
+                'preprocessing is not available, please `validate = True`'
+            )
+
+    tokenizer = None
+
+    if sentence_piece:
+        if validate:
+            check_file(
+                PATH_NGRAM['sentencepiece'], S3_PATH_NGRAM['sentencepiece']
+            )
+        else:
+            if not check_available(PATH_NGRAM[1]):
+                raise Exception(
+                    'sentence piece is not available, please `validate = True`'
+                )
+
+        vocab = PATH_NGRAM['sentencepiece']['vocab']
+        vocab_model = PATH_NGRAM['sentencepiece']['tokenizer']
+        tokenizer = _load_sentencepiece(vocab, vocab_model)
+
+    with open(PATH_NGRAM[1]['model']) as fopen:
+        corpus = json.load(fopen)
+    return _TransformerCorrector(model, corpus, tokenizer)

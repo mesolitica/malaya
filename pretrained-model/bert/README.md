@@ -42,22 +42,49 @@ python3 create-pretraining-data.py
 
 4. Execute pretraining,
 
-Run pretraining on Wikipedia and local parliament texts,
-
 ```bash
-python3 multigpu_pretraining.py --input_file=bert-0.tfrecord,bert-1.tfrecord --output_dir=pretraining_output4 --do_train=True --do_eval=False --bert_config_file=BASE_config.json --train_batch_size=120 --max_seq_length=128 --max_predictions_per_seq=20 --num_train_steps=1000000 --num_warmup_steps=10 --learning_rate=2e-5 --save_checkpoints_steps=200000 --use_gpu=True --num_gpu_cores=3 --eval_batch_size=12
+python3 multigpu_pretraining.py \
+--input_file=bert-combined.tfrecord \
+--output_dir=pretraining_output5 \
+--do_train=True \
+--do_eval=False \
+--bert_config_file=BASE_config.json \
+--train_batch_size=150 \
+--max_seq_length=128 \
+--max_predictions_per_seq=20 \
+--num_train_steps=1000000 \
+--num_warmup_steps=10 \
+--learning_rate=2e-5 \
+--save_checkpoints_steps=200000 \
+--use_gpu=True \
+--num_gpu_cores=3 \
+--eval_batch_size=12
 ```
 
-Run pretraining on Twitter and Instagram texts,
+- `num_gpu_cores`: Number of gpus.
+- `train_batch_size`: Make sure `train_batch_size` % `num_gpu_cores` is 0 and the batch will automatically distribute among gpus. If `num_gpu_cores` is 60 and `num_gpu_cores` is 2, so each gpus will get 30 batch size.
+
+5. Execute validation,
 
 ```bash
-python3 multigpu_pretraining.py --input_file=bert-2.tfrecord,bert-4.tfrecord --output_dir=pretraining_output4 --do_train=True --do_eval=False --bert_config_file=BASE_config.json --train_batch_size=120 --max_seq_length=128 --max_predictions_per_seq=20 --num_train_steps=2000000 --num_warmup_steps=10 --learning_rate=2e-5 --save_checkpoints_steps=200000 --use_gpu=True --num_gpu_cores=3 --eval_batch_size=12
+python3 validation.py --input_file=tests_output.tfrecord --output_dir=pretraining_output --bert_config_file=bert_config.json --train_batch_size=50 --max_seq_length=128 --max_predictions_per_seq=20 --num_train_steps=3000000 --num_warmup_steps=10 --learning_rate=2e-5
 ```
 
-Run pretraining on news texts,
-
-```bash
-python3 multigpu_pretraining.py --input_file=bert-3.tfrecord --output_dir=pretraining_output4 --do_train=True --do_eval=False --bert_config_file=BASE_config.json --train_batch_size=120 --max_seq_length=128 --max_predictions_per_seq=20 --num_train_steps=2200000 --num_warmup_steps=10 --learning_rate=2e-5 --save_checkpoints_steps=200000 --use_gpu=True --num_gpu_cores=3 --eval_batch_size=12
+```text
+INFO:tensorflow:***** Eval results *****
+I0910 11:20:31.561826 140220436277056 validation.py:595] ***** Eval results *****
+INFO:tensorflow:  global_step = 480048
+I0910 11:20:31.561924 140220436277056 validation.py:597]   global_step = 480048
+INFO:tensorflow:  loss = 3.5268908
+I0910 11:20:31.562081 140220436277056 validation.py:597]   loss = 3.5268908
+INFO:tensorflow:  masked_lm_accuracy = 0.46958354
+I0910 11:20:31.562179 140220436277056 validation.py:597]   masked_lm_accuracy = 0.46958354
+INFO:tensorflow:  masked_lm_loss = 3.1709714
+I0910 11:20:31.562261 140220436277056 validation.py:597]   masked_lm_loss = 3.1709714
+INFO:tensorflow:  next_sentence_accuracy = 0.7625
+I0910 11:20:31.562338 140220436277056 validation.py:597]   next_sentence_accuracy = 0.7625
+INFO:tensorflow:  next_sentence_loss = 0.3507687
+I0910 11:20:31.562414 140220436277056 validation.py:597]   next_sentence_loss = 0.3507687
 ```
 
 ## Download

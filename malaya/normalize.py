@@ -236,7 +236,9 @@ class _SPELL_NORMALIZE:
                 )
                 index += 1
                 continue
-            selected = self._speller.correct(word, debug = False)
+            selected = self._speller.correct(
+                word, string = ' '.join(tokenized), index = index
+            )
             result.append(result_string + selected + end_result_string)
             index += 1
 

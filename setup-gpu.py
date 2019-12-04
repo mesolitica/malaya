@@ -20,7 +20,7 @@ setuptools.setup(
         'scikit-learn',
         'requests',
         'unidecode',
-        'tensorflow-gpu',
+        'tensorflow-gpu==1.15',
         'numpy',
         'scipy',
         'PySastrawi',
@@ -28,6 +28,7 @@ setuptools.setup(
         'networkx',
         'sentencepiece',
         'bert-tensorflow',
+        'tqdm',
     ],
     license = 'MIT',
     classifiers = [

@@ -61,18 +61,73 @@ class _Model:
                 use_one_hot_embeddings = False,
             )
             self.logits = self.model.get_pooled_output()
+
+            output_layer = self.model.get_sequence_output()
+            embedding = self.model.get_embedding_table()
+            input_tensor = self.model.get_sequence_output()
+            output_weights = self.model.get_embedding_table()
+            project_weights = self.model.get_embedding_table_2()
+
+            with tf.variable_scope('cls/predictions'):
+                with tf.variable_scope('transform'):
+                    input_tensor = tf.layers.dense(
+                        input_tensor,
+                        units = bert_config.hidden_size,
+                        activation = modeling.get_activation(
+                            bert_config.hidden_act
+                        ),
+                        kernel_initializer = modeling.create_initializer(
+                            bert_config.initializer_range
+                        ),
+                    )
+                    input_tensor = modeling.layer_norm(input_tensor)
+
+                output_bias = tf.get_variable(
+                    'output_bias',
+                    shape = [albert_config.vocab_size],
+                    initializer = tf.zeros_initializer(),
+                )
+                input_project = tf.matmul(
+                    input_tensor, project_weights, transpose_b = True
+                )
+                logits = tf.matmul(
+                    input_project, output_weights, transpose_b = True
+                )
+                self._logits = tf.nn.bias_add(logits, output_bias)
+
             self._sess = tf.InteractiveSession()
             self._sess.run(tf.global_variables_initializer())
             var_lists = tf.get_collection(
                 tf.GraphKeys.TRAINABLE_VARIABLES, scope = 'bert'
             )
-            self._saver = tf.train.Saver(var_list = var_lists)
+            cls = tf.get_collection(
+                tf.GraphKeys.TRAINABLE_VARIABLES, scope = 'cls'
+            )
+            self._saver = tf.train.Saver(var_list = var_lists + cls)
             graph = tf.get_default_graph()
             list_of_tuples = [n.name for n in graph.as_graph_def().node]
             attns = _extract_attention_weights(
                 bert_config.num_hidden_layers, graph
             )
             self.attns = attns
+
+    def _log_vectorize(self, s_tokens):
+
+        """
+        Log vectorize ids, suitable for spelling correction or any minimizing log probability.
+
+        Parameters
+        ----------
+        s_tokens : list of tokenized word after sentencepiece.
+
+        Returns
+        -------
+        array: vectorized strings
+        """
+
+        return sess.run(
+            tf.nn.log_softmax(self._logits), feed_dict = {self.X: s_tokens}
+        )
 
     def vectorize(self, strings):
 

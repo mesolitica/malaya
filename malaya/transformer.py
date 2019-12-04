@@ -1,6 +1,7 @@
 _availability = {
     'bert': ['base', 'small'],
     'xlnet': ['base'],
+    'alxlnet': ['base'],
     'albert': ['base', 'large'],
 }
 
@@ -24,12 +25,14 @@ def load(size = 'base', model = 'xlnet', pool_mode = 'last', validate = True):
 
         * ``'bert'`` - BERT architecture from google.
         * ``'xlnet'`` - XLNET architecture from google.
+        * ``'alxlnet'`` - XLNET architecture from google + Malaya.
         * ``'albert'`` - ALBERT architecture from google.
     size : str, optional (default='base')
         Model size supported. Allowed values:
 
         * ``'base'`` - BASE size.
         * ``'small'`` - SMALL size.
+        * ``'large'`` - LARGE size.
     pool_mode : str, optional (default='last')
         Model logits architecture supported. Only usable if model = 'xlnet'. Allowed values:
 
@@ -76,5 +79,11 @@ def load(size = 'base', model = 'xlnet', pool_mode = 'last', validate = True):
         from ._transformer import _xlnet
 
         return _xlnet.xlnet(
+            model = size, pool_mode = pool_mode, validate = validate
+        )
+    if model == 'alxnet':
+        from ._transformer import _alxlnet
+
+        return _alxlnet.alxlnet(
             model = size, pool_mode = pool_mode, validate = validate
         )

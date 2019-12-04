@@ -737,7 +737,7 @@ PATH_BERT = {
         'directory': home + '/bert-model/base/bert-base/',
         'model': {
             'model': home + '/bert-model/base/bert-bahasa-base.tar.gz',
-            'version': 'v30',
+            'version': 'v31',
         },
     },
     'small': {
@@ -745,14 +745,14 @@ PATH_BERT = {
         'directory': home + '/bert-model/small/bert-small/',
         'model': {
             'model': home + '/bert-model/small/bert-bahasa-small.tar.gz',
-            'version': 'v30',
+            'version': 'v31',
         },
     },
 }
 
 S3_PATH_BERT = {
-    'base': {'model': 'bert-bahasa/bert-base-13-9-2019.tar.gz'},
-    'small': {'model': 'bert-bahasa/bert-small-19-9-2019.tar.gz'},
+    'base': {'model': 'bert-bahasa/bert-base-2-12-2019.tar.gz'},
+    'small': {'model': 'bert-bahasa/bert-small-4-12-2019.tar.gz'},
 }
 
 PATH_XLNET = {
@@ -774,7 +774,7 @@ PATH_ALBERT = {
         'directory': home + '/albert-model/base/albert-base/',
         'model': {
             'model': home + '/albert-model/base/albert-base.tar.gz',
-            'version': 'v30',
+            'version': 'v31',
         },
     },
     'large': {
@@ -782,12 +782,25 @@ PATH_ALBERT = {
         'directory': home + '/albert-model/large/albert-large/',
         'model': {
             'model': home + '/albert-model/base/albert-large.tar.gz',
-            'version': 'v30',
+            'version': 'v31',
         },
     },
 }
 
 S3_PATH_ALBERT = {
-    'base': {'model': 'bert-bahasa/albert-base-11-10-2019.tar.gz'},
-    'large': {'model': 'bert-bahasa/albert-large-26-10-2019.tar.gz'},
+    'base': {'model': 'bert-bahasa/albert-base-30-11-2019.tar.gz'},
+    'large': {'model': 'bert-bahasa/albert-large-30-11-2019.tar.gz'},
 }
+
+PATH_ALXLNET = {
+    'base': {
+        'path': home + '/alxlnet-model/base',
+        'directory': home + '/alxlnet-model/base/alxlnet-base/',
+        'model': {
+            'model': home + '/alxlnet-model/base/alxlnet-base.tar.gz',
+            'version': 'v31',
+        },
+    }
+}
+
+S3_PATH_XLNET = {'base': {'model': 'bert-bahasa/alxlnet-base-6-11-2019.tar.gz'}}

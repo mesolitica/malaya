@@ -32,9 +32,7 @@ cd albert
 cp modeling.py multigpu_pretraining.py optimization.py custom_optimization.py prepo_utils.py tokenization.py validation.py albert
 ```
 
-2. Run [dumping.ipynb](dumping.ipynb) to create text dataset for pretraining.
-
-You need to download [sp10m.cased.v6.model](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/sp10m.cased.v6.model) and [sp10m.cased.v6.vocab](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/sp10m.cased.v6.vocab) first.
+2. Run [preprocess](../preprocess).
 
 3. Create pretraining dataset,
 

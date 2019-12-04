@@ -1,5 +1,5 @@
 import tensorflow as tf
-from ._xlnet_model import xlnet as xlnet_lib
+from ._alxlnet_model import xlnet as xlnet_lib
 from ..texts._text_functions import (
     xlnet_tokenization,
     padding_sequence,
@@ -226,7 +226,7 @@ class _Model:
         _attention(results)
 
 
-def xlnet(model = 'base', pool_mode = 'last', validate = True):
+def alxlnet(model = 'base', pool_mode = 'last', validate = True):
     """
     Load xlnet model.
 
@@ -235,7 +235,7 @@ def xlnet(model = 'base', pool_mode = 'last', validate = True):
     model : str, optional (default='base')
         Model architecture supported. Allowed values:
 
-        * ``'base'`` - base xlnet-bahasa released by Malaya.
+        * ``'base'`` - base alxlnet-bahasa released by Malaya.
     pool_mode : str, optional (default='last')
         Model logits architecture supported. Allowed values:
 
@@ -261,7 +261,7 @@ def xlnet(model = 'base', pool_mode = 'last', validate = True):
     model = model.lower()
     pool_mode = pool_mode.lower()
 
-    from .._utils._paths import PATH_XLNET, S3_PATH_XLNET
+    from .._utils._paths import PATH_ALXLNET, S3_PATH_ALXLNET
     from .._utils._utils import check_file, check_available
 
     if pool_mode not in ['last', 'first', 'mean', 'attn']:
@@ -270,28 +270,28 @@ def xlnet(model = 'base', pool_mode = 'last', validate = True):
         )
 
     if validate:
-        check_file(PATH_XLNET[model]['model'], S3_PATH_XLNET[model])
+        check_file(PATH_ALXLNET[model]['model'], S3_PATH_ALXLNET[model])
     else:
-        if not check_available(PATH_XLNET[model]['model']):
+        if not check_available(PATH_ALXLNET[model]['model']):
             raise Exception(
                 'xlnet-model/%s is not available, please `validate = True`'
                 % (model)
             )
 
-    if not os.path.exists(PATH_XLNET[model]['directory']):
+    if not os.path.exists(PATH_ALXLNET[model]['directory']):
         import tarfile
 
-        with tarfile.open(PATH_XLNET[model]['model']['model']) as tar:
-            tar.extractall(path = PATH_XLNET[model]['path'])
+        with tarfile.open(PATH_ALXLNET[model]['model']['model']) as tar:
+            tar.extractall(path = PATH_ALXLNET[model]['path'])
 
     import sentencepiece as spm
 
     sp_model = spm.SentencePieceProcessor()
-    sp_model.Load(PATH_XLNET[model]['directory'] + 'sp10m.cased.v5.model')
+    sp_model.Load(PATH_ALXLNET[model]['directory'] + 'sp10m.cased.v5.model')
     xlnet_config = xlnet_lib.XLNetConfig(
-        json_path = PATH_XLNET[model]['directory'] + 'config.json'
+        json_path = PATH_ALXLNET[model]['directory'] + 'config.json'
     )
-    xlnet_checkpoint = PATH_XLNET[model]['directory'] + 'model.ckpt'
+    xlnet_checkpoint = PATH_ALXLNET[model]['directory'] + 'model.ckpt'
     model = _Model(
         xlnet_config, sp_model, xlnet_checkpoint, pool_mode = pool_mode
     )

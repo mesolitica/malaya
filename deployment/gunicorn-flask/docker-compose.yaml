@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  model:
+    build:
+      context: .
+    container_name: model-gunicorn-flask
+    command: bash worker.sh 5
+    ports:
+      - "8080:8080"
