@@ -22,7 +22,7 @@ from ._utils._utils import check_file, check_available
 
 def _load_sentencepiece(vocab, vocab_model):
     import sentencepiece as spm
-    from ..texts._text_functions import SentencePieceTokenizer
+    from .texts._text_functions import SentencePieceTokenizer
 
     sp_model = spm.SentencePieceProcessor()
     sp_model.Load(vocab_model)
@@ -189,7 +189,6 @@ def _return_known(word, dicts):
 class _Spell_augmentation:
     def __init__(self, sp_tokenizer, corpus, add_norvig_method = True):
         self._sp_tokenizer = sp_tokenizer
-        self._sp_tokenizer = sp_tokenizer
         if self._sp_tokenizer:
             self._augment = _augment_vowel_prob_sp
         else:
@@ -211,7 +210,7 @@ class _Spell_augmentation:
             ]
             inserts = [L + c + R for L, R in splits for c in alphabet]
         pseudo = _augment_vowel(word)
-        pseudo.extend(self._augment(word, self._sp_tokenizer))
+        pseudo.extend(self._augment(word, sp_tokenizer = self._sp_tokenizer))
         fuzziness = []
         if len(word):
 
@@ -219,19 +218,25 @@ class _Spell_augmentation:
             if word[-1] == 'e':
                 inner = word[:-1] + 'a'
                 fuzziness.append(inner)
-                pseudo.extend(self._augment(inner, self._sp_tokenizer))
+                pseudo.extend(
+                    self._augment(inner, sp_tokenizer = self._sp_tokenizer)
+                )
 
             # pikir -> fikir
             if word[0] == 'p':
                 inner = 'f' + word[1:]
                 fuzziness.append(inner)
-                pseudo.extend(self._augment(inner, self._sp_tokenizer))
+                pseudo.extend(
+                    self._augment(inner, sp_tokenizer = self._sp_tokenizer)
+                )
 
         if len(word) > 2:
             # bapak -> bapa, mintak -> minta, mntak -> mnta
             if word[-2:] == 'ak':
                 fuzziness.append(word[:-1])
-                pseudo.extend(self._augment(word[:-1], self._sp_tokenizer))
+                pseudo.extend(
+                    self._augment(word[:-1], sp_tokenizer = self._sp_tokenizer)
+                )
 
             # hnto -> hantar, bako -> bkar, sabo -> sabar
             if (
@@ -241,14 +246,18 @@ class _Spell_augmentation:
             ):
                 inner = word[:-1] + 'ar'
                 fuzziness.append(inner)
-                pseudo.extend(self._augment(inner, self._sp_tokenizer))
+                pseudo.extend(
+                    self._augment(inner, sp_tokenizer = self._sp_tokenizer)
+                )
 
             # antu -> hantu, antar -> hantar
             if word[0] == 'a' and word[1] in consonants:
                 inner = 'h' + word
                 fuzziness.append(inner)
                 pseudo.extend(_augment_vowel(inner))
-                pseudo.extend(self._augment(inner, self._sp_tokenizer))
+                pseudo.extend(
+                    self._augment(inner, sp_tokenizer = self._sp_tokenizer)
+                )
 
             # ptg -> ptng, dtg -> dtng
             if (
@@ -258,13 +267,17 @@ class _Spell_augmentation:
             ):
                 inner = word[:-1] + 'ng'
                 fuzziness.append(inner)
-                pseudo.extend(self._augment(inner, self._sp_tokenizer))
+                pseudo.extend(
+                    self._augment(inner, sp_tokenizer = self._sp_tokenizer)
+                )
 
             # igt -> ingt
             if word[1] == 'g' and word[2] in consonants:
                 inner = word[0] + 'n' + word[1:]
                 fuzziness.append(inner)
-                pseudo.extend(self._augment(inner, self._sp_tokenizer))
+                pseudo.extend(
+                    self._augment(inner, sp_tokenizer = self._sp_tokenizer)
+                )
 
         if self._add_norvig_method:
             return set(deletes + transposes + inserts + fuzziness + pseudo)
@@ -295,7 +308,7 @@ class _Spell_augmentation:
             ttt = {word}
         return ttt
 
-    def case_of(text):
+    def case_of(self, text):
         """
         Return the case-function appropriate for text: upper, lower, title, or just str.
         """
@@ -326,7 +339,7 @@ class _Spell_augmentation:
 class _TransformerCorrector(_Spell_augmentation):
     def __init__(self, model, corpus, sp_tokenizer):
         _Spell_augmentation.__init__(
-            self, self._sp_tokenizer, corpus, add_norvig_method = False
+            self, sp_tokenizer, corpus, add_norvig_method = False
         )
         self._model = model
 
@@ -335,7 +348,7 @@ class _TransformerCorrector(_Spell_augmentation):
         self._padding = tf.keras.preprocessing.sequence.pad_sequences
 
     def _correct(self, word, string, index, batch_size = 20):
-        possible_states = self.edit_step(word)
+        possible_states = self.edit_candidates(word)
         replaced_masks = []
         for state in possible_states:
             mask = string[:]
@@ -355,8 +368,8 @@ class _TransformerCorrector(_Spell_augmentation):
         masked_padded = self._padding(ids, padding = 'post')
         preds = []
         for i in range(0, len(masked_padded), batch_size):
-            idx = min(i + batch_size, len(masked_padded))
-            batch = masked_padded[i:idx]
+            index = min(i + batch_size, len(masked_padded))
+            batch = masked_padded[i:index]
             preds.append(self._model._log_vectorize(batch))
 
         preds = np.concatenate(preds, axis = 0)
@@ -400,29 +413,11 @@ class _TransformerCorrector(_Spell_augmentation):
             return word
         if word in stopword_tatabahasa:
             return word
-        hujung_result = [v for k, v in hujung.items() if word.endswith(k)]
-        if len(hujung_result):
-            hujung_result = max(hujung_result, key = len)
-            if len(hujung_result):
-                word = word[: -len(hujung_result)]
-        permulaan_result = [
-            v for k, v in permulaan.items() if word.startswith(k)
-        ]
-        if len(permulaan_result):
-            permulaan_result = max(permulaan_result, key = len)
-            if len(permulaan_result):
-                word = word[len(permulaan_result) :]
-        if len(word):
-            if word in rules_normalizer:
-                word = rules_normalizer[word]
-            else:
-                word = self._correct(
-                    word, string, index, batch_size = batch_size
-                )
-        if len(hujung_result) and not word.endswith(hujung_result):
-            word = word + hujung_result
-        if len(permulaan_result) and not word.startswith(permulaan_result):
-            word = permulaan_result + word
+
+        if word in rules_normalizer:
+            word = rules_normalizer[word]
+        else:
+            word = self._correct(word, string, index, batch_size = batch_size)
         return word
 
     def correct_text(self, text, batch_size = 20):
@@ -440,7 +435,7 @@ class _TransformerCorrector(_Spell_augmentation):
         string = re.sub(r'[ ]+', ' ', text).strip()
         string = [
             self.correct(word, string, no, batch_size = batch_size)
-            for no, word in string.split()
+            for no, word in enumerate(string.split())
         ]
         return ' '.join(string)
 
@@ -473,7 +468,7 @@ class _SpellCorrector(_Spell_augmentation):
         else:
             return []
 
-    def _correct(self, word):
+    def correct(self, word, **kwargs):
         """
         Most probable spelling correction for word.
         """
@@ -489,6 +484,7 @@ class _SpellCorrector(_Spell_augmentation):
         if word in stopword_tatabahasa:
             return word
         hujung_result = [v for k, v in hujung.items() if word.endswith(k)]
+        cp_word = word[:]
         if len(hujung_result):
             hujung_result = max(hujung_result, key = len)
             if len(hujung_result):
@@ -506,11 +502,28 @@ class _SpellCorrector(_Spell_augmentation):
             elif self._corpus.get(word, 0) > 1000:
                 pass
             else:
-                word = max(self.edit_candidates(word), key = self.P)
-        if len(hujung_result) and not word.endswith(hujung_result):
-            word = word + hujung_result
-        if len(permulaan_result) and not word.startswith(permulaan_result):
-            word = permulaan_result + word
+                candidates1 = self.edit_candidates(word)
+                candidates2 = self.edit_candidates(cp_word)
+                word1 = max(candidates1, key = self.P)
+                word2 = max(candidates2, key = self.P)
+
+                if self.WORDS[word1] > self.WORDS[word2]:
+                    word = word1
+                    if len(hujung_result) and not word.endswith(hujung_result):
+                        word = word + hujung_result
+                    if len(permulaan_result) and not word.startswith(
+                        permulaan_result
+                    ):
+                        word = permulaan_result + word
+                else:
+                    word = word2
+
+        else:
+            if len(hujung_result) and not word.endswith(hujung_result):
+                word = word + hujung_result
+            if len(permulaan_result) and not word.startswith(permulaan_result):
+                word = permulaan_result + word
+
         return word
 
     def correct_text(self, text):
@@ -648,6 +661,8 @@ class _SymspellCorrector:
             return word
         if word in stopword_tatabahasa:
             return word
+
+        cp_word = word[:]
         hujung_result = [v for k, v in hujung.items() if word.endswith(k)]
         if len(hujung_result):
             hujung_result = max(hujung_result, key = len)
@@ -664,12 +679,27 @@ class _SymspellCorrector:
             if word in rules_normalizer:
                 word = rules_normalizer[word]
             else:
-                stats = self.edit_candidates(word)
-                word = max(stats, key = stats.get)
-        if len(hujung_result) and not word.endswith(hujung_result):
-            word = word + hujung_result
-        if len(permulaan_result) and not word.startswith(permulaan_result):
-            word = permulaan_result + word
+                candidates1 = self.edit_candidates(word)
+                candidates2 = self.edit_candidates(cp_word)
+                word1 = max(candidates1, key = self.P)
+                word2 = max(candidates2, key = self.P)
+
+                if self.WORDS[word1] > self.WORDS[word2]:
+                    word = word1
+                    if len(hujung_result) and not word.endswith(hujung_result):
+                        word = word + hujung_result
+                    if len(permulaan_result) and not word.startswith(
+                        permulaan_result
+                    ):
+                        word = permulaan_result + word
+                else:
+                    word = word2
+
+        else:
+            if len(hujung_result) and not word.endswith(hujung_result):
+                word = word + hujung_result
+            if len(permulaan_result) and not word.startswith(permulaan_result):
+                word = permulaan_result + word
         return word
 
     def correct_text(self, text):
@@ -750,7 +780,7 @@ def probability(sentence_piece = False, validate = True):
                 )
 
         vocab = PATH_NGRAM['sentencepiece']['vocab']
-        vocab_model = PATH_NGRAM['sentencepiece']['tokenizer']
+        vocab_model = PATH_NGRAM['sentencepiece']['model']
         tokenizer = _load_sentencepiece(vocab, vocab_model)
 
     with open(PATH_NGRAM[1]['model']) as fopen:
@@ -828,8 +858,8 @@ def transformer(model, sentence_piece = False, validate = True):
     -------
     _TransformerCorrector: malaya.spell._TransformerCorrector class
     """
-    if not hasattr(model, 'log_vectorize'):
-        raise ValueError('model must has `log_vectorize` method')
+    if not hasattr(model, '_log_vectorize'):
+        raise ValueError('model must has `_log_vectorize` method')
 
     if not isinstance(sentence_piece, bool):
         raise ValueError('sentence_piece must be a boolean')
@@ -859,7 +889,7 @@ def transformer(model, sentence_piece = False, validate = True):
                 )
 
         vocab = PATH_NGRAM['sentencepiece']['vocab']
-        vocab_model = PATH_NGRAM['sentencepiece']['tokenizer']
+        vocab_model = PATH_NGRAM['sentencepiece']['model']
         tokenizer = _load_sentencepiece(vocab, vocab_model)
 
     with open(PATH_NGRAM[1]['model']) as fopen:

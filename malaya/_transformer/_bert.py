@@ -80,6 +80,7 @@ class _Model:
                 )
                 logits = tf.matmul(input_tensor, embedding, transpose_b = True)
                 self._logits = tf.nn.bias_add(logits, output_bias)
+                self._log_softmax = tf.nn.log_softmax(self._logits)
 
             self._sess = tf.InteractiveSession()
             self._sess.run(tf.global_variables_initializer())
@@ -109,9 +110,7 @@ class _Model:
         array: vectorized strings
         """
 
-        return sess.run(
-            tf.nn.log_softmax(self._logits), feed_dict = {self.X: s_tokens}
-        )
+        return self._sess.run(self._log_softmax, feed_dict = {self.X: s_tokens})
 
     def vectorize(self, strings):
 
@@ -287,9 +286,9 @@ def bert(model = 'base', lite = False, validate = True):
     from ..texts._text_functions import SentencePieceTokenizer
 
     bert_checkpoint = PATH_BERT[model]['directory'] + 'model.ckpt'
-    vocab_model = PATH_BERT[model]['directory'] + 'sp10m.cased.v4.model'
-    vocab = PATH_BERT[model]['directory'] + 'sp10m.cased.v4.vocab'
-    bert_config = PATH_BERT[model]['directory'] + 'bert_config.json'
+    vocab_model = PATH_BERT[model]['directory'] + 'sp10m.cased.v8.model'
+    vocab = PATH_BERT[model]['directory'] + 'sp10m.cased.v8.vocab'
+    bert_config = PATH_BERT[model]['directory'] + 'config.json'
 
     sp_model = spm.SentencePieceProcessor()
     sp_model.Load(vocab_model)

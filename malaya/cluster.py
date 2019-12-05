@@ -230,16 +230,17 @@ def cluster_entities(result):
 def cluster_scatter(
     corpus,
     vectorizer,
+    num_clusters = 5,
     titles = None,
     colors = None,
     stemming = True,
-    cleaning = simple_textcleaning,
     stop_words = None,
-    num_clusters = 5,
+    cleaning = simple_textcleaning,
     clustering = KMeans,
     decomposition = MDS,
+    ngram = (1, 3),
     figsize = (17, 9),
-    batch_size = 10,
+    batch_size = 20,
 ):
     """
     plot scatter plot on similar text clusters.
@@ -248,18 +249,21 @@ def cluster_scatter(
     ----------
 
     corpus: list
+    vectorizer: class
+    num_clusters: int, (default=5)
+        size of unsupervised clusters.
     titles: list
         list of titles, length must same with corpus.
     colors: list
         list of colors, length must same with num_clusters.
-    num_clusters: int, (default=5)
-        size of unsupervised clusters.
     stemming: bool, (default=True)
         If True, sastrawi_stemmer will apply.
-    cleaning: function, (default=simple_textcleaning)
-        function to clean the corpus.
     stop_words: list, (default=None)
         list of stop words to remove. If None, default is malaya.texts._text_functions.STOPWORDS
+    ngram: tuple, (default=(1,3))
+        n-grams size to train a corpus.
+    cleaning: function, (default=simple_textcleaning)
+        function to clean the corpus.
     batch_size: int, (default=10)
         size of strings for each vectorization and attention. Only useful if use transformer vectorizer.
 
@@ -291,15 +295,10 @@ def cluster_scatter(
             raise ValueError(
                 'size of colors must be same with number of clusters'
             )
-    if not hasattr(vectorizer, 'vectorize') or not hasattr(vectorizer, 'fit'):
-        raise ValueError(
-            'vectorizer must has `fit_transform` and `vectorize` methods'
-        )
+    if not hasattr(vectorizer, 'vectorize') and not hasattr(vectorizer, 'fit'):
+        raise ValueError('vectorizer must has `fit` and `vectorize` methods')
     if not isinstance(stemming, bool):
         raise ValueError('bool must be a boolean')
-
-    if stop_words is None:
-        stop_words = STOPWORDS
 
     try:
         import matplotlib.pyplot as plt
@@ -310,6 +309,10 @@ def cluster_scatter(
         raise Exception(
             'matplotlib and seaborn not installed. Please install it and try again.'
         )
+
+    if stop_words is None:
+        stop_words = STOPWORDS
+
     if cleaning is not None:
         for i in range(len(corpus)):
             corpus[i] = cleaning(corpus[i])
@@ -391,16 +394,15 @@ def cluster_scatter(
 
 def cluster_dendogram(
     corpus,
+    vectorizer,
     titles = None,
     stemming = True,
-    max_df = 0.95,
-    min_df = 2,
-    ngram = (1, 3),
-    cleaning = simple_textcleaning,
-    vectorizer = 'bow',
     stop_words = None,
+    cleaning = simple_textcleaning,
     random_samples = 0.3,
+    ngram = (1, 3),
     figsize = (17, 9),
+    batch_size = 20,
     **kwargs
 ):
     """
@@ -410,26 +412,23 @@ def cluster_dendogram(
     ----------
 
     corpus: list
+    vectorizer: class
+    num_clusters: int, (default=5)
+        size of unsupervised clusters.
     titles: list
         list of titles, length must same with corpus.
     stemming: bool, (default=True)
         If True, sastrawi_stemmer will apply.
-    max_df: float, (default=0.95)
-        maximum of a word selected based on document frequency.
-    min_df: int, (default=2)
-        minimum of a word selected on based on document frequency.
-    ngram: tuple, (default=(1,3))
-        n-grams size to train a corpus.
-    cleaning: function, (default=simple_textcleaning)
-        function to clean the corpus.
     stop_words: list, (default=None)
         list of stop words to remove. If None, default is malaya.texts._text_functions.STOPWORDS
-    vectorizer: str, (default='bow')
-        vectorizer technique. Allowed values:
-
-        * ``'bow'`` - Bag of Word.
-        * ``'tfidf'`` - Term frequency inverse Document Frequency.
-        * ``'skip-gram'`` - Bag of Word with skipping certain n-grams.
+    cleaning: function, (default=simple_textcleaning)
+        function to clean the corpus.
+    random_samples: float, (default=0.3)
+        random samples from the corpus, 0.3 means 30%.
+    ngram: tuple, (default=(1,3))
+        n-grams size to train a corpus.
+    batch_size: int, (default=20)
+        size of strings for each vectorization and attention. Only useful if use transformer vectorizer.
 
     Returns
     -------
@@ -444,35 +443,19 @@ def cluster_dendogram(
     if titles:
         if len(titles) != len(corpus):
             raise ValueError('length of titles must be same with corpus')
-    if not isinstance(vectorizer, str):
-        raise ValueError('vectorizer must be a string')
     if not isinstance(stemming, bool):
         raise ValueError('bool must be a boolean')
-    vectorizer = vectorizer.lower()
-    if not vectorizer in ['tfidf', 'bow', 'skip-gram']:
-        raise ValueError("vectorizer must be in  ['tfidf', 'bow', 'skip-gram']")
+
+    if not hasattr(vectorizer, 'vectorize') and not hasattr(vectorizer, 'fit'):
+        raise ValueError('vectorizer must has `fit` and `vectorize` methods')
+    if not isinstance(random_samples, float):
+        raise ValueError('random_samples must be a float')
+    if not (random_samples < 1 and random_samples > 0):
+        raise ValueError('random_samples must be between 0 and 1')
     if not isinstance(ngram, tuple):
         raise ValueError('ngram must be a tuple')
     if not len(ngram) == 2:
         raise ValueError('ngram size must equal to 2')
-    if not isinstance(min_df, int):
-        raise ValueError('min_df must be an integer')
-    if not isinstance(max_df, float):
-        raise ValueError('max_df must be a float')
-    if min_df < 1:
-        raise ValueError('min_df must be bigger than 0')
-    if not (max_df <= 1 and max_df > 0):
-        raise ValueError(
-            'max_df must be bigger than 0, less than or equal to 1'
-        )
-    if vectorizer == 'tfidf':
-        Vectorizer = TfidfVectorizer
-    elif vectorizer == 'bow':
-        Vectorizer = CountVectorizer
-    elif vectorizer == 'skip-gram':
-        Vectorizer = SkipGramVectorizer
-    else:
-        raise ValueError("vectorizer must be in  ['tfidf', 'bow', 'skip-gram']")
 
     try:
         import matplotlib.pyplot as plt
@@ -487,14 +470,8 @@ def cluster_dendogram(
     if stop_words is None:
         stop_words = STOPWORDS
 
-    tf_vectorizer = Vectorizer(
-        ngram_range = ngram,
-        min_df = min_df,
-        max_df = max_df,
-        stop_words = stop_words,
-        **kwargs
-    )
     corpus = random.sample(corpus, k = int(random_samples * len(corpus)))
+
     if cleaning is not None:
         for i in range(len(corpus)):
             corpus[i] = cleaning(corpus[i])
@@ -506,18 +483,41 @@ def cluster_dendogram(
         text_clean.append(
             ' '.join([word for word in text.split() if word not in stop_words])
         )
-    tf_vectorizer.fit(text_clean)
-    transformed_text_clean = tf_vectorizer.transform(text_clean)
-    features = tf_vectorizer.get_feature_names()
+
+    if hasattr(vectorizer, 'fit'):
+        vectorizer.fit(text_clean)
+        transformed_text_clean = vectorizer.transform(text_clean)
+        features = vectorizer.get_feature_names()
+    else:
+        transformed_text_clean, attentions = [], []
+        for i in range(0, len(text_clean), batch_size):
+            index = min(i + batch_size, len(text_clean))
+            transformed_text_clean.append(
+                vectorizer.vectorize(text_clean[i:index])
+            )
+            attentions.extend(vectorizer.attention(text_clean[i:index]))
+        transformed_text_clean = np.concatenate(
+            transformed_text_clean, axis = 0
+        )
+
     dist = 1 - cosine_similarity(transformed_text_clean)
     linkage_matrix = ward(dist)
     if not titles:
         titles = []
         for i in range(transformed_text_clean.shape[0]):
-            indices = np.argsort(
-                np.array(transformed_text_clean[i].todense())[0]
-            )[::-1]
-            titles.append(' '.join([features[i] for i in indices[: ngram[1]]]))
+
+            if hasattr(vectorizer, 'fit'):
+                indices = np.argsort(
+                    np.array(transformed_text_clean[i].todense())[0]
+                )[::-1]
+                titles.append(
+                    ' '.join([features[i] for i in indices[: ngram[1]]])
+                )
+            else:
+                attentions[i].sort(key = lambda x: x[1])
+                titles.append(
+                    ' '.join([i[0] for i in attentions[i][-ngram[1] :]])
+                )
     plt.figure(figsize = figsize)
     ax = dendrogram(linkage_matrix, orientation = 'right', labels = titles)
     plt.tick_params(
@@ -534,20 +534,19 @@ def cluster_dendogram(
 
 def cluster_graph(
     corpus,
+    vectorizer,
+    threshold = 0.9,
+    num_clusters = 5,
     titles = None,
     colors = None,
-    threshold = 0.3,
+    stop_words = None,
     stemming = True,
-    max_df = 0.95,
-    min_df = 2,
     ngram = (1, 3),
     cleaning = simple_textcleaning,
-    vectorizer = 'bow',
-    stop_words = None,
-    num_clusters = 5,
     clustering = KMeans,
     figsize = (17, 9),
     with_labels = True,
+    batch_size = 20,
     **kwargs
 ):
     """
@@ -555,33 +554,25 @@ def cluster_graph(
 
     Parameters
     ----------
+
     corpus: list
-    titles: list
-        list of titles, length must same with corpus.
-    colors: list
-        list of colors, length must same with num_clusters.
-    threshold: float, (default=0.3)
-        threshold to assume similarity for covariance matrix.
+    vectorizer: class
+    threshold: float, (default=0.9)
+        0.9 means, 90% above absolute pearson correlation.
     num_clusters: int, (default=5)
         size of unsupervised clusters.
+    titles: list
+        list of titles, length must same with corpus.
     stemming: bool, (default=True)
         If True, sastrawi_stemmer will apply.
-    max_df: float, (default=0.95)
-        maximum of a word selected based on document frequency.
-    min_df: int, (default=2)
-        minimum of a word selected on based on document frequency.
-    ngram: tuple, (default=(1,3))
-        n-grams size to train a corpus.
-    cleaning: function, (default=simple_textcleaning)
-        function to clean the corpus.
     stop_words: list, (default=None)
         list of stop words to remove. If None, default is malaya.texts._text_functions.STOPWORDS
-    vectorizer: str, (default='bow')
-        vectorizer technique. Allowed values:
-
-        * ``'bow'`` - Bag of Word.
-        * ``'tfidf'`` - Term frequency inverse Document Frequency.
-        * ``'skip-gram'`` - Bag of Word with skipping certain n-grams.
+    cleaning: function, (default=simple_textcleaning)
+        function to clean the corpus.
+    ngram: tuple, (default=(1,3))
+        n-grams size to train a corpus.
+    batch_size: int, (default=20)
+        size of strings for each vectorization and attention. Only useful if use transformer vectorizer.
 
     Returns
     -------
@@ -592,6 +583,7 @@ def cluster_graph(
         'node_labels': node_labels,
     }
     """
+
     if not isinstance(corpus, list):
         raise ValueError('corpus must be a list')
     if not isinstance(corpus[0], str):
@@ -608,27 +600,14 @@ def cluster_graph(
             raise ValueError(
                 'size of colors must be same with number of clusters'
             )
-    if not isinstance(vectorizer, str):
-        raise ValueError('vectorizer must be a string')
+    if not hasattr(vectorizer, 'vectorize') and not hasattr(vectorizer, 'fit'):
+        raise ValueError('vectorizer must has `fit` and `vectorize` methods')
     if not isinstance(stemming, bool):
         raise ValueError('bool must be a boolean')
-    vectorizer = vectorizer.lower()
-    if not vectorizer in ['tfidf', 'bow', 'skip-gram']:
-        raise ValueError("vectorizer must be in  ['tfidf', 'bow', 'skip-gram']")
     if not isinstance(ngram, tuple):
         raise ValueError('ngram must be a tuple')
     if not len(ngram) == 2:
         raise ValueError('ngram size must equal to 2')
-    if not isinstance(min_df, int):
-        raise ValueError('min_df must be an integer')
-    if not isinstance(max_df, float):
-        raise ValueError('max_df must be a float')
-    if min_df < 1:
-        raise ValueError('min_df must be bigger than 0')
-    if not (max_df <= 1 and max_df > 0):
-        raise ValueError(
-            'max_df must be bigger than 0, less than or equal to 1'
-        )
     if not isinstance(threshold, float):
         raise ValueError('threshold must be a float')
     if not (threshold <= 1 and threshold > 0):
@@ -636,20 +615,12 @@ def cluster_graph(
             'threshold must be bigger than 0, less than or equal to 1'
         )
 
-    if vectorizer == 'tfidf':
-        Vectorizer = TfidfVectorizer
-    elif vectorizer == 'bow':
-        Vectorizer = CountVectorizer
-    elif vectorizer == 'skip-gram':
-        Vectorizer = SkipGramVectorizer
-    else:
-        raise ValueError("vectorizer must be in  ['tfidf', 'bow', 'skip-gram']")
-
     try:
         import matplotlib.pyplot as plt
         import seaborn as sns
         import networkx as nx
         import networkx.drawing.layout as nxlayout
+        import pandas as pd
 
         sns.set()
     except:
@@ -659,13 +630,6 @@ def cluster_graph(
     if stop_words is None:
         stop_words = STOPWORDS
 
-    tf_vectorizer = Vectorizer(
-        ngram_range = ngram,
-        min_df = min_df,
-        max_df = max_df,
-        stop_words = stop_words,
-        **kwargs
-    )
     if cleaning is not None:
         for i in range(len(corpus)):
             corpus[i] = cleaning(corpus[i])
@@ -677,31 +641,59 @@ def cluster_graph(
         text_clean.append(
             ' '.join([word for word in text.split() if word not in stop_words])
         )
-    tf_vectorizer.fit(text_clean)
-    DxT = tf_vectorizer.transform(text_clean)
-    DxD = np.dot(DxT, DxT.T)
+
+    if hasattr(vectorizer, 'fit'):
+        vectorizer.fit(text_clean)
+        transformed_text_clean = vectorizer.transform(text_clean).todense()
+        features = vectorizer.get_feature_names()
+    else:
+        transformed_text_clean, attentions = [], []
+        for i in range(0, len(text_clean), batch_size):
+            index = min(i + batch_size, len(text_clean))
+            transformed_text_clean.append(
+                vectorizer.vectorize(text_clean[i:index])
+            )
+            attentions.extend(vectorizer.attention(text_clean[i:index]))
+        transformed_text_clean = np.concatenate(
+            transformed_text_clean, axis = 0
+        )
+
+    DxT = transformed_text_clean
+    DxD = np.abs(pd.DataFrame(DxT.T).corr()).values
     km = clustering(n_clusters = num_clusters)
     km.fit(DxT)
     clusters = km.labels_.tolist()
-    features = tf_vectorizer.get_feature_names()
+
     if not titles:
         titles = []
-        for i in range(DxT.shape[0]):
-            indices = np.argsort(np.array(DxT[i].todense())[0])[::-1]
-            titles.append(' '.join([features[i] for i in indices[: ngram[1]]]))
+        for i in range(transformed_text_clean.shape[0]):
+
+            if hasattr(vectorizer, 'fit'):
+                indices = np.argsort(np.array(transformed_text_clean[i])[0])[
+                    ::-1
+                ]
+                titles.append(
+                    ' '.join([features[i] for i in indices[: ngram[1]]])
+                )
+            else:
+                attentions[i].sort(key = lambda x: x[1])
+                titles.append(
+                    ' '.join([i[0] for i in attentions[i][-ngram[1] :]])
+                )
+
     if not colors:
         colors = sns.color_palette(n_colors = num_clusters)
     G = nx.Graph()
     for i in range(DxT.shape[0]):
         G.add_node(i, text = titles[i], label = clusters[i])
-    dense_DxD = DxD.toarray()
-    len_dense = len(dense_DxD)
+
+    len_dense = len(DxD)
     for i in range(len_dense):
         for j in range(len_dense):
             if j == i:
                 continue
-            if dense_DxD[i, j] >= threshold:
-                weight = dense_DxD[i, j]
+            if DxD[i, j] >= threshold:
+                weight = DxD[i, j]
                 G.add_edge(i, j, weight = weight)
     node_colors, node_labels = [], {}
     for node in G:
@@ -715,6 +707,7 @@ def cluster_graph(
         nx.draw(G, node_color = node_colors, pos = pos, labels = node_labels)
     else:
         nx.draw(G, node_color = node_colors, pos = pos)
+
     return {
         'G': G,
         'pos': pos,
@@ -726,20 +719,20 @@ def cluster_graph(
 def cluster_entity_linking(
     corpus,
     entity_model,
+    vectorizer,
     topic_modeling_model,
     topic_decomposition = 2,
     topic_length = 10,
     threshold = 0.3,
     fuzzy_ratio = 70,
     accepted_entities = ['law', 'location', 'organization', 'person', 'event'],
+    cleaning = simple_textcleaning,
     colors = None,
+    stemming = True,
+    stop_words = None,
     max_df = 1.0,
     min_df = 1,
     ngram = (2, 3),
-    stemming = True,
-    cleaning = simple_textcleaning,
-    vectorizer = 'bow',
-    stop_words = None,
     figsize = (17, 9),
     **kwargs
 ):
@@ -749,12 +742,13 @@ def cluster_entity_linking(
     Parameters
     ----------
     corpus: list or str
+    vectorizer: class
     titles: list
         list of titles, length must same with corpus.
     colors: list
         list of colors, length must same with num_clusters.
     threshold: float, (default=0.3)
-        threshold to assume similarity for covariance matrix.
+        0.3 means, 30% above absolute pearson correlation.
     topic_decomposition: int, (default=2)
         size of decomposition.
     topic_length: int, (default=10)
@@ -773,12 +767,6 @@ def cluster_entity_linking(
         function to clean the corpus.
     stop_words: list, (default=None)
         list of stop words to remove. If None, default is malaya.texts._text_functions.STOPWORDS
-    vectorizer: str, (default='bow')
-        vectorizer technique. Allowed values:
-
-        * ``'bow'`` - Bag of Word.
-        * ``'tfidf'`` - Term frequency inverse Document Frequency.
-        * ``'skip-gram'`` - Bag of Word with skipping certain n-grams.
 
     Returns
     -------
@@ -789,20 +777,22 @@ def cluster_entity_linking(
         'node_labels': node_labels,
     }
     """
+
+    import inspect
+
     if not isinstance(corpus, list) and not isinstance(corpus, str):
         raise ValueError('corpus must be a list')
     if isinstance(corpus, list):
         if not isinstance(corpus[0], str):
             raise ValueError('corpus must be list of strings')
+    if not hasattr(vectorizer, 'vectorize') and not hasattr(vectorizer, 'fit'):
+        raise ValueError('vectorizer must has `fit` and `vectorize` methods')
+    if 'max_df' not in inspect.getargspec(topic_modeling_model)[0]:
+        raise ValueError('topic_modeling_model must has `max_df` parameter')
     if not isinstance(colors, list) and colors is not None:
         raise ValueError('colors must be a list or None')
-    if not isinstance(vectorizer, str):
-        raise ValueError('vectorizer must be a string')
     if not isinstance(stemming, bool):
         raise ValueError('bool must be a boolean')
-    vectorizer = vectorizer.lower()
-    if not vectorizer in ['tfidf', 'bow', 'skip-gram']:
-        raise ValueError("vectorizer must be in  ['tfidf', 'bow', 'skip-gram']")
     if not isinstance(ngram, tuple):
         raise ValueError('ngram must be a tuple')
     if not len(ngram) == 2:
@@ -817,6 +807,7 @@ def cluster_entity_linking(
         raise ValueError('fuzzy_ratio must be an integer')
     if not isinstance(max_df, float):
         raise ValueError('max_df must be a float')
+
     if min_df < 1:
         raise ValueError('min_df must be bigger than 0')
     if not (max_df <= 1 and max_df > 0):
@@ -848,15 +839,6 @@ def cluster_entity_linking(
         raise Exception(
             'matplotlib, seaborn, networkx, fuzzywuzzy not installed. Please install it and try again.'
         )
-
-    if vectorizer == 'tfidf':
-        Vectorizer = TfidfVectorizer
-    elif vectorizer == 'bow':
-        Vectorizer = CountVectorizer
-    elif vectorizer == 'skip-gram':
-        Vectorizer = SkipGramVectorizer
-    else:
-        raise ValueError("vectorizer must be in  ['tfidf', 'bow', 'skip-gram']")
 
     if isinstance(corpus, str):
         corpus = split_into_sentences(corpus)
@@ -916,37 +898,52 @@ def cluster_entity_linking(
                 nested_corpus.append(string)
         topics_corpus.append(' '.join(nested_corpus))
 
-    tf_vectorizer = Vectorizer(
-        ngram_range = ngram,
-        min_df = min_df,
-        max_df = max_df,
-        stop_words = stop_words,
-        **kwargs
-    )
-    if cleaning is not None:
-        for i in range(len(topics_corpus)):
-            topics_corpus[i] = cleaning(topics_corpus[i])
-    if stemming:
-        for i in range(len(topics_corpus)):
-            topics_corpus[i] = sastrawi(topics_corpus[i])
+    corpus = topics_corpus
 
-    tf_vectorizer.fit(topics_corpus)
-    DxT = tf_vectorizer.transform(topics_corpus)
-    DxD = np.dot(DxT, DxT.T)
+    if cleaning is not None:
+        for i in range(len(corpus)):
+            corpus[i] = cleaning(corpus[i])
+    if stemming:
+        for i in range(len(corpus)):
+            corpus[i] = sastrawi(corpus[i])
+    text_clean = []
+    for text in corpus:
+        text_clean.append(
+            ' '.join([word for word in text.split() if word not in stop_words])
+        )
+
+    if hasattr(vectorizer, 'fit'):
+        vectorizer.fit(text_clean)
+        transformed_text_clean = vectorizer.transform(text_clean).todense()
+        features = vectorizer.get_feature_names()
+    else:
+        transformed_text_clean, attentions = [], []
+        for i in range(0, len(text_clean), batch_size):
+            index = min(i + batch_size, len(text_clean))
+            transformed_text_clean.append(
+                vectorizer.vectorize(text_clean[i:index])
+            )
+            attentions.extend(vectorizer.attention(text_clean[i:index]))
+        transformed_text_clean = np.concatenate(
+            transformed_text_clean, axis = 0
+        )
+
+    DxT = transformed_text_clean
+    DxD = np.abs(pd.DataFrame(DxT.T).corr()).values
 
     G = nx.Graph()
     for i in range(DxT.shape[0]):
-        G.add_node(i, text = topics[i], label = topics[i])
+        G.add_node(i, text = titles[i], label = clusters[i])
 
-    dense_DxD = DxD.toarray()
-    len_dense = len(dense_DxD)
+    len_dense = len(DxD)
     for i in range(len_dense):
         for j in range(len_dense):
             if j == i:
                 continue
-            if dense_DxD[i, j] >= threshold:
-                weight = dense_DxD[i, j]
+            if DxD[i, j] >= threshold:
+                weight = DxD[i, j]
                 G.add_edge(i, j, weight = weight)
+
     node_colors, node_labels = [], {}
     for node in G:
         node_colors.append(color_dict[G.node[node]['label']])

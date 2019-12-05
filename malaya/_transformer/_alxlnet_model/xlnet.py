@@ -5,7 +5,7 @@ from __future__ import print_function
 import json
 import os
 import tensorflow as tf
-import . as modeling
+from . import modeling
 
 
 def _get_initializer(FLAGS):

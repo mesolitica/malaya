@@ -2,443 +2,1200 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import collections
-import os
-import re
 import numpy as np
-import six
-from os.path import join
-from six.moves import zip
-
-from absl import flags
-
 import tensorflow as tf
 
 
-def configure_tpu(FLAGS):
-    if FLAGS.use_tpu:
-        tpu_cluster = tf.contrib.cluster_resolver.TPUClusterResolver(
-            FLAGS.tpu, zone = FLAGS.tpu_zone, project = FLAGS.gcp_project
-        )
-        master = tpu_cluster.get_master()
-    else:
-        tpu_cluster = None
-        master = FLAGS.master
+def gelu(x):
+    """Gaussian Error Linear Unit.
 
-    session_config = tf.ConfigProto(allow_soft_placement = True)
-    # Uncomment the following line if you hope to monitor GPU RAM growth
-    # session_config.gpu_options.allow_growth = True
+  This is a smoother version of the RELU.
+  Original paper: https://arxiv.org/abs/1606.08415
+  Args:
+    x: float Tensor to perform activation.
 
-    if FLAGS.use_tpu:
-        strategy = None
-        tf.logging.info('Use TPU without distribute strategy.')
-    elif FLAGS.num_core_per_host == 1:
-        strategy = None
-        tf.logging.info('Single device mode.')
-    else:
-        strategy = tf.contrib.distribute.MirroredStrategy(
-            num_gpus = FLAGS.num_core_per_host
-        )
-        tf.logging.info(
-            'Use MirroredStrategy with %d devices.',
-            strategy.num_replicas_in_sync,
-        )
-
-    per_host_input = tf.contrib.tpu.InputPipelineConfig.PER_HOST_V2
-    run_config = tf.contrib.tpu.RunConfig(
-        master = master,
-        model_dir = FLAGS.model_dir,
-        session_config = session_config,
-        tpu_config = tf.contrib.tpu.TPUConfig(
-            iterations_per_loop = FLAGS.iterations,
-            num_shards = FLAGS.num_hosts * FLAGS.num_core_per_host,
-            per_host_input_for_training = per_host_input,
-        ),
-        keep_checkpoint_max = FLAGS.max_save,
-        save_checkpoints_secs = None,
-        save_checkpoints_steps = FLAGS.save_steps,
-        train_distribute = strategy,
+  Returns:
+    `x` with the GELU activation applied.
+  """
+    cdf = 0.5 * (
+        1.0 + tf.tanh((np.sqrt(2 / np.pi) * (x + 0.044715 * tf.pow(x, 3))))
     )
-    return run_config
+    return x * cdf
 
 
-def init_from_checkpoint(FLAGS, global_vars = False):
-    tvars = tf.global_variables() if global_vars else tf.trainable_variables()
-    initialized_variable_names = {}
-    scaffold_fn = None
-    if FLAGS.init_checkpoint is not None:
-        if FLAGS.init_checkpoint.endswith('latest'):
-            ckpt_dir = os.path.dirname(FLAGS.init_checkpoint)
-            init_checkpoint = tf.train.latest_checkpoint(ckpt_dir)
+def embedding_lookup(
+    x,
+    n_token,
+    d_embed,
+    hidden_size,
+    initializer,
+    use_tpu = True,
+    scope = 'embedding',
+    reuse = None,
+    dtype = tf.float32,
+):
+    """TPU and GPU embedding_lookup function."""
+    with tf.variable_scope(scope, reuse = reuse):
+        lookup_table = tf.get_variable(
+            'lookup_table',
+            [n_token, d_embed],
+            dtype = dtype,
+            initializer = initializer,
+        )
+
+        project_variable = tf.get_variable(  # [embedding_size, hidden_size]
+            name = 'lookup_table_2',
+            shape = [d_embed, hidden_size],
+            initializer = initializer,
+        )
+
+        if use_tpu:
+            one_hot_idx = tf.one_hot(x, n_token, dtype = dtype)
+            if one_hot_idx.shape.ndims == 2:
+                return (
+                    tf.einsum('in,nd->id', one_hot_idx, lookup_table),
+                    lookup_table,
+                )
+            else:
+                return (
+                    tf.einsum('ibn,nd->ibd', one_hot_idx, lookup_table),
+                    lookup_table,
+                )
         else:
-            init_checkpoint = FLAGS.init_checkpoint
-
-        tf.logging.info('Initialize from the ckpt {}'.format(init_checkpoint))
-
-        (
-            assignment_map,
-            initialized_variable_names,
-        ) = get_assignment_map_from_checkpoint(tvars, init_checkpoint)
-        if FLAGS.use_tpu:
-
-            def tpu_scaffold():
-                tf.train.init_from_checkpoint(init_checkpoint, assignment_map)
-                return tf.train.Scaffold()
-
-            scaffold_fn = tpu_scaffold
-        else:
-            tf.train.init_from_checkpoint(init_checkpoint, assignment_map)
-
-        # Log customized initialization
-        tf.logging.info('**** Global Variables ****')
-        for var in tvars:
-            init_string = ''
-            if var.name in initialized_variable_names:
-                init_string = ', *INIT_FROM_CKPT*'
-            tf.logging.info(
-                '  name = %s, shape = %s%s', var.name, var.shape, init_string
-            )
-    return scaffold_fn
+            output_middle = tf.nn.embedding_lookup(lookup_table, x)
+            output = tf.matmul(output_middle, project_variable)
+            return output, lookup_table, project_variable
 
 
-def get_train_op(FLAGS, total_loss, grads_and_vars = None):
-    global_step = tf.train.get_or_create_global_step()
+def positional_embedding(pos_seq, inv_freq, bsz = None):
+    sinusoid_inp = tf.einsum('i,d->id', pos_seq, inv_freq)
+    pos_emb = tf.concat([tf.sin(sinusoid_inp), tf.cos(sinusoid_inp)], -1)
+    pos_emb = pos_emb[:, None, :]
 
-    # increase the learning rate linearly
-    if FLAGS.warmup_steps > 0:
-        warmup_lr = (
-            tf.cast(global_step, tf.float32)
-            / tf.cast(FLAGS.warmup_steps, tf.float32)
-            * FLAGS.learning_rate
-        )
+    if bsz is not None:
+        pos_emb = tf.tile(pos_emb, [1, bsz, 1])
+
+    return pos_emb
+
+
+def positionwise_ffn(
+    inp,
+    d_model,
+    d_inner,
+    dropout,
+    kernel_initializer,
+    activation_type = 'relu',
+    scope = 'ff',
+    is_training = True,
+    reuse = None,
+):
+    """Position-wise Feed-forward Network."""
+    if activation_type == 'relu':
+        activation = tf.nn.relu
+    elif activation_type == 'gelu':
+        activation = gelu
     else:
-        warmup_lr = 0.0
-
-    # decay the learning rate
-    if FLAGS.decay_method == 'poly':
-        decay_lr = tf.train.polynomial_decay(
-            FLAGS.learning_rate,
-            global_step = global_step - FLAGS.warmup_steps,
-            decay_steps = FLAGS.train_steps - FLAGS.warmup_steps,
-            end_learning_rate = FLAGS.learning_rate * FLAGS.min_lr_ratio,
-        )
-    elif FLAGS.decay_method == 'cos':
-        decay_lr = tf.train.cosine_decay(
-            FLAGS.learning_rate,
-            global_step = global_step - FLAGS.warmup_steps,
-            decay_steps = FLAGS.train_steps - FLAGS.warmup_steps,
-            alpha = FLAGS.min_lr_ratio,
-        )
-    else:
-        raise ValueError(FLAGS.decay_method)
-
-    learning_rate = tf.where(
-        global_step < FLAGS.warmup_steps, warmup_lr, decay_lr
-    )
-
-    if (
-        FLAGS.weight_decay > 0
-        and not FLAGS.use_tpu
-        and FLAGS.num_core_per_host > 1
-    ):
         raise ValueError(
-            'Do not support `weight_decay > 0` with multi-gpu '
-            'training so far.'
+            'Unsupported activation type {}'.format(activation_type)
         )
 
-    if FLAGS.weight_decay == 0:
-        optimizer = tf.train.AdamOptimizer(
-            learning_rate = learning_rate, epsilon = FLAGS.adam_epsilon
+    output = inp
+    with tf.variable_scope(scope, reuse = reuse):
+        output = tf.layers.dense(
+            output,
+            d_inner,
+            activation = activation,
+            kernel_initializer = kernel_initializer,
+            name = 'layer_1',
+        )
+        output = tf.layers.dropout(
+            output, dropout, training = is_training, name = 'drop_1'
+        )
+        output = tf.layers.dense(
+            output,
+            d_model,
+            kernel_initializer = kernel_initializer,
+            name = 'layer_2',
+        )
+        output = tf.layers.dropout(
+            output, dropout, training = is_training, name = 'drop_2'
+        )
+        output = tf.contrib.layers.layer_norm(
+            output + inp, begin_norm_axis = -1, scope = 'LayerNorm'
+        )
+    return output
+
+
+def head_projection(h, d_model, n_head, d_head, kernel_initializer, name):
+    """Project hidden states to a specific head with a 4D-shape."""
+    proj_weight = tf.get_variable(
+        '{}/kernel'.format(name),
+        [d_model, n_head, d_head],
+        dtype = h.dtype,
+        initializer = kernel_initializer,
+    )
+    head = tf.einsum('ibh,hnd->ibnd', h, proj_weight)
+
+    return head
+
+
+def post_attention(
+    h,
+    attn_vec,
+    d_model,
+    n_head,
+    d_head,
+    dropout,
+    is_training,
+    kernel_initializer,
+    residual = True,
+):
+    """Post-attention processing."""
+    # post-attention projection (back to `d_model`)
+    proj_o = tf.get_variable(
+        'o/kernel',
+        [d_model, n_head, d_head],
+        dtype = h.dtype,
+        initializer = kernel_initializer,
+    )
+    attn_out = tf.einsum('ibnd,hnd->ibh', attn_vec, proj_o)
+
+    attn_out = tf.layers.dropout(attn_out, dropout, training = is_training)
+    if residual:
+        output = tf.contrib.layers.layer_norm(
+            attn_out + h, begin_norm_axis = -1, scope = 'LayerNorm'
         )
     else:
-        optimizer = AdamWeightDecayOptimizer(
-            learning_rate = learning_rate,
-            epsilon = FLAGS.adam_epsilon,
-            exclude_from_weight_decay = ['LayerNorm', 'layer_norm', 'bias'],
-            weight_decay_rate = FLAGS.weight_decay,
+        output = tf.contrib.layers.layer_norm(
+            attn_out, begin_norm_axis = -1, scope = 'LayerNorm'
         )
 
-    if FLAGS.use_tpu:
-        optimizer = tf.contrib.tpu.CrossShardOptimizer(optimizer)
-
-    if grads_and_vars is None:
-        grads_and_vars = optimizer.compute_gradients(total_loss)
-    gradients, variables = zip(*grads_and_vars)
-    clipped, gnorm = tf.clip_by_global_norm(gradients, FLAGS.clip)
-
-    if getattr(FLAGS, 'lr_layer_decay_rate', 1.0) != 1.0:
-        n_layer = 0
-        for i in range(len(clipped)):
-            m = re.search(r'model/transformer/layer_(\d+?)/', variables[i].name)
-            if not m:
-                continue
-            n_layer = max(n_layer, int(m.group(1)) + 1)
-
-        for i in range(len(clipped)):
-            for l in range(n_layer):
-                if 'model/transformer/layer_{}/'.format(l) in variables[i].name:
-                    abs_rate = FLAGS.lr_layer_decay_rate ** (n_layer - 1 - l)
-                    clipped[i] *= abs_rate
-                    tf.logging.info(
-                        'Apply mult {:.4f} to layer-{} grad of {}'.format(
-                            abs_rate, l, variables[i].name
-                        )
-                    )
-                    break
-
-    train_op = optimizer.apply_gradients(
-        zip(clipped, variables), global_step = global_step
-    )
-
-    # Manually increment `global_step` for AdamWeightDecayOptimizer
-    if FLAGS.weight_decay > 0:
-        new_global_step = global_step + 1
-        train_op = tf.group(train_op, [global_step.assign(new_global_step)])
-
-    return train_op, learning_rate, gnorm
+    return output
 
 
-def clean_ckpt(_):
-    input_ckpt = FLAGS.clean_input_ckpt
-    output_model_dir = FLAGS.clean_output_model_dir
+def abs_attn_core(
+    q_head, k_head, v_head, attn_mask, dropatt, is_training, scale
+):
+    """Core absolute positional attention operations."""
 
-    tf.reset_default_graph()
+    attn_score = tf.einsum('ibnd,jbnd->ijbn', q_head, k_head)
+    attn_score *= scale
+    if attn_mask is not None:
+        attn_score = attn_score - 1e30 * attn_mask
 
-    var_list = tf.contrib.framework.list_variables(input_ckpt)
-    var_values, var_dtypes = {}, {}
-    for (name, shape) in var_list:
-        if not name.startswith('global_step') and 'adam' not in name.lower():
-            var_values[name] = None
-            tf.logging.info('Include {}'.format(name))
+    # attention probability
+    attn_prob = tf.nn.softmax(attn_score, 1)
+    attn_prob = tf.layers.dropout(attn_prob, dropatt, training = is_training)
+
+    # attention output
+    attn_vec = tf.einsum('ijbn,jbnd->ibnd', attn_prob, v_head)
+
+    return attn_vec
+
+
+def rel_attn_core(
+    q_head,
+    k_head_h,
+    v_head_h,
+    k_head_r,
+    seg_embed,
+    seg_mat,
+    r_w_bias,
+    r_r_bias,
+    r_s_bias,
+    attn_mask,
+    dropatt,
+    is_training,
+    scale,
+):
+    """Core relative positional attention operations."""
+
+    # content based attention score
+    ac = tf.einsum('ibnd,jbnd->ijbn', q_head + r_w_bias, k_head_h)
+
+    # position based attention score
+    bd = tf.einsum('ibnd,jbnd->ijbn', q_head + r_r_bias, k_head_r)
+    bd = rel_shift(bd, klen = tf.shape(ac)[1])
+
+    # segment based attention score
+    if seg_mat is None:
+        ef = 0
+    else:
+        ef = tf.einsum('ibnd,snd->ibns', q_head + r_s_bias, seg_embed)
+        ef = tf.einsum('ijbs,ibns->ijbn', seg_mat, ef)
+
+    # merge attention scores and perform masking
+    attn_score = (ac + bd + ef) * scale
+    if attn_mask is not None:
+        # attn_score = attn_score * (1 - attn_mask) - 1e30 * attn_mask
+        attn_score = attn_score - 1e30 * attn_mask
+
+    # attention probability
+    attn_prob = tf.nn.softmax(attn_score, 1)
+    attn_prob = tf.layers.dropout(attn_prob, dropatt, training = is_training)
+
+    # attention output
+    attn_vec = tf.einsum('ijbn,jbnd->ibnd', attn_prob, v_head_h)
+
+    return attn_vec
+
+
+def rel_shift(x, klen = -1):
+    """perform relative shift to form the relative attention score."""
+    x_size = tf.shape(x)
+
+    x = tf.reshape(x, [x_size[1], x_size[0], x_size[2], x_size[3]])
+    x = tf.slice(x, [1, 0, 0, 0], [-1, -1, -1, -1])
+    x = tf.reshape(x, [x_size[0], x_size[1] - 1, x_size[2], x_size[3]])
+    x = tf.slice(x, [0, 0, 0, 0], [-1, klen, -1, -1])
+
+    return x
+
+
+def _create_mask(qlen, mlen, dtype = tf.float32, same_length = False):
+    """create causal attention mask."""
+    attn_mask = tf.ones([qlen, qlen], dtype = dtype)
+    mask_u = tf.matrix_band_part(attn_mask, 0, -1)
+    mask_dia = tf.matrix_band_part(attn_mask, 0, 0)
+    attn_mask_pad = tf.zeros([qlen, mlen], dtype = dtype)
+    ret = tf.concat([attn_mask_pad, mask_u - mask_dia], 1)
+    if same_length:
+        mask_l = tf.matrix_band_part(attn_mask, -1, 0)
+        ret = tf.concat([ret[:, :qlen] + mask_l - mask_dia, ret[:, qlen:]], 1)
+
+    return ret
+
+
+def _cache_mem(curr_out, prev_mem, mem_len, reuse_len = None):
+    """cache hidden states into memory."""
+    if mem_len is None or mem_len == 0:
+        return None
+    else:
+        if reuse_len is not None and reuse_len > 0:
+            curr_out = curr_out[:reuse_len]
+
+        if prev_mem is None:
+            new_mem = curr_out[-mem_len:]
         else:
-            tf.logging.info('Exclude {}'.format(name))
+            new_mem = tf.concat([prev_mem, curr_out], 0)[-mem_len:]
 
-    tf.logging.info('Loading from {}'.format(input_ckpt))
-    reader = tf.contrib.framework.load_checkpoint(input_ckpt)
-    for name in var_values:
-        tensor = reader.get_tensor(name)
-        var_dtypes[name] = tensor.dtype
-        var_values[name] = tensor
+    return tf.stop_gradient(new_mem)
 
-    with tf.variable_scope(tf.get_variable_scope(), reuse = tf.AUTO_REUSE):
-        tf_vars = [
-            tf.get_variable(
-                v, shape = var_values[v].shape, dtype = var_dtypes[v]
-            )
-            for v in var_values
-        ]
-    placeholders = [tf.placeholder(v.dtype, shape = v.shape) for v in tf_vars]
-    assign_ops = [tf.assign(v, p) for (v, p) in zip(tf_vars, placeholders)]
-    global_step = tf.Variable(
-        0, name = 'global_step', trainable = False, dtype = tf.int64
-    )
-    saver = tf.train.Saver(tf.all_variables())
 
-    if not tf.gfile.Exists(output_model_dir):
-        tf.gfile.MakeDirs(output_model_dir)
+def relative_positional_encoding(
+    qlen, klen, d_model, clamp_len, attn_type, bi_data, bsz = None, dtype = None
+):
+    """create relative positional encoding."""
+    freq_seq = tf.range(0, d_model, 2.0)
+    if dtype is not None and dtype != tf.float32:
+        freq_seq = tf.cast(freq_seq, dtype = dtype)
+    inv_freq = 1 / (10000 ** (freq_seq / d_model))
 
-    # Build a model consisting only of variables, set them to the average values.
-    with tf.Session() as sess:
-        sess.run(tf.initialize_all_variables())
-        for p, assign_op, (name, value) in zip(
-            placeholders, assign_ops, six.iteritems(var_values)
-        ):
-            sess.run(assign_op, {p: value})
+    if attn_type == 'bi':
+        # beg, end = klen - 1, -qlen
+        beg, end = klen, -qlen
+    elif attn_type == 'uni':
+        # beg, end = klen - 1, -1
+        beg, end = klen, -1
+    else:
+        raise ValueError('Unknown `attn_type` {}.'.format(attn_type))
 
-        # Use the built saver to save the averaged checkpoint.
-        saver.save(
-            sess,
-            join(output_model_dir, 'model.ckpt'),
-            global_step = global_step,
+    if bi_data:
+        fwd_pos_seq = tf.range(beg, end, -1.0)
+        bwd_pos_seq = tf.range(-beg, -end, 1.0)
+
+        if dtype is not None and dtype != tf.float32:
+            fwd_pos_seq = tf.cast(fwd_pos_seq, dtype = dtype)
+            bwd_pos_seq = tf.cast(bwd_pos_seq, dtype = dtype)
+
+        if clamp_len > 0:
+            fwd_pos_seq = tf.clip_by_value(fwd_pos_seq, -clamp_len, clamp_len)
+            bwd_pos_seq = tf.clip_by_value(bwd_pos_seq, -clamp_len, clamp_len)
+
+        tf.logging.info('bsz here', bsz)
+        if bsz is not None:
+            # With bi_data, the batch size should be divisible by 2.
+            # assert bsz % 2 == 0
+            fwd_pos_emb = positional_embedding(fwd_pos_seq, inv_freq, bsz // 2)
+            bwd_pos_emb = positional_embedding(bwd_pos_seq, inv_freq, bsz // 2)
+        else:
+            fwd_pos_emb = positional_embedding(fwd_pos_seq, inv_freq)
+            bwd_pos_emb = positional_embedding(bwd_pos_seq, inv_freq)
+
+        pos_emb = tf.concat([fwd_pos_emb, bwd_pos_emb], axis = 1)
+    else:
+        fwd_pos_seq = tf.range(beg, end, -1.0)
+        if dtype is not None and dtype != tf.float32:
+            fwd_pos_seq = tf.cast(fwd_pos_seq, dtype = dtype)
+        if clamp_len > 0:
+            fwd_pos_seq = tf.clip_by_value(fwd_pos_seq, -clamp_len, clamp_len)
+        pos_emb = positional_embedding(fwd_pos_seq, inv_freq, bsz)
+
+    return pos_emb
+
+
+def multihead_attn(
+    q,
+    k,
+    v,
+    attn_mask,
+    d_model,
+    n_head,
+    d_head,
+    dropout,
+    dropatt,
+    is_training,
+    kernel_initializer,
+    residual = True,
+    scope = 'abs_attn',
+    reuse = None,
+):
+    """Standard multi-head attention with absolute positional embedding."""
+
+    scale = 1 / (d_head ** 0.5)
+    with tf.variable_scope(scope, reuse = reuse):
+        # attention heads
+        q_head = head_projection(
+            q, d_model, n_head, d_head, kernel_initializer, 'q'
+        )
+        k_head = head_projection(
+            k, d_model, n_head, d_head, kernel_initializer, 'k'
+        )
+        v_head = head_projection(
+            v, d_model, n_head, d_head, kernel_initializer, 'v'
         )
 
-
-def avg_checkpoints(model_dir, output_model_dir, last_k):
-    tf.reset_default_graph()
-
-    checkpoint_state = tf.train.get_checkpoint_state(model_dir)
-    checkpoints = checkpoint_state.all_model_checkpoint_paths[-last_k:]
-    var_list = tf.contrib.framework.list_variables(checkpoints[0])
-    var_values, var_dtypes = {}, {}
-    for (name, shape) in var_list:
-        if not name.startswith('global_step'):
-            var_values[name] = np.zeros(shape)
-    for checkpoint in checkpoints:
-        reader = tf.contrib.framework.load_checkpoint(checkpoint)
-        for name in var_values:
-            tensor = reader.get_tensor(name)
-            var_dtypes[name] = tensor.dtype
-            var_values[name] += tensor
-        tf.logging.info('Read from checkpoint %s', checkpoint)
-    for name in var_values:  # Average.
-        var_values[name] /= len(checkpoints)
-
-    with tf.variable_scope(tf.get_variable_scope(), reuse = tf.AUTO_REUSE):
-        tf_vars = [
-            tf.get_variable(
-                v, shape = var_values[v].shape, dtype = var_dtypes[v]
-            )
-            for v in var_values
-        ]
-    placeholders = [tf.placeholder(v.dtype, shape = v.shape) for v in tf_vars]
-    assign_ops = [tf.assign(v, p) for (v, p) in zip(tf_vars, placeholders)]
-    global_step = tf.Variable(
-        0, name = 'global_step', trainable = False, dtype = tf.int64
-    )
-    saver = tf.train.Saver(tf.all_variables())
-
-    # Build a model consisting only of variables, set them to the average values.
-    with tf.Session() as sess:
-        sess.run(tf.initialize_all_variables())
-        for p, assign_op, (name, value) in zip(
-            placeholders, assign_ops, six.iteritems(var_values)
-        ):
-            sess.run(assign_op, {p: value})
-        # Use the built saver to save the averaged checkpoint.
-        saver.save(
-            sess,
-            join(output_model_dir, 'model.ckpt'),
-            global_step = global_step,
+        # attention vector
+        attn_vec = abs_attn_core(
+            q_head, k_head, v_head, attn_mask, dropatt, is_training, scale
         )
 
+        # post processing
+        output = post_attention(
+            v,
+            attn_vec,
+            d_model,
+            n_head,
+            d_head,
+            dropout,
+            is_training,
+            kernel_initializer,
+            residual,
+        )
 
-def get_assignment_map_from_checkpoint(tvars, init_checkpoint):
-    """Compute the union of the current variables and checkpoint variables."""
-    assignment_map = {}
-    initialized_variable_names = {}
-
-    name_to_variable = collections.OrderedDict()
-    for var in tvars:
-        name = var.name
-        m = re.match('^(.*):\\d+$', name)
-        if m is not None:
-            name = m.group(1)
-        name_to_variable[name] = var
-
-    init_vars = tf.train.list_variables(init_checkpoint)
-
-    assignment_map = collections.OrderedDict()
-    for x in init_vars:
-        (name, var) = (x[0], x[1])
-        # tf.logging.info('original name: %s', name)
-        if name not in name_to_variable:
-            continue
-        # assignment_map[name] = name
-        assignment_map[name] = name_to_variable[name]
-        initialized_variable_names[name] = 1
-        initialized_variable_names[name + ':0'] = 1
-
-    return (assignment_map, initialized_variable_names)
+    return output
 
 
-class AdamWeightDecayOptimizer(tf.train.Optimizer):
-    """A basic Adam optimizer that includes "correct" L2 weight decay."""
+def rel_multihead_attn(
+    h,
+    r,
+    r_w_bias,
+    r_r_bias,
+    seg_mat,
+    r_s_bias,
+    seg_embed,
+    attn_mask,
+    mems,
+    d_model,
+    n_head,
+    d_head,
+    dropout,
+    dropatt,
+    is_training,
+    kernel_initializer,
+    scope = 'rel_attn',
+    reuse = None,
+):
+    """Multi-head attention with relative positional encoding."""
 
-    def __init__(
-        self,
-        learning_rate,
-        weight_decay_rate = 0.0,
-        beta_1 = 0.9,
-        beta_2 = 0.999,
-        epsilon = 1e-6,
-        exclude_from_weight_decay = None,
-        include_in_weight_decay = ['r_s_bias', 'r_r_bias', 'r_w_bias'],
-        name = 'AdamWeightDecayOptimizer',
-    ):
-        """Constructs a AdamWeightDecayOptimizer."""
-        super(AdamWeightDecayOptimizer, self).__init__(False, name)
+    scale = 1 / (d_head ** 0.5)
+    with tf.variable_scope(scope, reuse = reuse):
+        if mems is not None and mems.shape.ndims > 1:
+            cat = tf.concat([mems, h], 0)
+        else:
+            cat = h
 
-        self.learning_rate = learning_rate
-        self.weight_decay_rate = weight_decay_rate
-        self.beta_1 = beta_1
-        self.beta_2 = beta_2
-        self.epsilon = epsilon
-        self.exclude_from_weight_decay = exclude_from_weight_decay
-        self.include_in_weight_decay = include_in_weight_decay
+        # content heads
+        q_head_h = head_projection(
+            h, d_model, n_head, d_head, kernel_initializer, 'q'
+        )
+        k_head_h = head_projection(
+            cat, d_model, n_head, d_head, kernel_initializer, 'k'
+        )
+        v_head_h = head_projection(
+            cat, d_model, n_head, d_head, kernel_initializer, 'v'
+        )
 
-    def apply_gradients(self, grads_and_vars, global_step = None, name = None):
-        """See base class."""
-        assignments = []
-        for (grad, param) in grads_and_vars:
-            if grad is None or param is None:
-                continue
+        # positional heads
+        k_head_r = head_projection(
+            r, d_model, n_head, d_head, kernel_initializer, 'r'
+        )
 
-            param_name = self._get_variable_name(param.name)
+        # core attention ops
+        attn_vec = rel_attn_core(
+            q_head_h,
+            k_head_h,
+            v_head_h,
+            k_head_r,
+            seg_embed,
+            seg_mat,
+            r_w_bias,
+            r_r_bias,
+            r_s_bias,
+            attn_mask,
+            dropatt,
+            is_training,
+            scale,
+        )
 
-            m = tf.get_variable(
-                name = param_name + '/adam_m',
-                shape = param.shape.as_list(),
-                dtype = tf.float32,
-                trainable = False,
-                initializer = tf.zeros_initializer(),
+        # post processing
+        output = post_attention(
+            h,
+            attn_vec,
+            d_model,
+            n_head,
+            d_head,
+            dropout,
+            is_training,
+            kernel_initializer,
+        )
+
+    return output
+
+
+def two_stream_rel_attn(
+    h,
+    g,
+    r,
+    mems,
+    r_w_bias,
+    r_r_bias,
+    seg_mat,
+    r_s_bias,
+    seg_embed,
+    attn_mask_h,
+    attn_mask_g,
+    target_mapping,
+    d_model,
+    n_head,
+    d_head,
+    dropout,
+    dropatt,
+    is_training,
+    kernel_initializer,
+    scope = 'rel_attn',
+):
+    """Two-stream attention with relative positional encoding."""
+
+    scale = 1 / (d_head ** 0.5)
+    with tf.variable_scope(scope, reuse = False):
+
+        # content based attention score
+        if mems is not None and mems.shape.ndims > 1:
+            cat = tf.concat([mems, h], 0)
+        else:
+            cat = h
+
+        # content-based key head
+        k_head_h = head_projection(
+            cat, d_model, n_head, d_head, kernel_initializer, 'k'
+        )
+
+        # content-based value head
+        v_head_h = head_projection(
+            cat, d_model, n_head, d_head, kernel_initializer, 'v'
+        )
+
+        # position-based key head
+        k_head_r = head_projection(
+            r, d_model, n_head, d_head, kernel_initializer, 'r'
+        )
+
+        ##### h-stream
+        # content-stream query head
+        q_head_h = head_projection(
+            h, d_model, n_head, d_head, kernel_initializer, 'q'
+        )
+
+        # core attention ops
+        attn_vec_h = rel_attn_core(
+            q_head_h,
+            k_head_h,
+            v_head_h,
+            k_head_r,
+            seg_embed,
+            seg_mat,
+            r_w_bias,
+            r_r_bias,
+            r_s_bias,
+            attn_mask_h,
+            dropatt,
+            is_training,
+            scale,
+        )
+
+        # post processing
+        output_h = post_attention(
+            h,
+            attn_vec_h,
+            d_model,
+            n_head,
+            d_head,
+            dropout,
+            is_training,
+            kernel_initializer,
+        )
+
+    with tf.variable_scope(scope, reuse = True):
+        ##### g-stream
+        # query-stream query head
+        q_head_g = head_projection(
+            g, d_model, n_head, d_head, kernel_initializer, 'q'
+        )
+
+        # core attention ops
+        if target_mapping is not None:
+            q_head_g = tf.einsum('mbnd,mlb->lbnd', q_head_g, target_mapping)
+            attn_vec_g = rel_attn_core(
+                q_head_g,
+                k_head_h,
+                v_head_h,
+                k_head_r,
+                seg_embed,
+                seg_mat,
+                r_w_bias,
+                r_r_bias,
+                r_s_bias,
+                attn_mask_g,
+                dropatt,
+                is_training,
+                scale,
             )
-            v = tf.get_variable(
-                name = param_name + '/adam_v',
-                shape = param.shape.as_list(),
-                dtype = tf.float32,
-                trainable = False,
-                initializer = tf.zeros_initializer(),
+            attn_vec_g = tf.einsum('lbnd,mlb->mbnd', attn_vec_g, target_mapping)
+        else:
+            attn_vec_g = rel_attn_core(
+                q_head_g,
+                k_head_h,
+                v_head_h,
+                k_head_r,
+                seg_embed,
+                seg_mat,
+                r_w_bias,
+                r_r_bias,
+                r_s_bias,
+                attn_mask_g,
+                dropatt,
+                is_training,
+                scale,
             )
 
-            # Standard Adam update.
-            next_m = tf.multiply(self.beta_1, m) + tf.multiply(
-                1.0 - self.beta_1, grad
+        # post processing
+        output_g = post_attention(
+            g,
+            attn_vec_g,
+            d_model,
+            n_head,
+            d_head,
+            dropout,
+            is_training,
+            kernel_initializer,
+        )
+
+        return output_h, output_g
+
+
+def transformer_xl(
+    inp_k,
+    n_token,
+    n_layer,
+    d_model,
+    n_head,
+    d_head,
+    d_inner,
+    dropout,
+    dropatt,
+    attn_type,
+    bi_data,
+    initializer,
+    is_training,
+    mem_len = None,
+    inp_q = None,
+    mems = None,
+    same_length = False,
+    clamp_len = -1,
+    untie_r = False,
+    use_tpu = True,
+    input_mask = None,
+    perm_mask = None,
+    seg_id = None,
+    reuse_len = None,
+    ff_activation = 'relu',
+    target_mapping = None,
+    use_bfloat16 = False,
+    scope = 'transformer',
+    **kwargs
+):
+    """
+    Defines a Transformer-XL computation graph with additional
+    support for XLNet.
+
+    Args:
+
+    inp_k: int32 Tensor in shape [len, bsz], the input token IDs.
+    seg_id: int32 Tensor in shape [len, bsz], the input segment IDs.
+    input_mask: float32 Tensor in shape [len, bsz], the input mask.
+      0 for real tokens and 1 for padding.
+    mems: a list of float32 Tensors in shape [mem_len, bsz, d_model], memory
+      from previous batches. The length of the list equals n_layer.
+      If None, no memory is used.
+    perm_mask: float32 Tensor in shape [len, len, bsz].
+      If perm_mask[i, j, k] = 0, i attend to j in batch k;
+      if perm_mask[i, j, k] = 1, i does not attend to j in batch k.
+      If None, each position attends to all the others.
+    target_mapping: float32 Tensor in shape [num_predict, len, bsz].
+      If target_mapping[i, j, k] = 1, the i-th predict in batch k is
+      on the j-th token.
+      Only used during pretraining for partial prediction.
+      Set to None during finetuning.
+    inp_q: float32 Tensor in shape [len, bsz].
+      1 for tokens with losses and 0 for tokens without losses.
+      Only used during pretraining for two-stream attention.
+      Set to None during finetuning.
+
+    n_layer: int, the number of layers.
+    d_model: int, the hidden size.
+    n_head: int, the number of attention heads.
+    d_head: int, the dimension size of each attention head.
+    d_inner: int, the hidden size in feed-forward layers.
+    ff_activation: str, "relu" or "gelu".
+    untie_r: bool, whether to untie the biases in attention.
+    n_token: int, the vocab size.
+
+    is_training: bool, whether in training mode.
+    use_tpu: bool, whether TPUs are used.
+    use_bfloat16: bool, use bfloat16 instead of float32.
+    dropout: float, dropout rate.
+    dropatt: float, dropout rate on attention probabilities.
+    init: str, the initialization scheme, either "normal" or "uniform".
+    init_range: float, initialize the parameters with a uniform distribution
+      in [-init_range, init_range]. Only effective when init="uniform".
+    init_std: float, initialize the parameters with a normal distribution
+      with mean 0 and stddev init_std. Only effective when init="normal".
+    mem_len: int, the number of tokens to cache.
+    reuse_len: int, the number of tokens in the currect batch to be cached
+      and reused in the future.
+    bi_data: bool, whether to use bidirectional input pipeline.
+      Usually set to True during pretraining and False during finetuning.
+    clamp_len: int, clamp all relative distances larger than clamp_len.
+      -1 means no clamping.
+    same_length: bool, whether to use the same attention length for each token.
+    summary_type: str, "last", "first", "mean", or "attn". The method
+      to pool the input to get a vector representation.
+    initializer: A tf initializer.
+    scope: scope name for the computation graph.
+  """
+    tf.logging.info('memory input {}'.format(mems))
+    tf_float = tf.bfloat16 if use_bfloat16 else tf.float32
+    tf.logging.info('Use float type {}'.format(tf_float))
+
+    new_mems = []
+    with tf.variable_scope(scope):
+        if untie_r:
+            r_w_bias = tf.get_variable(
+                'r_w_bias',
+                [n_layer, n_head, d_head],
+                dtype = tf_float,
+                initializer = initializer,
             )
-            next_v = tf.multiply(self.beta_2, v) + tf.multiply(
-                1.0 - self.beta_2, tf.square(grad)
+            r_r_bias = tf.get_variable(
+                'r_r_bias',
+                [n_layer, n_head, d_head],
+                dtype = tf_float,
+                initializer = initializer,
+            )
+        else:
+            r_w_bias = tf.get_variable(
+                'r_w_bias',
+                [n_head, d_head],
+                dtype = tf_float,
+                initializer = initializer,
+            )
+            r_r_bias = tf.get_variable(
+                'r_r_bias',
+                [n_head, d_head],
+                dtype = tf_float,
+                initializer = initializer,
             )
 
-            update = next_m / (tf.sqrt(next_v) + self.epsilon)
+        bsz = tf.shape(inp_k)[1]
+        qlen = tf.shape(inp_k)[0]
+        mlen = tf.shape(mems[0])[0] if mems is not None else 0
+        klen = mlen + qlen
 
-            # Just adding the square of the weights to the loss function is *not*
-            # the correct way of using L2 regularization/weight decay with Adam,
-            # since that will interact with the m and v parameters in strange ways.
-            #
-            # Instead we want ot decay the weights in a manner that doesn't interact
-            # with the m/v parameters. This is equivalent to adding the square
-            # of the weights to the loss with plain (non-momentum) SGD.
-            if self._do_use_weight_decay(param_name):
-                update += self.weight_decay_rate * param
+        ##### Attention mask
+        # causal attention mask
+        if attn_type == 'uni':
+            attn_mask = _create_mask(qlen, mlen, tf_float, same_length)
+            attn_mask = attn_mask[:, :, None, None]
+        elif attn_type == 'bi':
+            attn_mask = None
+        else:
+            raise ValueError('Unsupported attention type: {}'.format(attn_type))
 
-            update_with_lr = self.learning_rate * update
+        # data mask: input mask & perm mask
+        if input_mask is not None and perm_mask is not None:
+            data_mask = input_mask[None] + perm_mask
+        elif input_mask is not None and perm_mask is None:
+            data_mask = input_mask[None]
+        elif input_mask is None and perm_mask is not None:
+            data_mask = perm_mask
+        else:
+            data_mask = None
 
-            next_param = param - update_with_lr
+        if data_mask is not None:
+            # all mems can be attended to
+            mems_mask = tf.zeros(
+                [tf.shape(data_mask)[0], mlen, bsz], dtype = tf_float
+            )
+            data_mask = tf.concat([mems_mask, data_mask], 1)
+            if attn_mask is None:
+                attn_mask = data_mask[:, :, :, None]
+            else:
+                attn_mask += data_mask[:, :, :, None]
 
-            assignments.extend(
-                [param.assign(next_param), m.assign(next_m), v.assign(next_v)]
+        if attn_mask is not None:
+            attn_mask = tf.cast(attn_mask > 0, dtype = tf_float)
+
+        if attn_mask is not None:
+            non_tgt_mask = -tf.eye(qlen, dtype = tf_float)
+            non_tgt_mask = tf.concat(
+                [tf.zeros([qlen, mlen], dtype = tf_float), non_tgt_mask],
+                axis = -1,
+            )
+            non_tgt_mask = tf.cast(
+                (attn_mask + non_tgt_mask[:, :, None, None]) > 0,
+                dtype = tf_float,
+            )
+        else:
+            non_tgt_mask = None
+
+        ##### Word embedding
+        word_emb_k, lookup_table, lookup_table_2 = embedding_lookup(
+            x = inp_k,
+            n_token = n_token,
+            d_embed = 128,
+            hidden_size = d_model,
+            initializer = initializer,
+            use_tpu = use_tpu,
+            dtype = tf_float,
+            scope = 'word_embedding',
+        )
+
+        if inp_q is not None:
+            with tf.variable_scope('mask_emb'):
+                mask_emb = tf.get_variable(
+                    'mask_emb', [1, 1, d_model], dtype = tf_float
+                )
+                if target_mapping is not None:
+                    word_emb_q = tf.tile(
+                        mask_emb, [tf.shape(target_mapping)[0], bsz, 1]
+                    )
+                else:
+                    inp_q_ext = inp_q[:, :, None]
+                    word_emb_q = (
+                        inp_q_ext * mask_emb + (1 - inp_q_ext) * word_emb_k
+                    )
+        output_h = tf.layers.dropout(
+            word_emb_k, dropout, training = is_training
+        )
+        if inp_q is not None:
+            output_g = tf.layers.dropout(
+                word_emb_q, dropout, training = is_training
             )
 
-        return tf.group(*assignments, name = name)
+        ##### Segment embedding
+        if seg_id is not None:
+            if untie_r:
+                r_s_bias = tf.get_variable(
+                    'r_s_bias',
+                    [n_layer, n_head, d_head],
+                    dtype = tf_float,
+                    initializer = initializer,
+                )
+            else:
+                # default case (tie)
+                r_s_bias = tf.get_variable(
+                    'r_s_bias',
+                    [n_head, d_head],
+                    dtype = tf_float,
+                    initializer = initializer,
+                )
 
-    def _do_use_weight_decay(self, param_name):
-        """Whether to use L2 weight decay for `param_name`."""
-        if not self.weight_decay_rate:
-            return False
-        for r in self.include_in_weight_decay:
-            if re.search(r, param_name) is not None:
-                return True
+            seg_embed = tf.get_variable(
+                'seg_embed',
+                [n_layer, 2, n_head, d_head],
+                dtype = tf_float,
+                initializer = initializer,
+            )
 
-        if self.exclude_from_weight_decay:
-            for r in self.exclude_from_weight_decay:
-                if re.search(r, param_name) is not None:
-                    tf.logging.info('Adam WD excludes {}'.format(param_name))
-                    return False
-        return True
+            # Convert `seg_id` to one-hot `seg_mat`
+            mem_pad = tf.zeros([mlen, bsz], dtype = tf.int32)
+            cat_ids = tf.concat([mem_pad, seg_id], 0)
 
-    def _get_variable_name(self, param_name):
-        """Get the variable name from the tensor name."""
-        m = re.match('^(.*):\\d+$', param_name)
-        if m is not None:
-            param_name = m.group(1)
-        return param_name
+            # `1` indicates not in the same segment [qlen x klen x bsz]
+            seg_mat = tf.cast(
+                tf.logical_not(tf.equal(seg_id[:, None], cat_ids[None, :])),
+                tf.int32,
+            )
+            seg_mat = tf.one_hot(seg_mat, 2, dtype = tf_float)
+        else:
+            seg_mat = None
+
+        ##### Positional encoding
+        pos_emb = relative_positional_encoding(
+            qlen,
+            klen,
+            d_model,
+            clamp_len,
+            attn_type,
+            bi_data,
+            bsz = bsz,
+            dtype = tf_float,
+        )
+        pos_emb = tf.layers.dropout(pos_emb, dropout, training = is_training)
+
+        ##### Attention layers
+        if mems is None:
+            mems = [None] * n_layer
+
+        name_variable_scope = 'layer_shared'
+
+        for i in range(n_layer):
+            # cache new mems
+            new_mems.append(_cache_mem(output_h, mems[i], mem_len, reuse_len))
+
+            # segment bias
+            if seg_id is None:
+                r_s_bias_i = None
+                seg_embed_i = None
+            else:
+                r_s_bias_i = r_s_bias if not untie_r else r_s_bias[i]
+                seg_embed_i = seg_embed[i]
+
+            with tf.variable_scope(
+                name_variable_scope, reuse = True if i > 0 else False
+            ):
+                if inp_q is not None:
+                    output_h, output_g = two_stream_rel_attn(
+                        h = output_h,
+                        g = output_g,
+                        r = pos_emb,
+                        r_w_bias = r_w_bias if not untie_r else r_w_bias[i],
+                        r_r_bias = r_r_bias if not untie_r else r_r_bias[i],
+                        seg_mat = seg_mat,
+                        r_s_bias = r_s_bias_i,
+                        seg_embed = seg_embed_i,
+                        attn_mask_h = non_tgt_mask,
+                        attn_mask_g = attn_mask,
+                        mems = mems[i],
+                        target_mapping = target_mapping,
+                        d_model = d_model,
+                        n_head = n_head,
+                        d_head = d_head,
+                        dropout = dropout,
+                        dropatt = dropatt,
+                        is_training = is_training,
+                        kernel_initializer = initializer,
+                    )
+                    reuse = True
+                else:
+                    reuse = False
+
+                    output_h = rel_multihead_attn(
+                        h = output_h,
+                        r = pos_emb,
+                        r_w_bias = r_w_bias if not untie_r else r_w_bias[i],
+                        r_r_bias = r_r_bias if not untie_r else r_r_bias[i],
+                        seg_mat = seg_mat,
+                        r_s_bias = r_s_bias_i,
+                        seg_embed = seg_embed_i,
+                        attn_mask = non_tgt_mask,
+                        mems = mems[i],
+                        d_model = d_model,
+                        n_head = n_head,
+                        d_head = d_head,
+                        dropout = dropout,
+                        dropatt = dropatt,
+                        is_training = is_training,
+                        kernel_initializer = initializer,
+                        reuse = reuse,
+                    )
+
+                if inp_q is not None:
+                    output_g = positionwise_ffn(
+                        inp = output_g,
+                        d_model = d_model,
+                        d_inner = d_inner,
+                        dropout = dropout,
+                        kernel_initializer = initializer,
+                        activation_type = ff_activation,
+                        is_training = is_training,
+                    )
+
+                output_h = positionwise_ffn(
+                    inp = output_h,
+                    d_model = d_model,
+                    d_inner = d_inner,
+                    dropout = dropout,
+                    kernel_initializer = initializer,
+                    activation_type = ff_activation,
+                    is_training = is_training,
+                    reuse = reuse,
+                )
+
+        if inp_q is not None:
+            output = tf.layers.dropout(
+                output_g, dropout, training = is_training
+            )
+        else:
+            output = tf.layers.dropout(
+                output_h, dropout, training = is_training
+            )
+
+        return output, new_mems, lookup_table, lookup_table_2
 
 
-if __name__ == '__main__':
-    flags.DEFINE_string('clean_input_ckpt', '', 'input ckpt for cleaning')
-    flags.DEFINE_string(
-        'clean_output_model_dir', '', 'output dir for cleaned ckpt'
-    )
+def lm_loss(
+    hidden,
+    target,
+    n_token,
+    d_model,
+    initializer,
+    lookup_table = None,
+    tie_weight = False,
+    bi_data = True,
+    use_tpu = False,
+):
+    """doc."""
 
-    FLAGS = flags.FLAGS
+    with tf.variable_scope('lm_loss'):
+        if tie_weight:
+            assert (
+                lookup_table is not None
+            ), 'lookup_table cannot be None for tie_weight'
+            softmax_w = lookup_table
+        else:
+            softmax_w = tf.get_variable(
+                'weight',
+                [n_token, d_model],
+                dtype = hidden.dtype,
+                initializer = initializer,
+            )
 
-    tf.app.run(clean_ckpt)
+        softmax_b = tf.get_variable(
+            'bias',
+            [n_token],
+            dtype = hidden.dtype,
+            initializer = tf.zeros_initializer(),
+        )
+
+        logits = tf.einsum('ibd,nd->ibn', hidden, softmax_w) + softmax_b
+
+        if use_tpu:
+            one_hot_target = tf.one_hot(target, n_token, dtype = logits.dtype)
+            loss = -tf.reduce_sum(
+                tf.nn.log_softmax(logits) * one_hot_target, -1
+            )
+        else:
+            loss = tf.nn.sparse_softmax_cross_entropy_with_logits(
+                labels = target, logits = logits
+            )
+
+        return loss
+
+
+def lm_accuracy(
+    hidden,
+    target,
+    n_token,
+    d_model,
+    initializer,
+    lookup_table = None,
+    lookup_table_2 = None,
+    tie_weight = False,
+    bi_data = True,
+    use_tpu = False,
+):
+    """doc."""
+
+    with tf.variable_scope('lm_loss'):
+        if tie_weight:
+            assert (
+                lookup_table is not None
+            ), 'lookup_table cannot be None for tie_weight'
+            softmax_w = lookup_table
+        else:
+            softmax_w = tf.get_variable(
+                'weight',
+                [n_token, d_model],
+                dtype = hidden.dtype,
+                initializer = initializer,
+            )
+
+        softmax_b = tf.get_variable(
+            'bias',
+            [n_token],
+            dtype = hidden.dtype,
+            initializer = tf.zeros_initializer(),
+        )
+        softmax_w = tf.matmul(softmax_w, lookup_table_2)
+
+        logits = tf.einsum('ibd,nd->ibn', hidden, softmax_w) + softmax_b
+        next_sentence_predictions = tf.argmax(
+            logits, axis = -1, output_type = tf.int32
+        )
+        print(target, next_sentence_predictions)
+        next_sentence_accuracy = tf.metrics.accuracy(
+            labels = target, predictions = next_sentence_predictions
+        )
+
+        if use_tpu:
+            one_hot_target = tf.one_hot(target, n_token, dtype = logits.dtype)
+            loss = -tf.reduce_sum(
+                tf.nn.log_softmax(logits) * one_hot_target, -1
+            )
+        else:
+            loss = tf.nn.sparse_softmax_cross_entropy_with_logits(
+                labels = target, logits = logits
+            )
+
+        return next_sentence_accuracy, loss
+
+
+def summarize_sequence(
+    summary_type,
+    hidden,
+    d_model,
+    n_head,
+    d_head,
+    dropout,
+    dropatt,
+    input_mask,
+    is_training,
+    initializer,
+    scope = None,
+    reuse = None,
+    use_proj = True,
+):
+
+    """
+      Different classification tasks may not may not share the same parameters
+      to summarize the sequence features.
+
+      If shared, one can keep the `scope` to the default value `None`.
+      Otherwise, one should specify a different `scope` for each task.
+  """
+
+    with tf.variable_scope(scope, 'sequnece_summary', reuse = reuse):
+        if summary_type == 'last':
+            summary = hidden[-1]
+        elif summary_type == 'first':
+            summary = hidden[0]
+        elif summary_type == 'mean':
+            summary = tf.reduce_mean(hidden, axis = 0)
+        elif summary_type == 'attn':
+            bsz = tf.shape(hidden)[1]
+
+            summary_bias = tf.get_variable(
+                'summary_bias',
+                [d_model],
+                dtype = hidden.dtype,
+                initializer = initializer,
+            )
+            summary_bias = tf.tile(summary_bias[None, None], [1, bsz, 1])
+
+            if input_mask is not None:
+                input_mask = input_mask[None, :, :, None]
+
+            summary = multihead_attn(
+                summary_bias,
+                hidden,
+                hidden,
+                input_mask,
+                d_model,
+                n_head,
+                d_head,
+                dropout,
+                dropatt,
+                is_training,
+                initializer,
+                residual = False,
+            )
+            summary = summary[0]
+        else:
+            raise ValueError('Unsupported summary type {}'.format(summary_type))
+
+        # use another projection as in BERT
+        if use_proj:
+            summary = tf.layers.dense(
+                summary,
+                d_model,
+                activation = tf.tanh,
+                kernel_initializer = initializer,
+                name = 'summary',
+            )
+
+        # dropout
+        summary = tf.layers.dropout(
+            summary, dropout, training = is_training, name = 'dropout'
+        )
+
+    return summary
+
+
+def classification_loss(
+    hidden,
+    labels,
+    n_class,
+    initializer,
+    scope,
+    reuse = None,
+    return_logits = False,
+):
+    """
+      Different classification tasks should use different scope names to ensure
+      different dense layers (parameters) are used to produce the logits.
+
+      An exception will be in transfer learning, where one hopes to transfer
+      the classification weights.
+  """
+
+    with tf.variable_scope(scope, reuse = reuse):
+        logits = tf.layers.dense(
+            hidden, n_class, kernel_initializer = initializer, name = 'logit'
+        )
+
+        one_hot_target = tf.one_hot(labels, n_class, dtype = hidden.dtype)
+        loss = -tf.reduce_sum(tf.nn.log_softmax(logits) * one_hot_target, -1)
+
+        if return_logits:
+            return loss, logits
+
+        return loss
+
+
+def regression_loss(
+    hidden, labels, initializer, scope, reuse = None, return_logits = False
+):
+    with tf.variable_scope(scope, reuse = reuse):
+        logits = tf.layers.dense(
+            hidden, 1, kernel_initializer = initializer, name = 'logit'
+        )
+
+        logits = tf.squeeze(logits, axis = -1)
+        loss = tf.square(logits - labels)
+
+        if return_logits:
+            return loss, logits
+
+        return loss

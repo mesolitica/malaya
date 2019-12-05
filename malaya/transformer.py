@@ -81,7 +81,7 @@ def load(size = 'base', model = 'xlnet', pool_mode = 'last', validate = True):
         return _xlnet.xlnet(
             model = size, pool_mode = pool_mode, validate = validate
         )
-    if model == 'alxnet':
+    if model == 'alxlnet':
         from ._transformer import _alxlnet
 
         return _alxlnet.alxlnet(

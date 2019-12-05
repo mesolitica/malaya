@@ -18,7 +18,8 @@ PATH_NGRAM = {
     },
     'sentencepiece': {
         'vocab': home + '/bert/sp10m.cased.v4.vocab',
-        'tokenizer': home + '/bert/sp10m.cased.v4.model',
+        'model': home + '/bert/sp10m.cased.v4.model',
+        'version': 'v31',
     },
 }
 
@@ -28,7 +29,7 @@ S3_PATH_NGRAM = {
     'symspell': {'model': 'v27/preprocessing/bm_1grams.txt'},
     'sentencepiece': {
         'vocab': 'bert-bahasa/sp10m.cased.v4.vocab',
-        'tokenizer': 'bert-bahasa/sp10m.cased.v4.model',
+        'model': 'bert-bahasa/sp10m.cased.v4.model',
     },
 }
 
@@ -734,7 +735,7 @@ S3_PATH_SIMILARITY = {
 PATH_BERT = {
     'base': {
         'path': home + '/bert-model/base',
-        'directory': home + '/bert-model/base/bert-base/',
+        'directory': home + '/bert-model/base/bert-base-v2/',
         'model': {
             'model': home + '/bert-model/base/bert-bahasa-base.tar.gz',
             'version': 'v31',
@@ -742,7 +743,7 @@ PATH_BERT = {
     },
     'small': {
         'path': home + '/bert-model/small',
-        'directory': home + '/bert-model/small/bert-small/',
+        'directory': home + '/bert-model/small/bert-small-v2/',
         'model': {
             'model': home + '/bert-model/small/bert-bahasa-small.tar.gz',
             'version': 'v31',
@@ -803,4 +804,6 @@ PATH_ALXLNET = {
     }
 }
 
-S3_PATH_XLNET = {'base': {'model': 'bert-bahasa/alxlnet-base-6-11-2019.tar.gz'}}
+S3_PATH_ALXLNET = {
+    'base': {'model': 'bert-bahasa/alxlnet-base-6-11-2019.tar.gz'}
+}

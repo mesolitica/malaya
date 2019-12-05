@@ -84,7 +84,7 @@ class _Model:
 
                 output_bias = tf.get_variable(
                     'output_bias',
-                    shape = [albert_config.vocab_size],
+                    shape = [bert_config.vocab_size],
                     initializer = tf.zeros_initializer(),
                 )
                 input_project = tf.matmul(
@@ -94,6 +94,7 @@ class _Model:
                     input_project, output_weights, transpose_b = True
                 )
                 self._logits = tf.nn.bias_add(logits, output_bias)
+                self._log_softmax = tf.nn.log_softmax(self._logits)
 
             self._sess = tf.InteractiveSession()
             self._sess.run(tf.global_variables_initializer())
@@ -125,9 +126,7 @@ class _Model:
         array: vectorized strings
         """
 
-        return sess.run(
-            tf.nn.log_softmax(self._logits), feed_dict = {self.X: s_tokens}
-        )
+        return self._sess.run(self._log_softmax, feed_dict = {self.X: s_tokens})
 
     def vectorize(self, strings):
 
