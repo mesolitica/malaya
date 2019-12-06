@@ -323,18 +323,6 @@ class _Spell_augmentation:
             else str
         )
 
-    def elong_normalized_candidates(self, word, acc = None):
-        if acc is None:
-            acc = []
-        candidates = [w for w in set(word) if word.count(w) > 1]
-        for c in candidates:
-            _w = word.replace(c + c, c)
-            if _w in acc:
-                continue
-            acc.append(_w)
-            self.elong_normalized_candidates(_w, acc)
-        return acc + [word]
-
 
 class _TransformerCorrector(_Spell_augmentation):
     def __init__(self, model, corpus, sp_tokenizer):
@@ -433,11 +421,26 @@ class _TransformerCorrector(_Spell_augmentation):
 
         text = re.sub('[^a-zA-Z]+', ' ', text)
         string = re.sub(r'[ ]+', ' ', text).strip()
-        string = [
-            self.correct(word, string, no, batch_size = batch_size)
-            for no, word in enumerate(string.split())
-        ]
-        return ' '.join(string)
+        strings = []
+        for no, word in enumerate(string.split()):
+            if not word[0].isupper():
+                word = self.case_of(word)(
+                    self.correct(
+                        word.lower(), string, no, batch_size = batch_size
+                    )
+                )
+            strings.append(word)
+
+        return ' '.join(strings)
+
+    def correct_word(self, word, string, batch_size = 20):
+        """
+        Spell-correct word in match, and preserve proper upper/lower/title case.
+        """
+
+        return self.case_of(word)(
+            self.correct(word.lower(), string, batch_size = batch_size)
+        )
 
 
 class _SpellCorrector(_Spell_augmentation):
@@ -551,6 +554,26 @@ class _SpellCorrector(_Spell_augmentation):
         """
 
         return self.case_of(word)(self.correct(word.lower()))
+
+    def elong_normalized_candidates(self, word, acc = None):
+        if acc is None:
+            acc = []
+        candidates = [w for w in set(word) if word.count(w) > 1]
+        for c in candidates:
+            _w = word.replace(c + c, c)
+            if _w in acc:
+                continue
+            acc.append(_w)
+            self.elong_normalized_candidates(_w, acc)
+        return acc + [word]
+
+    def best_elong_candidate(self, word):
+        candidates = self.elong_normalized_candidates(word)
+        best = self.most_probable(candidates)
+        return best or word
+
+    def normalize_elongated(self, word):
+        return self.case_of(word)(self.best_elong_candidate(word.lower()))
 
 
 class _SymspellCorrector:
@@ -681,10 +704,10 @@ class _SymspellCorrector:
             else:
                 candidates1 = self.edit_candidates(word)
                 candidates2 = self.edit_candidates(cp_word)
-                word1 = max(candidates1, key = self.P)
-                word2 = max(candidates2, key = self.P)
+                word1 = max(candidates1, key = candidates1.get)
+                word2 = max(candidates2, key = candidates2.get)
 
-                if self.WORDS[word1] > self.WORDS[word2]:
+                if candidates1[word1] > candidates2[word2]:
                     word = word1
                     if len(hujung_result) and not word.endswith(hujung_result):
                         word = word + hujung_result

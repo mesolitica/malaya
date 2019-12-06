@@ -40,6 +40,7 @@ _accepted_entities = [
     'quantity',
     'time',
     'event',
+    'X',
 ]
 
 
@@ -196,7 +197,7 @@ def cluster_entities(result):
         raise ValueError('result must be a list of tuple')
     if not all([i[1] in _accepted_entities for i in result]):
         raise ValueError(
-            'elements of result must be a subset or equal of supported POS, please run malaya.describe_pos() to get supported POS'
+            'elements of result must be a subset or equal of supported Entities, please run malaya.describe_entities() to get supported POS'
         )
 
     output = {
@@ -208,6 +209,7 @@ def cluster_entities(result):
         'quantity': [],
         'time': [],
         'event': [],
+        'X': [],
     }
     last_label, words = None, []
     for word, label in result:
@@ -718,22 +720,23 @@ def cluster_graph(
 
 def cluster_entity_linking(
     corpus,
-    entity_model,
     vectorizer,
+    entity_model,
     topic_modeling_model,
+    threshold = 0.3,
     topic_decomposition = 2,
     topic_length = 10,
-    threshold = 0.3,
     fuzzy_ratio = 70,
     accepted_entities = ['law', 'location', 'organization', 'person', 'event'],
     cleaning = simple_textcleaning,
-    colors = None,
     stemming = True,
+    colors = None,
     stop_words = None,
     max_df = 1.0,
     min_df = 1,
     ngram = (2, 3),
     figsize = (17, 9),
+    batch_size = 20,
     **kwargs
 ):
     """
@@ -832,6 +835,7 @@ def cluster_entity_linking(
         import seaborn as sns
         import networkx as nx
         import networkx.drawing.layout as nxlayout
+        import pandas as pd
         from fuzzywuzzy import fuzz
 
         sns.set()
@@ -859,8 +863,6 @@ def cluster_entity_linking(
     topic_model = topic_modeling_model(
         corpus,
         topic_decomposition,
-        stemming = stemming,
-        vectorizer = vectorizer,
         ngram = ngram,
         max_df = max_df,
         min_df = min_df,
@@ -933,7 +935,7 @@ def cluster_entity_linking(
 
     G = nx.Graph()
     for i in range(DxT.shape[0]):
-        G.add_node(i, text = titles[i], label = clusters[i])
+        G.add_node(i, text = topics[i], label = topics[i])
 
     len_dense = len(DxD)
     for i in range(len_dense):

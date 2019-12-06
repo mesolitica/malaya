@@ -51,7 +51,7 @@ Features
    using Multinomial, SGD, and Fast-text N-grams deep learning to distinguish Malay, English, and Indonesian.
 -  **Normalizer**
 
-   using local Malaysia NLP researches to normalize any bahasa texts.
+   using local Malaysia NLP researches hybrid with Transformer models to normalize any bahasa texts.
 -  **Num2Word**
 
    Convert from numbers to cardinal or ordinal representation.
@@ -69,7 +69,7 @@ Features
    From transfer-learning BERT-Bahasa, XLNET-Bahasa and ALBERT-Bahasa to build deep sentiment analysis models.
 -  **Spell Correction**
 
-   Using local Malaysia NLP researches to auto-correct any bahasa words.
+   Using local Malaysia NLP researches hybrid with Transformer models to auto-correct any bahasa words.
 -  **Stemmer**
 
    Use Character LSTM Seq2Seq with attention state-of-art to do Bahasa stemming.
@@ -93,7 +93,7 @@ Features
    Provide pretrained bahasa wikipedia and bahasa news Word2Vec, with easy interface and visualization.
 -  **Transformer**
 
-   Provide easy interface to load BERT-Bahasa, XLNET-Bahasa and ALBERT-Bahasa.
+   Provide easy interface to load BERT-Bahasa, XLNET-Bahasa, ALBERT-Bahasa and ALXNET-Bahasa.
 
 
 References
@@ -115,7 +115,7 @@ If you use our software for research, please cite:
 Acknowledgement
 ----------------
 
-Thanks to `Im Big <https://www.facebook.com/imbigofficial/>`_, `LigBlou <https://www.facebook.com/ligblou>`_, `Mesolitica <https://mesolitica.com/>`_ and `KeyReply <https://www.keyreply.com/>`_ for sponsoring AWS and Google cloud to train Malaya models.
+Thanks to `Im Big <https://www.facebook.com/imbigofficial/>`_, `LigBlou <https://www.facebook.com/ligblou>`_, `Mesolitica <https://mesolitica.com/>`_ and `KeyReply <https://www.keyreply.com/>`_ for sponsoring AWS Google and private cloud to train Malaya models.
 
 .. raw:: html
 
