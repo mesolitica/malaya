@@ -271,13 +271,7 @@ def cluster_scatter(
 
     Returns
     -------
-    dictionary: {
-        'X': X,
-        'Y': Y,
-        'labels': clusters,
-        'vector': transformed_text_clean,
-        'titles': titles,
-    }
+    dictionary: {'X': X, 'Y': Y, 'labels': clusters, 'vector': transformed_text_clean, 'titles': titles}
     """
     if not isinstance(corpus, list):
         raise ValueError('corpus must be a list')
@@ -578,12 +572,7 @@ def cluster_graph(
 
     Returns
     -------
-    dictionary: {
-        'G': G,
-        'pos': pos,
-        'node_colors': node_colors,
-        'node_labels': node_labels,
-    }
+    dictionary: {'G': G, 'pos': pos, 'node_colors': node_colors, 'node_labels': node_labels}
     """
 
     if not isinstance(corpus, list):
@@ -773,12 +762,7 @@ def cluster_entity_linking(
 
     Returns
     -------
-    dictionary: {
-        'G': G,
-        'pos': pos,
-        'node_colors': node_colors,
-        'node_labels': node_labels,
-    }
+    dictionary: {'G': G, 'pos': pos, 'node_colors': node_colors, 'node_labels': node_labels}
     """
 
     import inspect

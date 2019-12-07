@@ -90,6 +90,9 @@ malaya.spell
 .. automodule:: malaya.spell
     :members:
 
+.. autoclass:: malaya.spell._TransformerCorrector()
+    :members:
+
 .. autoclass:: malaya.spell._SpellCorrector()
     :members:
 
@@ -199,6 +202,15 @@ malaya._transformer._xlnet
     :members:
 
 .. autoclass:: malaya._transformer._xlnet._Model()
+    :members:
+
+malaya._transformer._alxlnet
+-----------------------------
+
+.. automodule:: malaya._transformer._alxlnet
+    :members:
+
+.. autoclass:: malaya._transformer._alxlnet._Model()
     :members:
 
 malaya._models._tensorflow_model
