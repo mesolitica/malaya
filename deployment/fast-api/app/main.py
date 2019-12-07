@@ -1,4 +1,5 @@
 import malaya
+import json
 from fastapi import FastAPI
 
 app = FastAPI()
@@ -10,5 +11,6 @@ model = malaya.sentiment.transformer(
 
 @app.get('/')
 def index(string: str = None):
-    r = model.predict(string, get_proba = True)
-    return {k: float(v) for k, v in r.items()}
+    strings = [string] * 50
+    r = model.predict_batch(strings, get_proba = True)
+    return json.dumps('done')

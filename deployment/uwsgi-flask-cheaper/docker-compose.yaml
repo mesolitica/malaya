@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  model:
+    build:
+      context: .
+    container_name: model-uwsgi-flask
+    command: bash worker.sh
+    ports:
+      - "8080:8080"
+    sysctls:
+      net.core.somaxconn: 1024
