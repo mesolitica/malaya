@@ -1,6 +1,10 @@
 import itertools
 import random
 import inspect
+import numpy as np
+import string as string_function
+from .preprocessing import _tokenizer
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 _accepted_pos = [
     'ADJ',
@@ -72,6 +76,18 @@ def _pad_sequence(
     if pad_right:
         sequence = itertools.chain(sequence, (right_pad_symbol,) * (n - 1))
     return sequence
+
+
+def to_ids(string, tokenizer):
+    words = []
+    for no, word in enumerate(string):
+        if word == '<mask>':
+            words.append(word)
+        else:
+            words.extend(tokenizer.tokenize(word))
+    masked_tokens = ['<cls>'] + words + ['<sep>']
+    masked_ids = tokenizer.convert_tokens_to_ids(masked_tokens)
+    return masked_ids, masked_ids.index(6)
 
 
 def ngrams(
@@ -207,38 +223,31 @@ def sentence_ngram(sentence, ngram = (1, 3)):
     return list(set(sentences))
 
 
-def w2v_augmentation(
+def wordvector_augmentation(
     string,
-    w2v,
+    wordvector,
     threshold = 0.5,
-    soft = False,
-    random_select = True,
-    augment_counts = 1,
     top_n = 5,
-    cleaning_function = _simple_textcleaning,
+    soft = False,
+    cleaning_function = None,
 ):
     """
-    augmenting a string using word2vec
+    augmenting a string using wordvector.
 
     Parameters
     ----------
     string: str
-    w2v: object
-        word2vec interface object.
+    wordvector: object
+        wordvector interface object.
     threshold: float, optional (default=0.5)
         random selection for a word.
     soft: bool, optional (default=False)
-        if True, a word not in the dictionary will be replaced with nearest fuzzywuzzy ratio.
+        if True, a word not in the dictionary will be replaced with nearest jarowrinkler ratio.
         if False, it will throw an exception if a word not in the dictionary.
-    random_select: bool, (default=True)
-        if True, a word randomly selected in the pool.
-        if False, based on the index
-    augment_counts: int, (default=1)
-        augmentation count for a string.
     top_n: int, (default=5)
         number of nearest neighbors returned.
-    cleaning_function: function, (default=malaya.generator._simple_textcleaning)
-
+    cleaning_function: function, (default=None)
+        function to clean text.
 
     Returns
     -------
@@ -252,48 +261,168 @@ def w2v_augmentation(
         raise ValueError('threshold must be bigger than 0 and less than 1')
     if not isinstance(soft, bool):
         raise ValueError('soft must be a boolean')
-    if not hasattr(w2v, 'batch_n_closest'):
-        raise ValueError('word2vec must has `batch_n_closest` method')
-    if not hasattr(w2v, '_dictionary'):
-        raise ValueError('word2vec must has `_dictionary` attribute')
-    if not isinstance(random_select, bool):
-        raise ValueError('random_select must be a boolean')
+    if not hasattr(wordvector, 'batch_n_closest'):
+        raise ValueError('wordvector must has `batch_n_closest` method')
+    if not hasattr(wordvector, '_dictionary'):
+        raise ValueError('wordvector must has `_dictionary` attribute')
     if not isinstance(top_n, int):
         raise ValueError('top_n must be an integer')
-    if not isinstance(augment_counts, int):
-        raise ValueError('augment_counts must be an integer')
-    if not random_select:
-        if augment_counts > top_n:
-            raise ValueError(
-                'if random_select is False, augment_counts need to be less than or equal to top_n'
-            )
+
     original_string = string
     if cleaning_function:
         string = cleaning_function(string)
-    string = string.split()
+    string = _tokenizer(string)
+    original_string = string[:]
     selected = []
-    while not len(selected):
-        selected = [
-            (no, w)
-            for no, w in enumerate(string)
-            if random.random() > threshold
-        ]
+    for no, w in enumerate(string):
+        if w in string_function.punctuation:
+            continue
+        if w[0].isupper():
+            continue
+        if random.random() > threshold:
+            selected.append((no, w))
+
+    if not len(selected):
+        raise ValueError(
+            'no words can augmented, make sure words available are not punctuation or proper nouns.'
+        )
+
     indices, words = [i[0] for i in selected], [i[1] for i in selected]
     batch_parameters = list(
-        inspect.signature(w2v.batch_n_closest).parameters.keys()
+        inspect.signature(wordvector.batch_n_closest).parameters.keys()
     )
     if 'soft' in batch_parameters:
-        results = w2v.batch_n_closest(words, num_closest = top_n, soft = soft)
+        results = wordvector.batch_n_closest(
+            words, num_closest = top_n, soft = soft
+        )
     else:
-        results = w2v.batch_n_closest(words, num_closest = top_n)
+        results = wordvector.batch_n_closest(words, num_closest = top_n)
+
     augmented = []
-    for i in range(augment_counts):
+    for i in range(top_n):
         string_ = string[:]
         for no in range(len(results)):
-            if random_select:
-                index = random.randint(0, len(results[no]) - 1)
-            else:
-                index = i
-            string_[indices[no]] = results[no][index]
-        augmented.append(_make_upper(' '.join(string_), original_string))
+            string_[indices[no]] = results[no][i]
+        augmented.append(
+            _make_upper(' '.join(string_), ' '.join(original_string))
+        )
     return augmented
+
+
+def transformer_augmentation(
+    string,
+    model,
+    threshold = 0.5,
+    top_p = 0.8,
+    top_k = 100,
+    temperature = 0.8,
+    top_n = 5,
+    cleaning_function = None,
+):
+
+    """
+    augmenting a string using transformer + nucleus sampling / top-k sampling.
+
+    Parameters
+    ----------
+    string: str
+    model: object
+        transformer interface object. Right now only supported BERT.
+    threshold: float, optional (default=0.5)
+        random selection for a word.
+    top_p: float, optional (default=0.8)
+        cumulative sum of probabilities to sample a word. If top_n bigger than 0, the model will use nucleus sampling, else top-k sampling.
+    top_k: int, optional (default=100)
+        k for top-k sampling.
+    temperature: float, optional (default=0.8)
+        logits * temperature.
+    top_n: int, (default=5)
+        number of nearest neighbors returned.
+    cleaning_function: function, (default=None)
+        function to clean text.
+
+    Returns
+    -------
+    result: list
+    """
+
+    if not isinstance(string, str):
+        raise ValueError('string must be a string')
+    if not hasattr(model, 'samples'):
+        raise ValueError('model must has `samples` attribute')
+    if not isinstance(threshold, float):
+        raise ValueError('threshold must be a float')
+    if not (threshold > 0 and threshold < 1):
+        raise ValueError('threshold must be bigger than 0 and less than 1')
+    if not isinstance(top_p, float):
+        raise ValueError('top_p must be a float')
+    if not top_p > 0:
+        raise ValueError('top_p must be bigger than 0')
+    if not isinstance(top_k, int):
+        raise ValueError('top_k must be an integer')
+    if not top_k > 0:
+        raise ValueError('top_k must be bigger than 0')
+    if not isinstance(temperature, float):
+        raise ValueError('temperature must be a float')
+    if not (temperature > 0 and threshold < 1):
+        raise ValueError('temperature must be bigger than 0 and less than 1')
+    if not isinstance(top_n, int):
+        raise ValueError('top_n must be an integer')
+    if not top_n > 0:
+        raise ValueError('top_n must be bigger than 0')
+    if top_n > top_k:
+        raise ValueError('top_k must be bigger than top_n')
+
+    original_string = string
+    if cleaning_function:
+        string = cleaning_function(string)
+    string = _tokenizer(string)
+    results = []
+    for token_idx, token in enumerate(string):
+        if token in string_function.punctuation:
+            continue
+        if token[0].isupper():
+            continue
+        if token.isdigit():
+            continue
+        if random.random() > threshold:
+            results.append(token_idx)
+
+    if not len(results):
+        raise ValueError(
+            'no words can augmented, make sure words available are not punctuation or proper nouns.'
+        )
+
+    maskeds, indices = [], []
+    for index in results:
+        new = string[:]
+        new[index] = '<mask>'
+        mask, ind = to_ids(new, model._tokenizer)
+        maskeds.append(mask)
+        indices.append(ind)
+
+    masked_padded = pad_sequences(maskeds, padding = 'post')
+    batch_indices = np.array([np.arange(len(indices)), indices]).T
+    samples = model._sess.run(
+        model.samples,
+        feed_dict = {
+            model.X: masked_padded,
+            model.top_p: top_p,
+            model.top_k: top_k,
+            model.temperature: temperature,
+            model.indices: batch_indices,
+            model.k: top_n,
+        },
+    )
+    outputs = []
+    for i in range(samples.shape[1]):
+        sample_i = samples[:, i]
+        samples_tokens = model._tokenizer.convert_ids_to_tokens(
+            sample_i.tolist()
+        )
+        new_splitted = ['▁' + w if len(w) > 1 else w for w in string]
+        for no, index in enumerate(results):
+            new_splitted[index] = samples_tokens[no]
+        new = ''.join(model._tokenizer.sp_model.DecodePieces(new_splitted))
+        outputs.append(new)
+    return outputs

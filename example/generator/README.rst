@@ -1,4 +1,3 @@
-
 .. code:: ipython3
 
     %%time
@@ -7,18 +6,51 @@
 
 .. parsed-literal::
 
-    CPU times: user 11.4 s, sys: 1.89 s, total: 13.3 s
-    Wall time: 18.4 s
+    CPU times: user 4.21 s, sys: 879 ms, total: 5.08 s
+    Wall time: 5.46 s
 
 
-Text augmentation
------------------
+Wordvector augmentation
+-----------------------
 
 Let say you have a very limited labelled corpus, and you want to add
 more, but labelling is very costly.
 
-So, text augmentation! You can use word2vec to replace words with
+So, text augmentation! You can use wordvector to replace words with
 similar semantics!
+
+.. code:: python
+
+   def wordvector_augmentation(
+       string,
+       wordvector,
+       threshold = 0.5,
+       top_n = 5,
+       soft = False,
+       cleaning_function = None,
+   ):
+       """
+       augmenting a string using wordvector.
+
+       Parameters
+       ----------
+       string: str
+       wordvector: object
+           wordvector interface object.
+       threshold: float, optional (default=0.5)
+           random selection for a word.
+       soft: bool, optional (default=False)
+           if True, a word not in the dictionary will be replaced with nearest jarowrinkler ratio.
+           if False, it will throw an exception if a word not in the dictionary.
+       top_n: int, (default=5)
+           number of nearest neighbors returned.
+       cleaning_function: function, (default=None)
+           function to clean text.
+
+       Returns
+       -------
+       result: list
+       """
 
 .. code:: ipython3
 
@@ -26,16 +58,23 @@ similar semantics!
 
 .. code:: ipython3
 
-    embedded_wiki = malaya.word2vec.load_wiki()
-    word_vector_wiki = malaya.word2vec.word2vec(embedded_wiki['nce_weights'], 
-                                                embedded_wiki['dictionary'])
+    embedded_wiki = malaya.wordvector.load_wiki()
+    word_vector_wiki = malaya.wordvector.load(embedded_wiki['nce_weights'], embedded_wiki['dictionary'])
+
+
+.. parsed-literal::
+
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/wordvector.py:85: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
+    
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/wordvector.py:96: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
+    
+
 
 .. code:: ipython3
 
-    augmented = malaya.generator.w2v_augmentation(string, 
+    augmented = malaya.generator.wordvector_augmentation(string,
                                       word_vector_wiki,
-                                      soft=True,
-                                      augment_counts=3)
+                                      soft=True)
     augmented
 
 
@@ -43,62 +82,23 @@ similar semantics!
 
 .. parsed-literal::
 
-    ['saya suka makan ayam ataupun daging',
-     'saya suka makan ayam serta ikan',
-     'saya suka makan ayam serta udang']
-
-
-
-Let we compare word mover distance with original.
-
-.. code:: ipython3
-
-    malaya.word_mover.distance(string.split(), augmented[0].split(), word_vector_wiki)
-
-
-
-
-.. parsed-literal::
-
-    1.1325703463561534
+    ['saya suka makan ayam dan ikan',
+     'anda gemar minum itik atau kerang',
+     'kami pandai mengeram kambing serta daging',
+     'kamu sanggup mengunyah lembu ataupun ayam',
+     'kita terpesona memakan arnab mahupun udang']
 
 
 
 .. code:: ipython3
 
-    malaya.word_mover.distance(string.split(), augmented[1].split(), word_vector_wiki)
-
-
-
-
-.. parsed-literal::
-
-    0.5428173272147179
-
-
+    text = 'Perdana Menteri berkata, beliau perlu memperoleh maklumat terperinci berhubung isu berkenaan sebelum kerajaan dapat mengambil sebarang tindakan lanjut. Bagaimanapun, beliau yakin masalah itu dapat diselesaikan dan pentadbiran kerajaan boleh berfungsi dengan baik.'
 
 .. code:: ipython3
 
-    malaya.word_mover.distance(string.split(), augmented[2].split(), word_vector_wiki)
-
-
-
-
-.. parsed-literal::
-
-    1.0979998614006043
-
-
-
-They are pretty good in term of sentence similarity! **Distance that
-higher than 2 ratios are assumed bad**.
-
-.. code:: ipython3
-
-    augmented = malaya.generator.w2v_augmentation('kerajaan sebenarnya sangat sayangkan rakyatnya', 
+    augmented = malaya.generator.wordvector_augmentation(text,
                                       word_vector_wiki,
-                                      soft=True,
-                                      augment_counts=5)
+                                      soft=True)
     augmented
 
 
@@ -106,342 +106,123 @@ higher than 2 ratios are assumed bad**.
 
 .. parsed-literal::
 
-    ['kerajaan sebenarnya amat sayangkan rakyatnya',
-     'kerajaan sebenarnya agak sayangkan warganya',
-     'kerajaan sebenarnya semakin sayangkan rakyatnya',
-     'kerajaan sebenarnya sangat sayangkan penduduknya',
-     'kerajaan sebenarnya agak sayangkan penduduknya']
+    ['Perdana Menteri berkata , beliau perlu memperoleh maklumat terperinci berhubung isu berkenaan sebelum kerajaan dapat mengambil sebarang tindakan lanjut . Bagaimanapun , beliau yakin masalah itu dapat diselesaikan dan pentadbiran kerajaan boleh berfungsi dengan baik .',
+     'Perdana Menteri berkata , dia perlu memperoleh informasi teliti berhubung isu berkenaan sebelum kerajaan boleh mengambil suatu perbuatan lanjut . Bagaimanapun , dia yakin masaalah itu dapat diselesaikan atau pentadbiran kerajaan boleh beroperasi dengan baiknya .',
+     'Perdana Menteri berkata , mereka perlu memperoleh data sistematik berhubung isu berkenaan sebelum kerajaan harus mengambil sesuatu perlakuan lanjut . Bagaimanapun , mereka yakin permasalahan itu dapat diselesaikan serta pentadbiran kerajaan boleh bertindak dengan hebat .',
+     'Perdana Menteri berkata , baginda perlu memperoleh perincian ekstensif berhubung isu berkenaan sebelum kerajaan mampu mengambil pelbagai sikap lanjut . Bagaimanapun , baginda yakin kesulitan itu dapat diselesaikan ataupun pentadbiran kerajaan boleh bergetar dengan kuat .',
+     'Perdana Menteri berkata , saya perlu memperoleh info menyeluruh berhubung isu berkenaan sebelum kerajaan perlu mengambil segala kelakuan lanjut . Bagaimanapun , saya yakin kesukaran itu dapat diselesaikan mahupun pentadbiran kerajaan boleh dimanfaatkan dengan kukuh .']
 
 
 
-.. code:: ipython3
-
-    bahdanau_entities = malaya.entity.deep_model('bahdanau')
-    bahdanau_pos = malaya.pos.deep_model('bahdanau')
-
-.. code:: ipython3
-
-    string = 'KUALA LUMPUR: Sempena sambutan Aidilfitri minggu depan, Perdana Menteri Tun Dr Mahathir Mohamad dan Menteri Pengangkutan Anthony Loke Siew Fook menitipkan pesanan khas kepada orang ramai yang mahu pulang ke kampung halaman masing-masing. Dalam video pendek terbitan Jabatan Keselamatan Jalan Raya (JKJR) itu, Dr Mahathir menasihati mereka supaya berhenti berehat dan tidur sebentar sekiranya mengantuk ketika memandu.'
-
-.. code:: ipython3
-
-    result_entities = bahdanau_entities.predict(string)
-    result_pos = bahdanau_pos.predict(string)
-
-Generate ngram sentences
+Transformer augmentation
 ------------------------
 
+Problem with wordvector, it just replaced a word for near synonym
+without understood the whole sentence context, so, Transformer comes to
+the rescue!
+
+.. code:: python
+
+   def transformer_augmentation(
+       string,
+       model,
+       threshold = 0.5,
+       top_p = 0.8,
+       top_k = 100,
+       temperature = 0.8,
+       top_n = 5,
+       cleaning_function = None,
+   ):
+
+       """
+       augmenting a string using transformer + nucleus sampling / top-k sampling.
+
+       Parameters
+       ----------
+       string: str
+       model: object
+           transformer interface object. Right now only supported BERT.
+       threshold: float, optional (default=0.5)
+           random selection for a word.
+       top_p: float, optional (default=0.8)
+           cumulative sum of probabilities to sample a word. If top_n bigger than 0, the model will use nucleus sampling, else top-k sampling.
+       top_k: int, optional (default=100)
+           k for top-k sampling.
+       temperature: float, optional (default=0.8)
+           logits * temperature.
+       top_n: int, (default=5)
+           number of nearest neighbors returned.
+       cleaning_function: function, (default=None)
+           function to clean text.
+
+       Returns
+       -------
+       result: list
+       """
+
 .. code:: ipython3
 
-    malaya.generator.sentence_ngram(string, ngram = (3, 5))
+    model = malaya.transformer.load(model = 'bert', size = 'small')
+
+
+.. parsed-literal::
+
+    WARNING:tensorflow:From /usr/local/lib/python3.7/site-packages/bert/modeling.py:93: The name tf.gfile.GFile is deprecated. Please use tf.io.gfile.GFile instead.
+    
+    WARNING:tensorflow:From /usr/local/lib/python3.7/site-packages/bert/modeling.py:171: The name tf.variable_scope is deprecated. Please use tf.compat.v1.variable_scope instead.
+    
+    WARNING:tensorflow:From /usr/local/lib/python3.7/site-packages/bert/modeling.py:409: The name tf.get_variable is deprecated. Please use tf.compat.v1.get_variable instead.
+    
+    WARNING:tensorflow:From /usr/local/lib/python3.7/site-packages/bert/modeling.py:490: The name tf.assert_less_equal is deprecated. Please use tf.compat.v1.assert_less_equal instead.
+    
+    WARNING:tensorflow:
+    The TensorFlow contrib module will not be included in TensorFlow 2.0.
+    For more information, please see:
+      * https://github.com/tensorflow/community/blob/master/rfcs/20180907-contrib-sunset.md
+      * https://github.com/tensorflow/addons
+      * https://github.com/tensorflow/io (for I/O related ops)
+    If you depend on functionality not listed there, please file an issue.
+    
+    WARNING:tensorflow:From /usr/local/lib/python3.7/site-packages/bert/modeling.py:671: dense (from tensorflow.python.layers.core) is deprecated and will be removed in a future version.
+    Instructions for updating:
+    Use keras.layers.Dense instead.
+    WARNING:tensorflow:From /usr/local/lib/python3.7/site-packages/tensorflow_core/python/layers/core.py:187: Layer.apply (from tensorflow.python.keras.engine.base_layer) is deprecated and will be removed in a future version.
+    Instructions for updating:
+    Please use `layer.__call__` method instead.
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/_transformer/_sampling.py:26: where (from tensorflow.python.ops.array_ops) is deprecated and will be removed in a future version.
+    Instructions for updating:
+    Use tf.where in 2.0, which has the same broadcast rule as np.where
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/_transformer/_bert.py:102: multinomial (from tensorflow.python.ops.random_ops) is deprecated and will be removed in a future version.
+    Instructions for updating:
+    Use `tf.random.categorical` instead.
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/_transformer/_bert.py:106: The name tf.global_variables_initializer is deprecated. Please use tf.compat.v1.global_variables_initializer instead.
+    
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/_transformer/_bert.py:107: The name tf.get_collection is deprecated. Please use tf.compat.v1.get_collection instead.
+    
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/_transformer/_bert.py:108: The name tf.GraphKeys is deprecated. Please use tf.compat.v1.GraphKeys instead.
+    
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/_transformer/_bert.py:113: The name tf.train.Saver is deprecated. Please use tf.compat.v1.train.Saver instead.
+    
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/_transformer/_bert.py:115: The name tf.get_default_graph is deprecated. Please use tf.compat.v1.get_default_graph instead.
+    
+    INFO:tensorflow:Restoring parameters from /Users/huseinzolkepli/Malaya/bert-model/small/bert-small-v2/model.ckpt
+
+
+.. code:: ipython3
+
+    augmented = malaya.generator.transformer_augmentation(text, model)
+    augmented
 
 
 
 
 .. parsed-literal::
 
-    ['Jalan Raya (JKJR) itu,',
-     'Pengangkutan Anthony Loke Siew',
-     'mengantuk ketika memandu.',
-     'KUALA LUMPUR: Sempena sambutan Aidilfitri',
-     'masing-masing. Dalam video pendek terbitan',
-     'terbitan Jabatan Keselamatan Jalan Raya',
-     'Anthony Loke Siew',
-     'Jalan Raya (JKJR)',
-     'Mohamad dan Menteri Pengangkutan',
-     'ramai yang mahu pulang ke',
-     'KUALA LUMPUR: Sempena',
-     'tidur sebentar sekiranya mengantuk',
-     'pesanan khas kepada',
-     'Mahathir menasihati mereka supaya',
-     'Raya (JKJR) itu, Dr',
-     'KUALA LUMPUR: Sempena sambutan',
-     'Sempena sambutan Aidilfitri minggu depan,',
-     'LUMPUR: Sempena sambutan Aidilfitri minggu',
-     'Loke Siew Fook menitipkan pesanan',
-     'orang ramai yang mahu pulang',
-     'pulang ke kampung',
-     'berehat dan tidur',
-     'mereka supaya berhenti berehat dan',
-     'Mohamad dan Menteri',
-     'Raya (JKJR) itu,',
-     'Fook menitipkan pesanan khas',
-     'kampung halaman masing-masing. Dalam video',
-     'masing-masing. Dalam video',
-     'pesanan khas kepada orang ramai',
-     'halaman masing-masing. Dalam video',
-     'terbitan Jabatan Keselamatan Jalan',
-     'ke kampung halaman masing-masing.',
-     'Jabatan Keselamatan Jalan',
-     'halaman masing-masing. Dalam video pendek',
-     'Mahathir menasihati mereka supaya berhenti',
-     'Dr Mahathir Mohamad dan',
-     'Dr Mahathir menasihati mereka',
-     'pesanan khas kepada orang',
-     'orang ramai yang',
-     'yang mahu pulang ke kampung',
-     'dan tidur sebentar sekiranya mengantuk',
-     'video pendek terbitan Jabatan Keselamatan',
-     'mereka supaya berhenti',
-     'Dalam video pendek',
-     'Sempena sambutan Aidilfitri',
-     'video pendek terbitan',
-     'Jabatan Keselamatan Jalan Raya (JKJR)',
-     'Mohamad dan Menteri Pengangkutan Anthony',
-     'Mahathir Mohamad dan Menteri',
-     'mahu pulang ke kampung halaman',
-     '(JKJR) itu, Dr Mahathir',
-     'Dalam video pendek terbitan Jabatan',
-     'berhenti berehat dan',
-     'khas kepada orang',
-     'menitipkan pesanan khas',
-     'khas kepada orang ramai',
-     'pendek terbitan Jabatan Keselamatan',
-     'kepada orang ramai',
-     'Anthony Loke Siew Fook menitipkan',
-     'Keselamatan Jalan Raya (JKJR) itu,',
-     'Dr Mahathir menasihati mereka supaya',
-     'tidur sebentar sekiranya mengantuk ketika',
-     'Mahathir menasihati mereka',
-     'berhenti berehat dan tidur',
-     'Menteri Pengangkutan Anthony Loke Siew',
-     'Menteri Tun Dr Mahathir Mohamad',
-     'sebentar sekiranya mengantuk',
-     'kampung halaman masing-masing.',
-     'orang ramai yang mahu',
-     'berehat dan tidur sebentar',
-     '(JKJR) itu, Dr Mahathir menasihati',
-     'Loke Siew Fook',
-     'Dr Mahathir Mohamad dan Menteri',
-     'pendek terbitan Jabatan Keselamatan Jalan',
-     'ke kampung halaman masing-masing. Dalam',
-     'Aidilfitri minggu depan, Perdana',
-     'sekiranya mengantuk ketika',
-     'khas kepada orang ramai yang',
-     'Menteri Tun Dr',
-     'Sempena sambutan Aidilfitri minggu',
-     'menasihati mereka supaya',
-     'menitipkan pesanan khas kepada',
-     'dan Menteri Pengangkutan Anthony',
-     'mahu pulang ke',
-     'kepada orang ramai yang mahu',
-     'Siew Fook menitipkan pesanan',
-     'itu, Dr Mahathir menasihati',
-     'dan tidur sebentar',
-     'menasihati mereka supaya berhenti berehat',
-     'Fook menitipkan pesanan',
-     'mereka supaya berhenti berehat',
-     'ke kampung halaman',
-     'menitipkan pesanan khas kepada orang',
-     'menasihati mereka supaya berhenti',
-     'Keselamatan Jalan Raya (JKJR)',
-     'Keselamatan Jalan Raya',
-     '(JKJR) itu, Dr',
-     'Siew Fook menitipkan',
-     'Anthony Loke Siew Fook',
-     'Jabatan Keselamatan Jalan Raya',
-     'Perdana Menteri Tun Dr Mahathir',
-     'kepada orang ramai yang',
-     'Pengangkutan Anthony Loke',
-     'supaya berhenti berehat dan',
-     'supaya berhenti berehat',
-     'ramai yang mahu pulang',
-     'halaman masing-masing. Dalam',
-     'Aidilfitri minggu depan, Perdana Menteri',
-     'pulang ke kampung halaman',
-     'supaya berhenti berehat dan tidur',
-     'Tun Dr Mahathir Mohamad dan',
-     'yang mahu pulang ke',
-     'Aidilfitri minggu depan,',
-     'itu, Dr Mahathir menasihati mereka',
-     'dan Menteri Pengangkutan Anthony Loke',
-     'berehat dan tidur sebentar sekiranya',
-     'Menteri Tun Dr Mahathir',
-     'pendek terbitan Jabatan',
-     'Fook menitipkan pesanan khas kepada',
-     'masing-masing. Dalam video pendek',
-     'depan, Perdana Menteri',
-     'minggu depan, Perdana Menteri',
-     'dan Menteri Pengangkutan',
-     'Dr Mahathir menasihati',
-     'LUMPUR: Sempena sambutan Aidilfitri',
-     'Menteri Pengangkutan Anthony Loke',
-     'kampung halaman masing-masing. Dalam',
-     'Dalam video pendek terbitan',
-     'Mahathir Mohamad dan',
-     'video pendek terbitan Jabatan',
-     'minggu depan, Perdana Menteri Tun',
-     'minggu depan, Perdana',
-     'ramai yang mahu',
-     'Siew Fook menitipkan pesanan khas',
-     'Jalan Raya (JKJR) itu, Dr',
-     'Menteri Pengangkutan Anthony',
-     'dan tidur sebentar sekiranya',
-     'tidur sebentar sekiranya',
-     'yang mahu pulang',
-     'Tun Dr Mahathir Mohamad',
-     'Tun Dr Mahathir',
-     'itu, Dr Mahathir',
-     'Dr Mahathir Mohamad',
-     'Mahathir Mohamad dan Menteri Pengangkutan',
-     'pulang ke kampung halaman masing-masing.',
-     'sambutan Aidilfitri minggu',
-     'Raya (JKJR) itu, Dr Mahathir',
-     'berhenti berehat dan tidur sebentar',
-     'terbitan Jabatan Keselamatan',
-     'Perdana Menteri Tun Dr',
-     'sekiranya mengantuk ketika memandu.',
-     'sebentar sekiranya mengantuk ketika',
-     'sebentar sekiranya mengantuk ketika memandu.',
-     'mahu pulang ke kampung',
-     'depan, Perdana Menteri Tun Dr',
-     'depan, Perdana Menteri Tun',
-     'Pengangkutan Anthony Loke Siew Fook',
-     'Perdana Menteri Tun',
-     'sambutan Aidilfitri minggu depan,',
-     'Loke Siew Fook menitipkan',
-     'LUMPUR: Sempena sambutan',
-     'sambutan Aidilfitri minggu depan, Perdana']
+    ['Perdana Menteri berkata, beliau telah mendapatkan maklumat terperinci mengenai perkara berkenaan supaya kerajaan tidak mengambil sebarang tindakan.. Bagaimanapun, beliau yakin isu itu dapat diselesaikan dan pastinya kerajaan boleh berfungsi dengan baik.',
+     'Perdana Menteri berkata, beliau akan mendapatkan maklumat terperinci berhubung perkara berkenaan supaya kerajaan tidak mengambil sebarang tindakan segera. Bagaimanapun, beliau yakin isu itu dapat diselesaikan dan diharap kerajaan boleh berfungsi dengan baik.',
+     'Perdana Menteri berkata, beliau akan memberikan maklumat terperinci berhubung isu berkenaan agar kerajaan perlu mengambil sebarang tindakan.. Bagaimanapun, beliau yakin perkara itu dapat diselesaikan dan berharap kerajaan boleh berfungsi dengan baik.',
+     'Perdana Menteri berkata, beliau akan memberikan maklumat terperinci berhubung perkara berkenaan dan kerajaan akan mengambil sebarang tindakan sewajarnya. Bagaimanapun, beliau yakin perkara itu dapat diselesaikan dan berharap kerajaan boleh berfungsi dengan baik.',
+     'Perdana Menteri berkata, beliau telah mendapatkan maklumat terperinci berhubung isu berkenaan supaya kerajaan tidak mengambil sebarang tindakan.. Bagaimanapun, beliau yakin isu itu dapat diselesaikan dan berharap kerajaan boleh berfungsi dengan baik.']
 
-
-
-Generate ngram sentences for selected POS and Entities
-------------------------------------------------------
-
-.. code:: ipython3
-
-    generated_grams = malaya.generator.pos_entities_ngram(
-        result_pos,
-        result_entities,
-        ngram = (1, 3),
-        accept_pos = ['NOUN', 'PROPN', 'VERB'],
-        accept_entities = ['law', 'location', 'organization', 'person', 'time'],
-    )
-    generated_grams
-
-
-
-
-.. parsed-literal::
-
-    ['Kuala Lumpur Sempena',
-     'masing-masing video terbitan',
-     'orang',
-     'Mahathir Mohamad Menteri',
-     'terbitan',
-     'tidur',
-     'Keselamatan Jalan',
-     'Anthony Loke Siew',
-     'minggu depan Perdana',
-     'halaman masing-masing video',
-     'sekiranya mengantuk',
-     'Mohamad Menteri',
-     'Tun',
-     'menitipkan pesanan orang',
-     'kampung halaman masing-masing',
-     'masing-masing video',
-     'Lumpur',
-     'Kuala Lumpur',
-     'orang pulang',
-     'menitipkan',
-     'minggu',
-     'Jabatan Keselamatan Jalan',
-     'berhenti',
-     'Fook menitipkan',
-     'Loke',
-     'Menteri Tun',
-     'Raya Jkjr',
-     'Keselamatan',
-     'Aidilfitri minggu',
-     'Mohamad Menteri Pengangkutan',
-     'Sempena sambutan Aidilfitri',
-     'kampung halaman',
-     'Raya Jkjr Dr',
-     'Menteri Pengangkutan',
-     'Anthony',
-     'sambutan',
-     'Mohamad',
-     'Jalan',
-     'halaman',
-     'sekiranya',
-     'Pengangkutan Anthony',
-     'Pengangkutan',
-     'Jkjr',
-     'pulang',
-     'berhenti berehat tidur',
-     'berehat',
-     'pulang kampung halaman',
-     'Loke Siew Fook',
-     'Mahathir',
-     'Jabatan Keselamatan',
-     'Jabatan',
-     'berehat tidur',
-     'video',
-     'Jkjr Dr Mahathir',
-     'mengantuk',
-     'Menteri Tun Dr',
-     'video terbitan',
-     'Fook menitipkan pesanan',
-     'pesanan',
-     'Siew',
-     'sekiranya mengantuk memandu',
-     'Keselamatan Jalan Raya',
-     'Siew Fook menitipkan',
-     'minggu depan',
-     'pulang kampung',
-     'halaman masing-masing',
-     'menasihati berhenti',
-     'mengantuk memandu',
-     'Pengangkutan Anthony Loke',
-     'Jalan Raya Jkjr',
-     'Aidilfitri minggu depan',
-     'sambutan Aidilfitri',
-     'depan Perdana Menteri',
-     'Lumpur Sempena',
-     'Mahathir menasihati',
-     'video terbitan Jabatan',
-     'Sempena sambutan',
-     'Jkjr Dr',
-     'Jalan Raya',
-     'Loke Siew',
-     'tidur sekiranya mengantuk',
-     'depan Perdana',
-     'memandu',
-     'Mahathir Mohamad',
-     'Dr Mahathir menasihati',
-     'Fook',
-     'Menteri',
-     'Siew Fook',
-     'Dr',
-     'orang pulang kampung',
-     'Menteri Pengangkutan Anthony',
-     'terbitan Jabatan',
-     'Aidilfitri',
-     'masing-masing',
-     'Tun Dr Mahathir',
-     'tidur sekiranya',
-     'Dr Mahathir Mohamad',
-     'sambutan Aidilfitri minggu',
-     'Tun Dr',
-     'menitipkan pesanan',
-     'menasihati',
-     'berhenti berehat',
-     'terbitan Jabatan Keselamatan',
-     'menasihati berhenti berehat',
-     'Lumpur Sempena sambutan',
-     'Perdana Menteri',
-     'Anthony Loke',
-     'pesanan orang pulang',
-     'Sempena',
-     'depan',
-     'Mahathir menasihati berhenti',
-     'Perdana Menteri Tun',
-     'Perdana',
-     'Kuala',
-     'Dr Mahathir',
-     'berehat tidur sekiranya',
-     'Raya',
-     'pesanan orang',
-     'kampung']
 
 

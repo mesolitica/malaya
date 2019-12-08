@@ -6,6 +6,7 @@ from ..texts._text_functions import (
     merge_sentencepiece_tokens,
     merge_wordpiece_tokens,
 )
+from ._sampling import top_k_logits, top_p_logits
 from collections import defaultdict
 import numpy as np
 import os
@@ -46,6 +47,11 @@ class _Model:
         _graph = tf.Graph()
         with _graph.as_default():
             self.X = tf.placeholder(tf.int32, [None, None])
+            self.top_p = tf.placeholder(tf.float32, None)
+            self.top_k = tf.placeholder(tf.int32, None)
+            self.k = tf.placeholder(tf.int32, None)
+            self.temperature = tf.placeholder(tf.float32, None)
+            self.indices = tf.placeholder(tf.int32, [None, None])
             self._tokenizer = tokenizer
             self._cls = cls
             self._sep = sep
@@ -81,6 +87,20 @@ class _Model:
                 logits = tf.matmul(input_tensor, embedding, transpose_b = True)
                 self._logits = tf.nn.bias_add(logits, output_bias)
                 self._log_softmax = tf.nn.log_softmax(self._logits)
+
+            logits = tf.gather_nd(self._logits, self.indices)
+            logits = logits / self.temperature
+
+            def necleus():
+                return top_p_logits(logits, self.top_p)
+
+            def select_k():
+                return top_k_logits(logits, self.top_k)
+
+            logits = tf.cond(self.top_p > 0, necleus, select_k)
+            self.samples = tf.multinomial(
+                logits, num_samples = self.k, output_dtype = tf.int32
+            )
 
             self._sess = tf.InteractiveSession()
             self._sess.run(tf.global_variables_initializer())
