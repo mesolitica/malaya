@@ -297,7 +297,3 @@ def w2v_augmentation(
             string_[indices[no]] = results[no][index]
         augmented.append(_make_upper(' '.join(string_), original_string))
     return augmented
-
-
-def bert_augmentation(string):
-    a
