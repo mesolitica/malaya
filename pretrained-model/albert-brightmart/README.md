@@ -76,53 +76,20 @@ I1007 22:35:07.644812 139954652473152 validation.py:607]   next_sentence_loss = 
 
 ## Download
 
-1. **BASE**, last update 11th October 2019,
-[albert-bahasa-base-11-10-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/albert-base-11-10-2019.tar.gz)
+1. **BASE**, last update 28th December 2019,
+[albert-base-15-12-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/albert-base-15-12-2019.tar.gz)
 
-  - Vocab size 20k.
+  - Vocab size 32k.
   - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news.
   - 1.0M steps, 3 GPUs TESLA V100.
-  - BASE size (43MB).
+  - BASE size (52MB).
 
-```text
-INFO:tensorflow:***** Eval results *****
-I1011 07:04:45.377109 139622928910144 validation.py:605] ***** Eval results *****
-INFO:tensorflow:  global_step = 1000002
-I1011 07:04:45.377210 139622928910144 validation.py:607]   global_step = 1000002
-INFO:tensorflow:  loss = 3.6847372
-I1011 07:04:45.377379 139622928910144 validation.py:607]   loss = 3.6847372
-INFO:tensorflow:  masked_lm_accuracy = 0.47363773
-I1011 07:04:45.377480 139622928910144 validation.py:607]   masked_lm_accuracy = 0.47363773
-INFO:tensorflow:  masked_lm_loss = 3.199521
-I1011 07:04:45.377568 139622928910144 validation.py:607]   masked_lm_loss = 3.199521
-INFO:tensorflow:  next_sentence_accuracy = 0.73875
-I1011 07:04:45.377651 139622928910144 validation.py:607]   next_sentence_accuracy = 0.73875
-INFO:tensorflow:  next_sentence_loss = 0.48904538
-I1011 07:04:45.377733 139622928910144 validation.py:607]   next_sentence_loss = 0.48904538
-```
+2. **LARGE**, last update 26th October 2019, [albert-large-28-12-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/albert-large-28-12-2019.tar.gz)
 
-2. **LARGE**, last update 26th October 2019, [albert-bahasa-large-26-10-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/albert-large-26-10-2019.tar.gz)
-
-  - Vocab size 20k.
+  - Vocab size 32k.
   - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news.
   - 1.0M steps, 3 GPUs TESLA V100.
-  - LARGE size (67MB).
-
-```text
-I1026 08:13:07.752892 140201609799488 validation.py:605] ***** Eval results *****
-INFO:tensorflow:  global_step = 1000002
-I1026 08:13:07.753000 140201609799488 validation.py:607]   global_step = 1000002
-INFO:tensorflow:  loss = 3.6535444
-I1026 08:13:07.753302 140201609799488 validation.py:607]   loss = 3.6535444
-INFO:tensorflow:  masked_lm_accuracy = 0.48277542
-I1026 08:13:07.753419 140201609799488 validation.py:607]   masked_lm_accuracy = 0.48277542
-INFO:tensorflow:  masked_lm_loss = 3.155771
-I1026 08:13:07.753515 140201609799488 validation.py:607]   masked_lm_loss = 3.155771
-INFO:tensorflow:  next_sentence_accuracy = 0.70125
-I1026 08:13:07.753599 140201609799488 validation.py:607]   next_sentence_accuracy = 0.70125
-INFO:tensorflow:  next_sentence_loss = 0.501724
-I1026 08:13:07.753678 140201609799488 validation.py:607]   next_sentence_loss = 0.501724
-```
+  - LARGE size (78MB).
 
 ## Comparison using Emotion Dataset
 

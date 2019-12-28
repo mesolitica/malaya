@@ -775,7 +775,7 @@ PATH_ALBERT = {
         'directory': home + '/albert-model/base/albert-base/',
         'model': {
             'model': home + '/albert-model/base/albert-base.tar.gz',
-            'version': 'v31',
+            'version': 'v32',
         },
     },
     'large': {
@@ -783,14 +783,14 @@ PATH_ALBERT = {
         'directory': home + '/albert-model/large/albert-large/',
         'model': {
             'model': home + '/albert-model/base/albert-large.tar.gz',
-            'version': 'v31',
+            'version': 'v32',
         },
     },
 }
 
 S3_PATH_ALBERT = {
-    'base': {'model': 'bert-bahasa/albert-base-30-11-2019.tar.gz'},
-    'large': {'model': 'bert-bahasa/albert-large-30-11-2019.tar.gz'},
+    'base': {'model': 'bert-bahasa/albert-base-15-12-2019.tar.gz'},
+    'large': {'model': 'bert-bahasa/albert-large-28-12-2019.tar.gz'},
 }
 
 PATH_ALXLNET = {

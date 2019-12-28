@@ -278,7 +278,7 @@ def xlnet(model = 'base', pool_mode = 'last', validate = True):
                 % (model)
             )
 
-    if not os.path.exists(PATH_XLNET[model]['directory']):
+    if not os.path.exists(PATH_XLNET[model]['directory'] + 'model.ckpt'):
         import tarfile
 
         with tarfile.open(PATH_XLNET[model]['model']['model']) as tar:

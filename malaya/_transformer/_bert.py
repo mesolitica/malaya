@@ -296,7 +296,7 @@ def bert(model = 'base', lite = False, validate = True):
                 'bert-model/%s is not available, please `validate = True`'
                 % (model)
             )
-    if not os.path.exists(PATH_BERT[model]['directory']):
+    if not os.path.exists(PATH_BERT[model]['directory'] + 'model.ckpt'):
         import tarfile
 
         with tarfile.open(PATH_BERT[model]['model']['model']) as tar:

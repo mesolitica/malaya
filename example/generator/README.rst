@@ -6,8 +6,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 4.21 s, sys: 879 ms, total: 5.08 s
-    Wall time: 5.46 s
+    CPU times: user 4 s, sys: 837 ms, total: 4.83 s
+    Wall time: 5.25 s
 
 
 Wordvector augmentation
@@ -83,10 +83,10 @@ similar semantics!
 .. parsed-literal::
 
     ['saya suka makan ayam dan ikan',
-     'anda gemar minum itik atau kerang',
-     'kami pandai mengeram kambing serta daging',
-     'kamu sanggup mengunyah lembu ataupun ayam',
-     'kita terpesona memakan arnab mahupun udang']
+     'saya gemar minum ayam dan kerang',
+     'saya pandai mengeram ayam dan daging',
+     'saya sanggup mengunyah ayam dan ayam',
+     'saya terpesona memakan ayam dan udang']
 
 
 
@@ -107,10 +107,10 @@ similar semantics!
 .. parsed-literal::
 
     ['Perdana Menteri berkata , beliau perlu memperoleh maklumat terperinci berhubung isu berkenaan sebelum kerajaan dapat mengambil sebarang tindakan lanjut . Bagaimanapun , beliau yakin masalah itu dapat diselesaikan dan pentadbiran kerajaan boleh berfungsi dengan baik .',
-     'Perdana Menteri berkata , dia perlu memperoleh informasi teliti berhubung isu berkenaan sebelum kerajaan boleh mengambil suatu perbuatan lanjut . Bagaimanapun , dia yakin masaalah itu dapat diselesaikan atau pentadbiran kerajaan boleh beroperasi dengan baiknya .',
-     'Perdana Menteri berkata , mereka perlu memperoleh data sistematik berhubung isu berkenaan sebelum kerajaan harus mengambil sesuatu perlakuan lanjut . Bagaimanapun , mereka yakin permasalahan itu dapat diselesaikan serta pentadbiran kerajaan boleh bertindak dengan hebat .',
-     'Perdana Menteri berkata , baginda perlu memperoleh perincian ekstensif berhubung isu berkenaan sebelum kerajaan mampu mengambil pelbagai sikap lanjut . Bagaimanapun , baginda yakin kesulitan itu dapat diselesaikan ataupun pentadbiran kerajaan boleh bergetar dengan kuat .',
-     'Perdana Menteri berkata , saya perlu memperoleh info menyeluruh berhubung isu berkenaan sebelum kerajaan perlu mengambil segala kelakuan lanjut . Bagaimanapun , saya yakin kesukaran itu dapat diselesaikan mahupun pentadbiran kerajaan boleh dimanfaatkan dengan kukuh .']
+     'Perdana Menteri menyatakan , beliau harus memperoleh maklumat teliti berhubung kontroversi berkenaan sebelum pemerintah boleh mengambil sebarang tindakan selanjutnya . Bagaimanapun , dia yakin masalah tersebut dapat dilaksanakan atau pentadbirannya pemerintah boleh berfungsi dengan baiknya .',
+     'Perdana Menteri mengatakan , beliau mesti memperoleh maklumat sistematik berhubung masalah berkenaan sebelum kemaharajaan harus mengambil sebarang tindakan terperinci . Bagaimanapun , mereka yakin masalah ini dapat dikuatkuasakan serta pemerintahan kemaharajaan boleh berfungsi dengan hebat .',
+     'Perdana Menteri mendakwa , beliau patut memperoleh maklumat ekstensif berhubung persoalan berkenaan sebelum rejim mampu mengambil sebarang tindakan menyeluruh . Bagaimanapun , baginda yakin masalah mereka dapat diatasi ataupun kepimpinan rejim boleh berfungsi dengan kuat .',
+     'Perdana Menteri merasakan , beliau dapat memperoleh maklumat menyeluruh berhubung krisis berkenaan sebelum kesultanan perlu mengambil sebarang tindakan serius . Bagaimanapun , saya yakin masalah berkenaan dapat ditangani mahupun perundangan kesultanan boleh berfungsi dengan kukuh .']
 
 
 
@@ -218,11 +218,41 @@ the rescue!
 
 .. parsed-literal::
 
-    ['Perdana Menteri berkata, beliau telah mendapatkan maklumat terperinci mengenai perkara berkenaan supaya kerajaan tidak mengambil sebarang tindakan.. Bagaimanapun, beliau yakin isu itu dapat diselesaikan dan pastinya kerajaan boleh berfungsi dengan baik.',
-     'Perdana Menteri berkata, beliau akan mendapatkan maklumat terperinci berhubung perkara berkenaan supaya kerajaan tidak mengambil sebarang tindakan segera. Bagaimanapun, beliau yakin isu itu dapat diselesaikan dan diharap kerajaan boleh berfungsi dengan baik.',
-     'Perdana Menteri berkata, beliau akan memberikan maklumat terperinci berhubung isu berkenaan agar kerajaan perlu mengambil sebarang tindakan.. Bagaimanapun, beliau yakin perkara itu dapat diselesaikan dan berharap kerajaan boleh berfungsi dengan baik.',
-     'Perdana Menteri berkata, beliau akan memberikan maklumat terperinci berhubung perkara berkenaan dan kerajaan akan mengambil sebarang tindakan sewajarnya. Bagaimanapun, beliau yakin perkara itu dapat diselesaikan dan berharap kerajaan boleh berfungsi dengan baik.',
-     'Perdana Menteri berkata, beliau telah mendapatkan maklumat terperinci berhubung isu berkenaan supaya kerajaan tidak mengambil sebarang tindakan.. Bagaimanapun, beliau yakin isu itu dapat diselesaikan dan berharap kerajaan boleh berfungsi dengan baik.']
+    ['Perdana Menteri berkata, kerajaan perlu memperoleh maklumat lanjut berhubung isu berkenaan supaya kerajaan dapat membuat sebarang tindakan lanjut. Bagaimanapun, beliau berharap masalah itu dapat diperbaiki dan pentadbiran kerajaan boleh berfungsi dengan baik.',
+     'Perdana Menteri berkata, kerajaan perlu memperoleh maklumat lanjut berhubung isu berkenaan supaya kerajaan dapat membuat sebarang tindakan lanjut. Bagaimanapun, beliau yakin masalah itu dapat diselesaikan dan pentadbiran kerajaan boleh berfungsi dengan baik.',
+     'Perdana Menteri berkata, kerajaan perlu memperoleh lebih lanjut berhubung isu berkenaan agar kerajaan dapat melakukan sebarang tindakan lanjut. Bagaimanapun, beliau berharap masalah itu dapat dipulihkan dan pentadbiran kerajaan boleh berfungsi dengan baik.',
+     'Perdana Menteri berkata, kerajaan perlu memperoleh maklumat lanjut berhubung isu berkenaan supaya kerajaan dapat melakukan sebarang tindakan lanjut. Bagaimanapun, beliau berharap masalah itu dapat diselesaikan dan pentadbiran kerajaan boleh berfungsi dengan baik.',
+     'Perdana Menteri berkata, kerajaan perlu memperoleh maklumat lanjut berhubung isu berkenaan supaya kerajaan dapat mengambil sebarang tindakan lanjut. Bagaimanapun, beliau yakin masalah ini dapat diselesaikan dan pentadbiran kerajaan boleh berfungsi dengan baik.']
+
+
+
+Base size give much better context! But beware, the model is quite big.
+
+.. code:: ipython3
+
+    model = malaya.transformer.load(model = 'bert', size = 'base')
+
+
+.. parsed-literal::
+
+    INFO:tensorflow:Restoring parameters from /Users/huseinzolkepli/Malaya/bert-model/base/bert-base-v2/model.ckpt
+
+
+.. code:: ipython3
+
+    augmented = malaya.generator.transformer_augmentation(text, model)
+    augmented
+
+
+
+
+.. parsed-literal::
+
+    ['Perdana Menteri berkata, kerajaan sudah mendapatkan maklumat lanjut berhubung isu itu agar kerajaan tidak mengambil sebarang tindakan lanjut. Bagaimanapun, beliau berharap masalah itu dapat diselesaikan dan bagaimana kerajaan dapat diselesaikan dengan baik.',
+     'Perdana Menteri berkata, kerajaan akan memberikan maklumat lanjut berhubung isu itu supaya kerajaan tidak mengambil sebarang tindakan lanjut. Bagaimanapun, beliau yakin masalah itu dapat diselesaikan dan bagaimana kerajaan dapat diselesaikan dengan baik.',
+     'Perdana Menteri berkata, kerajaan sudah mendapatkan maklumat terperinci berhubung perkara itu agar kerajaan dapat mengambil sebarang tindakan lanjut. Bagaimanapun, beliau yakin masalah itu dapat diselesaikan dan memastikan kerajaan dapat diselesaikan dengan baik.',
+     'Perdana Menteri berkata, kerajaan akan mendapatkan maklumat lanjut berhubung isu berkenaan dan kerajaan dapat mengambil sebarang tindakan lanjut. Bagaimanapun, beliau berharap masalah berkenaan dapat diselesaikan dan memastikan kerajaan dapat diselesaikan dengan baik.',
+     'Perdana Menteri berkata, kerajaan belum memberikan maklumat terperinci berhubung isu itu dan kerajaan tidak mengambil sebarang tindakan lanjut. Bagaimanapun, beliau yakin masalah itu dapat diselesaikan dan berharap kerajaan dapat diselesaikan dengan baik.']
 
 
 

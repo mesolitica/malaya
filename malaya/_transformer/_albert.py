@@ -311,7 +311,7 @@ def albert(model = 'base', validate = True):
                 'albert-model/%s is not available, please `validate = True`'
                 % (model)
             )
-    if not os.path.exists(PATH_ALBERT[model]['directory']):
+    if not os.path.exists(PATH_ALBERT[model]['directory'] + 'model.ckpt'):
         import tarfile
 
         with tarfile.open(PATH_ALBERT[model]['model']['model']) as tar:
@@ -322,8 +322,8 @@ def albert(model = 'base', validate = True):
     from glob import glob
 
     bert_checkpoint = PATH_ALBERT[model]['directory'] + 'model.ckpt'
-    vocab_model = PATH_ALBERT[model]['directory'] + 'sp10m.cased.v6.model'
-    vocab = PATH_ALBERT[model]['directory'] + 'sp10m.cased.v6.vocab'
+    vocab_model = PATH_ALBERT[model]['directory'] + 'sp10m.cased.v8.model'
+    vocab = PATH_ALBERT[model]['directory'] + 'sp10m.cased.v8.vocab'
     bert_config = glob(PATH_ALBERT[model]['directory'] + 'albert_config*')[0]
 
     sp_model = spm.SentencePieceProcessor()

@@ -2,6 +2,8 @@
 
 Thanks to official implementation from Google, https://github.com/google-research/google-research, Malaya just create custom pretraining and optimizer to support multigpus.
 
+**Tested on 4 Tesla V100 mirror strategy, loss is not decreasing, use [albert-brightmart](../albert-brightmart) instead.**
+
 ## Table of contents
   * [Objective](#objective)
   * [Acknowledgement](#acknowledgement)
@@ -53,29 +55,6 @@ python3 multigpu_pretraining.py --input_file=../bert/bert-0.tfrecord,../bert/ber
 
 - `num_gpu_cores`: Number of gpus.
 - `train_batch_size`: Make sure `train_batch_size` % `num_gpu_cores` is 0 and the batch will automatically distribute among gpus. If `num_gpu_cores` is 60 and `num_gpu_cores` is 2, so each gpus will get 30 batch size.
-
-5. Execute validation,
-
-```bash
-python3 validation.py --input_file=tests_output.tfrecord --output_dir=pretraining_output --bert_config_file=albert_config_base.json --train_batch_size=60 --max_seq_length=512 --max_predictions_per_seq=51 --num_train_steps=1000000 --learning_rate=2e-5
-```
-
-```text
-INFO:tensorflow:***** Eval results *****
-I1007 22:35:07.644245 139954652473152 validation.py:605] ***** Eval results *****
-INFO:tensorflow:  global_step = 300006
-I1007 22:35:07.644339 139954652473152 validation.py:607]   global_step = 300006
-INFO:tensorflow:  loss = 4.281704
-I1007 22:35:07.644485 139954652473152 validation.py:607]   loss = 4.281704
-INFO:tensorflow:  masked_lm_accuracy = 0.4212482
-I1007 22:35:07.644579 139954652473152 validation.py:607]   masked_lm_accuracy = 0.4212482
-INFO:tensorflow:  masked_lm_loss = 3.6995919
-I1007 22:35:07.644659 139954652473152 validation.py:607]   masked_lm_loss = 3.6995919
-INFO:tensorflow:  next_sentence_accuracy = 0.65125
-I1007 22:35:07.644736 139954652473152 validation.py:607]   next_sentence_accuracy = 0.65125
-INFO:tensorflow:  next_sentence_loss = 0.58434385
-I1007 22:35:07.644812 139954652473152 validation.py:607]   next_sentence_loss = 0.58434385
-```
 
 ## Citation
 
