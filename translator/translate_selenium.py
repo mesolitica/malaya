@@ -24,7 +24,10 @@ class Translate:
         self.driver.find_element_by_id('source').send_keys(string.lower())
         time.sleep(2)
         text = [elem.text for elem in self.driver.find_elements_by_xpath(span)]
-        return text[0]
+        if len(text):
+            return text[0]
+        else:
+            return '?'
 
 
 def task_translate(translator, string):
