@@ -1,8 +1,4 @@
-import re
-import os
-import random
 import numpy as np
-import json
 from .texts._jarowrinkler import JaroWinkler
 from sklearn.metrics.pairwise import (
     cosine_similarity,

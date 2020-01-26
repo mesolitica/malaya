@@ -1,58 +1,67 @@
-import pickle
-import os
 import numpy as np
+import json
 from .texts._jarowrinkler import JaroWinkler
 from scipy.spatial.distance import cdist
 from sklearn.neighbors import NearestNeighbors
+from ._utils._utils import check_file, _Calculator
+from ._utils._paths import PATH_WORDVECTOR, S3_PATH_WORDVECTOR
 import tensorflow as tf
-from . import home
-from ._utils._utils import download_file, _Calculator
+
+
+def _load(j, npy):
+    with open(j) as fopen:
+        vocab = json.load(fopen)
+    vector = np.load(npy)
+    return vocab, vector
 
 
 def load_wiki():
     """
-    Return malaya pretrained wikipedia word2vec size 256.
+    Return malaya pretrained wikipedia word2vec size 256. https://github.com/huseinzol05/Malaya/tree/master/pretrained-model/wordvector
 
     Returns
     -------
-    dictionary: dictionary of dictionary, reverse dictionary and vectors
+    tuple: (vocabulary, vector)
     """
-    if not os.path.isfile('%s/word2vec-wiki/word2vec.p' % (home)):
-        print('downloading word2vec-wiki embedded')
-        download_file(
-            'v13/word2vec/word2vec-wiki-nce-256.p',
-            '%s/word2vec-wiki/word2vec.p' % (home),
-        )
-    with open('%s/word2vec-wiki/word2vec.p' % (home), 'rb') as fopen:
-        return pickle.load(fopen)
+
+    check_file(PATH_WORDVECTOR['wikipedia'], S3_PATH_WORDVECTOR['wikipedia'])
+    return _load(
+        PATH_WORDVECTOR['wikipedia']['vocab'],
+        PATH_WORDVECTOR['wikipedia']['model'],
+    )
 
 
-def load_news(size = 256):
+def load_news():
     """
-    Return malaya pretrained news word2vec.
-
-    Parameters
-    ----------
-    size: int, (default=256)
+    Return malaya pretrained local malaysia news word2vec size 256. https://github.com/huseinzol05/Malaya/tree/master/pretrained-model/wordvector
 
     Returns
     -------
-    dictionary: dictionary of dictionary, reverse dictionary and vectors
+    tuple: (vocabulary, vector)
     """
-    if not isinstance(size, int):
-        raise ValueError('input must be an integer')
-    if size not in [32, 64, 128, 256, 512]:
-        raise ValueError(
-            'size word2vec not supported, only supports [32, 64, 128, 256, 512]'
-        )
-    if not os.path.isfile('%s/word2vec-%d/word2vec.p' % (home, size)):
-        print('downloading word2vec-%d embedded' % (size))
-        download_file(
-            'v7/word2vec/word2vec-%d.p' % (size),
-            '%s/word2vec-%d/word2vec.p' % (home, size),
-        )
-    with open('%s/word2vec-%d/word2vec.p' % (home, size), 'rb') as fopen:
-        return pickle.load(fopen)
+
+    check_file(PATH_WORDVECTOR['news'], S3_PATH_WORDVECTOR['news'])
+    return _load(
+        PATH_WORDVECTOR['news']['vocab'], PATH_WORDVECTOR['news']['model']
+    )
+
+
+def load_social_media():
+    """
+    Return malaya pretrained local malaysia social media word2vec size 256. https://github.com/huseinzol05/Malaya/tree/master/pretrained-model/wordvector
+
+    Returns
+    -------
+    tuple: (vocabulary, vector)
+    """
+
+    check_file(
+        PATH_WORDVECTOR['socialmedia'], S3_PATH_WORDVECTOR['socialmedia']
+    )
+    return _load(
+        PATH_WORDVECTOR['socialmedia']['vocab'],
+        PATH_WORDVECTOR['socialmedia']['model'],
+    )
 
 
 def load(embed_matrix, dictionary):

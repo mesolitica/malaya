@@ -807,3 +807,36 @@ PATH_ALXLNET = {
 S3_PATH_ALXLNET = {
     'base': {'model': 'bert-bahasa/alxlnet-base-6-11-2019.tar.gz'}
 }
+
+PATH_WORDVECTOR = {
+    'news': {
+        'vocab': home + '/wordvector/news/wordvector.json',
+        'model': home + '/wordvector/news/wordvector.npy',
+        'version': 'v31',
+    },
+    'wikipedia': {
+        'vocab': home + '/wordvector/wikipedia/wordvector.json',
+        'model': home + '/wordvector/wikipedia/wordvector.npy',
+        'version': 'v31',
+    },
+    'socialmedia': {
+        'vocab': home + '/wordvector/socialmedia/wordvector.json',
+        'model': home + '/wordvector/socialmedia/wordvector.npy',
+        'version': 'v31',
+    },
+}
+
+S3_PATH_WORDVECTOR = {
+    'news': {
+        'vocab': 'bert-bahasa/word2vec-news-ms-256.json',
+        'model': 'bert-bahasa/word2vec-news-ms-256.npy',
+    },
+    'wikipedia': {
+        'vocab': 'bert-bahasa/word2vec-wiki-ms-256.json',
+        'model': 'bert-bahasa/word2vec-wiki-ms-256.npy',
+    },
+    'socialmedia': {
+        'vocab': 'bert-bahasa/word2vec-ms-socialmedia-256.json',
+        'model': 'bert-bahasa/word2vec-ms-socialmedia-256.npy',
+    },
+}

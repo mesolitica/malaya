@@ -6,8 +6,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 4 s, sys: 837 ms, total: 4.83 s
-    Wall time: 5.25 s
+    CPU times: user 5.05 s, sys: 1.3 s, total: 6.35 s
+    Wall time: 7.79 s
 
 
 Wordvector augmentation
@@ -58,15 +58,15 @@ similar semantics!
 
 .. code:: python
 
-    embedded_wiki = malaya.wordvector.load_wiki()
-    word_vector_wiki = malaya.wordvector.load(embedded_wiki['nce_weights'], embedded_wiki['dictionary'])
+    vocab_wiki, embedded_wiki = malaya.wordvector.load_wiki()
+    word_vector_wiki = malaya.wordvector.load(embedded_wiki, vocab_wiki)
 
 
 .. parsed-literal::
 
-    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/wordvector.py:85: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/wordvector.py:94: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
     
-    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/wordvector.py:96: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/wordvector.py:105: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
     
 
 
@@ -83,10 +83,10 @@ similar semantics!
 .. parsed-literal::
 
     ['saya suka makan ayam dan ikan',
-     'saya gemar minum ayam dan kerang',
-     'saya pandai mengeram ayam dan daging',
-     'saya sanggup mengunyah ayam dan ayam',
-     'saya terpesona memakan ayam dan udang']
+     'saya suka minum kambing dan ikan',
+     'saya suka tidur lembu dan ikan',
+     'saya suka mandi babi dan ikan',
+     'saya suka berehat daging dan ikan']
 
 
 
@@ -107,10 +107,10 @@ similar semantics!
 .. parsed-literal::
 
     ['Perdana Menteri berkata , beliau perlu memperoleh maklumat terperinci berhubung isu berkenaan sebelum kerajaan dapat mengambil sebarang tindakan lanjut . Bagaimanapun , beliau yakin masalah itu dapat diselesaikan dan pentadbiran kerajaan boleh berfungsi dengan baik .',
-     'Perdana Menteri menyatakan , beliau harus memperoleh maklumat teliti berhubung kontroversi berkenaan sebelum pemerintah boleh mengambil sebarang tindakan selanjutnya . Bagaimanapun , dia yakin masalah tersebut dapat dilaksanakan atau pentadbirannya pemerintah boleh berfungsi dengan baiknya .',
-     'Perdana Menteri mengatakan , beliau mesti memperoleh maklumat sistematik berhubung masalah berkenaan sebelum kemaharajaan harus mengambil sebarang tindakan terperinci . Bagaimanapun , mereka yakin masalah ini dapat dikuatkuasakan serta pemerintahan kemaharajaan boleh berfungsi dengan hebat .',
-     'Perdana Menteri mendakwa , beliau patut memperoleh maklumat ekstensif berhubung persoalan berkenaan sebelum rejim mampu mengambil sebarang tindakan menyeluruh . Bagaimanapun , baginda yakin masalah mereka dapat diatasi ataupun kepimpinan rejim boleh berfungsi dengan kuat .',
-     'Perdana Menteri merasakan , beliau dapat memperoleh maklumat menyeluruh berhubung krisis berkenaan sebelum kesultanan perlu mengambil sebarang tindakan serius . Bagaimanapun , saya yakin masalah berkenaan dapat ditangani mahupun perundangan kesultanan boleh berfungsi dengan kukuh .']
+     'Perdana Menteri menyatakan , dia perlu memperoleh data terperinci berhubung persoalan berkenaan sebelum pemerintah dapat mendapat sebarang dakwaan lanjut . Bagaimanapun , beliau yakin gangguan itu dapat diselesaikan serta pentadbiran kerajaan dapat berfungsi dengan sempurna .',
+     'Perdana Menteri mengatakan , baginda perlu memperoleh bacaan terperinci berhubung prosedur berkenaan sebelum perlembagaan dapat menghabiskan sebarang kesalahan lanjut . Bagaimanapun , beliau yakin kelemahan itu dapat diselesaikan atau pentadbiran kerajaan harus berfungsi dengan kuat .',
+     'Perdana Menteri mendapati , mereka perlu memperoleh penjelasan terperinci berhubung artikel berkenaan sebelum kesultanan dapat mengubah sebarang perbuatan lanjut . Bagaimanapun , beliau yakin gejala itu dapat diselesaikan mahupun pentadbiran kerajaan perlu berfungsi dengan hebat .',
+     'Perdana Menteri mencadangkan , saya perlu memperoleh informasi terperinci berhubung kontroversi berkenaan sebelum pemerintahan dapat memakan sebarang gerakan lanjut . Bagaimanapun , beliau yakin risiko itu dapat diselesaikan tetapi pentadbiran kerajaan akan berfungsi dengan kukuh .']
 
 
 

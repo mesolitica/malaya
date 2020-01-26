@@ -26,6 +26,7 @@ Contents:
    Entities
    Generator
    Language
+   Lexicon
    Normalizer
    Num2word
    Pos

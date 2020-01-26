@@ -2,7 +2,6 @@ import re
 import json
 import ftfy
 import html
-import itertools
 from functools import lru_cache
 from math import log10
 from unidecode import unidecode

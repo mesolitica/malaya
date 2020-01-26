@@ -1,5 +1,3 @@
-import json
-import os
 from ._utils._utils import (
     check_file,
     load_graph,
@@ -8,7 +6,6 @@ from ._utils._utils import (
     sentencepiece_tokenizer_bert,
     sentencepiece_tokenizer_xlnet,
 )
-from . import home
 from ._utils._paths import PATH_TOXIC, S3_PATH_TOXIC
 from ._models._sklearn_model import MULTILABEL_BAYES
 from ._models._bert_model import SIGMOID_BERT

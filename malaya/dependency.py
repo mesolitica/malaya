@@ -1,4 +1,3 @@
-import json
 from ._utils._utils import (
     check_file,
     load_graph,

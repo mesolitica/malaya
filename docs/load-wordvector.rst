@@ -1,36 +1,22 @@
-
 Pretrained word2vec
 -------------------
 
 You can download Malaya pretrained without need to import malaya.
 
-word2vec from news
-^^^^^^^^^^^^^^^^^^
+word2vec from local news
+^^^^^^^^^^^^^^^^^^^^^^^^
 
-`size-32 <https://s3-ap-southeast-1.amazonaws.com/huseinhouse-storage/v7/word2vec/word2vec-32.p>`__
-
-`size-64 <https://s3-ap-southeast-1.amazonaws.com/huseinhouse-storage/v7/word2vec/word2vec-64.p>`__
-
-`size-128 <https://s3-ap-southeast-1.amazonaws.com/huseinhouse-storage/v7/word2vec/word2vec-128.p>`__
-
-`size-256 <https://s3-ap-southeast-1.amazonaws.com/huseinhouse-storage/v7/word2vec/word2vec-256.p>`__
-
-`size-512 <https://s3-ap-southeast-1.amazonaws.com/huseinhouse-storage/v7/word2vec/word2vec-512.p>`__
+`size-256 <https://github.com/huseinzol05/Malaya/tree/master/pretrained-model/wordvector#download>`__
 
 word2vec from wikipedia
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-`size-256 <https://s3-ap-southeast-1.amazonaws.com/huseinhouse-storage/v13/word2vec/word2vec-wiki-nce-256.p>`__
+`size-256 <https://github.com/huseinzol05/Malaya/tree/master/pretrained-model/wordvector#download>`__
 
-You will get a pickle file, contains ``['nce_weights', 'dictionary']``.
+word2vec from local social media
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To load that pickle file,
-
-.. code:: python
-
-   import pickle
-   with open('file.p', 'rb') as fopen:
-       word2vec = pickle.load(fopen)
+`size-256 <https://github.com/huseinzol05/Malaya/tree/master/pretrained-model/wordvector#download>`__
 
 But If you don’t know what to do with malaya word2vec, Malaya provided
 some useful functions for you!
@@ -44,8 +30,8 @@ some useful functions for you!
 
 .. parsed-literal::
 
-    CPU times: user 5.89 s, sys: 1.38 s, total: 7.27 s
-    Wall time: 11.5 s
+    CPU times: user 4.21 s, sys: 793 ms, total: 5 s
+    Wall time: 4.11 s
 
 
 Load malaya news word2vec
@@ -53,14 +39,14 @@ Load malaya news word2vec
 
 .. code:: python
 
-    embedded_news = malaya.wordvector.load_news(256)
+    vocab_news, embedded_news = malaya.wordvector.load_news()
 
 Load malaya wikipedia word2vec
 ------------------------------
 
 .. code:: python
 
-    embedded_wiki = malaya.wordvector.load_wiki()
+    vocab_wiki, embedded_wiki = malaya.wordvector.load_wiki()
 
 Load word vector interface
 --------------------------
@@ -82,7 +68,7 @@ Load word vector interface
        -------
        _wordvector: malaya.wordvector._wordvector object
        """
-
+       
 
 1. ``embed_matrix`` must be a 2d,
 
@@ -128,28 +114,31 @@ We need to parse the data to get ``embed_matrix`` and ``dictionary``.
 
     import io
     import numpy as np
-
+    
     fin = io.open('wiki.ms.vec', 'r', encoding='utf-8', newline='\n', errors='ignore')
     n, d = map(int, fin.readline().split())
-
+    
     data, vectors = {}, []
     for no, line in enumerate(fin):
         tokens = line.rstrip().split(' ')
         data[tokens[0]] = no
         vectors.append(list(map(float, tokens[1:])))
-
+        
     vectors = np.array(vectors)
+    fast_text = malaya.wordvector.load(vectors, data)
 
 .. code:: python
 
-    fast_text = malaya.wordvector.load(vectors, data)
-    word_vector_wiki = malaya.wordvector.load(embedded_wiki['nce_weights'], embedded_wiki['dictionary'])
+    word_vector_news = malaya.wordvector.load(embedded_news, vocab_news)
+    word_vector_wiki = malaya.wordvector.load(embedded_wiki, vocab_wiki)
 
 
 .. parsed-literal::
 
-    W0908 23:24:56.546383 4481250752 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/wordvector.py:96: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
-
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/wordvector.py:94: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
+    
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/wordvector.py:105: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
+    
 
 
 Check top-k similar semantics based on a word
@@ -158,14 +147,14 @@ Check top-k similar semantics based on a word
 .. code:: python
 
     word = 'anwar'
-    print("Embedding layer: 8 closest words to: '%s' using fast-text"%(word))
-    print(fast_text.n_closest(word=word, num_closest=8, metric='cosine'))
+    print("Embedding layer: 8 closest words to: '%s' using malaya news word2vec"%(word))
+    print(word_vector_news.n_closest(word=word, num_closest=8, metric='cosine'))
 
 
 .. parsed-literal::
 
-    Embedding layer: 8 closest words to: 'anwar' using fast-text
-    [['anwari', 0.7751702635797655], ['anwa', 0.7415013831727038], ['anwardi', 0.6817634761631164], ['dhanwar', 0.6797479885269004], ['ibrahim', 0.633790291910495], ['sanwan', 0.5990863002536039], ['ibrahimi', 0.5783653188698719], ['ibrahimiah', 0.5573087618004475]]
+    Embedding layer: 8 closest words to: 'anwar' using malaya news word2vec
+    [['najib', 0.6967672109603882], ['mukhriz', 0.675892174243927], ['azmin', 0.6686884164810181], ['rafizi', 0.6465028524398804], ['muhyiddin', 0.6413404941558838], ['daim', 0.6334482431411743], ['khairuddin', 0.6300410032272339], ['shahidan', 0.6269811391830444]]
 
 
 .. code:: python
@@ -178,7 +167,7 @@ Check top-k similar semantics based on a word
 .. parsed-literal::
 
     Embedding layer: 8 closest words to: 'anwar' using malaya wiki word2vec
-    [['zaid', 0.7285637855529785], ['khairy', 0.6839416027069092], ['zabidi', 0.6709405183792114], ['nizar', 0.6695379018783569], ['harussani', 0.6595045328140259], ['shahidan', 0.6565827131271362], ['azalina', 0.6541041135787964], ['shahrizat', 0.6538639068603516]]
+    [['rasulullah', 0.6918460130691528], ['jamal', 0.6604709029197693], ['noraniza', 0.65153968334198], ['khalid', 0.6450133323669434], ['mahathir', 0.6447468400001526], ['sukarno', 0.641593337059021], ['wahid', 0.6359774470329285], ['pekin', 0.6262176036834717]]
 
 
 Check batch top-k similar semantics based on a word
@@ -187,7 +176,7 @@ Check batch top-k similar semantics based on a word
 .. code:: python
 
     words = ['anwar', 'mahathir']
-    fast_text.batch_n_closest(words, num_closest=8,
+    word_vector_news.batch_n_closest(words, num_closest=8,
                                      return_similarity=False)
 
 
@@ -196,21 +185,21 @@ Check batch top-k similar semantics based on a word
 .. parsed-literal::
 
     [['anwar',
-      'anwari',
-      'anwa',
-      'anwardi',
-      'dhanwar',
-      'ibrahim',
-      'sanwan',
-      'ibrahimi'],
-     ['mahathir',
-      'mahathma',
-      'athir',
-      'mohamad',
-      'dr',
       'najib',
-      'fathir',
-      'badawi']]
+      'mukhriz',
+      'azmin',
+      'rafizi',
+      'muhyiddin',
+      'daim',
+      'khairuddin'],
+     ['mahathir',
+      'daim',
+      'sahruddin',
+      'streram',
+      'morsi',
+      'anifah',
+      'jokowi',
+      'ramasamy']]
 
 
 
@@ -239,18 +228,18 @@ dictionary.
 
     Exception                                 Traceback (most recent call last)
 
-    <ipython-input-20-50a78d59e7a9> in <module>
+    <ipython-input-14-50a78d59e7a9> in <module>
           1 words = ['anwar', 'mahathir','husein-comel']
           2 word_vector_wiki.batch_n_closest(words, num_closest=8,
     ----> 3                                  return_similarity=False,soft=False)
-
+    
 
     ~/Documents/Malaya/malaya/wordvector.py in batch_n_closest(self, words, num_closest, return_similarity, soft)
-        475                     raise Exception(
-        476                         '%s not in dictionary, please use another word or set `soft` = True'
-    --> 477                         % (words[i])
-        478                     )
-        479         batches = np.array([self.get_vector_by_name(w) for w in words])
+        484                     raise Exception(
+        485                         '%s not in dictionary, please use another word or set `soft` = True'
+    --> 486                         % (words[i])
+        487                     )
+        488         batches = np.array([self.get_vector_by_name(w) for w in words])
 
 
     Exception: husein-comel not in dictionary, please use another word or set `soft` = True
@@ -268,29 +257,29 @@ dictionary.
 .. parsed-literal::
 
     [['anwar',
-      'zaid',
-      'khairy',
-      'zabidi',
-      'nizar',
-      'harussani',
-      'shahidan',
-      'azalina'],
+      'rasulullah',
+      'jamal',
+      'noraniza',
+      'khalid',
+      'mahathir',
+      'sukarno',
+      'wahid'],
      ['mahathir',
-      'zulkifli',
-      'zambry',
       'anwar',
-      'khairy',
-      'mazlan',
-      'megawati',
-      'ramasamy'],
+      'wahid',
+      'najib',
+      'khalid',
+      'sukarno',
+      'suharto',
+      'salahuddin'],
      ['husein',
-      'hasbullah',
-      'juned',
-      'arsyad',
-      'taqiyuddin',
-      'achmad',
-      'mansoor',
-      'amru']]
+      'khairi',
+      'gccsa',
+      'jkrte',
+      'montagny',
+      'pejudo',
+      'badriyyin',
+      'naginatajutsu']]
 
 
 
@@ -299,12 +288,12 @@ Calculate vb - va + vc
 
 .. code:: python
 
-    print(fast_text.analogy('anwar', 'penjara', 'kerajaan', 5))
+    print(word_vector_news.analogy('anwar', 'penjara', 'kerajaan', 5))
 
 
 .. parsed-literal::
 
-    ['penjara', 'kerajaan', ',kerajaan', '#kerajaan', '\xa0kerajaan']
+    ['kerajaan', 'penjara', 'pemerintah', 'sebat', 'jas']
 
 
 .. code:: python
@@ -314,7 +303,7 @@ Calculate vb - va + vc
 
 .. parsed-literal::
 
-    ['penjara', 'kerajaan', 'kemaharajaan', 'pemerintah', 'pelabuhan']
+    ['kerajaan', 'penjara', 'pemerintah', 'hospital', 'kesultanan']
 
 
 Word2vec calculator
@@ -324,7 +313,7 @@ You can put any equation you wanted.
 
 .. code:: python
 
-    fast_text.calculator('anwar + amerika + mahathir', num_closest=8, metric='cosine',
+    word_vector_news.calculator('anwar + amerika + mahathir', num_closest=8, metric='cosine',
                           return_similarity=False)
 
 
@@ -334,13 +323,13 @@ You can put any equation you wanted.
 
     ['mahathir',
      'anwar',
-     'mohamad',
-     'mahfodz',
-     'athir',
-     'anwari',
-     'anwardi',
-     'mahathma',
-     'hishammudin']
+     'trump',
+     'duterte',
+     'netanyahu',
+     'jokowi',
+     'rusia',
+     'kj',
+     'obama']
 
 
 
@@ -354,15 +343,15 @@ You can put any equation you wanted.
 
 .. parsed-literal::
 
-    ['anwar',
-     'mahathir',
-     'hishammuddin',
+    ['mahathir',
+     'anwar',
      'sukarno',
-     'khairy',
-     'suffian',
-     'ahmadinejad',
-     'davutoglu',
-     'shahrizat']
+     'suharto',
+     'hamas',
+     'sparta',
+     'amerika',
+     'iraq',
+     'lubnan']
 
 
 
@@ -372,8 +361,8 @@ Visualize scatter-plot
 .. code:: python
 
     word = 'anwar'
-    result = fast_text.n_closest(word=word, num_closest=8, metric='cosine')
-    data = fast_text.scatter_plot(result, centre = word)
+    result = word_vector_news.n_closest(word=word, num_closest=8, metric='cosine')
+    data = word_vector_news.scatter_plot(result, centre = word)
 
 
 
@@ -397,8 +386,8 @@ Visualize tree-plot
 .. code:: python
 
     word = 'anwar'
-    result = fast_text.n_closest(word=word, num_closest=8, metric='cosine')
-    data = fast_text.tree_plot(result)
+    result = word_vector_news.n_closest(word=word, num_closest=8, metric='cosine')
+    data = word_vector_news.tree_plot(result)
 
 
 
@@ -467,11 +456,11 @@ Visualize social-network
            color for nodes.
        node_factor: int, (default=10)
            size factor for depth nodes. Increase this value will increase nodes sizes based on depth.
-
+           
 
 .. code:: python
 
-    g = fast_text.network('mahathir', figsize = (10, 10), node_factor = 50, depth = 3)
+    g = word_vector_news.network('mahathir', figsize = (10, 10), node_factor = 50, depth = 3)
 
 
 
@@ -490,9 +479,45 @@ Visualize social-network
 Get embedding from a word
 -------------------------
 
+.. code:: python
+
+    word_vector_wiki.get_vector_by_name('najib').shape
+
+
+
+
+.. parsed-literal::
+
+    (256,)
+
+
+
 If a word not found in the vocabulary, it will throw an exception with
 top-5 nearest words
 
 .. code:: python
 
     word_vector_wiki.get_vector_by_name('husein-comel')
+
+
+::
+
+
+    ---------------------------------------------------------------------------
+
+    Exception                                 Traceback (most recent call last)
+
+    <ipython-input-26-0460b04adbfb> in <module>
+    ----> 1 word_vector_wiki.get_vector_by_name('husein-comel')
+    
+
+    ~/Documents/Malaya/malaya/wordvector.py in get_vector_by_name(self, word)
+        127             raise Exception(
+        128                 'input not found in dictionary, here top-5 nearest words [%s]'
+    --> 129                 % (strings)
+        130             )
+        131         return self._embed_matrix[self._dictionary[word]]
+
+
+    Exception: input not found in dictionary, here top-5 nearest words [husein, husei, husenil, husen, secomel]
+
