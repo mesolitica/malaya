@@ -24,7 +24,10 @@ class Translate:
         self.driver.find_element_by_id('source').send_keys(string)
         time.sleep(2)
         text = [elem.text for elem in self.driver.find_elements_by_xpath(span)]
-        return text[0]
+        if len(text):
+            return text[0]
+        else:
+            return '?'
 
 
 def task_translate(translator, string):
@@ -32,11 +35,11 @@ def task_translate(translator, string):
 
 
 def run_parallel_in_threads(args_list, target = task_translate):
-    globalparas = []
+    globalparas = [None] * len(args_list)
     result = Queue()
 
     def task_wrapper(*args):
-        result.put(target(*args))
+        result.put((target(*args), args_list.index(args)))
 
     threads = [
         threading.Thread(target = task_wrapper, args = args)
@@ -47,7 +50,8 @@ def run_parallel_in_threads(args_list, target = task_translate):
     for t in threads:
         t.join()
     while not result.empty():
-        globalparas.append(result.get())
+        res = result.get()
+        globalparas.insert(res[1], res[0])
     globalparas = list(filter(None, globalparas))
     return globalparas
 
