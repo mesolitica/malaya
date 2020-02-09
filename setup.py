@@ -20,7 +20,7 @@ setuptools.setup(
         'scikit-learn',
         'requests',
         'unidecode',
-        'tensorflow==1.15',
+        'tensorflow>=1.15.2',
         'numpy',
         'scipy',
         'PySastrawi',
@@ -29,6 +29,7 @@ setuptools.setup(
         'sentencepiece',
         'bert-tensorflow',
         'tqdm',
+        'herpetologist',
     ],
     license = 'MIT',
     classifiers = [

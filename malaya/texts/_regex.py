@@ -62,6 +62,7 @@ _temperature = "-?\d+(?:[\.,']\d+)?\s*(?:K|Kelvin|kelvin|Kvin|F|f|Farenheit|fare
 _distance = "-?\d+(?:[\.,']\d+)?\s*(?:kaki|mtrs|metres|meters|feet|km|m|cm|feet|feets|miles|batu|inch|inches|feets)\\b"
 _volume = "-?\d+(?:[\.,']\d+)?\s*(?:ml|ML|liters|gallon|gallons|galon)\\b"
 _duration = '\d+\s*(?:jam|minit|hari|minggu|tahun|hours|hour)\\b|(?:sejam|sehari|setahun|sesaat|seminit)\\b'
+_weight = "\d+(?:[\.,']\d+)?\s*(?:kg|kilo|kilogram|g|gram)\\b"
 
 _left_datetime = '(%s) (%s)' % (_time, _date)
 _right_datetime = '(%s) (%s)' % (_date, _time)

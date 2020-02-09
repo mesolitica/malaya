@@ -214,13 +214,22 @@ def split_by_dot(string):
 
 
 def language_detection_textcleaning(string):
+    string = unidecode(string)
     string = re.sub(
-        u'[0-9!@#$%^&*()_\-+{}|\~`\'";:?/.>,<]',
-        ' ',
-        string.lower(),
-        flags = re.UNICODE,
+        'http\S+|www.\S+',
+        '',
+        ' '.join(
+            [i for i in string.split() if i.find('#') < 0 and i.find('@') < 0]
+        ),
     )
-    return re.sub(r'[ ]+', ' ', string).strip()
+    chars = ',.()!:\'"/;=-'
+    for c in chars:
+        string = string.replace(c, f' {c} ')
+
+    string = re.sub('[^A-Za-z ]+', ' ', unidecode(string))
+    string = re.sub(r'[ ]+', ' ', string).strip()
+
+    return string.lower()
 
 
 def pos_entities_textcleaning(string):

@@ -1,5 +1,6 @@
 from ._utils import _softmax_class
 from ._utils._paths import PATH_EMOTION, S3_PATH_EMOTION
+from herpetologist import check_type
 
 _emotion_label = ['anger', 'fear', 'joy', 'love', 'sadness', 'surprise']
 _availability = {
@@ -16,7 +17,8 @@ def available_transformer_model():
     return _availability
 
 
-def multinomial(validate = True):
+@check_type
+def multinomial(validate: bool = True):
     """
     Load multinomial emotion model.
 
@@ -38,7 +40,10 @@ def multinomial(validate = True):
     )
 
 
-def transformer(model = 'xlnet', size = 'base', validate = True):
+@check_type
+def transformer(
+    model: str = 'xlnet', size: str = 'base', validate: bool = True
+):
     """
     Load Transformer emotion model.
 
@@ -62,12 +67,6 @@ def transformer(model = 'xlnet', size = 'base', validate = True):
     -------
     MODEL : Transformer class
     """
-    if not isinstance(model, str):
-        raise ValueError('model must be a string')
-    if not isinstance(size, str):
-        raise ValueError('size must be a string')
-    if not isinstance(validate, bool):
-        raise ValueError('validate must be a boolean')
 
     model = model.lower()
     size = size.lower()

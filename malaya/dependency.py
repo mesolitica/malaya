@@ -9,6 +9,8 @@ from ._utils._utils import (
 from ._utils._parse_dependency import DependencyGraph
 from ._utils._paths import PATH_DEPEND, S3_PATH_DEPEND
 
+from herpetologist import check_type
+
 _dependency_tags = {
     'PAD': 0,
     'X': 1,
@@ -69,7 +71,10 @@ def available_transformer_model():
     return _availability
 
 
-def transformer(model = 'xlnet', size = 'base', validate = True):
+@check_type
+def transformer(
+    model: str = 'xlnet', size: str = 'base', validate: bool = True
+):
     """
     Load Transformer Entity Tagging model, transfer learning Transformer + biaffine attention.
 
@@ -93,12 +98,6 @@ def transformer(model = 'xlnet', size = 'base', validate = True):
     -------
     MODEL : Transformer class
     """
-    if not isinstance(model, str):
-        raise ValueError('model must be a string')
-    if not isinstance(size, str):
-        raise ValueError('size must be a string')
-    if not isinstance(validate, bool):
-        raise ValueError('validate must be a boolean')
 
     model = model.lower()
     size = size.lower()

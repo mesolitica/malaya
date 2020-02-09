@@ -8,6 +8,7 @@ from ._regex import (
     _distance,
     _volume,
     _duration,
+    _weight,
     _date,
     _past_date_string,
     _now_date_string,
@@ -86,6 +87,8 @@ class _Entity_regex:
         volume_ = [re.sub(r'[ ]+', ' ', s).strip() for s in volume_]
         duration_ = re.findall(_duration, string)
         duration_ = [re.sub(r'[ ]+', ' ', s).strip() for s in duration_]
+        weight_ = re.findall(_weight, string)
+        weight_ = [re.sub(r'[ ]+', ' ', s).strip() for s in weight_]
         phone_ = re.findall(_expressions['phone'], string)
         phone_ = [re.sub(r'[ ]+', ' ', s).strip() for s in phone_]
         email_ = re.findall(_expressions['email'], string)
@@ -170,4 +173,5 @@ class _Entity_regex:
         result['datetime'] = datetime_
         result['food'] = foods_
         result['drink'] = drinks_
+        result['weight'] = weight_
         return result

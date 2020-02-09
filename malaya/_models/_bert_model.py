@@ -20,6 +20,8 @@ from .._utils._html import (
     _render_relevancy,
 )
 import numpy as np
+from herpetologist import check_type
+from typing import List
 
 
 class BERT:
@@ -90,7 +92,10 @@ class BINARY_BERT(BERT):
             result = neutral(result)
         return result
 
-    def predict(self, string, get_proba = False, add_neutral = True):
+    @check_type
+    def predict(
+        self, string: str, get_proba: bool = False, add_neutral: bool = True
+    ):
         """
         classify a string.
 
@@ -106,12 +111,6 @@ class BINARY_BERT(BERT):
         -------
         dictionary: results
         """
-        if not isinstance(string, str):
-            raise ValueError('input must be a string')
-        if not isinstance(get_proba, bool):
-            raise ValueError('get_proba must be a boolean')
-        if not isinstance(add_neutral, bool):
-            raise ValueError('add_neutral must be a boolean')
 
         if add_neutral:
             label = self._label + ['neutral']
@@ -125,13 +124,19 @@ class BINARY_BERT(BERT):
         else:
             return label[np.argmax(result)]
 
-    def predict_batch(self, strings, get_proba = False, add_neutral = True):
+    @check_type
+    def predict_batch(
+        self,
+        strings: List[str],
+        get_proba: bool = False,
+        add_neutral: bool = True,
+    ):
         """
         classify list of strings.
 
         Parameters
         ----------
-        strings : list
+        strings : List[str]
         get_proba: bool, optional (default=False)
             If True, it will return probability of classes.
         add_neutral: bool, optional (default=True)
@@ -165,7 +170,10 @@ class BINARY_BERT(BERT):
         else:
             return [label[result] for result in np.argmax(results, axis = 1)]
 
-    def predict_words(self, string, method = 'last', visualization = True):
+    @check_type
+    def predict_words(
+        self, string: str, method: str = 'last', visualization: bool = True
+    ):
         """
         classify words.
 
@@ -185,10 +193,6 @@ class BINARY_BERT(BERT):
         -------
         dictionary: results
         """
-        if not isinstance(string, str):
-            raise ValueError('input must be a string')
-        if not isinstance(visualization, bool):
-            raise ValueError('visualization must be a boolean')
 
         method = method.lower()
         if method not in ['last', 'first', 'mean']:
@@ -313,7 +317,8 @@ class MULTICLASS_BERT(BERT):
         result = self._sess.run(self._softmax, feed_dict = {self._X: input_ids})
         return result
 
-    def predict(self, string, get_proba = False):
+    @check_type
+    def predict(self, string: str, get_proba: bool = False):
         """
         classify a string.
 
@@ -329,10 +334,6 @@ class MULTICLASS_BERT(BERT):
         -------
         dictionary: results
         """
-        if not isinstance(string, str):
-            raise ValueError('input must be a string')
-        if not isinstance(get_proba, bool):
-            raise ValueError('get_proba must be a boolean')
 
         result = self._predict([string])
         result = result[0]
@@ -341,13 +342,14 @@ class MULTICLASS_BERT(BERT):
         else:
             return self._label[np.argmax(result)]
 
-    def predict_batch(self, strings, get_proba = False):
+    @check_type
+    def predict_batch(self, strings: List[str], get_proba: bool = False):
         """
         classify list of strings.
 
         Parameters
         ----------
-        strings : list
+        strings : List[str]
         get_proba: bool, optional (default=False)
             If True, it will return probability of classes.
 
@@ -355,10 +357,6 @@ class MULTICLASS_BERT(BERT):
         -------
         list_dictionaries: list of results
         """
-        if not isinstance(strings, list):
-            raise ValueError('input must be a list')
-        if not isinstance(get_proba, bool):
-            raise ValueError('get_proba must be a boolean')
 
         results = self._predict(strings)
 
@@ -374,7 +372,10 @@ class MULTICLASS_BERT(BERT):
                 self._label[result] for result in np.argmax(results, axis = 1)
             ]
 
-    def predict_words(self, string, method = 'last', visualization = True):
+    @check_type
+    def predict_words(
+        self, string: str, method: str = 'last', visualization: bool = True
+    ):
         """
         classify words.
 
@@ -394,10 +395,6 @@ class MULTICLASS_BERT(BERT):
         -------
         dictionary: results
         """
-        if not isinstance(string, str):
-            raise ValueError('input must be a string')
-        if not isinstance(visualization, bool):
-            raise ValueError('visualization must be a boolean')
 
         method = method.lower()
         if method not in ['last', 'first', 'mean']:
@@ -523,7 +520,8 @@ class SIGMOID_BERT(BERT):
         result = self._sess.run(self._sigmoid, feed_dict = {self._X: input_ids})
         return result
 
-    def predict(self, string, get_proba = False):
+    @check_type
+    def predict(self, string: str, get_proba: bool = False):
         """
         classify a string.
 
@@ -539,10 +537,6 @@ class SIGMOID_BERT(BERT):
         -------
         dictionary: results
         """
-        if not isinstance(string, str):
-            raise ValueError('input must be a string')
-        if not isinstance(get_proba, bool):
-            raise ValueError('get_proba must be a boolean')
 
         result = self._predict([string])
         result = result[0]
@@ -552,13 +546,14 @@ class SIGMOID_BERT(BERT):
             probs = np.around(result)
             return [label for no, label in enumerate(self._label) if probs[no]]
 
-    def predict_batch(self, strings, get_proba = False):
+    @check_type
+    def predict_batch(self, strings: List[str], get_proba: bool = False):
         """
         classify list of strings.
 
         Parameters
         ----------
-        strings : list
+        strings : List[str]
         get_proba: bool, optional (default=False)
             If True, it will return probability of classes.
 
@@ -566,10 +561,6 @@ class SIGMOID_BERT(BERT):
         -------
         list_dictionaries: list of results
         """
-        if not isinstance(strings, list):
-            raise ValueError('input must be a list')
-        if not isinstance(get_proba, bool):
-            raise ValueError('get_proba must be a boolean')
 
         probs = self._predict(strings)
         results = []
@@ -590,7 +581,10 @@ class SIGMOID_BERT(BERT):
 
         return results
 
-    def predict_words(self, string, method = 'last', visualization = True):
+    @check_type
+    def predict_words(
+        self, string: str, method: str = 'last', visualization: bool = True
+    ):
         """
         classify words.
 
@@ -610,10 +604,6 @@ class SIGMOID_BERT(BERT):
         -------
         dictionary: results
         """
-        if not isinstance(string, str):
-            raise ValueError('input must be a string')
-        if not isinstance(visualization, bool):
-            raise ValueError('visualization must be a boolean')
 
         method = method.lower()
         if method not in ['last', 'first', 'mean']:
@@ -739,7 +729,8 @@ class SIAMESE_BERT(BERT):
             },
         )
 
-    def predict(self, string_left, string_right):
+    @check_type
+    def predict(self, string_left: str, string_right: str):
         """
         calculate similarity for two different texts.
 
@@ -752,34 +743,23 @@ class SIAMESE_BERT(BERT):
         -------
         float: float
         """
-        if not isinstance(string_left, str):
-            raise ValueError('string_left must be a string')
-        if not isinstance(string_right, str):
-            raise ValueError('string_right must be a string')
 
         return self._base([string_left], [string_right])[0, 1]
 
-    def predict_batch(self, strings_left, strings_right):
+    @check_type
+    def predict_batch(self, strings_left: List[str], strings_right: List[str]):
         """
         calculate similarity for two different batch of texts.
 
         Parameters
         ----------
-        string_left : str
-        string_right : str
+        string_left : List[str]
+        string_right : List[str]
 
         Returns
         -------
         list: list of float
         """
-        if not isinstance(strings_left, list):
-            raise ValueError('strings_left must be a list')
-        if not isinstance(strings_left[0], str):
-            raise ValueError('strings_left must be list of strings')
-        if not isinstance(strings_right, list):
-            raise ValueError('strings_right must be a list')
-        if not isinstance(strings_right[0], str):
-            raise ValueError('strings_right must be list of strings')
 
         return self._base(strings_left, strings_right)[:, 1]
 
@@ -816,7 +796,8 @@ class TAGGING_BERT(BERT):
         }
         self._pos = 'organization' not in self._settings['tag2idx']
 
-    def analyze(self, string):
+    @check_type
+    def analyze(self, string: str):
         """
         Analyze a string.
 
@@ -831,6 +812,7 @@ class TAGGING_BERT(BERT):
         predicted = self.predict(string)
         return tag_chunk(predicted)
 
+    @check_type
     def predict(self, string):
         """
         Tag a string.
@@ -843,8 +825,6 @@ class TAGGING_BERT(BERT):
         -------
         string: tagged string
         """
-        if not isinstance(string, str):
-            raise ValueError('input must be a string')
 
         parsed_sequence, bert_sequence = parse_bert_tagging(
             string, self._tokenizer, self._cls, self._sep
@@ -891,6 +871,7 @@ class DEPENDENCY_BERT(BERT):
         self._idx2tag = {int(v): k for k, v in self._tag2idx.items()}
         self._heads_seq = heads_seq
 
+    @check_type
     def predict(self, string):
         """
         Tag a string.
@@ -903,8 +884,6 @@ class DEPENDENCY_BERT(BERT):
         -------
         string: tagged string
         """
-        if not isinstance(string, str):
-            raise ValueError('input must be a string')
 
         parsed_sequence, bert_sequence = parse_bert_tagging(
             string, self._tokenizer, self._cls, self._sep

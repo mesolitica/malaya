@@ -5,6 +5,8 @@ import numpy as np
 import string as string_function
 from .preprocessing import _tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+from herpetologist import check_type
+from typing import List, Dict, Tuple, Callable
 
 _accepted_pos = [
     'ADJ',
@@ -50,18 +52,6 @@ def _make_upper(p, o):
     )
 
 
-def _simple_textcleaning(string, lowering = True):
-    """
-    use by topic modelling
-    only accept A-Z, a-z
-    """
-    string = unidecode(string)
-    string = re.sub(
-        '[^A-Za-z0-9\-\\/\'"!@#$%^&*()-+={}\[\];:<>,.? ]+', ' ', string
-    )
-    return re.sub(r'[ ]+', ' ', string.lower() if lowering else string).strip()
-
-
 def _pad_sequence(
     sequence,
     n,
@@ -90,9 +80,10 @@ def to_ids(string, tokenizer):
     return masked_ids, masked_ids.index(6)
 
 
+@check_type
 def ngrams(
-    sequence,
-    n,
+    sequence: List[str],
+    n: int,
     pad_left = False,
     pad_right = False,
     left_pad_symbol = None,
@@ -103,7 +94,7 @@ def ngrams(
 
     Parameters
     ----------
-    sequence : list of str
+    sequence : List[str]
         list of tokenize words.
     n : int
         ngram size
@@ -130,45 +121,40 @@ def ngrams(
         del history[0]
 
 
+@check_type
 def pos_entities_ngram(
-    result_pos,
-    result_entities,
-    ngram = (1, 3),
-    accept_pos = ['NOUN', 'PROPN', 'VERB'],
-    accept_entities = ['law', 'location', 'organization', 'person', 'time'],
+    result_pos: List[Tuple[str, str]],
+    result_entities: List[Tuple[str, str]],
+    ngram: Tuple[int, int] = (1, 3),
+    accept_pos: List[str] = ['NOUN', 'PROPN', 'VERB'],
+    accept_entities: List[str] = [
+        'law',
+        'location',
+        'organization',
+        'person',
+        'time',
+    ],
 ):
     """
     generate ngrams.
 
     Parameters
     ----------
-    result_pos : list of tuple
+    result_pos : List[Tuple[str, str]]
         result from POS recognition.
-    result_entities : list of tuple
+    result_entities : List[Tuple[str, str]]
         result of Entities recognition.
-    ngram : tuple
+    ngram : Tuple[int, int]
         ngram sizes.
-    accept_pos : list of str
+    accept_pos : List[str]
         accepted POS elements.
-    accept_entities : list of str
+    accept_entities : List[str]
         accept entities elements.
 
     Returns
     -------
     result: list
     """
-    if not isinstance(result_pos, list):
-        raise ValueError('result_pos must be a list')
-    if not isinstance(result_pos[0], tuple):
-        raise ValueError('result_pos must be a list of tuple')
-    if not isinstance(ngram, tuple):
-        raise ValueError('ngram must be a tuple')
-    if not len(ngram) == 2:
-        raise ValueError('ngram size must equal to 2')
-    if not isinstance(accept_pos, list):
-        raise ValueError('accept_pos must be a list')
-    if not isinstance(accept_entities, list):
-        raise ValueError('accept_entites must be a list')
     if not all([i in _accepted_pos for i in accept_pos]):
         raise ValueError(
             'accept_pos must be a subset or equal of supported POS, please run malaya.describe_pos() to get supported POS'
@@ -193,7 +179,8 @@ def pos_entities_ngram(
     return list(set(sentences))
 
 
-def sentence_ngram(sentence, ngram = (1, 3)):
+@check_type
+def sentence_ngram(sentence: str, ngram: Tuple[int, int] = (1, 3)):
     """
     generate ngram for a text
 
@@ -207,12 +194,6 @@ def sentence_ngram(sentence, ngram = (1, 3)):
     -------
     result: list
     """
-    if not isinstance(sentence, str):
-        raise ValueError('sentence must be a string')
-    if not isinstance(ngram, tuple):
-        raise ValueError('ngram must be a tuple')
-    if not len(ngram) == 2:
-        raise ValueError('ngram size must equal to 2')
 
     words = sentence.split()
     sentences = []
@@ -223,13 +204,14 @@ def sentence_ngram(sentence, ngram = (1, 3)):
     return list(set(sentences))
 
 
+@check_type
 def wordvector_augmentation(
-    string,
+    string: str,
     wordvector,
-    threshold = 0.5,
-    top_n = 5,
-    soft = False,
-    cleaning_function = None,
+    threshold: float = 0.5,
+    top_n: int = 5,
+    soft: bool = False,
+    cleaning_function: Callable = None,
 ):
     """
     augmenting a string using wordvector.
@@ -253,20 +235,10 @@ def wordvector_augmentation(
     -------
     result: list
     """
-    if not isinstance(string, str):
-        raise ValueError('string must be a string')
-    if not isinstance(threshold, float):
-        raise ValueError('threshold must be a float')
-    if not (threshold > 0 and threshold < 1):
-        raise ValueError('threshold must be bigger than 0 and less than 1')
-    if not isinstance(soft, bool):
-        raise ValueError('soft must be a boolean')
     if not hasattr(wordvector, 'batch_n_closest'):
         raise ValueError('wordvector must has `batch_n_closest` method')
     if not hasattr(wordvector, '_dictionary'):
         raise ValueError('wordvector must has `_dictionary` attribute')
-    if not isinstance(top_n, int):
-        raise ValueError('top_n must be an integer')
 
     original_string = string
     if cleaning_function:
@@ -310,14 +282,14 @@ def wordvector_augmentation(
 
 
 def transformer_augmentation(
-    string,
+    string: str,
     model,
-    threshold = 0.5,
-    top_p = 0.8,
-    top_k = 100,
-    temperature = 0.8,
-    top_n = 5,
-    cleaning_function = None,
+    threshold: float = 0.5,
+    top_p: float = 0.8,
+    top_k: int = 100,
+    temperature: float = 0.8,
+    top_n: int = 5,
+    cleaning_function: Callable = None,
 ):
 
     """
@@ -346,28 +318,16 @@ def transformer_augmentation(
     result: list
     """
 
-    if not isinstance(string, str):
-        raise ValueError('string must be a string')
     if not hasattr(model, 'samples'):
         raise ValueError('model must has `samples` attribute')
-    if not isinstance(threshold, float):
-        raise ValueError('threshold must be a float')
     if not (threshold > 0 and threshold < 1):
         raise ValueError('threshold must be bigger than 0 and less than 1')
-    if not isinstance(top_p, float):
-        raise ValueError('top_p must be a float')
     if not top_p > 0:
         raise ValueError('top_p must be bigger than 0')
-    if not isinstance(top_k, int):
-        raise ValueError('top_k must be an integer')
     if not top_k > 0:
         raise ValueError('top_k must be bigger than 0')
-    if not isinstance(temperature, float):
-        raise ValueError('temperature must be a float')
     if not (temperature > 0 and threshold < 1):
         raise ValueError('temperature must be bigger than 0 and less than 1')
-    if not isinstance(top_n, int):
-        raise ValueError('top_n must be an integer')
     if not top_n > 0:
         raise ValueError('top_n must be bigger than 0')
     if top_n > top_k:

@@ -16,6 +16,8 @@ from .._utils._html import (
     _render_emotion,
     _render_relevancy,
 )
+from herpetologist import check_type
+from typing import List
 
 
 def _convert_sparse_matrix_to_sparse_tensor(X, got_limit = True, limit = 5):
@@ -30,15 +32,15 @@ def _convert_sparse_matrix_to_sparse_tensor(X, got_limit = True, limit = 5):
 
 
 class _LANG_MODEL:
-    def __init__(self):
+    def __init__(self, learning_rate, dimension = 64, output = 6):
         self.X = tf.sparse_placeholder(tf.int32)
         self.W = tf.sparse_placeholder(tf.int32)
         self.Y = tf.placeholder(tf.int32, [None])
-        embeddings = tf.Variable(tf.truncated_normal([660726, 40]))
+        embeddings = tf.Variable(tf.truncated_normal([300000, dimension]))
         embed = tf.nn.embedding_lookup_sparse(
             embeddings, self.X, self.W, combiner = 'mean'
         )
-        self.logits = tf.layers.dense(embed, 4)
+        self.logits = tf.layers.dense(embed, output)
 
 
 class _SPARSE_SOFTMAX_MODEL:
@@ -56,7 +58,7 @@ class _SPARSE_SOFTMAX_MODEL:
 
 
 class DEEP_LANG:
-    def __init__(self, path, vectorizer, label):
+    def __init__(self, path, vectorizer, label, bpe, type):
         self._graph = tf.Graph()
         with self._graph.as_default():
             self._model = _LANG_MODEL()
@@ -67,62 +69,61 @@ class DEEP_LANG:
         self._vectorizer = vectorizer
         self._label = label
         self._softmax = tf.nn.softmax(self._model.logits)
+        self._bpe = bpe
+        self._type = type
 
-    def predict(self, string, get_proba = False):
+    def _predicts(self, strings):
+        strings = [language_detection_textcleaning(i) for i in strings]
+        subs = [
+            ' '.join(s)
+            for s in self._bpe.encode(strings, output_type = self._type)
+        ]
+        transformed = self._vectorizer.transform(subs)
+        batch_x = _convert_sparse_matrix_to_sparse_tensor(transformed)
+        probs = self._sess.run(
+            self._softmax,
+            feed_dict = {self._model.X: batch_x[0], self._model.W: batch_x[1]},
+        )
+        return probs
+
+    @check_type
+    def predict(self, string: str, get_proba: bool = False):
         """
         classify a string.
 
         Parameters
         ----------
         string : str
+        get_proba: bool, optional (default=False)
+            If True, it will return probability of classes.
 
         Returns
         -------
         dictionary: results
         """
-        if not isinstance(string, str):
-            raise ValueError('input must be a string')
-        if not isinstance(get_proba, bool):
-            raise ValueError('get_proba must be a boolean')
 
-        string = language_detection_textcleaning(string)
-        transformed = self._vectorizer.transform([string])
-        batch_x = _convert_sparse_matrix_to_sparse_tensor(transformed)
-        probs = self._sess.run(
-            self._softmax,
-            feed_dict = {self._model.X: batch_x[0], self._model.W: batch_x[1]},
-        )[0]
+        probs = self._predicts([string])[0]
         if get_proba:
             return {self._label[no]: i for no, i in enumerate(probs)}
         else:
             return self._label[np.argmax(probs)]
 
-    def predict_batch(self, strings, get_proba = False):
+    def predict_batch(self, strings: List[str], get_proba: bool = False):
         """
         classify list of strings
 
         Parameters
         ----------
-        strings : list
+        strings : List[str]
+        get_proba: bool, optional (default=False)
+            If True, it will return probability of classes.
+
 
         Returns
         -------
         list_dictionaries: list of results
         """
-        if not isinstance(strings, list):
-            raise ValueError('input must be a list')
-        if not isinstance(strings[0], str):
-            raise ValueError('input must be list of strings')
-        if not isinstance(get_proba, bool):
-            raise ValueError('get_proba must be a boolean')
-
-        strings = [language_detection_textcleaning(i) for i in strings]
-        transformed = self._vectorizer.transform(strings)
-        batch_x = _convert_sparse_matrix_to_sparse_tensor(transformed)
-        probs = self._sess.run(
-            self._softmax,
-            feed_dict = {self._model.X: batch_x[0], self._model.W: batch_x[1]},
-        )
+        probs = self._predicts(strings)
         dicts = []
         if get_proba:
             for i in range(probs.shape[0]):

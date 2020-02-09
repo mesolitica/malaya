@@ -7,6 +7,8 @@ from ..texts._text_functions import (
     tag_chunk,
 )
 from .._utils._utils import add_neutral as neutral
+from herpetologist import check_type
+from typing import List
 
 
 class BAYES:
@@ -25,7 +27,10 @@ class BINARY_BAYES(BAYES):
     ):
         BAYES.__init__(self, multinomial, label, vectorize, cleaning)
 
-    def predict(self, string, get_proba = False, add_neutral = True):
+    @check_type
+    def predict(
+        self, string: str, get_proba: bool = False, add_neutral: bool = True
+    ):
         """
         Classify a string.
 
@@ -41,12 +46,6 @@ class BINARY_BAYES(BAYES):
         -------
         string: result
         """
-        if not isinstance(string, str):
-            raise ValueError('input must be a string')
-        if not isinstance(get_proba, bool):
-            raise ValueError('get_proba must be a boolean')
-        if not isinstance(add_neutral, bool):
-            raise ValueError('add_neutral must be a boolean')
 
         if add_neutral:
             label = self._label + ['neutral']
@@ -62,13 +61,19 @@ class BINARY_BAYES(BAYES):
         else:
             return label[np.argmax(result)]
 
-    def predict_batch(self, strings, get_proba = False, add_neutral = True):
+    @check_type
+    def predict_batch(
+        self,
+        strings: List[str],
+        get_proba: bool = False,
+        add_neutral: bool = True,
+    ):
         """
         Classify a list of strings.
 
         Parameters
         ----------
-        strings: list
+        strings: List[str]
         get_proba: bool, optional (default=False)
             If True, it will return probability of classes.
         add_neutral: bool, optional (default=True)
@@ -78,14 +83,6 @@ class BINARY_BAYES(BAYES):
         -------
         string: list of results
         """
-        if not isinstance(strings, list):
-            raise ValueError('input must be a list')
-        if not isinstance(strings[0], str):
-            raise ValueError('input must be list of strings')
-        if not isinstance(get_proba, bool):
-            raise ValueError('get_proba must be a boolean')
-        if not isinstance(add_neutral, bool):
-            raise ValueError('add_neutral must be a boolean')
 
         if add_neutral:
             label = self._label + ['neutral']
@@ -116,7 +113,8 @@ class MULTICLASS_BAYES(BAYES):
     ):
         BAYES.__init__(self, multinomial, label, vectorize, cleaning)
 
-    def predict(self, string, get_proba = False):
+    @check_type
+    def predict(self, string: str, get_proba: bool = False):
         """
         Classify a string.
 
@@ -141,13 +139,14 @@ class MULTICLASS_BAYES(BAYES):
         else:
             return self._label[np.argmax(result)]
 
-    def predict_batch(self, strings, get_proba = False):
+    @check_type
+    def predict_batch(self, strings: List[str], get_proba: bool = False):
         """
         Classify a list of strings.
 
         Parameters
         ----------
-        strings: list
+        strings: List[str]
         get_proba: bool, optional (default=False)
             If True, it will return probability of classes.
 
@@ -155,12 +154,6 @@ class MULTICLASS_BAYES(BAYES):
         -------
         string: list of results
         """
-        if not isinstance(strings, list):
-            raise ValueError('input must be a list')
-        if not isinstance(strings[0], str):
-            raise ValueError('input must be list of strings')
-        if not isinstance(get_proba, bool):
-            raise ValueError('get_proba must be a boolean')
         strings = [self._cleaning(string) for string in strings]
         vectors = self._vectorize.transform(strings)
         results = self._multinomial.predict_proba(vectors)
@@ -191,7 +184,8 @@ class MULTILABEL_BAYES:
         ]
         self._cleaning = cleaning
 
-    def predict(self, string, get_proba = False):
+    @check_type
+    def predict(self, string: str, get_proba: bool = False):
         """
         Classify a string.
 
@@ -205,8 +199,7 @@ class MULTILABEL_BAYES:
         -------
         string: result
         """
-        if not isinstance(string, str):
-            raise ValueError('input must be a string')
+
         vectors = self._vectorize.transform([self._cleaning(string)])
         result = self._multinomial.predict_proba(vectors)[0]
         arounded = np.around(result)
@@ -220,7 +213,8 @@ class MULTILABEL_BAYES:
                     results.append(label)
         return results
 
-    def predict_batch(self, strings, get_proba = False):
+    @check_type
+    def predict_batch(self, strings: List[str], get_proba: bool = False):
         """
         Classify a list of strings.
 
@@ -234,10 +228,6 @@ class MULTILABEL_BAYES:
         -------
         string: list of results
         """
-        if not isinstance(strings, list):
-            raise ValueError('input must be a list')
-        if not isinstance(strings[0], str):
-            raise ValueError('input must be list of strings')
 
         strings = [self._cleaning(string) for string in strings]
         vectors = self._vectorize.transform(strings)
@@ -259,13 +249,18 @@ class MULTILABEL_BAYES:
 
 
 class LANGUAGE_DETECTION:
-    def __init__(self, model, label, vectorizer, mode = 'sklearn'):
+    def __init__(self, model, lang_labels):
         self._model = model
-        self._label = label
-        self._vectorizer = vectorizer
-        self._mode = mode
+        self._labels = list(lang_labels.values())
 
-    def predict(self, string, get_proba = False):
+    def _predict(self, strings):
+        strings = [
+            language_detection_textcleaning(string) for string in strings
+        ]
+        return self._model.predict(strings, k = 3)
+
+    @check_type
+    def predict(self, string: str, get_proba: bool = False):
         """
         Classify a string.
 
@@ -279,17 +274,21 @@ class LANGUAGE_DETECTION:
         -------
         string: result
         """
-        if not isinstance(string, str):
-            raise ValueError('input must be a string')
-        string = language_detection_textcleaning(string)
-        vectors = self._vectorizer.transform([string])
-        if get_proba:
-            result = self._model.predict_proba(vectors)[0]
-            return {self._label[i]: result[i] for i in range(len(result))}
-        else:
-            return self._label[self._model.predict(vectors)[0]]
 
-    def predict_batch(self, strings, get_proba = False):
+        result_labels, result_probs = self._predict([string])
+        result_labels = result_labels[0]
+        result_probs = result_probs[0]
+        if get_proba:
+            result = {label: 0.0 for label in self._labels}
+            for no, label in enumerate(result_labels):
+                label = label.replace('__label__', '')
+                result[label] = result_probs[no]
+            return result
+        else:
+            return result_labels[0].replace('__label__', '')
+
+    @check_type
+    def predict_batch(self, strings: List[str], get_proba: bool = False):
         """
         Classify a list of strings.
 
@@ -303,14 +302,8 @@ class LANGUAGE_DETECTION:
         -------
         string: list of results
         """
-        if not isinstance(strings, list):
-            raise ValueError('input must be a list')
-        if not isinstance(strings[0], str):
-            raise ValueError('input must be list of strings')
-        strings = [
-            language_detection_textcleaning(string) for string in strings
-        ]
-        vectors = self._vectorizer.transform(strings)
+
+        result_labels, result_probs = self._predict(strings)
 
         if get_proba:
             results = self._model.predict_proba(vectors)

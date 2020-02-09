@@ -9,6 +9,8 @@ from .texts._text_functions import (
     split_into_sentences,
     STOPWORDS,
 )
+from herpetologist import check_type
+from typing import List, Dict, Tuple, Callable
 
 import numpy as np
 import re
@@ -44,26 +46,19 @@ _accepted_entities = [
 ]
 
 
-def cluster_words(list_words):
+@check_type
+def cluster_words(list_words: List[str]):
     """
     cluster similar words based on structure, eg, ['mahathir mohamad', 'mahathir'] = ['mahathir mohamad']
 
     Parameters
     ----------
-    list_words : list of str
+    list_words : List[str]
 
     Returns
     -------
-    string: list of clustered words
+    string: List[str]
     """
-    if not isinstance(list_words, list):
-        raise ValueError('list_words must be a list')
-
-    if not len(list_words):
-        return []
-
-    if not isinstance(list_words[0], str):
-        raise ValueError('list_words must be a list of strings')
 
     dict_words = {}
     for word in list_words:
@@ -84,22 +79,20 @@ def cluster_words(list_words):
     return list(set(results))
 
 
-def cluster_pos(result):
+@check_type
+def cluster_pos(result: List[Tuple[str, str]]):
     """
     cluster similar POS.
 
     Parameters
     ----------
-    result: list
+    result: List[Tuple[str, str]]
 
     Returns
     -------
-    result: list
+    result: Dict[str, List[str]]
     """
-    if not isinstance(result, list):
-        raise ValueError('result must be a list')
-    if not isinstance(result[0], tuple):
-        raise ValueError('result must be a list of tuple')
+
     if not all([i[1] in _accepted_pos for i in result]):
         raise ValueError(
             'elements of result must be a subset or equal of supported POS, please run malaya.describe_pos() to get supported POS'
@@ -141,22 +134,19 @@ def cluster_pos(result):
     return output
 
 
-def cluster_tagging(result):
+@check_type
+def cluster_tagging(result: List[Tuple(str, str)]):
     """
     cluster any tagging results, as long the data passed `[(string, label), (string, label)]`.
 
     Parameters
     ----------
-    result: list
+    result: List[Tuple(str, str)]
 
     Returns
     -------
-    result: list
+    result: Dict[str, List[str]]
     """
-    if not isinstance(result, list):
-        raise ValueError('result must be a list')
-    if not isinstance(result[0], tuple):
-        raise ValueError('result must be a list of tuple')
 
     _, labels = list(zip(*result))
 
@@ -179,22 +169,19 @@ def cluster_tagging(result):
     return output
 
 
-def cluster_entities(result):
+@check_type
+def cluster_entities(result: List[Tuple(str, str)]):
     """
     cluster similar Entities.
 
     Parameters
     ----------
-    result: list
+    result: List[Tuple(str, str)]
 
     Returns
     -------
-    result: list
+    result: Dict[str, List[str]]
     """
-    if not isinstance(result, list):
-        raise ValueError('result must be a list')
-    if not isinstance(result[0], tuple):
-        raise ValueError('result must be a list of tuple')
     if not all([i[1] in _accepted_entities for i in result]):
         raise ValueError(
             'elements of result must be a subset or equal of supported Entities, please run malaya.describe_entities() to get supported POS'
@@ -229,20 +216,21 @@ def cluster_entities(result):
     return output
 
 
+@check_type
 def cluster_scatter(
-    corpus,
+    corpus: List[str],
     vectorizer,
-    num_clusters = 5,
-    titles = None,
-    colors = None,
-    stemming = True,
-    stop_words = None,
-    cleaning = simple_textcleaning,
+    num_clusters: int = 5,
+    titles: List[str] = None,
+    colors: List[str] = None,
+    stemming: bool = True,
+    stop_words: List[str] = None,
+    cleaning: Callable = simple_textcleaning,
     clustering = KMeans,
     decomposition = MDS,
-    ngram = (1, 3),
-    figsize = (17, 9),
-    batch_size = 20,
+    ngram: Tuple[int, int] = (1, 3),
+    figsize: Tuple[int, int] = (17, 9),
+    batch_size: int = 20,
 ):
     """
     plot scatter plot on similar text clusters.
@@ -250,19 +238,20 @@ def cluster_scatter(
     Parameters
     ----------
 
-    corpus: list
+    corpus: List[str]
     vectorizer: class
+        vectorizer class.
     num_clusters: int, (default=5)
         size of unsupervised clusters.
-    titles: list
+    titles: List[str], (default=None)
         list of titles, length must same with corpus.
-    colors: list
+    colors: List[str], (default=None)
         list of colors, length must same with num_clusters.
     stemming: bool, (default=True)
         If True, sastrawi_stemmer will apply.
-    stop_words: list, (default=None)
+    stop_words: List[str], (default=None)
         list of stop words to remove. If None, default is malaya.texts._text_functions.STOPWORDS
-    ngram: tuple, (default=(1,3))
+    ngram: Tuple[int, int], (default=(1,3))
         n-grams size to train a corpus.
     cleaning: function, (default=simple_textcleaning)
         function to clean the corpus.
@@ -273,16 +262,6 @@ def cluster_scatter(
     -------
     dictionary: {'X': X, 'Y': Y, 'labels': clusters, 'vector': transformed_text_clean, 'titles': titles}
     """
-    if not isinstance(corpus, list):
-        raise ValueError('corpus must be a list')
-    if not isinstance(corpus[0], str):
-        raise ValueError('corpus must be list of strings')
-    if not isinstance(titles, list) and titles is not None:
-        raise ValueError('titles must be a list or None')
-    if not isinstance(colors, list) and colors is not None:
-        raise ValueError('colors must be a list or None')
-    if not isinstance(batch_size, int):
-        raise ValueError('batch_size must be an integer')
     if titles:
         if len(titles) != len(corpus):
             raise ValueError('length of titles must be same with corpus')
@@ -293,8 +272,6 @@ def cluster_scatter(
             )
     if not hasattr(vectorizer, 'vectorize') and not hasattr(vectorizer, 'fit'):
         raise ValueError('vectorizer must has `fit` and `vectorize` methods')
-    if not isinstance(stemming, bool):
-        raise ValueError('bool must be a boolean')
 
     try:
         import matplotlib.pyplot as plt
@@ -388,18 +365,18 @@ def cluster_scatter(
     }
 
 
+@check_type
 def cluster_dendogram(
-    corpus,
+    corpus: List[str],
     vectorizer,
-    titles = None,
-    stemming = True,
-    stop_words = None,
-    cleaning = simple_textcleaning,
-    random_samples = 0.3,
-    ngram = (1, 3),
-    figsize = (17, 9),
-    batch_size = 20,
-    **kwargs
+    titles: List[str] = None,
+    stemming: bool = True,
+    stop_words: List[str] = None,
+    cleaning: Callable = simple_textcleaning,
+    random_samples: float = 0.3,
+    ngram: Tuple[int, int] = (1, 3),
+    figsize: Tuple[int, int] = (17, 9),
+    batch_size: int = 20,
 ):
     """
     plot hierarchical dendogram with similar texts.
@@ -407,21 +384,22 @@ def cluster_dendogram(
     Parameters
     ----------
 
-    corpus: list
+    corpus: List[str]
     vectorizer: class
+        vectorizer class.
     num_clusters: int, (default=5)
         size of unsupervised clusters.
-    titles: list
+    titles: List[str], (default=None)
         list of titles, length must same with corpus.
     stemming: bool, (default=True)
         If True, sastrawi_stemmer will apply.
-    stop_words: list, (default=None)
+    stop_words: List[str], (default=None)
         list of stop words to remove. If None, default is malaya.texts._text_functions.STOPWORDS
     cleaning: function, (default=simple_textcleaning)
         function to clean the corpus.
     random_samples: float, (default=0.3)
         random samples from the corpus, 0.3 means 30%.
-    ngram: tuple, (default=(1,3))
+    ngram: Tuple[int, int], (default=(1,3))
         n-grams size to train a corpus.
     batch_size: int, (default=20)
         size of strings for each vectorization and attention. Only useful if use transformer vectorizer.
@@ -430,28 +408,14 @@ def cluster_dendogram(
     -------
     dictionary: {'linkage_matrix': linkage_matrix, 'titles': titles}
     """
-    if not isinstance(corpus, list):
-        raise ValueError('corpus must be a list')
-    if not isinstance(corpus[0], str):
-        raise ValueError('corpus must be list of strings')
-    if not isinstance(titles, list) and titles is not None:
-        raise ValueError('titles must be a list or None')
     if titles:
         if len(titles) != len(corpus):
             raise ValueError('length of titles must be same with corpus')
-    if not isinstance(stemming, bool):
-        raise ValueError('bool must be a boolean')
 
     if not hasattr(vectorizer, 'vectorize') and not hasattr(vectorizer, 'fit'):
         raise ValueError('vectorizer must has `fit` and `vectorize` methods')
-    if not isinstance(random_samples, float):
-        raise ValueError('random_samples must be a float')
     if not (random_samples < 1 and random_samples > 0):
         raise ValueError('random_samples must be between 0 and 1')
-    if not isinstance(ngram, tuple):
-        raise ValueError('ngram must be a tuple')
-    if not len(ngram) == 2:
-        raise ValueError('ngram size must equal to 2')
 
     try:
         import matplotlib.pyplot as plt
@@ -528,22 +492,22 @@ def cluster_dendogram(
     return {'linkage_matrix': linkage_matrix, 'titles': titles}
 
 
+@check_type
 def cluster_graph(
-    corpus,
+    corpus: List[str],
     vectorizer,
-    threshold = 0.9,
-    num_clusters = 5,
-    titles = None,
-    colors = None,
-    stop_words = None,
-    stemming = True,
-    ngram = (1, 3),
-    cleaning = simple_textcleaning,
+    threshold: float = 0.9,
+    num_clusters: int = 5,
+    titles: List[str] = None,
+    colors: List[str] = None,
+    stop_words: List[str] = None,
+    stemming: bool = True,
+    ngram: Tuple[int, int] = (1, 3),
+    cleaning: Callable = simple_textcleaning,
     clustering = KMeans,
-    figsize = (17, 9),
-    with_labels = True,
-    batch_size = 20,
-    **kwargs
+    figsize: Tuple[int, int] = (17, 9),
+    with_labels: bool = True,
+    batch_size: int = 20,
 ):
     """
     plot undirected graph with similar texts.
@@ -551,21 +515,22 @@ def cluster_graph(
     Parameters
     ----------
 
-    corpus: list
+    corpus: List[str]
     vectorizer: class
+        vectorizer class.
     threshold: float, (default=0.9)
         0.9 means, 90% above absolute pearson correlation.
     num_clusters: int, (default=5)
         size of unsupervised clusters.
-    titles: list
+    titles: List[str], (default=True)
         list of titles, length must same with corpus.
     stemming: bool, (default=True)
         If True, sastrawi_stemmer will apply.
-    stop_words: list, (default=None)
+    stop_words: List[str], (default=None)
         list of stop words to remove. If None, default is malaya.texts._text_functions.STOPWORDS
     cleaning: function, (default=simple_textcleaning)
         function to clean the corpus.
-    ngram: tuple, (default=(1,3))
+    ngram: Tuple[int, int], (default=(1,3))
         n-grams size to train a corpus.
     batch_size: int, (default=20)
         size of strings for each vectorization and attention. Only useful if use transformer vectorizer.
@@ -575,14 +540,6 @@ def cluster_graph(
     dictionary: {'G': G, 'pos': pos, 'node_colors': node_colors, 'node_labels': node_labels}
     """
 
-    if not isinstance(corpus, list):
-        raise ValueError('corpus must be a list')
-    if not isinstance(corpus[0], str):
-        raise ValueError('corpus must be list of strings')
-    if not isinstance(titles, list) and titles is not None:
-        raise ValueError('titles must be a list or None')
-    if not isinstance(colors, list) and colors is not None:
-        raise ValueError('colors must be a list or None')
     if titles:
         if len(titles) != len(corpus):
             raise ValueError('length of titles must be same with corpus')
@@ -593,14 +550,6 @@ def cluster_graph(
             )
     if not hasattr(vectorizer, 'vectorize') and not hasattr(vectorizer, 'fit'):
         raise ValueError('vectorizer must has `fit` and `vectorize` methods')
-    if not isinstance(stemming, bool):
-        raise ValueError('bool must be a boolean')
-    if not isinstance(ngram, tuple):
-        raise ValueError('ngram must be a tuple')
-    if not len(ngram) == 2:
-        raise ValueError('ngram size must equal to 2')
-    if not isinstance(threshold, float):
-        raise ValueError('threshold must be a float')
     if not (threshold <= 1 and threshold > 0):
         raise ValueError(
             'threshold must be bigger than 0, less than or equal to 1'
@@ -708,25 +657,30 @@ def cluster_graph(
 
 
 def cluster_entity_linking(
-    corpus,
+    corpus: List[str],
     vectorizer,
     entity_model,
     topic_modeling_model,
-    threshold = 0.3,
-    topic_decomposition = 2,
-    topic_length = 10,
-    fuzzy_ratio = 70,
-    accepted_entities = ['law', 'location', 'organization', 'person', 'event'],
-    cleaning = simple_textcleaning,
-    stemming = True,
-    colors = None,
-    stop_words = None,
-    max_df = 1.0,
-    min_df = 1,
-    ngram = (2, 3),
-    figsize = (17, 9),
-    batch_size = 20,
-    **kwargs
+    threshold: float = 0.3,
+    topic_decomposition: int = 2,
+    topic_length: int = 10,
+    fuzzy_ratio: int = 70,
+    accepted_entities: List[str] = [
+        'law',
+        'location',
+        'organization',
+        'person',
+        'event',
+    ],
+    cleaning: Callable = simple_textcleaning,
+    stemming: bool = True,
+    colors: List[str] = None,
+    stop_words: List[str] = None,
+    max_df: float = 1.0,
+    min_df: int = 1,
+    ngram: Tuple[int, int] = (2, 3),
+    figsize: Tuple[int, int] = (17, 9),
+    batch_size: int = 20,
 ):
     """
     plot undirected graph for Entities and topics relationship.
@@ -767,33 +721,10 @@ def cluster_entity_linking(
 
     import inspect
 
-    if not isinstance(corpus, list) and not isinstance(corpus, str):
-        raise ValueError('corpus must be a list')
-    if isinstance(corpus, list):
-        if not isinstance(corpus[0], str):
-            raise ValueError('corpus must be list of strings')
     if not hasattr(vectorizer, 'vectorize') and not hasattr(vectorizer, 'fit'):
         raise ValueError('vectorizer must has `fit` and `vectorize` methods')
     if 'max_df' not in inspect.getargspec(topic_modeling_model)[0]:
         raise ValueError('topic_modeling_model must has `max_df` parameter')
-    if not isinstance(colors, list) and colors is not None:
-        raise ValueError('colors must be a list or None')
-    if not isinstance(stemming, bool):
-        raise ValueError('bool must be a boolean')
-    if not isinstance(ngram, tuple):
-        raise ValueError('ngram must be a tuple')
-    if not len(ngram) == 2:
-        raise ValueError('ngram size must equal to 2')
-    if not isinstance(min_df, int):
-        raise ValueError('min_df must be an integer')
-    if not isinstance(topic_decomposition, int):
-        raise ValueError('topic_decomposition must be an integer')
-    if not isinstance(topic_length, int):
-        raise ValueError('topic_length must be an integer')
-    if not isinstance(fuzzy_ratio, int):
-        raise ValueError('fuzzy_ratio must be an integer')
-    if not isinstance(max_df, float):
-        raise ValueError('max_df must be a float')
 
     if min_df < 1:
         raise ValueError('min_df must be bigger than 0')

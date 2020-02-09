@@ -1,12 +1,63 @@
-from tqdm import tqdm
 import tensorflow as tf
+import inspect
 import sentencepiece as spm
 import numpy as np
 import requests
 import os
+from tqdm import tqdm
+from tensorflow.contrib.seq2seq.python.ops import beam_search_ops
+from functools import wraps
+from typing import Dict, List, Tuple
 from pathlib import Path
 from .. import _delete_folder
-from tensorflow.contrib.seq2seq.python.ops import beam_search_ops
+
+
+def recursive_check(v, t):
+    if '__module__' in t.__dict__.keys():
+        if t.__module__ != 'typing':
+            return isinstance(v, t)
+    else:
+        return isinstance(v, t)
+
+    args = t.__args__
+    if args:
+        origin = isinstance(v, t.__origin__)
+        if 'typing.' in str(args[0]):
+            return origin and recursive_check(v[0], args[0])
+        else:
+            if t.__origin__ == Dict and origin:
+                key_type = args[0]
+                value_type = args[1]
+                return all([isinstance(k, key_type) for k in v.keys()]) and all(
+                    [isinstance(k, value_type) for k in v.values()]
+                )
+            else:
+                if not isinstance(v, (tuple, list, dict, set)):
+                    return False
+                if len(v) != len(args):
+                    return False
+                if len(args) == 1:
+                    return origin and all([isinstance(p, args[0]) for p in v])
+    else:
+        return isinstance(v, t)
+
+
+def check_type(func):
+    fullspec = inspect.getfullargspec(func)
+    parameters = fullspec.args
+    annotations = fullspec.annotations
+
+    @wraps(func)
+    def check(*args, **kwargs):
+        for v, p in zip(args, parameters):
+            t = annotations.get(p)
+            if t:
+                if not recursive_check(v, t):
+                    raise Exception(f'{v} must be a {t}')
+
+        return func(*args)
+
+    return check
 
 
 def sentencepiece_tokenizer_xlnet(path_tokenizer):
@@ -52,8 +103,8 @@ def download_file(url, filename):
     os.makedirs(os.path.dirname(filename), exist_ok = True)
     with open(filename, 'wb') as f:
         for data in tqdm(
-            iterable = r.iter_content(chunk_size = 1048576),
-            total = total_size / 1048576,
+            iterable = r.iter_content(chunk_size = 1_048_576),
+            total = total_size / 1_048_576,
             unit = 'MB',
             unit_scale = True,
         ):

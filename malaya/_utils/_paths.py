@@ -254,18 +254,13 @@ S3_PATH_POS = {
 
 
 PATH_LANG_DETECTION = {
-    'multinomial': {
-        'model': home
-        + '/language-detection/multinomial/multinomial-language-detection.pkl',
-        'vector': home
-        + '/language-detection/multinomial/vectorizer-language-detection.pkl',
-        'version': 'v10.2',
+    'fasttext-original': {
+        'model': home + '/language-detection/fasttext-original/fasstext.bin',
+        'version': 'v33',
     },
-    'sgd': {
-        'model': home + '/language-detection/sgd/sgd-language-detection.pkl',
-        'vector': home
-        + '/language-detection/multinomial/vectorizer-language-detection.pkl',
-        'version': 'v10.2',
+    'fasttext-quantized': {
+        'model': home + '/language-detection/fasttext-quantized/fasstext.tfz',
+        'version': 'v33',
     },
     'deep': {
         'model': home
@@ -273,25 +268,25 @@ PATH_LANG_DETECTION = {
         'index': home + '/language-detection/deep/model.ckpt.index',
         'meta': home + '/language-detection/deep/model.ckpt.meta',
         'vector': home
-        + '/language-detection/multinomial/vectorizer-language-detection.pkl',
-        'version': 'v10.2',
+        + '/language-detection/deep/vectorizer-language-detection.pkl',
+        'bpe': home + '/language-detection/deep/bpe.model',
+        'version': 'v33',
     },
 }
 
 S3_PATH_LANG_DETECTION = {
-    'multinomial': {
-        'model': 'v10/language-detection/multinomial-language-detection.pkl',
-        'vector': 'v10/language-detection/language-detection-vectorizer.pkl',
+    'fasttext-original': {
+        'model': 'v33/language-detection/fasttext-malaya.bin'
     },
-    'sgd': {
-        'model': 'v10/language-detection/sgd-language-detection.pkl',
-        'vector': 'v10/language-detection/language-detection-vectorizer.pkl',
+    'fasttext-quantized': {
+        'model': 'v33/language-detection/fasttext-malaya.ftz'
     },
     'deep': {
-        'model': 'v10/language-detection/model.ckpt.data-00000-of-00001',
-        'index': 'v10/language-detection/model.ckpt.index',
-        'meta': 'v10/language-detection/model.ckpt.meta',
-        'vector': 'v10/language-detection/language-detection-vectorizer.pkl',
+        'model': 'v33/language-detection/model.ckpt.data-00000-of-00001',
+        'index': 'v33/language-detection/model.ckpt.index',
+        'meta': 'v33/language-detection/model.ckpt.meta',
+        'vector': 'v33/language-detection/bow-language-detection.pkl',
+        'bpe': 'v33/language-detection/language-detection.model',
     },
 }
 

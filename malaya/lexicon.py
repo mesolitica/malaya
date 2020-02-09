@@ -6,6 +6,8 @@ from .texts._lexicon import (
     _sentiment_lexicon as sentiment_lexicon,
     _emotion_lexicon as emotion_lexicon,
 )
+from herpetologist import check_type
+from typing import List, Dict, Tuple, Callable
 
 
 class SelectedEmbedding:
@@ -139,16 +141,16 @@ def _populate(
 
 
 def random_walk(
-    lexicon,
+    lexicon: Dict[str, List[str]],
     wordvector,
-    pool_size = 10,
-    top_n = 20,
-    similarity_power = 10.0,
-    beta = 0.9,
-    arccos = True,
-    normalization = True,
-    soft = False,
-    silent = False,
+    pool_size: int = 10,
+    top_n: int = 20,
+    similarity_power: float = 10.0,
+    beta: float = 0.9,
+    arccos: bool = True,
+    normalization: bool = True,
+    soft: bool = False,
+    silent: bool = False,
 ):
 
     """
@@ -157,7 +159,7 @@ def random_walk(
     Parameters
     ----------
 
-    lexicon: dict
+    lexicon: Dict[str : List[str]]
         curated lexicon from expert domain, {'label1': [str], 'label2': [str]}.
     wordvector: object
         wordvector interface object.
@@ -184,24 +186,12 @@ def random_walk(
     tuple: (labels[argmax(scores), axis = 1], scores, labels)
     """
 
-    if not isinstance(lexicon, dict):
-        raise ValueError('lexicon must be a dictionary')
     if not hasattr(wordvector, 'batch_n_closest'):
         raise ValueError('wordvector must has `batch_n_closest` method')
     if not hasattr(wordvector, '_dictionary'):
         raise ValueError('wordvector must has `_dictionary` attribute')
-    if not isinstance(pool_size, int):
-        raise ValueError('pool_size must be an integer')
-    if not isinstance(top_n, int):
-        raise ValueError('top_n must be an integer')
-    if not isinstance(beta, float):
-        raise ValueError('beta must be a float')
     if not (beta > 0 and beta < 1):
         raise ValueError('beta must be bigger than 0 and less than 1')
-    if not isinstance(arccos, bool):
-        raise ValueError('arccos must be a boolean')
-    if not isinstance(soft, bool):
-        raise ValueError('soft must be a boolean')
 
     results, seeds, embeddings = _populate(
         lexicon = lexicon,
@@ -249,15 +239,15 @@ def random_walk(
 
 
 def propagate_probabilistic(
-    lexicon,
+    lexicon: Dict[str, List[str]],
     wordvector,
-    pool_size = 10,
-    top_n = 20,
-    similarity_power = 10.0,
-    arccos = True,
-    normalization = True,
-    soft = False,
-    silent = False,
+    pool_size: int = 10,
+    top_n: int = 20,
+    similarity_power: float = 10.0,
+    arccos: bool = True,
+    normalization: bool = True,
+    soft: bool = False,
+    silent: bool = False,
 ):
 
     """
@@ -266,7 +256,7 @@ def propagate_probabilistic(
     Parameters
     ----------
 
-    lexicon: dict
+    lexicon: Dict[str, List[str]]
         curated lexicon from expert domain, {'label1': [str], 'label2': [str]}.
     wordvector: object
         wordvector interface object.
@@ -291,20 +281,10 @@ def propagate_probabilistic(
     tuple: (labels[argmax(scores), axis = 1], scores, labels)
     """
 
-    if not isinstance(lexicon, dict):
-        raise ValueError('lexicon must be a dictionary')
     if not hasattr(wordvector, 'batch_n_closest'):
         raise ValueError('wordvector must has `batch_n_closest` method')
     if not hasattr(wordvector, '_dictionary'):
         raise ValueError('wordvector must has `_dictionary` attribute')
-    if not isinstance(pool_size, int):
-        raise ValueError('pool_size must be an integer')
-    if not isinstance(top_n, int):
-        raise ValueError('top_n must be an integer')
-    if not isinstance(arccos, bool):
-        raise ValueError('arccos must be a boolean')
-    if not isinstance(soft, bool):
-        raise ValueError('soft must be a boolean')
 
     results, seeds, embeddings = _populate(
         lexicon = lexicon,
@@ -346,14 +326,14 @@ def propagate_probabilistic(
 
 
 def propagate_graph(
-    lexicon,
+    lexicon: Dict[str, List[str]],
     wordvector,
-    pool_size = 10,
-    top_n = 20,
-    similarity_power = 10.0,
-    normalization = True,
-    soft = False,
-    silent = False,
+    pool_size: int = 10,
+    top_n: int = 20,
+    similarity_power: float = 10.0,
+    normalization: bool = True,
+    soft: bool = False,
+    silent: bool = False,
 ):
 
     """
@@ -362,7 +342,7 @@ def propagate_graph(
     Parameters
     ----------
 
-    lexicon: dict
+    lexicon: Dict[str, List[str]]
         curated lexicon from expert domain, {'label1': [str], 'label2': [str]}.
     wordvector: object
         wordvector interface object.
@@ -385,18 +365,10 @@ def propagate_graph(
     tuple: (labels[argmax(scores), axis = 1], scores, labels)
     """
 
-    if not isinstance(lexicon, dict):
-        raise ValueError('lexicon must be a dictionary')
     if not hasattr(wordvector, 'batch_n_closest'):
         raise ValueError('wordvector must has `batch_n_closest` method')
     if not hasattr(wordvector, '_dictionary'):
         raise ValueError('wordvector must has `_dictionary` attribute')
-    if not isinstance(pool_size, int):
-        raise ValueError('pool_size must be an integer')
-    if not isinstance(top_n, int):
-        raise ValueError('top_n must be an integer')
-    if not isinstance(soft, bool):
-        raise ValueError('soft must be a boolean')
 
     results, seeds, embeddings = _populate(
         lexicon = lexicon,
