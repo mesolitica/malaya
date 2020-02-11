@@ -146,12 +146,6 @@ class BINARY_BERT(BERT):
         -------
         list_dictionaries: list of results
         """
-        if not isinstance(strings, list):
-            raise ValueError('input must be a list')
-        if not isinstance(get_proba, bool):
-            raise ValueError('get_proba must be a boolean')
-        if not isinstance(add_neutral, bool):
-            raise ValueError('add_neutral must be a boolean')
 
         if add_neutral:
             label = self._label + ['neutral']
@@ -813,7 +807,7 @@ class TAGGING_BERT(BERT):
         return tag_chunk(predicted)
 
     @check_type
-    def predict(self, string):
+    def predict(self, string: str):
         """
         Tag a string.
 
@@ -872,7 +866,7 @@ class DEPENDENCY_BERT(BERT):
         self._heads_seq = heads_seq
 
     @check_type
-    def predict(self, string):
+    def predict(self, string: str):
         """
         Tag a string.
 

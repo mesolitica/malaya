@@ -10,7 +10,7 @@ from .texts._text_functions import (
     STOPWORDS,
 )
 from herpetologist import check_type
-from typing import List, Dict, Tuple, Callable
+from typing import List, Tuple, Callable
 
 import numpy as np
 import re
@@ -135,13 +135,13 @@ def cluster_pos(result: List[Tuple[str, str]]):
 
 
 @check_type
-def cluster_tagging(result: List[Tuple(str, str)]):
+def cluster_tagging(result: List[Tuple[str, str]]):
     """
     cluster any tagging results, as long the data passed `[(string, label), (string, label)]`.
 
     Parameters
     ----------
-    result: List[Tuple(str, str)]
+    result: List[Tuple[str, str]]
 
     Returns
     -------
@@ -170,13 +170,13 @@ def cluster_tagging(result: List[Tuple(str, str)]):
 
 
 @check_type
-def cluster_entities(result: List[Tuple(str, str)]):
+def cluster_entities(result: List[Tuple[str, str]]):
     """
     cluster similar Entities.
 
     Parameters
     ----------
-    result: List[Tuple(str, str)]
+    result: List[Tuple[str, str]]
 
     Returns
     -------
@@ -223,7 +223,7 @@ def cluster_scatter(
     num_clusters: int = 5,
     titles: List[str] = None,
     colors: List[str] = None,
-    stemming: bool = True,
+    stemming = sastrawi,
     stop_words: List[str] = None,
     cleaning: Callable = simple_textcleaning,
     clustering = KMeans,
@@ -247,8 +247,8 @@ def cluster_scatter(
         list of titles, length must same with corpus.
     colors: List[str], (default=None)
         list of colors, length must same with num_clusters.
-    stemming: bool, (default=True)
-        If True, sastrawi_stemmer will apply.
+    stemming: function, (default=sastrawi)
+        function to stem the corpus.
     stop_words: List[str], (default=None)
         list of stop words to remove. If None, default is malaya.texts._text_functions.STOPWORDS
     ngram: Tuple[int, int], (default=(1,3))
@@ -262,6 +262,8 @@ def cluster_scatter(
     -------
     dictionary: {'X': X, 'Y': Y, 'labels': clusters, 'vector': transformed_text_clean, 'titles': titles}
     """
+    if not isinstance(stemming, collections.Callable) and stemming is not None:
+        raise ValueError('stemming must be a callable type or None')
     if titles:
         if len(titles) != len(corpus):
             raise ValueError('length of titles must be same with corpus')
@@ -291,7 +293,7 @@ def cluster_scatter(
             corpus[i] = cleaning(corpus[i])
     if stemming:
         for i in range(len(corpus)):
-            corpus[i] = sastrawi(corpus[i])
+            corpus[i] = stemming(corpus[i])
     text_clean = []
     for text in corpus:
         text_clean.append(
@@ -370,7 +372,7 @@ def cluster_dendogram(
     corpus: List[str],
     vectorizer,
     titles: List[str] = None,
-    stemming: bool = True,
+    stemming = sastrawi,
     stop_words: List[str] = None,
     cleaning: Callable = simple_textcleaning,
     random_samples: float = 0.3,
@@ -391,8 +393,8 @@ def cluster_dendogram(
         size of unsupervised clusters.
     titles: List[str], (default=None)
         list of titles, length must same with corpus.
-    stemming: bool, (default=True)
-        If True, sastrawi_stemmer will apply.
+    stemming: function, (default=sastrawi)
+        function to stem the corpus.
     stop_words: List[str], (default=None)
         list of stop words to remove. If None, default is malaya.texts._text_functions.STOPWORDS
     cleaning: function, (default=simple_textcleaning)
@@ -408,6 +410,8 @@ def cluster_dendogram(
     -------
     dictionary: {'linkage_matrix': linkage_matrix, 'titles': titles}
     """
+    if not isinstance(stemming, collections.Callable) and stemming is not None:
+        raise ValueError('stemming must be a callable type or None')
     if titles:
         if len(titles) != len(corpus):
             raise ValueError('length of titles must be same with corpus')
@@ -437,7 +441,7 @@ def cluster_dendogram(
             corpus[i] = cleaning(corpus[i])
     if stemming:
         for i in range(len(corpus)):
-            corpus[i] = sastrawi(corpus[i])
+            corpus[i] = stemming(corpus[i])
     text_clean = []
     for text in corpus:
         text_clean.append(
@@ -501,7 +505,7 @@ def cluster_graph(
     titles: List[str] = None,
     colors: List[str] = None,
     stop_words: List[str] = None,
-    stemming: bool = True,
+    stemming = sastrawi,
     ngram: Tuple[int, int] = (1, 3),
     cleaning: Callable = simple_textcleaning,
     clustering = KMeans,
@@ -524,8 +528,8 @@ def cluster_graph(
         size of unsupervised clusters.
     titles: List[str], (default=True)
         list of titles, length must same with corpus.
-    stemming: bool, (default=True)
-        If True, sastrawi_stemmer will apply.
+    stemming: function, (default=sastrawi)
+        function to stem the corpus.
     stop_words: List[str], (default=None)
         list of stop words to remove. If None, default is malaya.texts._text_functions.STOPWORDS
     cleaning: function, (default=simple_textcleaning)
@@ -575,7 +579,7 @@ def cluster_graph(
             corpus[i] = cleaning(corpus[i])
     if stemming:
         for i in range(len(corpus)):
-            corpus[i] = sastrawi(corpus[i])
+            corpus[i] = stemming(corpus[i])
     text_clean = []
     for text in corpus:
         text_clean.append(
@@ -721,6 +725,8 @@ def cluster_entity_linking(
 
     import inspect
 
+    if not isinstance(stemming, collections.Callable) and stemming is not None:
+        raise ValueError('stemming must be a callable type or None')
     if not hasattr(vectorizer, 'vectorize') and not hasattr(vectorizer, 'fit'):
         raise ValueError('vectorizer must has `fit` and `vectorize` methods')
     if 'max_df' not in inspect.getargspec(topic_modeling_model)[0]:
@@ -817,12 +823,12 @@ def cluster_entity_linking(
 
     corpus = topics_corpus
 
-    if cleaning is not None:
+    if cleaning:
         for i in range(len(corpus)):
             corpus[i] = cleaning(corpus[i])
     if stemming:
         for i in range(len(corpus)):
-            corpus[i] = sastrawi(corpus[i])
+            corpus[i] = stemming(corpus[i])
     text_clean = []
     for text in corpus:
         text_clean.append(

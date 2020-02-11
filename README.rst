@@ -48,7 +48,7 @@ Features
    From transfer-learning BERT-Bahasa, XLNET-Bahasa and ALBERT-Bahasa to do Naming Entity Recognition.
 -  **Language Detection**
 
-   using Multinomial, SGD, and Fast-text N-grams deep learning to distinguish Malay, English, and Indonesian.
+   using Fast-text and Sparse Deep learning Model to classify Malay (formal and social media), Indonesia (formal and social media), Rojak language and Manglish.
 -  **Normalizer**
 
    using local Malaysia NLP researches hybrid with Transformer models to normalize any bahasa texts.

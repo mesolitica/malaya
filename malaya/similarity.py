@@ -17,21 +17,20 @@ from .preprocessing import _tokenizer
 from ._models._bert_model import SIAMESE_BERT
 from ._models._xlnet_model import SIAMESE_XLNET
 from ._utils._paths import PATH_SIMILARITY, S3_PATH_SIMILARITY
+from herpetologist import check_type
+from typing import List, Tuple
 
 
 class _VECTORIZER_SIMILARITY:
     def __init__(self, vectorizer):
         self._vectorizer = vectorizer
 
-    def _predict(self, left_strings, right_strings, similarity = 'cosine'):
-        if not isinstance(left_strings, list):
-            raise ValueError('left_strings must be a list')
-        if not isinstance(left_strings[0], str):
-            raise ValueError('left_strings must be list of strings')
-        if not isinstance(right_strings, list):
-            raise ValueError('right_strings must be a list')
-        if not isinstance(right_strings[0], str):
-            raise ValueError('right_strings must be list of strings')
+    def _predict(
+        self,
+        left_strings: List[str],
+        right_strings: List[str],
+        similarity: str = 'cosine',
+    ):
 
         if len(left_strings) != len(right_strings):
             raise ValueError(
@@ -64,7 +63,10 @@ class _VECTORIZER_SIMILARITY:
         else:
             return 1 / (similar + 1)
 
-    def predict(self, left_string, right_string, similarity = 'cosine'):
+    @check_type
+    def predict(
+        self, left_string: str, right_string: str, similarity: str = 'cosine'
+    ):
         """
         calculate similarity for two different texts.
 
@@ -83,15 +85,17 @@ class _VECTORIZER_SIMILARITY:
         -------
         float: float
         """
-        if not isinstance(left_string, str):
-            raise ValueError('left_string must be a string')
-        if not isinstance(right_string, str):
-            raise ValueError('right_string must be a string')
         return self._predict(
             [left_string], [right_string], similarity = similarity
         )[0, 0]
 
-    def predict_batch(self, left_strings, right_strings, similarity = 'cosine'):
+    @check_type
+    def predict_batch(
+        self,
+        left_strings: List[str],
+        right_strings: List[str],
+        similarity: str = 'cosine',
+    ):
         """
         calculate similarity for two different batch of texts.
 
@@ -114,13 +118,14 @@ class _VECTORIZER_SIMILARITY:
             left_strings, right_strings, similarity = similarity
         ).diagonal()
 
+    @check_type
     def tree_plot(
         self,
-        strings,
-        similarity = 'cosine',
-        visualize = True,
-        figsize = (7, 7),
-        annotate = True,
+        strings: List[str],
+        similarity: str = 'cosine',
+        visualize: bool = True,
+        figsize: Tuple[int, int] = (7, 7),
+        annotate: bool = True,
     ):
         """
         plot a tree plot based on output from bert similarity.
@@ -144,12 +149,6 @@ class _VECTORIZER_SIMILARITY:
         -------
         list_dictionaries: list of results
         """
-        if not isinstance(visualize, bool):
-            raise ValueError('visualize must be a boolean')
-        if not isinstance(figsize, tuple):
-            raise ValueError('figsize must be a tuple')
-        if not isinstance(annotate, bool):
-            raise ValueError('annotate must be a boolean')
 
         results = self._predict(strings, strings, similarity = similarity)
         if not visualize:
@@ -181,29 +180,15 @@ class _DOC2VEC_SIMILARITY:
         self._vectorizer = vectorizer
         self._jarowinkler = JaroWinkler()
 
+    @check_type
     def _predict(
         self,
-        left_strings,
-        right_strings,
-        aggregation = 'mean',
-        similarity = 'cosine',
-        soft = True,
+        left_strings: List[str],
+        right_strings: List[str],
+        aggregation: str = 'mean',
+        similarity: str = 'cosine',
+        soft: bool = True,
     ):
-
-        if not isinstance(left_strings, list):
-            raise ValueError('left_strings must be a list')
-        if not isinstance(left_strings[0], str):
-            raise ValueError('left_strings must be list of strings')
-        if not isinstance(right_strings, list):
-            raise ValueError('right_strings must be a list')
-        if not isinstance(right_strings[0], str):
-            raise ValueError('right_strings must be list of strings')
-        if not isinstance(aggregation, str):
-            raise ValueError('aggregation must be a string')
-        if not isinstance(similarity, str):
-            raise ValueError('similarity must be a string')
-        if not isinstance(soft, bool):
-            raise ValueError('soft must be a boolean')
 
         if len(left_strings) != len(right_strings):
             raise ValueError(
@@ -308,13 +293,14 @@ class _DOC2VEC_SIMILARITY:
         else:
             return 1 / (similar + 1)
 
+    @check_type
     def predict(
         self,
-        left_string,
-        right_string,
-        aggregation = 'mean',
-        similarity = 'cosine',
-        soft = True,
+        left_string: str,
+        right_string: str,
+        aggregation: str = 'mean',
+        similarity: str = 'cosine',
+        soft: bool = True,
     ):
         """
         calculate similarity for two different texts.
@@ -344,10 +330,6 @@ class _DOC2VEC_SIMILARITY:
         -------
         float: float
         """
-        if not isinstance(left_string, str):
-            raise ValueError('left_string must be a string')
-        if not isinstance(right_string, str):
-            raise ValueError('right_string must be a string')
 
         return self._predict(
             [left_string],
@@ -357,13 +339,14 @@ class _DOC2VEC_SIMILARITY:
             soft = soft,
         )[0, 0]
 
+    @check_type
     def predict_batch(
         self,
-        left_strings,
-        right_strings,
-        aggregation = 'mean',
-        similarity = 'cosine',
-        soft = True,
+        left_strings: List[str],
+        right_strings: List[str],
+        aggregation: str = 'mean',
+        similarity: str = 'cosine',
+        soft: bool = True,
     ):
         """
         calculate similarity for two different batch of texts.
@@ -402,15 +385,16 @@ class _DOC2VEC_SIMILARITY:
             soft = soft,
         ).diagonal()
 
+    @check_type
     def tree_plot(
         self,
-        strings,
-        aggregation = 'mean',
-        similarity = 'cosine',
-        soft = True,
-        visualize = True,
-        figsize = (7, 7),
-        annotate = True,
+        strings: List[str],
+        aggregation: str = 'mean',
+        similarity: str = 'cosine',
+        soft: bool = True,
+        visualize: bool = True,
+        figsize: Tuple[int, int] = (7, 7),
+        annotate: bool = True,
     ):
         """
         plot a tree plot based on output from bert similarity.
@@ -444,12 +428,6 @@ class _DOC2VEC_SIMILARITY:
         -------
         list_dictionaries: list of results
         """
-        if not isinstance(visualize, bool):
-            raise ValueError('visualize must be a boolean')
-        if not isinstance(figsize, tuple):
-            raise ValueError('figsize must be a tuple')
-        if not isinstance(annotate, bool):
-            raise ValueError('annotate must be a boolean')
 
         results = self._predict(
             strings,
@@ -530,7 +508,8 @@ def available_transformer_model():
     return _availability
 
 
-def transformer(model = 'bert', size = 'base', validate = True):
+@check_type
+def transformer(model: str = 'bert', size: str = 'base', validate: bool = True):
     """
     Load Transformer sentiment model.
 

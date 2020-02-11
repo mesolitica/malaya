@@ -48,13 +48,15 @@ from .texts._normalization import (
 )
 from .cluster import cluster_words
 from .preprocessing import _tokenizer
+from herpetologist import check_type
 
 
 class _SPELL_NORMALIZE:
     def __init__(self, speller):
         self._speller = speller
 
-    def normalize(self, string, check_english = True):
+    @check_type
+    def normalize(self, string: str, check_english: bool = True):
         """
         Normalize a string
 

@@ -1,5 +1,6 @@
 from ._utils import _softmax_class
 from ._utils._paths import PATH_SENTIMENT, S3_PATH_SENTIMENT
+from herpetologist import check_type
 
 _availability = {
     'bert': ['base', 'small'],
@@ -15,7 +16,8 @@ def available_transformer_model():
     return _availability
 
 
-def multinomial(validate = True):
+@check_type
+def multinomial(validate: bool = True):
     """
     Load multinomial sentiment model.
 
@@ -37,7 +39,10 @@ def multinomial(validate = True):
     )
 
 
-def transformer(model = 'xlnet', size = 'base', validate = True):
+@check_type
+def transformer(
+    model: str = 'xlnet', size: str = 'base', validate: bool = True
+):
     """
     Load Transformer sentiment model.
 

@@ -417,53 +417,23 @@ sessions stored in
    :width: 500px
 
 
-XGB
-^^^
+fast-text
+^^^^^^^^^
 
 .. code:: text
 
                  precision    recall  f1-score   support
 
-          OTHER       0.98      0.99      0.99      9424
-            eng       1.00      0.99      0.99      9972
-            ind       1.00      0.99      0.99     11511
-            zlm       1.00      1.00      1.00     10679
+            eng    0.97885   0.90067   0.93814    110129
+            ind    0.99524   0.97450   0.98476    354327
+          malay    0.95929   0.99686   0.97771   1405848
+       manglish    0.99082   0.92965   0.95926    182420
+          other    0.96867   0.71465   0.82249     78259
+          rojak    0.97184   0.92336   0.94698    142231
 
-      micro avg       0.99      0.99      0.99     41586
-      macro avg       0.99      0.99      0.99     41586
-   weighted avg       0.99      0.99      0.99     41586
-
-Multinomial
-^^^^^^^^^^^
-
-.. code:: text
-
-                 precision    recall  f1-score   support
-
-          OTHER       1.00      0.97      0.99      9424
-            eng       0.99      1.00      0.99      9972
-            ind       1.00      1.00      1.00     11511
-            zlm       0.99      1.00      0.99     10679
-
-      micro avg       0.99      0.99      0.99     41586
-      macro avg       0.99      0.99      0.99     41586
-   weighted avg       0.99      0.99      0.99     41586
-
-SGD
-^^^
-
-.. code:: text
-
-                 precision    recall  f1-score   support
-
-          OTHER       0.97      0.99      0.98      9424
-            eng       0.99      0.99      0.99      9972
-            ind       1.00      0.99      0.99     11511
-            zlm       1.00      1.00      1.00     10679
-
-      micro avg       0.99      0.99      0.99     41586
-      macro avg       0.99      0.99      0.99     41586
-   weighted avg       0.99      0.99      0.99     41586
+       accuracy                        0.96901   2273214
+      macro avg    0.97745   0.90662   0.93822   2273214
+   weighted avg    0.96948   0.96901   0.96815   2273214
 
 Deep learning
 ^^^^^^^^^^^^^
@@ -472,14 +442,16 @@ Deep learning
 
                  precision    recall  f1-score   support
 
-          other       1.00      0.99      0.99      9445
-        english       1.00      1.00      1.00      9987
-     indonesian       1.00      1.00      1.00     11518
-          malay       1.00      1.00      1.00     10636
+            eng    0.97730   0.98195   0.97962    110129
+            ind    0.97384   0.95950   0.96662    354327
+          malay    0.97534   0.98862   0.98194   1405848
+       manglish    0.98968   0.98971   0.98969    182420
+          other    0.98128   0.97775   0.97951     78259
+          rojak    0.95718   0.86179   0.90698    142231
 
-      micro avg       1.00      1.00      1.00     41586
-      macro avg       1.00      1.00      1.00     41586
-   weighted avg       1.00      1.00      1.00     41586
+       accuracy                        0.97554   2273214
+      macro avg    0.97577   0.95989   0.96739   2273214
+   weighted avg    0.97542   0.97554   0.97529   2273214
 
 POS Recognition
 ---------------
@@ -496,7 +468,7 @@ dataset available inside the notebooks. All training sessions stored in
 
 
 
-.. image:: models-accuracy_files/models-accuracy_25_0.png
+.. image:: models-accuracy_files/models-accuracy_23_0.png
    :width: 500px
 
 
@@ -635,7 +607,7 @@ sessions stored in
 
 
 
-.. image:: models-accuracy_files/models-accuracy_31_0.png
+.. image:: models-accuracy_files/models-accuracy_29_0.png
    :width: 500px
 
 
@@ -699,7 +671,7 @@ sessions stored in
 
 
 
-.. image:: models-accuracy_files/models-accuracy_36_0.png
+.. image:: models-accuracy_files/models-accuracy_34_0.png
    :width: 500px
 
 
@@ -793,7 +765,7 @@ sessions stored in
 
 
 
-.. image:: models-accuracy_files/models-accuracy_43_0.png
+.. image:: models-accuracy_files/models-accuracy_41_0.png
    :width: 500px
 
 
@@ -850,6 +822,15 @@ sessions stored in
 `session/subjectivity <https://github.com/huseinzol05/Malaya/tree/master/session/subjectivity>`__
 
 **Graph based on F1-score.**
+
+.. code:: ipython3
+
+    display(Image('subjectivity-accuracy.png', width=500))
+
+
+
+.. image:: models-accuracy_files/models-accuracy_46_0.png
+   :width: 500px
 
 
 multinomial
@@ -942,7 +923,7 @@ sessions stored in
 
 
 
-.. image:: models-accuracy_files/models-accuracy_55_0.png
+.. image:: models-accuracy_files/models-accuracy_53_0.png
    :width: 500px
 
 

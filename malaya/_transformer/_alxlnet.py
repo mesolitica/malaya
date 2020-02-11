@@ -10,6 +10,7 @@ from collections import defaultdict
 import re
 import os
 import numpy as np
+from herpetologist import check_type
 
 
 def get_assignment_map_from_checkpoint(tvars, init_checkpoint):
@@ -204,11 +205,10 @@ class _Model:
             )
         return output
 
+    @check_type
     def visualize_attention(self, string):
         from .._utils._html import _attention
 
-        if not isinstance(string, str):
-            raise ValueError('input must be a string')
         strings = [string]
         attentions, s_tokens = self._attention(strings)
         attn_dict = defaultdict(list)
@@ -226,7 +226,10 @@ class _Model:
         _attention(results)
 
 
-def alxlnet(model = 'base', pool_mode = 'last', validate = True):
+@check_type
+def alxlnet(
+    model: str = 'base', pool_mode: str = 'last', validate: bool = True
+):
     """
     Load xlnet model.
 
@@ -250,13 +253,6 @@ def alxlnet(model = 'base', pool_mode = 'last', validate = True):
     -------
     XLNET_MODEL: malaya._transformer._xlnet._Model class
     """
-
-    if not isinstance(model, str):
-        raise ValueError('model must be a string')
-    if not isinstance(pool_mode, str):
-        raise ValueError('pool_mode must be a string')
-    if not isinstance(validate, bool):
-        raise ValueError('validate must be a boolean')
 
     model = model.lower()
     pool_mode = pool_mode.lower()

@@ -6,6 +6,8 @@ from sklearn.neighbors import NearestNeighbors
 from ._utils._utils import check_file, _Calculator
 from ._utils._paths import PATH_WORDVECTOR, S3_PATH_WORDVECTOR
 import tensorflow as tf
+from herpetologist import check_type
+from typing import List, Tuple, Dict
 
 
 def _load(j, npy):
@@ -64,7 +66,8 @@ def load_social_media():
     )
 
 
-def load(embed_matrix, dictionary):
+@check_type
+def load(embed_matrix, dictionary: Dict):
 
     """
     Return malaya.wordvector._wordvector object.
@@ -104,7 +107,8 @@ class _wordvector:
             )
             self._sess = tf.InteractiveSession()
 
-    def get_vector_by_name(self, word):
+    @check_type
+    def get_vector_by_name(self, word: str):
         """
         get vector based on string.
 
@@ -116,8 +120,7 @@ class _wordvector:
         -------
         vector: numpy
         """
-        if not isinstance(word, str):
-            raise ValueError('input must be a string')
+
         if word not in self._dictionary:
             arr = np.array(
                 [self._jarowinkler.similarity(word, k) for k in self.words]
@@ -130,7 +133,10 @@ class _wordvector:
             )
         return self._embed_matrix[self._dictionary[word]]
 
-    def tree_plot(self, labels, figsize = (7, 7), annotate = True):
+    @check_type
+    def tree_plot(
+        self, labels, figsize: Tuple[int, int] = (7, 7), annotate: bool = True
+    ):
         """
         plot a tree plot based on output from calculator / n_closest / analogy.
 
@@ -191,13 +197,14 @@ class _wordvector:
         plt.show()
         return embed, labelled
 
+    @check_type
     def scatter_plot(
         self,
         labels,
-        centre = None,
-        figsize = (7, 7),
-        plus_minus = 25,
-        handoff = 5e-5,
+        centre: str = None,
+        figsize: Tuple[int, int] = (7, 7),
+        plus_minus: int = 25,
+        handoff: float = 5e-5,
     ):
         """
         plot a scatter plot based on output from calculator / n_closest / analogy.
@@ -227,19 +234,10 @@ class _wordvector:
                 'matplotlib and seaborn not installed. Please install it and try again.'
             )
 
-        if not isinstance(labels, list):
-            raise ValueError('input must be a list')
-        if not isinstance(figsize, tuple):
-            raise ValueError('figsize must be a tuple')
-        if not isinstance(plus_minus, int):
-            raise ValueError('plus_minus must be an integer')
-
         idx = [
             self.words.index(e[0] if isinstance(e, list) else e) for e in labels
         ]
         if centre:
-            if not isinstance(centre, str):
-                raise ValueError('centre must be a string')
             idx.append(self.words.index(centre))
         cp_idx = idx[:]
         for i in idx:
@@ -353,8 +351,12 @@ class _wordvector:
                 )
         return words
 
+    @check_type
     def batch_calculator(
-        self, equations, num_closest = 5, return_similarity = False
+        self,
+        equations: List[str],
+        num_closest: int = 5,
+        return_similarity: bool = False,
     ):
         """
         batch calculator parser for word2vec using tensorflow.
@@ -370,12 +372,6 @@ class _wordvector:
         -------
         word_list: list of nearest words
         """
-        if not isinstance(equations, list):
-            raise ValueError('equations must be a list of string')
-        if not isinstance(num_closest, int):
-            raise ValueError('num_closest must be an integer')
-        if not isinstance(return_similarity, bool):
-            raise ValueError('return_similarity must be a boolean')
         batches = np.array([self._calculate(eq) for eq in equations])
         return self._batch_process(
             batches,
@@ -383,12 +379,13 @@ class _wordvector:
             return_similarity = return_similarity,
         )
 
+    @check_type
     def calculator(
         self,
-        equation,
-        num_closest = 5,
-        metric = 'cosine',
-        return_similarity = True,
+        equation: str,
+        num_closest: bool = 5,
+        metric: str = 'cosine',
+        return_similarity: bool = True,
     ):
         """
         calculator parser for word2vec.
@@ -408,14 +405,6 @@ class _wordvector:
         -------
         word_list: list of nearest words
         """
-        if not isinstance(equation, str):
-            raise ValueError('input must be a string')
-        if not isinstance(num_closest, int):
-            raise ValueError('num_closest must be an integer')
-        if not isinstance(metric, str):
-            raise ValueError('metric must be a string')
-        if not isinstance(return_similarity, bool):
-            raise ValueError('num_closest must be a boolean')
         calculated = self._calculate(equation)
         if return_similarity:
             nn = NearestNeighbors(num_closest + 1, metric = metric).fit(
@@ -437,8 +426,13 @@ class _wordvector:
                 word_list.append(self._reverse_dictionary[i])
             return word_list
 
+    @check_type
     def batch_n_closest(
-        self, words, num_closest = 5, return_similarity = False, soft = True
+        self,
+        words: List[str],
+        num_closest: int = 5,
+        return_similarity: bool = False,
+        soft: bool = True,
     ):
         """
         find nearest words based on a batch of words using Tensorflow.
@@ -459,14 +453,6 @@ class _wordvector:
         -------
         word_list: list of nearest words
         """
-        if not isinstance(words, list):
-            raise ValueError('input must be list of strings')
-        if not isinstance(num_closest, int):
-            raise ValueError('num_closest must be an integer')
-        if not isinstance(return_similarity, bool):
-            raise ValueError('return_similarity must be a boolean')
-        if not isinstance(soft, bool):
-            raise ValueError('soft must be a boolean')
         if soft:
             for i in range(len(words)):
                 if words[i] not in self.words:
@@ -492,8 +478,13 @@ class _wordvector:
             return_similarity = return_similarity,
         )
 
+    @check_type
     def n_closest(
-        self, word, num_closest = 5, metric = 'cosine', return_similarity = True
+        self,
+        word: str,
+        num_closest: int = 5,
+        metric: str = 'cosine',
+        return_similarity: bool = True,
     ):
         """
         find nearest words based on a word.
@@ -513,14 +504,6 @@ class _wordvector:
         -------
         word_list: list of nearest words
         """
-        if not isinstance(word, str):
-            raise ValueError('input must be a string')
-        if not isinstance(num_closest, int):
-            raise ValueError('num_closest must be an integer')
-        if not isinstance(metric, str):
-            raise ValueError('metric must be a string')
-        if not isinstance(return_similarity, bool):
-            raise ValueError('num_closest must be a boolean')
         if return_similarity:
             nn = NearestNeighbors(num_closest + 1, metric = metric).fit(
                 self._embed_matrix
@@ -553,7 +536,10 @@ class _wordvector:
         sorted_indices = np.argsort(dist_array)
         return sorted_indices[:num]
 
-    def analogy(self, a, b, c, num = 1, metric = 'cosine'):
+    @check_type
+    def analogy(
+        self, a: str, b: str, c: str, num: int = 1, metric: str = 'cosine'
+    ):
         """
         analogy calculation, vb - va + vc.
 
@@ -570,12 +556,6 @@ class _wordvector:
         -------
         word_list: list of nearest words
         """
-        if not isinstance(a, str):
-            raise ValueError('a must be a string')
-        if not isinstance(b, str):
-            raise ValueError('b must be a string')
-        if not isinstance(c, str):
-            raise ValueError('c must be a string')
         if a not in self._dictionary:
             raise Exception('a not in dictinary')
         if b not in self._dictionary:
@@ -592,7 +572,8 @@ class _wordvector:
             d_word_list.append(self._reverse_dictionary[i])
         return d_word_list
 
-    def project_2d(self, start, end):
+    @check_type
+    def project_2d(self, start: int, end: int):
         """
         project word2vec into 2d dimension.
 
@@ -605,10 +586,6 @@ class _wordvector:
         -------
         tsne decomposition: numpy
         """
-        if not isinstance(start, int):
-            raise ValueError('start must be an integer')
-        if not isinstance(end, int):
-            raise ValueError('end must be an integer')
         tsne = TSNE(n_components = 2)
         embed_2d = tsne.fit_transform(self._embed_matrix[start:end, :])
         word_list = []
@@ -616,16 +593,17 @@ class _wordvector:
             word_list.append(self._reverse_dictionary[i])
         return embed_2d, word_list
 
+    @check_type
     def network(
         self,
-        word,
-        num_closest = 8,
-        depth = 4,
-        min_distance = 0.5,
-        iteration = 300,
-        figsize = (15, 15),
-        node_color = '#72bbd0',
-        node_factor = 50,
+        word: str,
+        num_closest: int = 8,
+        depth: int = 4,
+        min_distance: float = 0.5,
+        iteration: int = 300,
+        figsize: Tuple[int, int] = (15, 15),
+        node_color: str = '#72bbd0',
+        node_factor: int = 50,
     ):
 
         """
@@ -663,20 +641,6 @@ class _wordvector:
             raise Exception(
                 'matplotlib, networkx and pandas not installed. Please install it and try again.'
             )
-
-        if not isinstance(word, str):
-            raise ValueError('input must be a string')
-        if not isinstance(num_closest, int):
-            raise ValueError('num_closest must be an integer')
-        if not isinstance(depth, int):
-            raise ValueError('depth must be an integer')
-        if not isinstance(min_distance, float):
-            raise ValueError('min_distance must be a float')
-        if not isinstance(iteration, int):
-            raise ValueError('iteration must be an integer')
-        if not isinstance(figsize, tuple):
-            raise ValueError('figsize must be a tuple')
-        n_closest = self.n_closest
 
         def get_follower(
             centre,

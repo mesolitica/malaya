@@ -214,7 +214,6 @@ def split_by_dot(string):
 
 
 def language_detection_textcleaning(string):
-    string = unidecode(string)
     string = re.sub(
         'http\S+|www.\S+',
         '',
@@ -222,11 +221,15 @@ def language_detection_textcleaning(string):
             [i for i in string.split() if i.find('#') < 0 and i.find('@') < 0]
         ),
     )
+
     chars = ',.()!:\'"/;=-'
     for c in chars:
         string = string.replace(c, f' {c} ')
+    string = string.replace('\n', '').replace('\t', '')
 
-    string = re.sub('[^A-Za-z ]+', ' ', unidecode(string))
+    string = re.sub(
+        '[0-9!@#$%^&*()_\-+{}|\~`\'";:?/.>,<]', ' ', string, flags = re.UNICODE
+    )
     string = re.sub(r'[ ]+', ' ', string).strip()
 
     return string.lower()

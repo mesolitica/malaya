@@ -1,12 +1,15 @@
 from scipy.stats.mstats import gmean, hmean, hdmedian
 import numpy as np
+from herpetologist import check_type
+from typing import List
 
 
 def _most_common(l):
     return max(set(l), key = l.count)
 
 
-def voting_stack(models, text):
+@check_type
+def voting_stack(models, text: str):
     """
     Stacking for POS, Entities and Dependency models.
 
@@ -23,8 +26,6 @@ def voting_stack(models, text):
     """
     if not isinstance(models, list):
         raise ValueError('models must be a list')
-    if not isinstance(text, str):
-        raise ValueError('text must be a string')
     results, texts, votes, votes_indices, indices = [], [], [], [], []
     is_dependency = False
     for i in range(len(models)):
@@ -69,7 +70,8 @@ dict_function = {
 }
 
 
-def predict_stack(models, strings, mode = 'gmean'):
+@check_type
+def predict_stack(models, strings, mode: str = 'gmean'):
     """
     Stacking for predictive models.
 
@@ -104,8 +106,6 @@ def predict_stack(models, strings, mode = 'gmean'):
             raise ValueError('input must be a list of strings or a string')
     if isinstance(strings, str):
         strings = [strings]
-    if not isinstance(mode, str):
-        raise ValueError('mode must be a string')
     if mode.lower() not in dict_function:
         raise Exception(
             "mode not supported, only support ['gmean','hmean','mean','min','max','median']"

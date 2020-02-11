@@ -18,6 +18,7 @@ from .texts._tatabahasa import (
 )
 from ._utils._paths import PATH_NGRAM, S3_PATH_NGRAM
 from ._utils._utils import check_file, check_available
+from herpetologist import check_type
 
 
 def _load_sentencepiece(vocab, vocab_model):
@@ -375,20 +376,15 @@ class _TransformerCorrector(_Spell_augmentation):
         probs.sort(key = lambda x: x[1])
         return probs[0][0]
 
-    def correct(self, word, string, index = -1, batch_size = 20):
+    @check_type
+    def correct(
+        self, word: str, string: str, index: int = -1, batch_size: int = 20
+    ):
         """
         Correct a word within a text, returning the corrected word.
         """
-        if not isinstance(word, str):
-            raise ValueError('word must be a string')
-        if not isinstance(string, str):
-            raise ValueError('string must be a string')
-        if not isinstance(batch_size, int):
-            raise ValueError('batch_size must be an integer')
         if batch_size < 1:
             raise ValueError('batch_size must be bigger than 0')
-        if not isinstance(index, int):
-            raise ValueError('index must be an integer')
         string = string.split()
         if word not in string:
             raise ValueError('word not in string after split by spaces')
@@ -408,14 +404,12 @@ class _TransformerCorrector(_Spell_augmentation):
             word = self._correct(word, string, index, batch_size = batch_size)
         return word
 
-    def correct_text(self, text, batch_size = 20):
+    @check_type
+    def correct_text(self, text: str, batch_size: int = 20):
         """
-        Correct all the words within a text, returning the corrected text."""
+        Correct all the words within a text, returning the corrected text.
+        """
 
-        if not isinstance(text, str):
-            raise ValueError('text must be a string')
-        if not isinstance(batch_size, int):
-            raise ValueError('batch_size must be an integer')
         if batch_size < 1:
             raise ValueError('batch_size must be bigger than 0')
 
@@ -433,7 +427,8 @@ class _TransformerCorrector(_Spell_augmentation):
 
         return ' '.join(strings)
 
-    def correct_word(self, word, string, batch_size = 20):
+    @check_type
+    def correct_word(self, word: str, string: str, batch_size: int = 20):
         """
         Spell-correct word in match, and preserve proper upper/lower/title case.
         """
@@ -471,12 +466,11 @@ class _SpellCorrector(_Spell_augmentation):
         else:
             return []
 
-    def correct(self, word, **kwargs):
+    @check_type
+    def correct(self, word: str, **kwargs):
         """
         Most probable spelling correction for word.
         """
-        if not isinstance(word, str):
-            raise ValueError('word must be a string')
 
         if word in ENGLISH_WORDS:
             return word
@@ -529,7 +523,8 @@ class _SpellCorrector(_Spell_augmentation):
 
         return word
 
-    def correct_text(self, text):
+    @check_type
+    def correct_text(self, text: str):
         """
         Correct all the words within a text, returning the corrected text."""
 
@@ -548,7 +543,8 @@ class _SpellCorrector(_Spell_augmentation):
             return word
         return self.case_of(word)(self.correct(word.lower()))
 
-    def correct_word(self, word):
+    @check_type
+    def correct_word(self, word: str):
         """
         Spell-correct word in match, and preserve proper upper/lower/title case.
         """
@@ -669,12 +665,11 @@ class _SymspellCorrector:
             ttt = {word: 10}
         return ttt
 
-    def correct(self, word, **kwargs):
+    @check_type
+    def correct(self, word: str, **kwargs):
         """
         Most probable spelling correction for word.
         """
-        if not isinstance(word, str):
-            raise ValueError('word must be a string')
 
         if word in ENGLISH_WORDS:
             return word
@@ -725,12 +720,11 @@ class _SymspellCorrector:
                 word = permulaan_result + word
         return word
 
-    def correct_text(self, text):
+    @check_type
+    def correct_text(self, text: str):
         """
-        Correct all the words within a text, returning the corrected text."""
-
-        if not isinstance(text, str):
-            raise ValueError('text must be a string')
+        Correct all the words within a text, returning the corrected text.
+        """
 
         return re.sub('[a-zA-Z]+', self.correct_match, text)
 
@@ -760,7 +754,8 @@ class _SymspellCorrector:
         )
 
 
-def probability(sentence_piece = False, validate = True):
+@check_type
+def probability(sentence_piece: bool = False, validate: bool = True):
     """
     Train a Probability Spell Corrector.
 
@@ -775,11 +770,6 @@ def probability(sentence_piece = False, validate = True):
     -------
     _SpellCorrector: malaya.spell._SpellCorrector class
     """
-    if not isinstance(sentence_piece, bool):
-        raise ValueError('sentence_piece must be a boolean')
-
-    if not isinstance(validate, bool):
-        raise ValueError('validate must be a boolean')
 
     if validate:
         check_file(PATH_NGRAM[1], S3_PATH_NGRAM[1])
@@ -811,13 +801,14 @@ def probability(sentence_piece = False, validate = True):
     return _SpellCorrector(corpus, tokenizer)
 
 
+@check_type
 def symspell(
-    validate = True,
-    max_edit_distance_dictionary = 2,
-    prefix_length = 7,
-    term_index = 0,
-    count_index = 1,
-    top_k = 10,
+    validate: bool = True,
+    max_edit_distance_dictionary: int = 2,
+    prefix_length: int = 7,
+    term_index: int = 0,
+    count_index: int = 1,
+    top_k: int = 10,
 ):
     """
     Train a symspell Spell Corrector.
@@ -831,16 +822,6 @@ def symspell(
     -------
     _SpellCorrector: malaya.spell._SymspellCorrector class
     """
-    if not isinstance(validate, bool):
-        raise ValueError('validate must be a boolean')
-    if not isinstance(max_edit_distance_dictionary, int):
-        raise ValueError('max_edit_distance_dictionary must be an integer')
-    if not isinstance(prefix_length, int):
-        raise ValueError('prefix_length must be an integer')
-    if not isinstance(term_index, int):
-        raise ValueError('term_index must be an integer')
-    if not isinstance(count_index, int):
-        raise ValueError('count_index must be an integer')
 
     if validate:
         check_file(PATH_NGRAM['symspell'], S3_PATH_NGRAM['symspell'])
@@ -868,7 +849,8 @@ def symspell(
     return _SymspellCorrector(sym_spell, Verbosity.ALL, corpus, k = top_k)
 
 
-def transformer(model, sentence_piece = False, validate = True):
+@check_type
+def transformer(model, sentence_piece: bool = False, validate: bool = True):
     """
     Load a Transformer Spell Corrector. Right now only supported BERT and ALBERT.
 
@@ -883,12 +865,6 @@ def transformer(model, sentence_piece = False, validate = True):
     """
     if not hasattr(model, '_log_vectorize'):
         raise ValueError('model must has `_log_vectorize` method')
-
-    if not isinstance(sentence_piece, bool):
-        raise ValueError('sentence_piece must be a boolean')
-
-    if not isinstance(validate, bool):
-        raise ValueError('validate must be a boolean')
 
     if validate:
         check_file(PATH_NGRAM[1], S3_PATH_NGRAM[1])

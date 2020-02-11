@@ -15,6 +15,10 @@ lang_labels = {
 }
 
 
+def label():
+    return lang_labels
+
+
 @check_type
 def fasttext(quantization: bool = True, validate: bool = True):
 
@@ -59,7 +63,7 @@ def fasttext(quantization: bool = True, validate: bool = True):
             "model corrupted due to some reasons, please run malaya.clear_cache('language-detection/%s') and try again"
             % (model)
         )
-    return LANGUAGE_DETECTION(model, lang_labels)
+    return LANGUAGE_DETECTION(model_fasttext, lang_labels)
 
 
 @check_type

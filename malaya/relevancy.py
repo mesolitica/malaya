@@ -1,5 +1,6 @@
 from ._utils import _softmax_class
 from ._utils._paths import PATH_RELEVANCY, S3_PATH_RELEVANCY
+from herpetologist import check_type
 
 _availability = {'bert': ['base'], 'xlnet': ['base'], 'albert': ['base']}
 
@@ -11,7 +12,10 @@ def available_transformer_model():
     return _availability
 
 
-def transformer(model = 'xlnet', size = 'base', validate = True):
+@check_type
+def transformer(
+    model: str = 'xlnet', size: str = 'base', validate: bool = True
+):
     """
     Load Transformer relevancy model.
 
@@ -34,12 +38,6 @@ def transformer(model = 'xlnet', size = 'base', validate = True):
     -------
     MODEL : Transformer class
     """
-    if not isinstance(model, str):
-        raise ValueError('model must be a string')
-    if not isinstance(size, str):
-        raise ValueError('size must be a string')
-    if not isinstance(validate, bool):
-        raise ValueError('validate must be a boolean')
 
     model = model.lower()
     size = size.lower()

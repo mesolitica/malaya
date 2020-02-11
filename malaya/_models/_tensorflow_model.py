@@ -32,11 +32,11 @@ def _convert_sparse_matrix_to_sparse_tensor(X, got_limit = True, limit = 5):
 
 
 class _LANG_MODEL:
-    def __init__(self, learning_rate, dimension = 64, output = 6):
+    def __init__(self, dimension = 32, output = 6):
         self.X = tf.sparse_placeholder(tf.int32)
         self.W = tf.sparse_placeholder(tf.int32)
         self.Y = tf.placeholder(tf.int32, [None])
-        embeddings = tf.Variable(tf.truncated_normal([300000, dimension]))
+        embeddings = tf.Variable(tf.truncated_normal([400000, dimension]))
         embed = tf.nn.embedding_lookup_sparse(
             embeddings, self.X, self.W, combiner = 'mean'
         )
@@ -108,6 +108,7 @@ class DEEP_LANG:
         else:
             return self._label[np.argmax(probs)]
 
+    @check_type
     def predict_batch(self, strings: List[str], get_proba: bool = False):
         """
         classify list of strings

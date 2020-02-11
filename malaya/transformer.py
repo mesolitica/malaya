@@ -1,3 +1,5 @@
+from herpetologist import check_type
+
 _availability = {
     'bert': ['base', 'small'],
     'xlnet': ['base'],
@@ -13,7 +15,13 @@ def available_model():
     return _availability
 
 
-def load(size = 'base', model = 'xlnet', pool_mode = 'last', validate = True):
+@check_type
+def load(
+    size: int = 'base',
+    model: int = 'xlnet',
+    pool_mode: int = 'last',
+    validate: bool = True,
+):
 
     """
     Load transformer model.

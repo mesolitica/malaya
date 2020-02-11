@@ -14,6 +14,8 @@ from .texts._text_functions import (
 )
 from .texts.vectorizer import skipgrams, SkipGramVectorizer
 from .generator import ngrams as ngrams_generator
+from herpetologist import check_type
+from typing import List, Tuple, Callable
 
 
 def _softmax(x):
@@ -79,7 +81,10 @@ class _ATTENTION_TOPIC:
         self._features = features
         self._components = components
 
-    def top_topics(self, len_topic, top_n = 10, return_df = True):
+    @check_type
+    def top_topics(
+        self, len_topic: int, top_n: int = 10, return_df: bool = True
+    ):
         """
         Print important topics based on decomposition.
 
@@ -87,12 +92,6 @@ class _ATTENTION_TOPIC:
         ----------
         len_topic: int
         """
-        if not isinstance(len_topic, int):
-            raise ValueError('len_topic must be an integer')
-        if not isinstance(top_n, int):
-            raise ValueError('top_n must be an integer')
-        if not isinstance(return_df, bool):
-            raise ValueError('return_df must be a boolean')
         return print_topics_modelling(
             len_topic,
             feature_names = np.array(self._features),
@@ -101,7 +100,8 @@ class _ATTENTION_TOPIC:
             return_df = return_df,
         )
 
-    def get_topics(self, len_topic):
+    @check_type
+    def get_topics(self, len_topic: int):
         """
         Return important topics based on decomposition.
 
@@ -113,8 +113,6 @@ class _ATTENTION_TOPIC:
         -------
         results: list of strings
         """
-        if not isinstance(len_topic, int):
-            raise ValueError('len_topic must be an integer')
         results = []
         for no, topic in enumerate(self._components):
             results.append(
@@ -155,7 +153,8 @@ class _DEEP_TOPIC:
         for i in range(len(self._dictionary)):
             self._features.append(self._reversed_dictionary[i])
 
-    def visualize_topics(self, notebook_mode = False, mds = 'pcoa'):
+    @check_type
+    def visualize_topics(self, notebook_mode: int = False, mds: str = 'pcoa'):
         """
         Print important topics based on decomposition.
 
@@ -168,10 +167,6 @@ class _DEEP_TOPIC:
             * ``'mmds'`` - Dimension reduction via Multidimensional scaling
             * ``'tsne'`` - Dimension reduction via t-distributed stochastic neighbor embedding
         """
-        if not isinstance(mds, str):
-            raise ValueError('mds must be a string')
-        if not isinstance(notebook_mode, bool):
-            raise ValueError('notebook_mode must be a boolean')
         try:
             import pyLDAvis
             import pyLDAvis.sklearn
@@ -198,7 +193,10 @@ class _DEEP_TOPIC:
         else:
             pyLDAvis.show(prepared_vis_data)
 
-    def top_topics(self, len_topic, top_n = 10, return_df = True):
+    @check_type
+    def top_topics(
+        self, len_topic: int, top_n: int = 10, return_df: bool = True
+    ):
         """
         Print important topics based on decomposition.
 
@@ -206,12 +204,6 @@ class _DEEP_TOPIC:
         ----------
         len_topic: int
         """
-        if not isinstance(len_topic, int):
-            raise ValueError('len_topic must be an integer')
-        if not isinstance(top_n, int):
-            raise ValueError('top_n must be an integer')
-        if not isinstance(return_df, bool):
-            raise ValueError('return_df must be a boolean')
         return print_topics_modelling(
             len_topic,
             feature_names = np.array(self._features),
@@ -220,7 +212,8 @@ class _DEEP_TOPIC:
             return_df = return_df,
         )
 
-    def get_topics(self, len_topic):
+    @check_type
+    def get_topics(self, len_topic: int):
         """
         Return important topics based on decomposition.
 
@@ -232,8 +225,6 @@ class _DEEP_TOPIC:
         -------
         results: list of strings
         """
-        if not isinstance(len_topic, int):
-            raise ValueError('len_topic must be an integer')
         results = []
         for no, topic in enumerate(self._components):
             results.append(
@@ -249,7 +240,8 @@ class _DEEP_TOPIC:
             )
         return results
 
-    def get_sentences(self, len_sentence, k = 0):
+    @check_type
+    def get_sentences(self, len_sentence: int, k: int = 0):
         """
         Return important sentences related to selected column based on decomposition.
 
@@ -263,10 +255,6 @@ class _DEEP_TOPIC:
         -------
         results: list of strings
         """
-        if not isinstance(len_sentence, int):
-            raise ValueError('len_sentence must be an integer')
-        if not isinstance(k, int):
-            raise ValueError('k must be an integer')
         if not (k < self._doc_embed.shape[1] and k >= 0):
             raise ValueError('k should be between 0 and n_topics')
         reverse_sorted = np.argsort(self._doc_embed[:, k])[::-1]
@@ -284,7 +272,8 @@ class _TOPIC:
         self.vectorizer = vectorizer
         self._vectors = vectors
 
-    def visualize_topics(self, notebook_mode = False, mds = 'pcoa'):
+    @check_type
+    def visualize_topics(self, notebook_mode: bool = False, mds: str = 'pcoa'):
         """
         Print important topics based on decomposition.
 
@@ -297,10 +286,7 @@ class _TOPIC:
             * ``'mmds'`` - Dimension reduction via Multidimensional scaling
             * ``'tsne'`` - Dimension reduction via t-distributed stochastic neighbor embedding
         """
-        if not isinstance(mds, str):
-            raise ValueError('mds must be a string')
-        if not isinstance(notebook_mode, bool):
-            raise ValueError('notebook_mode must be a boolean')
+
         if not isinstance(self.comp, LatentDirichletAllocation):
             raise ValueError('only support lda_topic_modelling()')
 
@@ -318,7 +304,10 @@ class _TOPIC:
         else:
             pyLDAvis.show(prepared_vis_data)
 
-    def top_topics(self, len_topic, top_n = 10, return_df = True):
+    @check_type
+    def top_topics(
+        self, len_topic: int, top_n: int = 10, return_df: bool = True
+    ):
         """
         Print important topics based on decomposition.
 
@@ -326,10 +315,6 @@ class _TOPIC:
         ----------
         len_topic: int
         """
-        if not isinstance(len_topic, int):
-            raise ValueError('len_topic must be an integer')
-        if not isinstance(return_df, bool):
-            raise ValueError('return_df must be a boolean')
         return print_topics_modelling(
             len_topic,
             feature_names = np.array(self.features),
@@ -338,7 +323,8 @@ class _TOPIC:
             return_df = return_df,
         )
 
-    def get_topics(self, len_topic):
+    @check_type
+    def get_topics(self, len_topic: int):
         """
         Return important topics based on decomposition.
 
@@ -367,7 +353,8 @@ class _TOPIC:
             )
         return results
 
-    def get_sentences(self, len_sentence, k = 0):
+    @check_type
+    def get_sentences(self, len_sentence: int, k: int = 0):
         """
         Return important sentences related to selected column based on decomposition.
 
@@ -381,58 +368,31 @@ class _TOPIC:
         -------
         results: list of strings
         """
-        if not isinstance(len_sentence, int):
-            raise ValueError('len_sentence must be an integer')
-        if not isinstance(k, int):
-            raise ValueError('k must be an integer')
         if not (k < self.transformed.shape[1] and k >= 0):
             raise ValueError('k should be between 0 and n_topics')
         reverse_sorted = np.argsort(self.transformed[:, k])[::-1]
         return [self.corpus[i] for i in reverse_sorted[:len_sentence]]
 
 
+@check_type
 def _base_topic_modelling(
-    corpus,
-    n_topics,
+    corpus: List[str],
+    n_topics: int,
     decomposition,
-    max_df = 0.95,
-    min_df = 2,
-    ngram = (1, 3),
-    vectorizer = 'bow',
+    max_df: float = 0.95,
+    min_df: int = 2,
+    ngram: Tuple[int, int] = (1, 3),
+    vectorizer: str = 'bow',
     stemming = sastrawi,
-    cleaning = simple_textcleaning,
-    stop_words = None,
+    cleaning: Callable = simple_textcleaning,
+    stop_words: List[str] = None,
     **kwargs,
 ):
-    if not isinstance(corpus, list):
-        raise ValueError('corpus must be a list')
-    if not isinstance(corpus[0], str):
-        raise ValueError('corpus must be list of strings')
-    if not isinstance(n_topics, int):
-        raise ValueError('n_topics must be an integer')
-    if not isinstance(vectorizer, str):
-        raise ValueError('vectorizer must be a string')
     if not isinstance(stemming, collections.Callable) and stemming is not None:
         raise ValueError('stemming must be a callable type or None')
-    if not isinstance(cleaning, collections.Callable) and stemming is not None:
-        raise ValueError('cleaning must be a callable type or None')
-    if (
-        not isinstance(stop_words, set)
-        and not isinstance(stop_words, list)
-        and stop_words is not None
-    ):
-        raise ValueError('stop_words must be a set or a list or None')
     vectorizer = vectorizer.lower()
     if not vectorizer in ['tfidf', 'bow', 'skip-gram']:
         raise ValueError("vectorizer must be in  ['tfidf', 'bow', 'skip-gram']")
-    if not isinstance(ngram, tuple):
-        raise ValueError('ngram must be a tuple')
-    if not len(ngram) == 2:
-        raise ValueError('ngram size must equal to 2')
-    if not isinstance(min_df, int):
-        raise ValueError('min_df must be an integer')
-    if not (isinstance(max_df, int) or isinstance(max_df, float)):
-        raise ValueError('max_df must be an integer or a float')
     if min_df < 1:
         raise ValueError('min_df must be bigger than 0')
     if not (max_df <= 1 and max_df > 0):
@@ -444,10 +404,10 @@ def _base_topic_modelling(
             'length corpus must be bigger than or equal to n_topics'
         )
 
-    if cleaning is not None:
+    if cleaning:
         for i in range(len(corpus)):
             corpus[i] = cleaning(corpus[i])
-    if stemming is not None:
+    if stemming:
         for i in range(len(corpus)):
             corpus[i] = stemming(corpus[i])
     if vectorizer == 'tfidf':
@@ -658,21 +618,22 @@ def lsa(
     )
 
 
+@check_type
 def lda2vec(
-    corpus,
-    n_topics,
+    corpus: List[str],
+    n_topics: int,
     stemming = sastrawi,
-    max_df = 0.95,
-    min_df = 2,
-    ngram = (1, 3),
-    cleaning = simple_textcleaning,
-    vectorizer = 'bow',
-    stop_words = None,
-    window_size = 2,
-    embedding_size = 128,
-    epoch = 10,
-    switch_loss = 3,
-    skip = 5,
+    max_df: float = 0.95,
+    min_df: int = 2,
+    ngram: Tuple[int, int] = (1, 3),
+    cleaning: Callable = simple_textcleaning,
+    vectorizer: str = 'bow',
+    stop_words: List[str] = None,
+    window_size: int = 2,
+    embedding_size: int = 128,
+    epoch: int = 10,
+    switch_loss: int = 3,
+    skip: int = 5,
     **kwargs,
 ):
     """
@@ -714,51 +675,19 @@ def lda2vec(
     -------
     _DEEP_TOPIC: malaya.topic_modelling._DEEP_TOPIC class
     """
-    if not isinstance(corpus, list):
-        raise ValueError('corpus must be a list')
-    if not isinstance(corpus[0], str):
-        raise ValueError('corpus must be list of strings')
-    if not isinstance(n_topics, int):
-        raise ValueError('n_topics must be an integer')
-    if not isinstance(vectorizer, str):
-        raise ValueError('vectorizer must be a string')
     if not isinstance(stemming, collections.Callable) and stemming is not None:
         raise ValueError('stemming must be a callable type or None')
-    if not isinstance(cleaning, collections.Callable) and stemming is not None:
-        raise ValueError('cleaning must be a callable type or None')
-    if (
-        not isinstance(stop_words, set)
-        and not isinstance(stop_words, list)
-        and stop_words is not None
-    ):
-        raise ValueError('stop_words must be a set or a list or None')
+
     vectorizer = vectorizer.lower()
     if not vectorizer in ['tfidf', 'bow', 'skip-gram']:
         raise ValueError("vectorizer must be in  ['tfidf', 'bow', 'skip-gram']")
-    if not isinstance(ngram, tuple):
-        raise ValueError('ngram must be a tuple')
-    if not len(ngram) == 2:
-        raise ValueError('ngram size must equal to 2')
-    if not isinstance(min_df, int):
-        raise ValueError('min_df must be an integer')
-    if not (isinstance(max_df, int) or isinstance(max_df, float)):
-        raise ValueError('max_df must be an integer or a float')
+
     if min_df < 1:
         raise ValueError('min_df must be bigger than 0')
     if not (max_df <= 1 and max_df > 0):
         raise ValueError(
             'max_df must be bigger than 0, less than or equal to 1'
         )
-    if not isinstance(embedding_size, int):
-        raise ValueError('embedding_size must be an integer')
-    if not isinstance(window_size, int):
-        raise ValueError('window_size must be an integer')
-    if not isinstance(epoch, int):
-        raise ValueError('epoch must be an integer')
-    if not isinstance(switch_loss, int):
-        raise ValueError('switch_loss must be an integer')
-    if not isinstance(skip, int):
-        raise ValueError('skip must be an integer')
 
     if vectorizer == 'tfidf':
         Vectorizer = TfidfVectorizer
@@ -777,10 +706,10 @@ def lda2vec(
     if stop_words is None:
         stop_words = STOPWORDS
 
-    if cleaning is not None:
+    if cleaning:
         for i in range(len(corpus)):
             corpus[i] = cleaning(corpus[i])
-    if stemming is not None:
+    if stemming:
         for i in range(len(corpus)):
             corpus[i] = stemming(corpus[i])
     text_clean = []
@@ -844,15 +773,16 @@ def lda2vec(
     )
 
 
+@check_type
 def attention(
-    corpus,
-    n_topics,
+    corpus: List[str],
+    n_topics: int,
     vectorizer,
     stemming = sastrawi,
-    cleaning = simple_textcleaning,
-    stop_words = None,
-    ngram = (1, 3),
-    batch_size = 10,
+    cleaning: Callable = simple_textcleaning,
+    stop_words: List[str] = None,
+    ngram: Tuple[int, int] = (1, 3),
+    batch_size: int = 10,
 ):
 
     """
@@ -880,18 +810,6 @@ def attention(
     _ATTENTION_TOPIC: malaya.topic_modelling._ATTENTION_TOPIC class
     """
 
-    if not isinstance(corpus, list):
-        raise ValueError('corpus must be a list')
-    if not isinstance(corpus[0], str):
-        raise ValueError('corpus must be list of strings')
-    if not isinstance(n_topics, int):
-        raise ValueError('n_topics must be an integer')
-    if not isinstance(batch_size, int):
-        raise ValueError('batch_size must be an integer')
-    if not isinstance(ngram, tuple):
-        raise ValueError('ngram must be a tuple')
-    if not len(ngram) == 2:
-        raise ValueError('ngram size must equal to 2')
     if not hasattr(vectorizer, 'attention') and not hasattr(
         vectorizer, 'vectorize'
     ):
@@ -900,14 +818,6 @@ def attention(
         )
     if not isinstance(stemming, collections.Callable) and stemming is not None:
         raise ValueError('stemming must be a callable type or None')
-    if not isinstance(cleaning, collections.Callable) and stemming is not None:
-        raise ValueError('cleaning must be a callable type or None')
-    if (
-        not isinstance(stop_words, set)
-        and not isinstance(stop_words, list)
-        and stop_words is not None
-    ):
-        raise ValueError('stop_words must be a set or a list or None')
     if len(corpus) < n_topics:
         raise ValueError(
             'length corpus must be bigger than or equal to n_topics'
@@ -918,10 +828,10 @@ def attention(
     if stop_words is None:
         stop_words = STOPWORDS
 
-    if cleaning is not None:
+    if cleaning:
         for i in range(len(corpus)):
             corpus[i] = cleaning(corpus[i])
-    if stemming is not None:
+    if stemming:
         for i in range(len(corpus)):
             corpus[i] = stemming(corpus[i])
 

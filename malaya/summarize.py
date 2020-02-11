@@ -16,6 +16,8 @@ from .stem import sastrawi
 from ._models import _skip_thought
 from .cluster import cluster_words
 from .texts.vectorizer import SkipGramVectorizer
+from herpetologist import check_type
+from typing import List, Tuple
 
 
 class _DEEP_SKIPTHOUGHT:
@@ -69,7 +71,10 @@ class _DEEP_SUMMARIZER:
     def __init__(self, vectorizer):
         self._vectorizer = vectorizer
 
-    def summarize(self, corpus, top_k = 3, important_words = 3, **kwargs):
+    @check_type
+    def summarize(
+        self, corpus, top_k: int = 3, important_words: int = 3, **kwargs
+    ):
         """
         Summarize list of strings / corpus
 
@@ -86,10 +91,6 @@ class _DEEP_SUMMARIZER:
         -------
         string: summarized string
         """
-        if not isinstance(top_k, int):
-            raise ValueError('top_k must be an integer')
-        if not isinstance(important_words, int):
-            raise ValueError('important_words must be an integer')
         if not isinstance(corpus, list) and not isinstance(corpus, str):
             raise ValueError('corpus must be a list')
         if isinstance(corpus, list):
@@ -164,7 +165,8 @@ def available_skipthought():
     return ['lstm', 'residual-network']
 
 
-def deep_skipthought(model = 'lstm'):
+@check_type
+def deep_skipthought(model: str = 'lstm'):
     """
     Load deep learning skipthought model.
 
@@ -212,32 +214,23 @@ def encoder(vectorizer):
     return _DEEP_SUMMARIZER(vectorizer)
 
 
+@check_type
 def _base_summarizer(
     corpus,
     decomposition,
-    top_k = 3,
-    max_df = 0.95,
-    min_df = 2,
-    ngram = (1, 3),
-    vectorizer = 'bow',
-    important_words = 10,
+    top_k: int = 3,
+    max_df: float = 0.95,
+    min_df: int = 2,
+    ngram: Tuple[int, int] = (1, 3),
+    vectorizer: str = 'bow',
+    important_words: int = 10,
     **kwargs,
 ):
-    if not isinstance(vectorizer, str):
-        raise ValueError('vectorizer must be a string')
-    if not isinstance(top_k, int):
-        raise ValueError('top_k must be an integer')
+
     vectorizer = vectorizer.lower()
     if not vectorizer in ['tfidf', 'bow', 'skip-gram']:
         raise ValueError("vectorizer must be in  ['tfidf', 'bow', 'skip-gram']")
-    if not isinstance(ngram, tuple):
-        raise ValueError('ngram must be a tuple')
-    if not len(ngram) == 2:
-        raise ValueError('ngram size must equal to 2')
-    if not isinstance(min_df, int):
-        raise ValueError('min_df must be an integer')
-    if not (isinstance(max_df, int) or isinstance(max_df, float)):
-        raise ValueError('max_df must be an integer or a float')
+
     if min_df < 1:
         raise ValueError('min_df must be bigger than 0')
     if not (max_df <= 1 and max_df > 0):
@@ -399,7 +392,14 @@ def lsa(
     )
 
 
-def doc2vec(vectorizer, corpus, top_k = 3, aggregation = 'mean', soft = True):
+@check_type
+def doc2vec(
+    vectorizer,
+    corpus,
+    top_k: int = 3,
+    aggregation: int = 'mean',
+    soft: bool = True,
+):
     """
     summarize a list of strings using doc2vec, scoring using TextRank.
 
@@ -427,8 +427,6 @@ def doc2vec(vectorizer, corpus, top_k = 3, aggregation = 'mean', soft = True):
     """
     if not hasattr(vectorizer, 'get_vector_by_name'):
         raise ValueError('vectorizer must has `get_vector_by_name` method')
-    if not isinstance(top_k, int):
-        raise ValueError('top_k must be an integer')
     if not isinstance(corpus, list) and not isinstance(corpus, str):
         raise ValueError('corpus must be a list')
     if isinstance(corpus, list):

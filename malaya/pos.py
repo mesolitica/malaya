@@ -2,7 +2,7 @@ import re
 from .texts._tatabahasa import tatabahasa_dict, hujung, permulaan
 from ._utils import _tag_class
 from ._utils._paths import PATH_POS, S3_PATH_POS
-
+from herpetologist import check_type
 
 _availability = {
     'bert': ['base', 'small'],
@@ -41,7 +41,8 @@ def _naive_POS_word(word):
         return ('', word)
 
 
-def naive(string):
+@check_type
+def naive(string: str):
     """
     Recognize POS in a string using Regex.
 
@@ -53,8 +54,6 @@ def naive(string):
     -------
     string : tokenized string with POS related
     """
-    if not isinstance(string, str):
-        raise ValueError('input must be a string')
     string = string.lower()
     results = []
     for i in string.split():
@@ -62,7 +61,10 @@ def naive(string):
     return results
 
 
-def transformer(model = 'xlnet', size = 'base', validate = True):
+@check_type
+def transformer(
+    model: str = 'xlnet', size: str = 'base', validate: bool = True
+):
     """
     Load Transformer POS Tagging model, transfer learning Transformer + CRF.
 
@@ -86,12 +88,6 @@ def transformer(model = 'xlnet', size = 'base', validate = True):
     -------
     MODEL : Transformer class
     """
-    if not isinstance(model, str):
-        raise ValueError('model must be a string')
-    if not isinstance(size, str):
-        raise ValueError('size must be a string')
-    if not isinstance(validate, bool):
-        raise ValueError('validate must be a boolean')
 
     model = model.lower()
     size = size.lower()

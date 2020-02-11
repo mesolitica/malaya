@@ -11,6 +11,8 @@ from .texts._english_words import _english_words
 from ._utils._paths import PATH_PREPROCESSING, S3_PATH_PREPROCESSING
 from ._utils._utils import check_file, check_available
 from .stem import naive
+from herpetologist import check_type
+from typing import Tuple, List
 
 _annotate = [
     'hashtag',
@@ -507,7 +509,7 @@ class _Preprocessing:
 
 
 def preprocessing(
-    normalize = [
+    normalize: List[str] = [
         'url',
         'email',
         'percent',
@@ -518,7 +520,7 @@ def preprocessing(
         'date',
         'number',
     ],
-    annotate = [
+    annotate: List[str] = [
         'allcaps',
         'elongated',
         'repeated',
@@ -526,14 +528,14 @@ def preprocessing(
         'censored',
         'hashtag',
     ],
-    lowercase = True,
-    fix_unidecode = True,
-    expand_hashtags = True,
-    expand_english_contractions = True,
-    translate_english_to_bm = True,
-    remove_postfix = True,
-    maxlen_segmenter = 20,
-    validate = True,
+    lowercase: bool = True,
+    fix_unidecode: bool = True,
+    expand_hashtags: bool = True,
+    expand_english_contractions: bool = True,
+    translate_english_to_bm: bool = True,
+    remove_postfix: bool = True,
+    maxlen_segmenter: int = 20,
+    validate: bool = True,
     speller = None,
 ):
     """
@@ -574,20 +576,6 @@ def preprocessing(
         raise ValueError(
             "annotate only accept ['hashtag', 'allcaps', 'elongated', 'repeated', 'emphasis', 'censored']"
         )
-    if not isinstance(lowercase, bool):
-        raise ValueError('lowercase must be a boolean')
-    if not isinstance(fix_unidecode, bool):
-        raise ValueError('fix_unidecode must be a boolean')
-    if not isinstance(expand_hashtags, bool):
-        raise ValueError('expand_hashtags must be a boolean')
-    if not isinstance(expand_english_contractions, bool):
-        raise ValueError('expand_english_contractions must be a boolean')
-    if not isinstance(translate_english_to_bm, bool):
-        raise ValueError('translate_english_to_bm must be a boolean')
-    if not isinstance(validate, bool):
-        raise ValueError('validate must be a boolean')
-    if not isinstance(remove_postfix, bool):
-        raise ValueError('remove_postfix must be a boolean')
     if speller is not None:
         if not hasattr(speller, 'correct') and not hasattr(
             speller, 'normalize_elongated'
@@ -643,7 +631,7 @@ def preprocessing(
     )
 
 
-def segmenter(max_split_length = 20, validate = True):
+def segmenter(max_split_length: int = 20, validate: bool = True):
     """
     Load Segmenter class.
 

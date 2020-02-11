@@ -12,7 +12,7 @@ from ._models._bert_model import SIGMOID_BERT
 from ._models._xlnet_model import SIGMOID_XLNET
 
 from ._transformer._bert import bert_num_layers
-
+from herpetologist import check_type
 
 _label_toxic = [
     'toxic',
@@ -38,7 +38,8 @@ def available_transformer_model():
     return _availability
 
 
-def multinomial(validate = True):
+@check_type
+def multinomial(validate: bool = True):
     """
     Load multinomial toxicity model.
 
@@ -78,7 +79,10 @@ def multinomial(validate = True):
     )
 
 
-def transformer(model = 'xlnet', size = 'base', validate = True):
+@check_type
+def transformer(
+    model: str = 'xlnet', size: str = 'base', validate: bool = True
+):
     """
     Load Transformer emotion model.
 
@@ -102,12 +106,6 @@ def transformer(model = 'xlnet', size = 'base', validate = True):
     -------
     BERT : malaya._models._bert_model.BINARY_BERT class
     """
-    if not isinstance(model, str):
-        raise ValueError('model must be a string')
-    if not isinstance(size, str):
-        raise ValueError('size must be a string')
-    if not isinstance(validate, bool):
-        raise ValueError('validate must be a boolean')
 
     model = model.lower()
     size = size.lower()

@@ -18,6 +18,8 @@ from .._utils._html import (
     _render_relevancy,
 )
 import numpy as np
+from herpetologist import check_type
+from typing import List
 
 
 class XLNET:
@@ -87,7 +89,10 @@ class BINARY_XLNET(XLNET):
             result = neutral(result)
         return result
 
-    def predict(self, string, get_proba = False, add_neutral = True):
+    @check_type
+    def predict(
+        self, string: str, get_proba: bool = False, add_neutral: bool = True
+    ):
         """
         classify a string.
 
@@ -103,12 +108,6 @@ class BINARY_XLNET(XLNET):
         -------
         dictionary: results
         """
-        if not isinstance(string, str):
-            raise ValueError('input must be a string')
-        if not isinstance(get_proba, bool):
-            raise ValueError('get_proba must be a boolean')
-        if not isinstance(add_neutral, bool):
-            raise ValueError('add_neutral must be a boolean')
 
         if add_neutral:
             label = self._label + ['neutral']
@@ -122,7 +121,13 @@ class BINARY_XLNET(XLNET):
         else:
             return label[np.argmax(result)]
 
-    def predict_batch(self, strings, get_proba = False, add_neutral = True):
+    @check_type
+    def predict_batch(
+        self,
+        strings: List[str],
+        get_proba: bool = False,
+        add_neutral: bool = True,
+    ):
         """
         classify list of strings.
 
@@ -138,12 +143,6 @@ class BINARY_XLNET(XLNET):
         -------
         list_dictionaries: list of results
         """
-        if not isinstance(strings, list):
-            raise ValueError('input must be a list')
-        if not isinstance(get_proba, bool):
-            raise ValueError('get_proba must be a boolean')
-        if not isinstance(add_neutral, bool):
-            raise ValueError('add_neutral must be a boolean')
 
         if add_neutral:
             label = self._label + ['neutral']
@@ -162,7 +161,10 @@ class BINARY_XLNET(XLNET):
         else:
             return [label[result] for result in np.argmax(results, axis = 1)]
 
-    def predict_words(self, string, method = 'last', visualization = True):
+    @check_type
+    def predict_words(
+        self, string: str, method: str = 'last', visualization: bool = True
+    ):
         """
         classify words.
 
@@ -182,10 +184,6 @@ class BINARY_XLNET(XLNET):
         -------
         dictionary: results
         """
-        if not isinstance(string, str):
-            raise ValueError('input must be a string')
-        if not isinstance(visualization, bool):
-            raise ValueError('visualization must be a boolean')
 
         method = method.lower()
         if method not in ['last', 'first', 'mean']:
@@ -305,7 +303,8 @@ class MULTICLASS_XLNET(XLNET):
         )
         return result
 
-    def predict(self, string, get_proba = False):
+    @check_type
+    def predict(self, string: str, get_proba: bool = False):
         """
         classify a string.
 
@@ -321,10 +320,6 @@ class MULTICLASS_XLNET(XLNET):
         -------
         dictionary: results
         """
-        if not isinstance(string, str):
-            raise ValueError('input must be a string')
-        if not isinstance(get_proba, bool):
-            raise ValueError('get_proba must be a boolean')
 
         result = self._predict([string])
         result = result[0]
@@ -333,7 +328,8 @@ class MULTICLASS_XLNET(XLNET):
         else:
             return self._label[np.argmax(result)]
 
-    def predict_batch(self, strings, get_proba = False):
+    @check_type
+    def predict_batch(self, strings: List[str], get_proba: bool = False):
         """
         classify list of strings.
 
@@ -347,10 +343,6 @@ class MULTICLASS_XLNET(XLNET):
         -------
         list_dictionaries: list of results
         """
-        if not isinstance(strings, list):
-            raise ValueError('input must be a list')
-        if not isinstance(get_proba, bool):
-            raise ValueError('get_proba must be a boolean')
 
         results = self._predict(strings)
 
@@ -366,7 +358,10 @@ class MULTICLASS_XLNET(XLNET):
                 self._label[result] for result in np.argmax(results, axis = 1)
             ]
 
-    def predict_words(self, string, method = 'last', visualization = True):
+    @check_type
+    def predict_words(
+        self, string: str, method: str = 'last', visualization: bool = True
+    ):
         """
         classify words.
 
@@ -386,10 +381,6 @@ class MULTICLASS_XLNET(XLNET):
         -------
         dictionary: results
         """
-        if not isinstance(string, str):
-            raise ValueError('input must be a string')
-        if not isinstance(visualization, bool):
-            raise ValueError('visualization must be a boolean')
 
         method = method.lower()
         if method not in ['last', 'first', 'mean']:
@@ -511,7 +502,8 @@ class SIGMOID_XLNET(XLNET):
         )
         return result
 
-    def predict(self, string, get_proba = False):
+    @check_type
+    def predict(self, string: str, get_proba: bool = False):
         """
         classify a string.
 
@@ -527,10 +519,6 @@ class SIGMOID_XLNET(XLNET):
         -------
         dictionary: results
         """
-        if not isinstance(string, str):
-            raise ValueError('input must be a string')
-        if not isinstance(get_proba, bool):
-            raise ValueError('get_proba must be a boolean')
 
         result = self._predict([string])
         result = result[0]
@@ -540,7 +528,8 @@ class SIGMOID_XLNET(XLNET):
             probs = np.around(result)
             return [label for no, label in enumerate(self._label) if probs[no]]
 
-    def predict_batch(self, strings, get_proba = False):
+    @check_type
+    def predict_batch(self, strings: List[str], get_proba: bool = False):
         """
         classify list of strings.
 
@@ -554,10 +543,6 @@ class SIGMOID_XLNET(XLNET):
         -------
         list_dictionaries: list of results
         """
-        if not isinstance(strings, list):
-            raise ValueError('input must be a list')
-        if not isinstance(get_proba, bool):
-            raise ValueError('get_proba must be a boolean')
 
         probs = self._predict(strings)
         results = []
@@ -577,7 +562,10 @@ class SIGMOID_XLNET(XLNET):
                 results.append(list_result)
         return results
 
-    def predict_words(self, string, method = 'last', visualization = True):
+    @check_type
+    def predict_words(
+        self, string: str, method: str = 'last', visualization: bool = True
+    ):
         """
         classify words.
 
@@ -597,10 +585,6 @@ class SIGMOID_XLNET(XLNET):
         -------
         dictionary: results
         """
-        if not isinstance(string, str):
-            raise ValueError('input must be a string')
-        if not isinstance(visualization, bool):
-            raise ValueError('visualization must be a boolean')
 
         method = method.lower()
         if method not in ['last', 'first', 'mean']:
@@ -710,7 +694,8 @@ class SIAMESE_XLNET(XLNET):
             },
         )
 
-    def predict(self, string_left, string_right):
+    @check_type
+    def predict(self, string_left: str, string_right: str):
         """
         calculate similarity for two different texts.
 
@@ -723,14 +708,11 @@ class SIAMESE_XLNET(XLNET):
         -------
         float: float
         """
-        if not isinstance(string_left, str):
-            raise ValueError('string_left must be a string')
-        if not isinstance(string_right, str):
-            raise ValueError('string_right must be a string')
 
         return self._base([string_left], [string_right])[0, 1]
 
-    def predict_batch(self, strings_left, strings_right):
+    @check_type
+    def predict_batch(self, strings_left: List[str], strings_right: List[str]):
         """
         calculate similarity for two different batch of texts.
 
@@ -743,14 +725,6 @@ class SIAMESE_XLNET(XLNET):
         -------
         list: list of float
         """
-        if not isinstance(strings_left, list):
-            raise ValueError('strings_left must be a list')
-        if not isinstance(strings_left[0], str):
-            raise ValueError('strings_left must be list of strings')
-        if not isinstance(strings_right, list):
-            raise ValueError('strings_right must be a list')
-        if not isinstance(strings_right[0], str):
-            raise ValueError('strings_right must be list of strings')
 
         return self._base(strings_left, strings_right)[:, 1]
 
@@ -776,7 +750,8 @@ class TAGGING_XLNET(XLNET):
         }
         self._pos = 'organization' not in self._settings['tag2idx']
 
-    def analyze(self, string):
+    @check_type
+    def analyze(self, string: str):
         """
         Analyze a string.
 
@@ -791,7 +766,8 @@ class TAGGING_XLNET(XLNET):
         predicted = self.predict(string)
         return tag_chunk(predicted)
 
-    def predict(self, string):
+    @check_type
+    def predict(self, string: str):
         """
         Tag a string.
 
@@ -803,8 +779,6 @@ class TAGGING_XLNET(XLNET):
         -------
         string: tagged string
         """
-        if not isinstance(string, str):
-            raise ValueError('input must be a string')
 
         input_ids, input_masks, segment_ids, s_tokens = xlnet_tokenization(
             self._tokenizer, [string]
@@ -852,7 +826,8 @@ class DEPENDENCY_XLNET(XLNET):
         self._idx2tag = {int(v): k for k, v in self._tag2idx.items()}
         self._heads_seq = heads_seq
 
-    def predict(self, string):
+    @check_type
+    def predict(self, string: str):
         """
         Tag a string.
 
@@ -864,8 +839,6 @@ class DEPENDENCY_XLNET(XLNET):
         -------
         string: tagged string
         """
-        if not isinstance(string, str):
-            raise ValueError('input must be a string')
 
         input_ids, input_masks, segment_ids, s_tokens = xlnet_tokenization(
             self._tokenizer, [string]

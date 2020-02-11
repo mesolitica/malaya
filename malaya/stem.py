@@ -15,6 +15,7 @@ from .texts._text_functions import (
 )
 from ._utils._paths import PATH_STEM, S3_PATH_STEM
 from . import home
+from herpetologist import check_type
 
 factory = None
 sastrawi_stemmer = None
@@ -64,7 +65,8 @@ class _DEEP_STEMMER:
             int(k): v for k, v in self._dicts['rev_dictionary_to'].items()
         }
 
-    def stem(self, string):
+    @check_type
+    def stem(self, string: str):
         """
         Stem a string.
 
@@ -76,8 +78,6 @@ class _DEEP_STEMMER:
         -------
         string: stemmed string
         """
-        if not isinstance(string, str):
-            raise ValueError('input must be a string')
         token_strings = classification_textcleaning(string, True).split()
         idx = stemmer_str_idx(token_strings, self._dicts['dictionary_from'])
         predicted = self._sess.run(
@@ -97,7 +97,8 @@ class _DEEP_STEMMER:
         return ' '.join(results)
 
 
-def naive(word):
+@check_type
+def naive(word: str):
     """
     Stem a string using startswith and endswith.
 
@@ -109,8 +110,6 @@ def naive(word):
     -------
     string: stemmed string
     """
-    if not isinstance(word, str):
-        raise ValueError('input must be a string')
     hujung_result = [v for k, v in hujung.items() if word.endswith(k)]
     if len(hujung_result):
         hujung_result = max(hujung_result, key = len)
@@ -131,7 +130,8 @@ def available_deep_model():
     return ['lstm', 'bahdanau', 'luong']
 
 
-def sastrawi(string):
+@check_type
+def sastrawi(string: str):
     """
     Stem a string using Sastrawi.
 
@@ -145,12 +145,11 @@ def sastrawi(string):
     """
     if sastrawi_stemmer is None:
         _load_sastrawi()
-    if not isinstance(string, str):
-        raise ValueError('input must be a string')
     return sastrawi_stemmer.stem(string)
 
 
-def deep_model(model = 'bahdanau', validate = True):
+@check_type
+def deep_model(model: str = 'bahdanau', validate: bool = True):
     """
     Load seq2seq stemmer deep learning model.
 

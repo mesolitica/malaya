@@ -257,7 +257,7 @@ class LANGUAGE_DETECTION:
         strings = [
             language_detection_textcleaning(string) for string in strings
         ]
-        return self._model.predict(strings, k = 3)
+        return self._model.predict(strings)
 
     @check_type
     def predict(self, string: str, get_proba: bool = False):
@@ -306,14 +306,15 @@ class LANGUAGE_DETECTION:
         result_labels, result_probs = self._predict(strings)
 
         if get_proba:
-            results = self._model.predict_proba(vectors)
             outputs = []
-            for result in results:
-                outputs.append(
-                    {self._label[i]: result[i] for i in range(len(result))}
-                )
+            for no, labels in enumerate(result_labels):
+                result = {label: 0.0 for label in self._labels}
+                for no_, label in enumerate(labels):
+                    label = label.replace('__label__', '')
+                    result[label] = result_probs[no][no_]
+                outputs.append(result)
             return outputs
         else:
             return [
-                self._label[result] for result in self._model.predict(vectors)
+                label[0].replace('__label__', '') for label in result_labels
             ]

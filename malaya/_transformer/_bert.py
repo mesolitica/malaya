@@ -10,6 +10,7 @@ from ._sampling import top_k_logits, top_p_logits
 from collections import defaultdict
 import numpy as np
 import os
+from herpetologist import check_type
 
 bert_num_layers = {'multilanguage': 12, 'base': 12, 'small': 6}
 
@@ -231,11 +232,10 @@ class _Model:
                 )
         return output
 
-    def visualize_attention(self, string):
+    @check_type
+    def visualize_attention(self, string: str):
         from .._utils._html import _attention
 
-        if not isinstance(string, str):
-            raise ValueError('input must be a string')
         strings = [string]
         attentions, s_tokens = self._attention(strings)
         attn_dict = defaultdict(list)
@@ -260,7 +260,8 @@ def available_bert_model():
     return ['multilanguage', 'base', 'small']
 
 
-def bert(model = 'base', lite = False, validate = True):
+@check_type
+def bert(model: str = 'base', validate: bool = True):
     """
     Load bert model.
 
@@ -278,11 +279,6 @@ def bert(model = 'base', lite = False, validate = True):
     -------
     BERT_MODEL: malaya._transformer._bert._Model class
     """
-
-    if not isinstance(model, str):
-        raise ValueError('model must be a string')
-    if not isinstance(validate, bool):
-        raise ValueError('validate must be a boolean')
 
     from .._utils._paths import PATH_BERT, S3_PATH_BERT
     from .._utils._utils import check_file, check_available
