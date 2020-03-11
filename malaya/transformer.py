@@ -17,9 +17,9 @@ def available_model():
 
 @check_type
 def load(
-    size: int = 'base',
-    model: int = 'xlnet',
-    pool_mode: int = 'last',
+    size: str = 'base',
+    model: str = 'xlnet',
+    pool_mode: str = 'last',
     validate: bool = True,
 ):
 
