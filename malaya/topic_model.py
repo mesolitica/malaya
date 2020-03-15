@@ -622,7 +622,7 @@ def lsa(
 def lda2vec(
     corpus: List[str],
     n_topics: int,
-    stemming = sastrawi,
+    stemming: Callable = sastrawi,
     max_df: float = 0.95,
     min_df: int = 2,
     ngram: Tuple[int, int] = (1, 3),
@@ -778,7 +778,7 @@ def attention(
     corpus: List[str],
     n_topics: int,
     vectorizer,
-    stemming = sastrawi,
+    stemming: Callable = sastrawi,
     cleaning: Callable = simple_textcleaning,
     stop_words: List[str] = None,
     ngram: Tuple[int, int] = (1, 3),

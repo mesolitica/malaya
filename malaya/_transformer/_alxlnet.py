@@ -206,7 +206,7 @@ class _Model:
         return output
 
     @check_type
-    def visualize_attention(self, string):
+    def visualize_attention(self, string: str):
         from .._utils._html import _attention
 
         strings = [string]
