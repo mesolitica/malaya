@@ -66,6 +66,21 @@ def load_social_media():
     )
 
 
+def load_wiki_news_social_media():
+    """
+    Return malaya pretrained local malaysia Wikipedia + Social media + News word2vec size 256. https://github.com/huseinzol05/Malaya/tree/master/pretrained-model/wordvector
+
+    Returns
+    -------
+    tuple: (vocabulary, vector)
+    """
+
+    check_file(PATH_WORDVECTOR['combine'], S3_PATH_WORDVECTOR['combine'])
+    return _load(
+        PATH_WORDVECTOR['combine']['vocab'], PATH_WORDVECTOR['combine']['model']
+    )
+
+
 @check_type
 def load(embed_matrix, dictionary: Dict):
 

@@ -62,9 +62,7 @@ def naive(string: str):
 
 
 @check_type
-def transformer(
-    model: str = 'xlnet', size: str = 'base', validate: bool = True
-):
+def transformer(model: str = 'xlnet', size: str = 'base', **kwargs):
     """
     Load Transformer POS Tagging model, transfer learning Transformer + CRF.
 
@@ -81,8 +79,6 @@ def transformer(
 
         * ``'base'`` - BASE size.
         * ``'small'`` - SMALL size.
-    validate: bool, optional (default=True)
-        if True, malaya will check model availability and download if not available.
 
     Returns
     -------
@@ -100,10 +96,5 @@ def transformer(
             'size not supported, please check supported models from malaya.pos.available_transformer_model()'
         )
     return _tag_class.transformer(
-        PATH_POS,
-        S3_PATH_POS,
-        'pos',
-        model = model,
-        size = size,
-        validate = validate,
+        PATH_POS, S3_PATH_POS, 'pos', model = model, size = size, **kwargs
     )

@@ -1,7 +1,7 @@
 from herpetologist import check_type
 
 _availability = {
-    'bert': ['base', 'small'],
+    'bert': ['base'],
     'xlnet': ['base'],
     'alxlnet': ['base'],
     'albert': ['base', 'large'],
@@ -17,10 +17,7 @@ def available_model():
 
 @check_type
 def load(
-    size: int = 'base',
-    model: int = 'xlnet',
-    pool_mode: int = 'last',
-    validate: bool = True,
+    size: str = 'base', model: str = 'xlnet', pool_mode: str = 'last', **kwargs
 ):
 
     """
@@ -48,22 +45,11 @@ def load(
         * ``'first'`` - first of the sequence.
         * ``'mean'`` - mean of the sequence.
         * ``'attn'`` - attention of the sequence.
-    validate: bool, optional (default=True)
-        if True, malaya will check model availability and download if not available.
 
     Returns
     -------
     TRANSFORMER: malaya.transformer class
     """
-
-    if not isinstance(model, str):
-        raise ValueError('model must be a string')
-    if not isinstance(size, str):
-        raise ValueError('size must be a string')
-    if not isinstance(pool_mode, str):
-        raise ValueError('pool_mode must be a string')
-    if not isinstance(validate, bool):
-        raise ValueError('validate must be a boolean')
 
     model = model.lower()
     size = size.lower()
@@ -78,20 +64,17 @@ def load(
     if model == 'bert':
         from ._transformer import _bert
 
-        return _bert.bert(model = size, validate = validate)
+        return _bert.bert(model = size, **kwargs)
     if model == 'albert':
         from ._transformer import _albert
 
-        return _albert.albert(model = size, validate = validate)
+        return _albert.albert(model = size, **kwargs)
     if model == 'xlnet':
         from ._transformer import _xlnet
 
-        return _xlnet.xlnet(
-            model = size, pool_mode = pool_mode, validate = validate
-        )
+        return _xlnet.xlnet(model = size, pool_mode = pool_mode, **kwargs)
+
     if model == 'alxlnet':
         from ._transformer import _alxlnet
 
-        return _alxlnet.alxlnet(
-            model = size, pool_mode = pool_mode, validate = validate
-        )
+        return _alxlnet.alxlnet(model = size, pool_mode = pool_mode, **kwargs)

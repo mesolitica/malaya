@@ -227,7 +227,7 @@ class _Model:
 
 
 @check_type
-def xlnet(model: str = 'base', pool_mode: str = 'last', validate: bool = True):
+def xlnet(model: str = 'base', pool_mode: str = 'last', **kwargs):
     """
     Load xlnet model.
 
@@ -244,8 +244,6 @@ def xlnet(model: str = 'base', pool_mode: str = 'last', validate: bool = True):
         * ``'first'`` - first of the sequence.
         * ``'mean'`` - mean of the sequence.
         * ``'attn'`` - attention of the sequence.
-    validate: bool, optional (default=True)
-        if True, malaya will check model availability and download if not available.
 
     Returns
     -------
@@ -256,21 +254,14 @@ def xlnet(model: str = 'base', pool_mode: str = 'last', validate: bool = True):
     pool_mode = pool_mode.lower()
 
     from .._utils._paths import PATH_XLNET, S3_PATH_XLNET
-    from .._utils._utils import check_file, check_available
+    from .._utils._utils import check_file
 
     if pool_mode not in ['last', 'first', 'mean', 'attn']:
         raise Exception(
             "pool_mode not supported, only support ['last', 'first', 'mean', 'attn']"
         )
 
-    if validate:
-        check_file(PATH_XLNET[model]['model'], S3_PATH_XLNET[model])
-    else:
-        if not check_available(PATH_XLNET[model]['model']):
-            raise Exception(
-                'xlnet-model/%s is not available, please `validate = True`'
-                % (model)
-            )
+    check_file(PATH_XLNET[model]['model'], S3_PATH_XLNET[model], **kwargs)
 
     if not os.path.exists(PATH_XLNET[model]['directory'] + 'model.ckpt'):
         import tarfile

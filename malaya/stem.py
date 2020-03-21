@@ -149,7 +149,7 @@ def sastrawi(string: str):
 
 
 @check_type
-def deep_model(model: str = 'bahdanau', validate: bool = True):
+def deep_model(model: str = 'bahdanau', **kwargs):
     """
     Load seq2seq stemmer deep learning model.
 
@@ -157,21 +157,15 @@ def deep_model(model: str = 'bahdanau', validate: bool = True):
     -------
     DEEP_STEMMER: malaya.stemmer._DEEP_STEMMER class
     """
-    if validate:
-        check_file(PATH_STEM[model], S3_PATH_STEM[model])
-    else:
-        if not check_available(PATH_STEM[model]):
-            raise Exception(
-                'stem/%s is not available, please `validate = True`' % (model)
-            )
+    check_file(PATH_STEM[model], S3_PATH_STEM[model], **kwargs)
+
     try:
         with open(PATH_STEM[model]['setting'], 'r') as fopen:
             dic_stemmer = json.load(fopen)
         g = load_graph(PATH_STEM[model]['model'])
     except:
         raise Exception(
-            "model corrupted due to some reasons, please run malaya.clear_cache('stem/%s') and try again"
-            % (model)
+            f"model corrupted due to some reasons, please run malaya.clear_cache('stem/{model}') and try again"
         )
     return _DEEP_STEMMER(
         g.get_tensor_by_name('import/Placeholder:0'),

@@ -119,3 +119,18 @@ def skipgrams(
         random.shuffle(labels)
 
     return couples, labels
+
+
+def load_sentencepiece(vocab, vocab_model):
+    import sentencepiece as spm
+    from ._text_functions import SentencePieceTokenizer
+
+    sp_model = spm.SentencePieceProcessor()
+    sp_model.Load(vocab_model)
+
+    with open(vocab) as fopen:
+        v = fopen.read().split('\n')[:-1]
+    v = [i.split('\t') for i in v]
+    v = {i[0]: i[1] for i in v}
+    tokenizer = SentencePieceTokenizer(v, sp_model)
+    return tokenizer

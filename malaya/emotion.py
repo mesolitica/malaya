@@ -17,33 +17,21 @@ def available_transformer_model():
     return _availability
 
 
-@check_type
-def multinomial(validate: bool = True):
+def multinomial(**kwargs):
     """
     Load multinomial emotion model.
-
-    Parameters
-    ----------
-    validate: bool, optional (default=True)
-        if True, malaya will check model availability and download if not available.
 
     Returns
     -------
     BAYES : malaya._models._sklearn_model.BAYES class
     """
     return _softmax_class.multinomial(
-        PATH_EMOTION,
-        S3_PATH_EMOTION,
-        'emotion',
-        _emotion_label,
-        validate = validate,
+        PATH_EMOTION, S3_PATH_EMOTION, 'emotion', _emotion_label, **kwargs
     )
 
 
 @check_type
-def transformer(
-    model: str = 'xlnet', size: str = 'base', validate: bool = True
-):
+def transformer(model: str = 'xlnet', size: str = 'base', **kwargs):
     """
     Load Transformer emotion model.
 
@@ -60,8 +48,6 @@ def transformer(
 
         * ``'base'`` - BASE size.
         * ``'small'`` - SMALL size.
-    validate: bool, optional (default=True)
-        if True, malaya will check model availability and download if not available.
 
     Returns
     -------

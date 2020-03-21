@@ -2,7 +2,6 @@ import json
 from ._utils import (
     check_file,
     load_graph,
-    check_available,
     generate_session,
     sentencepiece_tokenizer_bert,
     sentencepiece_tokenizer_xlnet,
@@ -12,16 +11,9 @@ from .._models._xlnet_model import TAGGING_XLNET
 
 
 def transformer(
-    path, s3_path, class_name, model = 'xlnet', size = 'base', validate = True
+    path, s3_path, class_name, model = 'xlnet', size = 'base', **kwargs
 ):
-    if validate:
-        check_file(path[model][size], s3_path[model][size])
-    else:
-        if not check_available(path[model][size]):
-            raise Exception(
-                '%s/%s/%s is not available, please `validate = True`'
-                % (class_name, model, size)
-            )
+    check_file(path[model][size], s3_path[model][size], **kwargs)
 
     try:
         with open(path[model][size]['setting']) as fopen:
@@ -29,8 +21,7 @@ def transformer(
         g = load_graph(path[model][size]['model'])
     except:
         raise Exception(
-            "model corrupted due to some reasons, please run malaya.clear_cache('%s/%s/%s') and try again"
-            % (class_name, model, size)
+            f"model corrupted due to some reasons, please run malaya.clear_cache('{class_name}/{model}/{size}') and try again"
         )
 
     if model in ['albert', 'bert']:

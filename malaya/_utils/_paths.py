@@ -256,11 +256,11 @@ S3_PATH_POS = {
 PATH_LANG_DETECTION = {
     'fasttext-original': {
         'model': home + '/language-detection/fasttext-original/fasstext.bin',
-        'version': 'v33',
+        'version': 'v34',
     },
     'fasttext-quantized': {
         'model': home + '/language-detection/fasttext-quantized/fasstext.tfz',
-        'version': 'v33',
+        'version': 'v34',
     },
     'deep': {
         'model': home
@@ -270,23 +270,23 @@ PATH_LANG_DETECTION = {
         'vector': home
         + '/language-detection/deep/vectorizer-language-detection.pkl',
         'bpe': home + '/language-detection/deep/bpe.model',
-        'version': 'v33',
+        'version': 'v34',
     },
 }
 
 S3_PATH_LANG_DETECTION = {
     'fasttext-original': {
-        'model': 'v33/language-detection/fasttext-malaya.bin'
+        'model': 'v34/language-detection/fasttext-malaya.bin'
     },
     'fasttext-quantized': {
-        'model': 'v33/language-detection/fasttext-malaya.ftz'
+        'model': 'v34/language-detection/fasttext-malaya.ftz'
     },
     'deep': {
-        'model': 'v33/language-detection/model.ckpt.data-00000-of-00001',
-        'index': 'v33/language-detection/model.ckpt.index',
-        'meta': 'v33/language-detection/model.ckpt.meta',
-        'vector': 'v33/language-detection/bow-language-detection.pkl',
-        'bpe': 'v33/language-detection/language-detection.model',
+        'model': 'v34/language-detection/model.ckpt.data-00000-of-00001',
+        'index': 'v34/language-detection/model.ckpt.index',
+        'meta': 'v34/language-detection/model.ckpt.meta',
+        'vector': 'v34/language-detection/bow-language-detection.pkl',
+        'bpe': 'v34/language-detection/language-detection.model',
     },
 }
 
@@ -819,6 +819,11 @@ PATH_WORDVECTOR = {
         'model': home + '/wordvector/socialmedia/wordvector.npy',
         'version': 'v31',
     },
+    'combine': {
+        'vocab': home + '/wordvector/combine/wordvector.json',
+        'model': home + '/wordvector/combine/wordvector.npy',
+        'version': 'v34',
+    },
 }
 
 S3_PATH_WORDVECTOR = {
@@ -833,5 +838,9 @@ S3_PATH_WORDVECTOR = {
     'socialmedia': {
         'vocab': 'bert-bahasa/word2vec-ms-socialmedia-256.json',
         'model': 'bert-bahasa/word2vec-ms-socialmedia-256.npy',
+    },
+    'combine': {
+        'vocab': 'bert-bahasa/word2vec-combined-256.json',
+        'model': 'bert-bahasa/word2vec-combined-256.npy',
     },
 }

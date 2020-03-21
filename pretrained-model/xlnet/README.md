@@ -24,69 +24,7 @@ Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://w
 
 ## How-to
 
-1. Run [dumping.ipynb](dumping.ipynb) to create text dataset for pretraining.
-
-2. Git clone [Sentence-Piece](https://github.com/google/sentencepiece),
-
-```bash
-git clone https://github.com/google/sentencepiece.git
-```
-
-3. Install [Sentence-Piece](https://github.com/google/sentencepiece),
-
-On 23rd June 2019, we cannot use latest master to compile sentence-piece using bazel, after a few googled, we need to revert to some commit.
-
-```bash
-cd sentencepiece
-git checkout d4dd947fe71c4fa4ee24ad8297beee32887d8828
-mkdir build
-cd build
-cmake ..
-make -j $(nproc)
-sudo make install
-sudo ldconfig -v
-```
-
-Make sure you tested to run `spm_train` to make sure everything is fine,
-
-```bash
-spm_train
-```
-
-```text
-ERROR: --input must not be empty
-
-sentencepiece
-
-Usage: sentencepiece [options] files
-
-   --accept_language (comma-separated list of languages this model can accept)  type: string  default:
-   --add_dummy_prefix (Add dummy whitespace at the beginning of text)  type: bool  default: true
-   --bos_id (Override BOS (<s>) id. Set -1 to disable BOS.)  type: int32  default: 1
-   --bos_piece (Override BOS (<s>) piece.)  type: string  default: <s>
-   --character_coverage (character coverage to determine the minimum symbols)  type: double  default: 0.9995
-   --control_symbols (comma separated list of control symbols)  type: string  default:
-   --eos_id (Override EOS (</s>) id. Set -1 to disable EOS.)  type: int32  default: 2
-...
-```
-
-4. Create tokenizer using Sentence-Piece,
-
-```bash
-cd ../
-spm_train \
---input=dumping-all.txt \
---model_prefix=sp10m.cased.v5 \
---vocab_size=32000 \
---character_coverage=0.99995 \
---model_type=unigram \
---control_symbols=\<cls\>,\<sep\>,\<pad\>,\<mask\>,\<eod\> \
---user_defined_symbols=\<eop\>,.,\(,\),\",-,–,£,€ \
---shuffle_input_sentence \
---input_sentence_size=10000000
-```
-
-5. Convert text files to tfrecord,
+1. Convert text files to tfrecord,
 
 ```bash
 mkdir save-location
@@ -94,11 +32,11 @@ python3 data_utils.py \
   --bsz_per_host=20 \
   --seq_len=512 \
   --reuse_len=256 \
-  --input_glob=../dumping-all.txt \
+  --input_glob=dumping-* \
   --save_dir=save-location \
   --num_passes=20 \
   --bi_data=True \
-  --sp_path=sp10m.cased.v5.model \
+  --sp_path=sp10m.cased.v9.model \
   --mask_alpha=6 \
   --mask_beta=1 \
   --num_predict=85 \
@@ -106,7 +44,7 @@ python3 data_utils.py \
   --uncased=False
 ```
 
-6. Run pretained,
+2. Run pretained,
 
 **BASE**,
 
@@ -163,7 +101,7 @@ python3 train_gpu.py \
   --train_steps=700000  --iterations=10 --learning_rate=5e-5
 ```
 
-7. Run validation,
+3. Run validation,
 
 ```bash
 python3 validation.py \
@@ -207,11 +145,11 @@ python3 multigpu_pretraining.py \
   --mem_len=384 \
   --perm_size=256 \
   --n_layer=12 \
-  --d_model=512 \
-  --d_embed=512 \
-  --n_head=16 \
+  --d_model=768 \
+  --d_embed=768 \
+  --n_head=12 \
   --d_head=64 \
-  --d_inner=2048 \
+  --d_inner=3072 \
   --untie_r=True \
   --mask_alpha=6 \
   --mask_beta=1 \
@@ -219,11 +157,12 @@ python3 multigpu_pretraining.py \
   --model_dir=output-model \
   --uncased=False \
   --num_core_per_host=1 \
-  --train_steps=300000 \
+  --train_steps=600000 \
   --iterations=10 \
   --learning_rate=5e-5 \
   --num_gpu_cores=3 \
   --save_steps=30000 \
+  --ff_activation=gelu
 ```
 
 - `num_gpu_cores`: Number of gpus.

@@ -72,7 +72,7 @@ def cleaning(string):
     string = re.sub(
         r'\w+:\/{2}[\d\w-]+(\.[\d\w-]+)*(?:(?:\/[^\s/]*))*', '', string
     )
-    string = re.sub(r'http\S+|www.\S+', '', string)
+    string = re.sub(r'http\S+|www.\S+|bit.\S+', '', string)
     string = re.sub(r'[ ]+', ' ', string).strip().split()
     string = [w for w in string if w[0] != '@']
 
@@ -165,13 +165,13 @@ def duplicate_dots_marks_exclamations(strings):
             or (Counter(word)[','] > 1)
         ):
             if Counter(word)['.'] > 1:
-                new_word = re.sub('\.\.+', ' . . . ', new_word)
+                new_word = re.sub('\.\.+', ' . ', new_word)
             if Counter(word)['!'] > 1:
-                new_word = re.sub('\!\!+', ' ! ! ! ', new_word)
+                new_word = re.sub('\!\!+', ' ! ', new_word)
             if Counter(word)['?'] > 1:
-                new_word = re.sub('\?\?+', ' ? ? ? ', new_word)
+                new_word = re.sub('\?\?+', ' ? ', new_word)
             if Counter(word)[','] > 1:
-                new_word = re.sub('\,\,+', ' , , , ', new_word)
+                new_word = re.sub('\,\,+', ' , ', new_word)
             temp_dict[word] = new_word
     temp_dict = {k: v for k, v in temp_dict.items() if k != v}
     return temp_dict
@@ -180,6 +180,8 @@ def duplicate_dots_marks_exclamations(strings):
 def remove_underscore(strings):
     temp_dict = {}
     for word in strings:
+        if not len(word):
+            continue
         if (
             len(re.compile("[a-zA-Z0-9\-\.\,\/']").sub('', word)) / len(word)
             > 0.6
@@ -191,6 +193,8 @@ def remove_underscore(strings):
 def isolate_spamchars(strings):
     temp_dict = {}
     for word in strings:
+        if not len(word):
+            continue
         if (
             (
                 len(re.compile("[a-zA-Z0-9\-\.\,\/']").sub('', word))
@@ -201,7 +205,7 @@ def isolate_spamchars(strings):
             and (len(word) > 2)
         ):
             temp_dict[word] = ' '.join(
-                [' ' + next(iter(Counter(word).keys())) + ' ' for i in range(3)]
+                [next(iter(Counter(word).keys())) + '' for i in range(1)]
             )
     return temp_dict
 
@@ -298,3 +302,67 @@ def string_dict_cleaning(strings, dict):
             [make_dict_cleaning(w, dict) for w in strings[i].split()]
         )
     return strings
+
+
+alphabets = '([A-Za-z])'
+prefixes = (
+    '(Mr|St|Mrs|Ms|Dr|Prof|Capt|Cpt|Lt|Mt|Puan|puan|Tuan|tuan|sir|Sir)[.]'
+)
+suffixes = '(Inc|Ltd|Jr|Sr|Co)'
+starters = '(Mr|Mrs|Ms|Dr|He\s|She\s|It\s|They\s|Their\s|Our\s|We\s|But\s|However\s|That\s|This\s|Wherever|Dia|Mereka|Tetapi|Kita|Itu|Ini|Dan|Kami)'
+acronyms = '([A-Z][.][A-Z][.](?:[A-Z][.])?)'
+websites = '[.](com|net|org|io|gov|me|edu|my)'
+another_websites = '(www|http|https)[.]'
+digits = '([0-9])'
+
+
+def split_into_sentences(text):
+    text = ' ' + text + '  '
+    text = text.replace('\n', ' ')
+    text = re.sub(prefixes, '\\1<prd>', text)
+    text = re.sub(websites, '<prd>\\1', text)
+    text = re.sub(another_websites, '\\1<prd>', text)
+    if '...' in text:
+        text = text.replace('...', '<prd><prd><prd>')
+    if 'Ph.D' in text:
+        text = text.replace('Ph.D.', 'Ph<prd>D<prd>')
+    text = re.sub('\s' + alphabets + '[.] ', ' \\1<prd> ', text)
+    text = re.sub(acronyms + ' ' + starters, '\\1<stop> \\2', text)
+    text = re.sub(
+        alphabets + '[.]' + alphabets + '[.]' + alphabets + '[.]',
+        '\\1<prd>\\2<prd>\\3<prd>',
+        text,
+    )
+    text = re.sub(
+        alphabets + '[.]' + alphabets + '[.]', '\\1<prd>\\2<prd>', text
+    )
+    text = re.sub(' ' + suffixes + '[.] ' + starters, ' \\1<stop> \\2', text)
+    text = re.sub(' ' + suffixes + '[.]', ' \\1<prd>', text)
+    text = re.sub(' ' + alphabets + '[.]', ' \\1<prd>', text)
+    text = re.sub(digits + '[.]' + digits, '\\1<prd>\\2', text)
+    if '”' in text:
+        text = text.replace('.”', '”.')
+    if '"' in text:
+        text = text.replace('."', '".')
+    if '!' in text:
+        text = text.replace('!"', '"!')
+    if '?' in text:
+        text = text.replace('?"', '"?')
+    text = text.replace('.', '.<stop>')
+    text = text.replace('?', '?<stop>')
+    text = text.replace('!', '!<stop>')
+    text = text.replace('<prd>', '.')
+    sentences = text.split('<stop>')
+    sentences = sentences[:-1]
+    sentences = [cleaning(s.strip()) for s in sentences if len(s) > 10]
+    return sentences
+
+
+def cleaning_strings_split(strings):
+    texts = []
+    for i in tqdm(range(len(strings))):
+        s = split_into_sentences(strings[i])
+        if not len(s):
+            s = [strings[i]]
+        texts.extend(s)
+    return texts

@@ -70,13 +70,10 @@ class _SPELL_NORMALIZE:
         -------
         string: normalized string
         """
-        if not isinstance(string, str):
-            raise ValueError('input must be a string')
-        if not isinstance(check_english, bool):
-            raise ValueError('check_english must be a boolean')
 
         result, normalized = [], []
         tokenized = _tokenizer(string)
+        print(tokenized)
         index = 0
         while index < len(tokenized):
             word = tokenized[index]
@@ -259,36 +256,35 @@ class _SPELL_NORMALIZE:
         depan_date_string_ = re.findall(_depan_date_string, normalized)
         today_time_ = re.findall(_today_time, normalized)
         time_ = re.findall(_expressions['time'], normalized)
+
         left_datetime_ = [
-            '%s %s' % (i[0], i[1])
-            for i in re.findall(_left_datetime, normalized)
+            f'{i[0]} {i[1]}' for i in re.findall(_left_datetime, normalized)
         ]
         right_datetime_ = [
-            '%s %s' % (i[0], i[1])
-            for i in re.findall(_right_datetime, normalized)
+            f'{i[0]} {i[1]}' for i in re.findall(_right_datetime, normalized)
         ]
         today_left_datetime_ = [
-            '%s %s' % (i[0], i[1])
+            f'{i[0]} {i[1]}'
             for i in re.findall(_left_datetodaytime, normalized)
         ]
         today_right_datetime_ = [
-            '%s %s' % (i[0], i[1])
+            f'{i[0]} {i[1]}'
             for i in re.findall(_right_datetodaytime, normalized)
         ]
         left_yesterdaydatetime_ = [
-            '%s %s' % (i[0], i[1])
+            f'{i[0]} {i[1]}'
             for i in re.findall(_left_yesterdaydatetime, normalized)
         ]
         right_yesterdaydatetime_ = [
-            '%s %s' % (i[0], i[1])
+            f'{i[0]} {i[1]}'
             for i in re.findall(_right_yesterdaydatetime, normalized)
         ]
         left_yesterdaydatetodaytime_ = [
-            '%s %s' % (i[0], i[1])
+            f'{i[0]} {i[1]}'
             for i in re.findall(_left_yesterdaydatetodaytime, normalized)
         ]
         right_yesterdaydatetodaytime_ = [
-            '%s %s' % (i[0], i[1])
+            f'{i[0]} {i[1]}'
             for i in re.findall(_right_yesterdaydatetodaytime, normalized)
         ]
 

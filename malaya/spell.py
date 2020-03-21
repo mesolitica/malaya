@@ -16,24 +16,10 @@ from .texts._tatabahasa import (
     quad_vowels,
     group_compound,
 )
+from .texts.vectorizer import load_sentencepiece
 from ._utils._paths import PATH_NGRAM, S3_PATH_NGRAM
 from ._utils._utils import check_file, check_available
 from herpetologist import check_type
-
-
-def _load_sentencepiece(vocab, vocab_model):
-    import sentencepiece as spm
-    from .texts._text_functions import SentencePieceTokenizer
-
-    sp_model = spm.SentencePieceProcessor()
-    sp_model.Load(vocab_model)
-
-    with open(vocab) as fopen:
-        v = fopen.read().split('\n')[:-1]
-    v = [i.split('\t') for i in v]
-    v = {i[0]: i[1] for i in v}
-    tokenizer = SentencePieceTokenizer(v, sp_model)
-    return tokenizer
 
 
 def tokens_to_masked_ids(tokens, mask_ind, tokenizer):
@@ -755,7 +741,7 @@ class _SymspellCorrector:
 
 
 @check_type
-def probability(sentence_piece: bool = False, validate: bool = True):
+def probability(sentence_piece: bool = False, **kwargs):
     """
     Train a Probability Spell Corrector.
 
@@ -770,14 +756,7 @@ def probability(sentence_piece: bool = False, validate: bool = True):
     -------
     _SpellCorrector: malaya.spell._SpellCorrector class
     """
-
-    if validate:
-        check_file(PATH_NGRAM[1], S3_PATH_NGRAM[1])
-    else:
-        if not check_available(PATH_NGRAM[1]):
-            raise Exception(
-                'preprocessing is not available, please `validate = True`'
-            )
+    check_file(PATH_NGRAM[1], S3_PATH_NGRAM[1], **kwargs)
 
     tokenizer = None
 
@@ -794,7 +773,7 @@ def probability(sentence_piece: bool = False, validate: bool = True):
 
         vocab = PATH_NGRAM['sentencepiece']['vocab']
         vocab_model = PATH_NGRAM['sentencepiece']['model']
-        tokenizer = _load_sentencepiece(vocab, vocab_model)
+        tokenizer = load_sentencepiece(vocab, vocab_model)
 
     with open(PATH_NGRAM[1]['model']) as fopen:
         corpus = json.load(fopen)
@@ -803,38 +782,24 @@ def probability(sentence_piece: bool = False, validate: bool = True):
 
 @check_type
 def symspell(
-    validate: bool = True,
     max_edit_distance_dictionary: int = 2,
     prefix_length: int = 7,
     term_index: int = 0,
     count_index: int = 1,
     top_k: int = 10,
+    **kwargs
 ):
     """
     Train a symspell Spell Corrector.
-
-    Parameters
-    ----------
-    validate: bool, optional (default=True)
-        if True, malaya will check model availability and download if not available.
 
     Returns
     -------
     _SpellCorrector: malaya.spell._SymspellCorrector class
     """
 
-    if validate:
-        check_file(PATH_NGRAM['symspell'], S3_PATH_NGRAM['symspell'])
-        check_file(PATH_NGRAM[1], S3_PATH_NGRAM[1])
-    else:
-        if not check_available(PATH_NGRAM['symspell']):
-            raise Exception(
-                'preprocessing is not available, please `validate = True`'
-            )
-        if not check_available(PATH_NGRAM[1]):
-            raise Exception(
-                'preprocessing is not available, please `validate = True`'
-            )
+    check_file(PATH_NGRAM['symspell'], S3_PATH_NGRAM['symspell'], **kwargs)
+    check_file(PATH_NGRAM[1], S3_PATH_NGRAM[1], **kwargs)
+
     try:
         from symspellpy.symspellpy import SymSpell, Verbosity
     except:
@@ -850,7 +815,7 @@ def symspell(
 
 
 @check_type
-def transformer(model, sentence_piece: bool = False, validate: bool = True):
+def transformer(model, sentence_piece: bool = False, **kwargs):
     """
     Load a Transformer Spell Corrector. Right now only supported BERT and ALBERT.
 
@@ -866,30 +831,20 @@ def transformer(model, sentence_piece: bool = False, validate: bool = True):
     if not hasattr(model, '_log_vectorize'):
         raise ValueError('model must has `_log_vectorize` method')
 
-    if validate:
-        check_file(PATH_NGRAM[1], S3_PATH_NGRAM[1])
-    else:
-        if not check_available(PATH_NGRAM[1]):
-            raise Exception(
-                'preprocessing is not available, please `validate = True`'
-            )
+    check_file(PATH_NGRAM[1], S3_PATH_NGRAM[1], **kwargs)
 
     tokenizer = None
 
     if sentence_piece:
-        if validate:
-            check_file(
-                PATH_NGRAM['sentencepiece'], S3_PATH_NGRAM['sentencepiece']
-            )
-        else:
-            if not check_available(PATH_NGRAM[1]):
-                raise Exception(
-                    'sentence piece is not available, please `validate = True`'
-                )
+        check_file(
+            PATH_NGRAM['sentencepiece'],
+            S3_PATH_NGRAM['sentencepiece'],
+            **kwargs
+        )
 
         vocab = PATH_NGRAM['sentencepiece']['vocab']
         vocab_model = PATH_NGRAM['sentencepiece']['model']
-        tokenizer = _load_sentencepiece(vocab, vocab_model)
+        tokenizer = load_sentencepiece(vocab, vocab_model)
 
     with open(PATH_NGRAM[1]['model']) as fopen:
         corpus = json.load(fopen)

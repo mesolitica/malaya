@@ -3,8 +3,8 @@ import inspect
 import itertools
 from sklearn import preprocessing
 from .texts._lexicon import (
-    _sentiment_lexicon as sentiment_lexicon,
-    _emotion_lexicon as emotion_lexicon,
+    _sentiment_lexicon as sentiment,
+    _emotion_lexicon as emotion,
 )
 from herpetologist import check_type
 from typing import List, Dict, Tuple, Callable

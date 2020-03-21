@@ -24430,4 +24430,5 @@ _malay_words = {
     'asabah',
     'wan',
     'kapang',
+    'digunakan',
 }

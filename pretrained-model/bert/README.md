@@ -44,7 +44,7 @@ python3 create-pretraining-data.py
 
 ```bash
 python3 multigpu_pretraining.py \
---input_file=bert-combined.tfrecord \
+--input_file=dumping-*.tfrecord \
 --output_dir=pretraining_output5 \
 --do_train=True \
 --do_eval=False \
@@ -153,6 +153,13 @@ I0919 16:04:24.180881 139907485054784 validation.py:597]   next_sentence_accurac
 INFO:tensorflow:  next_sentence_loss = 0.35221446
 I0919 16:04:24.180958 139907485054784 validation.py:597]   next_sentence_loss = 0.35221446
 ```
+
+5. **BASE**, last update 19th March 2020, [bert-base-2020-03-19.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-base-2020-03-19.tar.gz)
+
+  - Vocab size 32k.
+  - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.
+  - 2.0M steps, 3 GPUs.
+  - BASE size (467MB).
 
 ## Comparison using Emotion Dataset
 

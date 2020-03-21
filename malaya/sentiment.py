@@ -16,15 +16,9 @@ def available_transformer_model():
     return _availability
 
 
-@check_type
-def multinomial(validate: bool = True):
+def multinomial(**kwargs):
     """
     Load multinomial sentiment model.
-
-    Parameters
-    ----------
-    validate: bool, optional (default=True)
-        if True, malaya will check model availability and download if not available.
 
     Returns
     -------
@@ -35,14 +29,12 @@ def multinomial(validate: bool = True):
         S3_PATH_SENTIMENT,
         'sentiment',
         ['negative', 'positive'],
-        validate = validate,
+        **kwargs
     )
 
 
 @check_type
-def transformer(
-    model: str = 'xlnet', size: str = 'base', validate: bool = True
-):
+def transformer(model: str = 'xlnet', size: str = 'base', **kwargs):
     """
     Load Transformer sentiment model.
 
@@ -59,19 +51,11 @@ def transformer(
 
         * ``'base'`` - BASE size.
         * ``'small'`` - SMALL size.
-    validate: bool, optional (default=True)
-        if True, malaya will check model availability and download if not available.
 
     Returns
     -------
     MODEL : Transformer class
     """
-    if not isinstance(model, str):
-        raise ValueError('model must be a string')
-    if not isinstance(size, str):
-        raise ValueError('size must be a string')
-    if not isinstance(validate, bool):
-        raise ValueError('validate must be a boolean')
 
     model = model.lower()
     size = size.lower()
@@ -90,5 +74,5 @@ def transformer(
         ['negative', 'positive'],
         model = model,
         size = size,
-        validate = validate,
+        **kwargs
     )

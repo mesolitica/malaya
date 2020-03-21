@@ -1,30 +1,33 @@
 # this file to store possible shortform, normalized, prefix, postfix, tatabahasa, titles and stopwords
-# 1. kata tanya, tanya_list
-# 2. kata perintah, perintah_list
-# 3. kata pangkal, pangkal_list
-# 4. kata bantu, bantu_list
-# 5. kata penguat, penguat_list
-# 6. kata penegas, penegas_list
-# 7. kata nafi, nafi_list
-# 8. kata pemeri, pemeri_list
-# 9. kata sendi, sendi_list
-# 10. kata pembenar, pembenar_list
-# 11. number, nombor_list
-# 12. suku bilangan, suku_bilangan_list
-# 13. kata penerangan, keterangan_list
-# 14. kata arah, arah_list
-# 15. kata hubung, hubung_list
-# 16. ganti nama, gantinama_list
-# 17. prefix, permulaan
-# 18. postfix, hujung
-# 19. postfix malaysian slang, hujung_malaysian
-# 20. sound to word, sounds
-# 21. word replacement for date string, date_replace
-# 22. word replacement for local slang, rules_normalizer
-# 23. calon dictionary, calon_dictionary
-# 24. stopwords, stopwords
-# 25. bi_vowels, bivowels, example, `aa`
-# 26. group_compound, group for biconsonant, example, `ng`
+# 1. mix laughing words, laughing
+# 2. mix negate words, negate_words
+# 3. partial noisy words, partial_noisy
+# 4. kata tanya, tanya_list
+# 5. kata perintah, perintah_list
+# 6. kata pangkal, pangkal_list
+# 7. kata bantu, bantu_list
+# 8. kata penguat, penguat_list
+# 9. kata penegas, penegas_list
+# 10. kata nafi, nafi_list
+# 11. kata pemeri, pemeri_list
+# 12. kata sendi, sendi_list
+# 13. kata pembenar, pembenar_list
+# 14. number, nombor_list
+# 15. suku bilangan, suku_bilangan_list
+# 16. kata penerangan, keterangan_list
+# 17. kata arah, arah_list
+# 18. kata hubung, hubung_list
+# 19. ganti nama, gantinama_list
+# 20. prefix, permulaan
+# 21. postfix, hujung
+# 22. postfix malaysian slang, hujung_malaysian
+# 23. sound to word, sounds
+# 24. word replacement for date string, date_replace
+# 25. word replacement for local slang, rules_normalizer
+# 26. calon dictionary, calon_dictionary
+# 27. stopwords, stopwords
+# 28. bi_vowels, bivowels, example, `aa`
+# 29. group_compound, group for biconsonant, example, `ng`
 
 GO = 0
 PAD = 1
@@ -34,6 +37,78 @@ UNK = 3
 alphabet = 'qwertyuiopasdfghjklzxcvbnm'
 consonants = 'bcdfghjklmnpqrstvwxyz'
 vowels = 'aeiou'
+
+laughing = {
+    'huhu',
+    'haha',
+    'gaga',
+    'hihi',
+    'wkawka',
+    'wkwk',
+    'kiki',
+    'keke',
+    'huehue',
+    'hshs',
+    'zzz',
+    'hoho',
+    'hew',
+    'uwu',
+    'ooo',
+    'sksk',
+    'ksks',
+}
+
+partial_noisy = {
+    'uwuu',
+    'dahl',
+    'ergh',
+    'herm',
+    'huwaa',
+    'kooo',
+    'gais',
+    'siaa',
+    'hhmm',
+    'hmmm',
+    'punyala',
+    'lhaa',
+    'oiii',
+    'ooii',
+    'oooi',
+    'laaa',
+    'uuuh',
+    'haaa',
+    'adee',
+    'dahh',
+    'errr',
+    'hanaa',
+    'hais',
+    'leww',
+    'yumm',
+    'jsis',
+    'hsis',
+    'yahh',
+    'fuhh',
+    'haih',
+    'meow',
+    'aiii',
+}
+
+negate_words = {
+    'tak',
+    'jangan',
+    'tidak',
+    'enggak',
+    'tiada',
+    'bukan',
+    'usah',
+    'tidaklah',
+    'jgn',
+    'tk',
+    'bkn',
+    "shouldn't",
+    "don't",
+    "doesn't",
+}
 
 tanya_list = [
     'kenapa',
@@ -356,6 +431,8 @@ date_replace = {
     'pkul': 'pukul',
 }
 rules_normalizer = {
+    'sapa': 'siapa',
+    'tq': 'terima kasih',
     'ty': 'terima kasih',
     'january': 'januari',
     'february': 'februari',

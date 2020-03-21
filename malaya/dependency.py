@@ -72,9 +72,7 @@ def available_transformer_model():
 
 
 @check_type
-def transformer(
-    model: str = 'xlnet', size: str = 'base', validate: bool = True
-):
+def transformer(model: str = 'xlnet', size: str = 'base', **kwargs):
     """
     Load Transformer Entity Tagging model, transfer learning Transformer + biaffine attention.
 
@@ -110,22 +108,8 @@ def transformer(
             'size not supported, please check supported models from malaya.dependency.available_transformer_model()'
         )
 
-    if validate:
-        check_file(PATH_DEPEND[model][size], S3_PATH_DEPEND[model][size])
-    else:
-        if not check_available(PATH_DEPEND[model][size]):
-            raise Exception(
-                'dependency/%s/%s is not available, please `validate = True`'
-                % (model, size)
-            )
-
-    try:
-        g = load_graph(PATH_DEPEND[model][size]['model'])
-    except:
-        raise Exception(
-            "model corrupted due to some reasons, please run malaya.clear_cache('dependency/%s/%s') and try again"
-            % (model, size)
-        )
+    check_file(PATH_DEPEND[model][size], S3_PATH_DEPEND[model][size], **kwargs)
+    g = load_graph(PATH_DEPEND[model][size]['model'])
 
     if model in ['bert', 'albert']:
         from ._models._bert_model import DEPENDENCY_BERT

@@ -4,7 +4,6 @@ import pickle
 from ._utils import (
     check_file,
     load_graph,
-    check_available,
     generate_session,
     sentencepiece_tokenizer_bert,
     sentencepiece_tokenizer_xlnet,
@@ -15,15 +14,8 @@ from .._models._xlnet_model import MULTICLASS_XLNET, BINARY_XLNET
 from .._transformer._bert import bert_num_layers
 
 
-def multinomial(path, s3_path, class_name, label, validate = True):
-    if validate:
-        check_file(path['multinomial'], s3_path['multinomial'])
-    else:
-        if not check_available(path['multinomial']):
-            raise Exception(
-                '%s/multinomial is not available, please `validate = True`'
-                % (class_name)
-            )
+def multinomial(path, s3_path, class_name, label, **kwargs):
+    check_file(path['multinomial'], s3_path['multinomial'], **kwargs)
     try:
         with open(path['multinomial']['model'], 'rb') as fopen:
             multinomial = pickle.load(fopen)
@@ -31,8 +23,7 @@ def multinomial(path, s3_path, class_name, label, validate = True):
             vectorize = pickle.load(fopen)
     except:
         raise Exception(
-            "model corrupted due to some reasons, please run malaya.clear_cache('%s/multinomial') and try again"
-            % (class_name)
+            f"model corrupted due to some reasons, please run malaya.clear_cache('{class_name}/multinomial') and try again"
         )
     from ..stem import _classification_textcleaning_stemmer
 
@@ -49,30 +40,10 @@ def multinomial(path, s3_path, class_name, label, validate = True):
 
 
 def transformer(
-    path,
-    s3_path,
-    class_name,
-    label,
-    model = 'bert',
-    size = 'base',
-    validate = True,
+    path, s3_path, class_name, label, model = 'bert', size = 'base', **kwargs
 ):
-    if validate:
-        check_file(path[model][size], s3_path[model][size])
-    else:
-        if not check_available(path[model][size]):
-            raise Exception(
-                '%s/%s/%s is not available, please `validate = True`'
-                % (class_name, model, size)
-            )
-
-    try:
-        g = load_graph(path[model][size]['model'])
-    except:
-        raise Exception(
-            "model corrupted due to some reasons, please run malaya.clear_cache('%s/%s/%s') and try again"
-            % (class_name, model, size)
-        )
+    check_file(path[model][size], s3_path[model][size], **kwargs)
+    g = load_graph(path[model][size]['model'])
 
     if len(label) > 2 or class_name == 'relevancy':
         if model in ['albert', 'bert']:

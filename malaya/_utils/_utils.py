@@ -5,59 +5,17 @@ import numpy as np
 import requests
 import os
 from tqdm import tqdm
-from tensorflow.contrib.seq2seq.python.ops import beam_search_ops
-from functools import wraps
-from typing import Dict, List, Tuple
 from pathlib import Path
 from .. import _delete_folder
 
+try:
+    from tensorflow.contrib.seq2seq.python.ops import beam_search_ops
+except:
+    import warnings
 
-def recursive_check(v, t):
-    if '__module__' in t.__dict__.keys():
-        if t.__module__ != 'typing':
-            return isinstance(v, t)
-    else:
-        return isinstance(v, t)
-
-    args = t.__args__
-    if args:
-        origin = isinstance(v, t.__origin__)
-        if 'typing.' in str(args[0]):
-            return origin and recursive_check(v[0], args[0])
-        else:
-            if t.__origin__ == Dict and origin:
-                key_type = args[0]
-                value_type = args[1]
-                return all([isinstance(k, key_type) for k in v.keys()]) and all(
-                    [isinstance(k, value_type) for k in v.values()]
-                )
-            else:
-                if not isinstance(v, (tuple, list, dict, set)):
-                    return False
-                if len(v) != len(args):
-                    return False
-                if len(args) == 1:
-                    return origin and all([isinstance(p, args[0]) for p in v])
-    else:
-        return isinstance(v, t)
-
-
-def check_type(func):
-    fullspec = inspect.getfullargspec(func)
-    parameters = fullspec.args
-    annotations = fullspec.annotations
-
-    @wraps(func)
-    def check(*args, **kwargs):
-        for v, p in zip(args, parameters):
-            t = annotations.get(p)
-            if t:
-                if not recursive_check(v, t):
-                    raise Exception(f'{v} must be a {t}')
-
-        return func(*args)
-
-    return check
+    warnings.warn(
+        'Cannot import beam_search_ops from tensorflow, some deep learning models may not able to load, make sure Tensorflow version is, 1.10 < version < 2.0'
+    )
 
 
 def sentencepiece_tokenizer_xlnet(path_tokenizer):
@@ -116,12 +74,18 @@ def generate_session(graph):
 
 
 def load_graph(frozen_graph_filename):
-    with tf.gfile.GFile(frozen_graph_filename, 'rb') as f:
-        graph_def = tf.GraphDef()
-        graph_def.ParseFromString(f.read())
-    with tf.Graph().as_default() as graph:
-        tf.import_graph_def(graph_def)
-    return graph
+    try:
+        with tf.gfile.GFile(frozen_graph_filename, 'rb') as f:
+            graph_def = tf.GraphDef()
+            graph_def.ParseFromString(f.read())
+        with tf.Graph().as_default() as graph:
+            tf.import_graph_def(graph_def)
+        return graph
+    except:
+        path = '/'.join(frozen_graph_filename.split('/')[:-1])
+        raise Exception(
+            f"model corrupted due to some reasons, please run malaya.clear_cache('{path}') and try again"
+        )
 
 
 def check_available(file):
@@ -133,34 +97,41 @@ def check_available(file):
     return True
 
 
-def check_file(file, s3_file):
-    base_location = os.path.dirname(file['model'])
-    version = base_location + '/version'
-    download = False
-    if os.path.isfile(version):
-        with open(version) as fopen:
-            if not file['version'] in fopen.read():
-                print('Found old version of %s, deleting..' % (base_location))
-                _delete_folder(base_location)
-                print('Done.')
-                download = True
-            else:
-                for key, item in file.items():
-                    if not os.path.exists(item):
-                        download = True
-                        break
-    else:
-        download = True
+def check_file(file, s3_file, validate = True, **kwargs):
+    if validate:
+        base_location = os.path.dirname(file['model'])
+        version = base_location + '/version'
+        download = False
+        if os.path.isfile(version):
+            with open(version) as fopen:
+                if not file['version'] in fopen.read():
+                    print(f'Found old version of {base_location}, deleting..')
+                    _delete_folder(base_location)
+                    print('Done.')
+                    download = True
+                else:
+                    for key, item in file.items():
+                        if not os.path.exists(item):
+                            download = True
+                            break
+        else:
+            download = True
 
-    if download:
-        for key, item in file.items():
-            if 'version' in key:
-                continue
-            if not os.path.isfile(item):
-                print('downloading frozen %s %s' % (base_location, key))
-                download_file(s3_file[key], item)
-        with open(version, 'w') as fopen:
-            fopen.write(file['version'])
+        if download:
+            for key, item in file.items():
+                if 'version' in key:
+                    continue
+                if not os.path.isfile(item):
+                    print(f'downloading frozen {base_location} {key}')
+                    download_file(s3_file[key], item)
+            with open(version, 'w') as fopen:
+                fopen.write(file['version'])
+    else:
+        if not check_available(file):
+            path = '/'.join(file['model'].split('/')[:-1])
+            raise Exception(
+                f'{path} is not available, please `validate = True`'
+            )
 
 
 class DisplayablePath(object):

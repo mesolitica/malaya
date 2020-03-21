@@ -3,8 +3,13 @@ import random
 import inspect
 import numpy as np
 import string as string_function
-from .preprocessing import _tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+from .preprocessing import _tokenizer
+from .texts._text_functions import simple_textcleaning
+from .texts.vectorizer import load_sentencepiece
+from .texts._tatabahasa import alphabet, consonants, vowels
+from ._utils._paths import PATH_NGRAM, S3_PATH_NGRAM
+from ._utils._utils import check_file, check_available
 from herpetologist import check_type
 from typing import List, Dict, Tuple, Callable
 
@@ -281,6 +286,7 @@ def wordvector_augmentation(
     return augmented
 
 
+@check_type
 def transformer_augmentation(
     string: str,
     model,
@@ -386,3 +392,136 @@ def transformer_augmentation(
         new = ''.join(model._tokenizer.sp_model.DecodePieces(new_splitted))
         outputs.append(new)
     return outputs
+
+
+@check_type
+def shortform(
+    word: str,
+    augment_vowel: bool = True,
+    augment_consonant: bool = True,
+    prob_delete_vowel: float = 0.5,
+    validate: bool = True,
+):
+    """
+    augmenting a formal word into socialmedia form. Purposely typo, purposely delete some vowels, 
+    purposely replaced some subwords into slang subwords.
+
+    Parameters
+    ----------
+    word: str
+    augment_vowel: bool, (default=True)
+        if True, will augment vowels for each samples generated.
+    augment_consonant: bool, (default=True)
+        if True, will augment consonants for each samples generated.
+    prob_delete_vowel: float, (default=0.5)
+        probability to delete a vowel.
+    validate: bool, optional (default=True)
+        if True, malaya will check model availability and download if not available.
+
+    Returns
+    -------
+    result: list
+    """
+
+    if not 0 < prob_delete_vowel < 1:
+        raise Exception(
+            'prob_delete_vowel must be bigger than 0 and less than 1'
+        )
+    word = simple_textcleaning(word)
+    if not len(word):
+        raise Exception('word is too short to augment shortform.')
+
+    if validate:
+        check_file(PATH_NGRAM['sentencepiece'], S3_PATH_NGRAM['sentencepiece'])
+    else:
+        if not check_available(PATH_NGRAM[1]):
+            raise Exception(
+                'sentence piece is not available, please `validate = True`'
+            )
+
+    vocab = PATH_NGRAM['sentencepiece']['vocab']
+    vocab_model = PATH_NGRAM['sentencepiece']['model']
+    tokenizer = load_sentencepiece(vocab, vocab_model)
+
+    replace_consonants = {
+        'n': 'm',
+        't': 'y',
+        'r': 't',
+        'g': 'h',
+        'j': 'k',
+        'k': 'l',
+        'd': 's',
+        'd': 'f',
+        'g': 'f',
+        'b': 'n',
+    }
+
+    replace_vowels = {'u': 'i', 'i': 'o', 'o': 'u'}
+
+    results = [word]
+
+    if len(word) > 1:
+
+        if word[-1] == 'a' and word[-2] in consonants:
+            results.append(word[:-1] + 'e')
+
+        if word[0] == 'f' and word[-1] == 'r':
+            results.append('p' + words[1:])
+
+        if word[-2] in consonants and word[-1] in vowels:
+            results.append(word + 'k')
+
+        if word[-2] in vowels and word[-1] == 'h':
+            results.append(word[:-1])
+
+    if len(word) > 2:
+        if word[-3] in consonants and word[-2:] == 'ar':
+            results.append(words[:-2] + 'o')
+
+        if word[0] == 'h' and word[1] in vowels and word[2] in consonants:
+            results.append(word[1:])
+
+        if word[-3] in consonants and word[-2:] == 'ng':
+            results.append(word[:-2] + 'g')
+
+        if word[1:3] == 'ng':
+            results.append(word[:1] + x[2:])
+
+    if augment_consonant:
+        result_consonants = []
+        for k, v in replace_consonants.items():
+            for r in results:
+                result_consonants.extend([r.replace(k, v), r.replace(v, k)])
+        results.extend(result_consonants)
+
+    if augment_vowel:
+        result_vowels = []
+        for k, v in replace_vowels.items():
+            for r in results:
+                result_vowels.extend([r.replace(k, v), r.replace(v, k)])
+        results.extend(result_vowels)
+
+    result_deleted = []
+    for s in results:
+        deleted = []
+        for c in s:
+            if random.random() > prob_delete_vowel and c in vowels:
+                continue
+            else:
+                deleted.append(c)
+        result_deleted.append(''.join(deleted))
+    results.extend(result_deleted)
+
+    filtered = []
+    for s in results:
+        t = tokenizer.tokenize(s)
+        if len(t) == 1:
+            filtered.append(s)
+            continue
+        if t[0] == '▁':
+            continue
+        if any([len(w) < 3 for w in t]):
+            continue
+        filtered.append(s)
+
+    return list(set(filtered))

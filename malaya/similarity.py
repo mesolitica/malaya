@@ -509,7 +509,7 @@ def available_transformer_model():
 
 
 @check_type
-def transformer(model: str = 'bert', size: str = 'base', validate: bool = True):
+def transformer(model: str = 'bert', size: str = 'base', **kwargs):
     """
     Load Transformer sentiment model.
 
@@ -527,18 +527,11 @@ def transformer(model: str = 'bert', size: str = 'base', validate: bool = True):
         * ``'base'`` - BASE size.
         * ``'small'`` - SMALL size.
     validate: bool, optional (default=True)
-        if True, malaya will check model availability and download if not available.
 
     Returns
     -------
     BERT : malaya._models._bert_model.BINARY_BERT class
     """
-    if not isinstance(model, str):
-        raise ValueError('model must be a string')
-    if not isinstance(size, str):
-        raise ValueError('size must be a string')
-    if not isinstance(validate, bool):
-        raise ValueError('validate must be a boolean')
 
     model = model.lower()
     size = size.lower()
@@ -551,24 +544,10 @@ def transformer(model: str = 'bert', size: str = 'base', validate: bool = True):
             'size not supported, please check supported models from malaya.sentiment.available_transformer_model()'
         )
 
-    if validate:
-        check_file(
-            PATH_SIMILARITY[model][size], S3_PATH_SIMILARITY[model][size]
-        )
-    else:
-        if not check_available(PATH_SIMILARITY[model][size]):
-            raise Exception(
-                'similarity/%s/%s is not available, please `validate = True`'
-                % (model, size)
-            )
-
-    try:
-        g = load_graph(PATH_SIMILARITY[model][size]['model'])
-    except:
-        raise Exception(
-            "model corrupted due to some reasons, please run malaya.clear_cache('similarity/%s/%s') and try again"
-            % (model, size)
-        )
+    check_file(
+        PATH_SIMILARITY[model][size], S3_PATH_SIMILARITY[model][size], **kwargs
+    )
+    g = load_graph(PATH_SIMILARITY[model][size]['model'])
 
     if model in ['albert', 'bert']:
         if model == 'bert':

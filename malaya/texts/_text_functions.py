@@ -5,7 +5,12 @@ import itertools
 import collections
 from unidecode import unidecode
 from .._utils._utils import download_file
-from ._tatabahasa import stopword_tatabahasa, stopwords, stopwords_calon
+from ._tatabahasa import (
+    stopword_tatabahasa,
+    stopwords,
+    stopwords_calon,
+    laughing,
+)
 from ._english_words import _english_words
 from ._malay_words import _malay_words
 from .._transformer._xlnet_model.prepro_utils import (
@@ -70,20 +75,10 @@ def _isWord(word):
     return True
 
 
-_list_laughing = {
-    'huhu',
-    'haha',
-    'gaga',
-    'hihi',
-    'wkawka',
-    'wkwk',
-    'kiki',
-    'keke',
-    'huehue',
-}
-
-
-def remove_links_alias(string):
+def transformer_textcleaning(string):
+    """
+    use by any transformer model before tokenization
+    """
     string = unidecode(string)
     string = re.sub(
         r'\w+:\/{2}[\d\w-]+(\.[\d\w-]+)*(?:(?:\/[^\s/]*))*', '', string
@@ -121,7 +116,7 @@ def malaya_textcleaning(string):
     string = [
         word
         for word in string
-        if not any([laugh in word for laugh in _list_laughing])
+        if not any([laugh in word for laugh in laughing])
         and word[: len(word) // 2] != word[len(word) // 2 :]
     ]
     string = ' '.join(string)
@@ -160,7 +155,7 @@ def normalizer_textcleaning(string):
     string = [
         word
         for word in string
-        if not any([laugh in word for laugh in _list_laughing])
+        if not any([laugh in word for laugh in laughing])
     ]
     string = ' '.join(string)
     return ''.join(''.join(s)[:2] for _, s in itertools.groupby(string))
@@ -520,7 +515,7 @@ def bert_tokenization(tokenizer, texts, cls = '[CLS]', sep = '[SEP]'):
 
     input_ids, input_masks, segment_ids, s_tokens = [], [], [], []
     for text in texts:
-        text = remove_links_alias(text)
+        text = transformer_textcleaning(text)
         tokens_a = tokenizer.tokenize(text)
         tokens_a = tokens_a if len(tokens_a) <= 510 else tokens_a[:510]
         tokens = [cls] + tokens_a + [sep]
@@ -632,8 +627,10 @@ def tokenize_fn(text, sp_model):
 def xlnet_tokenization_siamese(tokenizer, left, right):
     input_ids, input_mask, all_seg_ids = [], [], []
     for i in range(len(left)):
-        tokens = tokenize_fn(remove_links_alias(left[i]), tokenizer)
-        tokens_right = tokenize_fn(remove_links_alias(right[i]), tokenizer)
+        tokens = tokenize_fn(transformer_textcleaning(left[i]), tokenizer)
+        tokens_right = tokenize_fn(
+            transformer_textcleaning(right[i]), tokenizer
+        )
         segment_ids = [SEG_ID_A] * len(tokens)
         tokens.append(SEP_ID)
         segment_ids.append(SEG_ID_A)
@@ -664,7 +661,7 @@ def xlnet_tokenization_siamese(tokenizer, left, right):
 def xlnet_tokenization(tokenizer, texts):
     input_ids, input_masks, segment_ids, s_tokens = [], [], [], []
     for text in texts:
-        text = remove_links_alias(text)
+        text = transformer_textcleaning(text)
         tokens_a = tokenize_fn(text, tokenizer)
         tokens = []
         segment_id = []
@@ -779,7 +776,7 @@ def merge_sentencepiece_tokens(paired_tokens, weighted = True):
 
 
 def parse_bert_tagging(left, tokenizer, cls = '[CLS]', sep = '[SEP]'):
-    left = remove_links_alias(left)
+    left = transformer_textcleaning(left)
     bert_tokens = [cls] + tokenizer.tokenize(left) + [sep]
     return tokenizer.convert_tokens_to_ids(bert_tokens), bert_tokens
 

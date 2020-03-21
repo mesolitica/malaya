@@ -261,7 +261,7 @@ def available_bert_model():
 
 
 @check_type
-def bert(model: str = 'base', validate: bool = True):
+def bert(model: str = 'base', **kwargs):
     """
     Load bert model.
 
@@ -272,8 +272,6 @@ def bert(model: str = 'base', validate: bool = True):
 
         * ``'base'`` - base bert-bahasa released by Malaya.
         * ``'small'`` - small bert-bahasa released by Malaya.
-    validate: bool, optional (default=True)
-        if True, malaya will check model availability and download if not available.
 
     Returns
     -------
@@ -281,17 +279,11 @@ def bert(model: str = 'base', validate: bool = True):
     """
 
     from .._utils._paths import PATH_BERT, S3_PATH_BERT
-    from .._utils._utils import check_file, check_available
+    from .._utils._utils import check_file
 
     model = model.lower()
-    if validate:
-        check_file(PATH_BERT[model]['model'], S3_PATH_BERT[model])
-    else:
-        if not check_available(PATH_BERT[model]['model']):
-            raise Exception(
-                'bert-model/%s is not available, please `validate = True`'
-                % (model)
-            )
+    check_file(PATH_BERT[model]['model'], S3_PATH_BERT[model], **kwargs)
+
     if not os.path.exists(PATH_BERT[model]['directory'] + 'model.ckpt'):
         import tarfile
 

@@ -38,8 +38,7 @@ def available_transformer_model():
     return _availability
 
 
-@check_type
-def multinomial(validate: bool = True):
+def multinomial(**kwargs):
     """
     Load multinomial toxicity model.
 
@@ -54,13 +53,10 @@ def multinomial(validate: bool = True):
     """
     import pickle
 
-    if validate:
-        check_file(PATH_TOXIC['multinomial'], S3_PATH_TOXIC['multinomial'])
-    else:
-        if not check_available(PATH_TOXIC['multinomial']):
-            raise Exception(
-                'toxic/multinomial is not available, please `validate = True`'
-            )
+    check_file(
+        PATH_TOXIC['multinomial'], S3_PATH_TOXIC['multinomial'], **kwargs
+    )
+
     try:
         with open(PATH_TOXIC['multinomial']['model'], 'rb') as fopen:
             multinomial = pickle.load(fopen)
@@ -80,9 +76,7 @@ def multinomial(validate: bool = True):
 
 
 @check_type
-def transformer(
-    model: str = 'xlnet', size: str = 'base', validate: bool = True
-):
+def transformer(model: str = 'xlnet', size: str = 'base', **kwargs):
     """
     Load Transformer emotion model.
 
@@ -99,8 +93,6 @@ def transformer(
 
         * ``'base'`` - BASE size.
         * ``'small'`` - SMALL size.
-    validate: bool, optional (default=True)
-        if True, malaya will check model availability and download if not available.
 
     Returns
     -------
@@ -118,22 +110,8 @@ def transformer(
             'size not supported, please check supported models from malaya.sentiment.available_transformer_model()'
         )
 
-    if validate:
-        check_file(PATH_TOXIC[model][size], S3_PATH_TOXIC[model][size])
-    else:
-        if not check_available(PATH_TOXIC[model][size]):
-            raise Exception(
-                'toxicity/%s/%s is not available, please `validate = True`'
-                % (model, size)
-            )
-
-    try:
-        g = load_graph(PATH_TOXIC[model][size]['model'])
-    except:
-        raise Exception(
-            "model corrupted due to some reasons, please run malaya.clear_cache('toxicity/%s/%s') and try again"
-            % (model, size)
-        )
+    check_file(PATH_TOXIC[model][size], S3_PATH_TOXIC[model][size], **kwargs)
+    g = load_graph(PATH_TOXIC[model][size]['model'])
 
     if model in ['albert', 'bert']:
         if model == 'bert':

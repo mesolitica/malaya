@@ -277,7 +277,7 @@ def available_bert_model():
 
 
 @check_type
-def albert(model: str = 'base', validate: bool = True):
+def albert(model: str = 'base', **kwargs):
     """
     Load albert model.
 
@@ -287,8 +287,6 @@ def albert(model: str = 'base', validate: bool = True):
         Model architecture supported. Allowed values:
 
         * ``'base'`` - base albert-bahasa released by Malaya.
-    validate: bool, optional (default=True)
-        if True, malaya will check model availability and download if not available.
 
     Returns
     -------
@@ -296,17 +294,11 @@ def albert(model: str = 'base', validate: bool = True):
     """
 
     from .._utils._paths import PATH_ALBERT, S3_PATH_ALBERT
-    from .._utils._utils import check_file, check_available
+    from .._utils._utils import check_file
 
     model = model.lower()
-    if validate:
-        check_file(PATH_ALBERT[model]['model'], S3_PATH_ALBERT[model])
-    else:
-        if not check_available(PATH_ALBERT[model]['model']):
-            raise Exception(
-                'albert-model/%s is not available, please `validate = True`'
-                % (model)
-            )
+    check_file(PATH_ALBERT[model]['model'], S3_PATH_ALBERT[model], **kwargs)
+
     if not os.path.exists(PATH_ALBERT[model]['directory'] + 'model.ckpt'):
         import tarfile
 

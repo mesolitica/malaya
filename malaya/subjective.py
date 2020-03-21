@@ -16,8 +16,7 @@ def available_transformer_model():
     return _availability
 
 
-@check_type
-def multinomial(validate: bool = True):
+def multinomial(**kwargs):
     """
     Load multinomial subjectivity model.
 
@@ -35,14 +34,12 @@ def multinomial(validate: bool = True):
         S3_PATH_SUBJECTIVE,
         'subjective',
         ['negative', 'positive'],
-        validate = validate,
+        **kwargs
     )
 
 
 @check_type
-def transformer(
-    model: str = 'xlnet', size: str = 'base', validate: bool = True
-):
+def transformer(model: str = 'xlnet', size: str = 'base', **kwargs):
     """
     Load Transformer subjectivity model.
 
@@ -59,8 +56,6 @@ def transformer(
 
         * ``'base'`` - BASE size.
         * ``'small'`` - SMALL size.
-    validate: bool, optional (default=True)
-        if True, malaya will check model availability and download if not available.
 
     Returns
     -------
@@ -84,5 +79,5 @@ def transformer(
         ['negative', 'positive'],
         model = model,
         size = size,
-        validate = validate,
+        **kwargs
     )

@@ -20,7 +20,7 @@ def label():
 
 
 @check_type
-def fasttext(quantization: bool = True, validate: bool = True):
+def fasttext(quantization: bool = True, **kwargs):
 
     """
     Load Fasttext language detection model.
@@ -28,8 +28,6 @@ def fasttext(quantization: bool = True, validate: bool = True):
     ----------
     quantization: bool, optional (default=True)
         if True, load quantized fasttext model. Else, load original fasttext model.
-    validate: bool, optional (default=True)
-        if True, malaya will check model availability and download if not available.
 
     Returns
     -------
@@ -46,34 +44,24 @@ def fasttext(quantization: bool = True, validate: bool = True):
         model = 'fasttext-quantized'
     else:
         model = 'fasttext-original'
-    if validate:
-        check_file(PATH_LANG_DETECTION[model], S3_PATH_LANG_DETECTION[model])
-    else:
-        if not check_available(PATH_LANG_DETECTION[model]):
-            raise Exception(
-                'language-detection/%s is not available, please `validate = True`'
-                % (model)
-            )
+    check_file(
+        PATH_LANG_DETECTION[model], S3_PATH_LANG_DETECTION[model], **kwargs
+    )
+
     try:
         model_fasttext = fasttext.load_model(
             PATH_LANG_DETECTION[model]['model']
         )
     except:
         raise Exception(
-            "model corrupted due to some reasons, please run malaya.clear_cache('language-detection/%s') and try again"
-            % (model)
+            f"model corrupted due to some reasons, please run malaya.clear_cache('language-detection/{model}') and try again"
         )
     return LANGUAGE_DETECTION(model_fasttext, lang_labels)
 
 
-@check_type
-def deep_model(validate: bool = True):
+def deep_model(**kwargs):
     """
     Load deep learning language detection model.
-    Parameters
-    ----------
-    validate: bool, optional (default=True)
-        if True, malaya will check model availability and download if not available.
 
     Returns
     -------
@@ -87,13 +75,9 @@ def deep_model(validate: bool = True):
         )
     import os
 
-    if validate:
-        check_file(PATH_LANG_DETECTION['deep'], S3_PATH_LANG_DETECTION['deep'])
-    else:
-        if not check_available(PATH_LANG_DETECTION['deep']):
-            raise Exception(
-                'language-detection/deep is not available, please `validate = True`'
-            )
+    check_file(
+        PATH_LANG_DETECTION['deep'], S3_PATH_LANG_DETECTION['deep'], **kwargs
+    )
     try:
         with open(PATH_LANG_DETECTION['deep']['vector'], 'rb') as fopen:
             vector = pickle.load(fopen)
