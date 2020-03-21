@@ -105,63 +105,6 @@ def clear_cache(location):
     return True
 
 
-def load_malay_dictionary():
-    """
-    load 20k Pustaka dictionary.
-
-    Returns
-    -------
-    list: list of strings
-    """
-    from ._utils._paths import MALAY_TEXT
-
-    if not os.path.isfile(MALAY_TEXT):
-        print('downloading Malay texts')
-        download_file('v6/malay-text.txt', MALAY_TEXT)
-    try:
-        with open(MALAY_TEXT, 'r') as fopen:
-            results = [
-                text.lower()
-                for text in (list(filter(None, fopen.read().split('\n'))))
-            ]
-            if len(results) < 20000:
-                raise Exception(
-                    "model corrupted due to some reasons, please run malaya.clear_cache('dictionary') and try again"
-                )
-            return results
-    except:
-        raise Exception(
-            "model corrupted due to some reasons, please run malaya.clear_cache('dictionary') and try again"
-        )
-
-
-def load_200k_malay_dictionary():
-    """
-    load 200k words dictionary.
-
-    Returns
-    -------
-    list: list of strings
-    """
-    from ._utils._paths import MALAY_TEXT_200K
-
-    if not os.path.isfile(MALAY_TEXT_200K):
-        print('downloading 200k Malay texts')
-        download_file('v6/malay-text.txt', MALAY_TEXT_200K)
-    try:
-        with open(MALAY_TEXT_200K, 'r') as fopen:
-            results = json.load(fopen)
-            if len(results) < 200000:
-                raise Exception(
-                    "model corrupted due to some reasons, please run malaya.clear_cache('dictionary-200k') and try again"
-                )
-            return results
-    except:
-        raise Exception(
-            "model corrupted due to some reasons, please run malaya.clear_cache('dictionary-200k') and try again"
-        )
-
-
 def describe_pos_malaya():
     """
     Describe Malaya Part-Of-Speech supported (deprecated, use describe_pos() instead)

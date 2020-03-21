@@ -17,3 +17,9 @@ wiki.ms.vec
 client_secrets.json
 lid.176.ftz
 load-language-detection.ipynb
+coverage.xml
+.coverage
+.coveragerc
+htmlcov
+test
+.pytest_cache

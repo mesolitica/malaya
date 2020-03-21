@@ -1,3 +1,5 @@
+#!/bin/bash
+
 pip3 install setuptools -U
 pip3 install tqdm unidecode numpy scipy python-levenshtein tensorflow pyldavis
 pip3 install sklearn_crfsuite sklearn scikit-learn requests fuzzywuzzy
