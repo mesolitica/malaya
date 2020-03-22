@@ -38,7 +38,7 @@ MOCK_MODULES = [
     'tqdm',
     'tensorflow',
     'toolz',
-    'fuzzywuzzy',
+    'rapidfuzz',
     'unidecode',
     'nltk',
     'nltk.tokenize',

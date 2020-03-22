@@ -704,7 +704,7 @@ def cluster_entity_linking(
     topic_length: int, (default=10)
         size of topic models.
     fuzzy_ratio: int, (default=70)
-        size of ratio for fuzzywuzzy.
+        size of ratio for rapidfuzz.
     stemming: bool, (default=True)
         If True, sastrawi_stemmer will apply.
     max_df: float, (default=0.95)
@@ -757,12 +757,12 @@ def cluster_entity_linking(
         import networkx as nx
         import networkx.drawing.layout as nxlayout
         import pandas as pd
-        from fuzzywuzzy import fuzz
+        from rapidfuzz import fuzz
 
         sns.set()
     except:
         raise Exception(
-            'matplotlib, seaborn, networkx, fuzzywuzzy not installed. Please install it and try again.'
+            'matplotlib, seaborn, networkx, rapidfuzz not installed. Please install it and try again.'
         )
 
     if isinstance(corpus, str):
@@ -816,7 +816,7 @@ def cluster_entity_linking(
         for string in corpus:
             if (
                 topic in string
-                or fuzz.token_set_ratio(topic, string) >= fuzzy_ratio
+                or fuzz.token_set_ratio(topic, string, score_cutoff=fuzzy_ratio)
             ):
                 nested_corpus.append(string)
         topics_corpus.append(' '.join(nested_corpus))

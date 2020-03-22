@@ -257,7 +257,7 @@ Generate undirected graph for Entities and topics relationship
        topic_length: int, (default=10)
            size of topic models.
        fuzzy_ratio: int, (default=70)
-           size of ratio for fuzzywuzzy.
+           size of ratio for rapidfuzz.
        stemming: bool, (default=True)
            If True, sastrawi_stemmer will apply.
        max_df: float, (default=0.95)
