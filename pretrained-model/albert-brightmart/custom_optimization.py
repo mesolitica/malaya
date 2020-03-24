@@ -192,7 +192,7 @@ class LAMBOptimizer(tf.train.Optimizer):
             1.0,
         )
 
-        eta = self.learning_rate * r
+        eta = learning_rate_t * r
 
         update_with_lr = eta * update
 
@@ -227,7 +227,18 @@ class LAMBOptimizer(tf.train.Optimizer):
         if self._do_use_weight_decay(var.name):
             update += weight_decay_rate_t * var
 
-        update_with_lr = learning_rate_t * update
+        r1 = tf.sqrt(tf.reduce_sum(tf.square(var)))
+        r2 = tf.sqrt(tf.reduce_sum(tf.square(update)))
+
+        r = tf.where(
+            tf.greater(r1, 0.0),
+            tf.where(tf.greater(r2, 0.0), r1 / r2, 1.0),
+            1.0,
+        )
+
+        eta = learning_rate_t * r
+
+        update_with_lr = eta * update
 
         next_param = var - update_with_lr
 
@@ -264,6 +275,17 @@ class LAMBOptimizer(tf.train.Optimizer):
 
         if self._do_use_weight_decay(var.name):
             update += weight_decay_rate_t * var
+
+        r1 = tf.sqrt(tf.reduce_sum(tf.square(var)))
+        r2 = tf.sqrt(tf.reduce_sum(tf.square(update)))
+
+        r = tf.where(
+            tf.greater(r1, 0.0),
+            tf.where(tf.greater(r2, 0.0), r1 / r2, 1.0),
+            1.0,
+        )
+
+        eta = learning_rate_t * r
 
         update_with_lr = learning_rate_t * update
 

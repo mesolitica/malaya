@@ -204,7 +204,7 @@ class LAMBOptimizer(tf.train.Optimizer):
                 1.0,
             )
 
-        update_with_lr = ratio * self.learning_rate * update
+        update_with_lr = ratio * learning_rate_t * update
         next_param = var - update_with_lr
 
         return control_flow_ops.group(
@@ -248,7 +248,7 @@ class LAMBOptimizer(tf.train.Optimizer):
                 1.0,
             )
 
-        update_with_lr = ratio * self.learning_rate * update
+        update_with_lr = ratio * learning_rate_t * update
         next_param = var - update_with_lr
 
         return control_flow_ops.group(
@@ -297,7 +297,7 @@ class LAMBOptimizer(tf.train.Optimizer):
                 1.0,
             )
 
-        update_with_lr = ratio * self.learning_rate * update
+        update_with_lr = ratio * learning_rate_t * update
 
         var_update = state_ops.assign_sub(
             var, update_with_lr, use_locking = self._use_locking
