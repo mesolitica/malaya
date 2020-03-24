@@ -730,26 +730,15 @@ S3_PATH_SIMILARITY = {
 PATH_BERT = {
     'base': {
         'path': home + '/bert-model/base',
-        'directory': home + '/bert-model/base/bert-base-v2/',
+        'directory': home + '/bert-model/base/bert-base-v3/',
         'model': {
             'model': home + '/bert-model/base/bert-bahasa-base.tar.gz',
-            'version': 'v31',
+            'version': 'v34',
         },
-    },
-    'small': {
-        'path': home + '/bert-model/small',
-        'directory': home + '/bert-model/small/bert-small-v2/',
-        'model': {
-            'model': home + '/bert-model/small/bert-bahasa-small.tar.gz',
-            'version': 'v31',
-        },
-    },
+    }
 }
 
-S3_PATH_BERT = {
-    'base': {'model': 'bert-bahasa/bert-base-2-12-2019.tar.gz'},
-    'small': {'model': 'bert-bahasa/bert-small-4-12-2019.tar.gz'},
-}
+S3_PATH_BERT = {'base': {'model': 'bert-bahasa/bert-base-23-03-2020.tar.gz'}}
 
 PATH_XLNET = {
     'base': {
@@ -757,7 +746,7 @@ PATH_XLNET = {
         'directory': home + '/xlnet-model/base/xlnet-base/',
         'model': {
             'model': home + '/xlnet-model/base/xlnet-base.tar.gz',
-            'version': 'v30',
+            'version': 'v34',
         },
     }
 }
