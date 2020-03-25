@@ -33,9 +33,9 @@ from prepro_utils import preprocess_text, encode_ids, encode_pieces
 import sentencepiece as spm
 
 sp_model = spm.SentencePieceProcessor()
-sp_model.Load('sp10m.cased.v9.model')
+sp_model.Load('sp10m.cased.bert.model')
 
-with open('sp10m.cased.v9.vocab') as fopen:
+with open('sp10m.cased.bert.vocab') as fopen:
     v = fopen.read().split('\n')[:-1]
 v = [i.split('\t') for i in v]
 v = {i[0]: i[1] for i in v}
@@ -230,9 +230,9 @@ def create_masked_lm_predictions(
         for index in index_set:
             covered_indexes.add(index)
 
-            # 80% of the time, replace with [MASK]
+            # 80% of the time, replace with <mask>
             if random() < 0.8:
-                masked_token = '[MASK]'
+                masked_token = '<mask>'
             else:
                 # 10% of the time, keep original
                 if random() < 0.5:
@@ -450,7 +450,7 @@ def main():
         type = float,
         default = 0.0,
         help = 'Probability of masking each token for the LM task',
-    )  # no [mask] symbol in corpus
+    )  # no <mask> symbol in corpus
     parser.add_argument(
         '--max_predictions_per_seq',
         type = int,
