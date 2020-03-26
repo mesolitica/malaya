@@ -16,7 +16,7 @@ Thanks to [zihangdai](https://github.com/zihangdai) for opensourcing XLNET, http
 
 1. There is no multilanguage implementation of XLNET, and obviously no Bahasa Malaysia implemented. So we decided to train XLNET from scratch and finetune using available dataset we have. [Dataset we use for pretraining](https://github.com/huseinzol05/Malaya-Dataset#dumping).
 
-2. Provide **SMALL** and **BASE** XLNet for Bahasa.
+2. Provide **BASE** XLNet for Bahasa.
 
 ## Acknowledgement
 
@@ -58,11 +58,11 @@ python3 train_gpu.py \
   --mem_len=384 \
   --perm_size=256 \
   --n_layer=12 \
-  --d_model=512 \
-  --d_embed=512 \
-  --n_head=16 \
+  --d_model=768 \
+  --d_embed=768 \
+  --n_head=12 \
   --d_head=64 \
-  --d_inner=2048 \
+  --d_inner=3072 \
   --untie_r=True \
   --mask_alpha=6 \
   --mask_beta=1 \
@@ -72,33 +72,6 @@ python3 train_gpu.py \
   --num_core_per_host=1 \
   --train_steps=2000000  --iterations=10 --learning_rate=5e-5 \
   --num_gpu_cores=2
-```
-
-**SMALL**,
-
-```bash
-python3 train_gpu.py \
-  --corpus_info_path=save-location/corpus_info.json \
-  --record_info_dir=save-location/tfrecords \
-  --train_batch_size=4 \
-  --seq_len=512 \
-  --reuse_len=256 \
-  --mem_len=384 \
-  --perm_size=256 \
-  --n_layer=6 \
-  --d_model=512 \
-  --d_embed=512 \
-  --n_head=16 \
-  --d_head=64 \
-  --d_inner=2048 \
-  --untie_r=True \
-  --mask_alpha=6 \
-  --mask_beta=1 \
-  --num_predict=85 \
-  --model_dir=output-model \
-  --uncased=False \
-  --num_core_per_host=1 \
-  --train_steps=700000  --iterations=10 --learning_rate=5e-5
 ```
 
 3. Run validation,
@@ -113,11 +86,11 @@ python3 validation.py \
   --mem_len=384 \
   --perm_size=256 \
   --n_layer=12 \
-  --d_model=512 \
-  --d_embed=512 \
-  --n_head=16 \
+  --d_model=768 \
+  --d_embed=768 \
+  --n_head=12 \
   --d_head=64 \
-  --d_inner=2048 \
+  --d_inner=3072 \
   --untie_r=True \
   --mask_alpha=6 \
   --mask_beta=1 \
@@ -204,6 +177,13 @@ I0930 13:31:34.584934 140152603084608 evaluation.py:275] Finished evaluation at 
 INFO:tensorflow:Saving dict for global step 270000: accuracy = 0.53644705, global_step = 270000, loss = 2.6062012
 I0930 13:31:34.585190 140152603084608 estimator.py:2039] Saving dict for global step 270000: accuracy = 0.53644705, global_step = 270000, loss = 2.6062012
 ```
+
+4. 26 March 2020, [xlnet-base-26-03-2020.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/xlnet-base-26-03-2020.tar.gz)
+
+  - Vocab size 32k.
+  - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.
+  - 270k steps, 3 GPUs TESLA V100.
+  - BASE size (467MB).
 
 ## Comparison using Emotion Dataset
 
