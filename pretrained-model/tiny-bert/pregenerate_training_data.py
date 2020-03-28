@@ -27,6 +27,7 @@ from multiprocessing import Pool
 
 import numpy as np
 from random import random, randrange, randint, shuffle, choice
+import six
 
 from transformer.tokenization import BertTokenizer
 from prepro_utils import preprocess_text, encode_ids, encode_pieces
@@ -179,6 +180,30 @@ MaskedLmInstance = collections.namedtuple(
 )
 
 
+def _is_start_piece_sp(piece):
+    """Check if the current word piece is the starting piece (sentence piece)."""
+    special_pieces = set(list('!"#$%&"()*+,-./:;?@[\\]^_`{|}~'))
+    special_pieces.add(u'€'.encode('utf-8'))
+    special_pieces.add(u'£'.encode('utf-8'))
+    # Note(mingdachen):
+    # For foreign characters, we always treat them as a whole piece.
+    english_chars = set(list('abcdefghijklmnopqrstuvwhyz'))
+    if (
+        six.ensure_str(piece).startswith('▁')
+        or six.ensure_str(piece).startswith('<')
+        or piece in special_pieces
+        or not all(
+            [
+                str(i).lower() in english_chars.union(special_pieces)
+                for i in piece
+            ]
+        )
+    ):
+        return True
+    else:
+        return False
+
+
 def create_masked_lm_predictions(
     tokens, masked_lm_prob, max_predictions_per_seq, whole_word_mask, vocab_list
 ):
@@ -200,7 +225,7 @@ def create_masked_lm_predictions(
         if (
             whole_word_mask
             and len(cand_indices) >= 1
-            and token.startswith('##')
+            and not _is_start_piece_sp(token)
         ):
             cand_indices[-1].append(i)
         else:

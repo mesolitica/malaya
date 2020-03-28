@@ -19,39 +19,23 @@ Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://w
 
 ## How-to
 
-1. Copy any sentencepiece tokenizer you need, in the script, I will use [sp10m.cased.v9.model](../preprocess/sp10m.cased.v9.model) and [sp10m.cased.v9.vocab](../preprocess/sp10m.cased.v9.vocab)
-
-Simply edit [pregenerate_training_data.py](pregenerate_training_data.py),
-
-```python
-sp_model = spm.SentencePieceProcessor()
-sp_model.Load('sp10m.cased.v9.model')
-
-with open('sp10m.cased.v9.vocab') as fopen:
-    v = fopen.read().split('\n')[:-1]
-v = [i.split('\t') for i in v]
-v = {i[0]: i[1] for i in v}
-```
+1. Copy any sentencepiece tokenizer you need, in the script, I will use [sp10m.cased.bert.model](../preprocess/sp10m.cased.bert.model) and [sp10m.cased.bert.vocab](../preprocess/sp10m.cased.bert.vocab)
 
 2. Run [pregenerate_training_data.py](pregenerate_training_data.py),
 
 ```bash
-python pregenerate_training_data.py --train_corpus ${CORPUS_RAW} \
-                  --reduce_memory --do_lower_case \
-                  --epochs_to_generate 3 \
-                  --output_dir ${CORPUS_JSON_DIR}$ 
+python3 pregenerate_training_data.py --train_corpus ../bert/dumping-pdf.txt \
+--num_workers 10 \
+--output_dir .
 ```
 
 3. Run [general_distill.py](general_distill.py),
 
 ```bash
-# ${STUDENT_CONFIG_DIR}$ includes the config file of student_model.
-python general_distill.py --pregenerated_data ${CORPUS_JSON}$ \ 
-                          --teacher_model ${BERT_BASE}$ \
-                          --student_model ${STUDENT_CONFIG_DIR}$ \
-                          --reduce_memory --do_lower_case \
-                          --train_batch_size 256 \
-                          --output_dir ${GENERAL_TINYBERT_DIR}$ 
+python3 general_distill.py --pregenerated_data . --num_train_epochs 10 \
+--teacher_model bert-base-bahasa-cased \
+--student_model student \
+--train_batch_size 128 --output_dir tiny-bert-bahasa-cased
 ```
 
 4. Run [bert-pytorch-to-tf1.ipynb](bert-pytorch-to-tf1.ipynb) to convert Pytorch to TF 1.X model.
