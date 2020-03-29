@@ -1,5 +1,5 @@
-from ._utils import _softmax_class
-from ._utils._paths import PATH_SUBJECTIVE, S3_PATH_SUBJECTIVE
+from malaya.supervised import softmax
+from malaya.path import PATH_SUBJECTIVE, S3_PATH_SUBJECTIVE
 from herpetologist import check_type
 
 _availability = {

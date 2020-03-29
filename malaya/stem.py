@@ -1,20 +1,20 @@
 import re
 import json
 from unidecode import unidecode
-from .texts._tatabahasa import permulaan, hujung, rules_normalizer
-from ._utils._utils import (
+from malaya.text.tatabahasa import permulaan, hujung, rules_normalizer
+from malaya.function import (
     load_graph,
     check_file,
     check_available,
     generate_session,
 )
-from .texts._text_functions import (
+from malaya.text.function import (
     pad_sentence_batch,
     stemmer_str_idx,
     classification_textcleaning,
 )
-from ._utils._paths import PATH_STEM, S3_PATH_STEM
-from . import home
+from malaya.path import PATH_STEM, S3_PATH_STEM
+from malaya import home
 from herpetologist import check_type
 
 factory = None
@@ -33,7 +33,7 @@ def _load_sastrawi():
     sastrawi_stemmer = factory.create_stemmer()
 
 
-def _classification_textcleaning_stemmer(string, attention = False):
+def _classification_textcleaning_stemmer(string):
     string = re.sub(
         'http\S+|www.\S+',
         '',
@@ -46,13 +46,7 @@ def _classification_textcleaning_stemmer(string, attention = False):
     string = re.sub(r'[ ]+', ' ', string.lower()).strip()
     string = [rules_normalizer.get(w, w) for w in string.split()]
     string = [(naive(word), word) for word in string]
-    if attention:
-        return (
-            ' '.join([word[0] for word in string if len(word[0]) > 1]),
-            ' '.join([word[1] for word in string if len(word[0]) > 1]),
-        )
-    else:
-        return ' '.join([word[0] for word in string if len(word[0]) > 1])
+    return ' '.join([word[0] for word in string if len(word[0]) > 1])
 
 
 class _DEEP_STEMMER:

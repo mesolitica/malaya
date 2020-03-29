@@ -1,8 +1,8 @@
 import pickle
-from ._utils._utils import check_file, check_available
-from ._models._sklearn_model import LANGUAGE_DETECTION
-from ._models._tensorflow_model import DEEP_LANG
-from ._utils._paths import PATH_LANG_DETECTION, S3_PATH_LANG_DETECTION
+from malaya.function import check_file, check_available
+from malaya.model.sklearn import LANGUAGE_DETECTION
+from malaya.model.tf import DEEP_LANG
+from malaya.path import PATH_LANG_DETECTION, S3_PATH_LANG_DETECTION
 from herpetologist import check_type
 
 lang_labels = {

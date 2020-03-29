@@ -3,10 +3,10 @@ import json
 import re
 import dateparser
 from unidecode import unidecode
-from .num2word import to_cardinal, to_ordinal
-from .word2num import word2num
-from .texts._text_functions import ENGLISH_WORDS, MALAY_WORDS, multireplace
-from .texts._regex import (
+from malaya.num2word import to_cardinal, to_ordinal
+from malaya.word2num import word2num
+from malaya.text.function import ENGLISH_WORDS, MALAY_WORDS, multireplace
+from malaya.text.regex import (
     _date,
     _past_date_string,
     _now_date_string,
@@ -25,14 +25,14 @@ from .texts._regex import (
     _left_yesterdaydatetodaytime,
     _right_yesterdaydatetodaytime,
 )
-from .texts._tatabahasa import (
+from malaya.text.tatabahasa import (
     rules_normalizer,
     date_replace,
     consonants,
     sounds,
     hujung_malaysian,
 )
-from .texts._normalization import (
+from malaya.text.normalization import (
     _remove_postfix,
     _normalize_title,
     _is_number_regex,
@@ -46,8 +46,8 @@ from .texts._normalization import (
     money,
     ignore_words,
 )
-from .cluster import cluster_words
-from .preprocessing import _tokenizer
+from malaya.cluster import cluster_words
+from malaya.preprocessing import _tokenizer
 from herpetologist import check_type
 
 

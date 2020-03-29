@@ -2,7 +2,7 @@ import numpy as np
 import inspect
 import itertools
 from sklearn import preprocessing
-from .texts._lexicon import (
+from malaya.text.lexicon import (
     _sentiment_lexicon as sentiment,
     _emotion_lexicon as emotion,
 )

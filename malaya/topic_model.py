@@ -3,17 +3,17 @@ import collections
 from sklearn.utils import shuffle
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.decomposition import TruncatedSVD, NMF, LatentDirichletAllocation
-from .stem import sastrawi
-from ._models._lda2vec import LDA2VEC
-from .texts._text_functions import (
+from malaya.stem import sastrawi
+from malaya.model.lda2vec import LDA2VEC
+from malaya.text.function import (
     simple_textcleaning,
     STOPWORDS,
     classification_textcleaning,
     print_topics_modelling,
     build_dataset,
 )
-from .texts.vectorizer import skipgrams, SkipGramVectorizer
-from .generator import ngrams as ngrams_generator
+from malaya.text.vectorizer import skipgrams, SkipGramVectorizer
+from malaya.generator import ngrams as ngrams_generator
 from herpetologist import check_type
 from typing import List, Tuple, Callable
 

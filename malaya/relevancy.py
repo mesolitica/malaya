@@ -1,5 +1,5 @@
-from ._utils import _softmax_class
-from ._utils._paths import PATH_RELEVANCY, S3_PATH_RELEVANCY
+from malaya.supervised import softmax
+from malaya.path import PATH_RELEVANCY, S3_PATH_RELEVANCY
 from herpetologist import check_type
 
 _availability = {'bert': ['base'], 'xlnet': ['base'], 'albert': ['base']}

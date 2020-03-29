@@ -1,13 +1,16 @@
-from ._utils import _softmax_class
-from ._utils._paths import PATH_EMOTION, S3_PATH_EMOTION
+from malaya.supervised import softmax
+from malaya.path import PATH_EMOTION, S3_PATH_EMOTION
 from herpetologist import check_type
 
 _emotion_label = ['anger', 'fear', 'joy', 'love', 'sadness', 'surprise']
-_availability = {
-    'bert': ['base', 'small'],
-    'xlnet': ['base'],
-    'albert': ['base'],
-}
+_availability = [
+    'bert',
+    'tiny-bert',
+    'albert',
+    'tiny-albert',
+    'xlnet',
+    'alxlnet',
+]
 
 
 def available_transformer_model():
@@ -25,13 +28,13 @@ def multinomial(**kwargs):
     -------
     BAYES : malaya._models._sklearn_model.BAYES class
     """
-    return _softmax_class.multinomial(
+    return softmax.multinomial(
         PATH_EMOTION, S3_PATH_EMOTION, 'emotion', _emotion_label, **kwargs
     )
 
 
 @check_type
-def transformer(model: str = 'xlnet', size: str = 'base', **kwargs):
+def transformer(model: str = 'xlnet', **kwargs):
     """
     Load Transformer emotion model.
 
@@ -41,13 +44,11 @@ def transformer(model: str = 'xlnet', size: str = 'base', **kwargs):
         Model architecture supported. Allowed values:
 
         * ``'bert'`` - BERT architecture from google.
-        * ``'xlnet'`` - XLNET architecture from google.
+        * ``'tiny-bert'`` - BERT architecture from google with smaller parameters.
         * ``'albert'`` - ALBERT architecture from google.
-    size : str, optional (default='base')
-        Model size supported. Allowed values:
-
-        * ``'base'`` - BASE size.
-        * ``'small'`` - SMALL size.
+        * ``'tiny-albert'`` - ALBERT architecture from google with smaller parameters.
+        * ``'xlnet'`` - XLNET architecture from google.
+        * ``'alxlnet'`` - XLNET architecture from google + Malaya.
 
     Returns
     -------
@@ -60,11 +61,7 @@ def transformer(model: str = 'xlnet', size: str = 'base', **kwargs):
         raise Exception(
             'model not supported, please check supported models from malaya.emotion.available_transformer_model()'
         )
-    if size not in _availability[model]:
-        raise Exception(
-            'size not supported, please check supported models from malaya.emotion.available_transformer_model()'
-        )
-    return _softmax_class.transformer(
+    return softmax.transformer(
         PATH_EMOTION,
         S3_PATH_EMOTION,
         'emotion',

@@ -4,12 +4,12 @@ import inspect
 import numpy as np
 import string as string_function
 from tensorflow.keras.preprocessing.sequence import pad_sequences
-from .preprocessing import _tokenizer
-from .texts._text_functions import simple_textcleaning
-from .texts.vectorizer import load_sentencepiece
-from .texts._tatabahasa import alphabet, consonants, vowels
-from ._utils._paths import PATH_NGRAM, S3_PATH_NGRAM
-from ._utils._utils import check_file, check_available
+from malaya.preprocessing import _tokenizer
+from malaya.text.function import simple_textcleaning
+from malaya.text.bpe import sentencepiece_tokenizer_bert as load_sentencepiece
+from malaya.text.tatabahasa import alphabet, consonants, vowels
+from malaya.path import PATH_NGRAM, S3_PATH_NGRAM
+from malaya.function import check_file, check_available
 from herpetologist import check_type
 from typing import List, Dict, Tuple, Callable
 

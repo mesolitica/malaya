@@ -1,7 +1,7 @@
 import re
-from .texts._tatabahasa import tatabahasa_dict, hujung, permulaan
-from ._utils import _tag_class
-from ._utils._paths import PATH_POS, S3_PATH_POS
+from malaya.text.tatabahasa import tatabahasa_dict, hujung, permulaan
+from malaya.supervised import tag
+from malaya.path import PATH_POS, S3_PATH_POS
 from herpetologist import check_type
 
 _availability = {
@@ -95,6 +95,6 @@ def transformer(model: str = 'xlnet', size: str = 'base', **kwargs):
         raise Exception(
             'size not supported, please check supported models from malaya.pos.available_transformer_model()'
         )
-    return _tag_class.transformer(
+    return tag.transformer(
         PATH_POS, S3_PATH_POS, 'pos', model = model, size = size, **kwargs
     )

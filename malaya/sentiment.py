@@ -1,5 +1,5 @@
-from ._utils import _softmax_class
-from ._utils._paths import PATH_SENTIMENT, S3_PATH_SENTIMENT
+from malaya.supervised import softmax
+from malaya.path import PATH_SENTIMENT, S3_PATH_SENTIMENT
 from herpetologist import check_type
 
 _availability = {

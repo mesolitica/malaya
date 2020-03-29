@@ -38,7 +38,7 @@ except:
     )
 
 _delete_macos()
-from ._utils._utils import DisplayablePath, download_file
+from malaya.function import DisplayablePath, download_file
 
 if not os.path.isfile(version_path):
     _delete_folder(home)
@@ -250,4 +250,3 @@ from . import toxic
 from . import transformer
 from . import word2num
 from . import wordvector
-from .texts import vectorizer

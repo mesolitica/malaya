@@ -1,11 +1,12 @@
 import numpy as np
 import json
-from .texts._jarowrinkler import JaroWinkler
+import tensorflow as tf
 from scipy.spatial.distance import cdist
 from sklearn.neighbors import NearestNeighbors
-from ._utils._utils import check_file, _Calculator
-from ._utils._paths import PATH_WORDVECTOR, S3_PATH_WORDVECTOR
-import tensorflow as tf
+from malaya.text.jarowinkler import JaroWinkler
+from malaya.function import check_file
+from malaya.text.calculator import Calculator
+from malaya.path import PATH_WORDVECTOR, S3_PATH_WORDVECTOR
 from herpetologist import check_type
 from typing import List, Tuple, Dict
 

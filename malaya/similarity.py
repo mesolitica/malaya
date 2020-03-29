@@ -1,22 +1,24 @@
 import numpy as np
-from .texts._jarowrinkler import JaroWinkler
+from malaya.text.jarowinkler import JaroWinkler
 from sklearn.metrics.pairwise import (
     cosine_similarity,
     euclidean_distances,
     manhattan_distances,
 )
-from ._utils._utils import (
+from malaya.function import (
     check_file,
     load_graph,
     check_available,
     generate_session,
+)
+from malaya.text.bpe import (
     sentencepiece_tokenizer_bert,
     sentencepiece_tokenizer_xlnet,
 )
-from .preprocessing import _tokenizer
-from ._models._bert_model import SIAMESE_BERT
-from ._models._xlnet_model import SIAMESE_XLNET
-from ._utils._paths import PATH_SIMILARITY, S3_PATH_SIMILARITY
+from malaya.preprocessing import _tokenizer
+from malaya.model.bert import SIAMESE_BERT
+from malaya.model.xlnet import SIAMESE_XLNET
+from malaya.path import PATH_SIMILARITY, S3_PATH_SIMILARITY
 from herpetologist import check_type
 from typing import List, Tuple
 

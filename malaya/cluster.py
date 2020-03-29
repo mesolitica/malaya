@@ -2,9 +2,9 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.cluster import KMeans
 from sklearn.manifold import MDS
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
-from .texts.vectorizer import SkipGramVectorizer
-from .stem import sastrawi
-from .texts._text_functions import (
+from malaya.text.vectorizer import SkipGramVectorizer
+from malaya.stem import sastrawi
+from malaya.text.function import (
     simple_textcleaning,
     split_into_sentences,
     STOPWORDS,

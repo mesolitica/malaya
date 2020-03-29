@@ -4,18 +4,18 @@ import itertools
 import networkx as nx
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.decomposition import TruncatedSVD, NMF, LatentDirichletAllocation
-from .texts._jarowrinkler import JaroWinkler
+from malaya.text.jarowinkler import JaroWinkler
 from sklearn.metrics.pairwise import cosine_similarity
-from .texts._text_functions import (
+from malaya.text.function import (
     summary_textcleaning,
     STOPWORDS,
     split_into_sentences,
     simple_textcleaning,
 )
-from .stem import sastrawi
-from ._models import _skip_thought
-from .cluster import cluster_words
-from .texts.vectorizer import SkipGramVectorizer
+from malaya.stem import sastrawi
+from malaya.model import skip_thought
+from malaya.cluster import cluster_words
+from malaya.text.vectorizer import SkipGramVectorizer
 from herpetologist import check_type
 from typing import List, Tuple
 

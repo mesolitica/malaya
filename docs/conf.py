@@ -87,7 +87,7 @@ sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 # -- Project information -----------------------------------------------------
 
 project = 'malaya'
-copyright = '2019, huseinzol05'
+copyright = '2020, huseinzol05'
 author = 'huseinzol05'
 
 # The short X.Y version
@@ -147,6 +147,7 @@ exclude_patterns = [
     'text-clustering-generator.rst',
     'models-accuracy.rst',
     'translator.rst',
+    'generate',
 ]
 
 # The name of the Pygments (syntax highlighting) style to use.

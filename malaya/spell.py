@@ -3,9 +3,9 @@ from itertools import product
 import numpy as np
 import json
 import re
-from .texts._jarowrinkler import JaroWinkler
-from .texts._text_functions import ENGLISH_WORDS, MALAY_WORDS
-from .texts._tatabahasa import (
+from malaya.text.jarowinkler import JaroWinkler
+from malaya.text.function import ENGLISH_WORDS, MALAY_WORDS
+from malaya.text.tatabahasa import (
     alphabet,
     consonants,
     vowels,
@@ -16,9 +16,9 @@ from .texts._tatabahasa import (
     quad_vowels,
     group_compound,
 )
-from .texts.vectorizer import load_sentencepiece
-from ._utils._paths import PATH_NGRAM, S3_PATH_NGRAM
-from ._utils._utils import check_file, check_available
+from malaya.text.bpe import sentencepiece_tokenizer_bert as load_sentencepiece
+from malaya.path import PATH_NGRAM, S3_PATH_NGRAM
+from malaya.function import check_file, check_available
 from herpetologist import check_type
 
 

@@ -5,12 +5,12 @@ import html
 from functools import lru_cache
 from math import log10
 from unidecode import unidecode
-from .texts._tatabahasa import rules_normalizer, hujung
-from .texts._regex import _expressions, _money
-from .texts._english_words import _english_words
-from ._utils._paths import PATH_PREPROCESSING, S3_PATH_PREPROCESSING
-from ._utils._utils import check_file, check_available
-from .stem import naive
+from malaya.text.tatabahasa import rules_normalizer, hujung
+from malaya.text.regex import _expressions, _money
+from malaya.text.english.words import words as _english_words
+from malaya.path import PATH_PREPROCESSING, S3_PATH_PREPROCESSING
+from malaya.function import check_file, check_available
+from malaya.stem import naive
 from herpetologist import check_type
 from typing import Tuple, List
 

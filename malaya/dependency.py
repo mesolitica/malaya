@@ -1,13 +1,15 @@
-from ._utils._utils import (
+from malaya.function import (
     check_file,
     load_graph,
     generate_session,
     check_available,
+)
+from malaya.text.bpe import (
     sentencepiece_tokenizer_bert,
     sentencepiece_tokenizer_xlnet,
 )
-from ._utils._parse_dependency import DependencyGraph
-from ._utils._paths import PATH_DEPEND, S3_PATH_DEPEND
+from malaya.function.parse_dependency import DependencyGraph
+from malaya.path import PATH_DEPENDENCY, S3_PATH_DEPENDENCY
 
 from herpetologist import check_type
 
@@ -61,7 +63,14 @@ def dependency_graph(tagging, indexing):
     return DependencyGraph('\n'.join(result), top_relation_label = 'root')
 
 
-_availability = {'bert': ['base'], 'xlnet': ['base'], 'albert': ['base']}
+_availability = [
+    'bert',
+    'tiny-bert',
+    'albert',
+    'tiny-albert',
+    'xlnet',
+    'alxlnet',
+]
 
 
 def available_transformer_model():
@@ -72,7 +81,7 @@ def available_transformer_model():
 
 
 @check_type
-def transformer(model: str = 'xlnet', size: str = 'base', **kwargs):
+def transformer(model: str = 'xlnet', **kwargs):
     """
     Load Transformer Entity Tagging model, transfer learning Transformer + biaffine attention.
 
@@ -82,15 +91,11 @@ def transformer(model: str = 'xlnet', size: str = 'base', **kwargs):
         Model architecture supported. Allowed values:
 
         * ``'bert'`` - BERT architecture from google.
-        * ``'xlnet'`` - XLNET architecture from google.
+        * ``'tiny-bert'`` - BERT architecture from google with smaller parameters.
         * ``'albert'`` - ALBERT architecture from google.
-    size : str, optional (default='base')
-        Model size supported. Allowed values:
-
-        * ``'base'`` - BASE size.
-        * ``'small'`` - SMALL size.
-    validate: bool, optional (default=True)
-        if True, malaya will check model availability and download if not available.
+        * ``'tiny-albert'`` - ALBERT architecture from google with smaller parameters.
+        * ``'xlnet'`` - XLNET architecture from google.
+        * ``'alxlnet'`` - XLNET architecture from google + Malaya.
 
     Returns
     -------
@@ -98,25 +103,19 @@ def transformer(model: str = 'xlnet', size: str = 'base', **kwargs):
     """
 
     model = model.lower()
-    size = size.lower()
     if model not in _availability:
         raise Exception(
             'model not supported, please check supported models from malaya.dependency.available_transformer_model()'
         )
-    if size not in _availability[model]:
-        raise Exception(
-            'size not supported, please check supported models from malaya.dependency.available_transformer_model()'
-        )
 
-    check_file(PATH_DEPEND[model][size], S3_PATH_DEPEND[model][size], **kwargs)
-    g = load_graph(PATH_DEPEND[model][size]['model'])
+    check_file(PATH_DEPEND[model], S3_PATH_DEPEND[model], **kwargs)
+    g = load_graph(PATH_DEPEND[model]['model'])
 
-    if model in ['bert', 'albert']:
+    if model in ['bert', 'tiny-bert', 'albert', 'tiny-albert']:
         from ._models._bert_model import DEPENDENCY_BERT
 
         tokenizer, cls, sep = sentencepiece_tokenizer_bert(
-            PATH_DEPEND[model][size]['tokenizer'],
-            PATH_DEPEND[model][size]['vocab'],
+            PATH_DEPEND[model]['tokenizer'], PATH_DEPEND[model]['vocab']
         )
 
         return DEPENDENCY_BERT(
@@ -132,11 +131,11 @@ def transformer(model: str = 'xlnet', size: str = 'base', **kwargs):
             heads_seq = g.get_tensor_by_name('import/heads_seq:0'),
         )
 
-    if model in ['xlnet']:
+    if model in ['xlnet', 'alxlnet']:
         from ._models._xlnet_model import DEPENDENCY_XLNET
 
         tokenizer = sentencepiece_tokenizer_xlnet(
-            PATH_DEPEND[model][size]['tokenizer']
+            PATH_DEPEND[model]['tokenizer']
         )
 
         return DEPENDENCY_XLNET(

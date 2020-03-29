@@ -1,17 +1,19 @@
-from ._utils._utils import (
+from malaya.function import (
     check_file,
     load_graph,
     check_available,
     generate_session,
+)
+from malaya.text.bpe import (
     sentencepiece_tokenizer_bert,
     sentencepiece_tokenizer_xlnet,
 )
-from ._utils._paths import PATH_TOXIC, S3_PATH_TOXIC
-from ._models._sklearn_model import MULTILABEL_BAYES
-from ._models._bert_model import SIGMOID_BERT
-from ._models._xlnet_model import SIGMOID_XLNET
+from malaya.path import PATH_TOXIC, S3_PATH_TOXIC
+from malaya.model.sklearn import MULTILABEL_BAYES
+from malaya.model.bert import SIGMOID_BERT
+from malaya.model.xlnet import SIGMOID_XLNET
 
-from ._transformer._bert import bert_num_layers
+from malaya.transformer.bert import bert_num_layers
 from herpetologist import check_type
 
 _label_toxic = [

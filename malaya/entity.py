@@ -1,13 +1,16 @@
-from ._utils import _tag_class
-from ._utils._paths import PATH_ENTITIES, S3_PATH_ENTITIES
-from .texts._entity import _Entity_regex
+from malaya.supervised import tag
+from malaya.path import PATH_ENTITIES, S3_PATH_ENTITIES
+from malaya.text.entity import _Entity_regex
 from herpetologist import check_type
 
-_availability = {
-    'bert': ['base', 'small'],
-    'xlnet': ['base'],
-    'albert': ['base'],
-}
+_availability = [
+    'bert',
+    'tiny-bert',
+    'albert',
+    'tiny-albert',
+    'xlnet',
+    'alxlnet',
+]
 
 
 def available_transformer_model():
@@ -18,7 +21,7 @@ def available_transformer_model():
 
 
 @check_type
-def transformer(model: str = 'xlnet', size: str = 'base', **kwargs):
+def transformer(model: str = 'xlnet', **kwargs):
     """
     Load Transformer Entity Tagging model, transfer learning Transformer + CRF.
 
@@ -28,13 +31,11 @@ def transformer(model: str = 'xlnet', size: str = 'base', **kwargs):
         Model architecture supported. Allowed values:
 
         * ``'bert'`` - BERT architecture from google.
-        * ``'xlnet'`` - XLNET architecture from google.
+        * ``'tiny-bert'`` - BERT architecture from google with smaller parameters.
         * ``'albert'`` - ALBERT architecture from google.
-    size : str, optional (default='base')
-        Model size supported. Allowed values:
-
-        * ``'base'`` - BASE size.
-        * ``'small'`` - SMALL size.
+        * ``'tiny-albert'`` - ALBERT architecture from google with smaller parameters.
+        * ``'xlnet'`` - XLNET architecture from google.
+        * ``'alxlnet'`` - XLNET architecture from google + Malaya.
 
     Returns
     -------
@@ -47,11 +48,7 @@ def transformer(model: str = 'xlnet', size: str = 'base', **kwargs):
         raise Exception(
             'model not supported, please check supported models from malaya.entity.available_transformer_model()'
         )
-    if size not in _availability[model]:
-        raise Exception(
-            'size not supported, please check supported models from malaya.entity.available_transformer_model()'
-        )
-    return _tag_class.transformer(
+    return tag.transformer(
         PATH_ENTITIES,
         S3_PATH_ENTITIES,
         'entity',
