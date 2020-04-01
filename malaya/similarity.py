@@ -20,7 +20,7 @@ from malaya.model.bert import SIAMESE_BERT
 from malaya.model.xlnet import SIAMESE_XLNET
 from malaya.path import PATH_SIMILARITY, S3_PATH_SIMILARITY
 from herpetologist import check_type
-from typing import List, Tuple
+from typing import List, Tuple, Callable
 
 
 class _VECTORIZER_SIMILARITY:
@@ -462,6 +462,11 @@ class _DOC2VEC_SIMILARITY:
         plt.show()
 
 
+class ATTENTION:
+    def __ini__(self, vectorizer):
+        self._vectorizer = vectorizer
+
+
 def doc2vec(vectorizer):
     """
     Doc2vec interface for text similarity.
@@ -590,3 +595,13 @@ def transformer(model: str = 'bert', size: str = 'base', **kwargs):
             tokenizer = tokenizer,
             label = ['not similar', 'similar'],
         )
+
+
+def attention(vectorizer):
+    if not hasattr(vectorizer, 'attention') and not hasattr(
+        vectorizer, 'vectorize'
+    ):
+        raise ValueError(
+            'vectorizer must has `attention` and `vectorize` methods'
+        )
+    return ATTENTION(vectorizer = vectorizer)

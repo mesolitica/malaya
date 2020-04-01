@@ -6,8 +6,9 @@ from malaya.function import check_file, load_graph, generate_session
 from malaya.text.bpe import (
     sentencepiece_tokenizer_bert,
     sentencepiece_tokenizer_xlnet,
+    load_yttm,
 )
-from malaya.model.sklearn import BINARY_BAYES, MULTICLASS_BAYES
+from malaya.model.ml import BINARY_BAYES, MULTICLASS_BAYES
 from malaya.model.bert import MULTICLASS_BERT, BINARY_BERT
 from malaya.model.xlnet import MULTICLASS_XLNET, BINARY_XLNET
 from malaya.transformer.bert import bert_num_layers

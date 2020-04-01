@@ -1,6 +1,6 @@
 import pickle
 from malaya.function import check_file, check_available
-from malaya.model.sklearn import LANGUAGE_DETECTION
+from malaya.model.ml import LANGUAGE_DETECTION
 from malaya.model.tf import DEEP_LANG
 from malaya.path import PATH_LANG_DETECTION, S3_PATH_LANG_DETECTION
 from herpetologist import check_type
@@ -31,7 +31,7 @@ def fasttext(quantization: bool = True, **kwargs):
 
     Returns
     -------
-    LANGUAGE_DETECTION : malaya._models._sklearn_model.FASTTEXT_LANGUAGE_DETECTION class
+    LANGUAGE_DETECTION : malaya.model.ml.LANGUAGE_DETECTION class
     """
 
     try:
@@ -65,15 +65,8 @@ def deep_model(**kwargs):
 
     Returns
     -------
-    DEEP_LANG : malaya._models._tensorflow_model.DEEP_LANG class
+    DEEP_LANG : malaya.model.tf.DEEP_LANG class
     """
-    try:
-        import youtokentome as yttm
-    except:
-        raise Exception(
-            'youtokentome not installed. Please install it by `pip install youtokentome` and try again.'
-        )
-    import os
 
     check_file(
         PATH_LANG_DETECTION['deep'], S3_PATH_LANG_DETECTION['deep'], **kwargs
@@ -85,16 +78,17 @@ def deep_model(**kwargs):
         raise Exception(
             "model corrupted due to some reasons, please run malaya.clear_cache('language-detection/deep') and try again"
         )
-    try:
-        bpe = yttm.BPE(model = PATH_LANG_DETECTION['deep']['bpe'])
-    except:
-        raise Exception(
-            "model corrupted due to some reasons, please run malaya.clear_cache('language-detection/deep') and try again"
-        )
+
+    from malaya.text.bpe import load_yttm
+
+    bpe, subword_mode = load_yttm(PATH_LANG_DETECTION['deep']['bpe'])
+
+    import os
+
     return DEEP_LANG(
         os.path.dirname(PATH_LANG_DETECTION['deep']['model']),
         vector,
         lang_labels,
         bpe,
-        yttm.OutputType.SUBWORD,
+        subword_mode,
     )

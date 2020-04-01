@@ -58,7 +58,8 @@ def load_graph(frozen_graph_filename):
             tf.import_graph_def(graph_def)
         return graph
     except:
-        path = '/'.join(frozen_graph_filename.split('/')[:-1])
+        path = frozen_graph_filename.split('Malaya/')[1]
+        path = '/'.join(path.split('/')[:-1])
         raise Exception(
             f"model corrupted due to some reasons, please run malaya.clear_cache('{path}') and try again"
         )

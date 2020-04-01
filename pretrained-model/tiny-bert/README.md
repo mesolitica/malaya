@@ -6,6 +6,7 @@ Thanks to [huawei-noah](https://github.com/huawei-noah) for opensourcing most of
   * [Objective](#objective)
   * [Acknowledgement](#acknowledgement)
   * [How-to](#how-to)
+  * [Download](#download)
   * [Citation](#citation)
   * [Donation](#donation)
 
@@ -21,24 +22,66 @@ Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://w
 
 1. Copy any sentencepiece tokenizer you need, in the script, I will use [sp10m.cased.bert.model](../preprocess/sp10m.cased.bert.model) and [sp10m.cased.bert.vocab](../preprocess/sp10m.cased.bert.vocab)
 
-2. Run [pregenerate_training_data.py](pregenerate_training_data.py),
+2. Run [pregenerate_training_data.py](pregenerate_training_data.py) using twitter data,
 
 ```bash
-python3 pregenerate_training_data.py --train_corpus ../bert/dumping-pdf.txt \
---num_workers 10 \
+python3 pregenerate_training_data.py --train_corpus dumping-twitter.txt \
+--num_workers 1 \
 --output_dir .
 ```
 
-3. Run [general_distill.py](general_distill.py),
+3. Run [general_distill.py](general_distill.py) on twitter data,
 
 ```bash
-python3 general_distill.py --pregenerated_data . --num_train_epochs 10 \
+python3 general_distill.py --pregenerated_data . --num_train_epochs 3 \
 --teacher_model bert-base-bahasa-cased \
 --student_model student \
---train_batch_size 128 --output_dir tiny-bert-bahasa-cased
+--train_batch_size 201 --output_dir tiny-bert-bahasa-cased-twitter
 ```
 
-4. Run [bert-pytorch-to-tf1.ipynb](bert-pytorch-to-tf1.ipynb) to convert Pytorch to TF 1.X model.
+4. Run [combined-text.ipynb](combined-text.ipynb) to combine all dumping texts (except twitter and instagram).
+
+5. Run [pregenerate_training_data.py](pregenerate_training_data.py) on combined texts,
+
+```bash
+python3 pregenerate_training_data.py --train_corpus combined.txt \
+--epochs_to_generate 15 --output_dir .
+```
+
+6. Run [general_distill.py](general_distill.py) on combined texts,
+
+```bash
+python3 general_distill.py --pregenerated_data . --num_train_epochs 15 \
+--teacher_model bert-base-bahasa-cased \
+--student_model tiny-bert-bahasa-cased-twitter \
+--train_batch_size 201 -\
+-output_dir tiny-bert-bahasa-cased-combined --continue_train --eval_step 10000
+```
+
+7. Run [bert-pytorch-to-tf1.ipynb](bert-pytorch-to-tf1.ipynb) to convert Pytorch to TF 1.X model.
+
+## Download
+
+1. 31st March 2020, [tiny-bert-31-03-2020-twitter.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/tiny-bert-31-03-2020-twitter.tar.gz)
+
+  - Vocab size 32k.
+  - Distilled on raw twitter.
+  - TINY size (53MB).
+  - Pytorch model.
+
+2. 1st April 2020, [tiny-bert-01-04-2020-combined.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/tiny-bert-01-04-2020-combined.tar.gz)
+
+  - Vocab size 32k.
+  - Distilled on raw wikipedia, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.
+  - TINY size (53MB).
+  - Pytorch model.
+
+3. 1st April 2020, [tiny-bert-01-04-2020.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/tiny-bert-01-04-2020.tar.gz)
+
+  - Vocab size 32k.
+  - Distilled on raw wikipedia, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.
+  - TINY size (53MB).
+  - TF model.
 
 ## Citation
 

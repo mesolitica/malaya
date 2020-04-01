@@ -24,6 +24,8 @@ import random
 import sys
 import json
 
+os.environ['CUDA_VISIBLE_DEVICES'] = '1,2,3'
+
 import numpy as np
 import torch
 from collections import namedtuple
@@ -696,7 +698,7 @@ def main():
                             model_to_save.state_dict(), output_model_file
                         )
                         model_to_save.config.to_json_file(output_config_file)
-                        tokenizer.save_vocabulary(args.output_dir)
+                        # tokenizer.save_vocabulary(args.output_dir)
 
                         if oncloud:
                             logging.info(
@@ -725,7 +727,7 @@ def main():
 
             torch.save(model_to_save.state_dict(), output_model_file)
             model_to_save.config.to_json_file(output_config_file)
-            tokenizer.save_vocabulary(args.output_dir)
+            # tokenizer.save_vocabulary(args.output_dir)
 
             if oncloud:
                 logging.info(

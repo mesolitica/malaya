@@ -463,3 +463,20 @@ def sentencepiece_tokenizer_bert(path_tokenizer, path_vocab):
     v = {i[0]: i[1] for i in v}
     tokenizer = SentencePieceTokenizer(v, sp_model)
     return tokenizer
+
+
+def load_yttm(path):
+    try:
+        import youtokentome as yttm
+    except:
+        raise Exception(
+            'youtokentome not installed. Please install it by `pip install youtokentome` and try again.'
+        )
+    try:
+        return yttm.BPE(model = path), yttm.OutputType.SUBWORD
+    except:
+        path = path.split('Malaya/')[1]
+        path = '/'.join(path.split('/')[:-1])
+        raise Exception(
+            f"model corrupted due to some reasons, please run malaya.clear_cache('{path}') and try again"
+        )
