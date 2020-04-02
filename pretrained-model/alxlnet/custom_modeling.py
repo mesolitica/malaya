@@ -312,7 +312,6 @@ def relative_positional_encoding(
             fwd_pos_seq = tf.clip_by_value(fwd_pos_seq, -clamp_len, clamp_len)
             bwd_pos_seq = tf.clip_by_value(bwd_pos_seq, -clamp_len, clamp_len)
 
-        tf.logging.info('bsz here', bsz)
         if bsz is not None:
             # With bi_data, the batch size should be divisible by 2.
             # assert bsz % 2 == 0

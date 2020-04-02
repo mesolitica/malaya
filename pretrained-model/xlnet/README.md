@@ -134,7 +134,7 @@ python3 multigpu_pretraining.py \
   --iterations=10 \
   --learning_rate=5e-5 \
   --num_gpu_cores=3 \
-  --save_steps=30000 \
+  --save_steps=6000 \
   --ff_activation=gelu
 ```
 
