@@ -2,8 +2,6 @@
 
 Thanks to official implementation from Google, https://github.com/google-research/google-research, Malaya just create custom pretraining and optimizer to support multigpus.
 
-**Tested on 4 Tesla V100 mirror strategy, loss is not decreasing, use [albert-brightmart](../albert-brightmart) instead.**
-
 ## Table of contents
   * [Objective](#objective)
   * [Acknowledgement](#acknowledgement)
@@ -15,7 +13,7 @@ Thanks to official implementation from Google, https://github.com/google-researc
 
 1. There is no multilanguage implementation of ALBERT, and obviously no Bahasa Malaysia implemented. So we decided to train ALBERT from scratch and finetune using available dataset we have. [Dataset we use for pretraining](https://github.com/huseinzol05/Malaya-Dataset#dumping).
 
-2. Provide **BASE** and **LARGE** ALBERT for Bahasa.
+2. Provide **BASE** and **TINY** ALBERT for Bahasa.
 
 ## Acknowledgement
 
