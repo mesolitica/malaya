@@ -27,9 +27,20 @@ Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://w
 python3 create-pretraining.py
 ```
 
-2. Execure pretraining,
+2. Execute pretraining,
 
 **ALBERT required TPU to pretrain. I never had successful pretraining on GPUs even on a small dataset.**
+
+```bash
+python3 run_pretraining.py \
+--input_file=gs://bucket/albert-dataset/*.tfrecord \
+--output_dir=gs://bucket/albert-base-actual \
+--do_train=True --do_eval=False \
+--albert_config_file=gs://bucket/setting/BASE_config.json \
+--train_batch_size=1040 --max_seq_length=512 --max_predictions_per_seq=20 \
+--num_train_steps=150000 --num_warmup_steps=3125 --learning_rate=1e-4 \
+--save_checkpoints_steps=10000 --use_tpu=True --tpu_name=node-1 --tpu_zone=us-central1-a
+```
 
 ## Citation
 
