@@ -58,7 +58,7 @@ def transformer_textcleaning(string):
     """
     string = unidecode(string)
     string = re.sub(
-        r'\w+:\/{2}[\d\w-]+(\.[\d\w-]+)*(?:(?:\/[^\s/]*))*', '', string
+        r'\w+:\/{2}[\d\w-]+(\.[\d\w-]+)*(?:(?:\/[^\s/]*))*', ' ', string
     )
     string = re.sub(r'[ ]+', ' ', string).strip().split()
     string = [w for w in string if w[0] != '@']

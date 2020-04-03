@@ -23,38 +23,15 @@ Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://w
 
 ## How-to
 
-1. Create a folder and copy these python scripts,
+1. Create pretraining dataset,
 
 ```bash
-mkdir albert
-cd albert
-cp *.py albert
-pip3 install albert-tensorflow
+python3 create-pretraining.py
 ```
 
-2. Run [preprocess](../preprocess).
+2. Execure pretraining,
 
-3. Create pretraining dataset,
-
-```bash
-python3 create_pretraining_data.py \
---input_file=../parliament-text.txt,../wiki-text.txt,../dumping-instagram.txt,../dumping-twitter.txt,../news-text.txt \
---output_file=albert1.tfrecord,albert2.tfrecord,albert3.tfrecord --vocab_file=sp10m.cased.v8.vocab \
---spm_model_file=sp10m.cased.v8.model --do_lower_case=False --dupe_factor=5
-```
-
-4. Execute pretraining,
-
-Run pretraining on Wikipedia on parliament texts,
-
-```bash
-python3 multigpu_pretraining.py --input_file=../bert/bert-0.tfrecord,../bert/bert-1.tfrecord,../bert/bert-3.tfrecord --output_dir=pretraining_output --output_dir=pretraining_output --do_train=True --do_eval=False --albert_config_file=BASE_config.json --train_batch_size=300 --num_train_steps=2000000 --learning_rate=2e-5 --save_checkpoints_steps=100000 --use_gpu=True --num_gpu_cores=3 --max_seq_length=128
-```
-
-**ALBERT required multiGPUs or multiTPUs to pretrain. I never had successful pretraining on single GPU even on a small dataset.**
-
-- `num_gpu_cores`: Number of gpus.
-- `train_batch_size`: Make sure `train_batch_size` % `num_gpu_cores` is 0 and the batch will automatically distribute among gpus. If `num_gpu_cores` is 60 and `num_gpu_cores` is 2, so each gpus will get 30 batch size.
+**ALBERT required TPU to pretrain. I never had successful pretraining on GPUs even on a small dataset.**
 
 ## Citation
 
