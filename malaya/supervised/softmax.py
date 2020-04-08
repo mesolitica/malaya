@@ -25,7 +25,9 @@ def multinomial(path, s3_path, class_name, label, **kwargs):
         raise Exception(
             f"model corrupted due to some reasons, please run malaya.clear_cache('{class_name}/multinomial') and try again"
         )
-    from ..stem import _classification_textcleaning_stemmer
+    bpe, subword_mode = load_yttm(path['multinomial']['bpe'])
+
+    from malaya.stem import _classification_textcleaning_stemmer
 
     if len(label) > 2:
         selected_class = MULTICLASS_BAYES
@@ -35,6 +37,8 @@ def multinomial(path, s3_path, class_name, label, **kwargs):
         multinomial = multinomial,
         label = label,
         vectorize = vectorize,
+        bpe = bpe,
+        subword_mode = subword_mode,
         cleaning = _classification_textcleaning_stemmer,
     )
 

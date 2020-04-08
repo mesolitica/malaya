@@ -13,237 +13,216 @@ from typing import List
 
 class BAYES:
     def __init__(
-        self, multinomial, label, vectorize, cleaning = simple_textcleaning
+        self,
+        multinomial,
+        label,
+        vectorize,
+        bpe,
+        subword_mode,
+        cleaning = simple_textcleaning,
     ):
         self._multinomial = multinomial
         self._label = label
         self._vectorize = vectorize
+        self._bpe = bpe
+        self._subword_mode = subword_mode
         self._cleaning = cleaning
+
+    def _classify(self, strings):
+        strings = [self._cleaning(string) for string in strings]
+        subs = [
+            ' '.join(s)
+            for s in self._bpe.encode(strings, output_type = self._subword_mode)
+        ]
+        vectors = self._vectorize.transform(subs)
+        return self._multinomial.predict_proba(vectors)
+
+    def _predict(self, strings, add_neutral = False):
+        results = self._classify(strings)
+
+        if add_neutral:
+            result = neutral(results)
+            label = self._label + ['neutral']
+        else:
+            label = self._label
+
+        return [label[result] for result in np.argmax(results, axis = 1)]
+
+    def _predict_proba(self, strings, add_neutral = False):
+        results = self._classify(strings)
+
+        if add_neutral:
+            results = neutral(results)
+            label = self._label + ['neutral']
+        else:
+            label = self._label
+
+        outputs = []
+        for result in results:
+            outputs.append({label[i]: result[i] for i in range(len(result))})
+        return outputs
 
 
 class BINARY_BAYES(BAYES):
     def __init__(
-        self, multinomial, label, vectorize, cleaning = simple_textcleaning
+        self,
+        multinomial,
+        label,
+        vectorize,
+        bpe,
+        subword_mode,
+        cleaning = simple_textcleaning,
     ):
-        BAYES.__init__(self, multinomial, label, vectorize, cleaning)
+        BAYES.__init__(
+            self, multinomial, label, vectorize, bpe, subword_mode, cleaning
+        )
 
     @check_type
-    def predict(
-        self, string: str, get_proba: bool = False, add_neutral: bool = True
-    ):
+    def predict(self, strings: List[str], add_neutral: bool = True):
         """
         Classify a string.
 
         Parameters
         ----------
-        string : str
-        get_proba: bool, optional (default=False)
-            If True, it will return probability of classes.
+        strings: List[str]
         add_neutral: bool, optional (default=True)
             if True, it will add neutral probability.
 
         Returns
         -------
-        string: result
+        result: List[str]
         """
 
-        if add_neutral:
-            label = self._label + ['neutral']
-        else:
-            label = self._label
-        vectors = self._vectorize.transform([self._cleaning(string)])
-        result = self._multinomial.predict_proba(vectors)
-        if add_neutral:
-            result = neutral(result)
-        result = result[0]
-        if get_proba:
-            return {label[i]: result[i] for i in range(len(result))}
-        else:
-            return label[np.argmax(result)]
+        return self._predict(strings = strings, add_neutral = add_neutral)
 
     @check_type
-    def predict_batch(
-        self,
-        strings: List[str],
-        get_proba: bool = False,
-        add_neutral: bool = True,
-    ):
+    def predict_proba(self, strings: List[str], add_neutral: bool = True):
         """
         Classify a list of strings.
 
         Parameters
         ----------
         strings: List[str]
-        get_proba: bool, optional (default=False)
-            If True, it will return probability of classes.
         add_neutral: bool, optional (default=True)
             if True, it will add neutral probability.
 
         Returns
         -------
-        string: list of results
+        result: List[dict[str, float]]
         """
 
-        if add_neutral:
-            label = self._label + ['neutral']
-        else:
-            label = self._label
-
-        strings = [self._cleaning(string) for string in strings]
-        vectors = self._vectorize.transform(strings)
-        results = self._multinomial.predict_proba(vectors)
-
-        if add_neutral:
-            results = neutral(results)
-
-        if get_proba:
-            outputs = []
-            for result in results:
-                outputs.append(
-                    {label[i]: result[i] for i in range(len(result))}
-                )
-            return outputs
-        else:
-            return [label[result] for result in np.argmax(results, axis = 1)]
+        return self._predict_proba(strings = strings, add_neutral = add_neutral)
 
 
 class MULTICLASS_BAYES(BAYES):
     def __init__(
-        self, multinomial, label, vectorize, cleaning = simple_textcleaning
+        self,
+        multinomial,
+        label,
+        vectorize,
+        bpe,
+        subword_mode,
+        cleaning = simple_textcleaning,
     ):
-        BAYES.__init__(self, multinomial, label, vectorize, cleaning)
+        BAYES.__init__(
+            self, multinomial, label, vectorize, bpe, subword_mode, cleaning
+        )
 
     @check_type
-    def predict(self, string: str, get_proba: bool = False):
+    def predict(self, strings: List[str]):
         """
         Classify a string.
 
         Parameters
         ----------
-        string : str
-        get_proba: bool, optional (default=False)
-            If True, it will return probability of classes.
+        strings: List[str]
 
         Returns
         -------
-        string: result
+        result: List[str]
         """
-        if not isinstance(string, str):
-            raise ValueError('input must be a string')
-        if not isinstance(get_proba, bool):
-            raise ValueError('get_proba must be a boolean')
-        vectors = self._vectorize.transform([self._cleaning(string)])
-        result = self._multinomial.predict_proba(vectors)[0]
-        if get_proba:
-            return {self._label[i]: result[i] for i in range(len(result))}
-        else:
-            return self._label[np.argmax(result)]
+
+        return self._predict(strings = strings)
 
     @check_type
-    def predict_batch(self, strings: List[str], get_proba: bool = False):
+    def predict_proba(self, strings: List[str]):
         """
         Classify a list of strings.
 
         Parameters
         ----------
         strings: List[str]
-        get_proba: bool, optional (default=False)
-            If True, it will return probability of classes.
 
         Returns
         -------
-        string: list of results
+        result: List[dict[str, float]]
         """
-        strings = [self._cleaning(string) for string in strings]
-        vectors = self._vectorize.transform(strings)
-        results = self._multinomial.predict_proba(vectors)
-        if get_proba:
-            outputs = []
-            for result in results:
-                outputs.append(
-                    {self._label[i]: result[i] for i in range(len(result))}
-                )
-            return outputs
-        else:
-            return [
-                self._label[result] for result in np.argmax(results, axis = 1)
-            ]
+
+        return self._predict_proba(strings = strings)
 
 
-class MULTILABEL_BAYES:
-    def __init__(self, models, vectors, cleaning = simple_textcleaning):
-        self._multinomial = models
-        self._vectorize = vectors
-        self._class_names = [
-            'toxic',
-            'severe_toxic',
-            'obscene',
-            'threat',
-            'insult',
-            'identity_hate',
-        ]
-        self._cleaning = cleaning
+class MULTILABEL_BAYES(BAYES):
+    def __init__(
+        self,
+        multinomial,
+        label,
+        vectorize,
+        bpe,
+        subword_mode,
+        cleaning = simple_textcleaning,
+    ):
+        BAYES.__init__(
+            self, multinomial, label, vectorize, bpe, subword_mode, cleaning
+        )
 
     @check_type
-    def predict(self, string: str, get_proba: bool = False):
+    def predict(self, strings: List[str]):
         """
         Classify a string.
 
         Parameters
         ----------
-        string : str
-        get_proba: bool, optional (default=False)
-            If True, it will return probability of classes.
+        strings: List[str]
 
         Returns
         -------
-        string: result
+        result: List[List[str]]
         """
 
-        vectors = self._vectorize.transform([self._cleaning(string)])
-        result = self._multinomial.predict_proba(vectors)[0]
+        result = self._classify(strings = strings)
         arounded = np.around(result)
-        results = {} if get_proba else []
-        for no, label in enumerate(self._class_names):
-            if get_proba:
-                results[label] = result[no]
-            else:
-                prob = arounded[no]
-                if prob:
-                    results.append(label)
+
+        results = []
+        for i, row in enumerate(result):
+            nested_results = []
+            for no, label in enumerate(self._label):
+                if arounded[i, no]:
+                    nested_results.append(label)
+            results.append(nested_results)
         return results
 
     @check_type
-    def predict_batch(self, strings: List[str], get_proba: bool = False):
+    def predict_proba(self, strings: List[str]):
         """
         Classify a list of strings.
 
         Parameters
         ----------
         strings: list
-        get_proba: bool, optional (default=False)
-            If True, it will return probability of classes.
 
         Returns
         -------
-        string: list of results
+        result: List[dict[str, float]]
         """
 
-        strings = [self._cleaning(string) for string in strings]
-        vectors = self._vectorize.transform(strings)
-        result = self._multinomial.predict_proba(vectors)
+        result = self._classify(strings = strings)
         arounded = np.around(result)
 
         results = []
         for i, row in enumerate(result):
-            nested_results = {} if get_proba else []
+            nested_results = {}
             for no, label in enumerate(self._class_names):
-                if get_proba:
-                    nested_results[label] = row[no]
-                else:
-                    prob = arounded[i, no]
-                    if prob:
-                        nested_results.append(label)
+                nested_results[label] = row[no]
             results.append(nested_results)
         return results
 
@@ -260,61 +239,42 @@ class LANGUAGE_DETECTION:
         return self._model.predict(strings)
 
     @check_type
-    def predict(self, string: str, get_proba: bool = False):
+    def predict(self, strings: List[str]):
         """
         Classify a string.
 
         Parameters
         ----------
-        string : str
-        get_proba: bool, optional (default=False)
-            If True, it will return probability of classes.
+        strings: List[str]
 
         Returns
         -------
-        string: result
+        result: List[str]
         """
 
-        result_labels, result_probs = self._predict([string])
-        result_labels = result_labels[0]
-        result_probs = result_probs[0]
-        if get_proba:
-            result = {label: 0.0 for label in self._labels}
-            for no, label in enumerate(result_labels):
-                label = label.replace('__label__', '')
-                result[label] = result_probs[no]
-            return result
-        else:
-            return result_labels[0].replace('__label__', '')
+        result_labels, result_probs = self._predict(strings)
+        return [label[0].replace('__label__', '') for label in result_labels]
 
     @check_type
-    def predict_batch(self, strings: List[str], get_proba: bool = False):
+    def predict_proba(self, strings: List[str]):
         """
         Classify a list of strings.
 
         Parameters
         ----------
-        strings: list
-        get_proba: bool, optional (default=False)
-            If True, it will return probability of classes.
+        strings: List[str]
 
         Returns
         -------
-        string: list of results
+        result: List[dict[str, float]]
         """
 
         result_labels, result_probs = self._predict(strings)
-
-        if get_proba:
-            outputs = []
-            for no, labels in enumerate(result_labels):
-                result = {label: 0.0 for label in self._labels}
-                for no_, label in enumerate(labels):
-                    label = label.replace('__label__', '')
-                    result[label] = result_probs[no][no_]
-                outputs.append(result)
-            return outputs
-        else:
-            return [
-                label[0].replace('__label__', '') for label in result_labels
-            ]
+        outputs = []
+        for no, labels in enumerate(result_labels):
+            result = {label: 0.0 for label in self._labels}
+            for no_, label in enumerate(labels):
+                label = label.replace('__label__', '')
+                result[label] = result_probs[no][no_]
+            outputs.append(result)
+        return outputs

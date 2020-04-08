@@ -10,6 +10,7 @@ from malaya.text.tatabahasa import (
     stopwords_calon,
     laughing,
 )
+from malaya.text.rules import normalized_chars
 from malaya.text.english.words import words as _english_words
 from malaya.text.bahasa.words import words as _malay_words
 from malaya import home
@@ -52,11 +53,26 @@ def _isWord(word):
     return True
 
 
+def make_cleaning(s, c_dict):
+    s = s.translate(c_dict)
+    return s
+
+
 def transformer_textcleaning(string):
     """
     use by any transformer model before tokenization
     """
     string = unidecode(string)
+    string = ' '.join(
+        [make_cleaning(w, normalized_chars) for w in string.split()]
+    )
+    string = re.sub('\(dot\)', '.', string)
+    string = (
+        re.sub(re.findall(r'\<a(.*?)\>', string)[0], '', string)
+        if (len(re.findall(r'\<a (.*?)\>', string)) > 0)
+        and ('href' in re.findall(r'\<a (.*?)\>', string)[0])
+        else string
+    )
     string = re.sub(
         r'\w+:\/{2}[\d\w-]+(\.[\d\w-]+)*(?:(?:\/[^\s/]*))*', ' ', string
     )

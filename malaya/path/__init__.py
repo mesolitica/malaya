@@ -443,73 +443,59 @@ S3_PATH_ENTITIES = {
 
 PATH_SENTIMENT = {
     'multinomial': {
-        'model': home + '/sentiment/multinomial/multinomial-sentiment.pkl',
-        'vector': home
-        + '/sentiment/multinomial/multinomial-sentiment-tfidf.pkl',
-        'version': 'v30',
+        'model': home + '/sentiment/multinomial/multinomial.pkl',
+        'vector': home + '/sentiment/multinomial/tfidf.pkl',
+        'bpe': home + '/sentiment/multinomial/bpe.model',
+        'version': 'v34',
     },
     'bert': {
-        'base': {
-            'model': home + '/sentiment/bert/base/bert-sentiment.pb',
-            'vocab': home + '/bert/sp10m.cased.v4.vocab',
-            'tokenizer': home + '/bert/sp10m.cased.v4.model',
-            'version': 'v30',
-        },
-        'small': {
-            'model': home + '/sentiment/bert/small/bert-sentiment.pb',
-            'vocab': home + '/bert/sp10m.cased.v4.vocab',
-            'tokenizer': home + '/bert/sp10m.cased.v4.model',
-            'version': 'v30',
-        },
+        'model': home + '/sentiment/bert/base/model.pb',
+        'vocab': home + '/bert/sp10m.cased.bert.vocab',
+        'tokenizer': home + '/bert/sp10m.cased.bert.model',
+        'version': 'v34',
+    },
+    'tiny-bert': {
+        'model': home + '/sentiment/bert/tiny/model.pb',
+        'vocab': home + '/bert/sp10m.cased.bert.vocab',
+        'tokenizer': home + '/bert/sp10m.cased.bert.model',
+        'version': 'v34',
     },
     'albert': {
-        'base': {
-            'model': home + '/sentiment/albert/base/albert-sentiment.pb',
-            'vocab': home + '/albert/sp10m.cased.v6.vocab',
-            'tokenizer': home + '/albert/sp10m.cased.v6.model',
-            'version': 'v30',
-        }
+        'model': home + '/sentiment/albert/base/model.pb',
+        'vocab': home + '/albert/sp10m.cased.v10.vocab',
+        'tokenizer': home + '/albert/sp10m.cased.v10.model',
+        'version': 'v34',
+    },
+    'tiny-albert': {
+        'model': home + '/sentiment/albert/tiny/model.pb',
+        'vocab': home + '/bert/sp10m.cased.bert.vocab',
+        'tokenizer': home + '/bert/sp10m.cased.bert.model',
+        'version': 'v34',
     },
     'xlnet': {
-        'base': {
-            'model': home + '/sentiment/xlnet/base/albert-sentiment.pb',
-            'vocab': home + '/xlnet/sp10m.cased.v5.vocab',
-            'tokenizer': home + '/xlnet/sp10m.cased.v5.model',
-            'version': 'v30',
-        }
+        'model': home + '/sentiment/xlnet/base/model.pb',
+        'vocab': home + '/xlnet/sp10m.cased.v9.vocab',
+        'tokenizer': home + '/xlnet/sp10m.cased.v9.model',
+        'version': 'v34',
+    },
+    'alxlnet': {
+        'model': home + '/sentiment/alxlnet/base/model.pb',
+        'vocab': home + '/xlnet/sp10m.cased.v9.vocab',
+        'tokenizer': home + '/xlnet/sp10m.cased.v9.model',
+        'version': 'v34',
     },
 }
 
 S3_PATH_SENTIMENT = {
     'multinomial': {
-        'model': 'v30/sentiment/multinomial-sentiment.pkl',
-        'vector': 'v30/sentiment/multinomial-sentiment-tfidf.pkl',
+        'model': 'v34/sentiment/multinomial.pkl',
+        'vector': 'v34/sentiment/tfidf.pkl',
+        'bpe': 'v34/sentiment/bpe.model',
     },
     'bert': {
-        'base': {
-            'model': 'v30/sentiment/bert-base-sentiment.pb',
-            'vocab': 'bert-bahasa/sp10m.cased.v4.vocab',
-            'tokenizer': 'bert-bahasa/sp10m.cased.v4.model',
-        },
-        'small': {
-            'model': 'v30/sentiment/bert-small-sentiment.pb',
-            'vocab': 'bert-bahasa/sp10m.cased.v4.vocab',
-            'tokenizer': 'bert-bahasa/sp10m.cased.v4.model',
-        },
-    },
-    'albert': {
-        'base': {
-            'model': 'v30/sentiment/albert-base-sentiment.pb',
-            'vocab': 'bert-bahasa/sp10m.cased.v6.vocab',
-            'tokenizer': 'bert-bahasa/sp10m.cased.v6.model',
-        }
-    },
-    'xlnet': {
-        'base': {
-            'model': 'v30/sentiment/xlnet-base-sentiment.pb',
-            'vocab': 'bert-bahasa/sp10m.cased.v5.vocab',
-            'tokenizer': 'bert-bahasa/sp10m.cased.v5.model',
-        }
+        'model': 'v34/sentiment/bert-base-sentiment.pb',
+        'vocab': 'tokenizer/sp10m.cased.bert.vocab',
+        'tokenizer': 'tokenizer/sp10m.cased.bert.model',
     },
 }
 
@@ -587,9 +573,10 @@ S3_PATH_SUBJECTIVE = {
 
 PATH_EMOTION = {
     'multinomial': {
-        'model': home + '/emotion/multinomial/multinomial-emotion.pkl',
-        'vector': home + '/emotion/multinomial/multinomial-emotion-tfidf.pkl',
-        'version': 'v30',
+        'model': home + '/sentiment/emotion/multinomial.pkl',
+        'vector': home + '/sentiment/emotion/tfidf.pkl',
+        'bpe': home + '/sentiment/emotion/bpe.model',
+        'version': 'v34',
     },
     'bert': {
         'base': {
@@ -625,8 +612,9 @@ PATH_EMOTION = {
 
 S3_PATH_EMOTION = {
     'multinomial': {
-        'model': 'v30/emotion/multinomial-emotion.pkl',
-        'vector': 'v30/emotion/multinomial-emotion-tfidf.pkl',
+        'model': 'v34/emotion/multinomial.pkl',
+        'vector': 'v34/emotion/tfidf.pkl',
+        'bpe': 'v34/emotion/bpe.model',
     },
     'bert': {
         'base': {

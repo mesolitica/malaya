@@ -9,7 +9,7 @@ from malaya.text.bpe import (
     sentencepiece_tokenizer_xlnet,
 )
 from malaya.path import PATH_TOXIC, S3_PATH_TOXIC
-from malaya.model.sklearn import MULTILABEL_BAYES
+from malaya.model.ml import MULTILABEL_BAYES
 from malaya.model.bert import SIGMOID_BERT
 from malaya.model.xlnet import SIGMOID_XLNET
 

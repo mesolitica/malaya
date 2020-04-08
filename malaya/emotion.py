@@ -2,7 +2,7 @@ from malaya.supervised import softmax
 from malaya.path import PATH_EMOTION, S3_PATH_EMOTION
 from herpetologist import check_type
 
-_emotion_label = ['anger', 'fear', 'joy', 'love', 'sadness', 'surprise']
+_emotion_label = ['anger', 'fear', 'happy', 'love', 'sadness', 'surprise']
 _availability = [
     'bert',
     'tiny-bert',
@@ -26,7 +26,7 @@ def multinomial(**kwargs):
 
     Returns
     -------
-    BAYES : malaya._models._sklearn_model.BAYES class
+    BAYES : malaya.model.ml.BAYES class
     """
     return softmax.multinomial(
         PATH_EMOTION, S3_PATH_EMOTION, 'emotion', _emotion_label, **kwargs

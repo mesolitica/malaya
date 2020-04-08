@@ -2,11 +2,14 @@ from malaya.supervised import softmax
 from malaya.path import PATH_SENTIMENT, S3_PATH_SENTIMENT
 from herpetologist import check_type
 
-_availability = {
-    'bert': ['base', 'small'],
-    'xlnet': ['base'],
-    'albert': ['base'],
-}
+_availability = [
+    'bert',
+    'tiny-bert',
+    'albert',
+    'tiny-albert',
+    'xlnet',
+    'alxlnet',
+]
 
 
 def available_transformer_model():
@@ -22,9 +25,9 @@ def multinomial(**kwargs):
 
     Returns
     -------
-    BAYES : malaya._models._sklearn_model.BAYES class
+    BAYES : malaya.model.ml.BAYES class
     """
-    return _softmax_class.multinomial(
+    return softmax.multinomial(
         PATH_SENTIMENT,
         S3_PATH_SENTIMENT,
         'sentiment',
@@ -34,7 +37,7 @@ def multinomial(**kwargs):
 
 
 @check_type
-def transformer(model: str = 'xlnet', size: str = 'base', **kwargs):
+def transformer(model: str = 'bert', **kwargs):
     """
     Load Transformer sentiment model.
 
@@ -44,13 +47,11 @@ def transformer(model: str = 'xlnet', size: str = 'base', **kwargs):
         Model architecture supported. Allowed values:
 
         * ``'bert'`` - BERT architecture from google.
-        * ``'xlnet'`` - XLNET architecture from google.
+        * ``'tiny-bert'`` - BERT architecture from google with smaller parameters.
         * ``'albert'`` - ALBERT architecture from google.
-    size : str, optional (default='base')
-        Model size supported. Allowed values:
-
-        * ``'base'`` - BASE size.
-        * ``'small'`` - SMALL size.
+        * ``'tiny-albert'`` - ALBERT architecture from google with smaller parameters.
+        * ``'xlnet'`` - XLNET architecture from google.
+        * ``'alxlnet'`` - XLNET architecture from google + Malaya.
 
     Returns
     -------
@@ -63,16 +64,11 @@ def transformer(model: str = 'xlnet', size: str = 'base', **kwargs):
         raise Exception(
             'model not supported, please check supported models from malaya.sentiment.available_transformer_model()'
         )
-    if size not in _availability[model]:
-        raise Exception(
-            'size not supported, please check supported models from malaya.sentiment.available_transformer_model()'
-        )
-    return _softmax_class.transformer(
+    return softmax.transformer(
         PATH_SENTIMENT,
         S3_PATH_SENTIMENT,
         'sentiment',
         ['negative', 'positive'],
         model = model,
-        size = size,
         **kwargs
     )

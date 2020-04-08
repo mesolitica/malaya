@@ -81,8 +81,7 @@ def clear_all_cache():
         return True
     except:
         raise Exception(
-            'failed to clear cached models. Please make sure %s is able to overwrite from Malaya'
-            % (home)
+            f'failed to clear cached models. Please make sure {home} is able to overwrite from Malaya'
         )
 
 
