@@ -22,7 +22,7 @@ from herpetologist import check_type
 from typing import List
 
 
-class BERT:
+class BASE:
     def __init__(
         self,
         X,
@@ -31,8 +31,6 @@ class BERT:
         input_masks,
         sess,
         tokenizer,
-        cls,
-        sep,
         label = ['negative', 'positive'],
     ):
         self._X = X
@@ -41,12 +39,10 @@ class BERT:
         self._input_masks = input_masks
         self._sess = sess
         self._tokenizer = tokenizer
-        self._cls = cls
-        self._sep = sep
         self._label = label
 
 
-class BINARY_BERT(BERT):
+class BERT(BASE):
     def __init__(
         self,
         X,
@@ -56,13 +52,12 @@ class BINARY_BERT(BERT):
         logits_seq,
         sess,
         tokenizer,
-        cls,
-        sep,
         attns,
         class_name,
         label = ['negative', 'positive'],
     ):
-        BERT.__init__(
+
+        BASE.__init__(
             self,
             X = X,
             segment_ids = segment_ids,
@@ -70,135 +65,67 @@ class BINARY_BERT(BERT):
             logits = logits,
             sess = sess,
             tokenizer = tokenizer,
-            cls = cls,
-            sep = sep,
             label = label,
         )
+
         self._attns = attns
         self._logits_seq = logits_seq
         self._class_name = class_name
         self._softmax = tf.nn.softmax(self._logits)
         self._softmax_seq = tf.nn.softmax(self._logits_seq)
 
-    def _predict(self, strings, add_neutral):
-        input_ids, _, _, _ = bert_tokenization(
-            self._tokenizer, strings, self._cls, self._sep
+    def _classify(self, strings):
+        input_ids, input_masks, _, _ = bert_tokenization(
+            self._tokenizer, strings
         )
 
-        result = self._sess.run(self._softmax, feed_dict = {self._X: input_ids})
-        if add_neutral:
-            result = neutral(result)
-        return result
+        return self._sess.run(
+            self._softmax,
+            feed_dict = {self._X: input_ids, self._input_masks: input_masks},
+        )
 
-    @check_type
-    def predict(
-        self, string: str, get_proba: bool = False, add_neutral: bool = True
-    ):
-        """
-        classify a string.
-
-        Parameters
-        ----------
-        string : str
-        get_proba: bool, optional (default=False)
-            If True, it will return probability of classes.
-        add_neutral: bool, optional (default=True)
-            if True, it will add neutral probability.
-
-        Returns
-        -------
-        dictionary: results
-        """
+    def _predict(self, strings, add_neutral = False):
+        results = self._classify(strings)
 
         if add_neutral:
-            label = self._label + ['neutral']
-        else:
-            label = self._label
-        result = self._predict([string], add_neutral = add_neutral)
-
-        result = result[0]
-        if get_proba:
-            return {label[i]: result[i] for i in range(len(result))}
-        else:
-            return label[np.argmax(result)]
-
-    @check_type
-    def predict_batch(
-        self,
-        strings: List[str],
-        get_proba: bool = False,
-        add_neutral: bool = True,
-    ):
-        """
-        classify list of strings.
-
-        Parameters
-        ----------
-        strings : List[str]
-        get_proba: bool, optional (default=False)
-            If True, it will return probability of classes.
-        add_neutral: bool, optional (default=True)
-            if True, it will add neutral probability.
-
-        Returns
-        -------
-        list_dictionaries: list of results
-        """
-
-        if add_neutral:
+            result = neutral(results)
             label = self._label + ['neutral']
         else:
             label = self._label
 
-        results = self._predict(strings, add_neutral = add_neutral)
+        return [label[result] for result in np.argmax(results, axis = 1)]
 
-        if get_proba:
-            outputs = []
-            for result in results:
-                outputs.append(
-                    {label[i]: result[i] for i in range(len(result))}
-                )
-            return outputs
+    def _predict_proba(self, strings, add_neutral = False):
+        results = self._classify(strings)
+
+        if add_neutral:
+            results = neutral(results)
+            label = self._label + ['neutral']
         else:
-            return [label[result] for result in np.argmax(results, axis = 1)]
+            label = self._label
 
-    @check_type
-    def predict_words(
-        self, string: str, method: str = 'last', visualization: bool = True
+        outputs = []
+        for result in results:
+            outputs.append({label[i]: result[i] for i in range(len(result))})
+        return outputs
+
+    def _predict_words(
+        self, string, method, visualization, add_neutral = False
     ):
-        """
-        classify words.
-
-        Parameters
-        ----------
-        string : str
-        method : str, optional (default='last')
-            Attention layer supported. Allowed values:
-
-            * ``'last'`` - attention from last layer.
-            * ``'first'`` - attention from first layer.
-            * ``'mean'`` - average attentions from all layers.
-        visualization: bool, optional (default=True)
-            If True, it will open the visualization dashboard.
-
-        Returns
-        -------
-        dictionary: results
-        """
-
         method = method.lower()
         if method not in ['last', 'first', 'mean']:
             raise Exception(
                 "method not supported, only support 'last', 'first' and 'mean'"
             )
-        label = self._label + ['neutral']
+        if add_neutral:
+            label = self._label + ['neutral']
 
-        batch_x, _, _, s_tokens = bert_tokenization(
-            self._tokenizer, [string], cls = self._cls, sep = self._sep
+        batch_x, batch_mask, _, s_tokens = bert_tokenization(
+            self._tokenizer, [string]
         )
         result, attentions, words = self._sess.run(
             [self._softmax, self._attns, self._softmax_seq],
-            feed_dict = {self._X: batch_x},
+            feed_dict = {self._X: batch_x, self._input_masks: batch_mask},
         )
         if method == 'first':
             cls_attn = list(attentions[0].values())[0][:, :, 0, :]
@@ -215,26 +142,21 @@ class BINARY_BERT(BERT):
         cls_attn = np.mean(cls_attn, axis = 1)
         total_weights = np.sum(cls_attn, axis = -1, keepdims = True)
         attn = cls_attn / total_weights
-        result = neutral(result)
+        words = words[0]
+
+        if add_neutral:
+            result = neutral(result)
+            words = neutral(words)
+
         result = result[0]
-        words = neutral(words[0])
         weights = []
-        if '[' in self._cls:
-            merged = merge_wordpiece_tokens(list(zip(s_tokens[0], attn[0])))
-            for i in range(words.shape[1]):
-                m = merge_wordpiece_tokens(
-                    list(zip(s_tokens[0], words[:, i])), weighted = False
-                )
-                _, weight = zip(*m)
-                weights.append(weight)
-        else:
-            merged = merge_sentencepiece_tokens(list(zip(s_tokens[0], attn[0])))
-            for i in range(words.shape[1]):
-                m = merge_sentencepiece_tokens(
-                    list(zip(s_tokens[0], words[:, i])), weighted = False
-                )
-                _, weight = zip(*m)
-                weights.append(weight)
+        merged = merge_sentencepiece_tokens(list(zip(s_tokens[0], attn[0])))
+        for i in range(words.shape[1]):
+            m = merge_sentencepiece_tokens(
+                list(zip(s_tokens[0], words[:, i])), weighted = False
+            )
+            _, weight = zip(*m)
+            weights.append(weight)
         w, a = zip(*merged)
         words = np.array(weights).T
         distribution_words = words[:, np.argmax(words.sum(axis = 0))]
@@ -261,10 +183,122 @@ class BINARY_BERT(BERT):
         dict_result['attention'] = {'x': x_attention, 'y': np.array(a)}
         dict_result['barplot'] = {'x': label, 'y': y_barplot}
         dict_result['class_name'] = self._class_name
+
+        render_dict = {
+            'sentiment': _render_binary,
+            'relevancy': _render_relevancy,
+            'emotion': _render_emotion,
+            'toxic': _render_toxic,
+        }
         if visualization:
-            _render_binary(dict_result)
+            if result.shape[-1] == 2 and self._class_name == 'sentiment':
+                _render_relevancy(dict_result)
+            else:
+                render_dict[self._class_name](dict_result)
         else:
             return dict_result
+
+
+class BINARY_BERT(BERT):
+    def __init__(
+        self,
+        X,
+        segment_ids,
+        input_masks,
+        logits,
+        logits_seq,
+        sess,
+        tokenizer,
+        attns,
+        class_name,
+        label = ['negative', 'positive'],
+    ):
+        BERT.__init__(
+            self,
+            X = X,
+            segment_ids = segment_ids,
+            input_masks = input_masks,
+            logits = logits,
+            logits_seq = logits_seq,
+            sess = sess,
+            tokenizer = tokenizer,
+            attns = attns,
+            class_name = class_name,
+            label = label,
+        )
+
+    @check_type
+    def predict(self, strings: List[str], add_neutral: bool = True):
+        """
+        classify a string.
+
+        Parameters
+        ----------
+        strings: List[str]
+        add_neutral: bool, optional (default=True)
+            if True, it will add neutral probability.
+
+        Returns
+        -------
+        result: List[str]
+        """
+
+        return self._predict(strings = strings, add_neutral = add_neutral)
+
+    @check_type
+    def predict_proba(self, strings: List[str], add_neutral: bool = True):
+        """
+        classify list of strings.
+
+        Parameters
+        ----------
+        strings : List[str]
+        add_neutral: bool, optional (default=True)
+            if True, it will add neutral probability.
+
+        Returns
+        -------
+        result: List[dict[str, float]]
+        """
+
+        return self._predict_proba(strings = strings, add_neutral = add_neutral)
+
+    @check_type
+    def predict_words(
+        self,
+        string: str,
+        method: str = 'last',
+        add_neutral: bool = True,
+        visualization: bool = True,
+    ):
+        """
+        classify words.
+
+        Parameters
+        ----------
+        string : str
+        method : str, optional (default='last')
+            Attention layer supported. Allowed values:
+
+            * ``'last'`` - attention from last layer.
+            * ``'first'`` - attention from first layer.
+            * ``'mean'`` - average attentions from all layers.
+        add_neutral: bool, optional (default=True)
+            if True, it will add neutral probability.
+        visualization: bool, optional (default=True)
+            If True, it will open the visualization dashboard.
+
+        Returns
+        -------
+        result: dict
+        """
+
+        return self._predict_words(
+            string = string,
+            method = method,
+            add_neutral = add_neutral,
+            visualization = visualization,
+        )
 
 
 class MULTICLASS_BERT(BERT):
@@ -277,8 +311,6 @@ class MULTICLASS_BERT(BERT):
         logits_seq,
         sess,
         tokenizer,
-        cls,
-        sep,
         attns,
         class_name,
         label = ['negative', 'positive'],
@@ -289,17 +321,13 @@ class MULTICLASS_BERT(BERT):
             segment_ids = segment_ids,
             input_masks = input_masks,
             logits = logits,
+            logits_seq = logits_seq,
             sess = sess,
             tokenizer = tokenizer,
-            cls = cls,
-            sep = sep,
+            attns = attns,
+            class_name = class_name,
             label = label,
         )
-        self._attns = attns
-        self._logits_seq = logits_seq
-        self._class_name = class_name
-        self._softmax = tf.nn.softmax(self._logits)
-        self._softmax_seq = tf.nn.softmax(self._logits_seq)
 
     def _predict(self, strings):
         input_ids, _, _, _ = bert_tokenization(
@@ -310,59 +338,37 @@ class MULTICLASS_BERT(BERT):
         return result
 
     @check_type
-    def predict(self, string: str, get_proba: bool = False):
+    def predict(self, strings: List[str]):
         """
         classify a string.
 
         Parameters
         ----------
-        string : str
-        get_proba: bool, optional (default=False)
-            If True, it will return probability of classes.
+        strings: List[str]
         add_neutral: bool, optional (default=True)
-            if True, it will add neutral probability.
 
         Returns
         -------
-        dictionary: results
+        result: List[str]
         """
 
-        result = self._predict([string])
-        result = result[0]
-        if get_proba:
-            return {self._label[i]: result[i] for i in range(len(result))}
-        else:
-            return self._label[np.argmax(result)]
+        return self._predict(strings = strings)
 
     @check_type
-    def predict_batch(self, strings: List[str], get_proba: bool = False):
+    def predict_proba(self, strings: List[str]):
         """
         classify list of strings.
 
         Parameters
         ----------
         strings : List[str]
-        get_proba: bool, optional (default=False)
-            If True, it will return probability of classes.
 
         Returns
         -------
-        list_dictionaries: list of results
+        result: List[dict[str, float]]
         """
 
-        results = self._predict(strings)
-
-        if get_proba:
-            outputs = []
-            for result in results:
-                outputs.append(
-                    {self._label[i]: result[i] for i in range(len(result))}
-                )
-            return outputs
-        else:
-            return [
-                self._label[result] for result in np.argmax(results, axis = 1)
-            ]
+        return self._predict_proba(strings = strings)
 
     @check_type
     def predict_words(
@@ -385,92 +391,14 @@ class MULTICLASS_BERT(BERT):
 
         Returns
         -------
-        dictionary: results
+        result: dict
         """
-
-        method = method.lower()
-        if method not in ['last', 'first', 'mean']:
-            raise Exception(
-                "method not supported, only support 'last', 'first' and 'mean'"
-            )
-
-        batch_x, _, _, s_tokens = bert_tokenization(
-            self._tokenizer, [string], cls = self._cls, sep = self._sep
+        return self._predict_words(
+            string = string, method = method, visualization = visualization
         )
-        result, attentions, words = self._sess.run(
-            [self._softmax, self._attns, self._softmax_seq],
-            feed_dict = {self._X: batch_x},
-        )
-        if method == 'first':
-            cls_attn = list(attentions[0].values())[0][:, :, 0, :]
-
-        if method == 'last':
-            cls_attn = list(attentions[-1].values())[0][:, :, 0, :]
-
-        if method == 'mean':
-            combined_attentions = []
-            for a in attentions:
-                combined_attentions.append(list(a.values())[0])
-            cls_attn = np.mean(combined_attentions, axis = 0).mean(axis = 2)
-
-        cls_attn = np.mean(cls_attn, axis = 1)
-        total_weights = np.sum(cls_attn, axis = -1, keepdims = True)
-        attn = cls_attn / total_weights
-        result = result[0]
-        words = words[0]
-        weights = []
-        if '[' in self._cls:
-            merged = merge_wordpiece_tokens(list(zip(s_tokens[0], attn[0])))
-            for i in range(words.shape[1]):
-                m = merge_wordpiece_tokens(
-                    list(zip(s_tokens[0], words[:, i])), weighted = False
-                )
-                _, weight = zip(*m)
-                weights.append(weight)
-        else:
-            merged = merge_sentencepiece_tokens(list(zip(s_tokens[0], attn[0])))
-            for i in range(words.shape[1]):
-                m = merge_sentencepiece_tokens(
-                    list(zip(s_tokens[0], words[:, i])), weighted = False
-                )
-                _, weight = zip(*m)
-                weights.append(weight)
-        w, a = zip(*merged)
-        words = np.array(weights).T
-        distribution_words = words[:, np.argmax(words.sum(axis = 0))]
-        y_histogram, x_histogram = np.histogram(
-            distribution_words, bins = np.arange(0, 1, 0.05)
-        )
-        y_histogram = y_histogram / y_histogram.sum()
-        x_attention = np.arange(len(w))
-        left, right = np.unique(
-            np.argmax(words, axis = 1), return_counts = True
-        )
-        left = left.tolist()
-        y_barplot = []
-        for i in range(len(self._label)):
-            if i not in left:
-                y_barplot.append(i)
-            else:
-                y_barplot.append(right[left.index(i)])
-
-        dict_result = {self._label[i]: result[i] for i in range(len(result))}
-        dict_result['alphas'] = {w: a[no] for no, w in enumerate(w)}
-        dict_result['word'] = {w: words[no] for no, w in enumerate(w)}
-        dict_result['histogram'] = {'x': x_histogram, 'y': y_histogram}
-        dict_result['attention'] = {'x': x_attention, 'y': np.array(a)}
-        dict_result['barplot'] = {'x': self._label, 'y': y_barplot}
-        dict_result['class_name'] = self._class_name
-        if visualization:
-            if self._class_name == 'relevancy':
-                _render_relevancy(dict_result)
-            else:
-                _render_emotion(dict_result)
-        else:
-            return dict_result
 
 
-class SIGMOID_BERT(BERT):
+class SIGMOID_BERT(BASE):
     def __init__(
         self,
         X,
@@ -480,13 +408,11 @@ class SIGMOID_BERT(BERT):
         logits_seq,
         sess,
         tokenizer,
-        cls,
-        sep,
         attns,
         class_name,
         label = ['negative', 'positive'],
     ):
-        BERT.__init__(
+        BASE.__init__(
             self,
             X = X,
             segment_ids = segment_ids,
@@ -494,8 +420,6 @@ class SIGMOID_BERT(BERT):
             logits = logits,
             sess = sess,
             tokenizer = tokenizer,
-            cls = cls,
-            sep = sep,
             label = label,
         )
         self._attns = attns
@@ -504,72 +428,64 @@ class SIGMOID_BERT(BERT):
         self._sigmoid = tf.nn.sigmoid(self._logits)
         self._sigmoid_seq = tf.nn.sigmoid(self._logits_seq)
 
-    def _predict(self, strings):
-        input_ids, _, _, _ = bert_tokenization(
-            self._tokenizer, strings, self._cls, self._sep
+    def _classify(self, strings):
+
+        input_ids, input_masks, _, _ = bert_tokenization(
+            self._tokenizer, strings
         )
 
-        result = self._sess.run(self._sigmoid, feed_dict = {self._X: input_ids})
-        return result
+        return self._sess.run(
+            self._sigmoid,
+            feed_dict = {self._X: input_ids, self._input_masks: input_masks},
+        )
 
     @check_type
-    def predict(self, string: str, get_proba: bool = False):
+    def predict(self, strings: List[str]):
         """
         classify a string.
 
         Parameters
         ----------
-        string : str
-        get_proba: bool, optional (default=False)
-            If True, it will return probability of classes.
-        add_neutral: bool, optional (default=True)
-            if True, it will add neutral probability.
+        strings: List[str]
 
         Returns
         -------
-        dictionary: results
+        result: List[List[str]]
         """
 
-        result = self._predict([string])
-        result = result[0]
-        if get_proba:
-            return {self._label[i]: result[i] for i in range(len(result))}
-        else:
-            probs = np.around(result)
-            return [label for no, label in enumerate(self._label) if probs[no]]
+        probs = self._classify(strings)
+        results = []
+        probs = np.around(probs)
+        for prob in probs:
+            list_result = []
+            for no, label in enumerate(self._label):
+                if prob[no]:
+                    list_result.append(label)
+            results.append(list_result)
+
+        return results
 
     @check_type
-    def predict_batch(self, strings: List[str], get_proba: bool = False):
+    def predict_proba(self, strings: List[str]):
         """
         classify list of strings.
 
         Parameters
         ----------
         strings : List[str]
-        get_proba: bool, optional (default=False)
-            If True, it will return probability of classes.
 
         Returns
         -------
-        list_dictionaries: list of results
+        result: List[dict[str, float]]
         """
 
         probs = self._predict(strings)
         results = []
-        if get_proba:
-            for prob in probs:
-                dict_result = {}
-                for no, label in enumerate(self._label):
-                    dict_result[label] = prob[no]
-                results.append(dict_result)
-        else:
-            probs = np.around(probs)
-            for prob in probs:
-                list_result = []
-                for no, label in enumerate(self._label):
-                    if prob[no]:
-                        list_result.append(label)
-                results.append(list_result)
+        for prob in probs:
+            dict_result = {}
+            for no, label in enumerate(self._label):
+                dict_result[label] = prob[no]
+            results.append(dict_result)
 
         return results
 

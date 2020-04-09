@@ -50,7 +50,7 @@ class DEEP_LANG:
         self._bpe = bpe
         self._type = type
 
-    def _predicts(self, strings):
+    def _classify(self, strings):
         strings = [language_detection_textcleaning(i) for i in strings]
         subs = [
             ' '.join(s)
@@ -65,52 +65,43 @@ class DEEP_LANG:
         return probs
 
     @check_type
-    def predict(self, string: str, get_proba: bool = False):
+    def predict(self, strings: List[str]):
         """
         classify a string.
 
         Parameters
         ----------
-        string : str
-        get_proba: bool, optional (default=False)
-            If True, it will return probability of classes.
+        strings: List[str]
 
         Returns
         -------
-        dictionary: results
+        result: List[str]
         """
 
-        probs = self._predicts([string])[0]
-        if get_proba:
-            return {self._label[no]: i for no, i in enumerate(probs)}
-        else:
-            return self._label[np.argmax(probs)]
+        probs = self._predicts(strings)
+        dicts = []
+        probs = np.argmax(probs, 1)
+        for prob in probs:
+            dicts.append(self._label[prob])
+        return dicts
 
     @check_type
-    def predict_batch(self, strings: List[str], get_proba: bool = False):
+    def predict_proba(self, strings: List[str]):
         """
         classify list of strings
 
         Parameters
         ----------
         strings : List[str]
-        get_proba: bool, optional (default=False)
-            If True, it will return probability of classes.
 
 
         Returns
         -------
-        list_dictionaries: list of results
+        result: List[dict[str, float]]
         """
+
         probs = self._predicts(strings)
         dicts = []
-        if get_proba:
-            for i in range(probs.shape[0]):
-                dicts.append(
-                    {self._label[no]: k for no, k in enumerate(probs[i])}
-                )
-        else:
-            probs = np.argmax(probs, 1)
-            for prob in probs:
-                dicts.append(self._label[prob])
+        for i in range(probs.shape[0]):
+            dicts.append({self._label[no]: k for no, k in enumerate(probs[i])})
         return dicts
