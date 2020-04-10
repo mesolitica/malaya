@@ -149,7 +149,7 @@ tensorboard --logdir=tensorboard --host=0.0.0.0
 
 ## Download
 
-1.  9th July 2019, [xlnet-9-july-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/xlnet-9-july-2019-v2.tar.gz).
+1.  **BASE**, last update 9th July 2019, [xlnet-9-july-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/xlnet-9-july-2019-v2.tar.gz).
 
   - Vocab size 32k.
   - Trained on cleaned wikipedia, raw twitter, raw instagram, raw parliament, raw news.
@@ -157,7 +157,7 @@ tensorboard --logdir=tensorboard --host=0.0.0.0
   - BASE size (878MB).
   - test loss, 4.XX (last remember).
 
-2. 15 July 2019, [xlnet-15-july-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/xlnet-bahasa-small.tar.gz)
+2. **BASE**, last update 15 July 2019, [xlnet-15-july-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/xlnet-bahasa-small.tar.gz)
 
   - Vocab size 32k.
   - Trained on cleaned wikipedia, raw twitter, raw instagram, raw parliament, raw news.
@@ -165,20 +165,14 @@ tensorboard --logdir=tensorboard --host=0.0.0.0
   - BASE size (231MB).
   - test loss, 4.XX (last remember).
 
-3. 30 September 2019, [xlnet-base-30-september-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/xlnet-base-30-9-2019.tar.gz)
+3. **BASE** 30, last update 30 September 2019, [xlnet-base-30-september-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/xlnet-base-30-9-2019.tar.gz)
 
   - Vocab size 32k.
   - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news.
   - 270k steps, 3 GPUs TESLA V100.
   - BASE size (231MB).
 
-```text
-I0930 13:31:34.584934 140152603084608 evaluation.py:275] Finished evaluation at 2019-09-30-13:31:34
-INFO:tensorflow:Saving dict for global step 270000: accuracy = 0.53644705, global_step = 270000, loss = 2.6062012
-I0930 13:31:34.585190 140152603084608 estimator.py:2039] Saving dict for global step 270000: accuracy = 0.53644705, global_step = 270000, loss = 2.6062012
-```
-
-4. 26 March 2020, [xlnet-base-26-03-2020.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/xlnet-base-26-03-2020.tar.gz)
+4. **BASE**, last update 26 March 2020, [xlnet-base-26-03-2020.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/xlnet-base-26-03-2020.tar.gz)
 
   - Vocab size 32k.
   - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.

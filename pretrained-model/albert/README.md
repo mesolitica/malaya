@@ -6,6 +6,7 @@ Thanks to official implementation from Google, https://github.com/google-researc
   * [Objective](#objective)
   * [Acknowledgement](#acknowledgement)
   * [How-to](#how-to)
+  * [Download](#download)
   * [Citation](#citation)
   * [Donation](#donation)
 
@@ -41,6 +42,21 @@ python3 run_pretraining.py \
 --num_train_steps=150000 --num_warmup_steps=3125 --learning_rate=1e-4 \
 --save_checkpoints_steps=10000 --use_tpu=True --tpu_name=node-1 --tpu_zone=us-central1-a
 ```
+
+3. Open tensorboard,
+
+```
+tensorboard --logdir=gs://bucket/albert-base-actual --host=0.0.0.0
+```
+
+## Download
+
+1. **BASE**, last update 10th April 2020, [albert-base-2020-04-10.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/albert-base-2020-04-10.tar.gz)
+
+  - Vocab size 32k.
+  - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.
+  - 400k steps, TPU v3-8.
+  - BASE size (34MB).
 
 ## Citation
 

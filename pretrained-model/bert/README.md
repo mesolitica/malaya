@@ -89,76 +89,39 @@ I0910 11:20:31.562414 140220436277056 validation.py:597]   next_sentence_loss = 
 
 ## Download
 
-1. **BASE**, last update 30th July 2019, [bert-bahasa-base.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-bahasa-base.tar.gz) [Tensorboard data](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-base-30-july-2019-tensorboard.instance-3)
+1. **BASE**, last update 30th July 2019, [bert-bahasa-base.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-bahasa-base.tar.gz)
 
   - Vocab size 40k.
   - Trained on cleaned wikipedia, raw twitter, raw instagram, raw parliament, raw news.
   - 1.5M steps, single GPU.
   - BASE size (467MB).
 
-2. **SMALL**, last update 2nd August 2019,
-[bert-bahasa-small.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-bahasa-small.tar.gz) [Tensorboard data](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/events.out.tfevents.1564477991.instance-3)
+2. **SMALL**, last update 2nd August 2019, [bert-bahasa-small.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-bahasa-small.tar.gz)
 
   - Vocab size 40k.
   - Trained on cleaned wikipedia, raw twitter, raw instagram, raw parliament, raw news.
   - 1.5M steps, single GPU.
   - SMALL size (184MB).
 
-3. **BASE**, last update 13th September 2019,
-[bert-bahasa-base-13-9-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-base-13-9-2019.tar.gz)
+3. **BASE**, last update 13th September 2019, [bert-bahasa-base-13-9-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-base-13-9-2019.tar.gz)
 
   - Vocab size 40k.
   - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news.
   - 1.0M steps, 3 GPUs TESLA V100.
   - BASE size (467MB).
 
-```text
-INFO:tensorflow:***** Eval results *****
-I0913 04:02:36.334070 140621913737024 validation.py:595] ***** Eval results *****
-INFO:tensorflow:  global_step = 1000002
-I0913 04:02:36.334207 140621913737024 validation.py:597]   global_step = 1000002
-INFO:tensorflow:  loss = 3.2660308
-I0913 04:02:36.334458 140621913737024 validation.py:597]   loss = 3.2660308
-INFO:tensorflow:  masked_lm_accuracy = 0.49669307
-I0913 04:02:36.334600 140621913737024 validation.py:597]   masked_lm_accuracy = 0.49669307
-INFO:tensorflow:  masked_lm_loss = 2.9214077
-I0913 04:02:36.334724 140621913737024 validation.py:597]   masked_lm_loss = 2.9214077
-INFO:tensorflow:  next_sentence_accuracy = 0.78
-I0913 04:02:36.334844 140621913737024 validation.py:597]   next_sentence_accuracy = 0.78
-INFO:tensorflow:  next_sentence_loss = 0.33995274
-I0913 04:02:36.334962 140621913737024 validation.py:597]   next_sentence_loss = 0.33995274
-```
-
-4. **SMALL**, last update 19th September 2019,
-[bert-small-19-9-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-small-19-9-2019.tar.gz)
+4. **SMALL**, last update 19th September 2019, [bert-small-19-9-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-small-19-9-2019.tar.gz)
 
   - Vocab size 40k.
   - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news.
-  - 1.0M steps, 3 GPUs.
+  - 1.0M steps, 3 GPUs TESLA V100.
   - SMALL size (184MB).
-
-```text
-INFO:tensorflow:***** Eval results *****
-I0919 16:04:24.180380 139907485054784 validation.py:595] ***** Eval results *****
-INFO:tensorflow:  global_step = 1000002
-I0919 16:04:24.180476 139907485054784 validation.py:597]   global_step = 1000002
-INFO:tensorflow:  loss = 3.6021976
-I0919 16:04:24.180624 139907485054784 validation.py:597]   loss = 3.6021976
-INFO:tensorflow:  masked_lm_accuracy = 0.45817283
-I0919 16:04:24.180718 139907485054784 validation.py:597]   masked_lm_accuracy = 0.45817283
-INFO:tensorflow:  masked_lm_loss = 3.2453835
-I0919 16:04:24.180800 139907485054784 validation.py:597]   masked_lm_loss = 3.2453835
-INFO:tensorflow:  next_sentence_accuracy = 0.76
-I0919 16:04:24.180881 139907485054784 validation.py:597]   next_sentence_accuracy = 0.76
-INFO:tensorflow:  next_sentence_loss = 0.35221446
-I0919 16:04:24.180958 139907485054784 validation.py:597]   next_sentence_loss = 0.35221446
-```
 
 5. **BASE**, last update 19th March 2020, [bert-base-2020-03-19.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-base-2020-03-19.tar.gz)
 
   - Vocab size 32k.
   - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.
-  - 2.0M steps, 3 GPUs.
+  - 2.0M steps, 3 GPUs TESLA V100.
   - BASE size (467MB).
 
 ## Comparison using Emotion Dataset

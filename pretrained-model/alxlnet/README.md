@@ -83,11 +83,17 @@ python3 multigpu_pretraining.py \
 
 ## Download
 
-1. **BASE**, last update 6th November 2019,
-[alxlnet-base-6-11-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/alxlnet-base-6-11-2019.tar.gz)
+1. **BASE**, last update 6th November 2019, [alxlnet-base-6-11-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/alxlnet-base-6-11-2019.tar.gz)
 
   - Vocab size 32k.
   - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news.
+  - 1.0M steps, 3 GPUs TESLA V100.
+  - BASE size (34MB).
+
+2. **BASE**, last update 10th April 2020, [alxlnet-base-2020-04-10.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/alxlnet-base-2020-04-10.tar.gz)
+
+  - Vocab size 32k.
+  - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.
   - 1.0M steps, 3 GPUs TESLA V100.
   - BASE size (34MB).
 
