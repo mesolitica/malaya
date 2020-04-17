@@ -71,7 +71,14 @@ tensorboard --logdir=gs://bucket/albert-base-actual --host=0.0.0.0
   - Vocab size 32k.
   - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.
   - 400k steps, TPU v3-8.
-  - BASE size (34MB).
+  - BASE size (43.3MB).
+
+1. **TINY**, last update 17th April 2020, [albert-tiny-2020-04-17.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/albert-tiny-2020-04-17.tar.gz)
+
+  - Vocab size 32k.
+  - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.
+  - 1M steps, TPU v3-8.
+  - TINY size (21MB).
 
 ## Citation
 

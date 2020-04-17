@@ -749,8 +749,6 @@ def probability(sentence_piece: bool = False, **kwargs):
     ----------
     sentence_piece: bool, optional (default=False)
         if True, reduce possible augmentation states using sentence piece.
-    validate: bool, optional (default=True)
-        if True, malaya will check model availability and download if not available.
 
     Returns
     -------
@@ -821,8 +819,8 @@ def transformer(model, sentence_piece: bool = False, **kwargs):
 
     Parameters
     ----------
-    validate: bool, optional (default=True)
-        if True, malaya will check model availability and download if not available.
+    sentence_piece: bool, optional (default=False)
+        if True, reduce possible augmentation states using sentence piece.
 
     Returns
     -------
