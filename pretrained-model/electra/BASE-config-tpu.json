@@ -8,7 +8,7 @@
     "num_tpu_cores": 8,
     "tpu_name": "node-1",
     "tpu_zone": "us-central1-b",
-    "gcp_project": "mesolitica-cloud",
+    "gcp_project": "project",
     "model_size": "base",
     "embedding_size": 768,
     "max_seq_length": 512,
