@@ -95,7 +95,7 @@ python3 multigpu_pretraining.py \
   - Vocab size 32k.
   - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.
   - 1.0M steps, 3 GPUs TESLA V100.
-  - BASE size (34MB).
+  - BASE size (42.4MB).
 
 ## Comparison using Emotion Dataset
 
