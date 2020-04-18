@@ -2,7 +2,7 @@
     "vocab_size": 32000,
     "do_lower_case": false,
     "vocab_file": "bahasa.wordpiece",
-    "pretrain_tfrecords": "dataset/pretrain_data.tfrecord",
+    "pretrain_tfrecords": "dataset/pretrain_data.tfrecord*",
     "model_size": "base",
     "embedding_size": 768,
     "max_seq_length": 512,
