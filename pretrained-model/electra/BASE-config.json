@@ -1,0 +1,13 @@
+{
+    "vocab_size": 32000,
+    "do_lower_case": false,
+    "vocab_file": "bahasa.wordpiece",
+    "pretrain_tfrecords": "dataset/pretrain_data.tfrecord",
+    "model_size": "base",
+    "embedding_size": 768,
+    "max_seq_length": 512,
+    "learning_rate": 0.0002,
+    "generator_hidden_size": 0.33333,
+    "train_batch_size": 256,
+    "save_checkpoints_steps": 50000
+}

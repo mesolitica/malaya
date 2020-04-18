@@ -1,0 +1,7 @@
+{
+    "vocab_size": 32000,
+    "do_lower_case": false,
+    "vocab_file": "bahasa.wordpiece",
+    "pretrain_tfrecords": "dataset/pretrain_data.tfrecord*",
+    "save_checkpoints_steps": 50000
+}
