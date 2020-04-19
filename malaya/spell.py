@@ -9,13 +9,13 @@ from malaya.text.tatabahasa import (
     alphabet,
     consonants,
     vowels,
-    rules_normalizer,
     permulaan,
     hujung,
     stopword_tatabahasa,
     quad_vowels,
     group_compound,
 )
+from malaya.text.rules import rules_normalizer
 from malaya.text.bpe import sentencepiece_tokenizer_bert as load_sentencepiece
 from malaya.path import PATH_NGRAM, S3_PATH_NGRAM
 from malaya.function import check_file, check_available

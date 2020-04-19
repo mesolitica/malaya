@@ -5,7 +5,8 @@ import html
 from functools import lru_cache
 from math import log10
 from unidecode import unidecode
-from malaya.text.tatabahasa import rules_normalizer, hujung
+from malaya.text.tatabahasa import hujung
+from malaya.text.rules import rules_normalizer
 from malaya.text.regex import _expressions, _money
 from malaya.text.english.words import words as _english_words
 from malaya.path import PATH_PREPROCESSING, S3_PATH_PREPROCESSING

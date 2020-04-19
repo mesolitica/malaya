@@ -2,13 +2,13 @@ import re
 from malaya.num2word import to_cardinal, to_ordinal
 from malaya.word2num import word2num
 from malaya.text.tatabahasa import (
-    rules_normalizer,
     consonants,
     vowels,
     sounds,
     hujung_malaysian,
     calon_dictionary,
 )
+from malaya.text.rules import rules_normalizer
 
 ignore_words = ['ringgit', 'sen']
 ignore_postfix = ['adalah']

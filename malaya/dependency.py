@@ -63,14 +63,38 @@ def dependency_graph(tagging, indexing):
     return DependencyGraph('\n'.join(result), top_relation_label = 'root')
 
 
-_availability = [
-    'bert',
-    'tiny-bert',
-    'albert',
-    'tiny-albert',
-    'xlnet',
-    'alxlnet',
-]
+_availability = {
+    'bert': [
+        '426.0 MB',
+        'arc accuracy: 0.855',
+        'types accuracy: 0.848',
+        'root accuracy: 0.920',
+    ],
+    'tiny-bert': [
+        '59.5 MB',
+        'arc accuracy: 0.718',
+        'types accuracy: 0.694',
+        'root accuracy: 0.886',
+    ],
+    'albert': [
+        '50.0 MB',
+        'arc accuracy: 0.811',
+        'types accuracy: 0.793',
+        'root accuracy: 0.879',
+    ],
+    'tiny-albert': [
+        '24.8 MB',
+        'arc accuracy: 0.708',
+        'types accuracy: 0.673',
+        'root accuracy: 0.817',
+    ],
+    'xlnet': [
+        '450.2 MB',
+        'arc accuracy: 0.931',
+        'types accuracy: 0.925',
+        'root accuracy: 0.947',
+    ],
+}
 
 
 def available_transformer_model():
@@ -108,14 +132,14 @@ def transformer(model: str = 'xlnet', **kwargs):
             'model not supported, please check supported models from malaya.dependency.available_transformer_model()'
         )
 
-    check_file(PATH_DEPEND[model], S3_PATH_DEPEND[model], **kwargs)
-    g = load_graph(PATH_DEPEND[model]['model'])
+    check_file(PATH_DEPENDENCY[model], S3_PATH_DEPENDENCY[model], **kwargs)
+    g = load_graph(PATH_DEPENDENCY[model]['model'])
 
     if model in ['bert', 'tiny-bert', 'albert', 'tiny-albert']:
-        from ._models._bert_model import DEPENDENCY_BERT
+        from malaya.model.bert import DEPENDENCY_BERT
 
-        tokenizer, cls, sep = sentencepiece_tokenizer_bert(
-            PATH_DEPEND[model]['tokenizer'], PATH_DEPEND[model]['vocab']
+        tokenizer = sentencepiece_tokenizer_bert(
+            PATH_DEPENDENCY[model]['tokenizer'], PATH_DEPENDENCY[model]['vocab']
         )
 
         return DEPENDENCY_BERT(
@@ -125,17 +149,15 @@ def transformer(model: str = 'xlnet', **kwargs):
             logits = g.get_tensor_by_name('import/logits:0'),
             sess = generate_session(graph = g),
             tokenizer = tokenizer,
-            cls = cls,
-            sep = sep,
             settings = _dependency_tags,
             heads_seq = g.get_tensor_by_name('import/heads_seq:0'),
         )
 
     if model in ['xlnet', 'alxlnet']:
-        from ._models._xlnet_model import DEPENDENCY_XLNET
+        from malaya.model.xlnet import DEPENDENCY_XLNET
 
         tokenizer = sentencepiece_tokenizer_xlnet(
-            PATH_DEPEND[model]['tokenizer']
+            PATH_DEPENDENCY[model]['tokenizer']
         )
 
         return DEPENDENCY_XLNET(

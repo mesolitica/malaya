@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+from malaya.text.function import transformer_textcleaning
 
 import numpy as np
 import sentencepiece as spm

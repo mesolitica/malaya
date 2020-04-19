@@ -43,9 +43,7 @@ def multinomial(path, s3_path, class_name, label, **kwargs):
     )
 
 
-def transformer(
-    path, s3_path, class_name, label, model = 'bert', size = 'base', **kwargs
-):
+def transformer(path, s3_path, class_name, label, model = 'bert', **kwargs):
     check_file(path[model][size], s3_path[model][size], **kwargs)
     g = load_graph(path[model][size]['model'])
 

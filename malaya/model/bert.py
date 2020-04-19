@@ -265,11 +265,7 @@ class BINARY_BERT(BERT):
 
     @check_type
     def predict_words(
-        self,
-        string: str,
-        method: str = 'last',
-        add_neutral: bool = True,
-        visualization: bool = True,
+        self, string: str, method: str = 'last', visualization: bool = True
     ):
         """
         classify words.
@@ -283,8 +279,6 @@ class BINARY_BERT(BERT):
             * ``'last'`` - attention from last layer.
             * ``'first'`` - attention from first layer.
             * ``'mean'`` - average attentions from all layers.
-        add_neutral: bool, optional (default=True)
-            if True, it will add neutral probability.
         visualization: bool, optional (default=True)
             If True, it will open the visualization dashboard.
 
@@ -296,7 +290,7 @@ class BINARY_BERT(BERT):
         return self._predict_words(
             string = string,
             method = method,
-            add_neutral = add_neutral,
+            add_neutral = True,
             visualization = visualization,
         )
 
@@ -672,20 +666,11 @@ class SIAMESE_BERT(BERT):
         return self._base(strings_left, strings_right)[:, 1]
 
 
-class TAGGING_BERT(BERT):
+class TAGGING_BERT(BASE):
     def __init__(
-        self,
-        X,
-        segment_ids,
-        input_masks,
-        logits,
-        sess,
-        tokenizer,
-        cls,
-        sep,
-        settings,
+        self, X, segment_ids, input_masks, logits, sess, tokenizer, settings
     ):
-        BERT.__init__(
+        BASE.__init__(
             self,
             X = X,
             segment_ids = segment_ids,
@@ -715,7 +700,7 @@ class TAGGING_BERT(BERT):
 
         Returns
         -------
-        string: analyzed string
+        result: {'words': List[str], 'tags': [{'text': 'text', 'type': 'location', 'score': 1.0, 'beginOffset': 0, 'endOffset': 1}]}
         """
         predicted = self.predict(string)
         return tag_chunk(predicted)
@@ -731,24 +716,21 @@ class TAGGING_BERT(BERT):
 
         Returns
         -------
-        string: tagged string
+        result: Tuple[str, str]
         """
 
         parsed_sequence, bert_sequence = parse_bert_tagging(
-            string, self._tokenizer, self._cls, self._sep
+            string, self._tokenizer
         )
         predicted = self._sess.run(
             self._logits, feed_dict = {self._X: [parsed_sequence]}
         )[0]
         t = [self._settings['idx2tag'][d] for d in predicted]
-        if '[' in self._cls:
-            merged = merge_wordpiece_tokens_tagging(bert_sequence, t)
-        else:
-            merged = merge_sentencepiece_tokens_tagging(bert_sequence, t)
+        merged = merge_sentencepiece_tokens_tagging(bert_sequence, t)
         return list(zip(merged[0], merged[1]))
 
 
-class DEPENDENCY_BERT(BERT):
+class DEPENDENCY_BERT(BASE):
     def __init__(
         self,
         X,
@@ -757,12 +739,10 @@ class DEPENDENCY_BERT(BERT):
         logits,
         sess,
         tokenizer,
-        cls,
-        sep,
         settings,
         heads_seq,
     ):
-        BERT.__init__(
+        BASE.__init__(
             self,
             X = X,
             segment_ids = segment_ids,
@@ -770,8 +750,6 @@ class DEPENDENCY_BERT(BERT):
             logits = logits,
             sess = sess,
             tokenizer = tokenizer,
-            cls = cls,
-            sep = sep,
             label = None,
         )
 
@@ -786,15 +764,15 @@ class DEPENDENCY_BERT(BERT):
 
         Parameters
         ----------
-        string : str
+        string: str
 
         Returns
         -------
-        string: tagged string
+        result: d, tagging, indexing_
         """
 
         parsed_sequence, bert_sequence = parse_bert_tagging(
-            string, self._tokenizer, self._cls, self._sep
+            string, self._tokenizer
         )
         tagging, depend = self._sess.run(
             [self._logits, self._heads_seq],

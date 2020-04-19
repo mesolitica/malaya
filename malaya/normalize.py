@@ -26,7 +26,6 @@ from malaya.text.regex import (
     _right_yesterdaydatetodaytime,
 )
 from malaya.text.tatabahasa import (
-    rules_normalizer,
     date_replace,
     consonants,
     sounds,
@@ -46,6 +45,7 @@ from malaya.text.normalization import (
     money,
     ignore_words,
 )
+from malaya.text.rules import rules_normalizer
 from malaya.cluster import cluster_words
 from malaya.preprocessing import _tokenizer
 from herpetologist import check_type
