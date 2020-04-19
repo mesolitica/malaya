@@ -12,7 +12,7 @@ Thanks to Google for opensourcing most of the source code to develop ELECTRA, ht
 
 ## Objective
 
-1. Provide **SMALL** and **BASE** ELECTRA for Bahasa.
+1. Provide **SMALL**, **BASE** and **LARGE** ELECTRA for Bahasa.
 
 ## Acknowledgement
 
@@ -45,7 +45,7 @@ python3 build_pretraining_dataset.py \
 --no-lower-case
 ```
 
-For **BASE**,
+For **BASE** / **LARGE**,
 
 ```bash
 mkdir text-files

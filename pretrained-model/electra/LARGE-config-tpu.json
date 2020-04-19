@@ -1,0 +1,20 @@
+{
+    "vocab_size": 32000,
+    "do_lower_case": false,
+    "vocab_file": "gs://mesolitica-general/bahasa.wordpiece",
+    "pretrain_tfrecords": "gs://mesolitica-general/electra-data/pretrain_data.tfrecord*",
+    "model_dir": "gs://mesolitica-general/electra-large",
+    "use_tpu": true,
+    "num_tpu_cores": 8,
+    "tpu_name": "node-1",
+    "tpu_zone": "us-central1-b",
+    "gcp_project": "mesolitica-cloud",
+    "model_size": "large",
+    "embedding_size": 1024,
+    "max_seq_length": 512,
+    "learning_rate": 0.0002,
+    "mask_prob": 0.25,
+    "train_batch_size": 1024,
+    "generator_hidden_size": 0.25,
+    "save_checkpoints_steps": 10000
+}

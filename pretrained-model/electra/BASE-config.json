@@ -9,5 +9,5 @@
     "learning_rate": 0.0002,
     "generator_hidden_size": 0.33333,
     "train_batch_size": 256,
-    "save_checkpoints_steps": 50000
+    "save_checkpoints_steps": 10000
 }
