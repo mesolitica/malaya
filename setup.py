@@ -31,6 +31,7 @@ setuptools.setup(
         'tqdm',
         'herpetologist',
         'youtokentome',
+        'albert-tensorflow',
     ],
     license = 'MIT',
     classifiers = [

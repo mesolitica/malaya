@@ -66,5 +66,5 @@ def transformer(model: str = 'xlnet', **kwargs):
         'emotion',
         _emotion_label,
         model = model,
-        validate = validate,
+        **kwargs
     )

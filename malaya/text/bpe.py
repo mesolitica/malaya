@@ -47,7 +47,7 @@ def bert_tokenization(tokenizer, texts):
     for text in texts:
         text = transformer_textcleaning(text)
         tokens_a = tokenizer.tokenize(text)[:MAXLEN]
-        tokens = [cls] + tokens_a + [sep]
+        tokens = ['[CLS]'] + tokens_a + ['[SEP]']
         segment_id = [0] * len(tokens)
         input_id = tokenizer.convert_tokens_to_ids(tokens)
         input_mask = [1] * len(input_id)

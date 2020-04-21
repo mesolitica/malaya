@@ -754,20 +754,55 @@ S3_PATH_TOXIC = {
 }
 
 PATH_BERT = {
-    'base': {
+    'bert': {
         'path': home + '/bert-model/base',
         'directory': home + '/bert-model/base/bert-base-v3/',
         'model': {
-            'model': home + '/bert-model/base/bert-bahasa-base.tar.gz',
+            'model': home + '/bert-model/tiny/bert-bahasa-base.tar.gz',
             'version': 'v34',
         },
-    }
+    },
+    'tiny-bert': {
+        'path': home + '/bert-model/tiny',
+        'directory': home + '/bert-model/tiny/tiny-bert-v1/',
+        'model': {
+            'model': home + '/bert-model/base/tiny-bert-bahasa.tar.gz',
+            'version': 'v34',
+        },
+    },
 }
 
-S3_PATH_BERT = {'base': {'model': 'bert-bahasa/bert-base-23-03-2020.tar.gz'}}
+S3_PATH_BERT = {
+    'bert': {'model': 'v34/pretrained-model/bert-base.tar.gz'},
+    'tiny-bert': {'model': 'v34/pretrained-model/tiny-bert.tar.gz'},
+}
+
+PATH_ALBERT = {
+    'albert': {
+        'path': home + '/albert-model/base',
+        'directory': home + '/albert-model/base/albert-base/',
+        'model': {
+            'model': home + '/albert-model/base/albert-bahasa-base.tar.gz',
+            'version': 'v34',
+        },
+    },
+    'tiny-albert': {
+        'path': home + '/albert-model/tiny',
+        'directory': home + '/albert-model/tiny/albert-tiny/',
+        'model': {
+            'model': home + '/albert-model/tiny/albert-bahasa-tiny.tar.gz',
+            'version': 'v34',
+        },
+    },
+}
+
+S3_PATH_ALBERT = {
+    'albert': {'model': 'v34/pretrained-model/albert-base.tar.gz'},
+    'tiny-albert': {'model': 'v34/pretrained-model/albert-tiny.tar.gz'},
+}
 
 PATH_XLNET = {
-    'base': {
+    'xlnet': {
         'path': home + '/xlnet-model/base',
         'directory': home + '/xlnet-model/base/xlnet-base/',
         'model': {
@@ -777,45 +812,21 @@ PATH_XLNET = {
     }
 }
 
-S3_PATH_XLNET = {'base': {'model': 'bert-bahasa/xlnet-base-30-9-2019.tar.gz'}}
-
-PATH_ALBERT = {
-    'base': {
-        'path': home + '/albert-model/base',
-        'directory': home + '/albert-model/base/albert-base/',
-        'model': {
-            'model': home + '/albert-model/base/albert-base.tar.gz',
-            'version': 'v32',
-        },
-    },
-    'large': {
-        'path': home + '/albert-model/large',
-        'directory': home + '/albert-model/large/albert-large/',
-        'model': {
-            'model': home + '/albert-model/base/albert-large.tar.gz',
-            'version': 'v32',
-        },
-    },
-}
-
-S3_PATH_ALBERT = {
-    'base': {'model': 'bert-bahasa/albert-base-15-12-2019.tar.gz'},
-    'large': {'model': 'bert-bahasa/albert-large-28-12-2019.tar.gz'},
-}
+S3_PATH_XLNET = {'xlnet': {'model': 'v34/pretrained-model/xlnet-base.tar.gz'}}
 
 PATH_ALXLNET = {
-    'base': {
+    'alxlnet': {
         'path': home + '/alxlnet-model/base',
         'directory': home + '/alxlnet-model/base/alxlnet-base/',
         'model': {
             'model': home + '/alxlnet-model/base/alxlnet-base.tar.gz',
-            'version': 'v31',
+            'version': 'v34',
         },
     }
 }
 
 S3_PATH_ALXLNET = {
-    'base': {'model': 'bert-bahasa/alxlnet-base-6-11-2019.tar.gz'}
+    'alxlnet': {'model': 'v34/pretrained-model/alxlnet-base.tar.gz'}
 }
 
 PATH_WORDVECTOR = {

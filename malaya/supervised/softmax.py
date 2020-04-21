@@ -11,7 +11,7 @@ from malaya.text.bpe import (
 from malaya.model.ml import BINARY_BAYES, MULTICLASS_BAYES
 from malaya.model.bert import MULTICLASS_BERT, BINARY_BERT
 from malaya.model.xlnet import MULTICLASS_XLNET, BINARY_XLNET
-from malaya.transformer.bert import bert_num_layers
+from malaya.transformers.bert import bert_num_layers
 
 
 def multinomial(path, s3_path, class_name, label, **kwargs):
@@ -61,9 +61,13 @@ def transformer(path, s3_path, class_name, label, model = 'bert', **kwargs):
 
     if model in ['albert', 'bert']:
         if model == 'bert':
-            from .._transformer._bert import _extract_attention_weights_import
+            from malaya.transformer.bert import (
+                _extract_attention_weights_import,
+            )
         if model == 'albert':
-            from .._transformer._albert import _extract_attention_weights_import
+            from malaya.transformer.albert import (
+                _extract_attention_weights_import,
+            )
 
         tokenizer = sentencepiece_tokenizer_bert(
             path[model]['tokenizer'], path[model]['vocab']

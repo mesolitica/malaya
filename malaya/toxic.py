@@ -13,7 +13,7 @@ from malaya.model.ml import MULTILABEL_BAYES
 from malaya.model.bert import SIGMOID_BERT
 from malaya.model.xlnet import SIGMOID_XLNET
 
-from malaya.transformer.bert import bert_num_layers
+from malaya.transformers.bert import bert_num_layers
 from herpetologist import check_type
 
 _label_toxic = [
@@ -78,7 +78,7 @@ def multinomial(**kwargs):
 
 
 @check_type
-def transformer(model: str = 'xlnet', size: str = 'base', **kwargs):
+def transformer(model: str = 'xlnet', **kwargs):
     """
     Load Transformer emotion model.
 
@@ -102,7 +102,6 @@ def transformer(model: str = 'xlnet', size: str = 'base', **kwargs):
     """
 
     model = model.lower()
-    size = size.lower()
     if model not in _availability:
         raise Exception(
             'model not supported, please check supported models from malaya.sentiment.available_transformer_model()'
