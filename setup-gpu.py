@@ -43,9 +43,9 @@ setuptools.setup(
     ],
     package_data = {
         'malaya': [
-            '_utils/web/*.html',
-            '_utils/web/static/*.js',
-            '_utils/web/static/*.css',
+            'function/web/*.html',
+            'function/web/static/*.js',
+            'function/web/static/*.css',
         ]
     },
 )

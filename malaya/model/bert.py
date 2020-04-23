@@ -119,6 +119,8 @@ class BERT(BASE):
             )
         if add_neutral:
             label = self._label + ['neutral']
+        else:
+            label = self._label
 
         batch_x, batch_mask, _, s_tokens = bert_tokenization(
             self._tokenizer, [string]
@@ -191,10 +193,7 @@ class BERT(BASE):
             'toxic': _render_toxic,
         }
         if visualization:
-            if result.shape[-1] == 2 and self._class_name == 'sentiment':
-                _render_relevancy(dict_result)
-            else:
-                render_dict[self._class_name](dict_result)
+            render_dict[self._class_name](dict_result)
         else:
             return dict_result
 
@@ -322,14 +321,6 @@ class MULTICLASS_BERT(BERT):
             class_name = class_name,
             label = label,
         )
-
-    def _predict(self, strings):
-        input_ids, _, _, _ = bert_tokenization(
-            self._tokenizer, strings, self._cls, self._sep
-        )
-
-        result = self._sess.run(self._softmax, feed_dict = {self._X: input_ids})
-        return result
 
     @check_type
     def predict(self, strings: List[str]):
@@ -513,9 +504,7 @@ class SIGMOID_BERT(BASE):
                 "method not supported, only support 'last', 'first' and 'mean'"
             )
 
-        batch_x, _, _, s_tokens = bert_tokenization(
-            self._tokenizer, [string], cls = self._cls, sep = self._sep
-        )
+        batch_x, _, _, s_tokens = bert_tokenization(self._tokenizer, [string])
         result, attentions, words = self._sess.run(
             [self._sigmoid, self._attns, self._sigmoid_seq],
             feed_dict = {self._X: batch_x},
@@ -538,22 +527,13 @@ class SIGMOID_BERT(BASE):
         result = result[0]
         words = words[0]
         weights = []
-        if '[' in self._cls:
-            merged = merge_wordpiece_tokens(list(zip(s_tokens[0], attn[0])))
-            for i in range(words.shape[1]):
-                m = merge_wordpiece_tokens(
-                    list(zip(s_tokens[0], words[:, i])), weighted = False
-                )
-                _, weight = zip(*m)
-                weights.append(weight)
-        else:
-            merged = merge_sentencepiece_tokens(list(zip(s_tokens[0], attn[0])))
-            for i in range(words.shape[1]):
-                m = merge_sentencepiece_tokens(
-                    list(zip(s_tokens[0], words[:, i])), weighted = False
-                )
-                _, weight = zip(*m)
-                weights.append(weight)
+        merged = merge_sentencepiece_tokens(list(zip(s_tokens[0], attn[0])))
+        for i in range(words.shape[1]):
+            m = merge_sentencepiece_tokens(
+                list(zip(s_tokens[0], words[:, i])), weighted = False
+            )
+            _, weight = zip(*m)
+            weights.append(weight)
         w, a = zip(*merged)
         words = np.array(weights).T
         distribution_words = words[:, np.argmax(words.sum(axis = 0))]
@@ -586,7 +566,7 @@ class SIGMOID_BERT(BASE):
             return dict_result
 
 
-class SIAMESE_BERT(BERT):
+class SIAMESE_BERT(BASE):
     def __init__(
         self,
         X,
@@ -595,11 +575,9 @@ class SIAMESE_BERT(BERT):
         logits,
         sess,
         tokenizer,
-        cls,
-        sep,
         label = ['not similar', 'similar'],
     ):
-        BERT.__init__(
+        BASE.__init__(
             self,
             X = X,
             segment_ids = segment_ids,
@@ -607,19 +585,13 @@ class SIAMESE_BERT(BERT):
             logits = logits,
             sess = sess,
             tokenizer = tokenizer,
-            cls = cls,
-            sep = sep,
             label = label,
         )
         self._softmax = tf.nn.softmax(self._logits)
 
     def _base(self, strings_left, strings_right):
         input_ids, input_masks, segment_ids = bert_tokenization_siamese(
-            self._tokenizer,
-            strings_left,
-            strings_right,
-            cls = self._cls,
-            sep = self._sep,
+            self._tokenizer, strings_left, strings_right
         )
 
         return self._sess.run(
@@ -678,8 +650,6 @@ class TAGGING_BERT(BASE):
             logits = logits,
             sess = sess,
             tokenizer = tokenizer,
-            cls = cls,
-            sep = sep,
             label = None,
         )
 
@@ -719,11 +689,15 @@ class TAGGING_BERT(BASE):
         result: Tuple[str, str]
         """
 
-        parsed_sequence, bert_sequence = parse_bert_tagging(
+        parsed_sequence, input_mask, bert_sequence = parse_bert_tagging(
             string, self._tokenizer
         )
         predicted = self._sess.run(
-            self._logits, feed_dict = {self._X: [parsed_sequence]}
+            self._logits,
+            feed_dict = {
+                self._X: [parsed_sequence],
+                self._input_masks: [input_mask],
+            },
         )[0]
         t = [self._settings['idx2tag'][d] for d in predicted]
         merged = merge_sentencepiece_tokens_tagging(bert_sequence, t)

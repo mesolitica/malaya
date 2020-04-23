@@ -18,7 +18,7 @@ _color_sentiment = {
 _color_emotion = {
     'anger': 'rgb(254, 0, 20)',
     'fear': 'rgb(168, 103, 172)',
-    'joy': 'rgb(0, 211, 239)',
+    'happy': 'rgb(0, 211, 239)',
     'love': 'rgb(255, 70, 198)',
     'sadness': 'rgb(255, 206, 0)',
     'surprise': 'rgb(255, 244, 0)',
@@ -84,15 +84,15 @@ def _toxic_mark(
 
 
 def _emotion_mark(
-    text, anger, fear, joy, love, sadness, surprise, attention, label
+    text, anger, fear, happy, love, sadness, surprise, attention, label
 ):
     return (
-        "<mark style='background-color:%s' class='tooltipped' data-position='bottom' data-tooltip=\"Anger <i class='em em-angry'></i> %.3f<br>Fear <i class='em em-fearful'></i> %.3f<br>Joy <i class='em em-joy'></i> %.3f<br>Love <i class='em em-heart_eyes'></i> %.3f<br>Sadness <i class='em em-white_frowning_face'></i> %.3f<br>Surprise <i class='em em-dizzy_face'></i> %.3f<br>Attention <i class='em em-warning'></i> %.3f<br>\">%s</mark>"
+        "<mark style='background-color:%s' class='tooltipped' data-position='bottom' data-tooltip=\"Anger <i class='em em-angry'></i> %.3f<br>Fear <i class='em em-fearful'></i> %.3f<br>Happy <i class='em em-smile'></i> %.3f<br>Love <i class='em em-heart_eyes'></i> %.3f<br>Sadness <i class='em em-white_frowning_face'></i> %.3f<br>Surprise <i class='em em-dizzy_face'></i> %.3f<br>Attention <i class='em em-warning'></i> %.3f<br>\">%s</mark>"
         % (
             _color_emotion[label],
             anger,
             fear,
-            joy,
+            happy,
             love,
             sadness,
             surprise,
@@ -285,7 +285,7 @@ def _render_toxic(data, notebook_mode = False):
 def _render_emotion(data, notebook_mode = False):
     index_anger = data['barplot']['x'].index('anger')
     index_fear = data['barplot']['x'].index('fear')
-    index_joy = data['barplot']['x'].index('joy')
+    index_happy = data['barplot']['x'].index('happy')
     index_love = data['barplot']['x'].index('love')
     index_sadness = data['barplot']['x'].index('sadness')
     index_surprise = data['barplot']['x'].index('surprise')
@@ -301,7 +301,7 @@ def _render_emotion(data, notebook_mode = False):
                 k,
                 v[index_anger],
                 v[index_fear],
-                v[index_joy],
+                v[index_happy],
                 v[index_love],
                 v[index_sadness],
                 v[index_surprise],
@@ -330,7 +330,9 @@ def _render_emotion(data, notebook_mode = False):
         barplot_fear = escape(
             json.dumps(int(data['barplot']['y'][index_fear]))
         ),
-        barplot_joy = escape(json.dumps(int(data['barplot']['y'][index_joy]))),
+        barplot_happy = escape(
+            json.dumps(int(data['barplot']['y'][index_happy]))
+        ),
         barplot_love = escape(
             json.dumps(int(data['barplot']['y'][index_love]))
         ),

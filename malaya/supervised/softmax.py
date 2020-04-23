@@ -11,7 +11,6 @@ from malaya.text.bpe import (
 from malaya.model.ml import BINARY_BAYES, MULTICLASS_BAYES
 from malaya.model.bert import MULTICLASS_BERT, BINARY_BERT
 from malaya.model.xlnet import MULTICLASS_XLNET, BINARY_XLNET
-from malaya.transformers.bert import bert_num_layers
 
 
 def multinomial(path, s3_path, class_name, label, **kwargs):
@@ -44,55 +43,70 @@ def multinomial(path, s3_path, class_name, label, **kwargs):
 
 
 def transformer(path, s3_path, class_name, label, model = 'bert', **kwargs):
-    check_file(path[model][size], s3_path[model][size], **kwargs)
-    g = load_graph(path[model][size]['model'])
+    check_file(path[model], s3_path[model], **kwargs)
+    g = load_graph(path[model]['model'])
 
     if len(label) > 2 or class_name == 'relevancy':
-        if model in ['albert', 'bert']:
+        if model in ['albert', 'bert', 'tiny-albert', 'tiny-bert']:
             selected_class = MULTICLASS_BERT
-        if model in ['xlnet']:
+        if model in ['xlnet', 'alxlnet']:
             selected_class = MULTICLASS_XLNET
 
     else:
-        if model in ['albert', 'bert']:
+        if model in ['albert', 'bert', 'tiny-albert', 'tiny-bert']:
             selected_class = BINARY_BERT
-        if model in ['xlnet']:
+        if model in ['xlnet', 'alxlnet']:
             selected_class = BINARY_XLNET
 
-    if model in ['albert', 'bert']:
-        if model == 'bert':
-            from malaya.transformer.bert import (
+    if model in ['albert', 'bert', 'tiny-albert', 'tiny-bert']:
+        if model in ['bert', 'tiny-bert']:
+            from malaya.transformers.bert import (
                 _extract_attention_weights_import,
             )
-        if model == 'albert':
-            from malaya.transformer.albert import (
-                _extract_attention_weights_import,
-            )
+            from malaya.transformers.bert import bert_num_layers
 
-        tokenizer = sentencepiece_tokenizer_bert(
-            path[model]['tokenizer'], path[model]['vocab']
-        )
+            tokenizer = sentencepiece_tokenizer_bert(
+                path[model]['tokenizer'], path[model]['vocab']
+            )
+        if model in ['albert', 'tiny-albert']:
+            from malaya.transformers.albert import (
+                _extract_attention_weights_import,
+            )
+            from malaya.transformers.albert import bert_num_layers
+            from albert import tokenization
+
+            tokenizer = tokenization.FullTokenizer(
+                vocab_file = path[model]['vocab'],
+                do_lower_case = False,
+                spm_model_file = path[model]['tokenizer'],
+            )
 
         return selected_class(
             X = g.get_tensor_by_name('import/Placeholder:0'),
             segment_ids = None,
-            input_masks = None,
+            input_masks = g.get_tensor_by_name('import/Placeholder_1:0'),
             logits = g.get_tensor_by_name('import/logits:0'),
             logits_seq = g.get_tensor_by_name('import/logits_seq:0'),
             sess = generate_session(graph = g),
             tokenizer = tokenizer,
             label = label,
-            cls = cls,
-            sep = sep,
-            attns = _extract_attention_weights_import(bert_num_layers[size], g),
+            attns = _extract_attention_weights_import(
+                bert_num_layers[model], g
+            ),
             class_name = class_name,
         )
-    if model in ['xlnet']:
-        from .._transformer._xlnet import _extract_attention_weights_import
 
-        tokenizer = sentencepiece_tokenizer_xlnet(
-            path[model][size]['tokenizer']
-        )
+    if model in ['xlnet', 'alxlnet']:
+        if model in ['xlnet']:
+            from malaya.transformers.xlnet import (
+                _extract_attention_weights_import,
+            )
+        if model in ['alxlnet']:
+            from malaya.transformers.alxlnet import (
+                _extract_attention_weights_import,
+            )
+
+        tokenizer = sentencepiece_tokenizer_xlnet(path[model]['tokenizer'])
 
         return selected_class(
             X = g.get_tensor_by_name('import/Placeholder:0'),

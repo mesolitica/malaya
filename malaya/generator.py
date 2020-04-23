@@ -76,13 +76,13 @@ def _pad_sequence(
 def to_ids(string, tokenizer):
     words = []
     for no, word in enumerate(string):
-        if word == '<mask>':
+        if word == '[MASK]':
             words.append(word)
         else:
             words.extend(tokenizer.tokenize(word))
-    masked_tokens = ['<cls>'] + words + ['<sep>']
+    masked_tokens = ['[CLS]'] + words + ['[SEP]']
     masked_ids = tokenizer.convert_tokens_to_ids(masked_tokens)
-    return masked_ids, masked_ids.index(6)
+    return masked_ids, masked_ids.index(tokenizer.vocab['[MASK]'])
 
 
 @check_type
@@ -359,20 +359,23 @@ def transformer_augmentation(
             'no words can augmented, make sure words available are not punctuation or proper nouns.'
         )
 
-    maskeds, indices = [], []
+    maskeds, indices, input_masks = [], [], []
     for index in results:
         new = string[:]
-        new[index] = '<mask>'
+        new[index] = '[MASK]'
         mask, ind = to_ids(new, model._tokenizer)
         maskeds.append(mask)
         indices.append(ind)
+        input_masks.append([1] * len(mask))
 
     masked_padded = pad_sequences(maskeds, padding = 'post')
+    input_masks = pad_sequences(input_masks, padding = 'post')
     batch_indices = np.array([np.arange(len(indices)), indices]).T
     samples = model._sess.run(
         model.samples,
         feed_dict = {
             model.X: masked_padded,
+            model.MASK: input_masks,
             model.top_p: top_p,
             model.top_k: top_k,
             model.temperature: temperature,

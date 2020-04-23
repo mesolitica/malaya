@@ -83,7 +83,7 @@ def load_wiki_news_social_media():
 
 
 @check_type
-def load(embed_matrix, dictionary: Dict):
+def load(embed_matrix, dictionary: dict):
 
     """
     Return malaya.wordvector._wordvector object.

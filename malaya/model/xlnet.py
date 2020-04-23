@@ -122,6 +122,8 @@ class XLNET(BASE):
             )
         if add_neutral:
             label = self._label + ['neutral']
+        else:
+            label = self._label
 
         batch_x, input_masks, segment_ids, s_tokens = xlnet_tokenization(
             self._tokenizer, [string]
@@ -154,10 +156,14 @@ class XLNET(BASE):
 
         result = result[0]
         weights = []
-        merged = merge_sentencepiece_tokens(list(zip(s_tokens[0], attn[0])))
+        merged = merge_sentencepiece_tokens(
+            list(zip(s_tokens[0], attn[0])), model = 'xlnet'
+        )
         for i in range(words.shape[1]):
             m = merge_sentencepiece_tokens(
-                list(zip(s_tokens[0], words[:, i])), weighted = False
+                list(zip(s_tokens[0], words[:, i])),
+                weighted = False,
+                model = 'xlnet',
             )
             _, weight = zip(*m)
             weights.append(weight)
@@ -195,10 +201,7 @@ class XLNET(BASE):
             'toxic': _render_toxic,
         }
         if visualization:
-            if result.shape[-1] == 2 and self._class_name == 'sentiment':
-                _render_relevancy(dict_result)
-            else:
-                render_dict[self._class_name](dict_result)
+            render_dict[self._class_name](dict_result)
         else:
             return dict_result
 
@@ -550,10 +553,14 @@ class SIGMOID_XLNET(BASE):
         result = result[0]
         words = words[0]
         weights = []
-        merged = merge_sentencepiece_tokens(list(zip(s_tokens[0], attn[0])))
+        merged = merge_sentencepiece_tokens(
+            list(zip(s_tokens[0], attn[0])), model = 'xlnet'
+        )
         for i in range(words.shape[1]):
             m = merge_sentencepiece_tokens(
-                list(zip(s_tokens[0], words[:, i])), weighted = False
+                list(zip(s_tokens[0], words[:, i])),
+                weighted = False,
+                model = 'xlnet',
             )
             _, weight = zip(*m)
             weights.append(weight)
@@ -661,11 +668,11 @@ class SIAMESE_XLNET(XLNET):
         return self._base(strings_left, strings_right)[:, 1]
 
 
-class TAGGING_XLNET(XLNET):
+class TAGGING_XLNET(BASE):
     def __init__(
         self, X, segment_ids, input_masks, logits, sess, tokenizer, settings
     ):
-        XLNET.__init__(
+        BASE.__init__(
             self,
             X = X,
             segment_ids = segment_ids,
@@ -727,7 +734,9 @@ class TAGGING_XLNET(XLNET):
         )[0]
         t = [self._settings['idx2tag'][d] for d in predicted]
 
-        merged = merge_sentencepiece_tokens_tagging(s_tokens, t)
+        merged = merge_sentencepiece_tokens_tagging(
+            s_tokens, t, model = 'xlnet'
+        )
         return list(zip(*merged))
 
 

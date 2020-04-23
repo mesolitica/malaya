@@ -32,10 +32,10 @@
 
 <footer class="page-footer">
   <div class="footer-copyright">
-            <div class="container" style="color: #6c757d;">
-            Malaya Copyright
-            </div>
-          </div>
+    <div class="container" style="color: #6c757d;">
+      Malaya Copyright
+    </div>
+  </div>
 </footer>
 
 <script src="https://code.jquery.com/jquery-3.4.1.slim.js"></script>
@@ -44,165 +44,166 @@
 
 <script>
 
-var plot = echarts.init(document.getElementById('count'));
-var colors = ['rgb(254, 0, 20)', 'rgb(168, 103, 172)', 'rgb(0, 211, 239)', 'rgb(255, 70, 198)',
-'rgb(255, 206, 0)', 'rgb(255, 244, 0)'];
+  var plot = echarts.init(document.getElementById('count'));
+  var colors = ['rgb(254, 0, 20)', 'rgb(168, 103, 172)', 'rgb(0, 211, 239)', 'rgb(255, 70, 198)',
+    'rgb(255, 206, 0)', 'rgb(255, 244, 0)'];
 
-option = {
+  option = {
     title: {
       text: 'Classes barplot'
     },
-    data: ['Anger', 'Fear', 'Joy', 'Love', 'Sadness', 'Surprise'],
+    data: ['Anger', 'Fear', 'Happy', 'Love', 'Sadness', 'Surprise'],
     xAxis: {
-        type: 'category',
-        data: ['Anger', 'Fear', 'Joy', 'Love', 'Sadness', 'Surprise'],
-        axisLabel: {
-            interval: 0,
-            rotate: 30
-        },
+      type: 'category',
+      data: ['Anger', 'Fear', 'Happy', 'Love', 'Sadness', 'Surprise'],
+      axisLabel: {
+        interval: 0,
+        rotate: 30
+      },
     },
     yAxis: {
-        type: 'value',
-        splitLine: {
-                show: false
-            }
+      type: 'value',
+      splitLine: {
+        show: false
+      }
     },
     series: [{
-        data: [$barplot_anger, '-', '-', '-', '-', '-'],
-        stack: '1',
-        type: 'bar',
-        name: 'Anger',
-        color: colors[0],
-        label: {
-                normal: {
-                    show: true,
-                    position: 'top'
-                }
-            },
+      data: [$barplot_anger, '-', '-', '-', '-', '-'],
+      stack: '1',
+      type: 'bar',
+      name: 'Anger',
+      color: colors[0],
+      label: {
+        normal: {
+          show: true,
+          position: 'top'
+        }
+      },
     },
     {
-        data: ['-', $barplot_fear, '-', '-', '-', '-'],
-        type: 'bar',
-        stack: '1',
-        name: 'Fear',
-        color: colors[1],
-        label: {
-                normal: {
-                    show: true,
-                    position: 'top'
-                }
-            },
+      data: ['-', $barplot_fear, '-', '-', '-', '-'],
+      type: 'bar',
+      stack: '1',
+      name: 'Fear',
+      color: colors[1],
+      label: {
+        normal: {
+          show: true,
+          position: 'top'
+        }
+      },
     },
     {
-        data: ['-', '-', $barplot_joy, '-', '-', '-'],
-        type: 'bar',
-        stack: '1',
-        name: 'Joy',
-        color: colors[2],
-        label: {
-                normal: {
-                    show: true,
-                    position: 'top'
-                }
-            },
+      data: ['-', '-', $barplot_happy, '-', '-', '-'],
+      type: 'bar',
+      stack: '1',
+      name: 'Happy',
+      color: colors[2],
+      label: {
+        normal: {
+          show: true,
+          position: 'top'
+        }
+      },
     },
     {
-        data: ['-', '-', '-', $barplot_love, '-', '-'],
-        type: 'bar',
-        stack: '1',
-        name: 'Love',
-        color: colors[3],
-        label: {
-                normal: {
-                    show: true,
-                    position: 'top'
-                }
-            },
+      data: ['-', '-', '-', $barplot_love, '-', '-'],
+      type: 'bar',
+      stack: '1',
+      name: 'Love',
+      color: colors[3],
+      label: {
+        normal: {
+          show: true,
+          position: 'top'
+        }
+      },
     },
     {
-        data: ['-', '-', '-', '-', $barplot_sadness, '-'],
-        type: 'bar',
-        stack: '1',
-        name: 'Sadness',
-        color: colors[4],
-        label: {
-                normal: {
-                    show: true,
-                    position: 'top'
-                }
-            },
+      data: ['-', '-', '-', '-', $barplot_sadness, '-'],
+      type: 'bar',
+      stack: '1',
+      name: 'Sadness',
+      color: colors[4],
+      label: {
+        normal: {
+          show: true,
+          position: 'top'
+        }
+      },
     },
     {
-        data: ['-', '-', '-', '-', '-', $barplot_surprise],
-        type: 'bar',
-        stack: '1',
-        name: 'Surprise',
-        color: colors[5],
-        label: {
-                normal: {
-                    show: true,
-                    position: 'top'
-                }
-            },
+      data: ['-', '-', '-', '-', '-', $barplot_surprise],
+      type: 'bar',
+      stack: '1',
+      name: 'Surprise',
+      color: colors[5],
+      label: {
+        normal: {
+          show: true,
+          position: 'top'
+        }
+      },
     }
-  ]
-};
-plot.setOption(option = option)
+    ]
+  };
+  plot.setOption(option = option)
 
-option = {
-    title:{
+  option = {
+    title: {
       text: 'probability histogram'
     },
     xAxis: {
-        type: 'category',
-        data: $histogram_x,
+      type: 'category',
+      data: $histogram_x,
     },
     yAxis: {
-        type: 'value',
-        splitLine: {
-                show: false
-            }
+      type: 'value',
+      splitLine: {
+        show: false
+      }
     },
     series: [{
-        data: $histogram_y,
-        type: 'bar'
+      data: $histogram_y,
+      type: 'bar'
     }]
-};
+  };
 
-var plot = echarts.init(document.getElementById('histogram'));
-plot.setOption(option = option)
+  var plot = echarts.init(document.getElementById('histogram'));
+  plot.setOption(option = option)
 
-option = {
-  title:{
-    text: 'Attention'
-  },
+  option = {
+    title: {
+      text: 'Attention'
+    },
     xAxis: {
-        type: 'category',
-        name: 'Sentence length',
-        nameLocation: 'center',
-        nameGap: 30,
-        data: $attention_x
+      type: 'category',
+      name: 'Sentence length',
+      nameLocation: 'center',
+      nameGap: 30,
+      data: $attention_x
     },
     yAxis: {
-        type: 'value',
-        splitLine: {
-                show: false
-            }
+      type: 'value',
+      splitLine: {
+        show: false
+      }
     },
     series: [{
-        data: $attention_y,
-        type: 'line',
-        showSymbol: false
+      data: $attention_y,
+      type: 'line',
+      showSymbol: false
     }]
-};
+  };
 
-var plot = echarts.init(document.getElementById('entropy'));
-plot.setOption(option = option)
+  var plot = echarts.init(document.getElementById('entropy'));
+  plot.setOption(option = option)
 
-document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function () {
     var elems = document.querySelectorAll('.tooltipped');
     var instances = M.Tooltip.init(elems);
   });
 
 </script>
+
 </html>

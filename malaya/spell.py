@@ -24,8 +24,8 @@ from herpetologist import check_type
 
 def tokens_to_masked_ids(tokens, mask_ind, tokenizer):
     masked_tokens = tokens[:]
-    masked_tokens[mask_ind] = '<mask>'
-    masked_tokens = ['<cls>'] + masked_tokens + ['<sep>']
+    masked_tokens[mask_ind] = '[MASK]'
+    masked_tokens = ['[CLS]'] + masked_tokens + ['[SEP]']
     masked_ids = tokenizer.convert_tokens_to_ids(masked_tokens)
     return masked_ids
 

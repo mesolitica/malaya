@@ -3,14 +3,14 @@ from malaya.path import PATH_ENTITIES, S3_PATH_ENTITIES
 from malaya.text.entity import _Entity_regex
 from herpetologist import check_type
 
-_availability = [
-    'bert',
-    'tiny-bert',
-    'albert',
-    'tiny-albert',
-    'xlnet',
-    'alxlnet',
-]
+_availability = {
+    'bert': ['426.4 MB', 'accuracy: 0.994'],
+    'tiny-bert': ['57.7 MB', 'accuracy: 0.986'],
+    'albert': ['48.6 MB', 'accuracy: 0.984'],
+    'tiny-albert': ['22.4 MB', 'accuracy: 0.971'],
+    'xlnet': ['446.6 MB', 'accuracy: 0.992'],
+    'alxlnet': ['46.8 MB', 'accuracy: 0.993'],
+}
 
 
 def available_transformer_model():
@@ -43,18 +43,12 @@ def transformer(model: str = 'xlnet', **kwargs):
     """
 
     model = model.lower()
-    size = size.lower()
     if model not in _availability:
         raise Exception(
             'model not supported, please check supported models from malaya.entity.available_transformer_model()'
         )
     return tag.transformer(
-        PATH_ENTITIES,
-        S3_PATH_ENTITIES,
-        'entity',
-        model = model,
-        size = size,
-        **kwargs,
+        PATH_ENTITIES, S3_PATH_ENTITIES, 'entity', model = model, **kwargs
     )
 
 
@@ -69,7 +63,7 @@ def general_entity(model = None):
 
     Returns
     -------
-    _Entity_regex: malaya.texts._entity._Entity_regex class
+    _Entity_regex: malaya.text.entity._Entity_regex class
     """
     if not hasattr(model, 'predict') and model is not None:
         raise ValueError('model must has `predict` method')

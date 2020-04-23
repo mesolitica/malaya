@@ -6,7 +6,7 @@ _emotion_label = ['anger', 'fear', 'happy', 'love', 'sadness', 'surprise']
 _availability = {
     'bert': ['425.6 MB', 'accuracy: 0.992'],
     'tiny-bert': ['57.4 MB', 'accuracy: 0.988'],
-    'albert': ['48.6 MB', 'accuracy: 0.992'],
+    'albert': ['48.6 MB', 'accuracy: 0.997'],
     'tiny-albert': ['22.4 MB', 'accuracy: 0.981'],
     'xlnet': ['446.5 MB', 'accuracy: 0.990'],
     'alxlnet': ['46.8 MB', 'accuracy: 0.989'],

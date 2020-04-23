@@ -44,9 +44,9 @@ def _extract_attention_weights_import(num_layers, tf_graph):
     attns = [
         {
             f'layer_{i}': tf_graph.get_tensor_by_name(
-                f'bert/encoder/transformer/group_0_{i}/layer_{i}/inner_group_0/attention_1/self/attention_probs:0'
+                f'import/bert/encoder/transformer/group_0_{i}/layer_{i}/inner_group_0/attention_1/self/attention_probs:0'
                 if i
-                else 'bert/encoder/transformer/group_0/layer_0/inner_group_0/attention_1/self/attention_probs:0'
+                else 'import/bert/encoder/transformer/group_0/layer_0/inner_group_0/attention_1/self/attention_probs:0'
             )
         }
         for i in range(num_layers)
@@ -114,7 +114,7 @@ class Model:
                 return top_k_logits(logits, self.top_k)
 
             logits = tf.cond(self.top_p > 0, necleus, select_k)
-            self._samples = tf.multinomial(
+            self.samples = tf.multinomial(
                 logits, num_samples = self.k, output_dtype = tf.int32
             )
 

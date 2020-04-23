@@ -369,7 +369,8 @@ def merge_wordpiece_tokens(paired_tokens, weighted = True):
 def parse_bert_tagging(left, tokenizer):
     left = transformer_textcleaning(left)
     bert_tokens = ['[CLS]'] + tokenizer.tokenize(left) + ['[SEP]']
-    return tokenizer.convert_tokens_to_ids(bert_tokens), bert_tokens
+    input_mask = [1] * len(bert_tokens)
+    return tokenizer.convert_tokens_to_ids(bert_tokens), input_mask, bert_tokens
 
 
 def merge_sentencepiece_tokens(paired_tokens, weighted = True, model = 'bert'):

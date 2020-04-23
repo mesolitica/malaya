@@ -290,7 +290,7 @@ def load(model: str = 'base', **kwargs):
     with open(vocab) as fopen:
         v = fopen.read().split('\n')[:-1]
     v = [i.split('\t') for i in v]
-    v = {i[0]: i[1] for i in v}
+    v = {i[0]: no for no, i in enumerate(v)}
     tokenizer = SentencePieceTokenizer(v, sp_model)
 
     bert_config = modeling.BertConfig.from_json_file(bert_config)
