@@ -296,79 +296,9 @@ PATH_NGRAM = {
         'version': 'v28',
     },
     'sentencepiece': {
-        'vocab': home + '/bert/sp10m.cased.v4.vocab',
-        'model': home + '/bert/sp10m.cased.v4.model',
+        'vocab': home + '/preprocessing/sentencepiece/sp10m.cased.v4.vocab',
+        'model': home + '/preprocessing/sentencepiece/sp10m.cased.v4.model',
         'version': 'v31',
-    },
-}
-
-PATH_POS = {
-    'bert': {
-        'base': {
-            'model': home + '/pos/bert/base/bert-pos.pb',
-            'vocab': home + '/bert/sp10m.cased.v4.vocab',
-            'tokenizer': home + '/bert/sp10m.cased.v4.model',
-            'setting': home + '/pos/dictionary-pos.json',
-            'version': 'v30',
-        },
-        'small': {
-            'model': home + '/pos/bert/small/bert-pos.pb',
-            'vocab': home + '/bert/sp10m.cased.v4.vocab',
-            'tokenizer': home + '/bert/sp10m.cased.v4.model',
-            'setting': home + '/pos/dictionary-pos.json',
-            'version': 'v30',
-        },
-    },
-    'xlnet': {
-        'base': {
-            'model': home + '/pos/xlnet/base/xlnet-pos.pb',
-            'vocab': home + '/xlnet/sp10m.cased.v5.vocab',
-            'tokenizer': home + '/xlnet/sp10m.cased.v5.model',
-            'setting': home + '/pos/dictionary-pos.json',
-            'version': 'v30',
-        }
-    },
-    'albert': {
-        'base': {
-            'model': home + '/pos/albert/base/xlnet-pos.pb',
-            'vocab': home + '/albert/sp10m.cased.v6.vocab',
-            'tokenizer': home + '/albert/sp10m.cased.v6.model',
-            'setting': home + '/pos/dictionary-pos.json',
-            'version': 'v30',
-        }
-    },
-}
-
-S3_PATH_POS = {
-    'bert': {
-        'base': {
-            'model': 'v30/pos/bert-base-pos.pb',
-            'vocab': 'bert-bahasa/sp10m.cased.v4.vocab',
-            'tokenizer': 'bert-bahasa/sp10m.cased.v4.model',
-            'setting': 'bert-bahasa/dictionary-pos.json',
-        },
-        'small': {
-            'model': 'v30/pos/bert-small-pos.pb',
-            'vocab': 'bert-bahasa/sp10m.cased.v4.vocab',
-            'tokenizer': 'bert-bahasa/sp10m.cased.v4.model',
-            'setting': 'bert-bahasa/dictionary-pos.json',
-        },
-    },
-    'xlnet': {
-        'base': {
-            'model': 'v30/pos/xlnet-base-pos.pb',
-            'vocab': 'bert-bahasa/sp10m.cased.v5.vocab',
-            'tokenizer': 'bert-bahasa/sp10m.cased.v5.model',
-            'setting': 'bert-bahasa/dictionary-pos.json',
-        }
-    },
-    'albert': {
-        'base': {
-            'model': 'v30/pos/albert-base-pos.pb',
-            'vocab': 'bert-bahasa/sp10m.cased.v6.vocab',
-            'tokenizer': 'bert-bahasa/sp10m.cased.v6.model',
-            'setting': 'bert-bahasa/dictionary-pos.json',
-        }
     },
 }
 
@@ -379,6 +309,90 @@ S3_PATH_NGRAM = {
     'sentencepiece': {
         'vocab': 'bert-bahasa/sp10m.cased.v4.vocab',
         'model': 'bert-bahasa/sp10m.cased.v4.model',
+    },
+}
+
+PATH_POS = {
+    'bert': {
+        'model': home + '/pos/bert/base/model.pb',
+        'vocab': home + '/bert/sp10m.cased.bert.vocab',
+        'tokenizer': home + '/bert/sp10m.cased.bert.model',
+        'setting': home + '/pos/dictionary-pos.json',
+        'version': 'v34',
+    },
+    'tiny-bert': {
+        'model': home + '/pos/bert/tiny/model.pb',
+        'vocab': home + '/bert/sp10m.cased.bert.vocab',
+        'tokenizer': home + '/bert/sp10m.cased.bert.model',
+        'setting': home + '/pos/dictionary-pos.json',
+        'version': 'v34',
+    },
+    'albert': {
+        'model': home + '/pos/albert/base/model.pb',
+        'vocab': home + '/bert/sp10m.cased.v10.vocab',
+        'tokenizer': home + '/bert/sp10m.cased.v10.model',
+        'setting': home + '/pos/dictionary-pos.json',
+        'version': 'v34',
+    },
+    'tiny-albert': {
+        'model': home + '/pos/albert/tiny/model.pb',
+        'vocab': home + '/bert/sp10m.cased.v10.vocab',
+        'tokenizer': home + '/bert/sp10m.cased.v10.model',
+        'setting': home + '/pos/dictionary-pos.json',
+        'version': 'v34',
+    },
+    'xlnet': {
+        'model': home + '/pos/xlnet/base/model.pb',
+        'vocab': home + '/bert/sp10m.cased.v9.vocab',
+        'tokenizer': home + '/bert/sp10m.cased.v9.model',
+        'setting': home + '/pos/dictionary-pos.json',
+        'version': 'v34',
+    },
+    'alxlnet': {
+        'model': home + '/pos/alxlnet/base/model.pb',
+        'vocab': home + '/bert/sp10m.cased.v9.vocab',
+        'tokenizer': home + '/bert/sp10m.cased.v9.model',
+        'setting': home + '/pos/dictionary-pos.json',
+        'version': 'v34',
+    },
+}
+
+S3_PATH_POS = {
+    'bert': {
+        'model': 'v34/pos/bert-base-pos.pb',
+        'vocab': 'tokenizer/sp10m.cased.bert.vocab',
+        'tokenizer': 'tokenizer/sp10m.cased.bert.model',
+        'setting': 'bert-bahasa/dictionary-pos.json',
+    },
+    'tiny-bert': {
+        'model': 'v34/pos/tiny-bert-pos.pb',
+        'vocab': 'tokenizer/sp10m.cased.bert.vocab',
+        'tokenizer': 'tokenizer/sp10m.cased.bert.model',
+        'setting': 'bert-bahasa/dictionary-pos.json',
+    },
+    'albert': {
+        'model': 'v34/pos/albert-base-pos.pb',
+        'vocab': 'tokenizer/sp10m.cased.v10.vocab',
+        'tokenizer': 'tokenizer/sp10m.cased.v10.model',
+        'setting': 'bert-bahasa/dictionary-pos.json',
+    },
+    'tiny-albert': {
+        'model': 'v34/pos/albert-tiny-pos.pb',
+        'vocab': 'tokenizer/sp10m.cased.v10.vocab',
+        'tokenizer': 'tokenizer/sp10m.cased.v10.model',
+        'setting': 'bert-bahasa/dictionary-pos.json',
+    },
+    'xlnet': {
+        'model': 'v34/pos/xlnet-base-pos.pb',
+        'vocab': 'tokenizer/sp10m.cased.v9.vocab',
+        'tokenizer': 'tokenizer/sp10m.cased.v9.model',
+        'setting': 'bert-bahasa/dictionary-pos.json',
+    },
+    'alxlnet': {
+        'model': 'v34/pos/alxlnet-base-pos.pb',
+        'vocab': 'tokenizer/sp10m.cased.v9.vocab',
+        'tokenizer': 'tokenizer/sp10m.cased.v9.model',
+        'setting': 'bert-bahasa/dictionary-pos.json',
     },
 }
 
@@ -405,51 +419,72 @@ S3_PATH_PREPROCESSING = {
 
 PATH_RELEVANCY = {
     'bert': {
-        'base': {
-            'model': home + '/relevancy/bert/base/bert-relevancy.pb',
-            'vocab': home + '/bert/sp10m.cased.v4.vocab',
-            'tokenizer': home + '/bert/sp10m.cased.v4.model',
-            'version': 'v30',
-        }
+        'model': home + '/relevancy/bert/base/model.pb',
+        'vocab': home + '/bert/sp10m.cased.bert.vocab',
+        'tokenizer': home + '/bert/sp10m.cased.bert.model',
+        'version': 'v34',
+    },
+    'tiny-bert': {
+        'model': home + '/relevancy/bert/tiny/model.pb',
+        'vocab': home + '/bert/sp10m.cased.bert.vocab',
+        'tokenizer': home + '/bert/sp10m.cased.bert.model',
+        'version': 'v34',
     },
     'albert': {
-        'base': {
-            'model': home + '/relevancy/albert/base/albert-relevancy.pb',
-            'vocab': home + '/albert/sp10m.cased.v6.vocab',
-            'tokenizer': home + '/albert/sp10m.cased.v6.model',
-            'version': 'v30',
-        }
+        'model': home + '/relevancy/albert/base/model.pb',
+        'vocab': home + '/bert/sp10m.cased.v10.vocab',
+        'tokenizer': home + '/bert/sp10m.cased.v10.model',
+        'version': 'v34',
+    },
+    'tiny-albert': {
+        'model': home + '/relevancy/albert/tiny/model.pb',
+        'vocab': home + '/bert/sp10m.cased.v10.vocab',
+        'tokenizer': home + '/bert/sp10m.cased.v10.model',
+        'version': 'v34',
     },
     'xlnet': {
-        'base': {
-            'model': home + '/relevancy/xlnet/base/albert-relevancy.pb',
-            'vocab': home + '/xlnet/sp10m.cased.v5.vocab',
-            'tokenizer': home + '/xlnet/sp10m.cased.v5.model',
-            'version': 'v30',
-        }
+        'model': home + '/relevancy/xlnet/base/model.pb',
+        'vocab': home + '/bert/sp10m.cased.v9.vocab',
+        'tokenizer': home + '/bert/sp10m.cased.v9.model',
+        'version': 'v34',
+    },
+    'alxlnet': {
+        'model': home + '/relevancy/alxlnet/base/model.pb',
+        'vocab': home + '/bert/sp10m.cased.v9.vocab',
+        'tokenizer': home + '/bert/sp10m.cased.v9.model',
+        'version': 'v34',
     },
 }
 S3_PATH_RELEVANCY = {
     'bert': {
-        'base': {
-            'model': 'v30/relevancy/bert-base-relevancy.pb',
-            'vocab': 'bert-bahasa/sp10m.cased.v4.vocab',
-            'tokenizer': 'bert-bahasa/sp10m.cased.v4.model',
-        }
+        'model': 'v34/relevancy/bert-base-relevancy.pb',
+        'vocab': 'tokenizer/sp10m.cased.bert.vocab',
+        'tokenizer': 'tokenizer/sp10m.cased.bert.model',
+    },
+    'tiny-bert': {
+        'model': 'v34/relevancy/tiny-bert-relevancy.pb',
+        'vocab': 'tokenizer/sp10m.cased.bert.vocab',
+        'tokenizer': 'tokenizer/sp10m.cased.bert.model',
     },
     'albert': {
-        'base': {
-            'model': 'v30/relevancy/albert-base-relevancy.pb',
-            'vocab': 'bert-bahasa/sp10m.cased.v6.vocab',
-            'tokenizer': 'bert-bahasa/sp10m.cased.v6.model',
-        }
+        'model': 'v34/relevancy/albert-base-relevancy.pb',
+        'vocab': 'tokenizer/sp10m.cased.v10.vocab',
+        'tokenizer': 'tokenizer/sp10m.cased.v10.model',
+    },
+    'tiny-albert': {
+        'model': 'v34/relevancy/albert-tiny-relevancy.pb',
+        'vocab': 'tokenizer/sp10m.cased.v10.vocab',
+        'tokenizer': 'tokenizer/sp10m.cased.v10.model',
     },
     'xlnet': {
-        'base': {
-            'model': 'v30/relevancy/xlnet-base-relevancy.pb',
-            'vocab': 'bert-bahasa/sp10m.cased.v5.vocab',
-            'tokenizer': 'bert-bahasa/sp10m.cased.v5.model',
-        }
+        'model': 'v34/relevancy/xlnet-base-relevancy.pb',
+        'vocab': 'tokenizer/sp10m.cased.v9.vocab',
+        'tokenizer': 'tokenizer/sp10m.cased.v9.model',
+    },
+    'alxlnet': {
+        'model': 'v34/relevancy/alxlnet-base-relevancy.pb',
+        'vocab': 'tokenizer/sp10m.cased.v9.vocab',
+        'tokenizer': 'tokenizer/sp10m.cased.v9.model',
     },
 }
 
@@ -530,7 +565,7 @@ S3_PATH_SENTIMENT = {
         'tokenizer': 'tokenizer/sp10m.cased.v9.model',
     },
     'alxlnet': {
-        'model': 'v34/sentiment/alxlnet-base-emotion.pb',
+        'model': 'v34/sentiment/alxlnet-base-sentiment.pb',
         'vocab': 'tokenizer/sp10m.cased.v9.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.v9.model',
     },
@@ -538,52 +573,73 @@ S3_PATH_SENTIMENT = {
 
 PATH_SIMILARITY = {
     'bert': {
-        'base': {
-            'model': home + '/similarity/bert/base/bert-similarity.pb',
-            'vocab': home + '/bert/sp10m.cased.v4.vocab',
-            'tokenizer': home + '/bert/sp10m.cased.v4.model',
-            'version': 'v30',
-        }
+        'model': home + '/similarity/bert/base/model.pb',
+        'vocab': home + '/bert/sp10m.cased.bert.vocab',
+        'tokenizer': home + '/bert/sp10m.cased.bert.model',
+        'version': 'v34',
+    },
+    'tiny-bert': {
+        'model': home + '/similarity/bert/tiny/model.pb',
+        'vocab': home + '/bert/sp10m.cased.bert.vocab',
+        'tokenizer': home + '/bert/sp10m.cased.bert.model',
+        'version': 'v34',
     },
     'albert': {
-        'base': {
-            'model': home + '/similarity/albert/base/albert-similarity.pb',
-            'vocab': home + '/albert/sp10m.cased.v6.vocab',
-            'tokenizer': home + '/albert/sp10m.cased.v6.model',
-            'version': 'v30',
-        }
+        'model': home + '/similarity/albert/base/model.pb',
+        'vocab': home + '/albert/sp10m.cased.v10.vocab',
+        'tokenizer': home + '/albert/sp10m.cased.v10.model',
+        'version': 'v34',
+    },
+    'tiny-albert': {
+        'model': home + '/similarity/albert/tiny/model.pb',
+        'vocab': home + '/bert/sp10m.cased.bert.vocab',
+        'tokenizer': home + '/bert/sp10m.cased.bert.model',
+        'version': 'v34',
     },
     'xlnet': {
-        'base': {
-            'model': home + '/similarity/xlnet/base/albert-similarity.pb',
-            'vocab': home + '/xlnet/sp10m.cased.v5.vocab',
-            'tokenizer': home + '/xlnet/sp10m.cased.v5.model',
-            'version': 'v30',
-        }
+        'model': home + '/similarity/xlnet/base/model.pb',
+        'vocab': home + '/xlnet/sp10m.cased.v9.vocab',
+        'tokenizer': home + '/xlnet/sp10m.cased.v9.model',
+        'version': 'v34',
+    },
+    'alxlnet': {
+        'model': home + '/similarity/alxlnet/base/model.pb',
+        'vocab': home + '/xlnet/sp10m.cased.v9.vocab',
+        'tokenizer': home + '/xlnet/sp10m.cased.v9.model',
+        'version': 'v34',
     },
 }
 
 S3_PATH_SIMILARITY = {
     'bert': {
-        'base': {
-            'model': 'v30/similarity/bert-base-similarity.pb',
-            'vocab': 'bert-bahasa/sp10m.cased.v4.vocab',
-            'tokenizer': 'bert-bahasa/sp10m.cased.v4.model',
-        }
+        'model': 'v34/similarity/bert-base-similarity.pb',
+        'vocab': 'tokenizer/sp10m.cased.bert.vocab',
+        'tokenizer': 'tokenizer/sp10m.cased.bert.model',
+    },
+    'tiny-bert': {
+        'model': 'v34/similarity/tiny-bert-similarity.pb',
+        'vocab': 'tokenizer/sp10m.cased.bert.vocab',
+        'tokenizer': 'tokenizer/sp10m.cased.bert.model',
     },
     'albert': {
-        'base': {
-            'model': 'v30/similarity/albert-base-similarity.pb',
-            'vocab': 'bert-bahasa/sp10m.cased.v6.vocab',
-            'tokenizer': 'bert-bahasa/sp10m.cased.v6.model',
-        }
+        'model': 'v34/similarity/albert-base-similarity.pb',
+        'vocab': 'tokenizer/sp10m.cased.v10.vocab',
+        'tokenizer': 'tokenizer/sp10m.cased.v10.model',
+    },
+    'tiny-albert': {
+        'model': 'v34/similarity/albert-tiny-similarity.pb',
+        'vocab': 'tokenizer/sp10m.cased.v10.vocab',
+        'tokenizer': 'tokenizer/sp10m.cased.v10.model',
     },
     'xlnet': {
-        'base': {
-            'model': 'v30/similarity/xlnet-base-similarity.pb',
-            'vocab': 'bert-bahasa/sp10m.cased.v5.vocab',
-            'tokenizer': 'bert-bahasa/sp10m.cased.v5.model',
-        }
+        'model': 'v34/similarity/xlnet-base-similarity.pb',
+        'vocab': 'tokenizer/sp10m.cased.v9.vocab',
+        'tokenizer': 'tokenizer/sp10m.cased.v9.model',
+    },
+    'alxlnet': {
+        'model': 'v34/similarity/alxlnet-base-similarity.pb',
+        'vocab': 'tokenizer/sp10m.cased.v9.vocab',
+        'tokenizer': 'tokenizer/sp10m.cased.v9.model',
     },
 }
 

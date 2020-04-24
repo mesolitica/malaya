@@ -5,9 +5,12 @@ from malaya.path import PATH_POS, S3_PATH_POS
 from herpetologist import check_type
 
 _availability = {
-    'bert': ['base', 'small'],
-    'xlnet': ['base'],
-    'albert': ['base'],
+    'bert': ['426.4 MB', 'accuracy: 0.952'],
+    'tiny-bert': ['57.7 MB', 'accuracy: 0.953'],
+    'albert': ['48.7 MB', 'accuracy: 0.951'],
+    'tiny-albert': ['22.4 MB', 'accuracy: 0.933'],
+    'xlnet': ['446.6 MB', 'accuracy: 0.954'],
+    'alxlnet': ['46.8 MB', 'accuracy: 0.951'],
 }
 
 
@@ -62,9 +65,9 @@ def naive(string: str):
 
 
 @check_type
-def transformer(model: str = 'xlnet', size: str = 'base', **kwargs):
+def transformer(model: str = 'xlnet', **kwargs):
     """
-    Load Transformer POS Tagging model, transfer learning Transformer + CRF.
+    Load Transformer Entity Tagging model, transfer learning Transformer + CRF.
 
     Parameters
     ----------
@@ -72,13 +75,11 @@ def transformer(model: str = 'xlnet', size: str = 'base', **kwargs):
         Model architecture supported. Allowed values:
 
         * ``'bert'`` - BERT architecture from google.
-        * ``'xlnet'`` - XLNET architecture from google.
+        * ``'tiny-bert'`` - BERT architecture from google with smaller parameters.
         * ``'albert'`` - ALBERT architecture from google.
-    size : str, optional (default='base')
-        Model size supported. Allowed values:
-
-        * ``'base'`` - BASE size.
-        * ``'small'`` - SMALL size.
+        * ``'tiny-albert'`` - ALBERT architecture from google with smaller parameters.
+        * ``'xlnet'`` - XLNET architecture from google.
+        * ``'alxlnet'`` - XLNET architecture from google + Malaya.
 
     Returns
     -------
@@ -86,15 +87,10 @@ def transformer(model: str = 'xlnet', size: str = 'base', **kwargs):
     """
 
     model = model.lower()
-    size = size.lower()
     if model not in _availability:
         raise Exception(
             'model not supported, please check supported models from malaya.pos.available_transformer_model()'
         )
-    if size not in _availability[model]:
-        raise Exception(
-            'size not supported, please check supported models from malaya.pos.available_transformer_model()'
-        )
     return tag.transformer(
-        PATH_POS, S3_PATH_POS, 'pos', model = model, size = size, **kwargs
+        PATH_POS, S3_PATH_POS, 'pos', model = model, **kwargs
     )

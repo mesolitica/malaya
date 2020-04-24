@@ -2,14 +2,14 @@ from malaya.supervised import softmax
 from malaya.path import PATH_SENTIMENT, S3_PATH_SENTIMENT
 from herpetologist import check_type
 
-_availability = [
-    'bert',
-    'tiny-bert',
-    'albert',
-    'tiny-albert',
-    'xlnet',
-    'alxlnet',
-]
+_availability = {
+    'bert': ['425.6 MB', 'accuracy: 0.993'],
+    'tiny-bert': ['57.4 MB', 'accuracy: 0.987'],
+    'albert': ['48.6 MB', 'accuracy: 0.992'],
+    'tiny-albert': ['22.4 MB', 'accuracy: 0.985'],
+    'xlnet': ['446.5 MB', 'accuracy: 0.993'],
+    'alxlnet': ['46.8 MB', 'accuracy: 0.991'],
+}
 
 
 def available_transformer_model():

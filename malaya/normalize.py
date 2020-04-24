@@ -213,6 +213,21 @@ class _SPELL_NORMALIZE:
                 index += 1
                 continue
 
+            if re.findall(_expressions['hashtag'], word.lower()):
+                result.append(word)
+                index += 1
+                continue
+
+            if re.findall(_expressions['url'], word.lower()):
+                result.append(word)
+                index += 1
+                continue
+
+            if re.findall(_expressions['user'], word.lower()):
+                result.append(word)
+                index += 1
+                continue
+
             cardinal_ = cardinal(word)
             if cardinal_ != word:
                 result.append(cardinal_)

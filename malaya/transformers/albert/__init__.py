@@ -181,7 +181,7 @@ class Model:
         attentions = self._sess.run(
             self.attns, feed_dict = {self.X: batch_x, self.MASK: batch_masks}
         )
-        return attentions, s_tokens
+        return attentions, s_tokens, batch_masks
 
     @check_type
     def attention(self, strings: List[str], method: str = 'last', **kwargs):
@@ -208,7 +208,7 @@ class Model:
             raise Exception(
                 "method not supported, only support 'last', 'first' and 'mean'"
             )
-        attentions, s_tokens = self._attention(strings)
+        attentions, s_tokens, _ = self._attention(strings)
 
         if method == 'first':
             cls_attn = list(attentions[0].values())[0][:, :, 0, :]

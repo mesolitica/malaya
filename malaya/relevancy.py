@@ -2,7 +2,14 @@ from malaya.supervised import softmax
 from malaya.path import PATH_RELEVANCY, S3_PATH_RELEVANCY
 from herpetologist import check_type
 
-_availability = {'bert': ['base'], 'xlnet': ['base'], 'albert': ['base']}
+_availability = {
+    'bert': ['425.6 MB', 'accuracy: 0.872'],
+    'tiny-bert': ['57.4 MB', 'accuracy: 0.656'],
+    'albert': ['48.6 MB', 'accuracy: 0.871'],
+    'tiny-albert': ['22.4 MB', 'accuracy: 0.843'],
+    'xlnet': ['446.5 MB', 'accuracy: 0.885'],
+    'alxlnet': ['46.8 MB', 'accuracy: 0.874'],
+}
 
 
 def available_transformer_model():
@@ -13,9 +20,9 @@ def available_transformer_model():
 
 
 @check_type
-def transformer(model: str = 'xlnet', size: str = 'base', **kwargs):
+def transformer(model: str = 'xlnet', **kwargs):
     """
-    Load Transformer relevancy model.
+    Load Transformer emotion model.
 
     Parameters
     ----------
@@ -23,12 +30,11 @@ def transformer(model: str = 'xlnet', size: str = 'base', **kwargs):
         Model architecture supported. Allowed values:
 
         * ``'bert'`` - BERT architecture from google.
+        * ``'tiny-bert'`` - BERT architecture from google with smaller parameters.
+        * ``'albert'`` - ALBERT architecture from google.
+        * ``'tiny-albert'`` - ALBERT architecture from google with smaller parameters.
         * ``'xlnet'`` - XLNET architecture from google.
-    size : str, optional (default='base')
-        Model size supported. Allowed values:
-
-        * ``'base'`` - BASE size.
-        * ``'small'`` - SMALL size.
+        * ``'alxlnet'`` - XLNET architecture from google + Malaya.
 
     Returns
     -------
@@ -36,21 +42,15 @@ def transformer(model: str = 'xlnet', size: str = 'base', **kwargs):
     """
 
     model = model.lower()
-    size = size.lower()
     if model not in _availability:
         raise Exception(
             'model not supported, please check supported models from malaya.relevancy.available_transformer_model()'
         )
-    if size not in _availability[model]:
-        raise Exception(
-            'size not supported, please check supported models from malaya.relevancy.available_transformer_model()'
-        )
-    return _softmax_class.transformer(
+    return softmax.transformer(
         PATH_RELEVANCY,
         S3_PATH_RELEVANCY,
         'relevancy',
         ['negative', 'positive'],
         model = model,
-        size = size,
         **kwargs
     )

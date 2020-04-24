@@ -5677,7 +5677,6 @@ words = {
     'keseganan',
     'lasam',
     'biring',
-    'aja',
     'wajah',
     'godam',
     'dendang',

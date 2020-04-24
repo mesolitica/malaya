@@ -66,33 +66,7 @@ class _VECTORIZER_SIMILARITY:
             return 1 / (similar + 1)
 
     @check_type
-    def predict(
-        self, left_string: str, right_string: str, similarity: str = 'cosine'
-    ):
-        """
-        calculate similarity for two different texts.
-
-        Parameters
-        ----------
-        left_string : str
-        right_string : str
-        similarity : str, optional (default='mean')
-            similarity supported. Allowed values:
-
-            * ``'cosine'`` - cosine similarity.
-            * ``'euclidean'`` - euclidean similarity.
-            * ``'manhattan'`` - manhattan similarity.
-
-        Returns
-        -------
-        float: float
-        """
-        return self._predict(
-            [left_string], [right_string], similarity = similarity
-        )[0, 0]
-
-    @check_type
-    def predict_batch(
+    def predict_proba(
         self,
         left_strings: List[str],
         right_strings: List[str],
@@ -126,8 +100,8 @@ class _VECTORIZER_SIMILARITY:
         strings: List[str],
         similarity: str = 'cosine',
         visualize: bool = True,
-        figsize: Tuple[int, int] = (7, 7),
         annotate: bool = True,
+        figsize: Tuple[int, int] = (7, 7),
     ):
         """
         plot a tree plot based on output from bert similarity.
@@ -296,53 +270,7 @@ class _DOC2VEC_SIMILARITY:
             return 1 / (similar + 1)
 
     @check_type
-    def predict(
-        self,
-        left_string: str,
-        right_string: str,
-        aggregation: str = 'mean',
-        similarity: str = 'cosine',
-        soft: bool = True,
-    ):
-        """
-        calculate similarity for two different texts.
-
-        Parameters
-        ----------
-        left_string : str
-        right_string : str
-        aggregation : str, optional (default='mean')
-            Aggregation supported. Allowed values:
-
-            * ``'mean'`` - mean.
-            * ``'min'`` - min.
-            * ``'max'`` - max.
-            * ``'sum'`` - sum.
-            * ``'sqrt'`` - square root.
-        similarity : str, optional (default='mean')
-            similarity supported. Allowed values:
-
-            * ``'cosine'`` - cosine similarity.
-            * ``'euclidean'`` - euclidean similarity.
-            * ``'manhattan'`` - manhattan similarity.
-        soft: bool, optional (default=True)
-            word not inside word vector will replace with nearest word if True, else, will skip.
-
-        Returns
-        -------
-        float: float
-        """
-
-        return self._predict(
-            [left_string],
-            [right_string],
-            aggregation = aggregation,
-            similarity = similarity,
-            soft = soft,
-        )[0, 0]
-
-    @check_type
-    def predict_batch(
+    def predict_proba(
         self,
         left_strings: List[str],
         right_strings: List[str],
@@ -395,8 +323,8 @@ class _DOC2VEC_SIMILARITY:
         similarity: str = 'cosine',
         soft: bool = True,
         visualize: bool = True,
-        figsize: Tuple[int, int] = (7, 7),
         annotate: bool = True,
+        figsize: Tuple[int, int] = (7, 7),
     ):
         """
         plot a tree plot based on output from bert similarity.
@@ -462,11 +390,6 @@ class _DOC2VEC_SIMILARITY:
         plt.show()
 
 
-class ATTENTION:
-    def __ini__(self, vectorizer):
-        self._vectorizer = vectorizer
-
-
 def doc2vec(vectorizer):
     """
     Doc2vec interface for text similarity.
@@ -505,7 +428,14 @@ def encoder(vectorizer):
     return _VECTORIZER_SIMILARITY(vectorizer)
 
 
-_availability = {'bert': ['base'], 'xlnet': ['base'], 'albert': ['base']}
+_availability = {
+    'bert': ['423.4 MB', 'accuracy: 0.912'],
+    'tiny-bert': ['56.6 MB', 'accuracy: 0.902'],
+    'albert': ['46.3 MB', 'accuracy: 0.902'],
+    'tiny-albert': ['21.9 MB', 'accuracy: 0.868'],
+    'xlnet': ['448.7 MB', 'accuracy: 0.856'],
+    'alxlnet': ['49.0 MB', 'accuracy: 0.910'],
+}
 
 
 def available_transformer_model():
@@ -516,7 +446,7 @@ def available_transformer_model():
 
 
 @check_type
-def transformer(model: str = 'bert', size: str = 'base', **kwargs):
+def transformer(model: str = 'bert', **kwargs):
     """
     Load Transformer sentiment model.
 
@@ -526,14 +456,11 @@ def transformer(model: str = 'bert', size: str = 'base', **kwargs):
         Model architecture supported. Allowed values:
 
         * ``'bert'`` - BERT architecture from google.
-        * ``'xlnet'`` - XLNET architecture from google.
+        * ``'tiny-bert'`` - BERT architecture from google with smaller parameters.
         * ``'albert'`` - ALBERT architecture from google.
-    size : str, optional (default='base')
-        Model size supported. Allowed values:
-
-        * ``'base'`` - BASE size.
-        * ``'small'`` - SMALL size.
-    validate: bool, optional (default=True)
+        * ``'tiny-albert'`` - ALBERT architecture from google with smaller parameters.
+        * ``'xlnet'`` - XLNET architecture from google.
+        * ``'alxlnet'`` - XLNET architecture from google + Malaya.
 
     Returns
     -------
@@ -541,31 +468,39 @@ def transformer(model: str = 'bert', size: str = 'base', **kwargs):
     """
 
     model = model.lower()
-    size = size.lower()
     if model not in _availability:
         raise Exception(
-            'model not supported, please check supported models from malaya.sentiment.available_transformer_model()'
-        )
-    if size not in _availability[model]:
-        raise Exception(
-            'size not supported, please check supported models from malaya.sentiment.available_transformer_model()'
+            'model not supported, please check supported models from malaya.similarity.available_transformer_model()'
         )
 
-    check_file(
-        PATH_SIMILARITY[model][size], S3_PATH_SIMILARITY[model][size], **kwargs
-    )
-    g = load_graph(PATH_SIMILARITY[model][size]['model'])
+    check_file(PATH_SIMILARITY[model], S3_PATH_SIMILARITY[model], **kwargs)
+    g = load_graph(PATH_SIMILARITY[model]['model'])
 
-    if model in ['albert', 'bert']:
-        if model == 'bert':
-            from ._transformer._bert import _extract_attention_weights_import
-        if model == 'albert':
-            from ._transformer._albert import _extract_attention_weights_import
+    path = PATH_SIMILARITY
 
-        tokenizer, cls, sep = sentencepiece_tokenizer_bert(
-            PATH_SIMILARITY[model][size]['tokenizer'],
-            PATH_SIMILARITY[model][size]['vocab'],
-        )
+    if model in ['albert', 'bert', 'tiny-albert', 'tiny-bert']:
+        if model in ['bert', 'tiny-bert']:
+            from malaya.transformers.bert import (
+                _extract_attention_weights_import,
+            )
+            from malaya.transformers.bert import bert_num_layers
+
+            tokenizer = sentencepiece_tokenizer_bert(
+                path[model]['tokenizer'], path[model]['vocab']
+            )
+
+        if model in ['albert', 'tiny-albert']:
+            from malaya.transformers.albert import (
+                _extract_attention_weights_import,
+            )
+            from malaya.transformers.albert import bert_num_layers
+            from albert import tokenization
+
+            tokenizer = tokenization.FullTokenizer(
+                vocab_file = path[model]['vocab'],
+                do_lower_case = False,
+                spm_model_file = path[model]['tokenizer'],
+            )
 
         return SIAMESE_BERT(
             X = g.get_tensor_by_name('import/Placeholder:0'),
@@ -575,16 +510,19 @@ def transformer(model: str = 'bert', size: str = 'base', **kwargs):
             sess = generate_session(graph = g),
             tokenizer = tokenizer,
             label = ['not similar', 'similar'],
-            cls = cls,
-            sep = sep,
         )
 
-    if model in ['xlnet']:
-        from ._transformer._xlnet import _extract_attention_weights_import
+    if model in ['xlnet', 'alxlnet']:
+        if model in ['xlnet']:
+            from malaya.transformers.xlnet import (
+                _extract_attention_weights_import,
+            )
+        if model in ['alxlnet']:
+            from malaya.transformers.alxlnet import (
+                _extract_attention_weights_import,
+            )
 
-        tokenizer = sentencepiece_tokenizer_xlnet(
-            PATH_SIMILARITY[model][size]['tokenizer']
-        )
+        tokenizer = sentencepiece_tokenizer_xlnet(path[model]['tokenizer'])
 
         return SIAMESE_XLNET(
             X = g.get_tensor_by_name('import/Placeholder:0'),
@@ -595,13 +533,3 @@ def transformer(model: str = 'bert', size: str = 'base', **kwargs):
             tokenizer = tokenizer,
             label = ['not similar', 'similar'],
         )
-
-
-def attention(vectorizer):
-    if not hasattr(vectorizer, 'attention') and not hasattr(
-        vectorizer, 'vectorize'
-    ):
-        raise ValueError(
-            'vectorizer must has `attention` and `vectorize` methods'
-        )
-    return ATTENTION(vectorizer = vectorizer)

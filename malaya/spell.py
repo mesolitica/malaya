@@ -120,15 +120,17 @@ def _augment_vowel_alternate(string):
                     continue
             r.append(c)
 
-    if r[-1][-1] in vowels and string[-1] in consonants:
-        r.append(string[-1])
+    if len(r):
 
-    elif (
-        r[-1] in group_compound
-        and string[-2] in vowels
-        and string[-1] in consonants
-    ):
-        r.append(string[-2:])
+        if r[-1][-1] in vowels and string[-1] in consonants:
+            r.append(string[-1])
+
+        elif (
+            r[-1] in group_compound
+            and string[-2] in vowels
+            and string[-1] in consonants
+        ):
+            r.append(string[-2:])
 
     left = ''.join(r).replace('^', '')
     right = left + 'a'
@@ -341,11 +343,13 @@ class _TransformerCorrector(_Spell_augmentation):
             ids.extend(input_ids[i])
 
         masked_padded = self._padding(ids, padding = 'post')
+        input_masks = masked_padded.astype('bool').astype('int')
         preds = []
         for i in range(0, len(masked_padded), batch_size):
             index = min(i + batch_size, len(masked_padded))
             batch = masked_padded[i:index]
-            preds.append(self._model._log_vectorize(batch))
+            batch_mask = input_masks[i:index]
+            preds.append(self._model._log_vectorize(batch, batch_mask))
 
         preds = np.concatenate(preds, axis = 0)
         indices = np.array(indices)
@@ -841,8 +845,8 @@ def transformer(model, sentence_piece: bool = False, **kwargs):
         )
 
         vocab = PATH_NGRAM['sentencepiece']['vocab']
-        vocab_model = PATH_NGRAM['sentencepiece']['model']
-        tokenizer = load_sentencepiece(vocab, vocab_model)
+        model_vocab = PATH_NGRAM['sentencepiece']['model']
+        tokenizer = load_sentencepiece(model_vocab, vocab)
 
     with open(PATH_NGRAM[1]['model']) as fopen:
         corpus = json.load(fopen)

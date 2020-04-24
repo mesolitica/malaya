@@ -19,7 +19,7 @@ from malaya.function.html import (
 )
 import numpy as np
 from herpetologist import check_type
-from typing import List
+from typing import List, Tuple
 
 
 class BASE:
@@ -604,38 +604,65 @@ class SIAMESE_BERT(BASE):
         )
 
     @check_type
-    def predict(self, string_left: str, string_right: str):
-        """
-        calculate similarity for two different texts.
-
-        Parameters
-        ----------
-        string_left : str
-        string_right : str
-
-        Returns
-        -------
-        float: float
-        """
-
-        return self._base([string_left], [string_right])[0, 1]
-
-    @check_type
-    def predict_batch(self, strings_left: List[str], strings_right: List[str]):
+    def predict_proba(self, strings_left: List[str], strings_right: List[str]):
         """
         calculate similarity for two different batch of texts.
 
         Parameters
         ----------
-        string_left : List[str]
-        string_right : List[str]
+        strings_left : List[str]
+        strings_right : List[str]
 
         Returns
         -------
         list: list of float
         """
 
+        if len(strings_left) != len(strings_right):
+            raise Exception(
+                'length `strings_left` must be same as length `strings_right`'
+            )
+
         return self._base(strings_left, strings_right)[:, 1]
+
+    @check_type
+    def tree_plot(
+        self,
+        strings: List[str],
+        visualize: bool = True,
+        annotate: bool = True,
+        figsize: Tuple[int, int] = (7, 7),
+    ):
+        l, r = [], []
+        for s in strings:
+            for s_ in strings:
+                l.append(s)
+                r.append(s_)
+
+        results = self._base(l, r)[:, 1]
+        results = np.reshape(results, (len(strings), len(strings)))
+
+        if not visualize:
+            return results
+        try:
+            import matplotlib.pyplot as plt
+            import seaborn as sns
+
+            sns.set()
+        except:
+            raise Exception(
+                'matplotlib and seaborn not installed. Please install it and try again.'
+            )
+
+        plt.figure(figsize = figsize)
+        g = sns.clustermap(
+            results,
+            cmap = 'Blues',
+            xticklabels = strings,
+            yticklabels = strings,
+            annot = annotate,
+        )
+        plt.show()
 
 
 class TAGGING_BERT(BASE):

@@ -149,7 +149,7 @@ class Model:
                 self.input_masks: input_masks,
             },
         )
-        return attentions, s_tokens
+        return attentions, s_tokens, input_masks
 
     @check_type
     def attention(self, strings: List[str], method: str = 'last', **kwargs):
@@ -176,7 +176,7 @@ class Model:
             raise Exception(
                 "method not supported, only support ['last', 'first', 'mean']"
             )
-        attentions, s_tokens = self._attention(strings)
+        attentions, s_tokens, _ = self._attention(strings)
 
         if method == 'first':
             cls_attn = np.transpose(attentions[0][:, 0], (1, 0, 2))
