@@ -2,6 +2,8 @@ from malaya.supervised import softmax
 from malaya.path import PATH_SENTIMENT, S3_PATH_SENTIMENT
 from herpetologist import check_type
 
+label = ['negative', 'positive']
+
 _availability = {
     'bert': ['425.6 MB', 'accuracy: 0.993'],
     'tiny-bert': ['57.4 MB', 'accuracy: 0.987'],
@@ -28,11 +30,7 @@ def multinomial(**kwargs):
     BAYES : malaya.model.ml.BAYES class
     """
     return softmax.multinomial(
-        PATH_SENTIMENT,
-        S3_PATH_SENTIMENT,
-        'sentiment',
-        ['negative', 'positive'],
-        **kwargs
+        PATH_SENTIMENT, S3_PATH_SENTIMENT, 'sentiment', label, **kwargs
     )
 
 
@@ -67,7 +65,7 @@ def transformer(model: str = 'bert', **kwargs):
         PATH_SENTIMENT,
         S3_PATH_SENTIMENT,
         'sentiment',
-        ['negative', 'positive'],
+        label,
         model = model,
         **kwargs
     )

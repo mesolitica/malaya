@@ -14,9 +14,7 @@ lang_labels = {
     5: 'rojak',
 }
 
-
-def label():
-    return lang_labels
+label = list(lang_labels.values())
 
 
 @check_type

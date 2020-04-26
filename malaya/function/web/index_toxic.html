@@ -32,10 +32,10 @@
 
 <footer class="page-footer">
   <div class="footer-copyright">
-            <div class="container" style="color: #6c757d;">
-            Malaya Copyright
-            </div>
-          </div>
+    <div class="container" style="color: #6c757d;">
+      Malaya Copyright
+    </div>
+  </div>
 </footer>
 
 <script src="https://code.jquery.com/jquery-3.4.1.slim.js"></script>
@@ -44,165 +44,192 @@
 
 <script>
 
-var plot = echarts.init(document.getElementById('count'));
-var colors = ['rgb(0, 217, 0)', 'rgb(244, 248, 0)', 'rgb(248, 34, 13)', 'rgb(0, 238, 241)',
-'rgb(248, 95, 34)', 'rgb(230, 183, 0)'];
+  var plot = echarts.init(document.getElementById('count'));
+  var colors = ['rgb(244, 248, 0)', 'rgb(248, 34, 13)', 'rgb(0, 238, 241)',
+    'rgb(248, 95, 34)', 'rgb(230, 183, 0)', 'rgb(96, 187, 173)', 'rgb(66, 146, 39)', 'rgb(229, 169, 70)'];
 
-option = {
+  option = {
     title: {
       text: 'Classes barplot'
     },
-    data: ['Toxic', 'Severe Toxic', 'Obscene', 'Threat', 'Insult', 'Identity hate'],
+    data: ['Severe Toxic', 'Obscene', 'Threat', 'Insult', 'Identity attack', 'Indian', 'Malay', 'Chinese'],
     xAxis: {
-        type: 'category',
-        data: ['Toxic', 'Severe Toxic', 'Obscene', 'Threat', 'Insult', 'Identity hate'],
-        axisLabel: {
-            interval: 0,
-            rotate: 30
-        },
+      type: 'category',
+      data: ['Severe Toxic', 'Obscene', 'Threat', 'Insult', 'Identity attack', 'Indian', 'Malay', 'Chinese'],
+      axisLabel: {
+        interval: 0,
+        rotate: 30
+      },
     },
     yAxis: {
-        type: 'value',
-        splitLine: {
-                show: false
-            }
+      type: 'value',
+      splitLine: {
+        show: false
+      }
     },
     series: [{
-        data: [$barplot_toxic, '-', '-', '-', '-', '-'],
-        stack: '1',
-        type: 'bar',
-        name: 'Toxic',
-        color: colors[0],
-        label: {
-                normal: {
-                    show: true,
-                    position: 'top'
-                }
-            },
+      data: [$barplot_severe_toxic, '-', '-', '-', '-', '-', '-', '-'],
+      type: 'bar',
+      stack: '1',
+      name: 'Severe Toxic',
+      color: colors[0],
+      label: {
+        normal: {
+          show: true,
+          position: 'top'
+        }
+      },
     },
     {
-        data: ['-', $barplot_severe_toxic, '-', '-', '-', '-'],
-        type: 'bar',
-        stack: '1',
-        name: 'Severe Toxic',
-        color: colors[1],
-        label: {
-                normal: {
-                    show: true,
-                    position: 'top'
-                }
-            },
+      data: ['-', $barplot_obscene, '-', '-', '-', '-', '-', '-'],
+      type: 'bar',
+      stack: '1',
+      name: 'Obscene',
+      color: colors[1],
+      label: {
+        normal: {
+          show: true,
+          position: 'top'
+        }
+      },
     },
     {
-        data: ['-', '-', $barplot_obscene, '-', '-', '-'],
-        type: 'bar',
-        stack: '1',
-        name: 'Obscene',
-        color: colors[2],
-        label: {
-                normal: {
-                    show: true,
-                    position: 'top'
-                }
-            },
+      data: ['-', '-', $barplot_threat, '-', '-', '-', '-', '-'],
+      type: 'bar',
+      stack: '1',
+      name: 'Threat',
+      color: colors[2],
+      label: {
+        normal: {
+          show: true,
+          position: 'top'
+        }
+      },
     },
     {
-        data: ['-', '-', '-', $barplot_threat, '-', '-'],
-        type: 'bar',
-        stack: '1',
-        name: 'Threat',
-        color: colors[3],
-        label: {
-                normal: {
-                    show: true,
-                    position: 'top'
-                }
-            },
+      data: ['-', '-', '-', $barplot_insult, '-', '-', '-', '-'],
+      type: 'bar',
+      stack: '1',
+      name: 'Insult',
+      color: colors[3],
+      label: {
+        normal: {
+          show: true,
+          position: 'top'
+        }
+      },
     },
     {
-        data: ['-', '-', '-', '-', $barplot_insult, '-'],
-        type: 'bar',
-        stack: '1',
-        name: 'Insult',
-        color: colors[4],
-        label: {
-                normal: {
-                    show: true,
-                    position: 'top'
-                }
-            },
+      data: ['-', '-', '-', '-', $barplot_identity_hate, '-', '-', '-'],
+      type: 'bar',
+      stack: '1',
+      name: 'Identity attack',
+      color: colors[4],
+      label: {
+        normal: {
+          show: true,
+          position: 'top'
+        }
+      },
     },
     {
-        data: ['-', '-', '-', '-', '-', $barplot_identity_hate],
-        type: 'bar',
-        stack: '1',
-        name: 'Identity hate',
-        color: colors[5],
-        label: {
-                normal: {
-                    show: true,
-                    position: 'top'
-                }
-            },
+      data: ['-', '-', '-', '-', '-', $barplot_indian, '-', '-'],
+      type: 'bar',
+      stack: '1',
+      name: 'Indian',
+      color: colors[5],
+      label: {
+        normal: {
+          show: true,
+          position: 'top'
+        }
+      },
+    },
+    {
+      data: ['-', '-', '-', '-', '-', '-', $barplot_malay, '-'],
+      type: 'bar',
+      stack: '1',
+      name: 'Malay',
+      color: colors[6],
+      label: {
+        normal: {
+          show: true,
+          position: 'top'
+        }
+      },
+    },
+    {
+      data: ['-', '-', '-', '-', '-', '-', '-', $barplot_chinese],
+      type: 'bar',
+      stack: '1',
+      name: 'Chinese',
+      color: colors[7],
+      label: {
+        normal: {
+          show: true,
+          position: 'top'
+        }
+      },
     }
-  ]
-};
-plot.setOption(option = option)
+    ]
+  };
+  plot.setOption(option = option)
 
-option = {
-    title:{
+  option = {
+    title: {
       text: 'probability histogram'
     },
     xAxis: {
-        type: 'category',
-        data: $histogram_x,
+      type: 'category',
+      data: $histogram_x,
     },
     yAxis: {
-        type: 'value',
-        splitLine: {
-                show: false
-            }
+      type: 'value',
+      splitLine: {
+        show: false
+      }
     },
     series: [{
-        data: $histogram_y,
-        type: 'bar'
+      data: $histogram_y,
+      type: 'bar'
     }]
-};
+  };
 
-var plot = echarts.init(document.getElementById('histogram'));
-plot.setOption(option = option)
+  var plot = echarts.init(document.getElementById('histogram'));
+  plot.setOption(option = option)
 
-option = {
-  title:{
-    text: 'Attention'
-  },
+  option = {
+    title: {
+      text: 'Attention'
+    },
     xAxis: {
-        type: 'category',
-        name: 'Sentence length',
-        nameLocation: 'center',
-        nameGap: 30,
-        data: $attention_x
+      type: 'category',
+      name: 'Sentence length',
+      nameLocation: 'center',
+      nameGap: 30,
+      data: $attention_x
     },
     yAxis: {
-        type: 'value',
-        splitLine: {
-                show: false
-            }
+      type: 'value',
+      splitLine: {
+        show: false
+      }
     },
     series: [{
-        data: $attention_y,
-        type: 'line',
-        showSymbol: false
+      data: $attention_y,
+      type: 'line',
+      showSymbol: false
     }]
-};
+  };
 
-var plot = echarts.init(document.getElementById('entropy'));
-plot.setOption(option = option)
+  var plot = echarts.init(document.getElementById('entropy'));
+  plot.setOption(option = option)
 
-document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function () {
     var elems = document.querySelectorAll('.tooltipped');
     var instances = M.Tooltip.init(elems);
   });
 
 </script>
+
 </html>

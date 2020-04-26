@@ -13,7 +13,7 @@ from malaya.path import PATH_DEPENDENCY, S3_PATH_DEPENDENCY
 
 from herpetologist import check_type
 
-_dependency_tags = {
+label = {
     'PAD': 0,
     'X': 1,
     'nsubj': 2,
@@ -48,6 +48,40 @@ _dependency_tags = {
     'iobj': 31,
     'csubj:pass': 32,
 }
+
+
+def describe():
+    """
+    Describe Dependency supported.
+    """
+    print('acl - clausal modifier of noun')
+    print('advcl - adverbial clause modifier')
+    print('advmod - adverbial modifier')
+    print('amod - adjectival modifier')
+    print('appos - appositional modifier')
+    print('aux - auxiliary')
+    print('case - case marking')
+    print('ccomp - clausal complement')
+    print('compound - compound')
+    print('compound:plur - plural compound')
+    print('conj - conjunct')
+    print('cop - cop')
+    print('csubj - clausal subject')
+    print('dep - dependent')
+    print('det - determiner')
+    print('fixed - multi-word expression')
+    print('flat - name')
+    print('iobj - indirect object')
+    print('mark - marker')
+    print('nmod - nominal modifier')
+    print('nsubj - nominal subject')
+    print('obj - direct object')
+    print('parataxis - parataxis')
+    print('root - root')
+    print('xcomp - open clausal complement')
+    print(
+        'you can read more from https://universaldependencies.org/treebanks/id_pud/index.html'
+    )
 
 
 def dependency_graph(tagging, indexing):
@@ -149,7 +183,7 @@ def transformer(model: str = 'xlnet', **kwargs):
             logits = g.get_tensor_by_name('import/logits:0'),
             sess = generate_session(graph = g),
             tokenizer = tokenizer,
-            settings = _dependency_tags,
+            settings = label,
             heads_seq = g.get_tensor_by_name('import/heads_seq:0'),
         )
 
@@ -167,6 +201,6 @@ def transformer(model: str = 'xlnet', **kwargs):
             logits = g.get_tensor_by_name('import/logits:0'),
             sess = generate_session(graph = g),
             tokenizer = tokenizer,
-            settings = _dependency_tags,
+            settings = label,
             heads_seq = g.get_tensor_by_name('import/heads_seq:0'),
         )

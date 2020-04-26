@@ -25,12 +25,14 @@ _color_emotion = {
     'neutral': 'rgb(255, 255, 255)',
 }
 _color_toxic = {
-    'toxic': 'rgb(0, 217, 0)',
-    'severe_toxic': 'rgb(244, 248, 0)',
+    'severe toxic': 'rgb(244, 248, 0)',
     'obscene': 'rgb(248, 34, 13)',
     'threat': 'rgb(0, 238, 241)',
     'insult': 'rgb(248, 95, 34)',
-    'identity_hate': 'rgb(230, 183, 0)',
+    'identity attack': 'rgb(230, 183, 0)',
+    'indian': 'rgb(96, 187, 173)',
+    'malay': 'rgb(66, 146, 39)',
+    'chinese': 'rgb(229, 169, 70)',
     'neutral': 'rgb(255, 255, 255)',
 }
 
@@ -58,25 +60,29 @@ def _relevancy_mark(text, negative, positive, attention, label):
 
 def _toxic_mark(
     text,
-    toxic,
     severe_toxic,
     obscene,
     threat,
     insult,
     identity_hate,
+    indian,
+    malay,
+    chinese,
     attention,
     label,
 ):
     return (
-        "<mark style='background-color:%s' class='tooltipped' data-position='bottom' data-tooltip=\"Toxic <i class='em em-face_vomiting'></i> %.3f<br>Severe Toxic <i class='em em-face_vomiting'></i><i class='em em-face_vomiting'></i> %.3f<br>Obscene <i class='em em-confounded'></i> %.3f<br>Threat <i class='em em-fearful'></i> %.3f<br>Insult <i class='em em-boar'></i> %.3f<br>Identity hate <i class='em em-cry'></i> %.3f<br>Attention <i class='em em-warning'></i> %.3f<br>\">%s</mark>"
+        "<mark style='background-color:%s' class='tooltipped' data-position='bottom' data-tooltip=\"Severe Toxic <i class='em em-face_vomiting'></i><i class='em em-face_vomiting'></i> %.3f<br>Obscene <i class='em em-confounded'></i> %.3f<br>Threat <i class='em em-fearful'></i> %.3f<br>Insult <i class='em em-boar'></i> %.3f<br>Identity attack <i class='em em-cry'></i> %.3f<br>Indian <i class='em em-skin-tone-6'></i> %.3f<br>Malay <i class='em em-skin-tone-4'></i> %.3f<br>Chinese <i class='em em-skin-tone-2'></i> %.3f<br>Attention <i class='em em-warning'></i> %.3f<br>\">%s</mark>"
         % (
             _color_toxic[label],
-            toxic,
             severe_toxic,
             obscene,
             threat,
             insult,
             identity_hate,
+            indian,
+            malay,
+            chinese,
             attention,
             text,
         )
@@ -208,12 +214,14 @@ def _render_relevancy(data, notebook_mode = False):
 
 
 def _render_toxic(data, notebook_mode = False):
-    index_toxic = data['barplot']['x'].index('toxic')
-    index_severe_toxic = data['barplot']['x'].index('severe_toxic')
+    index_severe_toxic = data['barplot']['x'].index('severe toxic')
     index_obscene = data['barplot']['x'].index('obscene')
     index_threat = data['barplot']['x'].index('threat')
     index_insult = data['barplot']['x'].index('insult')
-    index_identity_hate = data['barplot']['x'].index('identity_hate')
+    index_identity_hate = data['barplot']['x'].index('identity attack')
+    index_indian = data['barplot']['x'].index('indian')
+    index_malay = data['barplot']['x'].index('malay')
+    index_chinese = data['barplot']['x'].index('chinese')
     toxic_mark = []
     for k, v in data['word'].items():
         where = np.where(np.array(v) >= 0.5)[0].shape[0]
@@ -224,12 +232,14 @@ def _render_toxic(data, notebook_mode = False):
         toxic_mark.append(
             _toxic_mark(
                 k,
-                v[index_toxic],
                 v[index_severe_toxic],
                 v[index_obscene],
                 v[index_threat],
                 v[index_insult],
                 v[index_identity_hate],
+                v[index_indian],
+                v[index_malay],
+                v[index_chinese],
                 data['alphas'][k],
                 where,
             )
@@ -249,9 +259,6 @@ def _render_toxic(data, notebook_mode = False):
     template = template.substitute(
         label = escape(data['class_name']),
         p = toxic_mark,
-        barplot_toxic = escape(
-            json.dumps(int(data['barplot']['y'][index_toxic]))
-        ),
         barplot_severe_toxic = escape(
             json.dumps(int(data['barplot']['y'][index_severe_toxic]))
         ),
@@ -266,6 +273,15 @@ def _render_toxic(data, notebook_mode = False):
         ),
         barplot_identity_hate = escape(
             json.dumps(int(data['barplot']['y'][index_identity_hate]))
+        ),
+        barplot_indian = escape(
+            json.dumps(int(data['barplot']['y'][index_indian]))
+        ),
+        barplot_malay = escape(
+            json.dumps(int(data['barplot']['y'][index_malay]))
+        ),
+        barplot_chinese = escape(
+            json.dumps(int(data['barplot']['y'][index_chinese]))
         ),
         histogram_x = escape(json.dumps(data['histogram']['x'].tolist())),
         histogram_y = escape(json.dumps(data['histogram']['y'].tolist())),

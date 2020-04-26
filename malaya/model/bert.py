@@ -21,6 +21,14 @@ import numpy as np
 from herpetologist import check_type
 from typing import List, Tuple
 
+render_dict = {
+    'sentiment': _render_binary,
+    'relevancy': _render_relevancy,
+    'emotion': _render_emotion,
+    'toxic': _render_toxic,
+    'subjective': _render_binary,
+}
+
 
 class BASE:
     def __init__(
@@ -186,12 +194,6 @@ class BERT(BASE):
         dict_result['barplot'] = {'x': label, 'y': y_barplot}
         dict_result['class_name'] = self._class_name
 
-        render_dict = {
-            'sentiment': _render_binary,
-            'relevancy': _render_relevancy,
-            'emotion': _render_emotion,
-            'toxic': _render_toxic,
-        }
         if visualization:
             render_dict[self._class_name](dict_result)
         else:
@@ -464,7 +466,7 @@ class SIGMOID_BERT(BASE):
         result: List[dict[str, float]]
         """
 
-        probs = self._predict(strings)
+        probs = self._classify(strings)
         results = []
         for prob in probs:
             dict_result = {}
@@ -504,10 +506,12 @@ class SIGMOID_BERT(BASE):
                 "method not supported, only support 'last', 'first' and 'mean'"
             )
 
-        batch_x, _, _, s_tokens = bert_tokenization(self._tokenizer, [string])
+        batch_x, input_masks, _, s_tokens = bert_tokenization(
+            self._tokenizer, [string]
+        )
         result, attentions, words = self._sess.run(
             [self._sigmoid, self._attns, self._sigmoid_seq],
-            feed_dict = {self._X: batch_x},
+            feed_dict = {self._X: batch_x, self._input_masks: input_masks},
         )
         if method == 'first':
             cls_attn = list(attentions[0].values())[0][:, :, 0, :]

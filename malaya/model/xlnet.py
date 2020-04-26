@@ -20,6 +20,14 @@ import numpy as np
 from herpetologist import check_type
 from typing import List, Tuple
 
+render_dict = {
+    'sentiment': _render_binary,
+    'relevancy': _render_relevancy,
+    'emotion': _render_emotion,
+    'toxic': _render_toxic,
+    'subjective': _render_binary,
+}
+
 
 class BASE:
     def __init__(
@@ -194,12 +202,6 @@ class XLNET(BASE):
         dict_result['barplot'] = {'x': label, 'y': y_barplot}
         dict_result['class_name'] = self._class_name
 
-        render_dict = {
-            'sentiment': _render_binary,
-            'relevancy': _render_relevancy,
-            'emotion': _render_emotion,
-            'toxic': _render_toxic,
-        }
         if visualization:
             render_dict[self._class_name](dict_result)
         else:
@@ -421,7 +423,7 @@ class SIGMOID_XLNET(BASE):
         self._sigmoid = tf.nn.sigmoid(self._logits)
         self._sigmoid_seq = tf.nn.sigmoid(self._logits_seq)
 
-    def _predict(self, strings):
+    def _classify(self, strings):
 
         input_ids, input_masks, segment_ids, _ = xlnet_tokenization(
             self._tokenizer, strings
@@ -438,63 +440,53 @@ class SIGMOID_XLNET(BASE):
         return result
 
     @check_type
-    def predict(self, string: str, get_proba: bool = False):
+    def predict(self, strings: List[str]):
         """
         classify a string.
 
         Parameters
         ----------
-        string : str
-        get_proba: bool, optional (default=False)
-            If True, it will return probability of classes.
-        add_neutral: bool, optional (default=True)
-            if True, it will add neutral probability.
+        strings: List[str]
 
         Returns
         -------
-        dictionary: results
+        result: List[List[str]]
         """
 
-        result = self._predict([string])
-        result = result[0]
-        if get_proba:
-            return {self._label[i]: result[i] for i in range(len(result))}
-        else:
-            probs = np.around(result)
-            return [label for no, label in enumerate(self._label) if probs[no]]
+        probs = self._classify(strings)
+        results = []
+        probs = np.around(probs)
+        for prob in probs:
+            list_result = []
+            for no, label in enumerate(self._label):
+                if prob[no]:
+                    list_result.append(label)
+            results.append(list_result)
+
+        return results
 
     @check_type
-    def predict_batch(self, strings: List[str], get_proba: bool = False):
+    def predict_proba(self, strings: List[str]):
         """
         classify list of strings.
 
         Parameters
         ----------
-        strings : list
-        get_proba: bool, optional (default=False)
-            If True, it will return probability of classes.
+        strings : List[str]
 
         Returns
         -------
-        list_dictionaries: list of results
+        result: List[dict[str, float]]
         """
 
-        probs = self._predict(strings)
+        probs = self._classify(strings)
         results = []
-        if get_proba:
-            for prob in probs:
-                dict_result = {}
-                for no, label in enumerate(self._label):
-                    dict_result[label] = prob[no]
-                results.append(dict_result)
-        else:
-            probs = np.around(probs)
-            for prob in probs:
-                list_result = []
-                for no, label in enumerate(self._label):
-                    if prob[no]:
-                        list_result.append(label)
-                results.append(list_result)
+        for prob in probs:
+            dict_result = {}
+            for no, label in enumerate(self._label):
+                dict_result[label] = prob[no]
+            results.append(dict_result)
+
         return results
 
     @check_type

@@ -4,7 +4,7 @@ import numpy as np
 import json
 import re
 from malaya.text.jarowinkler import JaroWinkler
-from malaya.text.function import ENGLISH_WORDS, MALAY_WORDS
+from malaya.text.function import case_of, ENGLISH_WORDS, MALAY_WORDS
 from malaya.text.tatabahasa import (
     alphabet,
     consonants,
@@ -297,21 +297,6 @@ class _Spell_augmentation:
             ttt = {word}
         return ttt
 
-    def case_of(self, text):
-        """
-        Return the case-function appropriate for text: upper, lower, title, or just str.
-        """
-
-        return (
-            str.upper
-            if text.isupper()
-            else str.lower
-            if text.islower()
-            else str.title
-            if text.istitle()
-            else str
-        )
-
 
 class _TransformerCorrector(_Spell_augmentation):
     def __init__(self, model, corpus, sp_tokenizer):
@@ -408,7 +393,7 @@ class _TransformerCorrector(_Spell_augmentation):
         strings = []
         for no, word in enumerate(string.split()):
             if not word[0].isupper():
-                word = self.case_of(word)(
+                word = case_of(word)(
                     self.correct(
                         word.lower(), string, no, batch_size = batch_size
                     )
@@ -531,7 +516,7 @@ class _SpellCorrector(_Spell_augmentation):
         word = match.group()
         if word[0].isupper():
             return word
-        return self.case_of(word)(self.correct(word.lower()))
+        return case_of(word)(self.correct(word.lower()))
 
     @check_type
     def correct_word(self, word: str):
@@ -539,7 +524,7 @@ class _SpellCorrector(_Spell_augmentation):
         Spell-correct word in match, and preserve proper upper/lower/title case.
         """
 
-        return self.case_of(word)(self.correct(word.lower()))
+        return case_of(word)(self.correct(word.lower()))
 
     def elong_normalized_candidates(self, word, acc = None):
         if acc is None:
@@ -559,7 +544,7 @@ class _SpellCorrector(_Spell_augmentation):
         return best or word
 
     def normalize_elongated(self, word):
-        return self.case_of(word)(self.best_elong_candidate(word.lower()))
+        return case_of(word)(self.best_elong_candidate(word.lower()))
 
 
 class _SymspellCorrector:
@@ -726,7 +711,7 @@ class _SymspellCorrector:
         word = match.group()
         if word[0].isupper():
             return word
-        return self.case_of(word)(self.correct(word.lower()))
+        return case_of(word)(self.correct(word.lower()))
 
     def case_of(self, text):
         """

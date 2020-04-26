@@ -1,29 +1,18 @@
 import re
 import json
+import os
 from unidecode import unidecode
 from malaya.text.tatabahasa import permulaan, hujung
 from malaya.text.rules import rules_normalizer
-from malaya.function import (
-    load_graph,
-    check_file,
-    check_available,
-    generate_session,
-)
-from malaya.text.function import (
-    pad_sentence_batch,
-    stemmer_str_idx,
-    classification_textcleaning,
-)
+from malaya.function import load_graph, check_file, generate_session
+from malaya.text.function import pad_sentence_batch, case_of
+from malaya.text.bpe import load_yttm
+from malaya.text.regex import _expressions
 from malaya.path import PATH_STEM, S3_PATH_STEM
-from malaya import home
 from herpetologist import check_type
 
 factory = None
 sastrawi_stemmer = None
-PAD = 0
-GO = 1
-EOS = 2
-UNK = 3
 
 
 def _load_sastrawi():
@@ -50,46 +39,71 @@ def _classification_textcleaning_stemmer(string):
     return ' '.join([word[0] for word in string if len(word[0]) > 1])
 
 
-class _DEEP_STEMMER:
-    def __init__(self, x, logits, sess, dicts):
+class DEEP_STEMMER:
+    def __init__(self, X, greedy, beam, sess, bpe, subword_mode, tokenizer):
+
+        self._X = X
+        self._greedy = greedy
+        self._beam = beam
         self._sess = sess
-        self._x = x
-        self._logits = logits
-        self._dicts = dicts
-        self._dicts['rev_dictionary_to'] = {
-            int(k): v for k, v in self._dicts['rev_dictionary_to'].items()
-        }
+        self._bpe = bpe
+        self._subword_mode = subword_mode
+        self._tokenizer = tokenizer
 
     @check_type
-    def stem(self, string: str):
+    def stem(self, string: str, beam_search: bool = True):
         """
         Stem a string.
 
         Parameters
         ----------
         string : str
+        beam_search : bool, (optional=True)
+            If True, use beam search decoder, else use greedy decoder.
 
         Returns
         -------
-        string: stemmed string
+        result: str
         """
-        token_strings = classification_textcleaning(string, True).split()
-        idx = stemmer_str_idx(token_strings, self._dicts['dictionary_from'])
-        predicted = self._sess.run(
-            self._logits, feed_dict = {self._x: pad_sentence_batch(idx, PAD)[0]}
-        )
-        results = []
-        for word in predicted:
-            results.append(
-                ''.join(
-                    [
-                        self._dicts['rev_dictionary_to'][c]
-                        for c in word
-                        if c not in [GO, PAD, EOS, UNK]
-                    ]
-                )
-            )
-        return ' '.join(results)
+        tokenized = self._tokenizer(string)
+        result, batch, actual, mapping = [], [], [], {}
+        for no, word in enumerate(tokenized):
+            if word in '~@#$%^&*()_+{}|[:"\'];<>,.?/-':
+                result.append(word)
+            elif (
+                re.findall(_money, word.lower())
+                or re.findall(_date, word.lower())
+                or re.findall(_expressions['time'], word.lower())
+                or re.findall(_expressions['hashtag'], word.lower())
+                or re.findall(_expressions['url'], word.lower())
+                or re.findall(_expressions['user'], word.lower())
+            ):
+                result.append(word)
+            else:
+                mapping[len(batch)] = no
+                result.append('REPLACE-ME')
+                actual.append(word)
+                batch.append(word)
+
+        batch = self._bpe.encode(batch, output_type = self._subword_mode)
+        batch = [i + [1] for i in batch]
+        batch = pad_sentence_batch(idx, 0)[0]
+
+        if beam_search:
+            output = self._beam
+        else:
+            output = self._greedy
+
+        output = self._sess.run(output, feed_dict = {self._model.X: batch})
+        output = output.tolist()
+
+        for no, o in enumerate(output):
+            predicted = list(dict.fromkeys(o))
+            predicted = bpe.decode(predicted)
+            predicted = case_of(actual[no])(predicted)
+            result[mapping[no]] = predicted
+
+        return ' '.join(result)
 
 
 @check_type
@@ -118,13 +132,6 @@ def naive(word: str):
     return word
 
 
-def available_deep_model():
-    """
-    List available deep learning stemming models.
-    """
-    return ['lstm', 'bahdanau', 'luong']
-
-
 @check_type
 def sastrawi(string: str):
     """
@@ -144,27 +151,29 @@ def sastrawi(string: str):
 
 
 @check_type
-def deep_model(model: str = 'bahdanau', **kwargs):
+def deep_model(**kwargs):
     """
-    Load seq2seq stemmer deep learning model.
+    Load LSTM + Bahdanau Attention stemming model.
 
     Returns
     -------
-    DEEP_STEMMER: malaya.stemmer._DEEP_STEMMER class
+    DEEP_STEMMER: malaya.stem._DEEP_STEMMER class
     """
-    check_file(PATH_STEM[model], S3_PATH_STEM[model], **kwargs)
+    from malaya.preprocessing import _tokenizer
 
-    try:
-        with open(PATH_STEM[model]['setting'], 'r') as fopen:
-            dic_stemmer = json.load(fopen)
-        g = load_graph(PATH_STEM[model]['model'])
-    except:
-        raise Exception(
-            f"model corrupted due to some reasons, please run malaya.clear_cache('stem/{model}') and try again"
-        )
+    check_file(
+        PATH_STEM['lstm-bahdanau'], S3_PATH_STEM['lstm-bahdanau'], **kwargs
+    )
+    g = load_graph(PATH_STEM['lstm-bahdanau']['model'])
+
+    bpe, subword_mode = load_yttm(path['transformer']['bpe'])
+
     return _DEEP_STEMMER(
         g.get_tensor_by_name('import/Placeholder:0'),
-        g.get_tensor_by_name('import/logits:0'),
+        g.get_tensor_by_name('import/greedy:0'),
+        g.get_tensor_by_name('import/beam:0'),
         generate_session(graph = g),
-        dic_stemmer,
+        bpe,
+        subword_mode,
+        _tokenizer,
     )

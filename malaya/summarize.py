@@ -59,7 +59,7 @@ class _DEEP_SKIPTHOUGHT:
         splitted_fullstop = [summary_textcleaning(i) for i in strings]
         original_strings = [i[0] for i in splitted_fullstop]
         cleaned_strings = [i[1] for i in splitted_fullstop]
-        sequences = _skip_thought.batch_sequence(
+        sequences = skip_thought.batch_sequence(
             cleaned_strings, self.dictionary, maxlen = self._maxlen
         )
         return self._sess.run(
@@ -109,7 +109,7 @@ class _DEEP_SUMMARIZER:
 
         if '_DEEP_SKIPTHOUGHT' in str(self._vectorizer):
 
-            sequences = _skip_thought.batch_sequence(
+            sequences = skip_thought.batch_sequence(
                 cleaned_strings,
                 self._vectorizer.dictionary,
                 maxlen = self._vectorizer._maxlen,
@@ -184,9 +184,9 @@ def deep_skipthought(model: str = 'lstm'):
     """
     model = model.lower()
     if model == 'lstm':
-        model = _skip_thought.news_load_model
+        model = skip_thought.news_load_model
     elif model == 'residual-network':
-        model = _skip_thought.wiki_load_model
+        model = skip_thought.wiki_load_model
     else:
         raise Exception(
             'model is not supported, please check supported models from malaya.summarize.available_skipthought()'
@@ -202,11 +202,11 @@ def encoder(vectorizer):
     Parameters
     ----------
     vectorizer : object
-        encoder interface object, BERT, skip-thought, XLNET.
+        encoder interface object, eg, BERT, skip-thought, XLNET, ALBERT, ALXLNET.
 
     Returns
     -------
-    _DOC2VEC_SIMILARITY: malaya.similarity._DOC2VEC_SIMILARITY
+    result: malaya.summarize._DEEP_SUMMARIZER
     """
 
     if not hasattr(vectorizer, 'vectorize'):

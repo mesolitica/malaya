@@ -216,12 +216,11 @@ class MULTILABEL_BAYES(BAYES):
         """
 
         result = self._classify(strings = strings)
-        arounded = np.around(result)
 
         results = []
         for i, row in enumerate(result):
             nested_results = {}
-            for no, label in enumerate(self._class_names):
+            for no, label in enumerate(self._label):
                 nested_results[label] = row[no]
             results.append(nested_results)
         return results

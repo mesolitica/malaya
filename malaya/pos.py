@@ -4,6 +4,24 @@ from malaya.supervised import tag
 from malaya.path import PATH_POS, S3_PATH_POS
 from herpetologist import check_type
 
+label = [
+    'ADJ',
+    'ADP',
+    'ADV',
+    'ADX',
+    'CCONJ',
+    'DET',
+    'NOUN',
+    'NUM',
+    'PART',
+    'PRON',
+    'PROPN',
+    'SCONJ',
+    'SYM',
+    'VERB',
+    'X',
+]
+
 _availability = {
     'bert': ['426.4 MB', 'accuracy: 0.952'],
     'tiny-bert': ['57.7 MB', 'accuracy: 0.953'],
@@ -12,6 +30,27 @@ _availability = {
     'xlnet': ['446.6 MB', 'accuracy: 0.954'],
     'alxlnet': ['46.8 MB', 'accuracy: 0.951'],
 }
+
+
+def describe():
+    """
+    Describe Part-Of-Speech supported.
+    """
+    print('ADJ - Adjective, kata sifat')
+    print('ADP - Adposition')
+    print('ADV - Adverb, kata keterangan')
+    print('ADX - Auxiliary verb, kata kerja tambahan')
+    print('CCONJ - Coordinating conjuction, kata hubung')
+    print('DET - Determiner, kata penentu')
+    print('NOUN - Noun, kata nama')
+    print('NUM - Number, nombor')
+    print('PART - Particle')
+    print('PRON - Pronoun, kata ganti')
+    print('PROPN - Proper noun, kata ganti nama khas')
+    print('SCONJ - Subordinating conjunction')
+    print('SYM - Symbol')
+    print('VERB - Verb, kata kerja')
+    print('X - Other')
 
 
 def available_transformer_model():

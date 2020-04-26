@@ -87,7 +87,7 @@ def to_ids(string, tokenizer):
 
 @check_type
 def ngrams(
-    sequence: List[str],
+    sequence,
     n: int,
     pad_left = False,
     pad_right = False,

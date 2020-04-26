@@ -399,6 +399,18 @@ def multireplace(string, replacements):
     return regexp.sub(lambda match: replacements[match.group(0)], string)
 
 
+def case_of(text):
+    return (
+        str.upper
+        if text.isupper()
+        else str.lower
+        if text.islower()
+        else str.title
+        if text.istitle()
+        else str
+    )
+
+
 alphabets = '([A-Za-z])'
 prefixes = (
     '(Mr|St|Mrs|Ms|Dr|Prof|Capt|Cpt|Lt|Mt|Puan|puan|Tuan|tuan|sir|Sir)[.]'

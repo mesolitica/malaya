@@ -12,24 +12,47 @@ from malaya.path import PATH_TOXIC, S3_PATH_TOXIC
 from malaya.model.ml import MULTILABEL_BAYES
 from malaya.model.bert import SIGMOID_BERT
 from malaya.model.xlnet import SIGMOID_XLNET
-
 from malaya.transformers.bert import bert_num_layers
 from herpetologist import check_type
 
-_label_toxic = [
-    'toxic',
-    'severe_toxic',
+label = [
+    'severe toxic',
     'obscene',
-    'threat',
+    'identity attack',
     'insult',
-    'identity_hate',
+    'threat',
+    'asian',
+    'atheist',
+    'bisexual',
+    'buddhist',
+    'christian',
+    'female',
+    'heterosexual',
+    'indian',
+    'homosexual, gay or lesbian',
+    'intellectual or learning disability',
+    'male',
+    'muslim',
+    'other disability',
+    'other gender',
+    'other race or ethnicity',
+    'other religion',
+    'other sexual orientation',
+    'physical disability',
+    'psychiatric or mental illness',
+    'transgender',
+    'malay',
+    'chinese',
 ]
 
 
 _availability = {
-    'bert': ['base', 'small'],
-    'xlnet': ['base'],
-    'albert': ['base'],
+    'bert': ['425.7 MB', 'accuracy: 0.814'],
+    'tiny-bert': ['57.4 MB', 'accuracy: 0.815'],
+    'albert': ['48.7 MB', 'accuracy: 0.812'],
+    'tiny-albert': ['22.4 MB', 'accuracy: 0.808'],
+    'xlnet': ['446.5 MB', 'accuracy: 0.807'],
+    'alxlnet': ['46.8 MB', 'accuracy: 0.817'],
 }
 
 
@@ -44,14 +67,9 @@ def multinomial(**kwargs):
     """
     Load multinomial toxicity model.
 
-    Parameters
-    ----------
-    validate: bool, optional (default=True)
-        if True, malaya will check model availability and download if not available.
-
     Returns
     -------
-    BAYES : malaya._models._sklearn_model.MULTILABEL_BAYES class
+    BAYES : malaya.model.ml.MULTILABEL_BAYES class
     """
     import pickle
 
@@ -66,13 +84,20 @@ def multinomial(**kwargs):
             vectorize = pickle.load(fopen)
     except:
         raise Exception(
-            "model corrupted due to some reasons, please run malaya.clear_cache('toxic/multinomial') and try again"
+            f"model corrupted due to some reasons, please run malaya.clear_cache('toxic/multinomial') and try again"
         )
-    from .stem import _classification_textcleaning_stemmer
+
+    from malaya.text.bpe import load_yttm
+    from malaya.stem import _classification_textcleaning_stemmer
+
+    bpe, subword_mode = load_yttm(PATH_TOXIC['multinomial']['bpe'])
 
     return MULTILABEL_BAYES(
-        models = multinomial,
-        vectors = vectorize,
+        multinomial = multinomial,
+        label = label,
+        vectorize = vectorize,
+        bpe = bpe,
+        subword_mode = subword_mode,
         cleaning = _classification_textcleaning_stemmer,
     )
 
@@ -80,7 +105,7 @@ def multinomial(**kwargs):
 @check_type
 def transformer(model: str = 'xlnet', **kwargs):
     """
-    Load Transformer emotion model.
+    Load Transformer toxicity model.
 
     Parameters
     ----------
@@ -88,17 +113,15 @@ def transformer(model: str = 'xlnet', **kwargs):
         Model architecture supported. Allowed values:
 
         * ``'bert'`` - BERT architecture from google.
-        * ``'xlnet'`` - XLNET architecture from google.
+        * ``'tiny-bert'`` - BERT architecture from google with smaller parameters.
         * ``'albert'`` - ALBERT architecture from google.
-    size : str, optional (default='base')
-        Model size supported. Allowed values:
-
-        * ``'base'`` - BASE size.
-        * ``'small'`` - SMALL size.
+        * ``'tiny-albert'`` - ALBERT architecture from google with smaller parameters.
+        * ``'xlnet'`` - XLNET architecture from google.
+        * ``'alxlnet'`` - XLNET architecture from google + Malaya.
 
     Returns
     -------
-    BERT : malaya._models._bert_model.BINARY_BERT class
+    result : malaya.model.bert.SIGMOID_BERT class
     """
 
     model = model.lower()
@@ -106,45 +129,61 @@ def transformer(model: str = 'xlnet', **kwargs):
         raise Exception(
             'model not supported, please check supported models from malaya.sentiment.available_transformer_model()'
         )
-    if size not in _availability[model]:
-        raise Exception(
-            'size not supported, please check supported models from malaya.sentiment.available_transformer_model()'
-        )
 
-    check_file(PATH_TOXIC[model][size], S3_PATH_TOXIC[model][size], **kwargs)
-    g = load_graph(PATH_TOXIC[model][size]['model'])
+    check_file(PATH_TOXIC[model], S3_PATH_TOXIC[model], **kwargs)
+    g = load_graph(PATH_TOXIC[model]['model'])
 
-    if model in ['albert', 'bert']:
-        if model == 'bert':
-            from ._transformer._bert import _extract_attention_weights_import
-        if model == 'albert':
-            from ._transformer._albert import _extract_attention_weights_import
+    path = PATH_TOXIC
 
-        tokenizer, cls, sep = sentencepiece_tokenizer_bert(
-            PATH_TOXIC[model][size]['tokenizer'],
-            PATH_TOXIC[model][size]['vocab'],
-        )
+    if model in ['albert', 'bert', 'tiny-albert', 'tiny-bert']:
+        if model in ['bert', 'tiny-bert']:
+            from malaya.transformers.bert import (
+                _extract_attention_weights_import,
+            )
+            from malaya.transformers.bert import bert_num_layers
+
+            tokenizer = sentencepiece_tokenizer_bert(
+                path[model]['tokenizer'], path[model]['vocab']
+            )
+        if model in ['albert', 'tiny-albert']:
+            from malaya.transformers.albert import (
+                _extract_attention_weights_import,
+            )
+            from malaya.transformers.albert import bert_num_layers
+            from albert import tokenization
+
+            tokenizer = tokenization.FullTokenizer(
+                vocab_file = path[model]['vocab'],
+                do_lower_case = False,
+                spm_model_file = path[model]['tokenizer'],
+            )
 
         return SIGMOID_BERT(
             X = g.get_tensor_by_name('import/Placeholder:0'),
             segment_ids = None,
-            input_masks = None,
+            input_masks = g.get_tensor_by_name('import/Placeholder_1:0'),
             logits = g.get_tensor_by_name('import/logits:0'),
             logits_seq = g.get_tensor_by_name('import/logits_seq:0'),
             sess = generate_session(graph = g),
             tokenizer = tokenizer,
-            label = _label_toxic,
-            cls = cls,
-            sep = sep,
-            attns = _extract_attention_weights_import(bert_num_layers[size], g),
+            label = label,
+            attns = _extract_attention_weights_import(
+                bert_num_layers[model], g
+            ),
             class_name = 'toxic',
         )
-    if model in ['xlnet']:
-        from ._transformer._xlnet import _extract_attention_weights_import
 
-        tokenizer = sentencepiece_tokenizer_xlnet(
-            PATH_TOXIC[model][size]['tokenizer']
-        )
+    if model in ['xlnet', 'alxlnet']:
+        if model in ['xlnet']:
+            from malaya.transformers.xlnet import (
+                _extract_attention_weights_import,
+            )
+        if model in ['alxlnet']:
+            from malaya.transformers.alxlnet import (
+                _extract_attention_weights_import,
+            )
+
+        tokenizer = sentencepiece_tokenizer_xlnet(path[model]['tokenizer'])
 
         return SIGMOID_XLNET(
             X = g.get_tensor_by_name('import/Placeholder:0'),
@@ -154,7 +193,7 @@ def transformer(model: str = 'xlnet', **kwargs):
             logits_seq = g.get_tensor_by_name('import/logits_seq:0'),
             sess = generate_session(graph = g),
             tokenizer = tokenizer,
-            label = _label_toxic,
+            label = label,
             attns = _extract_attention_weights_import(g),
             class_name = 'toxic',
         )

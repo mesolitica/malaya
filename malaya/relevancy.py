@@ -2,6 +2,8 @@ from malaya.supervised import softmax
 from malaya.path import PATH_RELEVANCY, S3_PATH_RELEVANCY
 from herpetologist import check_type
 
+label = ['not relevant', 'relevant']
+
 _availability = {
     'bert': ['425.6 MB', 'accuracy: 0.872'],
     'tiny-bert': ['57.4 MB', 'accuracy: 0.656'],
@@ -50,7 +52,7 @@ def transformer(model: str = 'xlnet', **kwargs):
         PATH_RELEVANCY,
         S3_PATH_RELEVANCY,
         'relevancy',
-        ['negative', 'positive'],
+        label,
         model = model,
         **kwargs
     )

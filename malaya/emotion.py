@@ -2,7 +2,7 @@ from malaya.supervised import softmax
 from malaya.path import PATH_EMOTION, S3_PATH_EMOTION
 from herpetologist import check_type
 
-_emotion_label = ['anger', 'fear', 'happy', 'love', 'sadness', 'surprise']
+label = ['anger', 'fear', 'happy', 'love', 'sadness', 'surprise']
 _availability = {
     'bert': ['425.6 MB', 'accuracy: 0.992'],
     'tiny-bert': ['57.4 MB', 'accuracy: 0.988'],
@@ -29,7 +29,7 @@ def multinomial(**kwargs):
     BAYES : malaya.model.ml.BAYES class
     """
     return softmax.multinomial(
-        PATH_EMOTION, S3_PATH_EMOTION, 'emotion', _emotion_label, **kwargs
+        PATH_EMOTION, S3_PATH_EMOTION, 'emotion', label, **kwargs
     )
 
 
@@ -61,10 +61,5 @@ def transformer(model: str = 'xlnet', **kwargs):
             'model not supported, please check supported models from malaya.emotion.available_transformer_model()'
         )
     return softmax.transformer(
-        PATH_EMOTION,
-        S3_PATH_EMOTION,
-        'emotion',
-        _emotion_label,
-        model = model,
-        **kwargs
+        PATH_EMOTION, S3_PATH_EMOTION, 'emotion', label, model = model, **kwargs
     )
