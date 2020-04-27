@@ -7,8 +7,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 4.1 s, sys: 752 ms, total: 4.85 s
-    Wall time: 3.97 s
+    CPU times: user 4.47 s, sys: 1.01 s, total: 5.48 s
+    Wall time: 5.37 s
 
 
 Why lexicon
@@ -30,7 +30,7 @@ Malaya provided a small sample for sentiment lexicon, simply,
 
 .. code:: python
 
-    sentiment_lexicon = malaya.lexicon.sentiment_lexicon
+    sentiment_lexicon = malaya.lexicon.sentiment
     sentiment_lexicon.keys()
 
 
@@ -49,7 +49,7 @@ Malaya provided a small sample for emotion lexicon, simply,
 
 .. code:: python
 
-    emotion_lexicon = malaya.lexicon.emotion_lexicon
+    emotion_lexicon = malaya.lexicon.emotion
     emotion_lexicon.keys()
 
 
@@ -88,22 +88,13 @@ And, at least small lexicon sample like this,
 
    {'label1': ['word1', 'word2'], 'label2': ['word3', 'word4']}
 
-``label`` can be more than 2, example like
-``malaya.lexicon.sentiment_lexicon``, up to 6 different labels.
+``label`` can be more than 2, example like ``malaya.lexicon.emotion``,
+up to 6 different labels.
 
 .. code:: python
 
     vocab, embedded = malaya.wordvector.load_social_media()
     wordvector = malaya.wordvector.load(embedded, vocab)
-
-
-.. parsed-literal::
-
-    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/wordvector.py:94: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
-    
-    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/wordvector.py:105: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
-    
-
 
 random walk
 -----------

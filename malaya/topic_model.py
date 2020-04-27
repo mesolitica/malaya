@@ -475,14 +475,14 @@ def lda(
     cleaning: function, (default=simple_textcleaning)
         function to clean the corpus.
     stop_words: list, (default=None)
-        list of stop words to remove. If None, default is malaya.texts._text_functions.STOPWORDS
+        list of stop words to remove. If None, default is malaya.text.function.STOPWORDS
 
     Returns
     -------
     _TOPIC: malaya.topic_modelling._TOPIC class
     """
     if stop_words is None:
-        stop_words = STOPWORDS
+        stop_words = list(STOPWORDS)
     return _base_topic_modelling(
         corpus,
         n_topics,
@@ -535,14 +535,14 @@ def nmf(
     cleaning: function, (default=simple_textcleaning)
         function to clean the corpus.
     stop_words: list, (default=None)
-        list of stop words to remove. If None, default is malaya.texts._text_functions.STOPWORDS
+        list of stop words to remove. If None, default is malaya.text.function.STOPWORDS
 
     Returns
     -------
     _TOPIC: malaya.topic_modelling._TOPIC class
     """
     if stop_words is None:
-        stop_words = STOPWORDS
+        stop_words = list(STOPWORDS)
     return _base_topic_modelling(
         corpus,
         n_topics,
@@ -595,14 +595,14 @@ def lsa(
     cleaning: function, (default=simple_textcleaning)
         function to clean the corpus.
     stop_words: list, (default=None)
-        list of stop words to remove. If None, default is malaya.texts._text_functions.STOPWORDS
+        list of stop words to remove. If None, default is malaya.text.function.STOPWORDS
 
     Returns
     -------
     _TOPIC: malaya.topic_modelling._TOPIC class
     """
     if stop_words is None:
-        stop_words = STOPWORDS
+        stop_words = list(STOPWORDS)
     return _base_topic_modelling(
         corpus,
         n_topics,

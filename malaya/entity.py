@@ -33,7 +33,9 @@ def describe():
     print('law - law, regulation, related law documents, documents, etc')
     print('location - location, place')
     print('organization - organization, company, government, facilities, etc')
-    print('person - person, group of people, believes, etc')
+    print(
+        'person - person, group of people, believes, unique arts (eg; food, drink), etc'
+    )
     print('quantity - numbers, quantity')
     print('time - date, day, time, etc')
     print('event - unique event happened, etc')

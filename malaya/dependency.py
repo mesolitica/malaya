@@ -128,6 +128,12 @@ _availability = {
         'types accuracy: 0.925',
         'root accuracy: 0.947',
     ],
+    'alxlnet': [
+        '50.0 MB',
+        'arc accuracy: 0.894',
+        'types accuracy: 0.886',
+        'root accuracy: 0.942',
+    ],
 }
 
 

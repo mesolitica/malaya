@@ -5,26 +5,31 @@ option = {
             interval: 0,
             rotate: 30
         },
-        data: ['bert-base (467MB)',
-        'xlnet-base (231MB)', 'albert-base (43MB)']
+        data: ['bert-base (426MB)',
+            'tiny-bert (59.5MB)',
+            'albert-base (50MB)',
+            'albert-tiny (24.8MB)',
+            'xlnet-base (450.2MB)',
+            'alxlnet-base (50.0MB)']
     },
     yAxis: {
         type: 'value',
-        min:0.98,
-        max:1.0
+        min: 0.96,
+        max: 1.0
     },
-    grid:{
-      bottom: 100
+    grid: {
+        bottom: 100
     },
-    backgroundColor:'rgb(252,252,252)',
+    backgroundColor: 'rgb(252,252,252)',
     series: [{
-        data: [0.99491, 0.99636, 0.99023],
+        data: [0.99562, 0.98102, 0.98785, 0.96997,
+            0.99678, 0.99475],
         type: 'bar',
         label: {
-                normal: {
-                    show: true,
-                    position: 'top'
-                }
-            },
+            normal: {
+                show: true,
+                position: 'top'
+            }
+        },
     }]
 };

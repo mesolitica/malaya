@@ -5,26 +5,32 @@ option = {
             interval: 0,
             rotate: 30
         },
-        data: ['multinomial', 'bert-base (467MB)',
-        'bert-small (185MB)', 'xlnet-base (231MB)', 'albert-base (43MB)']
+        data: ['multinomial (8MB)',
+            'bert-base (425.6MB)',
+            'tiny-bert (57.4MB)',
+            'albert-base (48.6MB)',
+            'albert-tiny (22.4MB)',
+            'xlnet-base (446.MB)',
+            'alxlnet-base (46.8MB)']
     },
     yAxis: {
         type: 'value',
-        min:0.80,
-        max:0.85
+        min: 0.89,
+        max: 1.0
     },
-    grid:{
-      bottom: 100
+    grid: {
+        bottom: 100
     },
-    backgroundColor:'rgb(252,252,252)',
+    backgroundColor: 'rgb(252,252,252)',
     series: [{
-        data: [0.80541, 0.84132, 0.84123, 0.83838, 0.81992],
+        data: [0.89167, 0.99329, 0.98774,
+            0.99226, 0.98551, 0.99353, 0.99188],
         type: 'bar',
         label: {
-                normal: {
-                    show: true,
-                    position: 'top'
-                }
-            },
+            normal: {
+                show: true,
+                position: 'top'
+            }
+        },
     }]
 };

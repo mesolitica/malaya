@@ -644,36 +644,15 @@ S3_PATH_SIMILARITY = {
 }
 
 PATH_STEM = {
-    'lstm': {
-        'model': home + '/stem/lstm/lstm-stem.pb',
-        'setting': home + '/stem/lstm/lstm-stem.json',
-        'version': 'v15',
-    },
-    'bahdanau': {
-        'model': home + '/stem/bahdanau/bahdanau-stem.pb',
-        'setting': home + '/stem/bahdanau/bahdanau-stem.json',
-        'version': 'v15',
-    },
-    'luong': {
-        'model': home + '/stem/luong/luong-stem.pb',
-        'setting': home + '/stem/luong/luong-stem.json',
-        'version': 'v15',
-    },
+    'deep': {
+        'model': home + '/stem/lstm/model.pb',
+        'bpe': home + '/stem/lstm/bpe.model',
+        'version': 'v34',
+    }
 }
 
 S3_PATH_STEM = {
-    'lstm': {
-        'model': 'v15/stem/lstm-stem.pb',
-        'setting': 'v15/stem/lstm-stem.json',
-    },
-    'bahdanau': {
-        'model': 'v15/stem/bahdanau-stem.pb',
-        'setting': 'v15/stem/bahdanau-stem.json',
-    },
-    'luong': {
-        'model': 'v15/stem/luong-stem.pb',
-        'setting': 'v15/stem/luong-stem.json',
-    },
+    'deep': {'model': 'v34/stem/model.pb', 'bpe': 'v34/stem/bpe.model'}
 }
 
 PATH_SUBJECTIVE = {

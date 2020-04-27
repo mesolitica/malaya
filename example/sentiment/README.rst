@@ -1,4 +1,3 @@
-
 .. code:: ipython3
 
     %%time
@@ -7,50 +6,58 @@
 
 .. parsed-literal::
 
-    CPU times: user 6.33 s, sys: 1.54 s, total: 7.88 s
-    Wall time: 12.4 s
+    CPU times: user 4.83 s, sys: 1.16 s, total: 5.99 s
+    Wall time: 6.98 s
 
 
 .. code:: ipython3
 
-    positive_text = 'Kerajaan negeri Kelantan mempersoalkan motif kenyataan Menteri Kewangan Lim Guan Eng yang hanya menyebut Kelantan penerima terbesar bantuan kewangan dari Kerajaan Persekutuan sebanyak RM50 juta. Sedangkan menurut Timbalan Menteri Besarnya, Datuk Mohd Amar Nik Abdullah, negeri lain yang lebih maju dari Kelantan turut mendapat pembiayaan dan pinjaman.'
-    negative_text = 'kerajaan sebenarnya sangat bencikan rakyatnya, minyak naik dan segalanya'
-
-All models have ``get_proba`` parameters. If True, it will returned
-probability every classes. Else, it will return highest probability
-class. **Default is False.**
-
-All models have ``add_neutral`` parameters. If True, it will add
-``neutral`` probability, Else, default probabilities. **Default is
-True.**
+    string1 = 'Sis, students from overseas were brought back because they are not in their countries which is if something happens to them, its not the other countries’ responsibility. Student dalam malaysia ni dah dlm tggjawab kerajaan. Mana part yg tak faham?'
+    string2 = 'Harap kerajaan tak bukak serentak. Slowly release week by week. Focus on economy related industries dulu'
 
 Load multinomial model
 ----------------------
 
+All model interface will follow sklearn interface started v3.4,
+
+.. code:: python
+
+   model.predict(List[str])
+
+   model.predict_proba(List[str])
+
 .. code:: ipython3
 
     model = malaya.sentiment.multinomial()
-    print(model.predict(positive_text,get_proba=True))
-    print(model.predict(negative_text,get_proba=True))
-    model.predict_batch([negative_text,negative_text],get_proba=True)
 
+.. code:: ipython3
 
-.. parsed-literal::
-
-    {'negative': 0.1708339408275661, 'positive': 0.008291660591724323, 'neutral': 0.8208743985807097}
-    {'negative': 0.5124503873063959, 'positive': 0.00487549612693598, 'neutral': 0.48267411656666814}
+    model.predict([string1, string2])
 
 
 
 
 .. parsed-literal::
 
-    [{'negative': 0.5124503873063959,
-      'positive': 0.00487549612693598,
-      'neutral': 0.48267411656666814},
-     {'negative': 0.5124503873063959,
-      'positive': 0.00487549612693598,
-      'neutral': 0.48267411656666814}]
+    ['positive', 'negative']
+
+
+
+.. code:: ipython3
+
+    model.predict_proba([string1, string2])
+
+
+
+
+.. parsed-literal::
+
+    [{'negative': 0.008184343650433397,
+      'positive': 0.18156563495665812,
+      'neutral': 0.8102500213929085},
+     {'negative': 0.010056240383248257,
+      'positive': 0.009943759616751778,
+      'neutral': 0.98}]
 
 
 
@@ -58,14 +65,16 @@ Disable ``neutral`` probability,
 
 .. code:: ipython3
 
-    print(model.predict(negative_text,get_proba=True,add_neutral=True))
-    print(model.predict(negative_text,get_proba=True,add_neutral=False))
+    model.predict_proba([string1, string2], add_neutral = False)
+
+
 
 
 .. parsed-literal::
 
-    {'negative': 0.5124503873063959, 'positive': 0.00487549612693598, 'neutral': 0.48267411656666814}
-    {'negative': 0.756225193653198, 'positive': 0.243774806346799}
+    [{'negative': 0.40921718252166983, 'positive': 0.5907828174783291},
+     {'negative': 0.5028120191624128, 'positive': 0.49718798083758886}]
+
 
 
 List available Transformer models
@@ -80,7 +89,12 @@ List available Transformer models
 
 .. parsed-literal::
 
-    {'bert': ['base', 'small'], 'xlnet': ['base'], 'albert': ['base']}
+    {'bert': ['425.6 MB', 'accuracy: 0.993'],
+     'tiny-bert': ['57.4 MB', 'accuracy: 0.987'],
+     'albert': ['48.6 MB', 'accuracy: 0.992'],
+     'tiny-albert': ['22.4 MB', 'accuracy: 0.985'],
+     'xlnet': ['446.5 MB', 'accuracy: 0.993'],
+     'alxlnet': ['46.8 MB', 'accuracy: 0.991']}
 
 
 
@@ -88,42 +102,33 @@ Make sure you can check accuracy chart from here first before select a
 model,
 https://malaya.readthedocs.io/en/latest/Accuracy.html#sentiment-analysis
 
-**You might want to use ALBERT, a very small size, 43MB, but the
+**You might want to use Tiny-Albert, a very small size, 22.4MB, but the
 accuracy is still on the top notch.**
 
-Load ALBERT model
------------------
+Load XLNET model
+----------------
+
+All model interface will follow sklearn interface started v3.4,
+
+.. code:: python
+
+   model.predict(List[str])
+
+   model.predict_proba(List[str])
 
 .. code:: ipython3
 
-    model = malaya.sentiment.transformer(model = 'albert', size = 'base')
+    model = malaya.sentiment.transformer(model = 'xlnet')
 
 
 .. parsed-literal::
 
-    WARNING: Logging before flag parsing goes to stderr.
-    W1018 00:21:45.580282 4405478848 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:68: The name tf.gfile.GFile is deprecated. Please use tf.io.gfile.GFile instead.
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/function/__init__.py:54: The name tf.gfile.GFile is deprecated. Please use tf.io.gfile.GFile instead.
     
-    W1018 00:21:45.582058 4405478848 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:69: The name tf.GraphDef is deprecated. Please use tf.compat.v1.GraphDef instead.
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/function/__init__.py:55: The name tf.GraphDef is deprecated. Please use tf.compat.v1.GraphDef instead.
     
-    W1018 00:21:48.671772 4405478848 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:64: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/function/__init__.py:49: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
     
-
-
-Predict single string
-^^^^^^^^^^^^^^^^^^^^^
-
-.. code:: ipython3
-
-    model.predict(positive_text,get_proba=True)
-
-
-
-
-.. parsed-literal::
-
-    {'negative': 0.928911, 'positive': 0.0007108902, 'neutral': 0.070378125}
-
 
 
 Predict batch of strings
@@ -131,15 +136,29 @@ Predict batch of strings
 
 .. code:: ipython3
 
-    model.predict_batch([positive_text, negative_text],get_proba=True)
+    model.predict_proba([string1, string2])
 
 
 
 
 .. parsed-literal::
 
-    [{'negative': 0.928911, 'positive': 0.00071089127, 'neutral': 0.070378125},
-     {'negative': 0.94854975, 'positive': 0.0005145021, 'neutral': 0.050935745}]
+    [{'negative': 0.00018888633, 'positive': 0.9811114, 'neutral': 0.018699706},
+     {'negative': 0.8079505, 'positive': 0.0019204962, 'neutral': 0.19012898}]
+
+
+
+.. code:: ipython3
+
+    model.predict_proba([string1, string2], add_neutral = False)
+
+
+
+
+.. parsed-literal::
+
+    [{'negative': 0.029847767, 'positive': 0.97015226},
+     {'negative': 0.1034979, 'positive': 0.89650214}]
 
 
 
@@ -151,13 +170,13 @@ visualization dashboard, you can disable by ``visualization=False``.
 
 .. code:: ipython3
 
-    model.predict_words(negative_text)
+    model.predict_words(string1)
 
 .. code:: ipython3
 
     from IPython.core.display import Image, display
     
-    display(Image('bert-sentiment.png', width=800))
+    display(Image('sentiment-dashboard.png', width=800))
 
 
 
@@ -174,35 +193,39 @@ https://malaya.readthedocs.io/en/latest/Stack.html
 .. code:: ipython3
 
     multinomial = malaya.sentiment.multinomial()
-    bert = malaya.sentiment.transformer(model = 'bert', size = 'base')
+    alxlnet = malaya.sentiment.transformer(model = 'alxlnet')
 
 .. code:: ipython3
 
-    bert.predict(positive_text, get_proba = True)
+    malaya.stack.predict_stack([multinomial, alxlnet, model], [string1, string2])
 
 
 
 
 .. parsed-literal::
 
-    {'negative': 4.0951385e-05, 'positive': 0.9959047, 'neutral': 0.0040543675}
+    [{'negative': 0.0005453552136673502,
+      'positive': 0.5603020846001405,
+      'neutral': 0.05399025419995675},
+     {'negative': 0.0002248290781177622,
+      'positive': 0.21361579430243546,
+      'neutral': 0.022142383292097452}]
 
 
+
+If you do not want neutral in ``predict_stack``, simply override the
+parameter,
 
 .. code:: ipython3
 
-    malaya.stack.predict_stack([multinomial, bert, model], [positive_text, negative_text])
+    malaya.stack.predict_stack([multinomial, alxlnet, model], [string1, string2], add_neutral = False)
 
 
 
 
 .. parsed-literal::
 
-    [{'negative': 0.018319895741887974,
-      'positive': 0.01804067965859282,
-      'neutral': 0.060514741560741055},
-     {'negative': 0.7832971121695218,
-      'positive': 0.0006567555331073403,
-      'neutral': 0.06501884954119536}]
+    [{'negative': 0.05828375571937787, 'positive': 0.8221586003437801},
+     {'negative': 0.014352668987571138, 'positive': 0.7835866999009022}]
 
 

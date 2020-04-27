@@ -6,8 +6,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 3.48 s, sys: 539 ms, total: 4.02 s
-    Wall time: 3.4 s
+    CPU times: user 4.82 s, sys: 1.21 s, total: 6.03 s
+    Wall time: 7.59 s
 
 
 .. code:: python
@@ -254,7 +254,7 @@ supported ``BERT`` and ``ALBERT`` only, XLNET is not that good**.
 
 .. code:: python
 
-    model = malaya.transformer.load(model = 'bert', size = 'small')
+    model = malaya.transformer.load(model = 'bert')
     transformer_corrector = malaya.spell.transformer(model, sentence_piece = True)
 
 
@@ -262,7 +262,7 @@ supported ``BERT`` and ``ALBERT`` only, XLNET is not that good**.
 
     WARNING:tensorflow:From /usr/local/lib/python3.7/site-packages/bert/modeling.py:93: The name tf.gfile.GFile is deprecated. Please use tf.io.gfile.GFile instead.
     
-    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/_transformer/_bert.py:48: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/bert/__init__.py:58: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
     
     WARNING:tensorflow:From /usr/local/lib/python3.7/site-packages/bert/modeling.py:171: The name tf.variable_scope is deprecated. Please use tf.compat.v1.variable_scope instead.
     
@@ -284,19 +284,25 @@ supported ``BERT`` and ``ALBERT`` only, XLNET is not that good**.
     WARNING:tensorflow:From /usr/local/lib/python3.7/site-packages/tensorflow_core/python/layers/core.py:187: Layer.apply (from tensorflow.python.keras.engine.base_layer) is deprecated and will be removed in a future version.
     Instructions for updating:
     Please use `layer.__call__` method instead.
-    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/_transformer/_bert.py:85: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/sampling.py:26: where (from tensorflow.python.ops.array_ops) is deprecated and will be removed in a future version.
+    Instructions for updating:
+    Use tf.where in 2.0, which has the same broadcast rule as np.where
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/bert/__init__.py:111: multinomial (from tensorflow.python.ops.random_ops) is deprecated and will be removed in a future version.
+    Instructions for updating:
+    Use `tf.random.categorical` instead.
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/bert/__init__.py:114: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
     
-    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/_transformer/_bert.py:86: The name tf.global_variables_initializer is deprecated. Please use tf.compat.v1.global_variables_initializer instead.
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/bert/__init__.py:115: The name tf.global_variables_initializer is deprecated. Please use tf.compat.v1.global_variables_initializer instead.
     
-    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/_transformer/_bert.py:87: The name tf.get_collection is deprecated. Please use tf.compat.v1.get_collection instead.
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/bert/__init__.py:116: The name tf.get_collection is deprecated. Please use tf.compat.v1.get_collection instead.
     
-    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/_transformer/_bert.py:88: The name tf.GraphKeys is deprecated. Please use tf.compat.v1.GraphKeys instead.
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/bert/__init__.py:117: The name tf.GraphKeys is deprecated. Please use tf.compat.v1.GraphKeys instead.
     
-    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/_transformer/_bert.py:93: The name tf.train.Saver is deprecated. Please use tf.compat.v1.train.Saver instead.
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/bert/__init__.py:122: The name tf.train.Saver is deprecated. Please use tf.compat.v1.train.Saver instead.
     
-    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/_transformer/_bert.py:95: The name tf.get_default_graph is deprecated. Please use tf.compat.v1.get_default_graph instead.
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/bert/__init__.py:124: The name tf.get_default_graph is deprecated. Please use tf.compat.v1.get_default_graph instead.
     
-    INFO:tensorflow:Restoring parameters from /Users/huseinzolkepli/Malaya/bert-model/small/bert-small-v2/model.ckpt
+    INFO:tensorflow:Restoring parameters from /Users/huseinzolkepli/Malaya/bert-model/base/bert-base-v3/model.ckpt
 
 
 .. code:: python
@@ -323,8 +329,8 @@ the time wall with probability based.
 
 .. parsed-literal::
 
-    CPU times: user 28.7 s, sys: 1.5 s, total: 30.2 s
-    Wall time: 6.11 s
+    CPU times: user 55.1 s, sys: 2.07 s, total: 57.1 s
+    Wall time: 10.6 s
 
 
 
@@ -343,8 +349,8 @@ the time wall with probability based.
 
 .. parsed-literal::
 
-    CPU times: user 105 ms, sys: 7.19 ms, total: 112 ms
-    Wall time: 112 ms
+    CPU times: user 111 ms, sys: 8.72 ms, total: 119 ms
+    Wall time: 119 ms
 
 
 
@@ -364,13 +370,22 @@ the time wall with probability based.
 
 .. parsed-literal::
 
-    'Husein suke makan ayam dekat kampung Jawa'
+    'Husein suka mkn ayam dekat kampung Jawa'
 
 
 
-Transformer did a mistake suggested ``suke`` instead ``suka``, this is
-because Malaya Transformer trained more on local context (social media)
-instead of standard context.
+.. code:: python
+
+    prob_corrector.correct_text(string2)
+
+
+
+
+.. parsed-literal::
+
+    'Husein suka makan ayam dekat kampung Jawa'
+
+
 
 Load symspeller speller
 -----------------------
@@ -490,7 +505,7 @@ To correct a sentence
 
 .. parsed-literal::
 
-    'Husein sama makan ayam dapat kampung Jawa'
+    'Husein suka makan ayam dapat kampung Jawa'
 
 
 
@@ -542,6 +557,7 @@ To correct a sentence
 
 .. parsed-literal::
 
-    'ialah bintang dalam kelas malaya saya, nanti mintalah'
+    'boleh bintang dalam kelas malaya saya, nanti mintalah'
+
 
 

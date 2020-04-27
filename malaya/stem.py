@@ -7,7 +7,7 @@ from malaya.text.rules import rules_normalizer
 from malaya.function import load_graph, check_file, generate_session
 from malaya.text.function import pad_sentence_batch, case_of
 from malaya.text.bpe import load_yttm
-from malaya.text.regex import _expressions
+from malaya.text.regex import _expressions, _money, _date
 from malaya.path import PATH_STEM, S3_PATH_STEM
 from herpetologist import check_type
 
@@ -83,25 +83,28 @@ class DEEP_STEMMER:
                 mapping[len(batch)] = no
                 result.append('REPLACE-ME')
                 actual.append(word)
-                batch.append(word)
+                batch.append(word.lower())
 
-        batch = self._bpe.encode(batch, output_type = self._subword_mode)
-        batch = [i + [1] for i in batch]
-        batch = pad_sentence_batch(idx, 0)[0]
+        if len(batch):
 
-        if beam_search:
-            output = self._beam
-        else:
-            output = self._greedy
+            batch = self._bpe.encode(batch, output_type = self._subword_mode)
 
-        output = self._sess.run(output, feed_dict = {self._model.X: batch})
-        output = output.tolist()
+            batch = [i + [1] for i in batch]
+            batch = pad_sentence_batch(batch, 0)[0]
 
-        for no, o in enumerate(output):
-            predicted = list(dict.fromkeys(o))
-            predicted = bpe.decode(predicted)
-            predicted = case_of(actual[no])(predicted)
-            result[mapping[no]] = predicted
+            if beam_search:
+                output = self._beam
+            else:
+                output = self._greedy
+
+            output = self._sess.run(output, feed_dict = {self._X: batch})
+            output = output.tolist()
+
+            for no, o in enumerate(output):
+                predicted = list(dict.fromkeys(o))
+                predicted = self._bpe.decode(predicted)[0].replace('<EOS>', '')
+                predicted = case_of(actual[no])(predicted)
+                result[mapping[no]] = predicted
 
         return ' '.join(result)
 
@@ -157,21 +160,19 @@ def deep_model(**kwargs):
 
     Returns
     -------
-    DEEP_STEMMER: malaya.stem._DEEP_STEMMER class
+    DEEP_STEMMER: malaya.stem.DEEP_STEMMER class
     """
     from malaya.preprocessing import _tokenizer
 
-    check_file(
-        PATH_STEM['lstm-bahdanau'], S3_PATH_STEM['lstm-bahdanau'], **kwargs
-    )
-    g = load_graph(PATH_STEM['lstm-bahdanau']['model'])
+    check_file(PATH_STEM['deep'], S3_PATH_STEM['deep'], **kwargs)
+    g = load_graph(PATH_STEM['deep']['model'])
 
-    bpe, subword_mode = load_yttm(path['transformer']['bpe'])
+    bpe, subword_mode = load_yttm(PATH_STEM['deep']['bpe'], id_mode = True)
 
-    return _DEEP_STEMMER(
+    return DEEP_STEMMER(
         g.get_tensor_by_name('import/Placeholder:0'),
-        g.get_tensor_by_name('import/greedy:0'),
-        g.get_tensor_by_name('import/beam:0'),
+        g.get_tensor_by_name('import/decode_1/greedy:0'),
+        g.get_tensor_by_name('import/decode_2/beam:0'),
         generate_session(graph = g),
         bpe,
         subword_mode,

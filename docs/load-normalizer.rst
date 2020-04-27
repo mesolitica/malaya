@@ -1,4 +1,3 @@
-
 .. code:: python
 
     %%time
@@ -7,8 +6,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 4.72 s, sys: 714 ms, total: 5.44 s
-    Wall time: 5.25 s
+    CPU times: user 4.17 s, sys: 822 ms, total: 4.99 s
+    Wall time: 4.14 s
 
 
 .. code:: python
@@ -38,9 +37,9 @@ Load spell normalizer
 .. parsed-literal::
 
     {'normalize': 'boleh datang lapan pagi esok tak atau minggu depan ? 02/10/2019 14:00:00 , tolong bayar tiga ribu dua ratus perpuluhan kosong ringgit sekali tahu',
-     'date': {'minggu depan': datetime.datetime(2019, 10, 25, 1, 15, 50, 630486),
-      '2 oktober 2019 2pm': datetime.datetime(2019, 10, 2, 14, 0),
-      '8 AM esok': datetime.datetime(2019, 10, 19, 8, 0)},
+     'date': {'minggu depan': datetime.datetime(2020, 5, 4, 0, 18, 26, 265157),
+      '8 AM esok': datetime.datetime(2020, 4, 28, 8, 0),
+      '2 oktober 2019 2pm': datetime.datetime(2019, 10, 2, 14, 0)},
      'money': {'rm 3.2k': 'RM3200.0'}}
 
 
@@ -385,7 +384,7 @@ Normalizing rules
 .. parsed-literal::
 
     {'normalize': 'dua hari lepas',
-     'date': {'2 hari lalu': datetime.datetime(2019, 10, 16, 1, 15, 51, 656170)},
+     'date': {'2 hari lalu': datetime.datetime(2020, 4, 25, 0, 18, 26, 775992)},
      'money': {}}
 
 
@@ -400,7 +399,7 @@ Normalizing rules
 .. parsed-literal::
 
     {'normalize': 'esok',
-     'date': {'esok': datetime.datetime(2019, 10, 19, 1, 15, 51, 675221)},
+     'date': {'esok': datetime.datetime(2020, 4, 28, 0, 18, 26, 784789)},
      'money': {}}
 
 
@@ -414,8 +413,8 @@ Normalizing rules
 
 .. parsed-literal::
 
-    {'normalize': '17/10/2019',
-     'date': {'okt 2019': datetime.datetime(2019, 10, 17, 0, 0)},
+    {'normalize': '26/10/2019',
+     'date': {'okt 2019': datetime.datetime(2019, 10, 26, 0, 0)},
      'money': {}}
 
 
@@ -430,7 +429,7 @@ Normalizing rules
 .. parsed-literal::
 
     {'normalize': 'dua pagi',
-     'date': {'2 AM': datetime.datetime(2019, 10, 17, 2, 0)},
+     'date': {'2 AM': datetime.datetime(2020, 4, 26, 2, 0)},
      'money': {}}
 
 
@@ -445,7 +444,7 @@ Normalizing rules
 .. parsed-literal::
 
     {'normalize': 'pukul lapan malam',
-     'date': {'pukul 8': datetime.datetime(2019, 10, 8, 0, 0)},
+     'date': {'pukul 8': datetime.datetime(2020, 4, 8, 0, 0)},
      'money': {}}
 
 
@@ -585,8 +584,8 @@ Normalizing rules
 
 .. parsed-literal::
 
-    {'normalize': '17/01/2019',
-     'date': {'januari 2019': datetime.datetime(2019, 1, 17, 0, 0)},
+    {'normalize': '26/01/2019',
+     'date': {'januari 2019': datetime.datetime(2019, 1, 26, 0, 0)},
      'money': {}}
 
 
@@ -604,7 +603,7 @@ Normalizing rules
 .. parsed-literal::
 
     {'normalize': '14:00:00',
-     'date': {'2pm': datetime.datetime(2019, 10, 17, 14, 0)},
+     'date': {'2pm': datetime.datetime(2020, 4, 26, 14, 0)},
      'money': {}}
 
 
@@ -619,7 +618,7 @@ Normalizing rules
 .. parsed-literal::
 
     {'normalize': '14:01:00',
-     'date': {'2:01pm': datetime.datetime(2019, 10, 17, 14, 1)},
+     'date': {'2:01pm': datetime.datetime(2020, 4, 26, 14, 1)},
      'money': {}}
 
 
@@ -634,5 +633,7 @@ Normalizing rules
 .. parsed-literal::
 
     {'normalize': '02:00:00',
-     'date': {'2am': datetime.datetime(2019, 10, 17, 2, 0)},
+     'date': {'2am': datetime.datetime(2020, 4, 26, 2, 0)},
      'money': {}}
+
+

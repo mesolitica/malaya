@@ -71,16 +71,15 @@ dict_function = {
 
 
 @check_type
-def predict_stack(models, strings, mode: str = 'gmean'):
+def predict_stack(models, strings: List[str], mode: str = 'gmean', **kwargs):
     """
     Stacking for predictive models.
 
     Parameters
     ----------
-    models: list
+    models: List[Callable]
         list of models.
-    strings: str or list of str
-        strings to predict.
+    strings: List[str]
     mode : str, optional (default='gmean')
         Model architecture supported. Allowed values:
 
@@ -96,16 +95,10 @@ def predict_stack(models, strings, mode: str = 'gmean'):
     -------
     result: dict
     """
+
     if not isinstance(models, list):
         raise ValueError('models must be a list')
-    if isinstance(strings, list):
-        if not isinstance(strings[0], str):
-            raise ValueError('input must be a list of strings or a string')
-    else:
-        if not isinstance(strings, str):
-            raise ValueError('input must be a list of strings or a string')
-    if isinstance(strings, str):
-        strings = [strings]
+
     if mode.lower() not in dict_function:
         raise Exception(
             "mode not supported, only support ['gmean','hmean','mean','min','max','median']"
@@ -113,16 +106,16 @@ def predict_stack(models, strings, mode: str = 'gmean'):
     mode = dict_function[mode.lower()]
 
     for i in range(len(models)):
-        if not 'predict_batch' in dir(models[i]):
-            raise ValueError('all models must able to predict_batch')
+        if not 'predict_proba' in dir(models[i]):
+            raise ValueError('all models must able to `predict_proba`')
 
     labels, results = None, []
     for i in range(len(models)):
         nested_results = []
         result = (
-            models[i].predict_batch(strings)
+            models[i].predict_proba(strings, **kwargs)
             if models[i].predict.__defaults__ is None
-            else models[i].predict_batch(strings, get_proba = True)
+            else models[i].predict_proba(strings, **kwargs)
         )
         for r in result:
             l = list(r.keys())

@@ -1,4 +1,3 @@
-
 .. code:: ipython3
 
     %%time
@@ -7,50 +6,128 @@
 
 .. parsed-literal::
 
-    CPU times: user 6.31 s, sys: 1.45 s, total: 7.76 s
-    Wall time: 11.8 s
+    CPU times: user 4.26 s, sys: 828 ms, total: 5.09 s
+    Wall time: 4.26 s
 
 
 .. code:: ipython3
 
     anger_text = 'babi la company ni, aku dah la penat datang dari jauh'
     fear_text = 'takut doh tengok cerita hantu tadi'
-    joy_text = 'bestnya dapat tidur harini, tak payah pergi kerja'
+    happy_text = 'bestnya dapat tidur harini, tak payah pergi kerja'
     love_text = 'aku sayang sgt dia dah doh'
     sadness_text = 'kecewa tengok kerajaan baru ni, janji ape pun tak dapat'
     surprise_text = 'sakit jantung aku, terkejut dengan cerita hantu tadi'
 
-All models got ``get_proba`` parameters. If True, it will returned
-probability every classes. Else, it will return highest probability
-class. **Default is True.**
+Get label
+---------
+
+.. code:: ipython3
+
+    malaya.emotion.label
+
+
+
+
+.. parsed-literal::
+
+    ['anger', 'fear', 'happy', 'love', 'sadness', 'surprise']
+
+
+
+All models follow same method as sklearn interface, ``predict`` to get
+batch of labels, ``predict_proba`` to get batch of probabilities.
 
 Load multinomial model
 ----------------------
 
+All model interface will follow sklearn interface started v3.4,
+
+.. code:: python
+
+   model.predict(List[str])
+
+   model.predict_proba(List[str])
+
 .. code:: ipython3
 
     model = malaya.emotion.multinomial()
-    print(model.predict(anger_text))
-    print(model.predict(anger_text,get_proba=True))
-    model.predict_batch([anger_text,
-                        fear_text,
-                        joy_text,
-                        love_text,
-                        sadness_text,
-                        surprise_text])
 
+.. code:: ipython3
 
-.. parsed-literal::
-
-    anger
-    {'anger': 0.2611975058422004, 'fear': 0.126458937751778, 'joy': 0.14950927633075184, 'love': 0.15828870784341198, 'sadness': 0.17548854227622668, 'surprise': 0.12905702995563215}
+    model.predict([anger_text])
 
 
 
 
 .. parsed-literal::
 
-    ['anger', 'fear', 'surprise', 'love', 'sadness', 'surprise']
+    ['anger']
+
+
+
+.. code:: ipython3
+
+    model.predict(
+        [anger_text, fear_text, happy_text, love_text, sadness_text, surprise_text]
+    )
+
+
+
+
+.. parsed-literal::
+
+    ['anger', 'fear', 'happy', 'love', 'sadness', 'surprise']
+
+
+
+.. code:: ipython3
+
+    model.predict_proba(
+        [anger_text, fear_text, happy_text, love_text, sadness_text, surprise_text]
+    )
+
+
+
+
+.. parsed-literal::
+
+    [{'anger': 0.32948272681734814,
+      'fear': 0.13959708810717708,
+      'happy': 0.14671455153216045,
+      'love': 0.12489192355631354,
+      'sadness': 0.1285972541671178,
+      'surprise': 0.13071645581988448},
+     {'anger': 0.11379406005377896,
+      'fear': 0.4006934391283133,
+      'happy': 0.11389665647702245,
+      'love': 0.12481915233837086,
+      'sadness': 0.0991261507380643,
+      'surprise': 0.14767054126445014},
+     {'anger': 0.15051890586527464,
+      'fear': 0.13931406415515296,
+      'happy': 0.32037710031973415,
+      'love': 0.13747954667255546,
+      'sadness': 0.11565866743099411,
+      'surprise': 0.13665171555628927},
+     {'anger': 0.1590563839629243,
+      'fear': 0.14687344690114268,
+      'happy': 0.1419948160674701,
+      'love': 0.279550441361504,
+      'sadness': 0.1285927908584157,
+      'surprise': 0.14393212084854254},
+     {'anger': 0.14268176425895224,
+      'fear': 0.12178299725318226,
+      'happy': 0.16187751258299898,
+      'love': 0.1030494733572262,
+      'sadness': 0.34277869755707796,
+      'surprise': 0.1278295549905621},
+     {'anger': 0.06724850384395685,
+      'fear': 0.1283628050361525,
+      'happy': 0.05801958643852813,
+      'love': 0.06666524240157067,
+      'sadness': 0.06537667186293224,
+      'surprise': 0.6143271904168589}]
 
 
 
@@ -66,7 +143,12 @@ List available Transformer models
 
 .. parsed-literal::
 
-    {'bert': ['base', 'small'], 'xlnet': ['base'], 'albert': ['base']}
+    {'bert': ['425.6 MB', 'accuracy: 0.992'],
+     'tiny-bert': ['57.4 MB', 'accuracy: 0.988'],
+     'albert': ['48.6 MB', 'accuracy: 0.997'],
+     'tiny-albert': ['22.4 MB', 'accuracy: 0.981'],
+     'xlnet': ['446.5 MB', 'accuracy: 0.990'],
+     'alxlnet': ['46.8 MB', 'accuracy: 0.989']}
 
 
 
@@ -74,47 +156,36 @@ Make sure you can check accuracy chart from here first before select a
 model,
 https://malaya.readthedocs.io/en/latest/Accuracy.html#emotion-analysis
 
-**You might want to use ALBERT, a very small size, 43MB, but the
+**You might want to use Tiny-Albert, a very small size, 22.4MB, but the
 accuracy is still on the top notch.**
 
-Load BERT model
----------------
+Load Albert model
+-----------------
+
+All model interface will follow sklearn interface started v3.4,
+
+.. code:: python
+
+   model.predict(List[str])
+
+   model.predict_proba(List[str])
 
 .. code:: ipython3
 
-    model = malaya.emotion.transformer(model = 'bert', size = 'small')
+    model = malaya.emotion.transformer(model = 'albert')
 
 
 .. parsed-literal::
 
-    WARNING: Logging before flag parsing goes to stderr.
-    W1017 22:10:55.813647 4669789632 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:68: The name tf.gfile.GFile is deprecated. Please use tf.io.gfile.GFile instead.
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/function/__init__.py:54: The name tf.gfile.GFile is deprecated. Please use tf.io.gfile.GFile instead.
     
-    W1017 22:10:55.817269 4669789632 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:69: The name tf.GraphDef is deprecated. Please use tf.compat.v1.GraphDef instead.
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/function/__init__.py:55: The name tf.GraphDef is deprecated. Please use tf.compat.v1.GraphDef instead.
     
-    W1017 22:10:58.647607 4669789632 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:64: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
+    WARNING:tensorflow:From /usr/local/lib/python3.7/site-packages/albert/tokenization.py:240: The name tf.logging.info is deprecated. Please use tf.compat.v1.logging.info instead.
     
-
-
-Predict single string
-^^^^^^^^^^^^^^^^^^^^^
-
-.. code:: ipython3
-
-    model.predict(anger_text,get_proba=True)
-
-
-
-
-.. parsed-literal::
-
-    {'anger': 0.9998387,
-     'fear': 0.00015925607,
-     'joy': 1.4158436e-06,
-     'love': 2.2607807e-07,
-     'sadness': 3.5324396e-07,
-     'surprise': 1.493917e-09}
-
+    INFO:tensorflow:loading sentence piece model
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/function/__init__.py:49: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
+    
 
 
 Predict batch of strings
@@ -122,50 +193,51 @@ Predict batch of strings
 
 .. code:: ipython3
 
-    model.predict_batch([anger_text, fear_text, joy_text,
-                        love_text, sadness_text, surprise_text],get_proba=True)
+    model.predict_proba(
+        [anger_text, fear_text, happy_text, love_text, sadness_text, surprise_text]
+    )
 
 
 
 
 .. parsed-literal::
 
-    [{'anger': 0.999967,
-      'fear': 3.1019e-05,
-      'joy': 9.3578916e-07,
-      'love': 8.069192e-07,
-      'sadness': 1.9151632e-07,
-      'surprise': 5.3283973e-09},
-     {'anger': 2.7872588e-08,
-      'fear': 0.9999925,
-      'joy': 6.6718403e-06,
-      'love': 8.4267407e-07,
-      'sadness': 2.088349e-08,
-      'surprise': 4.9783313e-08},
-     {'anger': 0.11070438,
-      'fear': 0.84919304,
-      'joy': 5.272726e-06,
-      'love': 0.0399928,
-      'sadness': 0.000100712394,
-      'surprise': 3.8468006e-06},
-     {'anger': 4.374225e-06,
-      'fear': 5.6794994e-07,
-      'joy': 2.0245703e-07,
-      'love': 0.9999949,
-      'sadness': 3.886778e-08,
-      'surprise': 1.59989e-08},
-     {'anger': 4.429462e-05,
-      'fear': 1.1004681e-06,
-      'joy': 3.3026482e-09,
-      'love': 3.1222495e-08,
-      'sadness': 0.9999546,
-      'surprise': 5.33118e-08},
-     {'anger': 0.0004420832,
-      'fear': 0.00097265776,
-      'joy': 0.0002473691,
-      'love': 0.0009974391,
-      'sadness': 0.56158155,
-      'surprise': 0.43575892}]
+    [{'anger': 0.9998901,
+      'fear': 3.2524113e-05,
+      'happy': 2.620931e-05,
+      'love': 2.2871463e-05,
+      'sadness': 9.782951e-06,
+      'surprise': 1.8502667e-05},
+     {'anger': 1.6941378e-05,
+      'fear': 0.9999205,
+      'happy': 9.070281e-06,
+      'love': 2.044179e-05,
+      'sadness': 6.7731107e-06,
+      'surprise': 2.6314676e-05},
+     {'anger': 0.15370166,
+      'fear': 0.0013852724,
+      'happy': 0.8268689,
+      'love': 0.011433229,
+      'sadness': 0.0011807577,
+      'surprise': 0.005430276},
+     {'anger': 1.2597201e-05,
+      'fear': 1.7600481e-05,
+      'happy': 9.667115e-06,
+      'love': 0.9999331,
+      'sadness': 1.3735416e-05,
+      'surprise': 1.3399296e-05},
+     {'anger': 1.9176923e-05,
+      'fear': 1.1163729e-05,
+      'happy': 6.353941e-06,
+      'love': 7.004002e-06,
+      'sadness': 0.99994576,
+      'surprise': 1.0511084e-05},
+     {'anger': 5.8739704e-05,
+      'fear': 1.9771342e-05,
+      'happy': 1.8316741e-05,
+      'love': 2.2319455e-05,
+      'sadness': 3.646786e-05,
+      'surprise': 0.9998443}]
 
 
 
@@ -183,11 +255,11 @@ visualization dashboard, you can disable by ``visualization=False``.
 
     from IPython.core.display import Image, display
     
-    display(Image('emotion-bert.png', width=800))
+    display(Image('emotion-dashboard.png', width=800))
 
 
 
-.. image:: load-emotion_files/load-emotion_16_0.png
+.. image:: load-emotion_files/load-emotion_19_0.png
    :width: 800px
 
 
@@ -203,19 +275,19 @@ https://malaya.readthedocs.io/en/latest/Stack.html
 
 .. code:: ipython3
 
-    malaya.stack.predict_stack([multinomial, model], anger_text)
+    malaya.stack.predict_stack([multinomial, model], [anger_text])
 
 
 
 
 .. parsed-literal::
 
-    [{'anger': 0.5110701622264388,
-      'fear': 0.0015030670756998694,
-      'joy': 0.00010128863548173158,
-      'love': 0.0002393405793062825,
-      'sadness': 4.8518840782529094e-05,
-      'surprise': 3.446262938211491e-06}]
+    [{'anger': 0.5739743139312979,
+      'fear': 0.002130791264743306,
+      'happy': 0.0019609404077070573,
+      'love': 0.0016901068202818533,
+      'sadness': 0.001121633002361737,
+      'surprise': 0.0015551851123993595}]
 
 
 
@@ -228,17 +300,18 @@ https://malaya.readthedocs.io/en/latest/Stack.html
 
 .. parsed-literal::
 
-    [{'anger': 0.5108635985076825,
-      'fear': 0.010215957164991074,
-      'joy': 0.0002369261921911302,
-      'love': 0.00035127684686427296,
-      'sadness': 0.00010086046614711628,
-      'surprise': 4.586600608224377e-06},
-     {'anger': 0.0001340990772442865,
-      'fear': 6.673330937532275e-05,
-      'joy': 7.930393733677666e-06,
-      'love': 4.6907952784882726e-05,
-      'sadness': 0.5392643694134984,
-      'surprise': 0.0005584244071919486}]
+    [{'anger': 0.5739743139312979,
+      'fear': 0.002130791264743306,
+      'happy': 0.0019609404077070573,
+      'love': 0.0016901068202818533,
+      'sadness': 0.001121633002361737,
+      'surprise': 0.0015551858768478731},
+     {'anger': 0.0016541454680912208,
+      'fear': 0.0011659984542562358,
+      'happy': 0.001014179551389293,
+      'love': 0.0008495638318424924,
+      'sadness': 0.5854571761989077,
+      'surprise': 0.001159149836587787}]
+
 
 

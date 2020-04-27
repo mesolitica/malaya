@@ -773,7 +773,7 @@ class DEPENDENCY_BERT(BASE):
 
         Returns
         -------
-        result: d, tagging, indexing_
+        result: Tuple
         """
 
         parsed_sequence, bert_sequence = parse_bert_tagging(

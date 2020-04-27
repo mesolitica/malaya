@@ -1,4 +1,3 @@
-
 Why Stacking?
 -------------
 
@@ -13,26 +12,20 @@ models to get a better result! It called stacking.
 
 .. parsed-literal::
 
-    CPU times: user 6.46 s, sys: 1.65 s, total: 8.11 s
-    Wall time: 13.1 s
+    CPU times: user 4.98 s, sys: 1.22 s, total: 6.2 s
+    Wall time: 7.31 s
 
 
 .. code:: python
 
     albert = malaya.sentiment.transformer('albert')
     multinomial = malaya.sentiment.multinomial()
-    bert = malaya.sentiment.transformer('bert')
+    alxlnet = malaya.sentiment.transformer('alxlnet')
 
 
 .. parsed-literal::
 
-    WARNING: Logging before flag parsing goes to stderr.
-    W1018 00:55:00.259906 4631889344 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:68: The name tf.gfile.GFile is deprecated. Please use tf.io.gfile.GFile instead.
-
-    W1018 00:55:00.263756 4631889344 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:69: The name tf.GraphDef is deprecated. Please use tf.compat.v1.GraphDef instead.
-
-    W1018 00:55:04.845674 4631889344 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:64: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
-
+    INFO:tensorflow:loading sentence piece model
 
 
 Stack multiple sentiment models
@@ -44,25 +37,24 @@ models can use ``malaya.stack.predict_stack``.
 
 .. code:: python
 
-   def predict_stack(models, text, mode = 'gmean'):
+   def predict_stack(models, strings: List[str], mode: str = 'gmean', **kwargs):
        """
        Stacking for predictive models.
 
        Parameters
        ----------
-       models: list
-           list of models
-       text: str
-           string to predict
+       models: List[Callable]
+           list of models.
+       strings: List[str]
        mode : str, optional (default='gmean')
            Model architecture supported. Allowed values:
 
-           * ``'gmean'`` - geometrical mean
-           * ``'hmean'`` - harmonic mean
-           * ``'mean'`` - mean
-           * ``'min'`` - min
-           * ``'max'`` - max
-           * ``'median'`` - Harrell-Davis median
+           * ``'gmean'`` - geometrical mean.
+           * ``'hmean'`` - harmonic mean.
+           * ``'mean'`` - mean.
+           * ``'min'`` - min.
+           * ``'max'`` - max.
+           * ``'median'`` - Harrell-Davis median.
 
 
        Returns
@@ -72,17 +64,33 @@ models can use ``malaya.stack.predict_stack``.
 
 .. code:: python
 
-    malaya.stack.predict_stack([albert, multinomial, bert],
-                              'harga minyak tak menentu')
+    malaya.stack.predict_stack([albert, multinomial, alxlnet],
+                              ['harga minyak tak menentu'])
 
 
 
 
 .. parsed-literal::
 
-    [{'negative': 0.5924219508044609,
-      'positive': 0.0008248967143827066,
-      'neutral': 0.0816649405431678}]
+    [{'negative': 0.49219437524658893,
+      'positive': 4.836121311772972e-05,
+      'neutral': 0.004789010889416813}]
+
+
+
+To disable ``neutral``, simply, ``add_neutral = False``.
+
+.. code:: python
+
+    malaya.stack.predict_stack([albert, multinomial, alxlnet],
+                              ['harga minyak tak menentu'], add_neutral = False)
+
+
+
+
+.. parsed-literal::
+
+    [{'negative': 0.8239995596048657, 'positive': 0.0019336028417252348}]
 
 
 
@@ -116,7 +124,7 @@ and Dependency Parsing recognition.**
 .. code:: python
 
     string = 'KUALA LUMPUR: Sempena sambutan Aidilfitri minggu depan, Perdana Menteri Tun Dr Mahathir Mohamad dan Menteri Pengangkutan Anthony Loke Siew Fook menitipkan pesanan khas kepada orang ramai yang mahu pulang ke kampung halaman masing-masing. Dalam video pendek terbitan Jabatan Keselamatan Jalan Raya (JKJR) itu, Dr Mahathir menasihati mereka supaya berhenti berehat dan tidur sebentar  sekiranya mengantuk ketika memandu.'
-
+    
     albert = malaya.pos.transformer('albert')
     bert = malaya.pos.transformer('bert')
     malaya.stack.voting_stack([albert, bert], string)
@@ -189,28 +197,19 @@ and Dependency Parsing recognition.**
 .. code:: python
 
     string = 'KUALA LUMPUR: Sempena sambutan Aidilfitri minggu depan, Perdana Menteri Tun Dr Mahathir Mohamad dan Menteri Pengangkutan Anthony Loke Siew Fook menitipkan pesanan khas kepada orang ramai yang mahu pulang ke kampung halaman masing-masing. Dalam video pendek terbitan Jabatan Keselamatan Jalan Raya (JKJR) itu, Dr Mahathir menasihati mereka supaya berhenti berehat dan tidur sebentar  sekiranya mengantuk ketika memandu.'
-
+    
     xlnet = malaya.dependency.transformer(model = 'xlnet')
-    bert = malaya.dependency.transformer(model = 'bert')
-
-
-.. parsed-literal::
-
-    WARNING: Logging before flag parsing goes to stderr.
-    W1018 01:10:28.652161 4692850112 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:68: The name tf.gfile.GFile is deprecated. Please use tf.io.gfile.GFile instead.
-
-    W1018 01:10:28.656165 4692850112 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:69: The name tf.GraphDef is deprecated. Please use tf.compat.v1.GraphDef instead.
-
-    W1018 01:10:33.700295 4692850112 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:64: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
-
-
+    alxlnet = malaya.dependency.transformer(model = 'alxlnet')
 
 .. code:: python
 
-    tagging, indexing = malaya.stack.voting_stack([xlnet, xlnet, bert], string)
+    tagging, indexing = malaya.stack.voting_stack([xlnet, xlnet, alxlnet], string)
     malaya.dependency.dependency_graph(tagging, indexing).to_graphvis()
 
 
 
 
-.. image:: load-stack_files/load-stack_10_0.svg
+.. image:: load-stack_files/load-stack_12_0.svg
+
+
+

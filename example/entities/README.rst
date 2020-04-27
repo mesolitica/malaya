@@ -1,4 +1,3 @@
-
 .. code:: ipython3
 
     %%time
@@ -7,8 +6,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 6.58 s, sys: 1.5 s, total: 8.08 s
-    Wall time: 12.3 s
+    CPU times: user 4.21 s, sys: 798 ms, total: 5.01 s
+    Wall time: 4.31 s
 
 
 Describe supported entities
@@ -16,7 +15,7 @@ Describe supported entities
 
 .. code:: ipython3
 
-    malaya.describe_entities()
+    malaya.entity.describe()
 
 
 .. parsed-literal::
@@ -25,7 +24,7 @@ Describe supported entities
     law - law, regulation, related law documents, documents, etc
     location - location, place
     organization - organization, company, government, facilities, etc
-    person - person, group of people, believes, etc
+    person - person, group of people, believes, unique arts (eg; food, drink), etc
     quantity - numbers, quantity
     time - date, day, time, etc
     event - unique event happened, etc
@@ -43,7 +42,12 @@ List available Transformer NER models
 
 .. parsed-literal::
 
-    {'bert': ['base', 'small'], 'xlnet': ['base'], 'albert': ['base']}
+    {'bert': ['426.4 MB', 'accuracy: 0.994'],
+     'tiny-bert': ['57.7 MB', 'accuracy: 0.986'],
+     'albert': ['48.6 MB', 'accuracy: 0.984'],
+     'tiny-albert': ['22.4 MB', 'accuracy: 0.971'],
+     'xlnet': ['446.6 MB', 'accuracy: 0.992'],
+     'alxlnet': ['46.8 MB', 'accuracy: 0.993']}
 
 
 
@@ -51,7 +55,7 @@ Make sure you can check accuracy chart from here first before select a
 model,
 https://malaya.readthedocs.io/en/latest/Accuracy.html#entities-recognition
 
-**You might want to use ALBERT, a very small size, 43MB, but the
+**You might want to use Tiny-Albert, a very small size, 22.4MB, but the
 accuracy is still on the top notch.**
 
 .. code:: ipython3
@@ -63,17 +67,19 @@ Load ALBERT model
 
 .. code:: ipython3
 
-    model = malaya.entity.transformer(model = 'albert', size = 'base')
+    model = malaya.entity.transformer(model = 'albert')
 
 
 .. parsed-literal::
 
-    WARNING: Logging before flag parsing goes to stderr.
-    W1017 22:28:20.427351 4703032768 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:68: The name tf.gfile.GFile is deprecated. Please use tf.io.gfile.GFile instead.
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/function/__init__.py:54: The name tf.gfile.GFile is deprecated. Please use tf.io.gfile.GFile instead.
     
-    W1017 22:28:20.428478 4703032768 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:69: The name tf.GraphDef is deprecated. Please use tf.compat.v1.GraphDef instead.
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/function/__init__.py:55: The name tf.GraphDef is deprecated. Please use tf.compat.v1.GraphDef instead.
     
-    W1017 22:28:21.298430 4703032768 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:64: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
+    WARNING:tensorflow:From /usr/local/lib/python3.7/site-packages/albert/tokenization.py:240: The name tf.logging.info is deprecated. Please use tf.compat.v1.logging.info instead.
+    
+    INFO:tensorflow:loading sentence piece model
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/function/__init__.py:49: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
     
 
 
@@ -90,7 +96,7 @@ Load ALBERT model
      ('Lumpur:', 'location'),
      ('Sempena', 'OTHER'),
      ('sambutan', 'OTHER'),
-     ('Aidilfitri', 'OTHER'),
+     ('Aidilfitri', 'event'),
      ('minggu', 'OTHER'),
      ('depan,', 'OTHER'),
      ('Perdana', 'person'),
@@ -116,8 +122,8 @@ Load ALBERT model
      ('mahu', 'OTHER'),
      ('pulang', 'OTHER'),
      ('ke', 'OTHER'),
-     ('kampung', 'location'),
-     ('halaman', 'location'),
+     ('kampung', 'OTHER'),
+     ('halaman', 'OTHER'),
      ('masing-masing.', 'OTHER'),
      ('Dalam', 'OTHER'),
      ('video', 'OTHER'),
@@ -217,10 +223,20 @@ Load ALBERT model
        'score': 1.0,
        'beginOffset': 0,
        'endOffset': 1},
-      {'text': 'Sempena sambutan Aidilfitri minggu depan,',
+      {'text': 'Sempena sambutan',
        'type': 'OTHER',
        'score': 1.0,
        'beginOffset': 2,
+       'endOffset': 3},
+      {'text': 'Aidilfitri',
+       'type': 'event',
+       'score': 1.0,
+       'beginOffset': 4,
+       'endOffset': 4},
+      {'text': 'minggu depan,',
+       'type': 'OTHER',
+       'score': 1.0,
+       'beginOffset': 5,
        'endOffset': 6},
       {'text': 'Perdana Menteri Tun Dr Mahathir Mohamad',
        'type': 'person',
@@ -237,20 +253,10 @@ Load ALBERT model
        'score': 1.0,
        'beginOffset': 14,
        'endOffset': 19},
-      {'text': 'menitipkan pesanan khas kepada orang ramai yang mahu pulang ke',
+      {'text': 'menitipkan pesanan khas kepada orang ramai yang mahu pulang ke kampung halaman masing-masing. Dalam video pendek terbitan',
        'type': 'OTHER',
        'score': 1.0,
        'beginOffset': 20,
-       'endOffset': 29},
-      {'text': 'kampung halaman',
-       'type': 'location',
-       'score': 1.0,
-       'beginOffset': 30,
-       'endOffset': 31},
-      {'text': 'masing-masing. Dalam video pendek terbitan',
-       'type': 'OTHER',
-       'score': 1.0,
-       'beginOffset': 32,
        'endOffset': 36},
       {'text': 'Jabatan Keselamatan Jalan Raya (JKJR)',
        'type': 'organization',
@@ -310,19 +316,14 @@ This is an optional.
 .. parsed-literal::
 
     {'person': ['Husein'],
-     'OTHER': ['baca buku',
-      'yang berharga',
-      'dekat',
-      'lepas, 2 ptg',
+     'OTHER': ['baca buku Perlembagaan yang berharga 3k ringgit dekat',
+      'minggu lepas,',
       ', suhu 32 celcius, sambil makan ayam goreng dan milo o ais'],
-     'law': ['Perlembagaan'],
-     'quantity': ['3k ringgit'],
      'location': ['kfc sungai petani'],
-     'time': {'2 oktober 2019': datetime.datetime(2019, 10, 2, 0, 0),
-      '2 PM': datetime.datetime(2019, 10, 17, 14, 0),
-      'minggu': None},
+     'time': {'2 PM': datetime.datetime(2020, 4, 26, 14, 0),
+      '2 PM 2 oktober 2019': datetime.datetime(2019, 10, 2, 14, 0)},
      'date': {'2 oktober 2019': datetime.datetime(2019, 10, 2, 0, 0),
-      'minggu lalu': datetime.datetime(2019, 10, 10, 22, 28, 23, 292272)},
+      'minggu lalu': datetime.datetime(2020, 4, 19, 23, 51, 23, 231714)},
      'money': {'3k ringgit': 'RM3000.0'},
      'temperature': ['32 celcius'],
      'distance': [],
@@ -333,7 +334,8 @@ This is an optional.
      'url': [],
      'datetime': {'2 ptg 2 oktober 2019': datetime.datetime(2019, 10, 2, 14, 0)},
      'food': ['ayam goreng'],
-     'drink': ['milo o ais']}
+     'drink': ['milo o ais'],
+     'weight': []}
 
 
 
@@ -346,8 +348,8 @@ This is an optional.
 
 .. parsed-literal::
 
-    {'OTHER': ['contact Husein at'],
-     'person': ['husein.zol05@gmail.com'],
+    {'OTHER': ['contact', 'at'],
+     'person': ['Husein', 'husein.zol05@gmail.com'],
      'date': {},
      'money': {},
      'temperature': [],
@@ -360,7 +362,8 @@ This is an optional.
      'time': {},
      'datetime': {},
      'food': [],
-     'drink': []}
+     'drink': [],
+     'weight': []}
 
 
 
@@ -373,11 +376,9 @@ This is an optional.
 
 .. parsed-literal::
 
-    {'OTHER': ['tolong tempahkan meja makan makan nasi',
-      'dan',
-      'tarik esok dekat Restoran'],
-     'person': ['dagang', 'jus apple, milo', 'Sebulek'],
-     'date': {'esok': datetime.datetime(2019, 10, 18, 22, 28, 26, 567487)},
+    {'OTHER': ['tolong tempahkan meja makan makan', 'dan', 'esok dekat'],
+     'person': ['nasi dagang', 'jus apple, milo tarik', 'Restoran Sebulek'],
+     'date': {'esok': datetime.datetime(2020, 4, 27, 23, 51, 23, 646172)},
      'money': {},
      'temperature': [],
      'distance': [],
@@ -389,7 +390,8 @@ This is an optional.
      'time': {},
      'datetime': {},
      'food': ['nasi dagang'],
-     'drink': ['milo tarik', 'jus apple']}
+     'drink': ['milo tarik', 'jus apple'],
+     'weight': []}
 
 
 
@@ -398,8 +400,8 @@ Voting stack model
 
 .. code:: ipython3
 
-    xlnet = malaya.entity.transformer(model = 'xlnet', size = 'base')
-    malaya.stack.voting_stack([model, xlnet, xlnet],
+    alxlnet = malaya.entity.transformer(model = 'alxlnet')
+    malaya.stack.voting_stack([model, alxlnet, alxlnet],
     'tolong tempahkan meja makan makan nasi dagang dan jus apple, milo tarik esok dekat Restoran Sebulek')
 
 
@@ -413,15 +415,16 @@ Voting stack model
      ('makan', 'OTHER'),
      ('makan', 'OTHER'),
      ('nasi', 'OTHER'),
-     ('dagang', 'OTHER'),
+     ('dagang', 'person'),
      ('dan', 'OTHER'),
      ('jus', 'OTHER'),
-     ('apple,', 'OTHER'),
+     ('apple,', 'person'),
      ('milo', 'person'),
      ('tarik', 'OTHER'),
      ('esok', 'OTHER'),
      ('dekat', 'OTHER'),
      ('Restoran', 'organization'),
-     ('Sebulek', 'person')]
+     ('Sebulek', 'organization')]
+
 
 

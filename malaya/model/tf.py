@@ -78,7 +78,7 @@ class DEEP_LANG:
         result: List[str]
         """
 
-        probs = self._predicts(strings)
+        probs = self._classify(strings)
         dicts = []
         probs = np.argmax(probs, 1)
         for prob in probs:
@@ -100,7 +100,7 @@ class DEEP_LANG:
         result: List[dict[str, float]]
         """
 
-        probs = self._predicts(strings)
+        probs = self._classify(strings)
         dicts = []
         for i in range(probs.shape[0]):
             dicts.append({self._label[no]: k for no, k in enumerate(probs[i])})

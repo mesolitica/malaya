@@ -73,7 +73,6 @@ class _SPELL_NORMALIZE:
 
         result, normalized = [], []
         tokenized = _tokenizer(string)
-        print(tokenized)
         index = 0
         while index < len(tokenized):
             word = tokenized[index]

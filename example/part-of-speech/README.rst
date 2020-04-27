@@ -1,4 +1,3 @@
-
 .. code:: ipython3
 
     %%time
@@ -7,8 +6,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 6.57 s, sys: 1.44 s, total: 8.01 s
-    Wall time: 12.5 s
+    CPU times: user 4.28 s, sys: 839 ms, total: 5.12 s
+    Wall time: 4.27 s
 
 
 Describe supported POS
@@ -16,7 +15,7 @@ Describe supported POS
 
 .. code:: ipython3
 
-    malaya.describe_pos()
+    malaya.pos.describe()
 
 
 .. parsed-literal::
@@ -50,7 +49,12 @@ List available Transformer POS models
 
 .. parsed-literal::
 
-    {'bert': ['base', 'small'], 'xlnet': ['base'], 'albert': ['base']}
+    {'bert': ['426.4 MB', 'accuracy: 0.952'],
+     'tiny-bert': ['57.7 MB', 'accuracy: 0.953'],
+     'albert': ['48.7 MB', 'accuracy: 0.951'],
+     'tiny-albert': ['22.4 MB', 'accuracy: 0.933'],
+     'xlnet': ['446.6 MB', 'accuracy: 0.954'],
+     'alxlnet': ['46.8 MB', 'accuracy: 0.951']}
 
 
 
@@ -58,7 +62,7 @@ Make sure you can check accuracy chart from here first before select a
 model,
 https://malaya.readthedocs.io/en/latest/Accuracy.html#pos-recognition
 
-**You might want to use ALBERT, a very small size, 43MB, but the
+**You might want to use Tiny-Albert, a very small size, 22.4MB, but the
 accuracy is still on the top notch.**
 
 .. code:: ipython3
@@ -70,18 +74,12 @@ Load ALBERT model
 
 .. code:: ipython3
 
-    model = malaya.pos.transformer(model = 'albert', size = 'base')
+    model = malaya.pos.transformer(model = 'albert')
 
 
 .. parsed-literal::
 
-    WARNING: Logging before flag parsing goes to stderr.
-    W1017 22:32:06.326681 4564137408 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:68: The name tf.gfile.GFile is deprecated. Please use tf.io.gfile.GFile instead.
-    
-    W1017 22:32:06.327857 4564137408 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:69: The name tf.GraphDef is deprecated. Please use tf.compat.v1.GraphDef instead.
-    
-    W1017 22:32:07.276805 4564137408 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:64: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
-    
+    INFO:tensorflow:loading sentence piece model
 
 
 .. code:: ipython3
@@ -97,7 +95,7 @@ Load ALBERT model
      ('Lumpur:', 'PROPN'),
      ('Sempena', 'ADP'),
      ('sambutan', 'NOUN'),
-     ('Aidilfitri', 'PROPN'),
+     ('Aidilfitri', 'NOUN'),
      ('minggu', 'NOUN'),
      ('depan,', 'ADJ'),
      ('Perdana', 'PROPN'),
@@ -142,14 +140,14 @@ Load ALBERT model
      ('mereka', 'PRON'),
      ('supaya', 'SCONJ'),
      ('berhenti', 'VERB'),
-     ('berehat', 'NOUN'),
+     ('berehat', 'VERB'),
      ('dan', 'CCONJ'),
-     ('tidur', 'NOUN'),
-     ('sebentar', 'ADV'),
+     ('tidur', 'VERB'),
+     ('sebentar', 'NOUN'),
      ('sekiranya', 'SCONJ'),
-     ('mengantuk', 'NOUN'),
+     ('mengantuk', 'ADJ'),
      ('ketika', 'SCONJ'),
-     ('memandu.', 'NOUN')]
+     ('memandu.', 'VERB')]
 
 
 
@@ -229,20 +227,10 @@ Load ALBERT model
        'score': 1.0,
        'beginOffset': 2,
        'endOffset': 2},
-      {'text': 'sambutan',
+      {'text': 'sambutan Aidilfitri minggu',
        'type': 'NOUN',
        'score': 1.0,
        'beginOffset': 3,
-       'endOffset': 3},
-      {'text': 'Aidilfitri',
-       'type': 'PROPN',
-       'score': 1.0,
-       'beginOffset': 4,
-       'endOffset': 4},
-      {'text': 'minggu',
-       'type': 'NOUN',
-       'score': 1.0,
-       'beginOffset': 5,
        'endOffset': 5},
       {'text': 'depan,',
        'type': 'ADJ',
@@ -379,15 +367,10 @@ Load ALBERT model
        'score': 1.0,
        'beginOffset': 47,
        'endOffset': 47},
-      {'text': 'berhenti',
+      {'text': 'berhenti berehat',
        'type': 'VERB',
        'score': 1.0,
        'beginOffset': 48,
-       'endOffset': 48},
-      {'text': 'berehat',
-       'type': 'NOUN',
-       'score': 1.0,
-       'beginOffset': 49,
        'endOffset': 49},
       {'text': 'dan',
        'type': 'CCONJ',
@@ -395,12 +378,12 @@ Load ALBERT model
        'beginOffset': 50,
        'endOffset': 50},
       {'text': 'tidur',
-       'type': 'NOUN',
+       'type': 'VERB',
        'score': 1.0,
        'beginOffset': 51,
        'endOffset': 51},
       {'text': 'sebentar',
-       'type': 'ADV',
+       'type': 'NOUN',
        'score': 1.0,
        'beginOffset': 52,
        'endOffset': 52},
@@ -410,7 +393,7 @@ Load ALBERT model
        'beginOffset': 53,
        'endOffset': 53},
       {'text': 'mengantuk',
-       'type': 'NOUN',
+       'type': 'ADJ',
        'score': 1.0,
        'beginOffset': 54,
        'endOffset': 54},
@@ -427,70 +410,5 @@ Voting stack model
 
 .. code:: ipython3
 
-    xlnet = malaya.pos.transformer(model = 'xlnet', size = 'base')
-    malaya.stack.voting_stack([model, xlnet, xlnet], string)
-
-
-
-
-.. parsed-literal::
-
-    [('Kuala', 'PROPN'),
-     ('Lumpur:', 'PROPN'),
-     ('Sempena', 'ADP'),
-     ('sambutan', 'NOUN'),
-     ('Aidilfitri', 'PROPN'),
-     ('minggu', 'NOUN'),
-     ('depan,', 'NOUN'),
-     ('Perdana', 'PROPN'),
-     ('Menteri', 'PROPN'),
-     ('Tun', 'PROPN'),
-     ('Dr', 'PROPN'),
-     ('Mahathir', 'PROPN'),
-     ('Mohamad', 'PROPN'),
-     ('dan', 'CCONJ'),
-     ('Menteri', 'PROPN'),
-     ('Pengangkutan', 'PROPN'),
-     ('Anthony', 'PROPN'),
-     ('Loke', 'PROPN'),
-     ('Siew', 'PROPN'),
-     ('Fook', 'PROPN'),
-     ('menitipkan', 'VERB'),
-     ('pesanan', 'NOUN'),
-     ('khas', 'ADJ'),
-     ('kepada', 'ADP'),
-     ('orang', 'NOUN'),
-     ('ramai', 'ADJ'),
-     ('yang', 'PRON'),
-     ('mahu', 'ADV'),
-     ('pulang', 'VERB'),
-     ('ke', 'ADP'),
-     ('kampung', 'NOUN'),
-     ('halaman', 'NOUN'),
-     ('masing-masing.', 'NOUN'),
-     ('Dalam', 'ADP'),
-     ('video', 'NOUN'),
-     ('pendek', 'ADJ'),
-     ('terbitan', 'NOUN'),
-     ('Jabatan', 'PROPN'),
-     ('Keselamatan', 'PROPN'),
-     ('Jalan', 'PROPN'),
-     ('Raya', 'PROPN'),
-     ('(JKJR)', 'PUNCT'),
-     ('itu,', 'DET'),
-     ('Dr', 'PROPN'),
-     ('Mahathir', 'PROPN'),
-     ('menasihati', 'VERB'),
-     ('mereka', 'PRON'),
-     ('supaya', 'SCONJ'),
-     ('berhenti', 'VERB'),
-     ('berehat', 'VERB'),
-     ('dan', 'CCONJ'),
-     ('tidur', 'VERB'),
-     ('sebentar', 'ADV'),
-     ('sekiranya', 'SCONJ'),
-     ('mengantuk', 'NOUN'),
-     ('ketika', 'SCONJ'),
-     ('memandu.', 'NOUN')]
-
-
+    alxlnet = malaya.pos.transformer(model = 'alxlnet')
+    malaya.stack.voting_stack([model, alxlnet, alxlnet], string)

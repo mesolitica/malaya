@@ -45,6 +45,12 @@ malaya.language_detection
 .. automodule:: malaya.language_detection
     :members:
 
+malaya.lexicon
+-------------------------
+
+.. automodule:: malaya.lexicon
+    :members:
+
 malaya.normalize
 -------------------------
 
@@ -70,6 +76,9 @@ malaya.preprocessing
 ----------------------
 
 .. automodule:: malaya.preprocessing
+    :members:
+
+.. autoclass:: malaya.preprocessing.SocialTokenizer()
     :members:
 
 malaya.relevancy
@@ -111,7 +120,7 @@ malaya.stem
 .. automodule:: malaya.stem
     :members:
 
-.. autoclass:: malaya.stem._DEEP_STEMMER()
+.. autoclass:: malaya.stem.DEEP_STEMMER()
     :members:
 
 malaya.subjective
@@ -177,86 +186,98 @@ malaya.wordvector
 .. autoclass:: malaya.wordvector._wordvector()
     :members:
 
-malaya._transformer._bert
+malaya.transformers.albert
 -----------------------------
 
-.. automodule:: malaya._transformer._bert
+.. automodule:: malaya.transformers.albert
     :members:
 
-.. autoclass:: malaya._transformer._bert._Model()
+.. autoclass:: malaya.transformers.albert.Model()
     :members:
 
-malaya._transformer._albert
+malaya.transformers.alxlnet
 -----------------------------
 
-.. automodule:: malaya._transformer._albert
+.. automodule:: malaya.transformers.alxlnet
     :members:
 
-.. autoclass:: malaya._transformer._albert._Model()
+.. autoclass:: malaya.transformers.alxlnet.Model()
     :members:
 
-malaya._transformer._xlnet
+malaya.transformers.bert
 -----------------------------
 
-.. automodule:: malaya._transformer._xlnet
+.. automodule:: malaya.transformers.bert
     :members:
 
-.. autoclass:: malaya._transformer._xlnet._Model()
+.. autoclass:: malaya.transformers.bert.Model()
     :members:
 
-malaya._transformer._alxlnet
+malaya.transformers.xlnet
 -----------------------------
 
-.. automodule:: malaya._transformer._alxlnet
+.. automodule:: malaya.transformers.xlnet
     :members:
 
-.. autoclass:: malaya._transformer._alxlnet._Model()
+.. autoclass:: malaya.transformers.xlnet.Model()
     :members:
 
-malaya._models._tensorflow_model
+malaya.model.tf
 ----------------------------------
 
-.. autoclass:: malaya._models._tensorflow_model._SPARSE_SOFTMAX_MODEL()
+.. autoclass:: malaya.model.tf.DEEP_LANG()
     :members:
 
-malaya._models._bert_model
+malaya.model.ml
 ----------------------------------
 
-.. autoclass:: malaya._models._bert_model.BINARY_BERT()
+.. autoclass:: malaya.model.ml.MULTICLASS_BAYES()
     :members:
 
-.. autoclass:: malaya._models._bert_model.MULTICLASS_BERT()
+.. autoclass:: malaya.model.ml.BINARY_BAYES()
     :members:
 
-.. autoclass:: malaya._models._bert_model.SIGMOID_BERT()
+.. autoclass:: malaya.model.ml.MULTILABEL_BAYES()
     :members:
 
-.. autoclass:: malaya._models._bert_model.SIAMESE_BERT()
-    :members:
-
-.. autoclass:: malaya._models._bert_model.TAGGING_BERT()
-    :members:
-
-.. autoclass:: malaya._models._bert_model.DEPENDENCY_BERT()
-    :members:
-
-malaya._models._xlnet_model
+malaya.model.bert
 ----------------------------------
 
-.. autoclass:: malaya._models._xlnet_model.BINARY_XLNET()
+.. autoclass:: malaya.model.bert.BINARY_BERT()
     :members:
 
-.. autoclass:: malaya._models._xlnet_model.MULTICLASS_XLNET()
+.. autoclass:: malaya.model.bert.MULTICLASS_BERT()
     :members:
 
-.. autoclass:: malaya._models._xlnet_model.SIGMOID_XLNET()
+.. autoclass:: malaya.model.bert.SIGMOID_BERT()
     :members:
 
-.. autoclass:: malaya._models._xlnet_model.SIAMESE_XLNET()
+.. autoclass:: malaya.model.bert.SIAMESE_BERT()
     :members:
 
-.. autoclass:: malaya._models._xlnet_model.TAGGING_XLNET()
+.. autoclass:: malaya.model.bert.TAGGING_BERT()
     :members:
 
-.. autoclass:: malaya._models._xlnet_model.DEPENDENCY_XLNET()
+.. autoclass:: malaya.model.bert.DEPENDENCY_BERT()
+    :members:
+
+malaya.model.xlnet
+----------------------------------
+
+.. autoclass:: malaya.model.xlnet.BINARY_XLNET()
+    :members:
+
+.. autoclass:: malaya.model.xlnet.MULTICLASS_XLNET()
+    :members:
+
+.. autoclass:: malaya.model.xlnet.SIGMOID_XLNET()
+    :members:
+
+.. autoclass:: malaya.model.xlnet.SIAMESE_XLNET()
+    :members:
+
+.. autoclass:: malaya.model.xlnet.TAGGING_XLNET()
+    :members:
+
+.. autoclass:: malaya.model.xlnet.DEPENDENCY_XLNET()
     :members:

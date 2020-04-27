@@ -797,7 +797,7 @@ class DEPENDENCY_XLNET(BASE):
 
         Returns
         -------
-        result : (d, tagging, indexing_)
+        result : Tuple
         """
 
         input_ids, input_masks, segment_ids, s_tokens = xlnet_tokenization(

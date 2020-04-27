@@ -15,6 +15,12 @@ _color_sentiment = {
     'neutral': 'rgb(255, 238, 109)',
     'negative': 'rgb(255, 139, 118)',
 }
+
+_color_relevancy = {
+    'relevant': 'rgb(143, 255, 113)',
+    'not relevant': 'rgb(255, 139, 118)',
+}
+
 _color_emotion = {
     'anger': 'rgb(254, 0, 20)',
     'fear': 'rgb(168, 103, 172)',
@@ -54,7 +60,7 @@ def _sentiment_mark(text, negative, positive, neutral, attention, label):
 def _relevancy_mark(text, negative, positive, attention, label):
     return (
         "<mark style='background-color:%s' class='tooltipped' data-position='bottom' data-tooltip=\"Relevant <i class='em em-information_source'></i> %.3f<br>Not relevant <i class='em em-lying_face'></i> %.3f<br>Attention <i class='em em-warning'></i> %.3f\">%s</mark>"
-        % (_color_sentiment[label], positive, negative, attention, text)
+        % (_color_relevancy[label], positive, negative, attention, text)
     )
 
 
@@ -164,8 +170,8 @@ def _render_binary(data, notebook_mode = False):
 
 
 def _render_relevancy(data, notebook_mode = False):
-    index_negative = data['barplot']['x'].index('negative')
-    index_positive = data['barplot']['x'].index('positive')
+    index_negative = data['barplot']['x'].index('not relevant')
+    index_positive = data['barplot']['x'].index('relevant')
     relevancy_mark = []
     for k, v in data['word'].items():
         relevancy_mark.append(

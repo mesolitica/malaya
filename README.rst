@@ -41,10 +41,10 @@ Features
 
 -  **Emotion Analysis**
 
-   From transfer-learning BERT-Bahasa, XLNET-Bahasa and ALBERT-Bahasa to build deep emotion analysis models.
+   Transfer learning on BERT-base-bahasa, Tiny-BERT-bahasa, Albert-base-bahasa, Albert-tiny-bahasa, XLNET-base-bahasa, ALXLNET-base-bahasa.
 -  **Entities Recognition**
 
-   From transfer-learning BERT-Bahasa, XLNET-Bahasa and ALBERT-Bahasa to do Naming Entity Recognition.
+   Transfer learning on BERT-base-bahasa, Tiny-BERT-bahasa, Albert-base-bahasa, Albert-tiny-bahasa, XLNET-base-bahasa, ALXLNET-base-bahasa.
 -  **Language Detection**
 
    using Fast-text and Sparse Deep learning Model to classify Malay (formal and social media), Indonesia (formal and social media), Rojak language and Manglish.
@@ -56,28 +56,28 @@ Features
    Convert from numbers to cardinal or ordinal representation.
 -  **Part-of-Speech Recognition**
 
-   From transfer-learning BERT-Bahasa, XLNET-Bahasa and ALBERT-Bahasa to do Part-of-Speech Recognition.
+   Transfer learning on BERT-base-bahasa, Tiny-BERT-bahasa, Albert-base-bahasa, Albert-tiny-bahasa, XLNET-base-bahasa, ALXLNET-base-bahasa.
 -  **Dependency Parsing**
 
-   From transfer-learning BERT-Bahasa, XLNET-Bahasa and ALBERT-Bahasa to do Dependency Parsing.
+   Transfer learning on BERT-base-bahasa, Tiny-BERT-bahasa, Albert-base-bahasa, Albert-tiny-bahasa, XLNET-base-bahasa, ALXLNET-base-bahasa.
 -  **Relevancy Analysis**
 
-   From transfer-learning BERT-Bahasa, XLNET-Bahasa and ALBERT-Bahasa to build deep relevancy analysis models.
+   Transfer learning on BERT-base-bahasa, Tiny-BERT-bahasa, Albert-base-bahasa, Albert-tiny-bahasa, XLNET-base-bahasa, ALXLNET-base-bahasa.
 -  **Sentiment Analysis**
 
-   From transfer-learning BERT-Bahasa, XLNET-Bahasa and ALBERT-Bahasa to build deep sentiment analysis models.
+   Transfer learning on BERT-base-bahasa, Tiny-BERT-bahasa, Albert-base-bahasa, Albert-tiny-bahasa, XLNET-base-bahasa, ALXLNET-base-bahasa.
 -  **Spell Correction**
 
    Using local Malaysia NLP researches hybrid with Transformer models to auto-correct any bahasa words.
 -  **Stemmer**
 
-   Use Character LSTM Seq2Seq with attention state-of-art to do Bahasa stemming.
+   Use BPE LSTM Seq2Seq with attention state-of-art to do Bahasa stemming.
 -  **Subjectivity Analysis**
 
-   From transfer-learning BERT-Bahasa, XLNET-Bahasa and ALBERT-Bahasa to build deep subjectivity analysis models.
+   Transfer learning on BERT-base-bahasa, Tiny-BERT-bahasa, Albert-base-bahasa, Albert-tiny-bahasa, XLNET-base-bahasa, ALXLNET-base-bahasa.
 -  **Similarity**
 
-   Use deep Encoder, Doc2Vec, BERT, XLNET and ALBERT to build deep semantic similarity models.
+   Use deep Encoder, Doc2Vec, BERT-base-bahasa, Tiny-BERT-bahasa, Albert-base-bahasa, Albert-tiny-bahasa, XLNET-base-bahasa and ALXLNET-base-bahasa to build deep semantic similarity models.
 -  **Summarization**
 
    Using BERT, XLNET, ALBERT, skip-thought, LDA, LSA and Doc2Vec to give precise unsupervised summarization, and TextRank as scoring algorithm.
@@ -86,13 +86,13 @@ Features
    Provide Attention, LDA2Vec, LDA, NMF and LSA interface for easy topic modelling with topics visualization.
 -  **Toxicity Analysis**
 
-   From transfer-learning BERT-Bahasa, XLNET-Bahasa and ALBERT-Bahasa to build deep toxicity analysis models.
+   Transfer learning on BERT-base-bahasa, Tiny-BERT-bahasa, Albert-base-bahasa, Albert-tiny-bahasa, XLNET-base-bahasa, ALXLNET-base-bahasa.
 -  **Word2Vec**
 
    Provide pretrained bahasa wikipedia and bahasa news Word2Vec, with easy interface and visualization.
 -  **Transformer**
 
-   Provide easy interface to load BERT-Bahasa, XLNET-Bahasa, ALBERT-Bahasa and ALXNET-Bahasa.
+   Provide easy interface to load BERT-base-bahasa, Tiny-BERT-bahasa, Albert-base-bahasa, Albert-tiny-bahasa, XLNET-base-bahasa, ALXLNET-base-bahasa.
 
 
 References

@@ -748,19 +748,15 @@ def probability(sentence_piece: bool = False, **kwargs):
     tokenizer = None
 
     if sentence_piece:
-        if validate:
-            check_file(
-                PATH_NGRAM['sentencepiece'], S3_PATH_NGRAM['sentencepiece']
-            )
-        else:
-            if not check_available(PATH_NGRAM[1]):
-                raise Exception(
-                    'sentence piece is not available, please `validate = True`'
-                )
+        check_file(
+            PATH_NGRAM['sentencepiece'],
+            S3_PATH_NGRAM['sentencepiece'],
+            **kwargs
+        )
 
         vocab = PATH_NGRAM['sentencepiece']['vocab']
         vocab_model = PATH_NGRAM['sentencepiece']['model']
-        tokenizer = load_sentencepiece(vocab, vocab_model)
+        tokenizer = load_sentencepiece(vocab_model, vocab)
 
     with open(PATH_NGRAM[1]['model']) as fopen:
         corpus = json.load(fopen)
@@ -830,8 +826,8 @@ def transformer(model, sentence_piece: bool = False, **kwargs):
         )
 
         vocab = PATH_NGRAM['sentencepiece']['vocab']
-        model_vocab = PATH_NGRAM['sentencepiece']['model']
-        tokenizer = load_sentencepiece(model_vocab, vocab)
+        vocab_model = PATH_NGRAM['sentencepiece']['model']
+        tokenizer = load_sentencepiece(vocab_model, vocab)
 
     with open(PATH_NGRAM[1]['model']) as fopen:
         corpus = json.load(fopen)

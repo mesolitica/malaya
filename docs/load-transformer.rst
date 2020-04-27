@@ -1,4 +1,3 @@
-
 Malaya provided basic interface for Pretrained Transformer encoder
 models, specific to Malay, local social media slang and Manglish
 language, we called it Transformer-Bahasa. This interface not able us to
@@ -9,6 +8,23 @@ it for custom transfer-learning, you can download it here,
 https://github.com/huseinzol05/Malaya/tree/master/pretrained-model/,
 some notebooks to help you get started.
 
+Or you can simply use `hugging-face
+transformers <https://huggingface.co/models?filter=malay>`__ to try
+transformer models from Malaya, simply check available models from here,
+https://huggingface.co/models?filter=malay
+
+.. code:: python
+
+    from IPython.core.display import Image, display
+    
+    display(Image('huggingface.png', width=500))
+
+
+
+.. image:: load-transformer_files/load-transformer_2_0.png
+   :width: 500px
+
+
 .. code:: python
 
     %%time
@@ -17,8 +33,8 @@ some notebooks to help you get started.
 
 .. parsed-literal::
 
-    CPU times: user 6.64 s, sys: 1.53 s, total: 8.17 s
-    Wall time: 11.9 s
+    CPU times: user 4.85 s, sys: 1.27 s, total: 6.12 s
+    Wall time: 7.45 s
 
 
 list Transformer-Bahasa available
@@ -33,17 +49,23 @@ list Transformer-Bahasa available
 
 .. parsed-literal::
 
-    {'bert': ['base', 'small'], 'xlnet': ['base'], 'albert': ['base', 'large']}
+    ['bert', 'tiny-bert', 'albert', 'tiny-albert', 'xlnet', 'alxlnet']
 
 
 
-1. ``bert`` is original BERT google architecture with ``base`` and
-   ``small`` sizes.
+1. ``bert`` - BERT architecture from google.
 
-2. ``xlnet`` is original XLNET google architecture with ``base`` size.
+2. ``tiny-bert`` - BERT architecture from google with smaller
+   parameters.
 
-3. ``albert`` is A-Lite BERT google + toyota architecture with ``base``
-   and ``large`` sizes.
+3. ``albert`` - ALBERT architecture from google.
+
+4. ``tiny-albert`` - ALBERT architecture from google with smaller
+   parameters.
+
+5. ``xlnet`` - XLNET architecture from google.
+
+6. ``alxlnet`` Malaya architecture, unpublished model.
 
 Load XLNET-Bahasa
 -----------------
@@ -57,32 +79,48 @@ Feel free to use another models.
 
 .. parsed-literal::
 
-    WARNING: Logging before flag parsing goes to stderr.
-    W1018 10:01:11.627138 4645320128 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet_model/xlnet.py:70: The name tf.gfile.Open is deprecated. Please use tf.io.gfile.GFile instead.
-
-    W1018 10:01:11.631047 4645320128 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet.py:71: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
-
-    W1018 10:01:11.645381 4645320128 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet_model/xlnet.py:253: The name tf.variable_scope is deprecated. Please use tf.compat.v1.variable_scope instead.
-
-    W1018 10:01:11.646437 4645320128 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet_model/xlnet.py:253: The name tf.AUTO_REUSE is deprecated. Please use tf.compat.v1.AUTO_REUSE instead.
-
-    W1018 10:01:11.648410 4645320128 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet_model/modeling.py:686: The name tf.logging.info is deprecated. Please use tf.compat.v1.logging.info instead.
-
-    W1018 10:01:11.651154 4645320128 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet_model/modeling.py:693: The name tf.get_variable is deprecated. Please use tf.compat.v1.get_variable instead.
-
-    W1018 10:01:11.742439 4645320128 deprecation.py:323] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet_model/modeling.py:797: dropout (from tensorflow.python.layers.core) is deprecated and will be removed in a future version.
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/xlnet/xlnet.py:70: The name tf.gfile.Open is deprecated. Please use tf.io.gfile.GFile instead.
+    
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/xlnet/__init__.py:81: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
+    
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/xlnet/xlnet.py:253: The name tf.variable_scope is deprecated. Please use tf.compat.v1.variable_scope instead.
+    
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/xlnet/xlnet.py:253: The name tf.AUTO_REUSE is deprecated. Please use tf.compat.v1.AUTO_REUSE instead.
+    
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/xlnet/modeling.py:686: The name tf.logging.info is deprecated. Please use tf.compat.v1.logging.info instead.
+    
+    INFO:tensorflow:memory input None
+    INFO:tensorflow:Use float type <dtype: 'float32'>
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/xlnet/modeling.py:693: The name tf.get_variable is deprecated. Please use tf.compat.v1.get_variable instead.
+    
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/xlnet/modeling.py:797: dropout (from tensorflow.python.layers.core) is deprecated and will be removed in a future version.
     Instructions for updating:
     Use keras.layers.dropout instead.
-    W1018 10:01:12.571429 4645320128 deprecation.py:323] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet_model/modeling.py:99: dense (from tensorflow.python.layers.core) is deprecated and will be removed in a future version.
+    WARNING:tensorflow:From /usr/local/lib/python3.7/site-packages/tensorflow_core/python/layers/core.py:271: Layer.apply (from tensorflow.python.keras.engine.base_layer) is deprecated and will be removed in a future version.
     Instructions for updating:
-    Use keras.layers.dense instead.
-    W1018 10:01:20.317589 4645320128 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet.py:84: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
-
-    W1018 10:01:21.431853 4645320128 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_transformer/_xlnet.py:90: The name tf.train.Saver is deprecated. Please use tf.compat.v1.train.Saver instead.
-
-    W1018 10:01:21.746469 4645320128 deprecation.py:323] From /usr/local/lib/python3.6/site-packages/tensorflow/python/training/saver.py:1276: checkpoint_exists (from tensorflow.python.training.checkpoint_management) is deprecated and will be removed in a future version.
+    Please use `layer.__call__` method instead.
+    WARNING:tensorflow:
+    The TensorFlow contrib module will not be included in TensorFlow 2.0.
+    For more information, please see:
+      * https://github.com/tensorflow/community/blob/master/rfcs/20180907-contrib-sunset.md
+      * https://github.com/tensorflow/addons
+      * https://github.com/tensorflow/io (for I/O related ops)
+    If you depend on functionality not listed there, please file an issue.
+    
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/xlnet/modeling.py:99: dense (from tensorflow.python.layers.core) is deprecated and will be removed in a future version.
     Instructions for updating:
-    Use standard file APIs to check for files with this prefix.
+    Use keras.layers.Dense instead.
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/xlnet/__init__.py:94: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
+    
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/xlnet/__init__.py:95: The name tf.global_variables_initializer is deprecated. Please use tf.compat.v1.global_variables_initializer instead.
+    
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/xlnet/__init__.py:96: The name tf.trainable_variables is deprecated. Please use tf.compat.v1.trainable_variables instead.
+    
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/xlnet/__init__.py:100: The name tf.train.Saver is deprecated. Please use tf.compat.v1.train.Saver instead.
+    
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/xlnet/__init__.py:103: The name tf.get_default_graph is deprecated. Please use tf.compat.v1.get_default_graph instead.
+    
+    INFO:tensorflow:Restoring parameters from /Users/huseinzolkepli/Malaya/xlnet-model/base/xlnet-base/model.ckpt
 
 
 .. code:: python
@@ -110,7 +148,7 @@ representation.
 
 .. parsed-literal::
 
-    (3, 512)
+    (3, 768)
 
 
 
@@ -246,11 +284,11 @@ https://github.com/jessevig/bertviz .
 
 .. raw:: html
 
-
-              <span style="user-select:none">
-                Layer: <select id="layer"></select>
-              </span>
-              <div id='vis'></div>
+    
+    <span style="user-select:none">
+      Layer: <select id="layer"></select>
+    </span>
+    <div id='vis'></div>
 
 
 
@@ -271,12 +309,12 @@ https://github.com/jessevig/bertviz .
 .. code:: python
 
     from IPython.core.display import Image, display
-
+    
     display(Image('xlnet-attention.png', width=300))
 
 
 
-.. image:: load-transformer_files/load-transformer_23_0.png
+.. image:: load-transformer_files/load-transformer_24_0.png
    :width: 300px
 
 

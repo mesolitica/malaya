@@ -1,4 +1,3 @@
-
 .. code:: ipython3
 
     %%time
@@ -7,8 +6,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 6.45 s, sys: 1.46 s, total: 7.91 s
-    Wall time: 11.9 s
+    CPU times: user 4.27 s, sys: 816 ms, total: 5.09 s
+    Wall time: 4.19 s
 
 
 Explanation
@@ -41,49 +40,45 @@ List available Transformer models
 
 .. parsed-literal::
 
-    {'bert': ['base'], 'xlnet': ['base'], 'albert': ['base']}
+    {'bert': ['425.6 MB', 'accuracy: 0.872'],
+     'tiny-bert': ['57.4 MB', 'accuracy: 0.656'],
+     'albert': ['48.6 MB', 'accuracy: 0.871'],
+     'tiny-albert': ['22.4 MB', 'accuracy: 0.843'],
+     'xlnet': ['446.5 MB', 'accuracy: 0.885'],
+     'alxlnet': ['46.8 MB', 'accuracy: 0.874']}
 
 
 
 Make sure you can check accuracy chart from here first before select a
 model, https://malaya.readthedocs.io/en/latest/Accuracy.html#relevancy
 
-**You might want to use ALBERT, a very small size, 43MB, but the
+**You might want to use Alxlnet, a very small size, 46.8MB, but the
 accuracy is still on the top notch.**
 
-Load ALBERT model
------------------
+Load ALXLNET model
+------------------
+
+All model interface will follow sklearn interface started v3.4,
+
+.. code:: python
+
+   model.predict(List[str])
+
+   model.predict_proba(List[str])
 
 .. code:: ipython3
 
-    model = malaya.relevancy.transformer(model = 'albert', size = 'base')
+    model = malaya.relevancy.transformer(model = 'alxlnet')
 
 
 .. parsed-literal::
 
-    WARNING: Logging before flag parsing goes to stderr.
-    W1017 22:41:08.638995 4600153536 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:68: The name tf.gfile.GFile is deprecated. Please use tf.io.gfile.GFile instead.
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/function/__init__.py:54: The name tf.gfile.GFile is deprecated. Please use tf.io.gfile.GFile instead.
     
-    W1017 22:41:08.640387 4600153536 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:69: The name tf.GraphDef is deprecated. Please use tf.compat.v1.GraphDef instead.
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/function/__init__.py:55: The name tf.GraphDef is deprecated. Please use tf.compat.v1.GraphDef instead.
     
-    W1017 22:41:11.770990 4600153536 deprecation_wrapper.py:119] From /Users/huseinzol/Documents/Malaya/malaya/_utils/_utils.py:64: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/function/__init__.py:49: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
     
-
-
-Predict single string
-^^^^^^^^^^^^^^^^^^^^^
-
-.. code:: ipython3
-
-    model.predict(negative_text,get_proba=True)
-
-
-
-
-.. parsed-literal::
-
-    {'negative': 0.9698777, 'positive': 0.03012232}
-
 
 
 Predict batch of strings
@@ -91,15 +86,15 @@ Predict batch of strings
 
 .. code:: ipython3
 
-    model.predict_batch([negative_text, positive_text],get_proba=True)
+    model.predict_proba([negative_text, positive_text])
 
 
 
 
 .. parsed-literal::
 
-    [{'negative': 0.9202206, 'positive': 0.079779394},
-     {'negative': 1.6046162e-05, 'positive': 0.9999839}]
+    [{'not relevant': 0.99813855, 'relevant': 0.0018614056},
+     {'not relevant': 9.000895e-06, 'relevant': 0.99999094}]
 
 
 
@@ -117,11 +112,11 @@ visualization dashboard, you can disable by ``visualization=False``.
 
     from IPython.core.display import Image, display
     
-    display(Image('relevancy-negative.png', width=800))
+    display(Image('relevancy-dashboard.png', width=800))
 
 
 
-.. image:: load-relevancy_files/load-relevancy_14_0.png
+.. image:: load-relevancy_files/load-relevancy_12_0.png
    :width: 800px
 
 
@@ -133,18 +128,29 @@ https://malaya.readthedocs.io/en/latest/Stack.html
 
 .. code:: ipython3
 
-    bert = malaya.relevancy.transformer(model = 'bert', size = 'base')
+    albert = malaya.relevancy.transformer(model = 'albert')
+
+
+.. parsed-literal::
+
+    INFO:tensorflow:loading sentence piece model
+
+
+.. parsed-literal::
+
+    INFO:tensorflow:loading sentence piece model
+
 
 .. code:: ipython3
 
-    malaya.stack.predict_stack([bert, model], [positive_text, negative_text])
+    malaya.stack.predict_stack([albert, model], [positive_text, negative_text])
 
 
 
 
 .. parsed-literal::
 
-    [{'negative': 5.5796554e-05, 'positive': 0.9998949},
-     {'negative': 0.9592692, 'positive': 0.0014194043}]
+    [{'not relevant': 4.471244e-05, 'relevant': 0.99976957},
+     {'not relevant': 0.9995484, 'relevant': 0.000368167}]
 
 

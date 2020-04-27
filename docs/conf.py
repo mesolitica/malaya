@@ -80,6 +80,9 @@ MOCK_MODULES = [
     'bert',
     'dateparser',
     'sentencepiece',
+    'tensorflow.keras',
+    'tensorflow.keras.preprocessing',
+    'tensorflow.keras.preprocessing.sequence',
 ]
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 

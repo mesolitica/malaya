@@ -467,7 +467,7 @@ def sentencepiece_tokenizer_bert(path_tokenizer, path_vocab):
     return tokenizer
 
 
-def load_yttm(path):
+def load_yttm(path, id_mode = False):
     try:
         import youtokentome as yttm
     except:
@@ -475,7 +475,11 @@ def load_yttm(path):
             'youtokentome not installed. Please install it by `pip install youtokentome` and try again.'
         )
     try:
-        return yttm.BPE(model = path), yttm.OutputType.SUBWORD
+        if id_mode:
+            type = yttm.OutputType.ID
+        else:
+            type = yttm.OutputType.SUBWORD
+        return yttm.BPE(model = path), type
     except:
         path = path.split('Malaya/')[1]
         path = '/'.join(path.split('/')[:-1])

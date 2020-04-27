@@ -1,4 +1,3 @@
-
 .. code:: python
 
     %%time
@@ -7,36 +6,109 @@
 
 .. parsed-literal::
 
-    CPU times: user 12.1 s, sys: 1.36 s, total: 13.4 s
-    Wall time: 17 s
+    CPU times: user 4.85 s, sys: 1.29 s, total: 6.14 s
+    Wall time: 7.76 s
+
+
+Use deep learning model
+-----------------------
+
+.. code:: python
+
+    model = malaya.stem.deep_model()
+
+
+.. parsed-literal::
+
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/function/__init__.py:54: The name tf.gfile.GFile is deprecated. Please use tf.io.gfile.GFile instead.
+    
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/function/__init__.py:55: The name tf.GraphDef is deprecated. Please use tf.compat.v1.GraphDef instead.
+    
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/function/__init__.py:49: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
+    
+
+
+.. code:: python
+
+    string = 'Benda yg SALAH ni, jgn lah didebatkan. Yg SALAH xkan jadi betul. Ingat tu. Mcm mana kesat sekalipun org sampaikan mesej, dan memang benda tu salah, diam je. Xyah nk tunjuk kau open sangat nk tegur cara org lain berdakwah'
+    another_string = 'melayu bodoh, dah la gay, sokong lgbt lagi, memang tak guna, http://twitter.com'
+
+.. code:: python
+
+    model.stem(string)
+
+
+
+
+.. parsed-literal::
+
+    'Benda yg SALAH ni , jgn lah debat . Yg SALAH xkan jadi betul . Ingat tu . Mcm mana kesat sekalipun org sampai mesej , dan memang benda tu salah , diam je . Xyah nk tunjuk kau open sangat nk tegur cara org lain dakwah'
+
+
+
+.. code:: python
+
+    model.stem(another_string)
+
+
+
+
+.. parsed-literal::
+
+    'layu bodoh , dah la gay , sokong lgbt lagi , memang tak guna , http://twitter.com'
+
+
+
+.. code:: python
+
+    model.stem('saya menyerukanlah')
+
+
+
+
+.. parsed-literal::
+
+    'saya seru'
+
 
 
 Use Sastrawi stemmer
 --------------------
 
+Malaya also included interface for `Sastrawi
+stemmer <https://pypi.org/project/PySastrawi/>`__. We also use it for
+internal purpose. To use it, simply,
+
 .. code:: python
 
-    malaya.stem.sastrawi('saya tengah berjalan')
+   malaya.stem.sastrawi(str)
+
+But it not able to maintain words like url, hashtag, money, datetime and
+user mention.
+
+.. code:: python
+
+    malaya.stem.sastrawi(another_string)
 
 
 
 
 .. parsed-literal::
 
-    'saya tengah jalan'
+    'melayu bodoh dah la gay sokong lgbt lagi memang tak guna http twitter com'
 
 
 
 .. code:: python
 
-    malaya.stem.sastrawi('saya tengah berjalankan sangat-sangat')
+    malaya.stem.sastrawi('saya menyerukanlah')
 
 
 
 
 .. parsed-literal::
 
-    'saya tengah jalan sangat'
+    'saya seru'
 
 
 
@@ -52,75 +124,3 @@ Use Sastrawi stemmer
     'tarik'
 
 
-
-List available deep learning stemming models
---------------------------------------------
-
-.. code:: python
-
-    malaya.stem.available_deep_model()
-
-
-
-
-.. parsed-literal::
-
-    ['lstm', 'bahdanau', 'luong']
-
-
-
-Load deep learning model
-------------------------
-
-.. code:: python
-
-    stemmer = malaya.stem.deep_model('bahdanau')
-    stemmer.stem('saya sangat sukakan awak tetapi awak sangatlah sakai')
-
-
-
-
-.. parsed-literal::
-
-    'saya sangat suka awak tetap awak sangat saka'
-
-
-
-.. code:: python
-
-    stemmer = malaya.stem.deep_model('luong')
-    stemmer.stem('saya sangat sukakan awak tetapi awak sangatlah sakai')
-
-
-
-
-.. parsed-literal::
-
-    'saya sangat suka awak tetap awak sangat saka'
-
-
-
-.. code:: python
-
-    stemmer = malaya.stem.deep_model('lstm')
-    stemmer.stem('saya sangat sukakan awak tetapi awak sangatlah sakai')
-
-
-
-
-.. parsed-literal::
-
-    'saya sangat suka awak tetapi awak sangat sakai'
-
-
-
-.. code:: python
-
-    malaya.stem.sastrawi('saya sangat sukakan awak tetapi awak sangatlah sakai')
-
-
-
-
-.. parsed-literal::
-
-    'saya sangat suka awak tetapi awak sangat sakai'
