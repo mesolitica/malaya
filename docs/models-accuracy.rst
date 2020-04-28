@@ -7,7 +7,7 @@ dataset available inside the notebooks. All training sessions stored in
 
 **Below chart is F1 accuracy for dependency tagging.**
 
-.. code:: ipython3
+.. code:: python
 
     from IPython.core.display import Image, display
     
@@ -328,7 +328,7 @@ sessions stored in
 
 **Graph based on F1-score.**
 
-.. code:: ipython3
+.. code:: python
 
     from IPython.core.display import Image, display
     
@@ -482,7 +482,7 @@ dataset available inside the notebooks. All training sessions stored in
 
 **Graph based on F1-score.**
 
-.. code:: ipython3
+.. code:: python
 
     from IPython.core.display import Image, display
     
@@ -641,7 +641,7 @@ sessions stored in
 
 **Graph based on F1-score.**
 
-.. code:: ipython3
+.. code:: python
 
     display(Image('language-detection-accuracy.png', width=500))
 
@@ -696,7 +696,7 @@ dataset available inside the notebooks. All training sessions stored in
 
 **Graph based on F1-score.**
 
-.. code:: ipython3
+.. code:: python
 
     display(Image('pos-accuracy.png', width=500))
 
@@ -894,7 +894,7 @@ sessions stored in
 
 **Graph based on F1-score.**
 
-.. code:: ipython3
+.. code:: python
 
     display(Image('relevancy-accuracy.png', width=500))
 
@@ -1003,7 +1003,7 @@ sessions stored in
 
 **Graph based on F1-score.**
 
-.. code:: ipython3
+.. code:: python
 
     display(Image('sentiment-accuracy.png', width=500))
 
@@ -1127,7 +1127,7 @@ sessions stored in
 
 **Graph based on F1-score.**
 
-.. code:: ipython3
+.. code:: python
 
     display(Image('similarity-accuracy.png', width=500))
 
@@ -1236,7 +1236,7 @@ sessions stored in
 
 **Graph based on F1-score.**
 
-.. code:: ipython3
+.. code:: python
 
     display(Image('subjectivity-accuracy.png', width=500))
 
@@ -1359,7 +1359,7 @@ sessions stored in
 
 **Graph based on F1-score.**
 
-.. code:: ipython3
+.. code:: python
 
     display(Image('toxic-accuracy.png', width=500))
 
