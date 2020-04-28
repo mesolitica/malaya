@@ -16,77 +16,10 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath('..'))
-
-if sys.version_info >= (3, 3):
-    from unittest.mock import MagicMock
-else:
-    from mock import MagicMock
-
-
-class Mock(MagicMock):
-    @classmethod
-    def __getattr__(cls, name):
-        return MagicMock()
-
-
-MOCK_MODULES = [
-    'pathlib',
-    'sklearn',
-    'numpy',
-    'scipy',
-    'tqdm',
-    'tensorflow',
-    'toolz',
-    'fuzzywuzzy',
-    'unidecode',
-    'nltk',
-    'nltk.tokenize',
-    'nltk.util',
-    'tensorflow.contrib',
-    'tensorflow.contrib.seq2seq',
-    'tensorflow.contrib.seq2seq.python',
-    'tensorflow.contrib.seq2seq.python.ops',
-    'Sastrawi',
-    'Sastrawi.Stemmer',
-    'Sastrawi.Stemmer.StemmerFactory',
-    'xgboost',
-    'scipy.sparse',
-    'pandas',
-    'sklearn.feature_extraction',
-    'sklearn.feature_extraction.text',
-    'sklearn.metrics',
-    'sklearn.metrics.pairwise',
-    'sklearn.utils',
-    'sklearn.cluster',
-    'sklearn.model_selection',
-    'sklearn.naive_bayes',
-    'sklearn.preprocessing',
-    'sklearn.cross_validation',
-    'scipy.linalg',
-    'sklearn.decomposition',
-    'sklearn.pipeline',
-    'sklearn.manifold',
-    'scipy.cluster',
-    'scipy.cluster.hierarchy',
-    'scipy.spatial',
-    'scipy.spatial.distance',
-    'scipy.stats',
-    'scipy.stats.mstats',
-    'sklearn.neighbors',
-    'pulp',
-    'ftfy',
-    'networkx',
-    'bert',
-    'dateparser',
-    'sentencepiece',
-    'tensorflow.keras',
-    'tensorflow.keras.preprocessing',
-    'tensorflow.keras.preprocessing.sequence',
-    'herpetologist',
-    'albert',
-]
-sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+SOURCE_DIR = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.abspath(__name__)))
+)
+sys.path.insert(0, SOURCE_DIR)
 
 
 # -- Project information -----------------------------------------------------

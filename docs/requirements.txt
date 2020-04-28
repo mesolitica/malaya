@@ -1,0 +1,17 @@
+dateparser
+sklearn
+scikit-learn
+requests
+unidecode
+tensorflow==1.14
+numpy
+scipy
+PySastrawi
+ftfy
+networkx
+sentencepiece
+bert-tensorflow
+tqdm
+herpetologist
+youtokentome
+albert-tensorflow
