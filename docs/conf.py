@@ -84,6 +84,7 @@ MOCK_MODULES = [
     'tensorflow.keras.preprocessing',
     'tensorflow.keras.preprocessing.sequence',
     'herpetologist',
+    'albert',
 ]
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
