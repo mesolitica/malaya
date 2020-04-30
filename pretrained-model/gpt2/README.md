@@ -48,7 +48,7 @@ python3 train_tpu.py \
 1. **117M**, last update 30th April 2020, [117m-bahasa.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/117m-bahasa-v3.tar.gz)
 
   - Vocab size 57k.
-  - Trained on raw wikipedia, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession and raw common-crawl
+  - Trained on raw wikipedia, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession and raw common-crawl, ~0.9B words.
   - 20k steps, 192 batch size, 1 V3-8 TPU.
   - perplexity, 5.4739473917272.
 
