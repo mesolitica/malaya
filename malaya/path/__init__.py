@@ -921,6 +921,30 @@ S3_PATH_ALXLNET = {
     'alxlnet': {'model': 'v34/pretrained-model/alxlnet-base.tar.gz'}
 }
 
+PATH_GPT2 = {
+    '117M': {
+        'path': home + '/gpt2/117M/',
+        'directory': home + '/gpt2/117M/model/',
+        'model': {
+            'model': home + '/gpt2/117M/gpt2-117M.tar.gz',
+            'version': 'v34',
+        },
+    },
+    '345M': {
+        'path': home + '/gpt2/345M/',
+        'directory': home + '/gpt2/345M/model/',
+        'model': {
+            'model': home + '/gpt2/345M/gpt2-345M.tar.gz',
+            'version': 'v34',
+        },
+    },
+}
+
+S3_PATH_GPT2 = {
+    '117M': {'model': 'v34/pretrained-model/gpt2-117M.tar.gz'},
+    '345M': {'model': 'v34/pretrained-model/gpt2-345M.tar.gz'},
+}
+
 PATH_WORDVECTOR = {
     'news': {
         'vocab': home + '/wordvector/news/wordvector.json',

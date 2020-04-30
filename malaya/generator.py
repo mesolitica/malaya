@@ -528,3 +528,8 @@ def shortform(
         filtered.append(s)
 
     return list(set(filtered))
+
+
+@check_type
+def gpt2(model = '345M'):
+    pass

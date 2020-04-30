@@ -79,7 +79,7 @@ flags.DEFINE_bool('use_tpu', True, 'Whether to use TPU or GPU/CPU.')
 
 # https://storage.googleapis.com/gpt-2/models/117M/hparams.json
 hparams = model.default_hparams()
-with open('small-hparams.json') as f:
+with open('base-hparams.json') as f:
     hparams.override_from_dict(json.load(f))
 
 
@@ -184,7 +184,7 @@ def model_fn_builder(
             eval_metrics = (metric_fn, [loss, input_ids, output])
             output_spec = tf.contrib.tpu.TPUEstimatorSpec(
                 mode = mode,
-                loss = loss,
+                loss = total_loss,
                 eval_metrics = eval_metrics,
                 scaffold_fn = scaffold_fn,
             )
@@ -221,9 +221,6 @@ def input_fn_builder(
             #     )
             # )
             # d = d.shuffle(buffer_size = 100)
-        else:
-            d = tf.data.TFRecordDataset(input_files)
-            d = d.repeat(0)
 
         d = d.apply(
             tf.contrib.data.map_and_batch(

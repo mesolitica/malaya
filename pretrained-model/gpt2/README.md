@@ -30,7 +30,9 @@ Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://w
 
 4. Convert dataset into tfrecord, [convert-tfrecord.ipynb](convert-tfrecord.ipynb) and upload to your own GCS.
 
-5. Start training, [train_tpu.py](train_tpu.py),
+5. Download pretrained GPT2 from OpenAI repository, [download-pretrained-to-gcs.ipynb](download-pretrained-to-gcs.ipynb)
+
+6. Start training, [train_tpu.py](train_tpu.py),
 
 ```bash
 python3 train_tpu.py \
@@ -43,12 +45,12 @@ python3 train_tpu.py \
 
 ## Download
 
-1. **117M**, last update 30th April 2020, [117m-bahasa.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/117m-bahasa.tar.gz)
+1. **117M**, last update 30th April 2020, [117m-bahasa.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/117m-bahasa-v3.tar.gz)
 
   - Vocab size 57k.
   - Trained on raw wikipedia, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession and raw common-crawl
-  - 4k steps, 192 batch size, 1 V3-8 TPU.
-  - perplexity, 14.8797317
+  - 20k steps, 192 batch size, 1 V3-8 TPU.
+  - perplexity, 5.4739473917272.
 
 ## Citation
 
