@@ -2,6 +2,8 @@
 
 Thanks to [openai/gpt2](https://github.com/openai/gpt-2) for opensourcing most of the source code to develop GPT2, https://github.com/openai/gpt-2 and [minimaxir/gpt-2-simple](https://github.com/minimaxir/gpt-2-simple). Malaya just edit the scripts to train on huge dataset.
 
+**Do not finetuned this model to build fake news generator**.
+
 ## Table of contents
   * [Objective](#objective)
   * [Acknowledgement](#acknowledgement)
@@ -51,6 +53,18 @@ python3 train_tpu.py \
   - Trained on raw wikipedia, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession and raw common-crawl, ~0.9B words.
   - 20k steps, 192 batch size, 1 V3-8 TPU.
   - perplexity, 5.4739473917272.
+
+Use [small-hparams.json](small-hparams.json) to load parameter config.
+
+1. **345M**, last update 1st May 2020, [345m-bahasa.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/345m-bahasa.tar.gz)
+
+  - Vocab size 57k.
+  - Trained on raw wikipedia, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession and raw common-crawl, ~0.9B words.
+  - 55k steps, 64 batch size, 1 V3-8 TPU.
+  - perplexity, 2.45960311115695
+
+Use [base-hparams.json](base-hparams.json) to load parameter config.
+
 
 ## Citation
 

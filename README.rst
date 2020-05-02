@@ -45,6 +45,9 @@ Features
 -  **Entities Recognition**
 
    Transfer learning on BERT-base-bahasa, Tiny-BERT-bahasa, Albert-base-bahasa, Albert-tiny-bahasa, XLNET-base-bahasa, ALXLNET-base-bahasa.
+-  **Generator**
+
+   Generate any texts given a context using GPT2 Bahasa 117M and 345M.
 -  **Language Detection**
 
    using Fast-text and Sparse Deep learning Model to classify Malay (formal and social media), Indonesia (formal and social media), Rojak language and Manglish.

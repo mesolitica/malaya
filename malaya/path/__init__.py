@@ -924,7 +924,7 @@ S3_PATH_ALXLNET = {
 PATH_GPT2 = {
     '117M': {
         'path': home + '/gpt2/117M/',
-        'directory': home + '/gpt2/117M/model/',
+        'directory': home + '/gpt2/117M/gpt2-bahasa-117M/',
         'model': {
             'model': home + '/gpt2/117M/gpt2-117M.tar.gz',
             'version': 'v34',
@@ -932,7 +932,7 @@ PATH_GPT2 = {
     },
     '345M': {
         'path': home + '/gpt2/345M/',
-        'directory': home + '/gpt2/345M/model/',
+        'directory': home + '/gpt2/345M/gpt2-bahasa-345M/',
         'model': {
             'model': home + '/gpt2/345M/gpt2-345M.tar.gz',
             'version': 'v34',
@@ -941,8 +941,8 @@ PATH_GPT2 = {
 }
 
 S3_PATH_GPT2 = {
-    '117M': {'model': 'v34/pretrained-model/gpt2-117M.tar.gz'},
-    '345M': {'model': 'v34/pretrained-model/gpt2-345M.tar.gz'},
+    '117M': {'model': 'v34/pretrained-model/gpt2-bahasa-117M.tar.gz'},
+    '345M': {'model': 'v34/pretrained-model/gpt2-bahasa-345M.tar.gz'},
 }
 
 PATH_WORDVECTOR = {

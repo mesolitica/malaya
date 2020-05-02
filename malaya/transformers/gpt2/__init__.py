@@ -1,5 +1,8 @@
 import tensorflow as tf
-from . import model
+import os
+import json
+from malaya.transformers.gpt2 import model as gpt2_model, encoder
+from herpetologist import check_type
 
 
 def top_k_logits(logits, k):
@@ -62,7 +65,7 @@ def sample_sequence(
         context = tf.fill([batch_size, 1], start_token)
 
     def step(hparams, tokens, past = None):
-        lm_output = model.model(
+        lm_output = gpt2_model.model(
             hparams = hparams,
             X = tokens,
             past = past,
@@ -72,7 +75,7 @@ def sample_sequence(
         logits = lm_output['logits'][:, :, : hparams.n_vocab]
         presents = lm_output['present']
         presents.set_shape(
-            model.past_shape(hparams = hparams, batch_size = batch_size)
+            gpt2_model.past_shape(hparams = hparams, batch_size = batch_size)
         )
         return {'logits': logits, 'presents': presents}
 
@@ -107,7 +110,9 @@ def sample_sequence(
             loop_vars = [context_output['presents'], context[:, -1], context],
             shape_invariants = [
                 tf.TensorShape(
-                    model.past_shape(hparams = hparams, batch_size = batch_size)
+                    gpt2_model.past_shape(
+                        hparams = hparams, batch_size = batch_size
+                    )
                 ),
                 tf.TensorShape([batch_size]),
                 tf.TensorShape([batch_size, None]),
@@ -119,27 +124,69 @@ def sample_sequence(
 
 
 class Model:
-    def __init__(
-        self, hparams, path, vectorizer, generate_length, temperature, top_k
-    ):
+    def __init__(self, hparams, encoder, generate_length, temperature, top_k):
+        self._encoder = encoder
         self._graph = tf.Graph()
         with self._graph.as_default():
             self._X = tf.compat.v1.placeholder(tf.int32, [1, None])
             self._model = sample_sequence(
                 hparams = hparams,
-                length = sample_length,
-                context = context,
+                length = generate_length,
+                context = self._X,
                 batch_size = 1,
-                temperature = 1.0,
-                top_k = 40,
+                temperature = temperature,
+                top_k = top_k,
             )
             self._sess = tf.InteractiveSession()
             self._sess.run(tf.global_variables_initializer())
-            saver = tf.train.Saver(tf.trainable_variables())
-            saver.restore(self._sess, path + '/model.ckpt')
+            self._saver = tf.train.Saver(tf.trainable_variables())
+
+    @check_type
+    def generate(self, string: str):
+        encoded = self._encoder.encode(string)
+        out = self._sess.run(self._model, feed_dict = {self._X: [encoded]})
+        return self._encoder.decode(out[0])
 
 
-def load(model = '345M', generate_length = 100, temperature = 1.0, top_k = 40):
-    hparams = model.default_hparams()
-    with open('small-hparams.json') as f:
+@check_type
+def load(
+    model = '345M',
+    generate_length = 100,
+    temperature = 1.0,
+    top_k = 40,
+    **kwargs
+):
+
+    from malaya.path import PATH_GPT2, S3_PATH_GPT2
+    from malaya.function import check_file
+
+    check_file(PATH_GPT2[model]['model'], S3_PATH_GPT2[model], **kwargs)
+
+    if not os.path.exists(PATH_GPT2[model]['directory'] + 'model.ckpt'):
+        import tarfile
+
+        with tarfile.open(PATH_GPT2[model]['model']['model']) as tar:
+            tar.extractall(path = PATH_GPT2[model]['path'])
+
+    params = PATH_GPT2[model]['directory'] + 'hparams.json'
+    merges = PATH_GPT2[model]['directory'] + 'bahasa-merges.txt'
+    vocab = PATH_GPT2[model]['directory'] + 'bahasa-vocab.json'
+    gpt2_checkpoint = PATH_GPT2[model]['directory'] + 'model.ckpt'
+
+    hparams = gpt2_model.default_hparams()
+    with open(params) as f:
         hparams.override_from_dict(json.load(f))
+
+    with open(vocab, 'r') as f:
+        en = json.load(f)
+    with open(merges, 'r', encoding = 'utf-8') as f:
+        bpe_data = f.read()
+
+    bpe_merges = [
+        tuple(merge_str.split()) for merge_str in bpe_data.split('\n')[1:-1]
+    ]
+    enc_malay = encoder.Encoder(encoder = en, bpe_merges = bpe_merges)
+
+    model = Model(hparams, enc_malay, generate_length, temperature, top_k)
+    model._saver.restore(model._sess, gpt2_checkpoint)
+    return model
