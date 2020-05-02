@@ -143,6 +143,17 @@ class Model:
 
     @check_type
     def generate(self, string: str):
+        """
+        generate a text given an initial string.
+
+        Parameters
+        ----------
+        string : str
+
+        Returns
+        -------
+        result: str
+        """
         encoded = self._encoder.encode(string)
         out = self._sess.run(self._model, feed_dict = {self._X: [encoded]})
         return self._encoder.decode(out[0])
@@ -156,6 +167,30 @@ def load(
     top_k = 40,
     **kwargs
 ):
+    """
+    Load gpt2 model.
+
+    Parameters
+    ----------
+    model : str, optional (default='345M')
+        Model architecture supported. Allowed values:
+
+        * ``'117M'`` - GPT2 117M parameters.
+        * ``'345M'`` - GPT2 345M parameters.
+
+    generate_length : int, optional (default=256)
+        length of sentence to generate.
+    
+    temperature : float, optional (default=1.0)
+        temperature value, value should between 0 and 1.
+
+    top_k : int, optional (default=40)
+        top-k in nucleus sampling selection.
+
+    Returns
+    -------
+    result: malaya.transformers.gpt2.Model class
+    """
 
     from malaya.path import PATH_GPT2, S3_PATH_GPT2
     from malaya.function import check_file
