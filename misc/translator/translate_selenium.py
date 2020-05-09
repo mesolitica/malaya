@@ -20,7 +20,7 @@ class Translate:
 
     def translate(self, string):
         self.driver.find_element_by_id('source').clear()
-        self.driver.find_element_by_id('source').send_keys(string[0])
+        self.driver.find_element_by_id('source').send_keys(string)
         time.sleep(3)
         text = [elem.text for elem in self.driver.find_elements_by_xpath(span)]
         if len(text):
