@@ -91,19 +91,19 @@ class Model:
             )
 
             self.logits = xlnet_model.get_pooled_out(pool_mode, True)
-            self._sess = tf.InteractiveSession()
-            self._sess.run(tf.global_variables_initializer())
-            tvars = tf.trainable_variables()
+            self._sess = tf.compat.v1.InteractiveSession()
+            self._sess.run(tf.compat.v1.global_variables_initializer())
+            tvars = tf.compat.v1.trainable_variables()
             assignment_map, _ = get_assignment_map_from_checkpoint(
                 tvars, checkpoint
             )
-            self._saver = tf.train.Saver(var_list = assignment_map)
+            self._saver = tf.compat.v1.train.Saver(var_list = assignment_map)
             attentions = [
                 n.name
-                for n in tf.get_default_graph().as_graph_def().node
+                for n in tf.compat.v1.get_default_graph().as_graph_def().node
                 if 'rel_attn/Softmax' in n.name
             ]
-            g = tf.get_default_graph()
+            g = tf.compat.v1.get_default_graph()
             self.attention_nodes = [
                 g.get_tensor_by_name('%s:0' % (a)) for a in attentions
             ]

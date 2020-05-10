@@ -137,9 +137,9 @@ class Model:
                 temperature = temperature,
                 top_k = top_k,
             )
-            self._sess = tf.InteractiveSession()
-            self._sess.run(tf.global_variables_initializer())
-            self._saver = tf.train.Saver(tf.trainable_variables())
+            self._sess = tf.compat.v1.InteractiveSession()
+            self._sess.run(tf.compat.v1.global_variables_initializer())
+            self._saver = tf.compat.v1.train.Saver(tf.compat.v1.trainable_variables())
 
     @check_type
     def generate(self, string: str):

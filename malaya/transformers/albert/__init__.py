@@ -118,17 +118,17 @@ class Model:
                 logits, num_samples = self.k, output_dtype = tf.int32
             )
 
-            self._sess = tf.InteractiveSession()
-            self._sess.run(tf.global_variables_initializer())
-            var_lists = tf.get_collection(
-                tf.GraphKeys.TRAINABLE_VARIABLES, scope = 'bert'
+            self._sess = tf.compat.v1.InteractiveSession()
+            self._sess.run(tf.compat.v1.global_variables_initializer())
+            var_lists = tf.compat.v1.get_collection(
+                tf.compat.v1.GraphKeys.TRAINABLE_VARIABLES, scope = 'bert'
             )
             cls = tf.get_collection(
-                tf.GraphKeys.TRAINABLE_VARIABLES, scope = 'cls'
+                tf.compat.v1.GraphKeys.TRAINABLE_VARIABLES, scope = 'cls'
             )
-            self._saver = tf.train.Saver(var_list = var_lists + cls)
+            self._saver = tf.compat.v1.train.Saver(var_list = var_lists + cls)
             attns = _extract_attention_weights(
-                bert_config.num_hidden_layers, tf.get_default_graph()
+                bert_config.num_hidden_layers, tf.compat.v1.get_default_graph()
             )
             self.attns = attns
 

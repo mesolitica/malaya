@@ -250,7 +250,7 @@ class XLNetModel(object):
         )
         tfm_args.update(input_args)
 
-        with tf.variable_scope('model', reuse = tf.AUTO_REUSE):
+        with tf.compat.v1.variable_scope('model', reuse = tf.compat.v1.AUTO_REUSE):
             (
                 self.output,
                 self.new_mems,

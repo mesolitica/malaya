@@ -110,7 +110,7 @@ class _wordvector:
         self._jarowinkler = JaroWinkler()
         _graph = tf.Graph()
         with _graph.as_default():
-            self._embedding = tf.placeholder(
+            self._embedding = tf.compat.v1.placeholder(
                 tf.float32, self._embed_matrix.shape
             )
             self._x = tf.placeholder(
@@ -121,7 +121,7 @@ class _wordvector:
             self._cosine_similarity = tf.matmul(
                 normed_array, tf.transpose(normed_embedding, [1, 0])
             )
-            self._sess = tf.InteractiveSession()
+            self._sess = tf.compat.v1.InteractiveSession()
 
     @check_type
     def get_vector_by_name(self, word: str):

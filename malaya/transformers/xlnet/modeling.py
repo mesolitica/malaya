@@ -683,14 +683,14 @@ def transformer_xl(
     initializer: A tf initializer.
     scope: scope name for the computation graph.
   """
-    tf.logging.info('memory input {}'.format(mems))
+    tf.compat.v1.logging.info('memory input {}'.format(mems))
     tf_float = tf.bfloat16 if use_bfloat16 else tf.float32
     tf.logging.info('Use float type {}'.format(tf_float))
 
     new_mems = []
     with tf.variable_scope(scope):
         if untie_r:
-            r_w_bias = tf.get_variable(
+            r_w_bias = tf.compat.v1.get_variable(
                 'r_w_bias',
                 [n_layer, n_head, d_head],
                 dtype = tf_float,
