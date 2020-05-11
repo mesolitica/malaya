@@ -253,7 +253,7 @@ tpu_estimator_model_fn.tpu_summaries = False
 # ==============================================================================
 tpu_mesh_shape.ensemble_parallelism = None
 tpu_mesh_shape.model_parallelism = 1
-tpu_mesh_shape.tpu_topology = '8x8'
+tpu_mesh_shape.tpu_topology = '2x2'
 
 # Parameters for decoder/Unitransformer:
 # ==============================================================================
