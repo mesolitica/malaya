@@ -22,6 +22,7 @@ num_layers = 12
 targets_length = 1024
 init_checkpoint = ""
 tokens_per_batch = 1048576
+total_train_steps = 100
 
 # Parameters for AdafactorOptimizer:
 # ==============================================================================
@@ -83,6 +84,7 @@ learning_rate_schedule_noam.linear_decay_fraction = 0.1
 learning_rate_schedule_noam.multiplier = 1.0
 learning_rate_schedule_noam.offset = 0
 learning_rate_schedule_noam.warmup_steps = 10000
+learning_rate_schedule_noam.total_train_steps = 10000
 
 # Parameters for make_bitransformer:
 # ==============================================================================
