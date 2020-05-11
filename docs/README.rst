@@ -97,6 +97,12 @@ Features
 
    Provide easy interface to load BERT-base-bahasa, Tiny-BERT-bahasa, Albert-base-bahasa, Albert-tiny-bahasa, XLNET-base-bahasa, ALXLNET-base-bahasa.
 
+Pretrained Models
+------------------
+
+Malaya also released Bahasa pretrained models, simply check at `Malaya/pretrained-model <https://github.com/huseinzol05/Malaya/tree/master/pretrained-model>`_
+
+Or can try use huggingface transformers library, https://huggingface.co/models?filter=malay
 
 References
 -----------

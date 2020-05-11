@@ -104,23 +104,6 @@ Malaya also released Bahasa pretrained models, simply check at `Malaya/pretraine
 
 Or can try use huggingface transformers library, https://huggingface.co/models?filter=malay
 
-1. Albert
-    - `Tiny <https://github.com/huseinzol05/Malaya/tree/master/pretrained-model/albert#download>`_
-    - `Base <https://github.com/huseinzol05/Malaya/tree/master/pretrained-model/albert#download>`_
-2. ALXLNET
-    - `Base <https://github.com/huseinzol05/Malaya/tree/master/pretrained-model/alxlnet#download>`_
-3. BERT
-    - `Tiny <https://github.com/huseinzol05/Malaya/tree/master/pretrained-model/tiny-bert#download>`_
-    - `Base <https://github.com/huseinzol05/Malaya/tree/master/pretrained-model/bert#download>`_
-4. Electra
-    - `Small <https://github.com/huseinzol05/Malaya/tree/master/pretrained-model/electra#download>`_
-    - `Base <https://github.com/huseinzol05/Malaya/tree/master/pretrained-model/electra#download>`_
-5. GPT2
-    - `117M <https://github.com/huseinzol05/Malaya/tree/master/pretrained-model/gpt2#download>`_
-    - `345M <https://github.com/huseinzol05/Malaya/tree/master/pretrained-model/gpt2#download>`_
-6. XLNET
-    - `Base <https://github.com/huseinzol05/Malaya/tree/master/pretrained-model/xlnet#download>`_
-
 References
 -----------
 
