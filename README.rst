@@ -8,8 +8,9 @@
     <p align="center">
         <a href="https://pypi.python.org/pypi/malaya"><img alt="Pypi version" src="https://badge.fury.io/py/malaya.svg"></a>
         <a href="https://pypi.python.org/pypi/malaya"><img alt="Python3 version" src="https://img.shields.io/pypi/pyversions/malaya.svg"></a>
-        <a href="https://github.com/huseinzol05/Malaya/blob/master/LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/License-MIT-yellow.svg"></a>
+        <a href="https://github.com/huseinzol05/Malaya/blob/master/LICENSE"><img alt="MIT License" src="https://img.shields.io/github/license/huseinzol05/malaya.svg?color=blue"></a>
         <a href="https://malaya.readthedocs.io/"><img alt="Documentation" src="https://readthedocs.org/projects/malaya/badge/?version=latest"></a>
+        <a href="https://github.com/huseinzol05/Malaya"><img alt="download stats" src="https://img.shields.io/pypi/dm/malaya.svg"></a>
     </p>
 
 =========
@@ -102,7 +103,7 @@ Pretrained Models
 
 Malaya also released Bahasa pretrained models, simply check at `Malaya/pretrained-model <https://github.com/huseinzol05/Malaya/tree/master/pretrained-model>`_
 
-Or can try use huggingface transformers library, https://huggingface.co/models?filter=malay
+Or can try use huggingface 🤗 Transformers library, https://huggingface.co/models?filter=malay
 
 References
 -----------
