@@ -22,7 +22,7 @@ num_layers = 12
 targets_length = 1024
 init_checkpoint = ""
 tokens_per_batch = 1048576
-total_train_steps = 100
+total_train_steps = 1000000
 
 # Parameters for AdafactorOptimizer:
 # ==============================================================================
@@ -84,7 +84,7 @@ learning_rate_schedule_noam.linear_decay_fraction = 0.1
 learning_rate_schedule_noam.multiplier = 1.0
 learning_rate_schedule_noam.offset = 0
 learning_rate_schedule_noam.warmup_steps = 10000
-learning_rate_schedule_noam.total_train_steps = 10000
+learning_rate_schedule_noam.total_train_steps = 1000000
 
 # Parameters for make_bitransformer:
 # ==============================================================================
@@ -197,7 +197,7 @@ run.save_checkpoints_steps = 2400
 run.sequence_length = {'inputs': %inputs_length, 'targets': %targets_length}
 run.train_dataset_fn = \
     @t5.models.mesh_transformer.mesh_train_dataset_fn
-run.train_steps = 1000000000
+run.train_steps = 1000000
 run.variable_filter = None
 run.vocabulary = \
     @t5.data.sentencepiece_vocabulary.SentencePieceVocabulary()
@@ -254,7 +254,7 @@ tpu_estimator_model_fn.tpu_summaries = False
 # Parameters for tpu_mesh_shape:
 # ==============================================================================
 tpu_mesh_shape.ensemble_parallelism = None
-tpu_mesh_shape.model_parallelism = 1
+tpu_mesh_shape.model_parallelism = 2
 tpu_mesh_shape.tpu_topology = '2x2'
 
 # Parameters for decoder/Unitransformer:

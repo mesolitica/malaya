@@ -20,7 +20,17 @@ Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://w
 
 ## How-to
 
+**training session required TPU**,
+
 1. Download [sp10m.cased.t5.model](../preprocess/sp10m.cased.t5.model) and [sp10m.cased.t5.vocab](../preprocess/sp10m.cased.t5.vocab).
+
+2. Generate [stemming data](generate-stemming.ipynb) and [synonyms data](generate-synonym.ipynb).
+
+3. Upload data to GCS, [prepare-upload-gcs.ipynb](prepare-upload-gcs.ipynb).
+
+4. Validate dataset from GCS, [test-dataset-gcs.ipynb](test-dataset-gcs.ipynb).
+
+5. Train using TPU, [train_tpu.py](train_tpu.py).
 
 ## Download
 
