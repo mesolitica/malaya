@@ -19,8 +19,6 @@ from queue import Queue
 from urllib.parse import quote
 from unidecode import unidecode
 
-xgb_language = None
-
 NUMBER_OF_CALLS_TO_GOOGLE_NEWS_ENDPOINT = 0
 
 GOOGLE_NEWS_URL = 'https://www.google.com.my/search?q={}&source=lnt&tbs=cdr%3A1%2Ccd_min%3A{}%2Ccd_max%3A{}&tbm=nws&start={}'
@@ -71,11 +69,15 @@ def forge_url(q, start, year_start, year_end):
 
 def extract_links(content):
     soup = BeautifulSoup(content, 'html.parser')
+    # return soup
     today = datetime.now().strftime('%m/%d/%Y')
     links_list = [
-        v.attrs['href'] for v in soup.find_all('a', {'class': ['lLrAF']})
+        v.attrs['href']
+        for v in soup.find_all('a', {'class': 'l lLrAF'.split()})
     ]
-    dates_list = [v.text for v in soup.find_all('div', {'class': ['slp']})]
+    dates_list = [
+        v.text for v in soup.find_all('div', {'class': 'dhIWPd'.split()})
+    ]
     output = []
     for (link, date) in zip(links_list, dates_list):
         try:
@@ -95,15 +97,10 @@ def extract_links(content):
                 except:
                     date[1] = 'null'
             output.append((link, date[0].strip(), date[1]))
-        except:
+        except Exception as e:
+            print(e)
             continue
     return output
-
-
-def get_malaya_summary(text):
-    import malaya
-
-    return malaya.summarize_lsa(text, important_words = 20)
 
 
 def get_article(link, news, date):
@@ -118,13 +115,7 @@ def get_article(link, news, date):
         article = Article(link, language = 'id')
         article.download()
         article.parse()
-        if xgb_language:
-            lang = xgb_language.predict(article.text)
-            malaya_summarized = get_malaya_summary(article.text.split('\n'))
-            article.summary = malaya_summarized['summary']
-            article.keywords = malaya_summarized['cluster-top-words']
-        else:
-            article.nlp()
+        article.nlp()
     return {
         'title': article.title,
         'url': link,
@@ -146,11 +137,7 @@ def google_news_run(
     year_end = 2011,
     debug = True,
     sleep_time_every_ten_articles = 0,
-    xgb_model = None,
 ):
-    global xgb_language
-    if xgb_model:
-        xgb_language = xgb_model
     num_articles_index = 0
     ua = UserAgent()
     results = []
@@ -163,7 +150,9 @@ def google_news_run(
                     NUMBER_OF_CALLS_TO_GOOGLE_NEWS_ENDPOINT
                 )
             )
-        headers = {'User-Agent': ua.chrome}
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36'
+        }
         success = False
         try:
             response = requests.get(url, headers = headers, timeout = 60)

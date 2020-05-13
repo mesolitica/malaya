@@ -41,20 +41,10 @@ ap.add_argument(
     default = 10,
     help = 'seconds to sleep for every 10 articles',
 )
-ap.add_argument(
-    '-m', '--malaya', default = False, help = 'boolean to use Malaya'
-)
 args = vars(ap.parse_args())
 
 from core import google_news_run
 import json
-
-xgb_model = None
-
-if args['malaya']:
-    import malaya
-
-    xgb_model = malaya.xgb_detect_languages()
 
 
 results = google_news_run(
@@ -64,7 +54,6 @@ results = google_news_run(
     year_end = args['end'],
     debug = False,
     sleep_time_every_ten_articles = args['sleep'],
-    xgb_model = xgb_model,
 )
 
 with open(args['issue'] + '.json', 'w') as fopen:
