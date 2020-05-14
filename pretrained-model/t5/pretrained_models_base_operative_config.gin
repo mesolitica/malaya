@@ -20,7 +20,7 @@ noise_density = 0.15
 num_heads = 12
 num_layers = 12
 targets_length = 1024
-init_checkpoint = ""
+init_checkpoint = "gs://mesolitica-general/t5-base/model.ckpt-100000"
 tokens_per_batch = 1048576
 total_train_steps = 1000000
 

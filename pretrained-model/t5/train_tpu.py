@@ -98,7 +98,6 @@ t5.data.TaskRegistry.add(
     splits = ['train'],
     text_preprocessor = [question_preprocessor],
     sentencepiece_model_path = vocab,
-    postprocess_fn = t5.data.postprocessors.lower_text,
     metric_fns = [t5.evaluation.metrics.accuracy],
 )
 
@@ -136,7 +135,6 @@ t5.data.TaskRegistry.add(
     splits = ['train'],
     text_preprocessor = [prep.next_sentence_prediction],
     sentencepiece_model_path = vocab,
-    postprocess_fn = t5.data.postprocessors.lower_text,
     metric_fns = [t5.evaluation.metrics.accuracy],
 )
 
@@ -183,7 +181,6 @@ t5.data.TaskRegistry.add(
     splits = ['train'],
     text_preprocessor = [news_preprocessor],
     sentencepiece_model_path = vocab,
-    postprocess_fn = t5.data.postprocessors.lower_text,
     metric_fns = [t5.evaluation.metrics.accuracy],
 )
 
@@ -227,7 +224,6 @@ t5.data.TaskRegistry.add(
     splits = ['train'],
     text_preprocessor = [stemming_preprocessor],
     sentencepiece_model_path = vocab,
-    postprocess_fn = t5.data.postprocessors.lower_text,
     metric_fns = [t5.evaluation.metrics.accuracy],
 )
 
@@ -271,7 +267,6 @@ t5.data.TaskRegistry.add(
     splits = ['train'],
     text_preprocessor = [synonym_preprocessor],
     sentencepiece_model_path = vocab,
-    postprocess_fn = t5.data.postprocessors.lower_text,
     metric_fns = [t5.evaluation.metrics.accuracy],
 )
 
@@ -317,7 +312,6 @@ t5.data.TaskRegistry.add(
     splits = ['train'],
     text_preprocessor = [quora_preprocessor],
     sentencepiece_model_path = vocab,
-    postprocess_fn = t5.data.postprocessors.lower_text,
     metric_fns = [t5.evaluation.metrics.accuracy],
 )
 
@@ -366,7 +360,6 @@ t5.data.TaskRegistry.add(
     splits = ['train'],
     text_preprocessor = [snli_preprocessor],
     sentencepiece_model_path = vocab,
-    postprocess_fn = t5.data.postprocessors.lower_text,
     metric_fns = [t5.evaluation.metrics.accuracy],
 )
 
@@ -413,7 +406,7 @@ def main(_):
         iterations_per_loop = 100,
     )
 
-    model.train(mixture_or_task_name = 'trivia_all_bahasa', steps = 100000)
+    model.train(mixture_or_task_name = 'trivia_all_bahasa', steps = 1000000)
 
 
 if __name__ == '__main__':
