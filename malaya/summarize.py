@@ -8,16 +8,19 @@ from malaya.text.jarowinkler import JaroWinkler
 from sklearn.metrics.pairwise import cosine_similarity
 from malaya.text.function import (
     summary_textcleaning,
-    STOPWORDS,
     split_into_sentences,
     simple_textcleaning,
+    STOPWORDS,
 )
 from malaya.stem import sastrawi
 from malaya.model import skip_thought
 from malaya.cluster import cluster_words
 from malaya.text.vectorizer import SkipGramVectorizer
+from malaya.path import PATH_SUMMARIZE, S3_PATH_SUMMARIZE
 from herpetologist import check_type
 from typing import List, Tuple
+
+_t5_availability = {'small': ['60MB'], 'base': ['400MB']}
 
 
 class _DEEP_SKIPTHOUGHT:
@@ -193,25 +196,6 @@ def deep_skipthought(model: str = 'lstm'):
         )
     sess, x, logits, attention, dictionary, maxlen = model()
     return _DEEP_SKIPTHOUGHT(sess, x, logits, attention, dictionary, maxlen)
-
-
-def encoder(vectorizer):
-    """
-    Encoder interface for text similarity.
-
-    Parameters
-    ----------
-    vectorizer : object
-        encoder interface object, eg, BERT, skip-thought, XLNET, ALBERT, ALXLNET.
-
-    Returns
-    -------
-    result: malaya.summarize._DEEP_SUMMARIZER
-    """
-
-    if not hasattr(vectorizer, 'vectorize'):
-        raise ValueError('vectorizer must has `vectorize` method')
-    return _DEEP_SUMMARIZER(vectorizer)
 
 
 @check_type
@@ -487,3 +471,40 @@ def doc2vec(
     )
     summary = [r[1] for r in ranked_sentences[:top_k]]
     return ' '.join(summary)
+
+
+def encoder(vectorizer):
+    """
+    Encoder interface for summarization.
+
+    Parameters
+    ----------
+    vectorizer : object
+        encoder interface object, eg, BERT, skip-thought, XLNET, ALBERT, ALXLNET.
+
+    Returns
+    -------
+    result: malaya.summarize._DEEP_SUMMARIZER
+    """
+
+    if not hasattr(vectorizer, 'vectorize'):
+        raise ValueError('vectorizer must has `vectorize` method')
+    return _DEEP_SUMMARIZER(vectorizer)
+
+
+def available_t5():
+    """
+    List available T5 models.
+    """
+    return _t5_availability
+
+
+@check_type
+def t5(model: str = 'base', **kwargs):
+
+    model = model.lower()
+    if model not in _t5_availability:
+        raise Exception(
+            'model not supported, please check supported models from malaya.summarize.available_t5()'
+        )
+    check_file(path[f't5-{model}'], s3_path[f't5-{model}'], **kwargs)

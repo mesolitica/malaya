@@ -11,8 +11,8 @@ from shutil import rmtree
 from pathlib import Path
 
 home = os.path.join(str(Path.home()), 'Malaya')
-version = '3.4'
-bump_version = '3.4.2'
+version = '3.5'
+bump_version = '3.5'
 version_path = os.path.join(home, 'version')
 
 
@@ -104,6 +104,7 @@ def clear_cache(location):
     return True
 
 
+from . import augmentation
 from . import cluster
 from . import dependency
 from . import emotion

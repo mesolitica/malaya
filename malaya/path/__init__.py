@@ -3,7 +3,13 @@ from malaya import home
 MALAY_TEXT = home + '/dictionary/malay-text.txt'
 MALAY_TEXT_200K = home + '/dictionary-200k/malay-text.txt'
 
-# sorted based on modules, started from cluster until toxic
+# sorted based on modules, started from augmentation until toxic
+
+PATH_AUGMENTATION = {
+    'synonym': {'model': home + '/synonym/synonym.json', 'version': 'v35'}
+}
+
+PATH
 
 # dependency.py
 PATH_DEPENDENCY = {
@@ -749,6 +755,8 @@ PATH_SUMMARIZE = {
         'setting': home + '/summarize/summary-wiki.json',
         'version': 'v13',
     },
+    't5-base': {},
+    't5-small': {},
 }
 
 S3_PATH_SUMMARIZE = {
@@ -760,6 +768,8 @@ S3_PATH_SUMMARIZE = {
         'model': 'v13/summarize/summary-wiki.pb',
         'setting': 'v13/summarize/summary-wiki.json',
     },
+    't5-base': {},
+    't5-small': {},
 }
 
 PATH_TOXIC = {

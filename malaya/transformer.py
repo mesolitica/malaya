@@ -7,6 +7,8 @@ _availability = [
     'tiny-albert',
     'xlnet',
     'alxlnet',
+    'small-electra',
+    'electra',
 ]
 
 
@@ -18,7 +20,7 @@ def available_model():
 
 
 @check_type
-def load(model: str = 'xlnet', pool_mode: str = 'last', **kwargs):
+def load(model: str = 'electra', pool_mode: str = 'last', **kwargs):
 
     """
     Load transformer model.
@@ -34,6 +36,9 @@ def load(model: str = 'xlnet', pool_mode: str = 'last', **kwargs):
         * ``'tiny-albert'`` - ALBERT architecture from google with smaller parameters.
         * ``'xlnet'`` - XLNET architecture from google.
         * ``'alxlnet'`` - XLNET architecture from google + Malaya.
+        * ``'small-electra'`` - ELECTRA architecture from google with smaller parameters
+        * ``'electra'`` - ELECTRA architecture from google.
+
 
     pool_mode : str, optional (default='last')
         Model logits architecture supported. Only usable if model in ['xlnet', 'alxlnet']. Allowed values:
@@ -70,3 +75,8 @@ def load(model: str = 'xlnet', pool_mode: str = 'last', **kwargs):
         from malaya.transformers.alxlnet import load
 
         return load(model = model, pool_mode = pool_mode, **kwargs)
+
+    if model in ['electra', 'small-electra']:
+        from malaya.transformers.electra import load
+
+        return load(model = model, **kwargs)

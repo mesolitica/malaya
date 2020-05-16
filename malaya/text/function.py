@@ -324,24 +324,6 @@ def print_topics_modelling(
         return df
 
 
-def str_idx(corpus, dic, maxlen, UNK = 0):
-    X = np.zeros((len(corpus), maxlen))
-    for i in range(len(corpus)):
-        for no, k in enumerate(corpus[i].split()[:maxlen][::-1]):
-            X[i, -1 - no] = dic.get(k, UNK)
-    return X
-
-
-def stemmer_str_idx(corpus, dic, UNK = 3):
-    X = []
-    for i in corpus:
-        ints = []
-        for k in i:
-            ints.append(dic.get(k, UNK))
-        X.append(ints)
-    return X
-
-
 def pad_sentence_batch(sentence_batch, pad_int):
     padded_seqs = []
     seq_lens = []
@@ -416,14 +398,14 @@ prefixes = (
     '(Mr|St|Mrs|Ms|Dr|Prof|Capt|Cpt|Lt|Mt|Puan|puan|Tuan|tuan|sir|Sir)[.]'
 )
 suffixes = '(Inc|Ltd|Jr|Sr|Co)'
-starters = '(Mr|Mrs|Ms|Dr|He\s|She\s|It\s|They\s|Their\s|Our\s|We\s|But\s|However\s|That\s|This\s|Wherever|Dia|Mereka|Tetapi|Kita|Itu|Ini|Dan|Kami)'
+starters = '(Mr|Mrs|Ms|Dr|He\s|She\s|It\s|They\s|Their\s|Our\s|We\s|But\s|However\s|That\s|This\s|Wherever|Dia|Mereka|Tetapi|Kita|Itu|Ini|Dan|Kami|Beliau|Seri|Datuk|Dato|Datin|Tuan|Puan)'
 acronyms = '([A-Z][.][A-Z][.](?:[A-Z][.])?)'
 websites = '[.](com|net|org|io|gov|me|edu|my)'
 another_websites = '(www|http|https)[.]'
 digits = '([0-9])'
 
 
-def split_into_sentences(text):
+def split_into_sentences(text, minimum_length = 5):
     text = unidecode(text)
     text = ' ' + text + '  '
     text = text.replace('\n', ' ')
@@ -462,7 +444,7 @@ def split_into_sentences(text):
     text = text.replace('<prd>', '.')
     sentences = text.split('<stop>')
     sentences = sentences[:-1]
-    sentences = [s.strip() for s in sentences if len(s) > 10]
+    sentences = [s.strip() for s in sentences if len(s) > minimum_length]
     return sentences
 
 

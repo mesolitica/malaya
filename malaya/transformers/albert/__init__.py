@@ -12,7 +12,6 @@ from malaya.text.bpe import (
     bert_tokenization,
     padding_sequence,
     merge_sentencepiece_tokens,
-    merge_wordpiece_tokens,
 )
 from malaya.transformers.sampling import top_k_logits, top_p_logits
 from collections import defaultdict
