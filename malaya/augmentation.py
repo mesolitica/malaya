@@ -31,7 +31,18 @@ def replace(string, threshold):
         if word in _synonym_dict and random.random() > threshold:
             w = random.choice(_synonym_dict[word])
             string[no] = w
-    return ' '.join(string)
+    return string
+
+
+def _make_upper(p, o):
+    p_split = p.split()
+    o_split = o.split()
+    return ' '.join(
+        [
+            s.title() if o_split[no][0].isupper() else s
+            for no, s in enumerate(p_split)
+        ]
+    )
 
 
 @check_type
@@ -39,7 +50,7 @@ def synonym(
     string: str,
     threshold: float = 0.5,
     top_n = 5,
-    cleaning_function: Callable = augmentation_textcleaning,
+    cleaning = augmentation_textcleaning,
     **kwargs
 ):
     """
@@ -52,13 +63,15 @@ def synonym(
         random selection for a word.
     top_n: int, (default=5)
         number of nearest neighbors returned. Length of returned result should as top_n.
-    cleaning_function: function, (default=malaya.text.function.augmentation_textcleaning)
+    cleaning: function, (default=malaya.text.function.augmentation_textcleaning)
         function to clean text.
 
     Returns
     -------
     result: List[str]
     """
+    if not isinstance(cleaning, Callable) and cleaning is not None:
+        raise ValueError('cleaning must be a callable type or None')
 
     global _synonym_dict
 
@@ -87,12 +100,16 @@ def synonym(
             synonyms[k] = list(set(v))
         _synonym_dict = synonyms
 
-    if cleaning_function:
-        string = cleaning_function(string)
+    original_string = string
+    if cleaning:
+        string = cleaning(string).split()
 
     augmented = []
     for i in range(top_n):
-        augmented.append(replace(string, threshold))
+        string_ = replace(string, threshold)
+        augmented.append(
+            _make_upper(' '.join(string_), ' '.join(original_string))
+        )
     return augmented
 
 
@@ -103,7 +120,7 @@ def wordvector(
     threshold: float = 0.5,
     top_n: int = 5,
     soft: bool = False,
-    cleaning_function: Callable = augmentation_textcleaning,
+    cleaning = augmentation_textcleaning,
 ):
     """
     augmenting a string using wordvector.
@@ -120,13 +137,16 @@ def wordvector(
         if False, it will throw an exception if a word not in the dictionary.
     top_n: int, (default=5)
         number of nearest neighbors returned. Length of returned result should as top_n.
-    cleaning_function: function, (default=malaya.text.function.augmentation_textcleaning)
+    cleaning: function, (default=malaya.text.function.augmentation_textcleaning)
         function to clean text.
 
     Returns
     -------
     result: List[str]
     """
+
+    if not isinstance(cleaning, Callable) and cleaning is not None:
+        raise ValueError('cleaning must be a callable type or None')
     if not hasattr(wordvector, 'batch_n_closest'):
         raise ValueError('wordvector must has `batch_n_closest` method')
     if not hasattr(wordvector, '_dictionary'):
@@ -135,8 +155,8 @@ def wordvector(
     from malaya.preprocessing import _tokenizer
 
     original_string = string
-    if cleaning_function:
-        string = cleaning_function(string)
+    if cleaning:
+        string = cleaning(string)
     string = _tokenizer(string)
     original_string = string[:]
     selected = []
@@ -184,7 +204,7 @@ def transformer(
     top_k: int = 100,
     temperature: float = 1.0,
     top_n: int = 5,
-    cleaning_function: Callable = None,
+    cleaning = None,
 ):
 
     """
@@ -206,14 +226,15 @@ def transformer(
         logits * temperature.
     top_n: int, (default=5)
         number of nearest neighbors returned. Length of returned result should as top_n.
-    cleaning_function: function, (default=None)
+    cleaning: function, (default=None)
         function to clean text.
 
     Returns
     -------
     result: List[str]
     """
-
+    if not isinstance(cleaning, Callable) and cleaning is not None:
+        raise ValueError('cleaning must be a callable type or None')
     if not hasattr(model, 'samples'):
         raise ValueError('model must has `samples` attribute')
     if not (threshold > 0 and threshold < 1):
@@ -232,8 +253,8 @@ def transformer(
     from malaya.preprocessing import _tokenizer
 
     original_string = string
-    if cleaning_function:
-        string = cleaning_function(string)
+    if cleaning:
+        string = cleaning(string)
     string = _tokenizer(string)
     results = []
     for token_idx, token in enumerate(string):

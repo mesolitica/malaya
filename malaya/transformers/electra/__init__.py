@@ -200,7 +200,7 @@ class Model:
 
         Parameters
         ----------
-        strings : str / list of str
+        strings : List[str]
         method : str, optional (default='last')
             Attention layer supported. Allowed values:
 
@@ -244,6 +244,15 @@ class Model:
 
     @check_type
     def visualize_attention(self, string: str):
+
+        """
+        Visualize attention.
+
+        Parameters
+        ----------
+        string : str
+        """
+
         from malaya.function.html import _attention
 
         strings = [string]

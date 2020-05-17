@@ -223,9 +223,9 @@ def cluster_scatter(
     num_clusters: int = 5,
     titles: List[str] = None,
     colors: List[str] = None,
-    stemming: Callable = sastrawi,
-    stop_words: List[str] = None,
-    cleaning: Callable = simple_textcleaning,
+    stemming = sastrawi,
+    stop_words: List[str] = STOPWORDS,
+    cleaning = simple_textcleaning,
     clustering = KMeans,
     decomposition = MDS,
     ngram: Tuple[int, int] = (1, 3),
@@ -247,13 +247,13 @@ def cluster_scatter(
         list of titles, length must same with corpus.
     colors: List[str], (default=None)
         list of colors, length must same with num_clusters.
-    stemming: function, (default=sastrawi)
+    stemming: function, (default=malaya.stem.sastrawi)
         function to stem the corpus.
-    stop_words: List[str], (default=None)
-        list of stop words to remove. If None, default is malaya.texts.function.STOPWORDS
+    stop_words: List[str], (default=malaya.texts.function.STOPWORDS)
+        list of stop words to remove.
     ngram: Tuple[int, int], (default=(1,3))
         n-grams size to train a corpus.
-    cleaning: function, (default=simple_textcleaning)
+    cleaning: function, (default=malaya.texts.function.simple_textcleaning)
         function to clean the corpus.
     batch_size: int, (default=10)
         size of strings for each vectorization and attention. Only useful if use transformer vectorizer.
@@ -262,8 +262,10 @@ def cluster_scatter(
     -------
     dictionary: {'X': X, 'Y': Y, 'labels': clusters, 'vector': transformed_text_clean, 'titles': titles}
     """
-    if not isinstance(stemming, collections.Callable) and stemming is not None:
+    if not isinstance(stemming, Callable) and stemming is not None:
         raise ValueError('stemming must be a callable type or None')
+    if not isinstance(cleaning, Callable) and cleaning is not None:
+        raise ValueError('cleaning must be a callable type or None')
     if titles:
         if len(titles) != len(corpus):
             raise ValueError('length of titles must be same with corpus')
@@ -285,10 +287,7 @@ def cluster_scatter(
             'matplotlib and seaborn not installed. Please install it and try again.'
         )
 
-    if stop_words is None:
-        stop_words = STOPWORDS
-
-    if cleaning is not None:
+    if cleaning:
         for i in range(len(corpus)):
             corpus[i] = cleaning(corpus[i])
     if stemming:
@@ -372,9 +371,9 @@ def cluster_dendogram(
     corpus: List[str],
     vectorizer,
     titles: List[str] = None,
-    stemming: Callable = sastrawi,
-    stop_words: List[str] = None,
-    cleaning: Callable = simple_textcleaning,
+    stemming = sastrawi,
+    stop_words: List[str] = STOPWORDS,
+    cleaning = simple_textcleaning,
     random_samples: float = 0.3,
     ngram: Tuple[int, int] = (1, 3),
     figsize: Tuple[int, int] = (17, 9),
@@ -393,11 +392,11 @@ def cluster_dendogram(
         size of unsupervised clusters.
     titles: List[str], (default=None)
         list of titles, length must same with corpus.
-    stemming: function, (default=sastrawi)
+    stemming: function, (default=malaya.stem.sastrawi)
         function to stem the corpus.
-    stop_words: List[str], (default=None)
-        list of stop words to remove. If None, default is malaya.texts.function.STOPWORDS
-    cleaning: function, (default=simple_textcleaning)
+    stop_words: List[str], (default=malaya.text.function.STOPWORDS)
+        list of stop words to remove.
+    cleaning: function, (default=malaya.text.function.simple_textcleaning)
         function to clean the corpus.
     random_samples: float, (default=0.3)
         random samples from the corpus, 0.3 means 30%.
@@ -410,8 +409,10 @@ def cluster_dendogram(
     -------
     dictionary: {'linkage_matrix': linkage_matrix, 'titles': titles}
     """
-    if not isinstance(stemming, collections.Callable) and stemming is not None:
+    if not isinstance(stemming, Callable) and stemming is not None:
         raise ValueError('stemming must be a callable type or None')
+    if not isinstance(cleaning, Callable) and cleaning is not None:
+        raise ValueError('cleaning must be a callable type or None')
     if titles:
         if len(titles) != len(corpus):
             raise ValueError('length of titles must be same with corpus')
@@ -431,8 +432,6 @@ def cluster_dendogram(
         raise Exception(
             'matplotlib and seaborn not installed. Please install it and try again.'
         )
-    if stop_words is None:
-        stop_words = STOPWORDS
 
     corpus = random.sample(corpus, k = int(random_samples * len(corpus)))
 
@@ -504,10 +503,10 @@ def cluster_graph(
     num_clusters: int = 5,
     titles: List[str] = None,
     colors: List[str] = None,
-    stop_words: List[str] = None,
-    stemming: Callable = sastrawi,
+    stop_words: List[str] = STOPWORDS,
+    stemming = sastrawi,
     ngram: Tuple[int, int] = (1, 3),
-    cleaning: Callable = simple_textcleaning,
+    cleaning = simple_textcleaning,
     clustering = KMeans,
     figsize: Tuple[int, int] = (17, 9),
     with_labels: bool = True,
@@ -528,11 +527,11 @@ def cluster_graph(
         size of unsupervised clusters.
     titles: List[str], (default=True)
         list of titles, length must same with corpus.
-    stemming: function, (default=sastrawi)
+    stemming: function, (default=malaya.stem.sastrawi)
         function to stem the corpus.
-    stop_words: List[str], (default=None)
-        list of stop words to remove. If None, default is malaya.texts.function.STOPWORDS
-    cleaning: function, (default=simple_textcleaning)
+    stop_words: List[str], (default=malaya.texts.function.STOPWORDS)
+        list of stop words to remove.
+    cleaning: function, (default=malaya.texts.function.simple_textcleaning)
         function to clean the corpus.
     ngram: Tuple[int, int], (default=(1,3))
         n-grams size to train a corpus.
@@ -543,6 +542,10 @@ def cluster_graph(
     -------
     dictionary: {'G': G, 'pos': pos, 'node_colors': node_colors, 'node_labels': node_labels}
     """
+    if not isinstance(stemming, Callable) and stemming is not None:
+        raise ValueError('stemming must be a callable type or None')
+    if not isinstance(cleaning, Callable) and cleaning is not None:
+        raise ValueError('cleaning must be a callable type or None')
 
     if titles:
         if len(titles) != len(corpus):
@@ -571,8 +574,6 @@ def cluster_graph(
         raise Exception(
             'matplotlib, seaborn, networkx not installed. Please install it and try again.'
         )
-    if stop_words is None:
-        stop_words = STOPWORDS
 
     if cleaning is not None:
         for i in range(len(corpus)):
@@ -676,10 +677,10 @@ def cluster_entity_linking(
         'person',
         'event',
     ],
-    cleaning: Callable = simple_textcleaning,
-    stemming: bool = True,
+    cleaning = simple_textcleaning,
+    stemming = sastrawi,
     colors: List[str] = None,
-    stop_words: List[str] = None,
+    stop_words: List[str] = STOPWORDS,
     max_df: float = 1.0,
     min_df: int = 1,
     ngram: Tuple[int, int] = (2, 3),
@@ -715,8 +716,8 @@ def cluster_entity_linking(
         n-grams size to train a corpus.
     cleaning: function, (default=simple_textcleaning)
         function to clean the corpus.
-    stop_words: list, (default=None)
-        list of stop words to remove. If None, default is malaya.texts.function.STOPWORDS
+    stop_words: list, (default=STOPWORDS)
+        list of stop words to remove.
 
     Returns
     -------
@@ -725,8 +726,11 @@ def cluster_entity_linking(
 
     import inspect
 
-    if not isinstance(stemming, collections.Callable) and stemming is not None:
+    if not isinstance(stemming, Callable) and stemming is not None:
         raise ValueError('stemming must be a callable type or None')
+    if not isinstance(cleaning, Callable) and cleaning is not None:
+        raise ValueError('cleaning must be a callable type or None')
+
     if not hasattr(vectorizer, 'vectorize') and not hasattr(vectorizer, 'fit'):
         raise ValueError('vectorizer must has `fit` and `vectorize` methods')
     if 'max_df' not in inspect.getargspec(topic_modeling_model)[0]:
@@ -748,8 +752,6 @@ def cluster_entity_linking(
         raise ValueError(
             'threshold must be bigger than 0, less than or equal to 1'
         )
-    if stop_words is None:
-        stop_words = STOPWORDS
 
     try:
         import matplotlib.pyplot as plt

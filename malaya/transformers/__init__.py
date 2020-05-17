@@ -9,5 +9,6 @@
 from . import albert
 from . import alxlnet
 from . import bert
+from . import electra
 from . import gpt2
 from . import xlnet

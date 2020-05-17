@@ -42,17 +42,6 @@ def _check_digit(string):
     return any(i.isdigit() for i in string)
 
 
-def _make_upper(p, o):
-    p_split = p.split()
-    o_split = o.split()
-    return ' '.join(
-        [
-            s.title() if o_split[no][0].isupper() else s
-            for no, s in enumerate(p_split)
-        ]
-    )
-
-
 def _pad_sequence(
     sequence,
     n,
@@ -361,7 +350,7 @@ def transformer(
 
     Returns
     -------
-    result: str
+    result: List[str]
     """
 
     if not hasattr(model, 'samples'):

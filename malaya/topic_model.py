@@ -384,12 +384,15 @@ def _base_topic_modelling(
     ngram: Tuple[int, int] = (1, 3),
     vectorizer: str = 'bow',
     stemming = sastrawi,
-    cleaning: Callable = simple_textcleaning,
+    cleaning = simple_textcleaning,
     stop_words: List[str] = None,
     **kwargs,
 ):
-    if not isinstance(stemming, collections.Callable) and stemming is not None:
+    if not isinstance(stemming, Callable) and stemming is not None:
         raise ValueError('stemming must be a callable type or None')
+    if not isinstance(cleaning, Callable) and cleaning is not None:
+        raise ValueError('cleaning must be a callable type or None')
+
     vectorizer = vectorizer.lower()
     if not vectorizer in ['tfidf', 'bow', 'skip-gram']:
         raise ValueError("vectorizer must be in  ['tfidf', 'bow', 'skip-gram']")
@@ -447,7 +450,7 @@ def lda(
     stemming = sastrawi,
     vectorizer = 'bow',
     cleaning = simple_textcleaning,
-    stop_words = None,
+    stop_words = STOPWORDS,
     **kwargs,
 ):
     """
@@ -464,7 +467,7 @@ def lda(
         minimum of a word selected on based on document frequency.
     ngram: tuple, (default=(1,3))
         n-grams size to train a corpus.
-    stemming: function, (default=sastrawi)
+    stemming: function, (default=malaya.stem.sastrawi)
         function to stem the corpus.
     vectorizer: str, (default='bow')
         vectorizer technique. Allowed values:
@@ -472,17 +475,16 @@ def lda(
         * ``'bow'`` - Bag of Word.
         * ``'tfidf'`` - Term frequency inverse Document Frequency.
         * ``'skip-gram'`` - Bag of Word with skipping certain n-grams.
-    cleaning: function, (default=simple_textcleaning)
+    cleaning: function, (default=malaya.text.function.simple_textcleaning)
         function to clean the corpus.
-    stop_words: list, (default=None)
-        list of stop words to remove. If None, default is malaya.text.function.STOPWORDS
+    stop_words: list, (default=malaya.text.function.STOPWORDS)
+        list of stop words to remove. 
 
     Returns
     -------
     _TOPIC: malaya.topic_modelling._TOPIC class
     """
-    if stop_words is None:
-        stop_words = list(STOPWORDS)
+    stop_words = list(stop_words)
     return _base_topic_modelling(
         corpus,
         n_topics,
@@ -507,7 +509,7 @@ def nmf(
     stemming = sastrawi,
     vectorizer = 'bow',
     cleaning = simple_textcleaning,
-    stop_words = None,
+    stop_words = STOPWORDS,
     **kwargs,
 ):
     """
@@ -524,7 +526,7 @@ def nmf(
         minimum of a word selected on based on document frequency.
     ngram: tuple, (default=(1,3))
         n-grams size to train a corpus.
-    stemming: function, (default=sastrawi)
+    stemming: function, (default=malaya.stem.sastrawi)
         function to stem the corpus.
     vectorizer: str, (default='bow')
         vectorizer technique. Allowed values:
@@ -532,17 +534,16 @@ def nmf(
         * ``'bow'`` - Bag of Word.
         * ``'tfidf'`` - Term frequency inverse Document Frequency.
         * ``'skip-gram'`` - Bag of Word with skipping certain n-grams.
-    cleaning: function, (default=simple_textcleaning)
+    cleaning: function, (default=malaya.text.function.simple_textcleaning)
         function to clean the corpus.
-    stop_words: list, (default=None)
-        list of stop words to remove. If None, default is malaya.text.function.STOPWORDS
+    stop_words: list, (default=malaya.text.function.STOPWORDS)
+        list of stop words to remove. 
 
     Returns
     -------
     _TOPIC: malaya.topic_modelling._TOPIC class
     """
-    if stop_words is None:
-        stop_words = list(STOPWORDS)
+    stop_words = list(stop_words)
     return _base_topic_modelling(
         corpus,
         n_topics,
@@ -567,7 +568,7 @@ def lsa(
     vectorizer = 'bow',
     stemming = sastrawi,
     cleaning = simple_textcleaning,
-    stop_words = None,
+    stop_words = STOPWORDS,
     **kwargs,
 ):
     """
@@ -590,19 +591,18 @@ def lsa(
         * ``'bow'`` - Bag of Word.
         * ``'tfidf'`` - Term frequency inverse Document Frequency.
         * ``'skip-gram'`` - Bag of Word with skipping certain n-grams.
-    stemming: function, (default=sastrawi)
+    stemming: function, (default=malaya.stem.sastrawi)
         function to stem the corpus.
-    cleaning: function, (default=simple_textcleaning)
+    cleaning: function, (default=malaya.text.function.simple_textcleaning)
         function to clean the corpus.
-    stop_words: list, (default=None)
-        list of stop words to remove. If None, default is malaya.text.function.STOPWORDS
+    stop_words: list, (default=malaya.text.function.STOPWORDS)
+        list of stop words to remove. 
 
     Returns
     -------
     _TOPIC: malaya.topic_modelling._TOPIC class
     """
-    if stop_words is None:
-        stop_words = list(STOPWORDS)
+    stop_words = list(stop_words)
     return _base_topic_modelling(
         corpus,
         n_topics,
@@ -625,10 +625,10 @@ def lda2vec(
     max_df: float = 0.95,
     min_df: int = 2,
     ngram: Tuple[int, int] = (1, 3),
-    stemming: Callable = sastrawi,
-    cleaning: Callable = simple_textcleaning,
+    stemming = sastrawi,
+    cleaning = simple_textcleaning,
     vectorizer: str = 'bow',
-    stop_words: List[str] = None,
+    stop_words: List[str] = STOPWORDS,
     window_size: int = 2,
     embedding_size: int = 128,
     epoch: int = 10,
@@ -644,7 +644,7 @@ def lda2vec(
     corpus: list
     n_topics: int, (default=10)
         size of decomposition column.
-    stemming: function, (default=sastrawi)
+    stemming: function, (default=malaya.stem.sastrawi)
         function to stem the corpus.
     max_df: float, (default=0.95)
         maximum of a word selected based on document frequency.
@@ -652,10 +652,10 @@ def lda2vec(
         minimum of a word selected on based on document frequency.
     ngram: tuple, (default=(1,3))
         n-grams size to train a corpus.
-    cleaning: function, (default=simple_textcleaning)
+    cleaning: function, (default=malaya.text.function.simple_textcleaning)
         function to clean the corpus.
-    stop_words: list, (default=None)
-        list of stop words to remove. If None, default is malaya.texts.function.STOPWORDS
+    stop_words: list, (default=malaya.text.function.STOPWORDS)
+        list of stop words to remove.
     embedding_size: int, (default=128)
         embedding size of lda2vec tensors.
     training_iteration: int, (default=10)
@@ -675,8 +675,10 @@ def lda2vec(
     -------
     _DEEP_TOPIC: malaya.topic_modelling._DEEP_TOPIC class
     """
-    if not isinstance(stemming, collections.Callable) and stemming is not None:
+    if not isinstance(stemming, Callable) and stemming is not None:
         raise ValueError('stemming must be a callable type or None')
+    if not isinstance(cleaning, Callable) and cleaning is not None:
+        raise ValueError('cleaning must be a callable type or None')
 
     vectorizer = vectorizer.lower()
     if not vectorizer in ['tfidf', 'bow', 'skip-gram']:
@@ -703,8 +705,6 @@ def lda2vec(
         max_df = max_df,
         stop_words = stop_words,
     )
-    if stop_words is None:
-        stop_words = STOPWORDS
 
     if cleaning:
         for i in range(len(corpus)):
@@ -778,9 +778,9 @@ def transformer(
     corpus: List[str],
     n_topics: int,
     vectorizer,
-    stemming: Callable = sastrawi,
-    cleaning: Callable = simple_textcleaning,
-    stop_words: List[str] = None,
+    stemming = sastrawi,
+    cleaning = simple_textcleaning,
+    stop_words: List[str] = STOPWORDS,
     ngram: Tuple[int, int] = (1, 3),
     batch_size: int = 10,
 ):
@@ -794,12 +794,12 @@ def transformer(
     n_topics: int, (default=10)
         size of decomposition column.
     vectorizer: object
-    stemming: function, (default=sastrawi)
+    stemming: function, (default=malaya.stem.sastrawi)
         function to stem the corpus.
-    cleaning: function, (default=simple_textcleaning)
+    cleaning: function, (default=malaya.text.function.simple_textcleaning)
         function to clean the corpus.
-    stop_words: list, (default=None)
-        list of stop words to remove. If None, default is malaya.texts.function.STOPWORDS
+    stop_words: list, (default=malaya.text.function.STOPWORDS)
+        list of stop words to remove.
     ngram: tuple, (default=(1,3))
         n-grams size to train a corpus.
     batch_size: int, (default=10)
@@ -816,17 +816,17 @@ def transformer(
         raise ValueError(
             'vectorizer must has `attention` and `vectorize` methods'
         )
-    if not isinstance(stemming, collections.Callable) and stemming is not None:
+    if not isinstance(stemming, Callable) and stemming is not None:
         raise ValueError('stemming must be a callable type or None')
+    if not isinstance(cleaning, Callable) and cleaning is not None:
+        raise ValueError('cleaning must be a callable type or None')
+
     if len(corpus) < n_topics:
         raise ValueError(
             'length corpus must be bigger than or equal to n_topics'
         )
 
     from sklearn.cluster import KMeans
-
-    if stop_words is None:
-        stop_words = STOPWORDS
 
     if cleaning:
         for i in range(len(corpus)):

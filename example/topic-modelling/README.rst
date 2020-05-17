@@ -1,9 +1,9 @@
-.. code:: python
+.. code:: ipython3
 
     import pandas as pd
     import malaya
 
-.. code:: python
+.. code:: ipython3
 
     df = pd.read_csv('tests/02032018.csv',sep=';')
     df = df.iloc[3:,1:]
@@ -20,7 +20,7 @@ Transformer
 We can use Transformer model to build topic modeling for corpus we have,
 the power of attention!
 
-.. code:: python
+.. code:: ipython3
 
     electra = malaya.transformer.load(model = 'electra')
     attention = malaya.topic_model.transformer(corpus, n_topics = 10, vectorizer = electra)
@@ -64,7 +64,7 @@ the power of attention!
 Get topics
 ^^^^^^^^^^
 
-.. code:: python
+.. code:: ipython3
 
     attention.top_topics(5, top_n = 10, return_df = True)
 
@@ -188,7 +188,7 @@ Get topics
 Get topics as string
 ^^^^^^^^^^^^^^^^^^^^
 
-.. code:: python
+.. code:: ipython3
 
     attention.get_topics(10)
 
@@ -212,11 +212,11 @@ Get topics as string
 
 
 
-.. code:: python
+.. code:: ipython3
 
     attention = malaya.topic_model.transformer(corpus, n_topics = 10, vectorizer = electra, stemming = None)
 
-.. code:: python
+.. code:: ipython3
 
     attention.top_topics(5, top_n = 10, return_df = True)
 
@@ -337,7 +337,7 @@ Get topics as string
 
 
 
-.. code:: python
+.. code:: ipython3
 
     attention.get_topics(10)
 
@@ -364,7 +364,7 @@ Get topics as string
 Train LDA2Vec model
 -------------------
 
-.. code:: python
+.. code:: ipython3
 
     lda2vec = malaya.topic_model.lda2vec(corpus, 10, vectorizer = 'skip-gram', skip = 4)
 
@@ -411,7 +411,7 @@ Get topics
 You able to set to return as Pandas Dataframe or not by using
 ``return_df`` parameter
 
-.. code:: python
+.. code:: ipython3
 
     lda2vec.top_topics(5, top_n = 10, return_df = True)
 
@@ -535,7 +535,7 @@ You able to set to return as Pandas Dataframe or not by using
 Important sentences based on topics
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code:: python
+.. code:: ipython3
 
     lda2vec.get_sentences(5)
 
@@ -555,7 +555,7 @@ Important sentences based on topics
 Get topics as string
 ^^^^^^^^^^^^^^^^^^^^
 
-.. code:: python
+.. code:: ipython3
 
     lda2vec.get_topics(10)
 
@@ -594,7 +594,7 @@ This will initiate `pyLDAvis <https://github.com/bmabey/pyLDAvis>`__
 object, to understand `pyLDAvis <https://github.com/bmabey/pyLDAvis>`__
 more, read at https://github.com/bmabey/pyLDAvis.
 
-.. code:: python
+.. code:: ipython3
 
     lda2vec.visualize_topics(notebook_mode = True)
 
@@ -656,7 +656,7 @@ more, read at https://github.com/bmabey/pyLDAvis.
 Train LDA model
 ---------------
 
-.. code:: python
+.. code:: ipython3
 
     lda = malaya.topic_model.lda(
         corpus,
@@ -670,7 +670,7 @@ Train LDA model
 Print topics
 ^^^^^^^^^^^^
 
-.. code:: python
+.. code:: ipython3
 
     lda.top_topics(5, top_n = 10, return_df = True)
 
@@ -794,7 +794,7 @@ Print topics
 Important sentences based on topics
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code:: python
+.. code:: ipython3
 
     lda.get_sentences(5)
 
@@ -814,7 +814,7 @@ Important sentences based on topics
 Get topics
 ^^^^^^^^^^
 
-.. code:: python
+.. code:: ipython3
 
     lda.get_topics(10)
 
@@ -848,7 +848,7 @@ Get topics
 Visualize topics
 ^^^^^^^^^^^^^^^^
 
-.. code:: python
+.. code:: ipython3
 
     lda.visualize_topics(notebook_mode = True)
 
@@ -910,7 +910,7 @@ Visualize topics
 Train NMF model
 ---------------
 
-.. code:: python
+.. code:: ipython3
 
     nmf = malaya.topic_model.nmf(corpus,10)
     nmf.top_topics(5, top_n = 10, return_df = True)
@@ -1032,7 +1032,7 @@ Train NMF model
 
 
 
-.. code:: python
+.. code:: ipython3
 
     nmf.get_sentences(5)
 
@@ -1049,7 +1049,7 @@ Train NMF model
 
 
 
-.. code:: python
+.. code:: ipython3
 
     nmf.get_topics(10)
 
@@ -1081,7 +1081,7 @@ Train NMF model
 Train LSA model
 ---------------
 
-.. code:: python
+.. code:: ipython3
 
     lsa = malaya.topic_model.lsa(corpus,10)
     lsa.top_topics(5, top_n = 10, return_df = True)
@@ -1203,7 +1203,7 @@ Train LSA model
 
 
 
-.. code:: python
+.. code:: ipython3
 
     lsa.get_sentences(5)
 
@@ -1220,7 +1220,7 @@ Train LSA model
 
 
 
-.. code:: python
+.. code:: ipython3
 
     lsa.get_topics(10)
 

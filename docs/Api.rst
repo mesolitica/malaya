@@ -9,6 +9,12 @@ malaya
 .. automodule:: malaya
     :members:
 
+malaya.augmentation
+---------------------
+
+.. automodule:: malaya.augmentation
+    :members:
+
 malaya.cluster
 -----------------
 
@@ -57,7 +63,7 @@ malaya.normalize
 .. automodule:: malaya.normalize
     :members:
 
-.. autoclass:: malaya.normalize._SPELL_NORMALIZE()
+.. autoclass:: malaya.normalize.NORMALIZER()
     :members:
 
 malaya.num2word
@@ -211,6 +217,15 @@ malaya.transformers.bert
     :members:
 
 .. autoclass:: malaya.transformers.bert.Model()
+    :members:
+
+malaya.transformers.electra
+-----------------------------
+
+.. automodule:: malaya.transformers.electra
+    :members:
+
+.. autoclass:: malaya.transformers.electra.Model()
     :members:
 
 malaya.transformers.gpt2

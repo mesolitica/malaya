@@ -7,8 +7,8 @@ _availability = [
     'tiny-albert',
     'xlnet',
     'alxlnet',
-    'small-electra',
     'electra',
+    'small-electra',
 ]
 
 

@@ -22,6 +22,7 @@ def fasttext(quantization: bool = True, **kwargs):
 
     """
     Load Fasttext language detection model.
+    
     Parameters
     ----------
     quantization: bool, optional (default=True)

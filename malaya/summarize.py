@@ -507,4 +507,3 @@ def t5(model: str = 'base', **kwargs):
         raise Exception(
             'model not supported, please check supported models from malaya.summarize.available_t5()'
         )
-    check_file(path[f't5-{model}'], s3_path[f't5-{model}'], **kwargs)

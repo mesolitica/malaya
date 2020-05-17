@@ -238,7 +238,7 @@ def augmentation_textcleaning(string):
         '[0-9!@#$%^&*()_\-+{}|\~`\'";:?/.>,<]', ' ', string, flags = re.UNICODE
     )
     string = re.sub(r'[ ]+', ' ', string).strip()
-    return string.lower().split()
+    return string.lower()
 
 
 def pos_entities_textcleaning(string):
