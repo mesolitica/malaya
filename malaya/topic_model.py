@@ -655,7 +655,7 @@ def lda2vec(
     cleaning: function, (default=simple_textcleaning)
         function to clean the corpus.
     stop_words: list, (default=None)
-        list of stop words to remove. If None, default is malaya.texts._text_functions.STOPWORDS
+        list of stop words to remove. If None, default is malaya.texts.function.STOPWORDS
     embedding_size: int, (default=128)
         embedding size of lda2vec tensors.
     training_iteration: int, (default=10)
@@ -774,7 +774,7 @@ def lda2vec(
 
 
 @check_type
-def attention(
+def transformer(
     corpus: List[str],
     n_topics: int,
     vectorizer,
@@ -786,7 +786,7 @@ def attention(
 ):
 
     """
-    Use attention from vectorizer model to do topic modelling based on corpus / list of strings given.
+    Use attention from transformer model to do topic modelling based on corpus / list of strings given.
 
     Parameters
     ----------
@@ -799,7 +799,7 @@ def attention(
     cleaning: function, (default=simple_textcleaning)
         function to clean the corpus.
     stop_words: list, (default=None)
-        list of stop words to remove. If None, default is malaya.texts._text_functions.STOPWORDS
+        list of stop words to remove. If None, default is malaya.texts.function.STOPWORDS
     ngram: tuple, (default=(1,3))
         n-grams size to train a corpus.
     batch_size: int, (default=10)

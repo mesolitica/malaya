@@ -1,10 +1,17 @@
 import random
+import json
 import inspect
 import numpy as np
 import string as string_function
+from collections import defaultdict
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+from malaya.function import check_file
+from malaya.text.function import augmentation_textcleaning
+from malaya.path import PATH_AUGMENTATION, S3_PATH_AUGMENTATION
 from herpetologist import check_type
 from typing import List, Dict, Tuple, Callable
+
+_synonym_dict = None
 
 
 def to_ids(string, tokenizer):
@@ -19,12 +26,74 @@ def to_ids(string, tokenizer):
     return masked_ids, masked_ids.index(tokenizer.vocab['[MASK]'])
 
 
-def synonym():
-    pass
+def replace(string, threshold):
+    for no, word in enumerate(string):
+        if word in _synonym_dict and random.random() > threshold:
+            w = random.choice(_synonym_dict[word])
+            string[no] = w
+    return ' '.join(string)
 
 
-def tfidf():
-    pass
+@check_type
+def synonym(
+    string: str,
+    threshold: float = 0.5,
+    top_n = 5,
+    cleaning_function: Callable = augmentation_textcleaning,
+    **kwargs
+):
+    """
+    augmenting a string using synonym, https://github.com/huseinzol05/Malaya-Dataset#90k-synonym
+
+    Parameters
+    ----------
+    string: str
+    threshold: float, optional (default=0.5)
+        random selection for a word.
+    top_n: int, (default=5)
+        number of nearest neighbors returned. Length of returned result should as top_n.
+    cleaning_function: function, (default=malaya.text.function.augmentation_textcleaning)
+        function to clean text.
+
+    Returns
+    -------
+    result: List[str]
+    """
+
+    global _synonym_dict
+
+    if _synonym_dict is None:
+        check_file(
+            PATH_AUGMENTATION['synonym'],
+            S3_PATH_AUGMENTATION['synonym'],
+            **kwargs
+        )
+        synonyms = defaultdict(list)
+        files = [
+            PATH_AUGMENTATION['synonym']['model'],
+            PATH_AUGMENTATION['synonym']['model2'],
+        ]
+        for file in files:
+            with open(file) as fopen:
+                data = json.load(fopen)
+
+            for i in data:
+                if not len(i[1]):
+                    continue
+                synonyms[i[0]].extend(i[1])
+                for r in i[1]:
+                    synonyms[r].append(i[0])
+        for k, v in synonyms.items():
+            synonyms[k] = list(set(v))
+        _synonym_dict = synonyms
+
+    if cleaning_function:
+        string = cleaning_function(string)
+
+    augmented = []
+    for i in range(top_n):
+        augmented.append(replace(string, threshold))
+    return augmented
 
 
 @check_type
@@ -34,7 +103,7 @@ def wordvector(
     threshold: float = 0.5,
     top_n: int = 5,
     soft: bool = False,
-    cleaning_function: Callable = None,
+    cleaning_function: Callable = augmentation_textcleaning,
 ):
     """
     augmenting a string using wordvector.
@@ -50,18 +119,20 @@ def wordvector(
         if True, a word not in the dictionary will be replaced with nearest jarowrinkler ratio.
         if False, it will throw an exception if a word not in the dictionary.
     top_n: int, (default=5)
-        number of nearest neighbors returned.
-    cleaning_function: function, (default=None)
+        number of nearest neighbors returned. Length of returned result should as top_n.
+    cleaning_function: function, (default=malaya.text.function.augmentation_textcleaning)
         function to clean text.
 
     Returns
     -------
-    result: list
+    result: List[str]
     """
     if not hasattr(wordvector, 'batch_n_closest'):
         raise ValueError('wordvector must has `batch_n_closest` method')
     if not hasattr(wordvector, '_dictionary'):
         raise ValueError('wordvector must has `_dictionary` attribute')
+
+    from malaya.preprocessing import _tokenizer
 
     original_string = string
     if cleaning_function:
@@ -109,9 +180,9 @@ def transformer(
     string: str,
     model,
     threshold: float = 0.5,
-    top_p: float = 0.8,
+    top_p: float = 0.9,
     top_k: int = 100,
-    temperature: float = 0.8,
+    temperature: float = 1.0,
     top_n: int = 5,
     cleaning_function: Callable = None,
 ):
@@ -123,23 +194,24 @@ def transformer(
     ----------
     string: str
     model: object
-        transformer interface object. Right now only supported BERT, ALBERT.
+        transformer interface object. Right now only supported BERT, ALBERT and ELECTRA.
     threshold: float, optional (default=0.5)
         random selection for a word.
     top_p: float, optional (default=0.8)
-        cumulative sum of probabilities to sample a word. If top_n bigger than 0, the model will use nucleus sampling, else top-k sampling.
+        cumulative sum of probabilities to sample a word. 
+        If top_n bigger than 0, the model will use nucleus sampling, else top-k sampling.
     top_k: int, optional (default=100)
         k for top-k sampling.
     temperature: float, optional (default=0.8)
         logits * temperature.
     top_n: int, (default=5)
-        number of nearest neighbors returned.
+        number of nearest neighbors returned. Length of returned result should as top_n.
     cleaning_function: function, (default=None)
         function to clean text.
 
     Returns
     -------
-    result: list
+    result: List[str]
     """
 
     if not hasattr(model, 'samples'):
@@ -156,6 +228,8 @@ def transformer(
         raise ValueError('top_n must be bigger than 0')
     if top_n > top_k:
         raise ValueError('top_k must be bigger than top_n')
+
+    from malaya.preprocessing import _tokenizer
 
     original_string = string
     if cleaning_function:
@@ -177,7 +251,7 @@ def transformer(
             'no words can augmented, make sure words available are not punctuation or proper nouns.'
         )
 
-    maskeds, indices, input_masks = [], [], []
+    maskeds, indices, input_masks, input_segments = [], [], [], []
     for index in results:
         new = string[:]
         new[index] = '[MASK]'
@@ -185,9 +259,11 @@ def transformer(
         maskeds.append(mask)
         indices.append(ind)
         input_masks.append([1] * len(mask))
+        input_segments.append([0] * len(mask))
 
     masked_padded = pad_sequences(maskeds, padding = 'post')
     input_masks = pad_sequences(input_masks, padding = 'post')
+    input_segments = pad_sequences(input_segments, padding = 'post')
     batch_indices = np.array([np.arange(len(indices)), indices]).T
     samples = model._sess.run(
         model.samples,
@@ -199,17 +275,25 @@ def transformer(
             model.temperature: temperature,
             model.indices: batch_indices,
             model.k: top_n,
+            model.segment_ids: input_segments,
         },
     )
+
     outputs = []
     for i in range(samples.shape[1]):
         sample_i = samples[:, i]
         samples_tokens = model._tokenizer.convert_ids_to_tokens(
             sample_i.tolist()
         )
-        new_splitted = ['▁' + w if len(w) > 1 else w for w in string]
+        if hasattr(model._tokenizer, 'sp_model'):
+            new_splitted = ['▁' + w if len(w) > 1 else w for w in string]
+        else:
+            new_splitted = [w if len(w) > 1 else w for w in string]
         for no, index in enumerate(results):
             new_splitted[index] = samples_tokens[no]
-        new = ''.join(model._tokenizer.sp_model.DecodePieces(new_splitted))
+        if hasattr(model._tokenizer, 'sp_model'):
+            new = ''.join(model._tokenizer.sp_model.DecodePieces(new_splitted))
+        else:
+            new = ' '.join(new_splitted)
         outputs.append(new)
     return outputs

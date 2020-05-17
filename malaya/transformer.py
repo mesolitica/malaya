@@ -36,9 +36,8 @@ def load(model: str = 'electra', pool_mode: str = 'last', **kwargs):
         * ``'tiny-albert'`` - ALBERT architecture from google with smaller parameters.
         * ``'xlnet'`` - XLNET architecture from google.
         * ``'alxlnet'`` - XLNET architecture from google + Malaya.
-        * ``'small-electra'`` - ELECTRA architecture from google with smaller parameters
         * ``'electra'`` - ELECTRA architecture from google.
-
+        * ``'small-electra'`` - ELECTRA architecture from google with smaller parameters.
 
     pool_mode : str, optional (default='last')
         Model logits architecture supported. Only usable if model in ['xlnet', 'alxlnet']. Allowed values:

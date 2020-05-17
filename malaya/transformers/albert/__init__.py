@@ -59,6 +59,7 @@ class Model:
         _graph = tf.Graph()
         with _graph.as_default():
             self.X = tf.placeholder(tf.int32, [None, None])
+            self.segment_ids = tf.placeholder(tf.int32, [None, None])
             self.top_p = tf.placeholder(tf.float32, None)
             self.top_k = tf.placeholder(tf.int32, None)
             self.k = tf.placeholder(tf.int32, None)
@@ -236,7 +237,7 @@ class Model:
         from malaya.function.html import _attention
 
         strings = [string]
-        attentions, s_tokens = self._attention(strings)
+        attentions, s_tokens, _ = self._attention(strings)
         attn_dict = defaultdict(list)
         for layer, attn_data in enumerate(attentions):
             attn = list(attn_data.values())[0][0]
@@ -263,7 +264,7 @@ def load(model: str = 'albert', **kwargs):
         Model architecture supported. Allowed values:
 
         * ``'albert'`` - base albert-bahasa released by Malaya.
-        * ``'albert-tiny'`` - tiny bert-bahasa released by Malaya.
+        * ``'tiny-albert'`` - tiny bert-bahasa released by Malaya.
 
     Returns
     -------

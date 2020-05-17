@@ -13,7 +13,6 @@ from malaya.text.bpe import (
     bert_tokenization,
     padding_sequence,
     merge_sentencepiece_tokens,
-    merge_wordpiece_tokens,
 )
 from malaya.transformers.sampling import top_k_logits, top_p_logits
 from collections import defaultdict
@@ -56,6 +55,7 @@ class Model:
         _graph = tf.Graph()
         with _graph.as_default():
             self.X = tf.placeholder(tf.int32, [None, None])
+            self.segment_ids = tf.placeholder(tf.int32, [None, None])
             self.top_p = tf.placeholder(tf.float32, None)
             self.top_k = tf.placeholder(tf.int32, None)
             self.k = tf.placeholder(tf.int32, None)
@@ -230,7 +230,7 @@ class Model:
         from malaya.function.html import _attention
 
         strings = [string]
-        attentions, s_tokens = self._attention(strings)
+        attentions, s_tokens, _ = self._attention(strings)
         attn_dict = defaultdict(list)
         for layer, attn_data in enumerate(attentions):
             attn = list(attn_data.values())[0][0]

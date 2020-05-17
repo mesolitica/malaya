@@ -1,9 +1,7 @@
 import tensorflow as tf
 import numpy as np
 from malaya.text.function import (
-    str_idx,
     entities_textcleaning,
-    char_str_idx,
     generate_char_seq,
     language_detection_textcleaning,
     tag_chunk,

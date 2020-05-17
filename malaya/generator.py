@@ -1,7 +1,6 @@
 import itertools
 import random
 import numpy as np
-from malaya.preprocessing import _tokenizer
 from malaya.text.function import simple_textcleaning
 from malaya.text.bpe import sentencepiece_tokenizer_bert as load_sentencepiece
 from malaya.text.tatabahasa import alphabet, consonants, vowels
@@ -331,12 +330,12 @@ def shortform(
 def transformer(
     string: str,
     model,
-    generate_length: int = 256,
+    generate_length: int = 30,
+    leed_out_len: int = 1,
     temperature: float = 1.0,
-    top_k = 100,
-    burnin = 250,
-    max_iter = 500,
-    sample = True,
+    top_k: int = 100,
+    burnin: int = 15,
+    batch_size: int = 5,
 ):
     """
     Use pretrained transformer models to generate a string given a prefix string.
@@ -349,14 +348,16 @@ def transformer(
         transformer interface object. Right now only supported BERT, ALBERT.
     generate_length : int, optional (default=256)
         length of sentence to generate.
+    leed_out_len : int, optional (default=1)
+        length of extra masks for each iteration. 
     temperature: float, optional (default=1.0)
         logits * temperature.
     top_k: int, optional (default=100)
         k for top-k sampling.
-    burnin: int, optional (default=250)
+    burnin: int, optional (default=15)
         for the first burnin steps, sample from the entire next word distribution, instead of top_k.
-    max_iter: int, optional (default=500)
-        number of iterations to run for.
+    batch_size: int, optional (default=5)
+        generate sentences size of batch_size.
 
     Returns
     -------
@@ -373,8 +374,23 @@ def transformer(
         raise ValueError('top_k must be bigger than 0')
     if not burnin > 0:
         raise ValueError('burnin must be bigger than 0')
-    if not max_iter > 0:
-        raise ValueError('max_iter must be bigger than 0')
+    if leed_out_len >= generate_length:
+        raise ValueError('leed_out_len must be smaller than generate_length')
+    if burnin >= generate_length:
+        raise ValueError('burnin must be smaller than generate_length')
+
+    from malaya.transformers.babble import sequential_generation
+
+    return sequential_generation(
+        string,
+        model,
+        batch_size = batch_size,
+        max_len = generate_length,
+        leed_out_len = leed_out_len,
+        temperature = temperature,
+        top_k = top_k,
+        burnin = burnin,
+    )
 
 
 @check_type

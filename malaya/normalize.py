@@ -47,13 +47,16 @@ from malaya.text.normalization import (
 )
 from malaya.text.rules import rules_normalizer
 from malaya.cluster import cluster_words
-from malaya.preprocessing import _tokenizer
 from herpetologist import check_type
 
 
-class _SPELL_NORMALIZE:
+class NORMALIZER:
     def __init__(self, speller):
+
+        from malaya.preprocessing import _tokenizer
+
         self._speller = speller
+        self._tokenizer = _tokenizer
 
     @check_type
     def normalize(self, string: str, check_english: bool = True):
@@ -72,7 +75,7 @@ class _SPELL_NORMALIZE:
         """
 
         result, normalized = [], []
-        tokenized = _tokenizer(string)
+        tokenized = self._tokenizer(string)
         index = 0
         while index < len(tokenized):
             word = tokenized[index]
@@ -328,9 +331,9 @@ class _SPELL_NORMALIZE:
         return {'normalize': result, 'date': dates_, 'money': money_}
 
 
-def spell(speller):
+def normalizer(speller):
     """
-    Train a Spelling Normalizer
+    Load a Normalizer using any spelling correction model.
 
     Parameters
     ----------
@@ -338,7 +341,7 @@ def spell(speller):
 
     Returns
     -------
-    _SPELL_NORMALIZE: malaya.normalizer._SPELL_NORMALIZE class
+    result: malaya.normalizer.NORMALIZER class
     """
     if not hasattr(speller, 'correct') and not hasattr(
         speller, 'normalize_elongated'
@@ -346,4 +349,4 @@ def spell(speller):
         raise ValueError(
             'speller must has `correct` or `normalize_elongated` method'
         )
-    return _SPELL_NORMALIZE(speller)
+    return NORMALIZER(speller)

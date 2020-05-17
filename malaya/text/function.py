@@ -223,6 +223,24 @@ def language_detection_textcleaning(string):
     return string.lower()
 
 
+def augmentation_textcleaning(string):
+    string = re.sub(
+        'http\S+|www.\S+',
+        '',
+        ' '.join(
+            [i for i in string.split() if i.find('#') < 0 and i.find('@') < 0]
+        ),
+    )
+    chars = ',.()!:\'"/;=-'
+    for c in chars:
+        string = string.replace(c, f' {c} ')
+    string = re.sub(
+        '[0-9!@#$%^&*()_\-+{}|\~`\'";:?/.>,<]', ' ', string, flags = re.UNICODE
+    )
+    string = re.sub(r'[ ]+', ' ', string).strip()
+    return string.lower().split()
+
+
 def pos_entities_textcleaning(string):
     """
     use by text entities and pos

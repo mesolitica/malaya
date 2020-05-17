@@ -20,7 +20,8 @@ def _load(j, npy):
 
 def load_wiki():
     """
-    Return malaya pretrained wikipedia word2vec size 256. https://github.com/huseinzol05/Malaya/tree/master/pretrained-model/wordvector
+    Return malaya pretrained wikipedia word2vec size 256. 
+    https://github.com/huseinzol05/Malaya/tree/master/pretrained-model/wordvector
 
     Returns
     -------

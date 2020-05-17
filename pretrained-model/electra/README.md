@@ -96,7 +96,7 @@ python3 run_pretraining.py --data-dir directory \
 
   - Vocab size 32k.
   - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.
-  - 800k steps, V3-8 TPU
+  - 728.8k steps, V3-8 TPU
   - BASE size (443MB).
 
 ## Citation

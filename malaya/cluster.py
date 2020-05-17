@@ -250,7 +250,7 @@ def cluster_scatter(
     stemming: function, (default=sastrawi)
         function to stem the corpus.
     stop_words: List[str], (default=None)
-        list of stop words to remove. If None, default is malaya.texts._text_functions.STOPWORDS
+        list of stop words to remove. If None, default is malaya.texts.function.STOPWORDS
     ngram: Tuple[int, int], (default=(1,3))
         n-grams size to train a corpus.
     cleaning: function, (default=simple_textcleaning)
@@ -396,7 +396,7 @@ def cluster_dendogram(
     stemming: function, (default=sastrawi)
         function to stem the corpus.
     stop_words: List[str], (default=None)
-        list of stop words to remove. If None, default is malaya.texts._text_functions.STOPWORDS
+        list of stop words to remove. If None, default is malaya.texts.function.STOPWORDS
     cleaning: function, (default=simple_textcleaning)
         function to clean the corpus.
     random_samples: float, (default=0.3)
@@ -531,7 +531,7 @@ def cluster_graph(
     stemming: function, (default=sastrawi)
         function to stem the corpus.
     stop_words: List[str], (default=None)
-        list of stop words to remove. If None, default is malaya.texts._text_functions.STOPWORDS
+        list of stop words to remove. If None, default is malaya.texts.function.STOPWORDS
     cleaning: function, (default=simple_textcleaning)
         function to clean the corpus.
     ngram: Tuple[int, int], (default=(1,3))
@@ -716,7 +716,7 @@ def cluster_entity_linking(
     cleaning: function, (default=simple_textcleaning)
         function to clean the corpus.
     stop_words: list, (default=None)
-        list of stop words to remove. If None, default is malaya.texts._text_functions.STOPWORDS
+        list of stop words to remove. If None, default is malaya.texts.function.STOPWORDS
 
     Returns
     -------

@@ -7,6 +7,11 @@ import tensorflow as tf
 import tensorflow_probability as tfp
 import math
 import numpy as np
+from malaya.text.bpe import merge_sentencepiece_tokens, merge_wordpiece_tokens
+
+CLS = '[CLS]'
+SEP = '[SEP]'
+MASK = '[MASK]'
 
 
 def topk_distributions(logits, top_k):
@@ -28,16 +33,6 @@ def distributions(logits):
         return dist.sample().eval()
 
 
-def tokenize_batch(batch, tokenizer):
-    return [tokenizer.convert_tokens_to_ids(sent) for sent in batch]
-
-
-def get_init_text(
-    seed_text, max_len, mask, sep, batch_size = 1, rand_init = False
-):
-    batch = [seed_text + [mask] * max_len + [sep] for _ in range(batch_size)]
-
-
 def generate_step(
     logits,
     gen_idx,
@@ -46,7 +41,7 @@ def generate_step(
     sample = False,
     return_list = True,
 ):
-    logits = out[:, gen_idx]
+    logits = logits[:, gen_idx]
     logits = logits / temperature
     if top_k > 0:
         idx = topk_distributions(logits, top_k)
@@ -57,35 +52,73 @@ def generate_step(
     return idx.tolist() if return_list else idx
 
 
-def parallel_sequential_generation(
+def tokenize_batch(batch, tokenizer):
+    return [tokenizer.convert_tokens_to_ids(sent) for sent in batch]
+
+
+def untokenize_batch(batch, tokenizer):
+    return [tokenizer.convert_ids_to_tokens(sent) for sent in batch]
+
+
+def get_init_text(seed_text, max_len, tokenizer, batch_size = 1):
+    batch = [seed_text + [MASK] * max_len + [SEP] for _ in range(batch_size)]
+    return tokenize_batch(batch, tokenizer)
+
+
+def sequential_generation(
     seed_text,
     model,
-    batch_size = 10,
+    batch_size = 5,
     max_len = 15,
-    top_k = 0,
+    leed_out_len = 1,
     temperature = 1.0,
-    max_iter = 300,
-    burnin = 200,
+    top_k = 100,
+    burnin = 20,
 ):
     mask_id = model._tokenizer.vocab['[MASK]']
+    sep_id = model._tokenizer.vocab['[SEP]']
+    seed_text = model._tokenizer.tokenize(seed_text)
     seed_len = len(seed_text)
-    batch = get_init_text(seed_text, max_len, batch_size)
-    for ii in range(max_iter):
-        kk = np.random.randint(0, max_len)
-        for jj in range(batch_size):
-            batch[jj][seed_len + kk] = mask_id
+    batch = get_init_text(
+        seed_text, max_len, model._tokenizer, batch_size = batch_size
+    )
+
+    for ii in range(max_len):
+        inp = [sent[: seed_len + ii] + [sep_id] for sent in batch]
         batch = np.array(batch)
-        masks = np.zeros(*batch.shape)
+        masks = np.ones(batch.shape)
+        segments = np.zeros(batch.shape)
         out = model._sess.run(
-            model._logits, feed_dict = {model.X: batch, model.MASK: masks}
+            model._logits,
+            feed_dict = {
+                model.X: batch,
+                model.MASK: masks,
+                model.segment_ids: segments,
+            },
         )
         topk = top_k if (ii >= burnin) else 0
         idxs = generate_step(
             out,
-            gen_idx = seed_len + kk,
+            gen_idx = seed_len + ii,
             top_k = topk,
             temperature = temperature,
             sample = (ii < burnin),
         )
         for jj in range(batch_size):
-            batch[jj][seed_len + kk] = idxs[jj]
+            batch[jj][seed_len + ii] = idxs[jj]
+
+    results = untokenize_batch(batch.tolist(), model._tokenizer)
+    if hasattr(model._tokenizer, 'sp_model'):
+        merge_function = merge_sentencepiece_tokens
+    else:
+        merge_function = merge_wordpiece_tokens
+
+    outputs = []
+
+    for r in results:
+        r = [(t, 0) for t in r]
+        r = merge_function(r)
+        r = [t[0] for t in r]
+        outputs.append(' '.join(r))
+
+    return outputs

@@ -206,7 +206,7 @@ class Model:
         from malaya.function.html import _attention
 
         strings = [string]
-        attentions, s_tokens = self._attention(strings)
+        attentions, s_tokens, _ = self._attention(strings)
         attn_dict = defaultdict(list)
         for layer, attn_data in enumerate(attentions):
             attn = attn_data[:, :, 0]

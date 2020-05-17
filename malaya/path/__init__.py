@@ -6,10 +6,19 @@ MALAY_TEXT_200K = home + '/dictionary-200k/malay-text.txt'
 # sorted based on modules, started from augmentation until toxic
 
 PATH_AUGMENTATION = {
-    'synonym': {'model': home + '/synonym/synonym.json', 'version': 'v35'}
+    'synonym': {
+        'model': home + '/synonym/synonym0.json',
+        'model2': home + '/synonym/synonym1.json',
+        'version': 'v35',
+    }
 }
 
-PATH
+S3_PATH_AUGMENTATION = {
+    'synonym': {
+        'model': 'https://raw.githubusercontent.com/huseinzol05/Malaya-Dataset/master/dictionary/synonym/synonym0.json',
+        'model2': 'https://raw.githubusercontent.com/huseinzol05/Malaya-Dataset/master/dictionary/synonym/synonym1.json',
+    }
+}
 
 # dependency.py
 PATH_DEPENDENCY = {
@@ -853,6 +862,30 @@ S3_PATH_TOXIC = {
         'vocab': 'tokenizer/sp10m.cased.v9.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.v9.model',
     },
+}
+
+PATH_ELECTRA = {
+    'electra': {
+        'path': home + '/electra-model/base',
+        'directory': home + '/electra-model/base/electra-base/',
+        'model': {
+            'model': home + '/electra-model/base/electra-bahasa-base.tar.gz',
+            'version': 'v34',
+        },
+    },
+    'small-electra': {
+        'path': home + '/electra-model/small',
+        'directory': home + '/electra-model/small/electra-small/',
+        'model': {
+            'model': home + '/electra-model/small/electra-bahasa-small.tar.gz',
+            'version': 'v34',
+        },
+    },
+}
+
+S3_PATH_ELECTRA = {
+    'electra': {'model': 'v34/pretrained-model/electra-base.tar.gz'},
+    'small-electra': {'model': 'v34/pretrained-model/electra-small.tar.gz'},
 }
 
 PATH_BERT = {
