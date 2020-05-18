@@ -3,12 +3,19 @@ import setuptools
 
 __packagename__ = 'malaya-gpu'
 
+
+def readme():
+    with open('README-pypi.rst', 'rb') as f:
+        return f.read().decode('UTF-8')
+
+
 setuptools.setup(
     name = __packagename__,
     packages = setuptools.find_packages(),
-    version = '3.4.4',
+    version = '3.4.5',
     python_requires = '>=3.6.*',
     description = 'Natural-Language-Toolkit for bahasa Malaysia, powered by Deep Learning Tensorflow. GPU Version',
+    long_description = readme(),
     author = 'huseinzol05',
     author_email = 'husein.zol05@gmail.com',
     url = 'https://github.com/huseinzol05/Malaya',
