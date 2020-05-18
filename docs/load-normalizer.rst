@@ -6,8 +6,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 4.17 s, sys: 822 ms, total: 4.99 s
-    Wall time: 4.14 s
+    CPU times: user 4.84 s, sys: 1.27 s, total: 6.11 s
+    Wall time: 7.83 s
 
 
 .. code:: python
@@ -19,13 +19,16 @@
     string5 = 'Husein Zolkepli dapat tempat ke-12 lumba lari hari ni'
     string6 = 'Husein Zolkepli (2011 - 2019) adalah ketua kampng di kedah sekolah King Edward ke-IV'
 
-Load spell normalizer
----------------------
+Load normalizer
+---------------
+
+This normalizer can load any spelling correction model, eg,
+``malaya.spell.probability``, or ``malaya.spell.transformer``.
 
 .. code:: python
 
     corrector = malaya.spell.probability()
-    normalizer = malaya.normalize.spell(corrector)
+    normalizer = malaya.normalize.normalizer(corrector)
 
 .. code:: python
 
@@ -37,8 +40,8 @@ Load spell normalizer
 .. parsed-literal::
 
     {'normalize': 'boleh datang lapan pagi esok tak atau minggu depan ? 02/10/2019 14:00:00 , tolong bayar tiga ribu dua ratus perpuluhan kosong ringgit sekali tahu',
-     'date': {'minggu depan': datetime.datetime(2020, 5, 4, 0, 18, 26, 265157),
-      '8 AM esok': datetime.datetime(2020, 4, 28, 8, 0),
+     'date': {'minggu depan': datetime.datetime(2020, 5, 25, 10, 7, 42, 399557),
+      '8 AM esok': datetime.datetime(2020, 5, 19, 8, 0),
       '2 oktober 2019 2pm': datetime.datetime(2019, 10, 2, 14, 0)},
      'money': {'rm 3.2k': 'RM3200.0'}}
 
