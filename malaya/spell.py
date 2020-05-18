@@ -175,7 +175,7 @@ def _return_known(word, dicts):
     return set(w for w in word if w in dicts)
 
 
-class _Spell_augmentation:
+class SPELL:
     def __init__(self, sp_tokenizer, corpus, add_norvig_method = True):
         self._sp_tokenizer = sp_tokenizer
         if self._sp_tokenizer:
@@ -298,11 +298,9 @@ class _Spell_augmentation:
         return ttt
 
 
-class _TransformerCorrector(_Spell_augmentation):
+class TRANSFORMER(SPELL):
     def __init__(self, model, corpus, sp_tokenizer):
-        _Spell_augmentation.__init__(
-            self, sp_tokenizer, corpus, add_norvig_method = False
-        )
+        SPELL.__init__(self, sp_tokenizer, corpus, add_norvig_method = False)
         self._model = model
 
         import tensorflow as tf
@@ -413,7 +411,7 @@ class _TransformerCorrector(_Spell_augmentation):
         )
 
 
-class _SpellCorrector(_Spell_augmentation):
+class PROBABILITY(SPELL):
     """
     The SpellCorrector extends the functionality of the Peter Norvig's
     spell-corrector in http://norvig.com/spell-correct.html
@@ -423,7 +421,7 @@ class _SpellCorrector(_Spell_augmentation):
     """
 
     def __init__(self, corpus, sp_tokenizer = None):
-        _Spell_augmentation.__init__(self, sp_tokenizer, corpus)
+        SPELL.__init__(self, sp_tokenizer, corpus)
 
     def tokens(text):
         return REGEX_TOKEN.findall(text.lower())
@@ -547,7 +545,7 @@ class _SpellCorrector(_Spell_augmentation):
         return case_of(word)(self.best_elong_candidate(word.lower()))
 
 
-class _SymspellCorrector:
+class SYMSPELL:
     """
     The SymspellCorrector extends the functionality of symspeller, https://github.com/mammothb/symspellpy
     And improve it using some algorithms from Normalization of noisy texts in Malaysian online reviews,
@@ -741,7 +739,7 @@ def probability(sentence_piece: bool = False, **kwargs):
 
     Returns
     -------
-    _SpellCorrector: malaya.spell._SpellCorrector class
+    PROBABILITY: malaya.spell.PROBABILITY class
     """
     check_file(PATH_NGRAM[1], S3_PATH_NGRAM[1], **kwargs)
 
@@ -760,7 +758,7 @@ def probability(sentence_piece: bool = False, **kwargs):
 
     with open(PATH_NGRAM[1]['model']) as fopen:
         corpus = json.load(fopen)
-    return _SpellCorrector(corpus, tokenizer)
+    return PROBABILITY(corpus, tokenizer)
 
 
 @check_type
@@ -777,7 +775,7 @@ def symspell(
 
     Returns
     -------
-    _SpellCorrector: malaya.spell._SymspellCorrector class
+    _SpellCorrector: malaya.spell.SYMSPELL class
     """
 
     check_file(PATH_NGRAM['symspell'], S3_PATH_NGRAM['symspell'], **kwargs)
@@ -794,7 +792,7 @@ def symspell(
     sym_spell.load_dictionary(dictionary_path, term_index, count_index)
     with open(PATH_NGRAM[1]['model']) as fopen:
         corpus = json.load(fopen)
-    return _SymspellCorrector(sym_spell, Verbosity.ALL, corpus, k = top_k)
+    return SYMSPELL(sym_spell, Verbosity.ALL, corpus, k = top_k)
 
 
 @check_type
@@ -809,7 +807,7 @@ def transformer(model, sentence_piece: bool = False, **kwargs):
 
     Returns
     -------
-    _TransformerCorrector: malaya.spell._TransformerCorrector class
+    TRANSFORMER: malaya.spell.TRANSFORMER class
     """
     if not hasattr(model, '_log_vectorize'):
         raise ValueError('model must has `_log_vectorize` method')
@@ -831,4 +829,4 @@ def transformer(model, sentence_piece: bool = False, **kwargs):
 
     with open(PATH_NGRAM[1]['model']) as fopen:
         corpus = json.load(fopen)
-    return _TransformerCorrector(model, corpus, tokenizer)
+    return TRANSFORMER(model, corpus, tokenizer)

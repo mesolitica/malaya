@@ -99,6 +99,7 @@ class Model:
                     hidden, self.model.get_embedding_table(), transpose_b = True
                 )
                 self._logits = tf.nn.bias_add(logits, output_bias)
+                self._log_softmax = tf.nn.log_softmax(self._logits)
 
             logits = tf.gather_nd(self._logits, self.indices)
             logits = logits / self.temperature
@@ -144,10 +145,16 @@ class Model:
         -------
         result: np.array
         """
+        s_tokens = np.array(s_tokens)
+        segments = np.zeros(s_tokens.shape)
 
         return self._sess.run(
             self._log_softmax,
-            feed_dict = {self.X: s_tokens, self.MASK: s_masks},
+            feed_dict = {
+                self.X: s_tokens,
+                self.MASK: s_masks,
+                self.segment_ids: segments,
+            },
         )
 
     @check_type

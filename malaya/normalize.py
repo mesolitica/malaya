@@ -341,7 +341,7 @@ def normalizer(speller):
 
     Returns
     -------
-    result: malaya.normalizer.NORMALIZER class
+    result: malaya.normalize.NORMALIZER class
     """
     if not hasattr(speller, 'correct') and not hasattr(
         speller, 'normalize_elongated'

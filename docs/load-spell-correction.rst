@@ -6,8 +6,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 4.82 s, sys: 1.21 s, total: 6.03 s
-    Wall time: 7.59 s
+    CPU times: user 4.58 s, sys: 971 ms, total: 5.55 s
+    Wall time: 4.84 s
 
 
 .. code:: python
@@ -250,59 +250,48 @@ example,
 It supposely replaced ``skt`` with ``sikit``, a common word people use
 in social media to give a little bit of attention to ``pencen``. So, to
 fix that, we can use Transformer model! **Right now transformer speller
-supported ``BERT`` and ``ALBERT`` only, XLNET is not that good**.
+supported ``BERT``, ``ALBERT`` and ``ELECTRA`` only, ``XLNET`` is not
+that good**.
 
 .. code:: python
 
-    model = malaya.transformer.load(model = 'bert')
+    model = malaya.transformer.load(model = 'electra')
     transformer_corrector = malaya.spell.transformer(model, sentence_piece = True)
 
 
 .. parsed-literal::
 
-    WARNING:tensorflow:From /usr/local/lib/python3.7/site-packages/bert/modeling.py:93: The name tf.gfile.GFile is deprecated. Please use tf.io.gfile.GFile instead.
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/electra/__init__.py:56: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
     
-    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/bert/__init__.py:58: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
-    
-    WARNING:tensorflow:From /usr/local/lib/python3.7/site-packages/bert/modeling.py:171: The name tf.variable_scope is deprecated. Please use tf.compat.v1.variable_scope instead.
-    
-    WARNING:tensorflow:From /usr/local/lib/python3.7/site-packages/bert/modeling.py:409: The name tf.get_variable is deprecated. Please use tf.compat.v1.get_variable instead.
-    
-    WARNING:tensorflow:From /usr/local/lib/python3.7/site-packages/bert/modeling.py:490: The name tf.assert_less_equal is deprecated. Please use tf.compat.v1.assert_less_equal instead.
-    
-    WARNING:tensorflow:
-    The TensorFlow contrib module will not be included in TensorFlow 2.0.
-    For more information, please see:
-      * https://github.com/tensorflow/community/blob/master/rfcs/20180907-contrib-sunset.md
-      * https://github.com/tensorflow/addons
-      * https://github.com/tensorflow/io (for I/O related ops)
-    If you depend on functionality not listed there, please file an issue.
-    
-    WARNING:tensorflow:From /usr/local/lib/python3.7/site-packages/bert/modeling.py:671: dense (from tensorflow.python.layers.core) is deprecated and will be removed in a future version.
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/electra/modeling.py:240: dense (from tensorflow.python.layers.core) is deprecated and will be removed in a future version.
     Instructions for updating:
     Use keras.layers.Dense instead.
     WARNING:tensorflow:From /usr/local/lib/python3.7/site-packages/tensorflow_core/python/layers/core.py:187: Layer.apply (from tensorflow.python.keras.engine.base_layer) is deprecated and will be removed in a future version.
     Instructions for updating:
     Please use `layer.__call__` method instead.
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/electra/__init__.py:79: The name tf.variable_scope is deprecated. Please use tf.compat.v1.variable_scope instead.
+    
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/electra/__init__.py:93: The name tf.get_variable is deprecated. Please use tf.compat.v1.get_variable instead.
+    
     WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/sampling.py:26: where (from tensorflow.python.ops.array_ops) is deprecated and will be removed in a future version.
     Instructions for updating:
     Use tf.where in 2.0, which has the same broadcast rule as np.where
-    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/bert/__init__.py:111: multinomial (from tensorflow.python.ops.random_ops) is deprecated and will be removed in a future version.
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/electra/__init__.py:115: multinomial (from tensorflow.python.ops.random_ops) is deprecated and will be removed in a future version.
     Instructions for updating:
     Use `tf.random.categorical` instead.
-    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/bert/__init__.py:114: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/electra/__init__.py:118: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
     
-    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/bert/__init__.py:115: The name tf.global_variables_initializer is deprecated. Please use tf.compat.v1.global_variables_initializer instead.
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/electra/__init__.py:119: The name tf.global_variables_initializer is deprecated. Please use tf.compat.v1.global_variables_initializer instead.
     
-    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/bert/__init__.py:116: The name tf.get_collection is deprecated. Please use tf.compat.v1.get_collection instead.
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/electra/__init__.py:121: The name tf.get_collection is deprecated. Please use tf.compat.v1.get_collection instead.
     
-    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/bert/__init__.py:117: The name tf.GraphKeys is deprecated. Please use tf.compat.v1.GraphKeys instead.
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/electra/__init__.py:122: The name tf.GraphKeys is deprecated. Please use tf.compat.v1.GraphKeys instead.
     
-    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/bert/__init__.py:122: The name tf.train.Saver is deprecated. Please use tf.compat.v1.train.Saver instead.
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/electra/__init__.py:128: The name tf.train.Saver is deprecated. Please use tf.compat.v1.train.Saver instead.
     
-    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/bert/__init__.py:124: The name tf.get_default_graph is deprecated. Please use tf.compat.v1.get_default_graph instead.
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/electra/__init__.py:130: The name tf.get_default_graph is deprecated. Please use tf.compat.v1.get_default_graph instead.
     
-    INFO:tensorflow:Restoring parameters from /Users/huseinzolkepli/Malaya/bert-model/base/bert-base-v3/model.ckpt
+    INFO:tensorflow:Restoring parameters from /Users/huseinzolkepli/Malaya/electra-model/base/electra-base/model.ckpt
 
 
 .. code:: python
@@ -329,8 +318,8 @@ the time wall with probability based.
 
 .. parsed-literal::
 
-    CPU times: user 55.1 s, sys: 2.07 s, total: 57.1 s
-    Wall time: 10.6 s
+    CPU times: user 21.8 s, sys: 1.19 s, total: 23 s
+    Wall time: 5.15 s
 
 
 
@@ -349,8 +338,8 @@ the time wall with probability based.
 
 .. parsed-literal::
 
-    CPU times: user 111 ms, sys: 8.72 ms, total: 119 ms
-    Wall time: 119 ms
+    CPU times: user 108 ms, sys: 3.34 ms, total: 112 ms
+    Wall time: 112 ms
 
 
 
@@ -358,32 +347,6 @@ the time wall with probability based.
 .. parsed-literal::
 
     'kerajaan patut bagi pencen awal sakit kepada warga emas supaya emosi'
-
-
-
-.. code:: python
-
-    transformer_corrector.correct_text(string2)
-
-
-
-
-.. parsed-literal::
-
-    'Husein suka mkn ayam dekat kampung Jawa'
-
-
-
-.. code:: python
-
-    prob_corrector.correct_text(string2)
-
-
-
-
-.. parsed-literal::
-
-    'Husein suka makan ayam dekat kampung Jawa'
 
 
 
@@ -558,6 +521,5 @@ To correct a sentence
 .. parsed-literal::
 
     'boleh bintang dalam kelas malaya saya, nanti mintalah'
-
 
 
