@@ -10,8 +10,8 @@
     Wall time: 4.82 s
 
 
-GPT2
-----
+Load GPT2
+---------
 
 Malaya provided Pretrained GTP2 model, specific to Malay, we called it
 GTP2-Bahasa. This interface not able us to use it to do custom training.
@@ -183,8 +183,8 @@ GPT2-Bahasa only available ``117M`` and ``345M`` models.
     Jangan pernah putus putus asa kerana kita
 
 
-Transformer
------------
+Load Transformer
+----------------
 
 We also can generate a text like GPT2 using Transformer-Bahasa. Right
 now only supported BERT, ALBERT and ELECTRA.

@@ -20,8 +20,8 @@ more, but labelling is very costly.
 So, text augmentation! We provided few augmentation interfaces in
 Malaya.
 
-Synonym
--------
+Load Synonym
+------------
 
 Use dictionary of synonym to replace words with it synonyms. Synonym
 data from
@@ -93,8 +93,8 @@ data from
 
 
 
-Wordvector
-----------
+Load Wordvector
+---------------
 
 dictionary of synonym is quite hard to populate, required some domain
 experts to help us. So we can use wordvector to find nearest words.
@@ -184,8 +184,8 @@ experts to help us. So we can use wordvector to find nearest words.
 
 
 
-Transformer
------------
+Load Transformer
+----------------
 
 Problem with wordvector, it just replaced a word for near synonym
 without understood the whole sentence context, so, Transformer comes to
