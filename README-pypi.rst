@@ -43,7 +43,7 @@ Features
    using Fast-text and Sparse Deep learning Model to classify Malay (formal and social media), Indonesia (formal and social media), Rojak language and Manglish.
 -  **Normalizer**
 
-   using local Malaysia NLP researches hybrid with Transformer models to normalize any bahasa texts.
+   using local Malaysia NLP researches hybrid with Transformer-Bahasa to normalize any bahasa texts.
 -  **Num2Word**
 
    Convert from numbers to cardinal or ordinal representation.
@@ -58,19 +58,19 @@ Features
    Transfer learning on BERT-base-bahasa, Tiny-BERT-bahasa, Albert-base-bahasa, Albert-tiny-bahasa, XLNET-base-bahasa, ALXLNET-base-bahasa.
 -  **Similarity**
 
-   Use deep Encoder, Doc2Vec, BERT-base-bahasa, Tiny-BERT-bahasa, Albert-base-bahasa, Albert-tiny-bahasa, XLNET-base-bahasa and ALXLNET-base-bahasa to build deep semantic similarity models.
+   Using deep Encoder, Doc2Vec, BERT-base-bahasa, Tiny-BERT-bahasa, Albert-base-bahasa, Albert-tiny-bahasa, XLNET-base-bahasa and ALXLNET-base-bahasa to build deep semantic similarity models.
 -  **Spell Correction**
 
-   Using local Malaysia NLP researches hybrid with Transformer models to auto-correct any bahasa words.
+   Using local Malaysia NLP researches hybrid with Transformer-Bahasa to auto-correct any bahasa words.
 -  **Stemmer**
 
-   Use BPE LSTM Seq2Seq with attention state-of-art to do Bahasa stemming.
+   Using BPE LSTM Seq2Seq with attention state-of-art to do Bahasa stemming.
 -  **Subjectivity Analysis**
 
    Transfer learning on BERT-base-bahasa, Tiny-BERT-bahasa, Albert-base-bahasa, Albert-tiny-bahasa, XLNET-base-bahasa, ALXLNET-base-bahasa.
 -  **Summarization**
 
-   Using BERT, XLNET, ALBERT, skip-thought, LDA, LSA and Doc2Vec to give precise unsupervised summarization, and TextRank as scoring algorithm.
+   Provide Transformer-Bahasa, skip-thought, LDA, LSA and Doc2Vec interface to give precise unsupervised summarization, and TextRank as scoring algorithm.
 -  **Topic Modelling**
 
    Provide Transformer-Bahasa, LDA2Vec, LDA, NMF and LSA interface for easy topic modelling with topics visualization.
@@ -113,12 +113,18 @@ If you use our software for research, please cite:
 Acknowledgement
 ----------------
 
-Thanks to `Im Big <https://www.facebook.com/imbigofficial/>`_, `LigBlou <https://www.facebook.com/ligblou>`_, `Mesolitica <https://mesolitica.com/>`_ and `KeyReply <https://www.keyreply.com/>`_ for sponsoring AWS Google and private cloud to train Malaya models.
+Thanks to `Im Big <https://www.facebook.com/imbigofficial/>`_, `LigBlou <https://www.facebook.com/ligblou>`_, `Mesolitica <https://mesolitica.com/>`_ and `KeyReply <https://www.keyreply.com/>`_ for sponsoring AWS, GCP and private cloud to train Malaya models.
 
 Contributing
 ----------------
 
 Thank you for contributing this library, really helps a lot. Feel free to contact me to suggest me anything or want to contribute other kind of forms, we accept everything, not just code!
+
+.. raw:: html
+
+    <a href="#readme">
+        <img alt="logo" width="30%" src="https://contributors-img.firebaseapp.com/image?repo=huseinzol05/malaya">
+    </a>
 
 License
 --------

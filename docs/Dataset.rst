@@ -5,7 +5,7 @@ Dataset
 
     <p align="center">
         <a href="#readme">
-            <img alt="logo" width="70%" src="https://raw.githubusercontent.com/huseinzol05/Malaya-Dataset/master/karangan-sekolah/wordcloud.png">
+            <img alt="logo" width="70%" src="https://raw.githubusercontent.com/huseinzol05/Malay-Dataset/master/wordcloud.png">
         </a>
     </p>
 
@@ -13,7 +13,7 @@ We want to make sure not just the code we open-sourced, but also goes to
 dataset, so everyone can validate.
 
 You can check in
-`Malaya-Dataset <https://github.com/huseinzol05/Malaya-Dataset>`__ for
+`Malay-Dataset <https://github.com/huseinzol05/Malay-Dataset>`__ for
 our open dataset.
 
 Citation
