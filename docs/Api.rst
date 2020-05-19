@@ -165,10 +165,13 @@ malaya.topic_model
 .. automodule:: malaya.topic_model
     :members:
 
-.. autoclass:: malaya.topic_model._TOPIC()
+.. autoclass:: malaya.topic_model._ATTENTION_TOPIC()
     :members:
 
 .. autoclass:: malaya.topic_model._DEEP_TOPIC()
+    :members:
+
+.. autoclass:: malaya.topic_model._TOPIC()
     :members:
 
 malaya.toxic
