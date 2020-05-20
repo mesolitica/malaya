@@ -400,7 +400,7 @@ class _wordvector:
     def calculator(
         self,
         equation: str,
-        num_closest: bool = 5,
+        num_closest: int = 5,
         metric: str = 'cosine',
         return_similarity: bool = True,
     ):

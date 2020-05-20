@@ -120,12 +120,6 @@ Contributing
 
 Thank you for contributing this library, really helps a lot. Feel free to contact me to suggest me anything or want to contribute other kind of forms, we accept everything, not just code!
 
-.. raw:: html
-
-    <a href="#readme">
-        <img alt="logo" width="30%" src="https://contributors-img.firebaseapp.com/image?repo=huseinzol05/malaya">
-    </a>
-
 License
 --------
 
