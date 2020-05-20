@@ -34,6 +34,14 @@ Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://w
 
 ## Download
 
+1. 20th May 2020, [t5-base-05-20-2020.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/t5-base-05-20-2020.tar.gz)
+
+  - Vocab size 32k.
+  - Trained on unsupervised, question-answer, pairing, news-title, stemming, synonym and SNLI tasks.
+  - 487.6k steps, 128 batch size, 1 V3-8 TPU.
+  - BASE size (427MB).
+  - Tensorboard included.
+
 ## Citation
 
 1. Please citate the repository if use these checkpoints.
