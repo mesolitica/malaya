@@ -270,13 +270,23 @@ PATH_GENERATOR = {
                 + '/generator-sample/t5/base/generator-t5-base.tar.gz',
                 'version': 'v35',
             },
-        }
+        },
+        'small': {
+            'path': home + '/generator-sample/t5/small',
+            'directory': home + '/generator-sample/t5/small/model/',
+            'model': {
+                'model': home
+                + '/generator-sample/t5/small/generator-t5-small.tar.gz',
+                'version': 'v35',
+            },
+        },
     }
 }
 
 S3_PATH_GENERATOR = {
     'sample': {
-        'base': {'model': 'v35/generator/sample-generator-t5-base.tar.gz'}
+        'base': {'model': 'v35/generator/sample-generator-t5-base.tar.gz'},
+        'small': {'model': 'v35/generator/sample-generator-t5-small.tar.gz'},
     }
 }
 

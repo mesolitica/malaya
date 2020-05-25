@@ -71,7 +71,7 @@ class GENERATOR:
     @check_type
     def generate(self, strings: List[str]):
         """
-        generate a long text given a isu penting.
+        generate a long text given a isi penting.
 
         Parameters
         ----------

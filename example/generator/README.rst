@@ -2,12 +2,13 @@
 
     %%time
     import malaya
+    from pprint import pprint
 
 
 .. parsed-literal::
 
-    CPU times: user 4.8 s, sys: 1.17 s, total: 5.97 s
-    Wall time: 6.97 s
+    CPU times: user 4.83 s, sys: 1.18 s, total: 6.01 s
+    Wall time: 7.1 s
 
 
 List available T5 Model
@@ -33,6 +34,26 @@ T5 in Malaya is quite, most of the text generative model we found on the
 internet like GPT2 or Markov, simply just continue prefix input from
 user, but not for T5 Malaya. We want to generate an article or karangan
 like high school when the users give ‘isu penting’.
+
+.. code:: python
+
+   def t5(model: str = 'base', **kwargs):
+
+       """
+       Load T5 model to generate a string given a isu penting.
+
+       Parameters
+       ----------
+       model : str, optional (default='base')
+           Model architecture supported. Allowed values:
+
+           * ``'base'`` - T5 Base parameters.
+           * ``'small'`` - T5 Small parameters.
+
+       Returns
+       -------
+       result: malaya.model.t5.GENERATOR class
+       """
 
 .. code:: ipython3
 
@@ -62,19 +83,46 @@ world.
 generate
 ^^^^^^^^
 
-``model.generate`` accepts list of string.
+``model.generate`` accepts list of strings.
+
+.. code:: python
+
+   def generate(self, strings: List[str]):
+       """
+       generate a long text given a isi penting.
+
+       Parameters
+       ----------
+       strings: List[str]
+
+       Returns
+       -------
+       result: str
+       """
 
 .. code:: ipython3
 
-    model.generate(isi_penting)
-
-
+    pprint(model.generate(isi_penting))
 
 
 .. parsed-literal::
 
-    ': Presiden Bersatu, Tan Sri Muhyiddin Yassin perlu mengekalkan Tun Dr Mahathir Mohamad sebagai perdana menteri berbanding Datuk Seri Anwar Ibrahim yang hanya minta bantuan untuk menyelesaikan kemelut kedudukan negara.Muhyiddin berkata, ini kerana semua pihak tahu masalah yang dihadapi oleh Perdana Menteri adalah di luar bidang kuasa beliau sendiri.Katanya, Muhyiddin perlu membantu beliau kerana beliau percaya rakyat Malaysia tahu apa yang berlaku di luar bidang kuasa beliau."Apa yang berlaku di luar bidang kuasa Dr Mahathir... semua tahu bahawa ini berlaku di bawah kepimpinan Anwar."Muhyiddin dan seluruh rakyat yang tahu apa yang berlaku di Johor."Ini kerana di Johor ini, majoriti menteri-menteri dalam Pakatan Harapan banyak sangat ketua-ketua parti."Jadi Muhyiddin perlu bantu Dr Mahathir sebab rakyat tahu apa yang berlaku di Johor Bahru," katanya dalam satu kenyataan di sini, pada Jumaat.Dalam pada itu, Muhyiddin berkata, rakyat juga perlu menolong Muhyiddin untuk menyelesaikan masalah yang melanda negara ketika ini.Menurutnya, Muhyiddin perlu menggalas tugas dengan baik dan memastikan keadaan negara berada dalam keadaan baik.'
-
+    (': Presiden Bersatu, Tan Sri Muhyiddin Yassin perlu mengekalkan Tun Dr '
+     'Mahathir Mohamad sebagai perdana menteri berbanding Datuk Seri Anwar Ibrahim '
+     'yang hanya minta bantuan untuk menyelesaikan kemelut kedudukan '
+     'negara.Muhyiddin berkata, ini kerana semua pihak tahu masalah yang dihadapi '
+     'oleh Perdana Menteri adalah di luar bidang kuasa beliau sendiri.Katanya, '
+     'Muhyiddin perlu membantu beliau kerana beliau percaya rakyat Malaysia tahu '
+     'apa yang berlaku di luar bidang kuasa beliau."Apa yang berlaku di luar '
+     'bidang kuasa Dr Mahathir... semua tahu bahawa ini berlaku di bawah '
+     'kepimpinan Anwar."Muhyiddin dan seluruh rakyat yang tahu apa yang berlaku di '
+     'Johor."Ini kerana di Johor ini, majoriti menteri-menteri dalam Pakatan '
+     'Harapan banyak sangat ketua-ketua parti."Jadi Muhyiddin perlu bantu Dr '
+     'Mahathir sebab rakyat tahu apa yang berlaku di Johor Bahru," katanya dalam '
+     'satu kenyataan di sini, pada Jumaat.Dalam pada itu, Muhyiddin berkata, '
+     'rakyat juga perlu menolong Muhyiddin untuk menyelesaikan masalah yang '
+     'melanda negara ketika ini.Menurutnya, Muhyiddin perlu menggalas tugas dengan '
+     'baik dan memastikan keadaan negara berada dalam keadaan baik.')
 
 
 Pretty good!
@@ -89,15 +137,31 @@ We also can give any isi penting even does not make any sense.
 
 .. code:: ipython3
 
-    model.generate(isi_penting)
-
-
+    pprint(model.generate(isi_penting))
 
 
 .. parsed-literal::
 
-    'Kuala Lumpur: Pelakon, Neelofa tetap dengan keputusannya untuk membuat keputusan berkahwin selewat-lewatnya hujung tahun ini, bukan kerana bergaduh dengan ahli perniagaan, Datuk Seri Husein Awang. Neelofa, 27, berkata, dia sendiri sudah bersikap berani untuk bersemuka dengan Long Tiger yang juga antara selebriti popular tanah air. "Saya ibarat \'putri\' dalam kehidupan. Bila saya sudah mula berkawan dengan Long Tiger, tiba-tiba Long Tiger bergaduh dengan Husein. "Perselisihan faham antara saya dan Omar adalah isu yang sangat sensitif. Namun ia tidak merebak ke dua pihak saja. "Mohon maaf kalau saya tidak tahu apa-apa, bagaimanapun saya tetap dengan keputusan ini," katanya kepada Bh Online. Pelakon Lelaki Hari Ini Kabir: Tabiat Long Tiger tidak ubah seperti hambar. Foto: Roslin Mat Tahir Isu hangat ini tercetus selepas bapa mentua Neelofa, Datuk Hasbullah Awang, meninggal dunia akibat kemalangan jalan raya semasa dalam perjalanan pulang ke kampung. Dalam kemalangan itu, Neelofa terpaksa menerima nasib malang apabila melenting di hadapan suaminya yang juga teraju kumpulan nafsu, dalam perjalanan pulang. Bagaimanapun, apabila tiba di lokasi kemalangan, oleh pelakon yang dikenali sebagai Nor Neelofa atau mesra dengan panggilan Long Tiger, berlaku pertengkaran antara mereka. Bagaimanapun, pertengkaran terbabit tidak berakhir sehingga ke hari ini. Noor Neelofa berkata, ketika mereka sekeluarga masih berada dalam perjalanan pulang ke kampung, dia sama sekali tidak perlu melayan apa sahaja yang berlaku. "Saya cuma nak terus ke kampung bercerita. Itulah prinsip kita. "Jangan layan apa sahaja yang berlaku, saya tetap nak bercakap mengenai apa yang berlaku," katanya.'
-
+    ('Kuala Lumpur: Pelakon, Neelofa tetap dengan keputusan dibuat untuk berkahwin '
+     'penutup tahun ini, selepas mengadakan pertemuan dengan Long Tiger. Neelofa '
+     'atau nama sebenarnya, Mohd Neelofa Ahmad Noor berkata, dia tidak pernah '
+     'merancang untuk berkahwin, namun menegaskan dirinya lebih mengutamakan masa '
+     'depan. "Saya seronok bersama keluarga. Kalau kami berkahwin awal tahun ini, '
+     'ia mengambil masa yang lama. Itu impian saya tetapi biarlah, selepas setahun '
+     'saya berehat, saya akan mula bekerja. "Jadi, apabila sering sesi pertemuan '
+     'dengan Long Tiger, saya kena tegas mengenai perkara ini. Bukan soal nak '
+     'memalukan diri sendiri tetapi siapa yang boleh menghentam saya," katanya '
+     'kepada Bh Online. Dalam sesi pertemuan itu, Neelofa yang juga pengacara '
+     'acara Top 5, bergaduh dengan Husein, dalam pergaduhan yang berlaku di '
+     'Kompleks Mahkamah Tinggi Syariah di sini, baru-baru ini. Ditanya mengenai '
+     'hubungannya dengan wanita itu, Neelofa berkata, mereka masih belum '
+     'menyelesaikan perkara itu dengan baik. "Saya tidak tahu pasal semua ini, '
+     'tetapi ia akan diselesaikan menerusi cara baik. Tidak kiralah apa yang kami '
+     'tidak cakap pun. "Pada mulanya kami hanya mahu membebaskan mereka daripada '
+     'sebarang isu, namun selepas beberapa hari bergaduh, kami akhirnya mengambil '
+     'keputusan untuk berkahwin dengan Hadiza Aziz. "Jika mereka mahu, kami akan '
+     'membendung, namun pada masa yang sama, kami tidak mahu bergaduh dengan '
+     'lelaki yang digelar Long Tiger," katanya.')
 
 
 How about karangan like high school?
@@ -116,15 +180,100 @@ How about karangan like high school?
 
 .. code:: ipython3
 
-    model.generate(isi_penting)
-
-
+    pprint(model.generate(isi_penting))
 
 
 .. parsed-literal::
 
-    'Dalam meniti era globalisasi ini, kita sering dihantui dengan pelbagai isu dan konflik yang melanda dalam negara yang diselesaikan dengan baik. Hal ini kerana, nila setitik rosak susu sebelanga. Oleh itu, usaha-usaha yang baik akan dapat dilaksanakan dengan meningkatkan semangat kerjasama antara pihak yang terlibat. Hal ini demikian kerana, hubungan yang erat akan memudahkan kita untuk merancakkan lagi aktiviti di peringkat komuniti dalam sama-sama membantu menjalankan aktiviti seharian. Sekiranya semangat kerjasama dapat dipupuk, ia akan memberi semangat baharu dimana hubungan orang ramai dengan individu lain akan menjadi lebih erat. Jelaslah bahawa kerjasama yang baik akan mewujudkan semangat kerjasama yang kukuh dan muafakat dalam kalangan warga masyarakat. Peribahasa Melayu berkata, nah, sepah dikata, apabila orang sekampung menunaikan umrah, penduduk kampung akan menjalankan tugas mereka dengan senang hati dan senang. Tegasnya, kerjasama yang erat akan menjadikan kita lebih dekat dan dikenali daripada orang luar. Ia juga dapat mengeratkan hubungan silaturahim. Semua pihak perlu sedar bahawa usaha yang baik akan memberikan manfaat sekiranya kita membersihkan kawasan persekitaran kita. Makanan yang disediakan oleh penduduk dapat menjadi sumber pendapatan kepada mereka. Seterusnya, kebersihan kawasan persekitaran terpelihara. Kita dapat lihat kawasan-kawasan seperti di sekolah masih terdapat wabak penyakit seperti Denggi. (Kash) Bencana adalah hasil daripada sikap segelintir masyarakat yang mengabaikan kebersihan kawasan persekitaran sehingga menyebabkan berlakunya jangkitan penyakit. Jelaslah bahawa sesetengah kawasan tidak pernah dijangkiti wabak penyakit seperti demam kuning. Justeru, jika kita mengamalkan kebersihan kawasan itu, kita akan sentiasa peka dan mengambil langkah-langkah yang perlu. Oleh itu, kita perlu sedar bahawa kita tidak boleh hidup dalam keadaan yang begitu baik sekiranya kita menggunakan pakaian yang diletakkan di tempat duduk yang rapi. Oleh itu, kita boleh mendapatkan pakaian yang dipakai oleh mereka dan mengamalkan kebersihan yang dapat memenuhi kehendak mereka. Intihannya, pelbagai cara yang boleh dilakukan untuk mengurangkan pembiakan nyamuk aedes. Ibu bapa seharusnya memastikan anak-anak mengamalkan kebersihan di kawasan masing-masing dengan lebih rapi. Sekiranya kebersihan itu dibiarkan, kita akan menjadi lebih buruk. Oleh itu, kita perlulah sentiasa kreatif dalam mengubah sikap setiap anak-anak yang masih kecil agar mampu menjadi orang yang lebih baik. Ibu dan bapa juga perlu menunjukkan teladan yang baik terhadap anak-anak seperti peribahasa Melayu, melentur buluh biarlah dari rebungnya. Anak-Anak juga sewajarnya sentiasa berfikiran positif dan berfikiran positif. Jangan mudah terpengaruh dengan cara-cara yang tidak baik untuk dilakukan oleh sesiapa sahaja. Seterusnya, kita perlu meningkatkan lagi usaha untuk mendidik dan membimbing mereka agar menjadi lebih berhemah dalam menjalani kehidupan seharian. Pada masa yang sama, masyarakat juga perlu menghadiri pelbagai bengkel bagi mendidik dan meningkatkan nilai-nilai murni dalam kehidupan. Hal ini demikian kerana, jika kita mempunyai kelapangan, kita akan sentiasa mencuba-cuba untuk mengkomersialkan diri sendiri. Jika begitu, kita pasti akan gagal menjadi manusia yang lebih baik terutama jika berlaku perselisihan faham dan sebagainya. Maka, kita perlu mencari jalan untuk mewujudkan masyarakat yang sejahtera. Selain itu, dengan mengamalkan nilai-nilai murni yang mudah, kita akan hidup dalam suasana yang aman damai dan ceria. Hal ini demikian kerana, jika kita mengamalkan prinsip ini, kita mampu menjana pendapatan yang lebih tinggi. Hal ini demikian kerana, jika kita tidak mengamalkan nilai-nilai murni ini, yang akan menjadi negara yang lebih baik adalah negara yang makmur dan sejahtera. Seterusnya, kita juga boleh menerapkan nilai-nilai murni yang mampu menjadi ikutan masyarakat. Seperti peribahasa Melayu, melentur buluh biarlah dari rebungnya. Intihannya, sebagai rakyat yang berjiwa besar, kita perlu mempraktikkan nilai-nilai murni yang mampu membantu kita melakukan sesuatu. Kesimpulannya, semua pihak perlu berganding bahu bagai aur dengan tebing untuk mewujudkan masyarakat yang harmoni dan berbudi bahasa.'
-
+    ('Dewasa ini, kes-kes seumpama denggi semakin menular di kalangan masyarakat. '
+     'Justeru, individu yang bertanggungjawab dan berkesan perlu memainkan peranan '
+     'penting dalam memastikan persekitaran dalam komuniti terjamin. Persis kata '
+     'peribahasa Melayu, melentur buluh biarlah dari rebungnya. Oleh itu, tindakan '
+     'yang wajar perlu diambil terutamanya jika kita mengamalkan sikap-sikap di '
+     'dalam komuniti supaya kehidupan kita tidak terjejas. Oleh itu, kita perlu '
+     'mengamalkan sikap bekerjasama dengan masyarakat dalam memastikan '
+     'persekitaran kita selamat. Jika kita sehati, sikap bekerjasama dapat dipupuk '
+     'dan dibudayakan dalam masyarakat. Maka, amalan ini secara tidak langsung '
+     'mampu membantu kita supaya tidak hidup lebih sejahtera. Pada masa yang sama, '
+     'ia juga dapat mengelakkan berlakunya sebarang masalah kesihatan dan '
+     'seterusnya membantu yang mungkin akan berlaku pada masa akan datang. '
+     'Masyarakat yang prihatin perlu meluahkan perasaan dan menitik beratkan soal '
+     'kebersihan kawasan persekitaran. Bak kata peribahasa Melayu, mencegah lebih '
+     'baik daripada merawat. Tamsilnya, pihak kerajaan perlu menjalankan usaha '
+     'yang bersungguh-sungguh sebagai tanggungjawab yang diamanahkan. Selain itu, '
+     'sikap masyarakat yang mengambil berat tentang kebersihan kawasan '
+     'persekitaran dapat membantu mengurangkan masalah kesihatan yang kian '
+     'menular. Secara tidak langsung, masyarakat awam akan melahirkan masyarakat '
+     'yang peka dan menghargai keberadaan anggota masyarakat di sekeliling mereka. '
+     'Bagi memastikan kebersihan kawasan persekitaran terjamin, kita perlu '
+     'memastikan komuniti yang berada ditaarapkan dalam keadaan bersih dan terurus '
+     'agar keselamatan masyarakat terjamin. Para pekerja dan ahli peniaga perlu '
+     'memastikan kebersihan kawasan mereka dijaga dengan baik. Hal ini kerana, '
+     'kita akan berhadapan dengan pelbagai masalah kesihatan yang mengakibatkan '
+     'Malaysia menjadi negara ketiga yang paling teruk terkena jangkitan demam '
+     'denggi pada tahun lepas. Sekiranya kita mempraktikkan amalan berkenaan, kita '
+     'akan berhadapan dengan bahaya. Sekiranya aktiviti ini diteruskan, kita akan '
+     'terencat daripada jumlah kes penyakit yang menyerang. Secara tidak langsung, '
+     'kita akan dapat membendung penularan wabak penyakit di kalangan masyarakat. '
+     'Sebagai contoh, wabak denggi di Malaysia berkemungkinan boleh menularkan '
+     'jangkitan kepada penduduk di negeri-negeri yang lain. Oleh itu, langkah ini '
+     'wajar dan mempunyai sistem pengurusan kebersihan yang terbaik bagi '
+     'membolehkan jumlah pesakit yang dirawat di hospital meningkat. Kesannya, ia '
+     'dapat membantu kita untuk mengamalkan kaedah yang betul dan matang dalam '
+     'kehidupan. Selain itu, sekiranya kita mengamalkan sikap kerja, kita akan '
+     'sentiasa berusaha supaya kita terhindar daripada wabak penyakit yang '
+     'menyerang penduduk di sekeliling kita. Bak kata peribahasa Melayu, mencegah '
+     'lebih baik daripada merawat. Semua pihak perlu berganding bahu bagai aur '
+     'dengan tebing untuk menjaga kesihatan dan keselamatan para pekerja dalam '
+     'kawasan yang sangat rentan. Kebersihan kawasan persekitaran merupakan elemen '
+     'yang penting dalam memastikan persekitaran kita selamat daripada jangkitan '
+     'wabak seperti denggi. Kita tentunya tidak mahu ada tempat yang kotor dan '
+     'busuk namun kita tidak boleh berbuat demikian kerana ia merupakan elemen '
+     'yang tidak boleh dijual beli. Oleh itu, jika kita mengamalkan sikap kerja '
+     "yang 'membersihkan', kita akan menjadi lebih baik dan selamat daripada wabak "
+     'penyakit seperti denggi. Jika kita mengamalkan sikap ini, kita akan menjadi '
+     'lebih baik dan selamat daripada ancaman penyakit-penyakit yang berbahaya. '
+     'Tidak kira apabila kita sudah terbiasa dengan amalan ini, sudah pasti '
+     'keselamatan kita akan terjamin. Selain itu, kita perlulah dirikan amalan '
+     'seperti rajin mencuci tangan menggunakan sabun atau segala benda lain kerana '
+     'kita juga mempunyai tempat yang sesuai untuk membasuh tangan dengan baik. '
+     'Perkara ini boleh menjadi perubahan kepada amalan kita dalam kehidupan '
+     'apabila kita berusaha untuk membersihkan kawasan yang telah dikenal pasti. '
+     'Secara tidak langsung, kita dapat bertukar-tukar fikiran dan mengamalkan '
+     'nilai-nilai murni dalam kehidupan. Hal ini demikian kerana, kita antara '
+     'mereka yang merancang untuk melakukan sesuatu bagi mengelakkan berlakunya '
+     'kemalangan. Hakikatnya, amalan membasuh tangan menggunakan sabun atau benda '
+     'lain adalah berniat buruk kerana akan dapat mengganggu kelancaran proses '
+     'pemanduan terutamanya apabila tidur. Kesannya, kita akan mewujudkan '
+     'masyarakat yang bertimbang rasa dan bergantung kepada orang lain untuk '
+     'melakukan kerja mereka walaupun di mana mereka berada. Selain itu, kita '
+     'dapat mengamalkan cara yang betul dalam memastikan kebersihan kawasan '
+     'persekitaran adalah terjamin. Kita tidak boleh menyembunyikan diri daripada '
+     'pengetahuan umum seperti di tempat awam seperti tempat letak kereta yang '
+     'sering digunakan oleh orang ramai. Jika kita menggunakan tandas awam dan '
+     'menggunakan botol air untuk membersihkan kawasan berkenaan, kita akan mudah '
+     'terdedah dengan wabak penyakit yang membahayakan kesihatan. Selain itu, kita '
+     'juga perlu sentiasa berjaga-jaga dengan memakai penutup mulut dan hidung '
+     'jika ada demam. Jika kita tidak mengamalkan kebersihan, besar kemungkinan ia '
+     'boleh mengundang kepada penularan wabak penyakit. Bak kata peribahasa '
+     'Melayu, mencegah lebih baik daripada merawat. Jika kita membuat keputusan '
+     'untuk menutup mulut atau hidung dengan pakaian yang bersih dan bijak, kita '
+     'akan menjadi lebih baik daripada menyelamatkan diri sendiri daripada '
+     'jangkitan penyakit. Andai kata, pengamal media dapat menggunakan telefon '
+     'pintar ketika membuat liputan di media massa, proses ini akan membuatkan '
+     'kehidupan mereka lebih mudah dan sukar. Selain itu, proses nyah kuman juga '
+     'dapat memastikan kebersihan di kawasan rumah kita terjamin. Contohnya, semua '
+     'stesen minyak dan restoran makanan segera perlu memakai penutup mulut dan '
+     'hidung secara betul agar penularan wabak penyakit dapat dihentikan. Penonton '
+     'yang berada di dalam juga wajar digalakkan untuk menggunakan penutup mulut '
+     'dan hidung agar mudah terkena jangkitan kuman. Selain itu, pengisian masa '
+     'lapang yang terdapat di kawasan tempat awam dapat mendidik masyarakat untuk '
+     'mengamalkan nilai-nilai murni seperti rajin mencuci tangan menggunakan sabun '
+     'dan air supaya tidak terdedah kepada virus denggi. Walaupun kita mempunyai '
+     'ramai kenalan yang ramai tetapi tidak dapat mengamalkannya kerana kita perlu '
+     'adalah rakan yang sedar dan memahami tugas masing-masing. Pelbagai cara yang '
+     'boleh kita lakukan bagi memastikan hospital atau klinik-klinik kerajaan '
+     'menjadi')
 
 
 .. code:: ipython3
@@ -141,15 +290,44 @@ How about karangan like high school?
 
 .. code:: ipython3
 
-    model.generate(isi_penting)
-
-
+    pprint(model.generate(isi_penting))
 
 
 .. parsed-literal::
 
-    'Pada zaman pascakemerdekaan ini, peribahasa Melayu ada berkata, di mana tumpahnya kuah kalau tidak ke nasi. Begitulah peribahasa Melayu berkata, jika tiada usaha tanpa usaha yang kukuh, pasti akan terlambat. Oleh itu, kita sebagai rakyat Malaysia wajar bermuhasabah diri dan berusaha berusaha agar mencapai apa yang diimpikan. Seterusnya, kita harus bersabar menunggu keputusan dan berusaha untuk mencapai apa yang diimpikan. Pelbagai cara dan kaedah yang boleh diguna pakai dalam menyelesaikan masalah yang dihadapi semasa menempuhi zaman ini seperti masalah kesihatan reproduksi, masalah obesiti, kesesakan jalan raya dan perkara-perkara lain yang dilihat menggamit perhatian kita. Di samping itu, kita sebagai rakyat Malaysia harus tampil untuk melihat dan menyelami kesusahan orang sekeliling kita ini. Golongan pekerja dan usahawan adalah golongan yang antara golongan terbesar di dunia dan perlu membantu mencari jalan penyelesaian bagi mengatasi segala masalah tersebut. Golongan berpendapatan rendah seperti orang kaya yang masih memerlukan bantuan dari segi kewangan dan kehidupan perlulah meluangkan masa yang ada untuk mencari pendapatan sampingan yang lebih bermanfaat bagi meringankan beban keluarga mereka. Jelaslah bahawa kita tidak mampu untuk bekerja dalam keadaan yang serba kekurangan. Sekiranya kita malas berusaha, kita akan terus kecundang dan tidak lagi mampu menyediakan produk yang boleh digunakan untuk kehidupan kita. Oleh itu, usaha yang kita lakukan adalah untuk memastikan diri kita sentiasa berada di landasan yang betul. Usaha yang kita lakukan hendaklah didorong dengan semangat yang tinggi supaya tidak mudah berputus asa. Malahan, dengan itu, kita dapat menghargai golongan yang lebih tua kerana kelebihannya mendidik diri - lebih muda dari orang lain. Dalam hal ini, ibu dan bapa akan sentiasa memantau anak-anak mereka di samping melarang anak-anak mereka daripada melakukan aktiviti yang tidak bermanfaat. Apabila kita lihat di televisyen dan di televisyen, pelajar-pelajar akan membuat perancangan untuk mengulang kaji pelajaran mereka di hadapan kamera dan kemudian dibimbing diri untuk menjadi guru-guru. Selain itu, kita juga boleh menjadi orang yang memberi nasihat kepada pelajar-pelajar dengan cara yang betul dalam mencari pengalaman yang baru. Jelaslah bahawa guru-guru juga mempunyai ilmu yang luas dalam pembelajaran dan mereka boleh memberikan fokus apabila menjalankan tugas dan belajar. Mereka dapat merangka pelbagai aktiviti untuk mengajar dalam tempoh yang singkat dan mudah. Oleh itu, mereka boleh merancang aktiviti-aktiviti yang penting dalam membentuk pemikiran dan pemikiran mereka dengan lebih berkesan. Tuntasnya, setiap daripada kita wajar memahami dan memiliki kepentingan untuk membantu sesuatu yang kita tidak tahu. Akhir sekali, peranan yang mustahak dalam mendidik adalah mengenali dan menghormati orang yang lebih tua. Ibu bapa berperanan penting dalam mendidik anak-anak sejak di bangku sekolah lagi. Bak kata peribahasa Melayu, melebihkan pergaulan. Ibu bapa boleh menjadi insan yang bijaksana, sopan santun dan bijaksana sebagai anak yang menjadi khalifah di muka bumi ini. Ibu bapa berperanan penting dalam mendidik anak-anak sehingga mereka bersedia untuk menempuhi zaman dalam dunia yang penuh mencabar ini. Selain itu, ibu bapa juga berperanan penting dalam mendidik anak-anak mereka agar sentiasa berusaha untuk mencapai matlamat yang diidam-idamkan. Ibu bapa juga berperanan penting dalam memastikan setiap anak-anak tidak mengesampingkan perasaan atau perasaan untuk maju bersama keluarga dan negara. Ibu bapa berperanan penting dalam memastikan anak-anak mencapai matlamat yang diidamkan. Menjadikan ibu bapa sebagai idola, saya boleh berbuat demikian dengan menasihatkan mereka supaya sentiasa mendoakan yang terbaik untuk kita. Guru-Guru juga boleh memberikan semangat yang tinggi untuk berjaya dalam kehidupan masing-masing. Sekiranya kita berjaya mencapai tujuan yang telah ditetapkan, pasti pencapaian kita akan menjadi lebih membanggakan. Akhir sekali, kita harus sedar bahawa tugas yang perlu dilaksanakan adalah menjaga kesihatan dan nyawa kita dan memastikan tiada sebarang masalah yang timbul. Pada masa yang sama, kita hendaklah sentiasa menjaga kesihatan dan nyawa kita dan tidak sesekali putus asa untuk sembuh.'
-
+    ('Sejak akhir-akhir ini, pelbagai isu yang hangat diperkatakan oleh masyarakat '
+     'yang berkait dengan sambutan Hari Raya Aidilfitri. Pelbagai faktor yang '
+     'melatari perkara yang berlaku dalam kalangan masyarakat hari ini, khususnya '
+     'bagi golongan muda. Dikatakan bahawa kehidupan kita hari ini semakin '
+     'mencabar terutamanya kesibukan dalam menjalankan tugas dan mengajar. '
+     'Justeru, tidak dinafikan apabila semakin jauh kita, semakin ramai yang '
+     'memilih untuk lalai atau tidak mematuhi arahan yang telah ditetapkan. '
+     'Mendepani cabaran ini, golongan muda terpaksa menempuhi segala cabaran untuk '
+     'menjadi lebih baik dan lebih baik. Minda yang perlu diterapkan, terutama di '
+     'dalam kelas untuk mempelajari ilmu pengetahuan. Jika tidak, kita akan '
+     'menjadi lebih mudah untuk menilai dan menyelesaikan masalah yang dihadapi. '
+     'Oleh itu, kita perlu berfikir untuk menetapkan langkah yang patut atau perlu '
+     'dilaksanakan bagi mengatasi masalah yang berlaku. Selain itu, guru-guru juga '
+     'harus mendidik peserta-peserta dalam kelas supaya dapat menjalankan kegiatan '
+     'dengan lebih serius dan berkesan. Guru-Guru juga seharusnya berusaha untuk '
+     'meningkatkan kemahiran mereka dalam kalangan pelajar. Seperti peribahasa '
+     'Melayu, melentur buluh biarlah dari rebungnya. Setiap insan mempunyai '
+     'peranan masing-masing dan tanggungjawab yang masing-masing. Kesempatan untuk '
+     'memberikan nasihat dan teguran adalah lebih penting dan membantu secara '
+     'halus dan bijaksana dalam melakukan sesuatu. Selain itu, guru-guru hendaklah '
+     'berani untuk melakukan sesuatu perkara yang memberi manfaat kepada para '
+     'pelajar yang lain. Cara ini adalah dengan melakukan aktiviti-aktiviti yang '
+     'boleh memberi manfaat kepada para pelajar. Selain itu, guru-guru juga '
+     'perlulah menjaga disiplin mereka dengan sebaik-baiknya. Dalam menyampaikan '
+     'nasihat dan teguran secara berterusan, pelajar juga boleh melakukan perkara '
+     'yang boleh mendatangkan mudarat. Anak-Anak awal pelajar dan rakan-rakan '
+     'mereka juga boleh melakukan tugas yang bermanfaat. Keadaan ini membolehkan '
+     'mereka untuk lebih berusaha dan memberikan nasihat yang berguna kepada kaum '
+     'lain. Oleh itu, mereka perlu sentiasa mengingati dan mendidik pelajar dengan '
+     'nilai-nilai yang murni. Setiap orang mempunyai impian yang tinggi untuk '
+     'berjaya. Sama ada kita berjaya atau tidak, pencapaian yang diperoleh setelah '
+     'tamat belajar akan memberikan kita nilai yang baik dan perlu menjadi contoh '
+     'yang baik untuk negara kita.')
 
 
 Load GPT2
@@ -266,6 +444,26 @@ GPT2-Bahasa only available ``117M`` and ``345M`` models.
 .. code:: ipython3
 
     string = 'ceritanya sebegini, aku bangun pagi baca surat khabar berita harian, tetiba aku nampak cerita seram, '
+
+generate
+^^^^^^^^
+
+``model.generate`` accepts a string.
+
+.. code:: python
+
+   def generate(self, string: str):
+       """
+       generate a text given an initial string.
+
+       Parameters
+       ----------
+       string : str
+
+       Returns
+       -------
+       result: str
+       """
 
 .. code:: ipython3
 

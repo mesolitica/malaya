@@ -2,12 +2,13 @@
 
     %%time
     import malaya
+    from pprint import pprint
 
 
 .. parsed-literal::
 
-    CPU times: user 4.89 s, sys: 1.16 s, total: 6.06 s
-    Wall time: 7.11 s
+    CPU times: user 4.98 s, sys: 1.24 s, total: 6.23 s
+    Wall time: 7.65 s
 
 
 List available T5 models
@@ -42,6 +43,26 @@ Load T5
 T5 is a transformer model that capable to generate abstractive
 summarization. In this example, we are going to use ``base`` model, feel
 free to use ``small`` if you find ``base`` is too slow.
+
+.. code:: python
+
+   def t5(model: str = 'base', **kwargs):
+
+       """
+       Load T5 model to generate a summarization given a string.
+
+       Parameters
+       ----------
+       model : str, optional (default='base')
+           Model architecture supported. Allowed values:
+
+           * ``'base'`` - T5 Base parameters.
+           * ``'small'`` - T5 Small parameters.
+
+       Returns
+       -------
+       result: malaya.model.t5.SUMMARIZATION class
+       """
 
 .. code:: ipython3
 
@@ -86,7 +107,24 @@ default is ``ringkasan``,
 
 .. code:: python
 
-   def summarize(self, string: str, mode: str = 'ringkasan')
+   def summarize(self, string: str, mode: str = 'ringkasan'):
+       """
+       Summarize a string.
+
+       Parameters
+       ----------
+       string: str
+       mode: str
+           mode for summarization. Allowed values:
+
+           * ``'ringkasan'`` - summarization for long sentence, eg, news summarization.
+           * ``'tajuk'`` - title summarization for long sentence, eg, news title.
+           * ``'perenggan'`` - summarization for each perenggan. This will automatically split sentences by EOS.
+
+       Returns
+       -------
+       result: str
+       """
 
 I am going to simply copy paste some local news into this notebook. I
 will search about ``isu mahathir`` in google news, `link
@@ -187,15 +225,14 @@ generate ringkasan
 
 .. code:: ipython3
 
-    model.summarize(string, mode = 'ringkasan')
-
-
+    pprint(model.summarize(string, mode = 'ringkasan'))
 
 
 .. parsed-literal::
 
-    'Kenyataan media yang dibuat oleh kepimpinan parti adalah sah. Tidak ada persoalan peletakan jawatan Dr Mahathir adalah sah atau tidak. Ia sudah diputuskan oleh semua pihak termasuk Presiden, Tan Sri Muhyiddin Yassin'
-
+    ('Kenyataan media yang dibuat oleh kepimpinan parti adalah sah. Tidak ada '
+     'persoalan peletakan jawatan Dr Mahathir adalah sah atau tidak. Ia sudah '
+     'diputuskan oleh semua pihak termasuk Presiden, Tan Sri Muhyiddin Yassin')
 
 
 generate tajuk
@@ -223,15 +260,24 @@ applied ``#`` to mask sensitive issues.
 
 .. code:: ipython3
 
-    model.summarize(string, mode = 'perenggan')
-
-
+    pprint(model.summarize(string, mode = 'perenggan'))
 
 
 .. parsed-literal::
 
-    'Peletakan jawatan dr mahathir di mesyuarat khas. Tidak ada persoalan mengenai peletakan jawatan presiden. Bekas ketua un menolak peletakan jawatan dr m. Keputusan kami mengenai keputusan ####. Malaysia mengatakan peletakan jawatan adalah sah. "Semua keputusan mesti dibuat melalui parti.. Perbincangan mengenai keputusan mesyuarat parti tidak ada keputusan parti. Locus standy untuk membawa perkara ini kepada jppm. Ketua parti mengatakan bahawa dia harus menjadi pentadbir. Pm mengatakan bahawa dia tidak lagi menjadi ketua bersatu. Laporan mengatakan bahawa kedudukan muhyiddin yassin disahkan. Pm menolak peletakan jawatan tetapi menolak surat peletakan jawatan. #### - #### - ####. Marzuki menolak kenyataan media yang menyokong parti. "Kenyataan media bukanlah keputusan rasmi.. Keputusan mengenai pertemuan afghanistan tetap tidak berubah. Kami catat dalam minit yang berlaku di mesyuarat'
-
+    ('Peletakan jawatan dr mahathir di mesyuarat khas. Tidak ada persoalan '
+     'mengenai peletakan jawatan presiden. Bekas ketua un menolak peletakan '
+     'jawatan dr m. Keputusan kami mengenai keputusan ####. Malaysia mengatakan '
+     'peletakan jawatan adalah sah. "Semua keputusan mesti dibuat melalui parti.. '
+     'Perbincangan mengenai keputusan mesyuarat parti tidak ada keputusan parti. '
+     'Locus standy untuk membawa perkara ini kepada jppm. Ketua parti mengatakan '
+     'bahawa dia harus menjadi pentadbir. Pm mengatakan bahawa dia tidak lagi '
+     'menjadi ketua bersatu. Laporan mengatakan bahawa kedudukan muhyiddin yassin '
+     'disahkan. Pm menolak peletakan jawatan tetapi menolak surat peletakan '
+     'jawatan. #### - #### - ####. Marzuki menolak kenyataan media yang menyokong '
+     'parti. "Kenyataan media bukanlah keputusan rasmi.. Keputusan mengenai '
+     'pertemuan afghanistan tetap tidak berubah. Kami catat dalam minit yang '
+     'berlaku di mesyuarat')
 
 
 **Link**: https://www.malaysiakini.com/news/525953
@@ -324,15 +370,15 @@ sah,” katanya.
 
 .. code:: ipython3
 
-    model.summarize(string, mode = 'ringkasan')
-
-
+    pprint(model.summarize(string, mode = 'ringkasan'))
 
 
 .. parsed-literal::
 
-    '"Kerajaan berharap Dr Mahathir tidak hipokrit," kata menteri undang-undang. Riza Aziz, anak tiri Najib Razak, dilepas tanpa dibebaskan atas tuduhan pengubahan wang haram. Mahathir mengatakan dia mempersoalkan jika pihak yang didakwa mencuri boleh terlepas tindakan'
-
+    ('"Kerajaan berharap Dr Mahathir tidak hipokrit," kata menteri undang-undang. '
+     'Riza Aziz, anak tiri Najib Razak, dilepas tanpa dibebaskan atas tuduhan '
+     'pengubahan wang haram. Mahathir mengatakan dia mempersoalkan jika pihak yang '
+     'didakwa mencuri boleh terlepas tindakan')
 
 
 .. code:: ipython3
@@ -350,15 +396,24 @@ sah,” katanya.
 
 .. code:: ipython3
 
-    model.summarize(string, mode = 'perenggan')
-
-
+    pprint(model.summarize(string, mode = 'perenggan'))
 
 
 .. parsed-literal::
 
-    'Menteri mengatakan bahawa dia tertanya-tanya dengan keputusan mahkamah untuk membebaskan anak tiri najib. Pas mengatakan peguam negara akan dilantik pada akhir tahun. Pm merujuk kepada pembebasan tanpa pembebasan kepada aig. Pm berharap tidak ada yang hipokrit dengan keputusan pendakwaan. Riza dilepas tanpa dibebaskan dari tuduhan pengubahan wang. Pihak pendakwaan brazil bersetuju untuk mengembalikan aset luar negara. Pm mempersoalkan sama ada pihak yang dituduh mencuri boleh terlepas tindakan. "Dia curi berbilion-bilion...Dia bagi balik kepada kerajaan.. Britain mengatakan duit yang dicuri adalah wang yang dicuri. Sekarang ini, jangan ambil tindakan terhadap aku.. Aig mengatakan kita \'terus memberi balik duit okey lah\'. Mahathir mengatakan undang-undang mungkin perlu dipinda. Afghanistan mengatakan bahawa kenyataan pm tidak wajar. Pm berharap pm tidak akan berbohong. Pm malaysia mengatakan bahawa ia akan mematuhi undang-undang'
-
+    ('Menteri mengatakan bahawa dia tertanya-tanya dengan keputusan mahkamah untuk '
+     'membebaskan anak tiri najib. Pas mengatakan peguam negara akan dilantik pada '
+     'akhir tahun. Pm merujuk kepada pembebasan tanpa pembebasan kepada aig. Pm '
+     'berharap tidak ada yang hipokrit dengan keputusan pendakwaan. Riza dilepas '
+     'tanpa dibebaskan dari tuduhan pengubahan wang. Pihak pendakwaan brazil '
+     'bersetuju untuk mengembalikan aset luar negara. Pm mempersoalkan sama ada '
+     'pihak yang dituduh mencuri boleh terlepas tindakan. "Dia curi '
+     'berbilion-bilion...Dia bagi balik kepada kerajaan.. Britain mengatakan duit '
+     'yang dicuri adalah wang yang dicuri. Sekarang ini, jangan ambil tindakan '
+     "terhadap aku.. Aig mengatakan kita 'terus memberi balik duit okey lah'. "
+     'Mahathir mengatakan undang-undang mungkin perlu dipinda. Afghanistan '
+     'mengatakan bahawa kenyataan pm tidak wajar. Pm berharap pm tidak akan '
+     'berbohong. Pm malaysia mengatakan bahawa ia akan mematuhi undang-undang')
 
 
 List available skip-thought models
