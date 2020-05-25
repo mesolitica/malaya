@@ -12,7 +12,7 @@ _availability = [
 ]
 
 
-def available_model():
+def available_transformer():
     """
     List available transformer models.
     """

@@ -6,8 +6,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 5.07 s, sys: 1.33 s, total: 6.4 s
-    Wall time: 8.1 s
+    CPU times: user 4.74 s, sys: 1.19 s, total: 5.93 s
+    Wall time: 7.13 s
 
 
 .. code:: python
@@ -237,7 +237,7 @@ List available Transformer models
 
 .. code:: python
 
-    malaya.similarity.available_transformer_model()
+    malaya.similarity.available_transformer()
 
 
 

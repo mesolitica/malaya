@@ -14,11 +14,17 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
+   :caption: Getting Started
 
    Installation
    Dataset
    Accuracy
    Cache
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Module
+
    Transformer
    Augmentation
    Cluster
@@ -46,6 +52,11 @@ Contents:
    Wordvector
    Cluster
    Api
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Misc
+
    Contributing
    Crawler
    Translator-malaya

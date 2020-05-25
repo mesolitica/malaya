@@ -6,8 +6,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 4.28 s, sys: 839 ms, total: 5.12 s
-    Wall time: 4.27 s
+    CPU times: user 4.38 s, sys: 902 ms, total: 5.28 s
+    Wall time: 4.68 s
 
 
 Describe supported POS
@@ -42,7 +42,7 @@ List available Transformer POS models
 
 .. code:: python
 
-    malaya.pos.available_transformer_model()
+    malaya.pos.available_transformer()
 
 
 

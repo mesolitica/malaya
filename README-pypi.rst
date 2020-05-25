@@ -37,7 +37,7 @@ Features
    Transfer learning on BERT-base-bahasa, Tiny-BERT-bahasa, Albert-base-bahasa, Albert-tiny-bahasa, XLNET-base-bahasa, ALXLNET-base-bahasa.
 -  **Generator**
 
-   Generate any texts given a context using GPT2 Bahasa 117M and 345M or Transformer-Bahasa.
+   Generate any texts given a context using T5-Bahasa, GPT2-Bahasa or Transformer-Bahasa.
 -  **Language Detection**
 
    using Fast-text and Sparse Deep learning Model to classify Malay (formal and social media), Indonesia (formal and social media), Rojak language and Manglish.
@@ -70,7 +70,7 @@ Features
    Transfer learning on BERT-base-bahasa, Tiny-BERT-bahasa, Albert-base-bahasa, Albert-tiny-bahasa, XLNET-base-bahasa, ALXLNET-base-bahasa.
 -  **Summarization**
 
-   Provide Transformer-Bahasa, skip-thought, LDA, LSA and Doc2Vec interface to give precise unsupervised summarization, and TextRank as scoring algorithm.
+   Provide Abstractive T5-Bahasa also Extractive interface using Transformer-Bahasa, skip-thought, LDA, LSA and Doc2Vec.
 -  **Topic Modelling**
 
    Provide Transformer-Bahasa, LDA2Vec, LDA, NMF and LSA interface for easy topic modelling with topics visualization.

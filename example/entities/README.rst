@@ -6,8 +6,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 4.21 s, sys: 798 ms, total: 5.01 s
-    Wall time: 4.31 s
+    CPU times: user 4.61 s, sys: 1.03 s, total: 5.64 s
+    Wall time: 5.84 s
 
 
 Describe supported entities
@@ -35,7 +35,7 @@ List available Transformer NER models
 
 .. code:: ipython3
 
-    malaya.entity.available_transformer_model()
+    malaya.entity.available_transformer()
 
 
 

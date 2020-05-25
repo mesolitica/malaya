@@ -1,65 +1,91 @@
 import tensorflow as tf
 from herpetologist import check_type
-from malaya.text.function import transformer_textcleaning
+from malaya.text.function import transformer_textcleaning, split_into_sentences
+from typing import List
+import re
 
 
-class Summarization:
+def cleaning(string):
+    return re.sub(r'[ ]+', ' ', string).strip()
+
+
+def remove_repeat_fullstop(string):
+    return ' '.join([k.strip() for k in string.split('.') if len(k.strip())])
+
+
+class SUMMARIZATION:
     def __init__(self, model):
         self._model = model
 
     def _summarize(self, string, mode):
-        string = f'{mode}: string'
-        return string
+        string = f'{mode}: {string}'
+
+        return self._model([string])[0].decode('utf-8')
 
     @check_type
-    def summarize(self, corpus, mode: str = 'ringkasan'):
+    def summarize(self, string: str, mode: str = 'ringkasan'):
         """
-        Summarize list of strings / corpus.
+        Summarize a string.
 
         Parameters
         ----------
-        corpus: str, list
+        string: str
         mode: str
             mode for summarization. Allowed values:
 
             * ``'ringkasan'`` - summarization for long sentence, eg, news summarization.
-            * `'tajuk'`` - title summarization for long sentence, eg, news title.
-            * `'pendek'`` - summarization for each sentences. This will automatically split sentences by EOS.
+            * ``'tajuk'`` - title summarization for long sentence, eg, news title.
+            * ``'perenggan'`` - summarization for each perenggan. This will automatically split sentences by EOS.
 
         Returns
         -------
-        string: summarized string
+        result: str
         """
         mode = mode.lower()
-        if mode not in ['ringkasan', 'tajuk', 'pendek']:
+        if mode not in ['ringkasan', 'tajuk', 'perenggan']:
             raise ValueError(
-                'mode only supports `ringkasan`, `tajuk`, and `pendek`'
+                'mode only supports `ringkasan`, `tajuk`, and `perenggan`'
             )
-        if not isinstance(corpus, list) and not isinstance(corpus, str):
-            raise ValueError('corpus must be a list')
-        if isinstance(corpus, list):
-            if not isinstance(corpus[0], str):
-                raise ValueError('corpus must be list of strings')
 
-        if isinstance(corpus, str):
-            corpus = split_into_sentences(corpus)
-        else:
-            corpus = '. '.join(corpus)
-            corpus = split_into_sentences(corpus)
+        if mode == 'perenggan':
+            splitted_fullstop = split_into_sentences(string)
 
-        splitted_fullstop = [transformer_textcleaning(i) for i in corpus]
-
-        if mode == 'pendek':
             results = []
             for splitted in splitted_fullstop:
-                if len(splitted.split()) < 5:
+                if len(splitted.split()) < 8:
                     results.append(splitted)
                 else:
-                    results.append(self._summarize(splitted, mode))
+                    results.append(self._summarize(splitted, mode).capitalize())
             results = '. '.join(results)
 
         else:
-            joined = '. '.join(splitted_fullstop)
-            results = self._summarize(joined, mode)
+            results = self._summarize(cleaning(string), mode)
 
         return results
+
+
+class GENERATOR:
+    def __init__(self, model):
+        self._model = model
+
+    @check_type
+    def generate(self, strings: List[str]):
+        """
+        generate a long text given a isu penting.
+
+        Parameters
+        ----------
+        strings: List[str]
+
+        Returns
+        -------
+        result: str
+        """
+
+        points = [
+            f'{no + 1}. {remove_repeat_fullstop(string)}.'
+            for no, string in enumerate(strings)
+        ]
+        points = ' '.join(points)
+        points = f'karangan: {points}'
+        return self._model([cleaning(points)])[0].decode('utf-8')

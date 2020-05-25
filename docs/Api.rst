@@ -1,6 +1,6 @@
 .. _Api:
 
-API Reference
+API
 =============
 
 malaya
@@ -105,13 +105,13 @@ malaya.spell
 .. automodule:: malaya.spell
     :members:
 
-.. autoclass:: malaya.spell._TransformerCorrector()
+.. autoclass:: malaya.spell.TRANSFORMER()
     :members:
 
-.. autoclass:: malaya.spell._SpellCorrector()
+.. autoclass:: malaya.spell.PROBABILITY()
     :members:
 
-.. autoclass:: malaya.spell._SymspellCorrector()
+.. autoclass:: malaya.spell.SYMSPELL()
     :members:
 
 malaya.stack
@@ -247,6 +247,15 @@ malaya.transformers.xlnet
     :members:
 
 .. autoclass:: malaya.transformers.xlnet.Model()
+    :members:
+
+malaya.model.t5
+----------------------------------
+
+.. autoclass:: malaya.model.t5.SUMMARIZATION()
+    :members:
+
+.. autoclass:: malaya.model.t5.GENERATOR()
     :members:
 
 malaya.model.tf

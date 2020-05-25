@@ -12,7 +12,7 @@ def readme():
 setuptools.setup(
     name = __packagename__,
     packages = setuptools.find_packages(),
-    version = '3.4.6',
+    version = '3.5',
     python_requires = '>=3.6.*',
     description = 'Natural-Language-Toolkit for bahasa Malaysia, powered by Deep Learning Tensorflow.',
     long_description = readme(),
@@ -39,6 +39,8 @@ setuptools.setup(
         'herpetologist',
         'youtokentome',
         'albert-tensorflow',
+        'tensorflow-text>=1.14,<2.0',
+        'tf-sentencepiece',
     ],
     license = 'MIT',
     classifiers = [

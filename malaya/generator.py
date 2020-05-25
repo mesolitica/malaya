@@ -1,4 +1,5 @@
 import itertools
+import os
 import random
 import numpy as np
 from malaya.text.function import simple_textcleaning
@@ -36,6 +37,12 @@ _accepted_entities = [
     'time',
     'event',
 ]
+
+_t5_availability = {'small': ['122MB'], 'base': ['448MB']}
+_gpt2_availability = {
+    '117M': ['441.6MB, perplexity: 5.47394'],
+    '345M': ['1.2GB, perplexity: 2.4596'],
+}
 
 
 def _check_digit(string):
@@ -382,6 +389,13 @@ def transformer(
     )
 
 
+def available_gpt2():
+    """
+    List available gpt2 generator models.
+    """
+    return _gpt2_availability
+
+
 @check_type
 def gpt2(
     model: str = '345M',
@@ -435,3 +449,74 @@ def gpt2(
         top_k = top_k,
         **kwargs
     )
+
+
+def available_t5():
+    """
+    List available T5 models.
+    """
+    return _t5_availability
+
+
+@check_type
+def t5(model: str = 'base', **kwargs):
+
+    """
+    Load T5 model to generate a string given a isu penting.
+
+    Parameters
+    ----------
+    model : str, optional (default='base')
+        Model architecture supported. Allowed values:
+
+        * ``'base'`` - T5 Base parameters.
+        * ``'small'`` - T5 Small parameters.
+
+    Returns
+    -------
+    result: malaya.model.t5.GENERATOR class
+    """
+
+    model = model.lower()
+    if model not in _t5_availability:
+        raise Exception(
+            'model not supported, please check supported models from malaya.generator.available_t5()'
+        )
+
+    from malaya.path import PATH_GENERATOR, S3_PATH_GENERATOR
+
+    path = PATH_GENERATOR['sample']
+    s3_path = S3_PATH_GENERATOR['sample']
+
+    from malaya.function import check_file
+
+    try:
+        import tensorflow_text
+        import tf_sentencepiece
+        import tensorflow as tf
+    except:
+        raise Exception(
+            'tensorflow-text and tf-sentencepiece not installed. Please install it by `pip install tensorflow-text tf-sentencepiece` and try again.'
+        )
+
+    check_file(path[model]['model'], s3_path[model], **kwargs)
+
+    if not os.path.exists(path[model]['directory'] + 'saved_model.pb'):
+        import tarfile
+
+        with tarfile.open(path[model]['model']['model']) as tar:
+            tar.extractall(path = path[model]['path'])
+
+    sess = tf.InteractiveSession()
+    meta_graph_def = tf.compat.v1.saved_model.load(
+        sess, ['serve'], path[model]['directory']
+    )
+    signature_def = meta_graph_def.signature_def['serving_default']
+    pred = lambda x: sess.run(
+        fetches = signature_def.outputs['outputs'].name,
+        feed_dict = {signature_def.inputs['input'].name: x},
+    )
+
+    from malaya.model.t5 import GENERATOR
+
+    return GENERATOR(pred)

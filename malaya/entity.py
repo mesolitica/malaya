@@ -41,7 +41,7 @@ def describe():
     print('event - unique event happened, etc')
 
 
-def available_transformer_model():
+def available_transformer():
     """
     List available transformer Entity Tagging models.
     """

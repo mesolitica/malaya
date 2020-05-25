@@ -1,11 +1,6 @@
 import tensorflow as tf
 import numpy as np
-from malaya.text.function import (
-    entities_textcleaning,
-    generate_char_seq,
-    language_detection_textcleaning,
-    tag_chunk,
-)
+from malaya.text.function import language_detection_textcleaning
 from herpetologist import check_type
 from typing import List
 

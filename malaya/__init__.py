@@ -11,9 +11,10 @@ from shutil import rmtree
 from pathlib import Path
 
 home = os.path.join(str(Path.home()), 'Malaya')
-version = '3.4'
-bump_version = '3.4.6'
+version = '3.5'
+bump_version = '3.5'
 version_path = os.path.join(home, 'version')
+__version__ = bump_version
 
 
 def _delete_folder(folder):

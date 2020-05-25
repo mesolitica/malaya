@@ -11,7 +11,9 @@
         <a href="https://github.com/huseinzol05/Malaya/blob/master/LICENSE"><img alt="MIT License" src="https://img.shields.io/github/license/huseinzol05/malaya.svg?color=blue"></a>
         <a href="https://malaya.readthedocs.io/"><img alt="Documentation" src="https://readthedocs.org/projects/malaya/badge/?version=latest"></a>
         <a href="https://pepy.tech/project/malaya"><img alt="total stats" src="https://static.pepy.tech/badge/malaya"></a>
-        <a href="https://github.com/huseinzol05/Malaya"><img alt="download stats" src="https://img.shields.io/pypi/dm/malaya.svg"></a>
+        <a href="https://pepy.tech/project/malaya"><img alt="download stats / month" src="https://static.pepy.tech/badge/malaya/month"></a>
+        <a href="https://pepy.tech/project/malaya"><img alt="total stats" src="https://static.pepy.tech/badge/malaya-gpu"></a>
+        <a href="https://pepy.tech/project/malaya"><img alt="download stats / month" src="https://static.pepy.tech/badge/malaya-gpu/month"></a>
     </p>
 
 =========
@@ -55,7 +57,7 @@ Features
    Transfer learning on BERT-base-bahasa, Tiny-BERT-bahasa, Albert-base-bahasa, Albert-tiny-bahasa, XLNET-base-bahasa, ALXLNET-base-bahasa.
 -  **Generator**
 
-   Generate any texts given a context using GPT2 Bahasa 117M and 345M or Transformer-Bahasa.
+   Generate any texts given a context using T5-Bahasa, GPT2-Bahasa or Transformer-Bahasa.
 -  **Language Detection**
 
    using Fast-text and Sparse Deep learning Model to classify Malay (formal and social media), Indonesia (formal and social media), Rojak language and Manglish.
@@ -88,7 +90,7 @@ Features
    Transfer learning on BERT-base-bahasa, Tiny-BERT-bahasa, Albert-base-bahasa, Albert-tiny-bahasa, XLNET-base-bahasa, ALXLNET-base-bahasa.
 -  **Summarization**
 
-   Provide Transformer-Bahasa, skip-thought, LDA, LSA and Doc2Vec interface to give precise unsupervised summarization, and TextRank as scoring algorithm.
+   Provide Abstractive T5-Bahasa also Extractive interface using Transformer-Bahasa, skip-thought, LDA, LSA and Doc2Vec.
 -  **Topic Modelling**
 
    Provide Transformer-Bahasa, LDA2Vec, LDA, NMF and LSA interface for easy topic modelling with topics visualization.

@@ -260,6 +260,26 @@ S3_PATH_ENTITIES = {
     },
 }
 
+PATH_GENERATOR = {
+    'sample': {
+        'base': {
+            'path': home + '/generator-sample/t5/base',
+            'directory': home + '/generator-sample/t5/base/model/',
+            'model': {
+                'model': home
+                + '/generator-sample/t5/base/generator-t5-base.tar.gz',
+                'version': 'v35',
+            },
+        }
+    }
+}
+
+S3_PATH_GENERATOR = {
+    'sample': {
+        'base': {'model': 'v35/generator/sample-generator-t5-base.tar.gz'}
+    }
+}
+
 PATH_LANG_DETECTION = {
     'fasttext-original': {
         'model': home + '/language-detection/fasttext-original/fasstext.bin',
@@ -764,8 +784,17 @@ PATH_SUMMARIZE = {
         'setting': home + '/summarize/summary-wiki.json',
         'version': 'v13',
     },
-    't5-base': {},
-    't5-small': {},
+    'argmax': {
+        'base': {
+            'path': home + '/summarize-argmax/t5/base',
+            'directory': home + '/summarize-argmax/t5/base/model/',
+            'model': {
+                'model': home
+                + '/summarize-argmax/t5/base/summarize-t5-base.tar.gz',
+                'version': 'v35',
+            },
+        }
+    },
 }
 
 S3_PATH_SUMMARIZE = {
@@ -777,8 +806,9 @@ S3_PATH_SUMMARIZE = {
         'model': 'v13/summarize/summary-wiki.pb',
         'setting': 'v13/summarize/summary-wiki.json',
     },
-    't5-base': {},
-    't5-small': {},
+    'argmax': {
+        'base': {'model': 'v35/summarize/argmax-summarize-t5-base.tar.gz'}
+    },
 }
 
 PATH_TOXIC = {

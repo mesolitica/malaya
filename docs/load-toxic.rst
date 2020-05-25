@@ -6,8 +6,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 4.54 s, sys: 975 ms, total: 5.52 s
-    Wall time: 5.61 s
+    CPU times: user 4.46 s, sys: 932 ms, total: 5.4 s
+    Wall time: 4.88 s
 
 
 get labels
@@ -116,7 +116,7 @@ List available Transformer models
 
 .. code:: python
 
-    malaya.toxic.available_transformer_model()
+    malaya.toxic.available_transformer()
 
 
 

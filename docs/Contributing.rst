@@ -4,27 +4,6 @@ Contributing
 Contributions are welcome and are greatly appreciated! Every little bit
 helps, and credit will always be given.
 
-**Table of Contents**
-
--  `Types of Contributions`_
-
-   -  `Report Bugs`_
-   -  `Fix Bugs`_
-   -  `Implement Features`_
-   -  `Dataset`_
-   -  `Improve Documentation`_
-   -  `Submit Feedback`_
-
--  `Documentation`_
--  `Local development environment`_
-
-   -  `Installation`_
-
--  `Pull Request Guidelines`_
-
-Types of Contributions
-======================
-
 Report Bugs
 -----------
 
@@ -83,11 +62,6 @@ Unit test
 ---------
 
 Test every possible program flow! You can check `unit tests here`_.
-
-Documentation
-=============
-
-The latest API
 
 .. _Types of Contributions: #types-of-contributions
 .. _Report Bugs: #report-bugs

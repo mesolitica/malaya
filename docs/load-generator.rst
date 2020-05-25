@@ -6,8 +6,150 @@
 
 .. parsed-literal::
 
-    CPU times: user 4.46 s, sys: 887 ms, total: 5.35 s
-    Wall time: 4.82 s
+    CPU times: user 4.8 s, sys: 1.17 s, total: 5.97 s
+    Wall time: 6.97 s
+
+
+List available T5 Model
+-----------------------
+
+.. code:: python
+
+    malaya.generator.available_t5()
+
+
+
+
+.. parsed-literal::
+
+    {'small': ['122MB'], 'base': ['448MB']}
+
+
+
+Load T5
+-------
+
+T5 in Malaya is quite, most of the text generative model we found on the
+internet like GPT2 or Markov, simply just continue prefix input from
+user, but not for T5 Malaya. We want to generate an article or karangan
+like high school when the users give ‘isu penting’.
+
+.. code:: python
+
+    model = malaya.generator.t5()
+
+
+.. parsed-literal::
+
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/generator.py:510: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
+    
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/generator.py:512: load (from tensorflow.python.saved_model.loader_impl) is deprecated and will be removed in a future version.
+    Instructions for updating:
+    This function will only be available through the v1 compatibility library as tf.compat.v1.saved_model.loader.load or tf.compat.v1.saved_model.load. There will be a new function for importing SavedModels in Tensorflow 2.0.
+    INFO:tensorflow:Restoring parameters from /Users/huseinzolkepli/Malaya/generator-sample/t5/base/model/variables/variables
+
+
+.. code:: python
+
+    isi_penting = ['Dr M perlu dikekalkan sebagai perdana menteri',
+                  'Muhyiddin perlulah menolong Dr M',
+                  'rakyat perlu menolong Muhyiddin']
+
+I just want to test the model given this isi penting, because we all
+know, Dr M and Muhyiddin are not supporting each others in the real
+world.
+
+generate
+^^^^^^^^
+
+``model.generate`` accepts list of string.
+
+.. code:: python
+
+    model.generate(isi_penting)
+
+
+
+
+.. parsed-literal::
+
+    ': Presiden Bersatu, Tan Sri Muhyiddin Yassin perlu mengekalkan Tun Dr Mahathir Mohamad sebagai perdana menteri berbanding Datuk Seri Anwar Ibrahim yang hanya minta bantuan untuk menyelesaikan kemelut kedudukan negara.Muhyiddin berkata, ini kerana semua pihak tahu masalah yang dihadapi oleh Perdana Menteri adalah di luar bidang kuasa beliau sendiri.Katanya, Muhyiddin perlu membantu beliau kerana beliau percaya rakyat Malaysia tahu apa yang berlaku di luar bidang kuasa beliau."Apa yang berlaku di luar bidang kuasa Dr Mahathir... semua tahu bahawa ini berlaku di bawah kepimpinan Anwar."Muhyiddin dan seluruh rakyat yang tahu apa yang berlaku di Johor."Ini kerana di Johor ini, majoriti menteri-menteri dalam Pakatan Harapan banyak sangat ketua-ketua parti."Jadi Muhyiddin perlu bantu Dr Mahathir sebab rakyat tahu apa yang berlaku di Johor Bahru," katanya dalam satu kenyataan di sini, pada Jumaat.Dalam pada itu, Muhyiddin berkata, rakyat juga perlu menolong Muhyiddin untuk menyelesaikan masalah yang melanda negara ketika ini.Menurutnya, Muhyiddin perlu menggalas tugas dengan baik dan memastikan keadaan negara berada dalam keadaan baik.'
+
+
+
+Pretty good!
+
+.. code:: python
+
+    isi_penting = ['Neelofa tetap dengan keputusan untuk berkahwin akhir tahun ini',
+                  'Long Tiger sanggup membantu Neelofa',
+                  'Tiba-tiba Long Tiger bergaduh dengan Husein']
+
+We also can give any isi penting even does not make any sense.
+
+.. code:: python
+
+    model.generate(isi_penting)
+
+
+
+
+.. parsed-literal::
+
+    'Kuala Lumpur: Pelakon, Neelofa tetap dengan keputusannya untuk membuat keputusan berkahwin selewat-lewatnya hujung tahun ini, bukan kerana bergaduh dengan ahli perniagaan, Datuk Seri Husein Awang. Neelofa, 27, berkata, dia sendiri sudah bersikap berani untuk bersemuka dengan Long Tiger yang juga antara selebriti popular tanah air. "Saya ibarat \'putri\' dalam kehidupan. Bila saya sudah mula berkawan dengan Long Tiger, tiba-tiba Long Tiger bergaduh dengan Husein. "Perselisihan faham antara saya dan Omar adalah isu yang sangat sensitif. Namun ia tidak merebak ke dua pihak saja. "Mohon maaf kalau saya tidak tahu apa-apa, bagaimanapun saya tetap dengan keputusan ini," katanya kepada Bh Online. Pelakon Lelaki Hari Ini Kabir: Tabiat Long Tiger tidak ubah seperti hambar. Foto: Roslin Mat Tahir Isu hangat ini tercetus selepas bapa mentua Neelofa, Datuk Hasbullah Awang, meninggal dunia akibat kemalangan jalan raya semasa dalam perjalanan pulang ke kampung. Dalam kemalangan itu, Neelofa terpaksa menerima nasib malang apabila melenting di hadapan suaminya yang juga teraju kumpulan nafsu, dalam perjalanan pulang. Bagaimanapun, apabila tiba di lokasi kemalangan, oleh pelakon yang dikenali sebagai Nor Neelofa atau mesra dengan panggilan Long Tiger, berlaku pertengkaran antara mereka. Bagaimanapun, pertengkaran terbabit tidak berakhir sehingga ke hari ini. Noor Neelofa berkata, ketika mereka sekeluarga masih berada dalam perjalanan pulang ke kampung, dia sama sekali tidak perlu melayan apa sahaja yang berlaku. "Saya cuma nak terus ke kampung bercerita. Itulah prinsip kita. "Jangan layan apa sahaja yang berlaku, saya tetap nak bercakap mengenai apa yang berlaku," katanya.'
+
+
+
+How about karangan like high school?
+
+.. code:: python
+
+    # http://mieadham86.blogspot.com/2016/09/isi-isi-penting-karangan-bahasa-melayu.html
+    # KEBAIKAN AMALAN BERGOTONG-ROYONG
+    
+    isi_penting = ['Dapat memupuk semangat kerjasama',
+                   'Dapat mengeratkan hubungan silaturahim.',
+                   'Kebersihan kawasan persekitaran terpelihara.',
+                   'Terhindar daripada wabak penyakit seperti Denggi',
+                   'Mengisi masa lapang',
+                   'Menerapkan nilai-nilai murni dalam kehidupan']
+
+.. code:: python
+
+    model.generate(isi_penting)
+
+
+
+
+.. parsed-literal::
+
+    'Dalam meniti era globalisasi ini, kita sering dihantui dengan pelbagai isu dan konflik yang melanda dalam negara yang diselesaikan dengan baik. Hal ini kerana, nila setitik rosak susu sebelanga. Oleh itu, usaha-usaha yang baik akan dapat dilaksanakan dengan meningkatkan semangat kerjasama antara pihak yang terlibat. Hal ini demikian kerana, hubungan yang erat akan memudahkan kita untuk merancakkan lagi aktiviti di peringkat komuniti dalam sama-sama membantu menjalankan aktiviti seharian. Sekiranya semangat kerjasama dapat dipupuk, ia akan memberi semangat baharu dimana hubungan orang ramai dengan individu lain akan menjadi lebih erat. Jelaslah bahawa kerjasama yang baik akan mewujudkan semangat kerjasama yang kukuh dan muafakat dalam kalangan warga masyarakat. Peribahasa Melayu berkata, nah, sepah dikata, apabila orang sekampung menunaikan umrah, penduduk kampung akan menjalankan tugas mereka dengan senang hati dan senang. Tegasnya, kerjasama yang erat akan menjadikan kita lebih dekat dan dikenali daripada orang luar. Ia juga dapat mengeratkan hubungan silaturahim. Semua pihak perlu sedar bahawa usaha yang baik akan memberikan manfaat sekiranya kita membersihkan kawasan persekitaran kita. Makanan yang disediakan oleh penduduk dapat menjadi sumber pendapatan kepada mereka. Seterusnya, kebersihan kawasan persekitaran terpelihara. Kita dapat lihat kawasan-kawasan seperti di sekolah masih terdapat wabak penyakit seperti Denggi. (Kash) Bencana adalah hasil daripada sikap segelintir masyarakat yang mengabaikan kebersihan kawasan persekitaran sehingga menyebabkan berlakunya jangkitan penyakit. Jelaslah bahawa sesetengah kawasan tidak pernah dijangkiti wabak penyakit seperti demam kuning. Justeru, jika kita mengamalkan kebersihan kawasan itu, kita akan sentiasa peka dan mengambil langkah-langkah yang perlu. Oleh itu, kita perlu sedar bahawa kita tidak boleh hidup dalam keadaan yang begitu baik sekiranya kita menggunakan pakaian yang diletakkan di tempat duduk yang rapi. Oleh itu, kita boleh mendapatkan pakaian yang dipakai oleh mereka dan mengamalkan kebersihan yang dapat memenuhi kehendak mereka. Intihannya, pelbagai cara yang boleh dilakukan untuk mengurangkan pembiakan nyamuk aedes. Ibu bapa seharusnya memastikan anak-anak mengamalkan kebersihan di kawasan masing-masing dengan lebih rapi. Sekiranya kebersihan itu dibiarkan, kita akan menjadi lebih buruk. Oleh itu, kita perlulah sentiasa kreatif dalam mengubah sikap setiap anak-anak yang masih kecil agar mampu menjadi orang yang lebih baik. Ibu dan bapa juga perlu menunjukkan teladan yang baik terhadap anak-anak seperti peribahasa Melayu, melentur buluh biarlah dari rebungnya. Anak-Anak juga sewajarnya sentiasa berfikiran positif dan berfikiran positif. Jangan mudah terpengaruh dengan cara-cara yang tidak baik untuk dilakukan oleh sesiapa sahaja. Seterusnya, kita perlu meningkatkan lagi usaha untuk mendidik dan membimbing mereka agar menjadi lebih berhemah dalam menjalani kehidupan seharian. Pada masa yang sama, masyarakat juga perlu menghadiri pelbagai bengkel bagi mendidik dan meningkatkan nilai-nilai murni dalam kehidupan. Hal ini demikian kerana, jika kita mempunyai kelapangan, kita akan sentiasa mencuba-cuba untuk mengkomersialkan diri sendiri. Jika begitu, kita pasti akan gagal menjadi manusia yang lebih baik terutama jika berlaku perselisihan faham dan sebagainya. Maka, kita perlu mencari jalan untuk mewujudkan masyarakat yang sejahtera. Selain itu, dengan mengamalkan nilai-nilai murni yang mudah, kita akan hidup dalam suasana yang aman damai dan ceria. Hal ini demikian kerana, jika kita mengamalkan prinsip ini, kita mampu menjana pendapatan yang lebih tinggi. Hal ini demikian kerana, jika kita tidak mengamalkan nilai-nilai murni ini, yang akan menjadi negara yang lebih baik adalah negara yang makmur dan sejahtera. Seterusnya, kita juga boleh menerapkan nilai-nilai murni yang mampu menjadi ikutan masyarakat. Seperti peribahasa Melayu, melentur buluh biarlah dari rebungnya. Intihannya, sebagai rakyat yang berjiwa besar, kita perlu mempraktikkan nilai-nilai murni yang mampu membantu kita melakukan sesuatu. Kesimpulannya, semua pihak perlu berganding bahu bagai aur dengan tebing untuk mewujudkan masyarakat yang harmoni dan berbudi bahasa.'
+
+
+
+.. code:: python
+
+    # http://mieadham86.blogspot.com/2016/09/isi-isi-penting-karangan-bahasa-melayu.html
+    # CARA MENJADI MURID CEMERLANG
+    
+    isi_penting = ['Rajin berusaha – tidak mudah putus asa',
+                   'Menghormati orang yang lebih tua – mendapat keberkatan',
+                   'Melibatkan diri secara aktif dalam bidang kokurikulum',
+                   'Memberi tumpuan ketika guru mengajar.',
+                   'Berdisiplin – menepati jadual yang disediakan.',
+                   'Bercita-cita tinggi – mempunyai keazaman yang tinggi untuk berjaya']
+
+.. code:: python
+
+    model.generate(isi_penting)
+
+
+
+
+.. parsed-literal::
+
+    'Pada zaman pascakemerdekaan ini, peribahasa Melayu ada berkata, di mana tumpahnya kuah kalau tidak ke nasi. Begitulah peribahasa Melayu berkata, jika tiada usaha tanpa usaha yang kukuh, pasti akan terlambat. Oleh itu, kita sebagai rakyat Malaysia wajar bermuhasabah diri dan berusaha berusaha agar mencapai apa yang diimpikan. Seterusnya, kita harus bersabar menunggu keputusan dan berusaha untuk mencapai apa yang diimpikan. Pelbagai cara dan kaedah yang boleh diguna pakai dalam menyelesaikan masalah yang dihadapi semasa menempuhi zaman ini seperti masalah kesihatan reproduksi, masalah obesiti, kesesakan jalan raya dan perkara-perkara lain yang dilihat menggamit perhatian kita. Di samping itu, kita sebagai rakyat Malaysia harus tampil untuk melihat dan menyelami kesusahan orang sekeliling kita ini. Golongan pekerja dan usahawan adalah golongan yang antara golongan terbesar di dunia dan perlu membantu mencari jalan penyelesaian bagi mengatasi segala masalah tersebut. Golongan berpendapatan rendah seperti orang kaya yang masih memerlukan bantuan dari segi kewangan dan kehidupan perlulah meluangkan masa yang ada untuk mencari pendapatan sampingan yang lebih bermanfaat bagi meringankan beban keluarga mereka. Jelaslah bahawa kita tidak mampu untuk bekerja dalam keadaan yang serba kekurangan. Sekiranya kita malas berusaha, kita akan terus kecundang dan tidak lagi mampu menyediakan produk yang boleh digunakan untuk kehidupan kita. Oleh itu, usaha yang kita lakukan adalah untuk memastikan diri kita sentiasa berada di landasan yang betul. Usaha yang kita lakukan hendaklah didorong dengan semangat yang tinggi supaya tidak mudah berputus asa. Malahan, dengan itu, kita dapat menghargai golongan yang lebih tua kerana kelebihannya mendidik diri - lebih muda dari orang lain. Dalam hal ini, ibu dan bapa akan sentiasa memantau anak-anak mereka di samping melarang anak-anak mereka daripada melakukan aktiviti yang tidak bermanfaat. Apabila kita lihat di televisyen dan di televisyen, pelajar-pelajar akan membuat perancangan untuk mengulang kaji pelajaran mereka di hadapan kamera dan kemudian dibimbing diri untuk menjadi guru-guru. Selain itu, kita juga boleh menjadi orang yang memberi nasihat kepada pelajar-pelajar dengan cara yang betul dalam mencari pengalaman yang baru. Jelaslah bahawa guru-guru juga mempunyai ilmu yang luas dalam pembelajaran dan mereka boleh memberikan fokus apabila menjalankan tugas dan belajar. Mereka dapat merangka pelbagai aktiviti untuk mengajar dalam tempoh yang singkat dan mudah. Oleh itu, mereka boleh merancang aktiviti-aktiviti yang penting dalam membentuk pemikiran dan pemikiran mereka dengan lebih berkesan. Tuntasnya, setiap daripada kita wajar memahami dan memiliki kepentingan untuk membantu sesuatu yang kita tidak tahu. Akhir sekali, peranan yang mustahak dalam mendidik adalah mengenali dan menghormati orang yang lebih tua. Ibu bapa berperanan penting dalam mendidik anak-anak sejak di bangku sekolah lagi. Bak kata peribahasa Melayu, melebihkan pergaulan. Ibu bapa boleh menjadi insan yang bijaksana, sopan santun dan bijaksana sebagai anak yang menjadi khalifah di muka bumi ini. Ibu bapa berperanan penting dalam mendidik anak-anak sehingga mereka bersedia untuk menempuhi zaman dalam dunia yang penuh mencabar ini. Selain itu, ibu bapa juga berperanan penting dalam mendidik anak-anak mereka agar sentiasa berusaha untuk mencapai matlamat yang diidam-idamkan. Ibu bapa juga berperanan penting dalam memastikan setiap anak-anak tidak mengesampingkan perasaan atau perasaan untuk maju bersama keluarga dan negara. Ibu bapa berperanan penting dalam memastikan anak-anak mencapai matlamat yang diidamkan. Menjadikan ibu bapa sebagai idola, saya boleh berbuat demikian dengan menasihatkan mereka supaya sentiasa mendoakan yang terbaik untuk kita. Guru-Guru juga boleh memberikan semangat yang tinggi untuk berjaya dalam kehidupan masing-masing. Sekiranya kita berjaya mencapai tujuan yang telah ditetapkan, pasti pencapaian kita akan menjadi lebih membanggakan. Akhir sekali, kita harus sedar bahawa tugas yang perlu dilaksanakan adalah menjaga kesihatan dan nyawa kita dan memastikan tiada sebarang masalah yang timbul. Pada masa yang sama, kita hendaklah sentiasa menjaga kesihatan dan nyawa kita dan tidak sesekali putus asa untuk sembuh.'
+
 
 
 Load GPT2
@@ -55,7 +197,7 @@ from here, https://huggingface.co/models?filter=malay&search=gpt2
 
 
 
-.. image:: load-generator_files/load-generator_4_0.png
+.. image:: load-generator_files/load-generator_21_0.png
    :width: 500px
 
 

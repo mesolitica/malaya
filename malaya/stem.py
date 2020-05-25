@@ -153,7 +153,6 @@ def sastrawi(string: str):
     return sastrawi_stemmer.stem(string)
 
 
-@check_type
 def deep_model(**kwargs):
     """
     Load LSTM + Bahdanau Attention stemming model.

@@ -13,7 +13,7 @@ _availability = {
 }
 
 
-def available_transformer_model():
+def available_transformer():
     """
     List available transformer emotion analysis models.
     """

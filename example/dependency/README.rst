@@ -6,8 +6,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 5.1 s, sys: 1.3 s, total: 6.4 s
-    Wall time: 7.82 s
+    CPU times: user 4.53 s, sys: 1.05 s, total: 5.58 s
+    Wall time: 5.85 s
 
 
 Describe supported dependencies
@@ -57,7 +57,7 @@ List available transformer Dependency models
 
 .. code:: ipython3
 
-    malaya.dependency.available_transformer_model()
+    malaya.dependency.available_transformer()
 
 
 

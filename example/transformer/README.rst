@@ -33,8 +33,8 @@ https://huggingface.co/models?filter=malay
 
 .. parsed-literal::
 
-    CPU times: user 4.36 s, sys: 866 ms, total: 5.23 s
-    Wall time: 4.33 s
+    CPU times: user 4.93 s, sys: 1.31 s, total: 6.25 s
+    Wall time: 8 s
 
 
 list Transformer-Bahasa available
@@ -42,7 +42,7 @@ list Transformer-Bahasa available
 
 .. code:: ipython3
 
-    malaya.transformer.available_model()
+    malaya.transformer.available_transformer()
 
 
 
@@ -72,7 +72,7 @@ list Transformer-Bahasa available
 
 5. ``xlnet`` - XLNET architecture from google.
 
-6. ``alxlnet`` Malaya architecture, unpublished model.
+6. ``alxlnet`` Malaya architecture, unpublished model, A-lite XLNET.
 
 7. ``electra`` ELECTRA architecture from google.
 

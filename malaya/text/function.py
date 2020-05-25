@@ -354,27 +354,6 @@ def pad_sentence_batch(sentence_batch, pad_int):
     return padded_seqs, seq_lens
 
 
-def char_str_idx(corpus, dic, UNK = 2):
-    maxlen = max([len(i) for i in corpus])
-    X = np.zeros((len(corpus), maxlen))
-    for i in range(len(corpus)):
-        for no, k in enumerate(corpus[i][:maxlen]):
-            X[i, no] = dic.get(k, UNK)
-    return X
-
-
-def generate_char_seq(batch, dic, UNK = 2):
-    maxlen_c = max([len(k) for k in batch])
-    x = [[len(i) for i in k] for k in batch]
-    maxlen = max([j for i in x for j in i])
-    temp = np.zeros((len(batch), maxlen_c, maxlen), dtype = np.int32)
-    for i in range(len(batch)):
-        for k in range(len(batch[i])):
-            for no, c in enumerate(batch[i][k][::-1]):
-                temp[i, k, -1 - no] = dic.get(c, UNK)
-    return temp
-
-
 def build_dataset(words, n_words, included_prefix = True):
     count = (
         [['GO', 0], ['PAD', 1], ['EOS', 2], ['UNK', 3]]
@@ -424,6 +403,7 @@ digits = '([0-9])'
 
 
 def split_into_sentences(text, minimum_length = 5):
+    text = text + '.'
     text = unidecode(text)
     text = ' ' + text + '  '
     text = text.replace('\n', ' ')

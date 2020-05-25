@@ -438,7 +438,7 @@ _availability = {
 }
 
 
-def available_transformer_model():
+def available_transformer():
     """
     List available transformer similarity models.
     """
