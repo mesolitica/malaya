@@ -548,7 +548,7 @@ def t5(model: str = 'base', **kwargs):
         import tensorflow as tf
     except:
         raise Exception(
-            'tensorflow-text and tf-sentencepiece not installed. Please install it by `pip install tensorflow-text tf-sentencepiece` and try again.'
+            'tensorflow-text and tf-sentencepiece not installed. Please install it by `pip install tensorflow-text tf-sentencepiece` and try again. Also, make sure tensorflow-text version same as tensorflow version.'
         )
 
     check_file(path[model]['model'], s3_path[model], **kwargs)
