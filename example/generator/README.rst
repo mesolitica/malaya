@@ -30,10 +30,10 @@ List available T5 Model
 Load T5
 -------
 
-T5 in Malaya is quite, most of the text generative model we found on the
-internet like GPT2 or Markov, simply just continue prefix input from
-user, but not for T5 Malaya. We want to generate an article or karangan
-like high school when the users give ‘isu penting’.
+T5 in Malaya is quite unique, most of the text generative model we found
+on the internet like GPT2 or Markov, simply just continue prefix input
+from user, but not for T5 Malaya. We want to generate an article or
+karangan like high school when the users give ‘isu penting’.
 
 .. code:: python
 
