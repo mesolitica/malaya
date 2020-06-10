@@ -33,7 +33,7 @@ Load T5
 T5 in Malaya is quite unique, most of the text generative model we found
 on the internet like GPT2 or Markov, simply just continue prefix input
 from user, but not for T5 Malaya. We want to generate an article or
-karangan like high school when the users give ‘isu penting’.
+karangan like high school when the users give ‘isi penting’.
 
 .. code:: python
 
@@ -333,8 +333,8 @@ How about karangan like high school?
 Load GPT2
 ---------
 
-Malaya provided Pretrained GTP2 model, specific to Malay, we called it
-GTP2-Bahasa. This interface not able us to use it to do custom training.
+Malaya provided Pretrained GPT2 model, specific to Malay, we called it
+GPT2-Bahasa. This interface not able us to use it to do custom training.
 
 GPT2-Bahasa was pretrained on ~0.9 billion words, and below is the list
 of dataset we trained,

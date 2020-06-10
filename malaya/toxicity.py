@@ -69,7 +69,7 @@ def multinomial(**kwargs):
 
     Returns
     -------
-    BAYES : malaya.model.ml.MULTILABEL_BAYES class
+    result : malaya.model.ml.MULTILABEL_BAYES class
     """
     import pickle
 

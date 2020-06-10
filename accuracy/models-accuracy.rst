@@ -1145,12 +1145,12 @@ bert-base
 
                  precision    recall  f1-score   support
 
-    not similar    0.90249   0.89242   0.89743     51004
-        similar    0.91965   0.92737   0.92349     67716
+    not similar    0.91813   0.86843   0.89259    114935
+        similar    0.84816   0.90468   0.87551     93371
 
-       accuracy                        0.91236    118720
-      macro avg    0.91107   0.90990   0.91046    118720
-   weighted avg    0.91227   0.91236   0.91229    118720
+       accuracy                        0.88468    208306
+      macro avg    0.88315   0.88656   0.88405    208306
+   weighted avg    0.88677   0.88468   0.88493    208306
 
 tiny-bert
 ^^^^^^^^^
@@ -1160,12 +1160,12 @@ tiny-bert
 
                  precision    recall  f1-score   support
 
-    not similar    0.90513   0.86192   0.88299     50752
-        similar    0.90044   0.93254   0.91621     67968
+    not similar    0.90845   0.85704   0.88200    114843
+        similar    0.83576   0.89387   0.86384     93463
 
-       accuracy                        0.90235    118720
-      macro avg    0.90279   0.89723   0.89960    118720
-   weighted avg    0.90245   0.90235   0.90201    118720
+       accuracy                        0.87357    208306
+      macro avg    0.87210   0.87546   0.87292    208306
+   weighted avg    0.87583   0.87357   0.87385    208306
 
 albert-base
 ^^^^^^^^^^^
@@ -1175,12 +1175,12 @@ albert-base
 
                  precision    recall  f1-score   support
 
-    not similar    0.88944   0.88169   0.88555     50951
-        similar    0.91163   0.91760   0.91461     67769
+    not similar    0.88351   0.88549   0.88450    114523
+        similar    0.85978   0.85743   0.85860     93783
 
-       accuracy                        0.90219    118720
-      macro avg    0.90054   0.89965   0.90008    118720
-   weighted avg    0.90211   0.90219   0.90214    118720
+       accuracy                        0.87286    208306
+      macro avg    0.87164   0.87146   0.87155    208306
+   weighted avg    0.87283   0.87286   0.87284    208306
 
 albert-tiny
 ^^^^^^^^^^^
@@ -1190,12 +1190,12 @@ albert-tiny
 
                  precision    recall  f1-score   support
 
-    not similar    0.87350   0.80987   0.84048     50840
-        similar    0.86497   0.91215   0.88793     67880
+    not similar    0.84881   0.82946   0.83902    114914
+        similar    0.79588   0.81821   0.80689     93392
 
-       accuracy                        0.86835    118720
-      macro avg    0.86923   0.86101   0.86421    118720
-   weighted avg    0.86862   0.86835   0.86761    118720
+       accuracy                        0.82441    208306
+      macro avg    0.82234   0.82383   0.82295    208306
+   weighted avg    0.82508   0.82441   0.82461    208306
 
 xlnet-base
 ^^^^^^^^^^
@@ -1205,12 +1205,12 @@ xlnet-base
 
                  precision    recall  f1-score   support
 
-    not similar    0.77288   0.94355   0.84973     51004
-        similar    0.94900   0.79116   0.86292     67716
+    not similar    0.74384   0.92845   0.82596    114854
+        similar    0.87347   0.60705   0.71629     93452
 
-       accuracy                        0.85663    118720
-      macro avg    0.86094   0.86736   0.85633    118720
-   weighted avg    0.87334   0.85663   0.85725    118720
+       accuracy                        0.78426    208306
+      macro avg    0.80866   0.76775   0.77112    208306
+   weighted avg    0.80200   0.78426   0.77676    208306
 
 alxlnet-base
 ^^^^^^^^^^^^
@@ -1220,12 +1220,12 @@ alxlnet-base
 
                  precision    recall  f1-score   support
 
-    not similar    0.90872   0.87774   0.89296     50777
-        similar    0.91090   0.93411   0.92236     67943
+    not similar    0.89614   0.90170   0.89891    114554
+        similar    0.87897   0.87231   0.87563     93752
 
-       accuracy                        0.91000    118720
-      macro avg    0.90981   0.90592   0.90766    118720
-   weighted avg    0.90997   0.91000   0.90978    118720
+       accuracy                        0.88847    208306
+      macro avg    0.88756   0.88700   0.88727    208306
+   weighted avg    0.88841   0.88847   0.88843    208306
 
 Subjectivity Analysis
 ---------------------

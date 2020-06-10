@@ -183,7 +183,7 @@ def random_walk(
 
     Returns
     -------
-    tuple: (labels[argmax(scores), axis = 1], scores, labels)
+    result: tuple(labels[argmax(scores), axis = 1], scores, labels)
     """
 
     if not hasattr(wordvector, 'batch_n_closest'):
@@ -278,7 +278,7 @@ def propagate_probabilistic(
 
     Returns
     -------
-    tuple: (labels[argmax(scores), axis = 1], scores, labels)
+    result: tuple(labels[argmax(scores), axis = 1], scores, labels)
     """
 
     if not hasattr(wordvector, 'batch_n_closest'):
@@ -362,7 +362,7 @@ def propagate_graph(
 
     Returns
     -------
-    tuple: (labels[argmax(scores), axis = 1], scores, labels)
+    result: tuple(labels[argmax(scores), axis = 1], scores, labels)
     """
 
     if not hasattr(wordvector, 'batch_n_closest'):

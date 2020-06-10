@@ -146,7 +146,8 @@ def sastrawi(string: str):
 
     Returns
     -------
-    string: stemmed string.
+    result: str
+        stemmed string.
     """
     if sastrawi_stemmer is None:
         _load_sastrawi()
@@ -159,7 +160,7 @@ def deep_model(**kwargs):
 
     Returns
     -------
-    DEEP_STEMMER: malaya.stem.DEEP_STEMMER class
+    result: malaya.stem.DEEP_STEMMER class
     """
     from malaya.preprocessing import _tokenizer
 

@@ -739,7 +739,7 @@ def probability(sentence_piece: bool = False, **kwargs):
 
     Returns
     -------
-    PROBABILITY: malaya.spell.PROBABILITY class
+    result: malaya.spell.PROBABILITY class
     """
     check_file(PATH_NGRAM[1], S3_PATH_NGRAM[1], **kwargs)
 
@@ -775,7 +775,7 @@ def symspell(
 
     Returns
     -------
-    _SpellCorrector: malaya.spell.SYMSPELL class
+    result: malaya.spell.SYMSPELL class
     """
 
     check_file(PATH_NGRAM['symspell'], S3_PATH_NGRAM['symspell'], **kwargs)
@@ -807,7 +807,7 @@ def transformer(model, sentence_piece: bool = False, **kwargs):
 
     Returns
     -------
-    TRANSFORMER: malaya.spell.TRANSFORMER class
+    result: malaya.spell.TRANSFORMER class
     """
     if not hasattr(model, '_log_vectorize'):
         raise ValueError('model must has `_log_vectorize` method')

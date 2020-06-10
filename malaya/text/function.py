@@ -78,7 +78,6 @@ def transformer_textcleaning(string):
     )
     string = re.sub(r'[ ]+', ' ', string).strip().split()
     string = [w for w in string if w[0] != '@']
-    string = [w.title() if w[0].isupper() else w for w in string]
     return ' '.join(string)
 
 

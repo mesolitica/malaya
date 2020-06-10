@@ -11,8 +11,8 @@ from shutil import rmtree
 from pathlib import Path
 
 home = os.path.join(str(Path.home()), 'Malaya')
-version = '3.5'
-bump_version = '3.5.2'
+version = '3.6'
+bump_version = '3.6.0'
 version_path = os.path.join(home, 'version')
 __version__ = bump_version
 
@@ -122,10 +122,11 @@ from . import similarity
 from . import spell
 from . import stack
 from . import stem
-from . import subjective
-from . import summarize
+from . import subjectivity
+from . import summarization
 from . import topic_model
-from . import toxic
+from . import toxicity
 from . import transformer
 from . import word2num
 from . import wordvector
+from . import zero_shot

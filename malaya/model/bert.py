@@ -18,6 +18,7 @@ from malaya.function.html import (
     _render_relevancy,
 )
 import numpy as np
+from collections import defaultdict
 from herpetologist import check_type
 from typing import List, Tuple
 
@@ -231,7 +232,7 @@ class BINARY_BERT(BERT):
     @check_type
     def predict(self, strings: List[str], add_neutral: bool = True):
         """
-        classify a string.
+        classify list of strings.
 
         Parameters
         ----------
@@ -249,7 +250,7 @@ class BINARY_BERT(BERT):
     @check_type
     def predict_proba(self, strings: List[str], add_neutral: bool = True):
         """
-        classify list of strings.
+        classify list of strings and return probability.
 
         Parameters
         ----------
@@ -327,7 +328,7 @@ class MULTICLASS_BERT(BERT):
     @check_type
     def predict(self, strings: List[str]):
         """
-        classify a string.
+        classify list of strings.
 
         Parameters
         ----------
@@ -344,7 +345,7 @@ class MULTICLASS_BERT(BERT):
     @check_type
     def predict_proba(self, strings: List[str]):
         """
-        classify list of strings.
+        classify list of strings and return probability.
 
         Parameters
         ----------
@@ -429,7 +430,7 @@ class SIGMOID_BERT(BASE):
     @check_type
     def predict(self, strings: List[str]):
         """
-        classify a string.
+        classify list of strings.
 
         Parameters
         ----------
@@ -455,7 +456,7 @@ class SIGMOID_BERT(BASE):
     @check_type
     def predict_proba(self, strings: List[str]):
         """
-        classify list of strings.
+        classify list of strings and return probability.
 
         Parameters
         ----------
@@ -809,3 +810,78 @@ class DEPENDENCY_BERT(BASE):
             )
         d = DependencyGraph('\n'.join(result), top_relation_label = 'root')
         return d, tagging, indexing_
+
+
+class ZEROSHOT_BERT(BASE):
+    def __init__(
+        self,
+        X,
+        segment_ids,
+        input_masks,
+        logits,
+        sess,
+        tokenizer,
+        label = ['not similar', 'similar'],
+    ):
+        BASE.__init__(
+            self,
+            X = X,
+            segment_ids = segment_ids,
+            input_masks = input_masks,
+            logits = logits,
+            sess = sess,
+            tokenizer = tokenizer,
+            label = label,
+        )
+        self._softmax = tf.nn.softmax(self._logits)
+
+    def _base(self, strings, labels):
+        strings_left, strings_right, mapping = [], [], defaultdict(list)
+        index = 0
+        for no, string in enumerate(strings):
+            for label in labels:
+                strings_left.append(string)
+                strings_right.append(f'teks ini adalah mengenai {label}')
+                mapping[no].append(index)
+                index += 1
+
+        input_ids, input_masks, segment_ids = bert_tokenization_siamese(
+            self._tokenizer, strings_left, strings_right
+        )
+
+        output = self._sess.run(
+            self._softmax,
+            feed_dict = {
+                self._X: input_ids,
+                self._segment_ids: segment_ids,
+                self._input_masks: input_masks,
+            },
+        )
+
+        results = []
+        for k, v in mapping.items():
+            result = {}
+            for no, index in enumerate(v):
+                result[labels[no]] = output[index, 1]
+            results.append(result)
+        return results
+
+    @check_type
+    def predict_proba(self, strings: List[str], labels: List[str]):
+        """
+        classify list of strings and return probability.
+
+        Parameters
+        ----------
+        strings : List[str]
+        labels : List[str]
+
+        Returns
+        -------
+        list: list of float
+        """
+
+        if len(set(labels)) != len(labels):
+            raise ValueError('labels must be unique.')
+
+        return self._base(strings, labels)

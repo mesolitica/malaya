@@ -49,7 +49,7 @@ def load(model: str = 'electra', pool_mode: str = 'last', **kwargs):
 
     Returns
     -------
-    TRANSFORMER: malaya.transformers.* class
+    result: malaya.transformers.* class
     """
 
     model = model.lower()

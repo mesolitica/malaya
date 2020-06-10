@@ -86,7 +86,7 @@ def ngrams(
 
     Returns
     -------
-    ngram: list
+    result: List[Tuple[str, str]]
     """
     sequence = _pad_sequence(
         sequence, n, pad_left, pad_right, left_pad_symbol, right_pad_symbol
@@ -195,7 +195,7 @@ def shortform(
     augment_vowel: bool = True,
     augment_consonant: bool = True,
     prob_delete_vowel: float = 0.5,
-    validate: bool = True,
+    **kwargs
 ):
     """
     augmenting a formal word into socialmedia form. Purposely typo, purposely delete some vowels, 
@@ -210,8 +210,6 @@ def shortform(
         if True, will augment consonants for each samples generated.
     prob_delete_vowel: float, (default=0.5)
         probability to delete a vowel.
-    validate: bool, optional (default=True)
-        if True, malaya will check model availability and download if not available.
 
     Returns
     -------
@@ -226,13 +224,9 @@ def shortform(
     if not len(word):
         raise Exception('word is too short to augment shortform.')
 
-    if validate:
-        check_file(PATH_NGRAM['sentencepiece'], S3_PATH_NGRAM['sentencepiece'])
-    else:
-        if not check_available(PATH_NGRAM[1]):
-            raise Exception(
-                'sentence piece is not available, please `validate = True`'
-            )
+    check_file(
+        PATH_NGRAM['sentencepiece'], S3_PATH_NGRAM['sentencepiece'], **kwargs
+    )
 
     vocab = PATH_NGRAM['sentencepiece']['vocab']
     vocab_model = PATH_NGRAM['sentencepiece']['model']

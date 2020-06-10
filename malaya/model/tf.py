@@ -60,7 +60,7 @@ class DEEP_LANG:
     @check_type
     def predict(self, strings: List[str]):
         """
-        classify a string.
+        classify list of strings.
 
         Parameters
         ----------
@@ -81,7 +81,7 @@ class DEEP_LANG:
     @check_type
     def predict_proba(self, strings: List[str]):
         """
-        classify list of strings
+        classify list of strings and return probability.
 
         Parameters
         ----------

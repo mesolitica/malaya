@@ -23,7 +23,7 @@ from herpetologist import check_type
 from typing import List, Tuple, Callable
 
 
-class _VECTORIZER_SIMILARITY:
+class VECTORIZER_SIMILARITY:
     def __init__(self, vectorizer):
         self._vectorizer = vectorizer
 
@@ -88,7 +88,7 @@ class _VECTORIZER_SIMILARITY:
 
         Returns
         -------
-        list: list of float
+        result: List[float]
         """
         return self._predict(
             left_strings, right_strings, similarity = similarity
@@ -123,7 +123,8 @@ class _VECTORIZER_SIMILARITY:
 
         Returns
         -------
-        list_dictionaries: list of results
+        result: list
+            list of results
         """
 
         results = self._predict(strings, strings, similarity = similarity)
@@ -151,7 +152,7 @@ class _VECTORIZER_SIMILARITY:
         plt.show()
 
 
-class _DOC2VEC_SIMILARITY:
+class DOC2VEC_SIMILARITY:
     def __init__(self, vectorizer):
         self._vectorizer = vectorizer
         self._jarowinkler = JaroWinkler()
@@ -304,7 +305,7 @@ class _DOC2VEC_SIMILARITY:
 
         Returns
         -------
-        list: list of float
+        result: List[float]
         """
 
         return self._predict(
@@ -356,7 +357,8 @@ class _DOC2VEC_SIMILARITY:
 
         Returns
         -------
-        list_dictionaries: list of results
+        result: list
+            list of results.
         """
 
         results = self._predict(
@@ -401,12 +403,12 @@ def doc2vec(vectorizer):
 
     Returns
     -------
-    _DOC2VEC_SIMILARITY: malaya.similarity._DOC2VEC_SIMILARITY
+    result: malaya.similarity.DOC2VEC_SIMILARITY
     """
 
     if not hasattr(vectorizer, 'get_vector_by_name'):
         raise ValueError('vectorizer must has `get_vector_by_name` method')
-    return _DOC2VEC_SIMILARITY(vectorizer)
+    return DOC2VEC_SIMILARITY(vectorizer)
 
 
 def encoder(vectorizer):
@@ -420,21 +422,21 @@ def encoder(vectorizer):
 
     Returns
     -------
-    _DOC2VEC_SIMILARITY: malaya.similarity._DOC2VEC_SIMILARITY
+    result: malaya.similarity.VECTORIZER_SIMILARITY
     """
 
     if not hasattr(vectorizer, 'vectorize'):
         raise ValueError('vectorizer must has `vectorize` method')
-    return _VECTORIZER_SIMILARITY(vectorizer)
+    return VECTORIZER_SIMILARITY(vectorizer)
 
 
 _availability = {
-    'bert': ['423.4 MB', 'accuracy: 0.912'],
-    'tiny-bert': ['56.6 MB', 'accuracy: 0.902'],
-    'albert': ['46.3 MB', 'accuracy: 0.902'],
-    'tiny-albert': ['21.9 MB', 'accuracy: 0.868'],
-    'xlnet': ['448.7 MB', 'accuracy: 0.856'],
-    'alxlnet': ['49.0 MB', 'accuracy: 0.910'],
+    'bert': ['423.4 MB', 'accuracy: 0.885'],
+    'tiny-bert': ['56.6 MB', 'accuracy: 0.873'],
+    'albert': ['46.3 MB', 'accuracy: 0.873'],
+    'tiny-albert': ['21.9 MB', 'accuracy: 0.824'],
+    'xlnet': ['448.7 MB', 'accuracy: 0.784'],
+    'alxlnet': ['49.0 MB', 'accuracy: 0.888'],
 }
 
 
@@ -445,28 +447,7 @@ def available_transformer():
     return _availability
 
 
-@check_type
-def transformer(model: str = 'bert', **kwargs):
-    """
-    Load Transformer sentiment model.
-
-    Parameters
-    ----------
-    model : str, optional (default='bert')
-        Model architecture supported. Allowed values:
-
-        * ``'bert'`` - BERT architecture from google.
-        * ``'tiny-bert'`` - BERT architecture from google with smaller parameters.
-        * ``'albert'`` - ALBERT architecture from google.
-        * ``'tiny-albert'`` - ALBERT architecture from google with smaller parameters.
-        * ``'xlnet'`` - XLNET architecture from google.
-        * ``'alxlnet'`` - XLNET architecture from google + Malaya.
-
-    Returns
-    -------
-    BERT : malaya._models._bert_model.BINARY_BERT class
-    """
-
+def _transformer(model, bert_class, xlnet_class, **kwargs):
     model = model.lower()
     if model not in _availability:
         raise Exception(
@@ -502,7 +483,7 @@ def transformer(model: str = 'bert', **kwargs):
                 spm_model_file = path[model]['tokenizer'],
             )
 
-        return SIAMESE_BERT(
+        return bert_class(
             X = g.get_tensor_by_name('import/Placeholder:0'),
             segment_ids = g.get_tensor_by_name('import/Placeholder_1:0'),
             input_masks = g.get_tensor_by_name('import/Placeholder_2:0'),
@@ -524,7 +505,7 @@ def transformer(model: str = 'bert', **kwargs):
 
         tokenizer = sentencepiece_tokenizer_xlnet(path[model]['tokenizer'])
 
-        return SIAMESE_XLNET(
+        return xlnet_class(
             X = g.get_tensor_by_name('import/Placeholder:0'),
             segment_ids = g.get_tensor_by_name('import/Placeholder_1:0'),
             input_masks = g.get_tensor_by_name('import/Placeholder_2:0'),
@@ -533,3 +514,33 @@ def transformer(model: str = 'bert', **kwargs):
             tokenizer = tokenizer,
             label = ['not similar', 'similar'],
         )
+
+
+@check_type
+def transformer(model: str = 'bert', **kwargs):
+    """
+    Load Transformer similarity model.
+
+    Parameters
+    ----------
+    model : str, optional (default='bert')
+        Model architecture supported. Allowed values:
+
+        * ``'bert'`` - BERT architecture from google.
+        * ``'tiny-bert'`` - BERT architecture from google with smaller parameters.
+        * ``'albert'`` - ALBERT architecture from google.
+        * ``'tiny-albert'`` - ALBERT architecture from google with smaller parameters.
+        * ``'xlnet'`` - XLNET architecture from google.
+        * ``'alxlnet'`` - XLNET architecture from google + Malaya.
+
+    Returns
+    -------
+    result : malaya.model.bert.SIAMESE_BERT class
+    """
+
+    return _transformer(
+        model = model,
+        bert_class = SIAMESE_BERT,
+        xlnet_class = SIAMESE_XLNET,
+        **kwargs
+    )

@@ -9,9 +9,7 @@ global model
 @app.before_first_request
 def load_model():
     global model
-    model = malaya.sentiment.transformer(
-        model = 'albert', size = 'base', validate = False
-    )
+    model = malaya.sentiment.transformer(model = 'albert', validate = False)
 
 
 @app.route('/', methods = ['GET'])

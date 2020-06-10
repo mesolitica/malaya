@@ -7,8 +7,6 @@ Thanks to Google and Toyota research for released [ALBERT paper](https://arxiv.o
   * [Acknowledgement](#acknowledgement)
   * [How-to](#how-to)
   * [Download](#download)
-  * [Comparison using Emotion Dataset](#comparison-using-emotion-dataset)
-  * [Comparison using POS Dataset](#comparison-using-pos-dataset)
   * [Citation](#citation)
   * [Donation](#donation)
 
@@ -94,24 +92,8 @@ python3 multigpu_pretraining.py \
 
   - Vocab size 32k.
   - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.
-  - 1.0M steps, 3 GPUs TESLA V100.
+  - 300k steps, 3 GPUs TESLA V100.
   - BASE size (42.4MB).
-
-## Comparison using Emotion Dataset
-
-Link to [emotion dataset](https://github.com/huseinzol05/Malaya-Dataset#emotion).
-
-Link to [notebooks-base](transfer-learning-emotion-base.ipynb).
-
-<img src="barplot/emotion.png" width="70%" align="">
-
-## Comparison using POS Dataset
-
-Link to [POS dataset](https://github.com/huseinzol05/malaya-dataset#part-of-speech).
-
-Link to [notebooks-base](transfer-learning-pos-base.ipynb).
-
-<img src="barplot/pos.png" width="70%" align="">
 
 ## Citation
 

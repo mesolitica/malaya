@@ -14,16 +14,16 @@ option = {
     },
     yAxis: {
         type: 'value',
-        min: 0.85,
-        max: 0.92
+        min: 0.78,
+        max: 0.90
     },
     grid: {
         bottom: 100
     },
     backgroundColor: 'rgb(252,252,252)',
     series: [{
-        data: [0.91236, 0.90235, 0.90219, 0.86835,
-            0.85663, 0.91000],
+        data: [0.88468, 0.87357, 0.87286, 0.82441,
+            0.78426, 0.88847],
         type: 'bar',
         label: {
             normal: {

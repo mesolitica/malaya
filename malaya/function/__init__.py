@@ -30,7 +30,7 @@ def download_file(url, filename):
         r = requests.get(url, stream = True)
     else:
         r = requests.get(
-            'http://s3-ap-southeast-1.amazonaws.com/huseinhouse-storage/' + url,
+            'https://f000.backblazeb2.com/file/malaya-model/' + url,
             stream = True,
         )
     total_size = int(r.headers['content-length'])

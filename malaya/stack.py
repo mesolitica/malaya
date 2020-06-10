@@ -112,22 +112,26 @@ def predict_stack(models, strings: List[str], mode: str = 'gmean', **kwargs):
     labels, results = None, []
     for i in range(len(models)):
         nested_results = []
-        result = (
-            models[i].predict_proba(strings, **kwargs)
-            if models[i].predict.__defaults__ is None
-            else models[i].predict_proba(strings, **kwargs)
-        )
+        result = models[i].predict_proba(strings, **kwargs)
         for r in result:
-            l = list(r.keys())
-            if not labels:
-                labels = l
+            if isinstance(r, dict):
+                l = list(r.keys())
+                if not labels:
+                    labels = l
+                else:
+                    if l != labels:
+                        raise ValueError('domain classification must be same!')
+                nested_results.append(list(r.values()))
             else:
-                if l != labels:
-                    raise ValueError('domain classification must be same!')
-            nested_results.append(list(r.values()))
+                nested_results.append(r)
         results.append(nested_results)
     results = mode(np.array(results), axis = 0)
     outputs = []
-    for result in results:
-        outputs.append({label: result[no] for no, label in enumerate(labels)})
+    if labels:
+        for result in results:
+            outputs.append(
+                {label: result[no] for no, label in enumerate(labels)}
+            )
+    else:
+        outputs = results
     return outputs

@@ -20,44 +20,82 @@ Contents:
    Dataset
    Accuracy
    Cache
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Module
-
-   Transformer
-   Augmentation
-   Cluster
-   Dependency
-   Emotion
-   Entities
-   Generator
-   Language
-   Lexicon
-   Normalizer
-   Num2word
-   Pos
-   Preprocessing
-   Relevancy
-   Sentiment
-   Similarity
-   Spell
-   Stack
-   Stemmer
-   Subjective
-   Summarization
-   Topic
-   Toxic
-   Word2num
-   Wordvector
-   Cluster
+   Deployment
    Api
 
 .. toctree::
    :maxdepth: 2
-   :caption: Misc
+   :caption: Pre-trained model
 
+   Transformer
+   Wordvector
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Normalization Module
+
+   Normalizer
+   Num2word
+   Preprocessing
+   Spell
+   Stemmer
+   Word2num
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Generative Module
+
+   Augmentation
+   Generator
+   Lexicon
+   Topic
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Classification Module
+
+   Emotion
+   Language
+   Relevancy
+   Sentiment
+   Similarity
+   Subjective
+   Toxic
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Tagging Module
+
+   Dependency
+   Entities
+   Pos
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Summarization Module
+
+   Abstractive
+   Extractive
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Zero-shot Module
+
+   Classification
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Misc Module
+   
+   Cluster
+   Stack
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Misc
+   
    Contributing
    Crawler
+   Donation
    Translator-malaya
    Reference

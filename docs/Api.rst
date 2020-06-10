@@ -129,22 +129,28 @@ malaya.stem
 .. autoclass:: malaya.stem.DEEP_STEMMER()
     :members:
 
-malaya.subjective
------------------
+malaya.subjectivity
+--------------------
 
-.. automodule:: malaya.subjective
+.. automodule:: malaya.subjectivity
     :members:
 
-malaya.summarize
----------------------
+malaya.summarization.abstractive
+---------------------------------
 
-.. automodule:: malaya.summarize
+.. automodule:: malaya.summarization.abstractive
     :members:
 
-.. autoclass:: malaya.summarize._DEEP_SUMMARIZER()
+malaya.summarization.extractive
+---------------------------------
+
+.. automodule:: malaya.summarization.extractive
     :members:
 
-.. autoclass:: malaya.summarize._DEEP_SKIPTHOUGHT()
+.. autoclass:: malaya.summarization.extractive.DEEP_SUMMARIZER()
+    :members:
+
+.. autoclass:: malaya.summarization.extractive.DEEP_SKIPTHOUGHT()
     :members:
 
 malaya.similarity
@@ -153,10 +159,10 @@ malaya.similarity
 .. automodule:: malaya.similarity
     :members:
 
-.. autoclass:: malaya.similarity._VECTORIZER_SIMILARITY()
+.. autoclass:: malaya.similarity.VECTORIZER_SIMILARITY()
     :members:
 
-.. autoclass:: malaya.similarity._DOC2VEC_SIMILARITY()
+.. autoclass:: malaya.similarity.DOC2VEC_SIMILARITY()
     :members:
 
 malaya.topic_model
@@ -165,19 +171,19 @@ malaya.topic_model
 .. automodule:: malaya.topic_model
     :members:
 
-.. autoclass:: malaya.topic_model._ATTENTION_TOPIC()
+.. autoclass:: malaya.topic_model.ATTENTION_TOPIC()
     :members:
 
-.. autoclass:: malaya.topic_model._DEEP_TOPIC()
+.. autoclass:: malaya.topic_model.DEEP_TOPIC()
     :members:
 
-.. autoclass:: malaya.topic_model._TOPIC()
+.. autoclass:: malaya.topic_model.TOPIC()
     :members:
 
-malaya.toxic
+malaya.toxicity
 -------------------------
 
-.. automodule:: malaya.toxic
+.. automodule:: malaya.toxicity
     :members:
 
 malaya.transformer
@@ -192,7 +198,13 @@ malaya.wordvector
 .. automodule:: malaya.wordvector
     :members:
 
-.. autoclass:: malaya.wordvector._wordvector()
+.. autoclass:: malaya.wordvector.WORDVECTOR()
+    :members:
+
+malaya.zero_shot.classification
+--------------------------------
+
+.. automodule:: malaya.zero_shot.classification
     :members:
 
 malaya.transformers.albert
@@ -297,6 +309,9 @@ malaya.model.bert
 .. autoclass:: malaya.model.bert.DEPENDENCY_BERT()
     :members:
 
+.. autoclass:: malaya.model.bert.ZEROSHOT_BERT()
+    :members:
+
 malaya.model.xlnet
 ----------------------------------
 
@@ -316,4 +331,7 @@ malaya.model.xlnet
     :members:
 
 .. autoclass:: malaya.model.xlnet.DEPENDENCY_XLNET()
+    :members:
+
+.. autoclass:: malaya.model.xlnet.ZEROSHOT_XLNET()
     :members:

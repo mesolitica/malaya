@@ -566,7 +566,7 @@ def preprocessing(
 
     Returns
     -------
-    _Preprocessing : malaya.preprocessing._Preprocessing class
+    result : malaya.preprocessing._Preprocessing class
     """
 
     if any([e not in _normalize for e in normalize]):
@@ -645,7 +645,7 @@ def segmenter(max_split_length: int = 20, validate: bool = True):
 
     Returns
     -------
-    _Segmenter : malaya.preprocessing._Segmenter class
+    result : malaya.preprocessing._Segmenter class
     """
 
     if validate:

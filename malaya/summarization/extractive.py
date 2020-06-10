@@ -17,27 +17,11 @@ from malaya.stem import sastrawi
 from malaya.model import skip_thought
 from malaya.cluster import cluster_words
 from malaya.text.vectorizer import SkipGramVectorizer
-from malaya.path import PATH_SUMMARIZE, S3_PATH_SUMMARIZE
 from herpetologist import check_type
 from typing import List, Tuple
 
-_t5_availability = {
-    'small': [
-        '122MB',
-        'ROUGE-1: 0.33854',
-        'ROUGE-2: 0.14588',
-        'ROUGE-L: 0.23528',
-    ],
-    'base': [
-        '448MB',
-        'ROUGE-1: 0.34103',
-        'ROUGE-2: 0.14994',
-        'ROUGE-L: 0.23655',
-    ],
-}
 
-
-class _DEEP_SKIPTHOUGHT:
+class DEEP_SKIPTHOUGHT:
     def __init__(
         self, sess, x, logits, attention, dictionary, maxlen, model = None
     ):
@@ -84,7 +68,7 @@ class _DEEP_SKIPTHOUGHT:
         )
 
 
-class _DEEP_SUMMARIZER:
+class DEEP_SUMMARIZER:
     def __init__(self, vectorizer):
         self._vectorizer = vectorizer
 
@@ -124,7 +108,7 @@ class _DEEP_SUMMARIZER:
         original_strings = [i[0] for i in splitted_fullstop]
         cleaned_strings = [i[1] for i in splitted_fullstop]
 
-        if '_DEEP_SKIPTHOUGHT' in str(self._vectorizer):
+        if 'DEEP_SKIPTHOUGHT' in str(self._vectorizer):
 
             sequences = skip_thought.batch_sequence(
                 cleaned_strings,
@@ -197,7 +181,7 @@ def deep_skipthought(model: str = 'lstm'):
 
     Returns
     -------
-    _DEEP_SKIPTHOUGHT: malaya.summarize._DEEP_SKIPTHOUGHT class
+    DEEP_SKIPTHOUGHT: malaya.summarize.DEEP_SKIPTHOUGHT class
     """
     model = model.lower()
     if model == 'lstm':
@@ -209,7 +193,7 @@ def deep_skipthought(model: str = 'lstm'):
             'model is not supported, please check supported models from malaya.summarize.available_skipthought()'
         )
     sess, x, logits, attention, dictionary, maxlen = model()
-    return _DEEP_SKIPTHOUGHT(sess, x, logits, attention, dictionary, maxlen)
+    return DEEP_SKIPTHOUGHT(sess, x, logits, attention, dictionary, maxlen)
 
 
 @check_type
@@ -222,6 +206,7 @@ def _base_summarizer(
     ngram: Tuple[int, int] = (1, 3),
     vectorizer: str = 'bow',
     important_words: int = 10,
+    retry: int = 5,
     **kwargs,
 ):
 
@@ -278,7 +263,12 @@ def _base_summarizer(
     similar = cosine_similarity(vectors, vectors)
     similar[similar >= 0.999] = 0
     nx_graph = nx.from_numpy_array(similar)
-    scores = nx.pagerank(nx_graph, max_iter = 10000)
+    for _ in range(retry):
+        try:
+            scores = nx.pagerank(nx_graph, max_iter = 10000)
+            break
+        except:
+            pass
     ranked_sentences = sorted(
         ((scores[i], s) for i, s in enumerate(original_strings)), reverse = True
     )
@@ -498,77 +488,9 @@ def encoder(vectorizer):
 
     Returns
     -------
-    result: malaya.summarize._DEEP_SUMMARIZER
+    result: malaya.summarize.DEEP_SUMMARIZER
     """
 
     if not hasattr(vectorizer, 'vectorize'):
         raise ValueError('vectorizer must has `vectorize` method')
-    return _DEEP_SUMMARIZER(vectorizer)
-
-
-def available_t5():
-    """
-    List available T5 models.
-    """
-    return _t5_availability
-
-
-@check_type
-def t5(model: str = 'base', **kwargs):
-
-    """
-    Load T5 model to generate a summarization given a string.
-
-    Parameters
-    ----------
-    model : str, optional (default='base')
-        Model architecture supported. Allowed values:
-
-        * ``'base'`` - T5 Base parameters.
-        * ``'small'`` - T5 Small parameters.
-
-    Returns
-    -------
-    result: malaya.model.t5.SUMMARIZATION class
-    """
-
-    model = model.lower()
-    if model not in _t5_availability:
-        raise Exception(
-            'model not supported, please check supported models from malaya.summarize.available_t5()'
-        )
-    path = PATH_SUMMARIZE['argmax']
-    s3_path = S3_PATH_SUMMARIZE['argmax']
-
-    from malaya.function import check_file
-
-    try:
-        import tensorflow_text
-        import tf_sentencepiece
-        import tensorflow as tf
-    except:
-        raise Exception(
-            'tensorflow-text and tf-sentencepiece not installed. Please install it by `pip install tensorflow-text tf-sentencepiece` and try again. Also, make sure tensorflow-text version same as tensorflow version.'
-        )
-
-    check_file(path[model]['model'], s3_path[model], **kwargs)
-
-    if not os.path.exists(path[model]['directory'] + 'saved_model.pb'):
-        import tarfile
-
-        with tarfile.open(path[model]['model']['model']) as tar:
-            tar.extractall(path = path[model]['path'])
-
-    sess = tf.InteractiveSession()
-    meta_graph_def = tf.compat.v1.saved_model.load(
-        sess, ['serve'], path[model]['directory']
-    )
-    signature_def = meta_graph_def.signature_def['serving_default']
-    pred = lambda x: sess.run(
-        fetches = signature_def.outputs['outputs'].name,
-        feed_dict = {signature_def.inputs['input'].name: x},
-    )
-
-    from malaya.model.t5 import SUMMARIZATION
-
-    return SUMMARIZATION(pred)
+    return DEEP_SUMMARIZER(vectorizer)

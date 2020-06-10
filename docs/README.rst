@@ -106,6 +106,9 @@ Features
 -  **Word2Vec**
 
    Provide pretrained bahasa wikipedia and bahasa news Word2Vec, with easy interface and visualization.
+-  **Zero-shot classification**
+
+   Provide Zero-shot classification interface using Transformer-Bahasa to recognize texts without any labeled training data.
 
 Pretrained Models
 ------------------

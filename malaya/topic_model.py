@@ -76,7 +76,7 @@ def _prepare_topics(
     return data
 
 
-class _ATTENTION_TOPIC:
+class ATTENTION_TOPIC:
     def __init__(self, features, components):
         self._features = features
         self._components = components
@@ -111,7 +111,7 @@ class _ATTENTION_TOPIC:
 
         Returns
         -------
-        results: list of strings
+        result: List[str]
         """
         results = []
         for no, topic in enumerate(self._components):
@@ -129,7 +129,7 @@ class _ATTENTION_TOPIC:
         return results
 
 
-class _DEEP_TOPIC:
+class DEEP_TOPIC:
     def __init__(
         self,
         model,
@@ -223,7 +223,7 @@ class _DEEP_TOPIC:
 
         Returns
         -------
-        results: list of strings
+        result: List[str]
         """
         results = []
         for no, topic in enumerate(self._components):
@@ -253,7 +253,7 @@ class _DEEP_TOPIC:
 
         Returns
         -------
-        results: list of strings
+        result: List[str]
         """
         if not (k < self._doc_embed.shape[1] and k >= 0):
             raise ValueError('k should be between 0 and n_topics')
@@ -261,7 +261,7 @@ class _DEEP_TOPIC:
         return [self._corpus[i] for i in reverse_sorted[:len_sentence]]
 
 
-class _TOPIC:
+class TOPIC:
     def __init__(
         self, features, comp, corpus, transformed, vectorizer, vectors
     ):
@@ -334,7 +334,7 @@ class _TOPIC:
 
         Returns
         -------
-        results: list of strings
+        result: List[str]
         """
         if not isinstance(len_topic, int):
             raise ValueError('len_topic must be an integer')
@@ -366,7 +366,7 @@ class _TOPIC:
 
         Returns
         -------
-        results: list of strings
+        result: List[str]
         """
         if not (k < self.transformed.shape[1] and k >= 0):
             raise ValueError('k should be between 0 and n_topics')
@@ -431,7 +431,7 @@ def _base_topic_modelling(
     tf = tf_vectorizer.fit_transform(corpus)
     tf_features = tf_vectorizer.get_feature_names()
     compose = decomposition(n_topics).fit(tf)
-    return _TOPIC(
+    return TOPIC(
         tf_features,
         compose,
         [classification_textcleaning(c) for c in corpus],
@@ -482,7 +482,7 @@ def lda(
 
     Returns
     -------
-    _TOPIC: malaya.topic_modelling._TOPIC class
+    result: malaya.topic_modelling.TOPIC class
     """
     stop_words = list(stop_words)
     return _base_topic_modelling(
@@ -541,7 +541,7 @@ def nmf(
 
     Returns
     -------
-    _TOPIC: malaya.topic_modelling._TOPIC class
+    TOPIC: malaya.topic_modelling.TOPIC class
     """
     stop_words = list(stop_words)
     return _base_topic_modelling(
@@ -600,7 +600,7 @@ def lsa(
 
     Returns
     -------
-    _TOPIC: malaya.topic_modelling._TOPIC class
+    TOPIC: malaya.topic_modelling.TOPIC class
     """
     stop_words = list(stop_words)
     return _base_topic_modelling(
@@ -673,7 +673,7 @@ def lda2vec(
 
     Returns
     -------
-    _DEEP_TOPIC: malaya.topic_modelling._DEEP_TOPIC class
+    result: malaya.topic_modelling.DEEP_TOPIC class
     """
     if not isinstance(stemming, Callable) and stemming is not None:
         raise ValueError('stemming must be a callable type or None')
@@ -763,7 +763,7 @@ def lda2vec(
     model.train(
         pivot_words, target_words, doc_ids, epoch, switch_loss = switch_loss
     )
-    return _DEEP_TOPIC(
+    return DEEP_TOPIC(
         model,
         dictionary,
         reversed_dictionary,
@@ -807,7 +807,7 @@ def transformer(
 
     Returns
     -------
-    _ATTENTION_TOPIC: malaya.topic_modelling._ATTENTION_TOPIC class
+    result: malaya.topic_modelling.ATTENTION_TOPIC class
     """
 
     if not hasattr(vectorizer, 'attention') and not hasattr(
@@ -872,4 +872,4 @@ def transformer(
             if word in features:
                 components[i, features.index(word)] += score
 
-    return _ATTENTION_TOPIC(features, components)
+    return ATTENTION_TOPIC(features, components)

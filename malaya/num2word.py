@@ -142,7 +142,8 @@ def to_cardinal(number):
 
     Returns
     -------
-    string: cardinal representation
+    result: str
+        cardinal representation
     """
     if number >= max_num:
         raise OverflowError(errmsg_toobig % (number, max_num))
@@ -166,7 +167,8 @@ def to_ordinal(number):
 
     Returns
     -------
-    string: ordinal representation
+    result: str
+        ordinal representation
     """
 
     verify_ordinal(number)
@@ -186,7 +188,8 @@ def to_ordinal_num(number):
 
     Returns
     -------
-    string: ordinal numering representation
+    result: str
+        ordinal numering representation
     """
 
     verify_ordinal(number)
@@ -203,7 +206,8 @@ def to_currency(value):
 
     Returns
     -------
-    string: cardinal currency representation
+    result: str
+        cardinal currency representation
     """
 
     return to_cardinal(value) + ' ringgit'
@@ -219,6 +223,7 @@ def to_year(value):
 
     Returns
     -------
-    string: cardinal year representation
+    result: str
+        cardinal year representation
     """
     return to_cardinal(value)

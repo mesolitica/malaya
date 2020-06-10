@@ -172,11 +172,11 @@ tensorboard --logdir=tensorboard --host=0.0.0.0
   - 270k steps, 3 GPUs TESLA V100.
   - BASE size (231MB).
 
-4. **BASE**, last update 26 March 2020, [xlnet-base-26-03-2020.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/xlnet-base-26-03-2020.tar.gz)
+4. **BASE**, last update 29 March 2020, [xlnet-base-29-03-2020.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/xlnet-base-29-03-2020.tar.gz)
 
   - Vocab size 32k.
   - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.
-  - 270k steps, 3 GPUs TESLA V100.
+  - 300k steps, 3 GPUs TESLA V100.
   - BASE size (467MB).
 
 ## Comparison using Emotion Dataset

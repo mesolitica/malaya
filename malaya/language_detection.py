@@ -30,7 +30,7 @@ def fasttext(quantization: bool = True, **kwargs):
 
     Returns
     -------
-    LANGUAGE_DETECTION : malaya.model.ml.LANGUAGE_DETECTION class
+    result : malaya.model.ml.LANGUAGE_DETECTION class
     """
 
     try:
@@ -64,7 +64,7 @@ def deep_model(**kwargs):
 
     Returns
     -------
-    DEEP_LANG : malaya.model.tf.DEEP_LANG class
+    result : malaya.model.tf.DEEP_LANG class
     """
 
     check_file(

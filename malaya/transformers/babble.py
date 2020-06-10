@@ -15,7 +15,7 @@ MASK = '[MASK]'
 
 
 def topk_distributions(logits, top_k):
-    with tf.Session().as_default():
+    with tf.InteractiveSession().as_default():
         logits = tf.convert_to_tensor(logits)
         kth_vals, kth_idx = tf.nn.top_k(logits, k = top_k)
         dist = tfp.distributions.categorical.Categorical(logits = kth_vals)
@@ -27,7 +27,7 @@ def topk_distributions(logits, top_k):
 
 
 def distributions(logits):
-    with tf.Session().as_default():
+    with tf.InteractiveSession().as_default():
         logits = tf.convert_to_tensor(logits)
         dist = tfp.distributions.categorical.Categorical(logits = logits)
         return dist.sample().eval()

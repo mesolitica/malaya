@@ -67,7 +67,7 @@ def transformer(model: str = 'xlnet', **kwargs):
 
     Returns
     -------
-    MODEL : Transformer class
+    result : Transformer class
     """
 
     model = model.lower()
@@ -91,7 +91,7 @@ def general_entity(model = None):
 
     Returns
     -------
-    _Entity_regex: malaya.text.entity._Entity_regex class
+    result: malaya.text.entity._Entity_regex class
     """
     if not hasattr(model, 'predict') and model is not None:
         raise ValueError('model must has `predict` method')

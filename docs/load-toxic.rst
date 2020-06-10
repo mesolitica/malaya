@@ -6,8 +6,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 4.46 s, sys: 932 ms, total: 5.4 s
-    Wall time: 4.88 s
+    CPU times: user 4.85 s, sys: 1.28 s, total: 6.13 s
+    Wall time: 7.51 s
 
 
 get labels
@@ -15,7 +15,7 @@ get labels
 
 .. code:: python
 
-    malaya.toxic.label
+    malaya.toxicity.label
 
 
 
@@ -70,7 +70,7 @@ All model interface will follow sklearn interface started v3.4,
 
 .. code:: python
 
-    model = malaya.toxic.multinomial()
+    model = malaya.toxicity.multinomial()
 
 .. code:: python
 
@@ -116,7 +116,7 @@ List available Transformer models
 
 .. code:: python
 
-    malaya.toxic.available_transformer()
+    malaya.toxicity.available_transformer()
 
 
 
@@ -145,7 +145,7 @@ All model interface will follow sklearn interface started v3.4,
 
 .. code:: python
 
-    model = malaya.toxic.transformer(model = 'alxlnet')
+    model = malaya.toxicity.transformer(model = 'alxlnet')
 
 Predict batch of strings
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -246,7 +246,7 @@ https://malaya.readthedocs.io/en/latest/Stack.html
 
 .. code:: python
 
-    albert = malaya.toxic.transformer(model = 'albert')
+    albert = malaya.toxicity.transformer(model = 'albert')
 
 
 .. parsed-literal::

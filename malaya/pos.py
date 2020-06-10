@@ -122,7 +122,7 @@ def transformer(model: str = 'xlnet', **kwargs):
 
     Returns
     -------
-    MODEL : Transformer class
+    result : malaya.supervised.tag.transformer
     """
 
     model = model.lower()

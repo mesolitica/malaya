@@ -25,7 +25,7 @@ def load_wiki():
 
     Returns
     -------
-    tuple: (vocabulary, vector)
+    result: tuple(vocabulary, vector)
     """
 
     check_file(PATH_WORDVECTOR['wikipedia'], S3_PATH_WORDVECTOR['wikipedia'])
@@ -41,7 +41,7 @@ def load_news():
 
     Returns
     -------
-    tuple: (vocabulary, vector)
+    result: tuple(vocabulary, vector)
     """
 
     check_file(PATH_WORDVECTOR['news'], S3_PATH_WORDVECTOR['news'])
@@ -56,7 +56,7 @@ def load_social_media():
 
     Returns
     -------
-    tuple: (vocabulary, vector)
+    result: tuple(vocabulary, vector)
     """
 
     check_file(
@@ -74,7 +74,7 @@ def load_wiki_news_social_media():
 
     Returns
     -------
-    tuple: (vocabulary, vector)
+    result: tuple(vocabulary, vector)
     """
 
     check_file(PATH_WORDVECTOR['combine'], S3_PATH_WORDVECTOR['combine'])
@@ -87,7 +87,7 @@ def load_wiki_news_social_media():
 def load(embed_matrix, dictionary: dict):
 
     """
-    Return malaya.wordvector._wordvector object.
+    Return malaya.wordvector.WORDVECTOR object.
 
     Parameters
     ----------
@@ -96,13 +96,13 @@ def load(embed_matrix, dictionary: dict):
 
     Returns
     -------
-    _wordvector: malaya.wordvector._wordvector object
+    result: malaya.wordvector.WORDVECTOR object
     """
 
-    return _wordvector(embed_matrix = embed_matrix, dictionary = dictionary)
+    return WORDVECTOR(embed_matrix = embed_matrix, dictionary = dictionary)
 
 
-class _wordvector:
+class WORDVECTOR:
     def __init__(self, embed_matrix, dictionary):
         self._embed_matrix = embed_matrix
         self._dictionary = dictionary

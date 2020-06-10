@@ -6,8 +6,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 4.74 s, sys: 1.19 s, total: 5.93 s
-    Wall time: 7.13 s
+    CPU times: user 5.26 s, sys: 1.51 s, total: 6.77 s
+    Wall time: 9.58 s
 
 
 .. code:: ipython3
@@ -16,6 +16,11 @@
     string2 = 'Perbincangan isu pembalakan perlu babit kerajaan negeri'
     string3 = 'kerajaan perlu kisah isu iklim, pemuda mogok lapar'
     string4 = 'Kerajaan dicadang tubuh jawatankuasa khas tangani isu alam sekitar'
+
+.. code:: ipython3
+
+    news1 = 'Tun Dr Mahathir Mohamad mengakui pembubaran Parlimen bagi membolehkan pilihan raya diadakan tidak sesuai dilaksanakan pada masa ini berikutan isu COVID-19'
+    husein = 'DrM sembang pilihan raya tak boleh buat sebab COVID 19'
 
 Calculate similarity using doc2vec
 ----------------------------------
@@ -52,15 +57,6 @@ wikipedia much more accurate.
     vocab_news, embedded_news = malaya.wordvector.load_news()
     w2v = malaya.wordvector.load(embedded_news, vocab_news)
     doc2vec = malaya.similarity.doc2vec(w2v)
-
-
-.. parsed-literal::
-
-    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/wordvector.py:113: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
-    
-    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/wordvector.py:124: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
-    
-
 
 predict for 2 strings
 ^^^^^^^^^^^^^^^^^^^^^
@@ -109,7 +105,7 @@ visualize tree plot
 
 
 
-.. image:: load-similarity_files/load-similarity_10_1.png
+.. image:: load-similarity_files/load-similarity_11_1.png
 
 
 Different similarity function different percentage.
@@ -142,43 +138,8 @@ using xlnet
 
 .. parsed-literal::
 
-    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/xlnet/xlnet.py:70: The name tf.gfile.Open is deprecated. Please use tf.io.gfile.GFile instead.
-    
-    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/xlnet/xlnet.py:253: The name tf.variable_scope is deprecated. Please use tf.compat.v1.variable_scope instead.
-    
-    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/xlnet/xlnet.py:253: The name tf.AUTO_REUSE is deprecated. Please use tf.compat.v1.AUTO_REUSE instead.
-    
-    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/xlnet/modeling.py:686: The name tf.logging.info is deprecated. Please use tf.compat.v1.logging.info instead.
-    
     INFO:tensorflow:memory input None
     INFO:tensorflow:Use float type <dtype: 'float32'>
-    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/xlnet/modeling.py:693: The name tf.get_variable is deprecated. Please use tf.compat.v1.get_variable instead.
-    
-    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/xlnet/modeling.py:797: dropout (from tensorflow.python.layers.core) is deprecated and will be removed in a future version.
-    Instructions for updating:
-    Use keras.layers.dropout instead.
-    WARNING:tensorflow:From /usr/local/lib/python3.7/site-packages/tensorflow_core/python/layers/core.py:271: Layer.apply (from tensorflow.python.keras.engine.base_layer) is deprecated and will be removed in a future version.
-    Instructions for updating:
-    Please use `layer.__call__` method instead.
-    WARNING:tensorflow:
-    The TensorFlow contrib module will not be included in TensorFlow 2.0.
-    For more information, please see:
-      * https://github.com/tensorflow/community/blob/master/rfcs/20180907-contrib-sunset.md
-      * https://github.com/tensorflow/addons
-      * https://github.com/tensorflow/io (for I/O related ops)
-    If you depend on functionality not listed there, please file an issue.
-    
-    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/xlnet/modeling.py:99: dense (from tensorflow.python.layers.core) is deprecated and will be removed in a future version.
-    Instructions for updating:
-    Use keras.layers.Dense instead.
-    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/xlnet/__init__.py:95: The name tf.global_variables_initializer is deprecated. Please use tf.compat.v1.global_variables_initializer instead.
-    
-    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/xlnet/__init__.py:96: The name tf.trainable_variables is deprecated. Please use tf.compat.v1.trainable_variables instead.
-    
-    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/xlnet/__init__.py:100: The name tf.train.Saver is deprecated. Please use tf.compat.v1.train.Saver instead.
-    
-    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/transformers/xlnet/__init__.py:103: The name tf.get_default_graph is deprecated. Please use tf.compat.v1.get_default_graph instead.
-    
     INFO:tensorflow:Restoring parameters from /Users/huseinzolkepli/Malaya/xlnet-model/base/xlnet-base/model.ckpt
 
 
@@ -194,7 +155,7 @@ predict for 2 strings
 
 .. parsed-literal::
 
-    array([0.824718], dtype=float32)
+    array([0.80475146], dtype=float32)
 
 
 
@@ -203,14 +164,14 @@ predict batch of strings
 
 .. code:: ipython3
 
-    encoder.predict_proba([string1, string2], [string3, string4])
+    encoder.predict_proba([string1, string2, news1, news1], [string3, string4, husein, string1])
 
 
 
 
 .. parsed-literal::
 
-    array([0.59171796, 0.56186515], dtype=float32)
+    array([0.82172215, 0.74461347, 0.7767106 , 0.5949546 ], dtype=float32)
 
 
 
@@ -229,7 +190,7 @@ visualize tree plot
 
 
 
-.. image:: load-similarity_files/load-similarity_20_1.png
+.. image:: load-similarity_files/load-similarity_21_1.png
 
 
 List available Transformer models
@@ -244,14 +205,20 @@ List available Transformer models
 
 .. parsed-literal::
 
-    {'bert': ['423.4 MB', 'accuracy: 0.912'],
-     'tiny-bert': ['56.6 MB', 'accuracy: 0.902'],
-     'albert': ['46.3 MB', 'accuracy: 0.902'],
-     'tiny-albert': ['21.9 MB', 'accuracy: 0.868'],
-     'xlnet': ['448.7 MB', 'accuracy: 0.856'],
-     'alxlnet': ['49.0 MB', 'accuracy: 0.910']}
+    {'bert': ['423.4 MB', 'accuracy: 0.885'],
+     'tiny-bert': ['56.6 MB', 'accuracy: 0.873'],
+     'albert': ['46.3 MB', 'accuracy: 0.873'],
+     'tiny-albert': ['21.9 MB', 'accuracy: 0.824'],
+     'xlnet': ['448.7 MB', 'accuracy: 0.784'],
+     'alxlnet': ['49.0 MB', 'accuracy: 0.888']}
 
 
+
+We trained on `Quora Question
+Pairs <https://github.com/huseinzol05/Malay-Dataset#quora>`__,
+`translated SNLI <https://github.com/huseinzol05/Malay-Dataset#snli>`__
+and `translated
+MNLI <https://github.com/huseinzol05/Malay-Dataset#mnli>`__
 
 Make sure you can check accuracy chart from here first before select a
 model, https://malaya.readthedocs.io/en/latest/Accuracy.html#similarity
@@ -259,9 +226,77 @@ model, https://malaya.readthedocs.io/en/latest/Accuracy.html#similarity
 **You might want to use ALXLNET, a very small size, 49MB, but the
 accuracy is still on the top notch.**
 
+Load transformer model
+----------------------
+
+In this example, I am going to load ``alxlnet``, feel free to use any
+available models above.
+
 .. code:: ipython3
 
     model = malaya.similarity.transformer(model = 'alxlnet')
+
+predict batch
+^^^^^^^^^^^^^
+
+.. code:: python
+
+   def predict_proba(self, strings_left: List[str], strings_right: List[str]):
+       """
+       calculate similarity for two different batch of texts.
+
+       Parameters
+       ----------
+       string_left : List[str]
+       string_right : List[str]
+
+       Returns
+       -------
+       result : List[float]
+       """
+
+you need to give list of left strings, and list of right strings.
+
+first left string will compare will first right string and so on.
+
+similarity model only supported ``predict_proba``.
+
+.. code:: ipython3
+
+    model.predict_proba([string1, string2, news1, news1], [string3, string4, husein, string1])
+
+
+
+
+.. parsed-literal::
+
+    array([0.9980831 , 0.08294717, 0.92421347, 0.5633721 ], dtype=float32)
+
+
+
+visualize tree plot
+^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    model.tree_plot([string1, string2, string3, string4])
+
+
+
+.. parsed-literal::
+
+    <Figure size 504x504 with 0 Axes>
+
+
+
+.. image:: load-similarity_files/load-similarity_30_1.png
+
+
+.. code:: ipython3
+
+    alxlnet = malaya.similarity.transformer(model = 'alxlnet')
+    albert = malaya.similarity.transformer(model = 'albert')
+    tiny_bert = malaya.similarity.transformer(model = 'tiny-bert')
 
 
 .. parsed-literal::
@@ -270,24 +305,39 @@ accuracy is still on the top notch.**
     
     WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/function/__init__.py:55: The name tf.GraphDef is deprecated. Please use tf.compat.v1.GraphDef instead.
     
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/function/__init__.py:49: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
+    
+    WARNING:tensorflow:From /usr/local/lib/python3.7/site-packages/albert/tokenization.py:240: The name tf.logging.info is deprecated. Please use tf.compat.v1.logging.info instead.
+    
+    INFO:tensorflow:loading sentence piece model
 
 
-predict batch
-^^^^^^^^^^^^^
+Stacking models
+---------------
 
-you need to give list of left strings, and list of right strings.
+More information, you can read at
+https://malaya.readthedocs.io/en/latest/Stack.html
 
-first left string will compare will first right string and so on.
+If you want to stack zero-shot classification models, you need to pass
+labels using keyword parameter,
+
+.. code:: python
+
+   malaya.stack.predict_stack([model1, model2], List[str], strings_right = List[str])
+
+We will passed ``strings_right`` as ``**kwargs``.
 
 .. code:: ipython3
 
-    model.predict_proba([string1, string2], [string3, string4])
+    malaya.stack.predict_stack([alxlnet, albert, tiny_bert], [string1, string2, news1, news1], 
+                               strings_right = [string3, string4, husein, string1])
 
 
 
 
 .. parsed-literal::
 
-    array([0.9988274 , 0.04958355], dtype=float32)
+    array([0.99745977, 0.07261255, 0.16457608, 0.03985301], dtype=float32)
+
 
 

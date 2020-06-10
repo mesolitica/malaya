@@ -80,17 +80,14 @@ def bert_tokenization_siamese(tokenizer, left, right):
     input_ids, input_masks, segment_ids = [], [], []
     a, b = [], []
     for i in range(len(left)):
-        tokens_a = tokenizer.tokenize(left[i])
-        tokens_b = tokenizer.tokenize(right[i])
+        tokens_a = tokenizer.tokenize(transformer_textcleaning(left[i]))
+        tokens_b = tokenizer.tokenize(transformer_textcleaning(right[i]))
         a.append(tokens_a)
         b.append(tokens_b)
 
-    maxlen = max([len(i) for i in a] + [len(i) for i in b]) + 5
-    maxlen = min(maxlen, MAXLEN)
     for i in range(len(left)):
         tokens_a = a[i]
         tokens_b = b[i]
-        _truncate_seq_pair(tokens_a, tokens_b, maxlen - 3)
 
         tokens = []
         segment_id = []
@@ -110,14 +107,14 @@ def bert_tokenization_siamese(tokenizer, left, right):
         input_id = tokenizer.convert_tokens_to_ids(tokens)
         input_mask = [1] * len(input_id)
 
-        while len(input_id) < maxlen:
-            input_id.append(0)
-            input_mask.append(0)
-            segment_id.append(0)
-
         input_ids.append(input_id)
         input_masks.append(input_mask)
         segment_ids.append(segment_id)
+
+    maxlen = max([len(i) for i in input_ids])
+    input_ids = padding_sequence(input_ids, maxlen)
+    input_masks = padding_sequence(input_masks, maxlen)
+    segment_ids = padding_sequence(segment_ids, maxlen)
 
     return input_ids, input_masks, segment_ids
 
@@ -290,7 +287,7 @@ def xlnet_tokenization_siamese(tokenizer, left, right):
     maxlen = max([len(i) for i in input_ids])
     input_ids = padding_sequence(input_ids, maxlen)
     input_mask = padding_sequence(input_mask, maxlen, pad_int = 1)
-    all_seg_ids = padding_sequence(all_seg_ids, maxlen, pad_int = SEG_ID_PAD)
+    all_seg_ids = padding_sequence(all_seg_ids, maxlen, pad_int = 4)
     return input_ids, input_mask, all_seg_ids
 
 

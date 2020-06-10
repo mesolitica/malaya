@@ -163,7 +163,7 @@ def transformer(model: str = 'xlnet', **kwargs):
 
     Returns
     -------
-    MODEL : Transformer class
+    result : Transformer class
     """
 
     model = model.lower()

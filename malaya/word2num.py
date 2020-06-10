@@ -83,6 +83,18 @@ def _number_formation(number_words):
 
 
 def word2num(string):
+    """
+    Translate from string to number, eg 'kesepuluh' -> 10.
+
+    Parameters
+    ----------
+    string: str
+
+    Returns
+    -------
+    result: int / float
+    """
+
     if not isinstance(string, str):
         raise ValueError('input must be a string')
 

@@ -4,9 +4,7 @@ from fastapi import FastAPI
 
 app = FastAPI()
 
-model = malaya.sentiment.transformer(
-    model = 'albert', size = 'base', validate = False
-)
+model = malaya.sentiment.transformer(model = 'albert', validate = False)
 
 
 @app.get('/')

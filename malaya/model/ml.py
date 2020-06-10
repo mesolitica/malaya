@@ -80,7 +80,7 @@ class BINARY_BAYES(BAYES):
     @check_type
     def predict(self, strings: List[str], add_neutral: bool = True):
         """
-        Classify a string.
+        classify list of strings.
 
         Parameters
         ----------
@@ -98,7 +98,7 @@ class BINARY_BAYES(BAYES):
     @check_type
     def predict_proba(self, strings: List[str], add_neutral: bool = True):
         """
-        Classify a list of strings.
+        classify list of strings and return probability.
 
         Parameters
         ----------
@@ -131,7 +131,7 @@ class MULTICLASS_BAYES(BAYES):
     @check_type
     def predict(self, strings: List[str]):
         """
-        Classify a string.
+        classify list of strings.
 
         Parameters
         ----------
@@ -147,7 +147,7 @@ class MULTICLASS_BAYES(BAYES):
     @check_type
     def predict_proba(self, strings: List[str]):
         """
-        Classify a list of strings.
+        classify list of strings and return probability.
 
         Parameters
         ----------
@@ -178,7 +178,7 @@ class MULTILABEL_BAYES(BAYES):
     @check_type
     def predict(self, strings: List[str]):
         """
-        Classify a string.
+        classify list of strings.
 
         Parameters
         ----------
@@ -204,7 +204,7 @@ class MULTILABEL_BAYES(BAYES):
     @check_type
     def predict_proba(self, strings: List[str]):
         """
-        Classify a list of strings.
+        classify list of strings and return probability.
 
         Parameters
         ----------
@@ -240,7 +240,7 @@ class LANGUAGE_DETECTION:
     @check_type
     def predict(self, strings: List[str]):
         """
-        Classify a string.
+        classify list of strings.
 
         Parameters
         ----------
@@ -257,7 +257,7 @@ class LANGUAGE_DETECTION:
     @check_type
     def predict_proba(self, strings: List[str]):
         """
-        Classify a list of strings.
+        classify list of strings and return probability.
 
         Parameters
         ----------

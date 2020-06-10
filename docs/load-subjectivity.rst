@@ -6,8 +6,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 4.44 s, sys: 906 ms, total: 5.34 s
-    Wall time: 4.76 s
+    CPU times: user 4.68 s, sys: 1.17 s, total: 5.84 s
+    Wall time: 6.97 s
 
 
 Explanation
@@ -33,7 +33,7 @@ Load multinomial model
 
 .. code:: python
 
-    model = malaya.subjective.multinomial()
+    model = malaya.subjectivity.multinomial()
     model.predict_proba([positive_text,negative_text])
 
 
@@ -69,7 +69,7 @@ List available Transformer models
 
 .. code:: python
 
-    malaya.subjective.available_transformer()
+    malaya.subjectivity.available_transformer()
 
 
 
@@ -97,7 +97,7 @@ Load ALBERT model
 
 .. code:: python
 
-    model = malaya.subjective.transformer(model = 'albert')
+    model = malaya.subjectivity.transformer(model = 'albert')
 
 
 .. parsed-literal::
@@ -152,8 +152,8 @@ https://malaya.readthedocs.io/en/latest/Stack.html
 
 .. code:: python
 
-    multinomial = malaya.subjective.multinomial()
-    alxlnet = malaya.subjective.transformer(model = 'alxlnet')
+    multinomial = malaya.subjectivity.multinomial()
+    alxlnet = malaya.subjectivity.transformer(model = 'alxlnet')
 
 .. code:: python
 
@@ -164,9 +164,9 @@ https://malaya.readthedocs.io/en/latest/Stack.html
 
 .. parsed-literal::
 
-    [{'negative': 0.20034929559639789,
-      'positive': 0.001535203515262801,
-      'neutral': 0.05709727282942257}]
+    [{'negative': 0.19735892950073536,
+      'positive': 0.003119166818228667,
+      'neutral': 0.1160071232668102}]
 
 
 
@@ -179,7 +179,6 @@ https://malaya.readthedocs.io/en/latest/Stack.html
 
 .. parsed-literal::
 
-    [{'negative': 0.7426834424956867, 'positive': 0.04292000676029137}]
-
+    [{'negative': 0.7424157666636825, 'positive': 0.04498033797670938}]
 
 

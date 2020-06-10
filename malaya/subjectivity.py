@@ -31,7 +31,7 @@ def multinomial(**kwargs):
 
     Returns
     -------
-    BAYES : malaya.model.ml.BAYES class
+    result : malaya.model.ml.BAYES class
     """
     return softmax.multinomial(
         PATH_SUBJECTIVE, S3_PATH_SUBJECTIVE, 'subjective', label, **kwargs
@@ -57,7 +57,7 @@ def transformer(model: str = 'xlnet', **kwargs):
 
     Returns
     -------
-    MODEL : Transformer class
+    result : Transformer class
     """
 
     model = model.lower()
