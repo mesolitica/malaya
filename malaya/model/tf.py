@@ -1,6 +1,11 @@
 import tensorflow as tf
 import numpy as np
-from malaya.text.function import language_detection_textcleaning
+from malaya.text.function import (
+    language_detection_textcleaning,
+    split_into_sentences,
+    transformer_textcleaning,
+    pad_sentence_batch,
+)
 from herpetologist import check_type
 from typing import List
 
@@ -98,3 +103,72 @@ class DEEP_LANG:
         for i in range(probs.shape[0]):
             dicts.append({self._label[no]: k for no, k in enumerate(probs[i])})
         return dicts
+
+
+class PARAPHRASE:
+    def __init__(self, X, greedy, beam, sess, tokenizer):
+
+        self._X = X
+        self._greedy = greedy
+        self._beam = beam
+        self._sess = sess
+        self._tokenizer = tokenizer
+
+    def _paraphrase(self, strings, beam_search = True):
+        encoded = [self._tokenizer.encode(string) + [1] for string in strings]
+        if beam_search:
+            output = self._beam
+        else:
+            output = self._greedy
+        batch_x = pad_sentence_batch(encoded, 0)[0]
+        p = self._sess.run(output, feed_dict = {self._X: batch_x}).tolist()
+        result = []
+        for row in p:
+            result.append(
+                self._tokenizer.decode([i for i in row if i not in [0, 1]])
+            )
+        return result
+
+    def paraphrase(
+        self, string: str, beam_search: bool = True, split_fullstop: bool = True
+    ):
+        """
+        Paraphrase a string.
+
+        Parameters
+        ----------
+        string : str
+        beam_search : bool, (optional=True)
+            If True, use beam search decoder, else use greedy decoder.
+        split_fullstop: bool, (default=True)
+            if True, will generate paraphrase for each strings splitted by fullstop.
+
+        Returns
+        -------
+        result: str
+        """
+
+        if split_fullstop:
+
+            splitted_fullstop = split_into_sentences(
+                transformer_textcleaning(string)
+            )
+
+            results, batch, mapping = [], [], {}
+            for no, splitted in enumerate(splitted_fullstop):
+                if len(splitted.split()) < 4:
+                    results.append(splitted)
+                else:
+                    mapping[len(batch)] = no
+                    results.append('REPLACE-ME')
+                    batch.append(splitted)
+
+            if len(batch):
+                output = self._paraphrase(batch, beam_search = beam_search)
+                for no in range(len(output)):
+                    results[mapping[no]] = output[no]
+
+            return ' '.join(results)
+
+        else:
+            return self._paraphrase([string], beam_search = beam_search)[0]

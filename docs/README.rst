@@ -67,6 +67,9 @@ Features
 -  **Num2Word**
 
    Convert from numbers to cardinal or ordinal representation.
+-  **Paraphrase**
+
+   Provide Abstractive Paraphrase using T5-Bahasa and Transformer-Bahasa.
 -  **Part-of-Speech Recognition**
 
    Transfer learning on BERT-base-bahasa, Tiny-BERT-bahasa, Albert-base-bahasa, Albert-tiny-bahasa, XLNET-base-bahasa, ALXLNET-base-bahasa.

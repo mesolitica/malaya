@@ -1,4 +1,3 @@
-
 .. code:: python
 
     %%time
@@ -7,8 +6,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 4.83 s, sys: 755 ms, total: 5.58 s
-    Wall time: 5.38 s
+    CPU times: user 5.22 s, sys: 1.35 s, total: 6.57 s
+    Wall time: 8 s
 
 
 Preprocessing
@@ -63,7 +62,6 @@ These are defaults setting for ``preprocessing()``,
        translate_english_to_bm = True,
        remove_prefix_postfix = True,
        maxlen_segmenter = 20,
-       validate = True,
        speller = None,
    ):
 
@@ -138,8 +136,8 @@ english to bahasa malaysia.
 
 .. parsed-literal::
 
-    CPU times: user 15.5 s, sys: 3.12 s, total: 18.6 s
-    Wall time: 21.6 s
+    CPU times: user 12.5 s, sys: 854 ms, total: 13.3 s
+    Wall time: 13.4 s
 
 
 .. code:: python
@@ -150,8 +148,8 @@ english to bahasa malaysia.
 
 .. parsed-literal::
 
-    CPU times: user 78.1 ms, sys: 1.63 ms, total: 79.7 ms
-    Wall time: 81.6 ms
+    CPU times: user 6.71 ms, sys: 148 µs, total: 6.86 ms
+    Wall time: 6.85 ms
 
 
 
@@ -170,8 +168,8 @@ english to bahasa malaysia.
 
 .. parsed-literal::
 
-    CPU times: user 2.03 ms, sys: 43 µs, total: 2.07 ms
-    Wall time: 2.11 ms
+    CPU times: user 49.6 ms, sys: 847 µs, total: 50.4 ms
+    Wall time: 51 ms
 
 
 
@@ -190,8 +188,8 @@ english to bahasa malaysia.
 
 .. parsed-literal::
 
-    CPU times: user 1.58 ms, sys: 24 µs, total: 1.61 ms
-    Wall time: 1.72 ms
+    CPU times: user 546 µs, sys: 5 µs, total: 551 µs
+    Wall time: 554 µs
 
 
 
@@ -210,8 +208,8 @@ english to bahasa malaysia.
 
 .. parsed-literal::
 
-    CPU times: user 4.12 ms, sys: 759 µs, total: 4.88 ms
-    Wall time: 4.26 ms
+    CPU times: user 1.83 ms, sys: 22 µs, total: 1.86 ms
+    Wall time: 1.87 ms
 
 
 
@@ -230,8 +228,8 @@ english to bahasa malaysia.
 
 .. parsed-literal::
 
-    CPU times: user 7.58 ms, sys: 855 µs, total: 8.43 ms
-    Wall time: 7.82 ms
+    CPU times: user 4.91 ms, sys: 164 µs, total: 5.07 ms
+    Wall time: 5.19 ms
 
 
 
@@ -260,8 +258,8 @@ original words, so we can use spelling correction to normalize it.
 
 .. parsed-literal::
 
-    CPU times: user 14.4 s, sys: 2.17 s, total: 16.6 s
-    Wall time: 17.5 s
+    CPU times: user 12.4 s, sys: 888 ms, total: 13.3 s
+    Wall time: 13.4 s
 
 
 .. code:: python
@@ -272,8 +270,8 @@ original words, so we can use spelling correction to normalize it.
 
 .. parsed-literal::
 
-    CPU times: user 71.5 ms, sys: 14.9 ms, total: 86.4 ms
-    Wall time: 88.1 ms
+    CPU times: user 56.2 ms, sys: 1.29 ms, total: 57.5 ms
+    Wall time: 58 ms
 
 
 
@@ -292,8 +290,8 @@ original words, so we can use spelling correction to normalize it.
 
 .. parsed-literal::
 
-    CPU times: user 2.01 ms, sys: 451 µs, total: 2.46 ms
-    Wall time: 2.47 ms
+    CPU times: user 1.24 ms, sys: 22 µs, total: 1.26 ms
+    Wall time: 1.27 ms
 
 
 
@@ -312,8 +310,8 @@ original words, so we can use spelling correction to normalize it.
 
 .. parsed-literal::
 
-    CPU times: user 969 µs, sys: 319 µs, total: 1.29 ms
-    Wall time: 1.3 ms
+    CPU times: user 556 µs, sys: 8 µs, total: 564 µs
+    Wall time: 567 µs
 
 
 
@@ -332,8 +330,8 @@ original words, so we can use spelling correction to normalize it.
 
 .. parsed-literal::
 
-    CPU times: user 4.05 ms, sys: 731 µs, total: 4.78 ms
-    Wall time: 4.77 ms
+    CPU times: user 1.16 ms, sys: 14 µs, total: 1.17 ms
+    Wall time: 1.19 ms
 
 
 
@@ -352,8 +350,8 @@ original words, so we can use spelling correction to normalize it.
 
 .. parsed-literal::
 
-    CPU times: user 9.05 ms, sys: 619 µs, total: 9.67 ms
-    Wall time: 9.72 ms
+    CPU times: user 3.82 ms, sys: 69 µs, total: 3.89 ms
+    Wall time: 3.93 ms
 
 
 
@@ -378,8 +376,8 @@ frequencies.
 
 .. parsed-literal::
 
-    CPU times: user 163 ms, sys: 36.4 ms, total: 199 ms
-    Wall time: 206 ms
+    CPU times: user 93.7 ms, sys: 24 ms, total: 118 ms
+    Wall time: 118 ms
 
 
 .. code:: python
@@ -390,8 +388,8 @@ frequencies.
 
 .. parsed-literal::
 
-    CPU times: user 1.25 ms, sys: 28 µs, total: 1.28 ms
-    Wall time: 1.29 ms
+    CPU times: user 907 µs, sys: 1e+03 ns, total: 908 µs
+    Wall time: 913 µs
 
 
 
@@ -410,8 +408,8 @@ frequencies.
 
 .. parsed-literal::
 
-    CPU times: user 595 µs, sys: 24 µs, total: 619 µs
-    Wall time: 628 µs
+    CPU times: user 616 µs, sys: 36 µs, total: 652 µs
+    Wall time: 666 µs
 
 
 
@@ -438,8 +436,8 @@ normalizations at
 
 .. parsed-literal::
 
-    CPU times: user 15 s, sys: 2.64 s, total: 17.6 s
-    Wall time: 19.5 s
+    CPU times: user 12.3 s, sys: 879 ms, total: 13.2 s
+    Wall time: 13.2 s
 
 
 .. code:: python
@@ -450,8 +448,8 @@ normalizations at
 
 .. parsed-literal::
 
-    CPU times: user 85.9 ms, sys: 2.74 ms, total: 88.7 ms
-    Wall time: 92 ms
+    CPU times: user 53.4 ms, sys: 1.17 ms, total: 54.6 ms
+    Wall time: 55 ms
 
 
 
@@ -470,8 +468,8 @@ normalizations at
 
 .. parsed-literal::
 
-    CPU times: user 4.07 ms, sys: 942 µs, total: 5.01 ms
-    Wall time: 4.66 ms
+    CPU times: user 1.35 ms, sys: 18 µs, total: 1.37 ms
+    Wall time: 1.39 ms
 
 
 
@@ -490,8 +488,8 @@ normalizations at
 
 .. parsed-literal::
 
-    CPU times: user 1.38 ms, sys: 74 µs, total: 1.46 ms
-    Wall time: 1.48 ms
+    CPU times: user 498 µs, sys: 1e+03 ns, total: 499 µs
+    Wall time: 503 µs
 
 
 
@@ -666,30 +664,32 @@ algorithm.
 
 .. parsed-literal::
 
-    'dr mahathir'
+    'Dr Mahathir'
 
 
-
-But it will lower the output, you can create a simple function to fix
-it.
 
 .. code:: python
 
-    import re
-
-    def segment(string):
-        segmented = segmenter.segment(string)
-        splitted = re.sub(r'[ ]+', ' ', segmented).strip().split()
-        splitted = [split.title() if string[string.lower().find(split)].isupper() else split for split in splitted]
-        return ' '.join(splitted)
-
-.. code:: python
-
-    segment('DrMahathir dan NajibRazak')
+    segmenter.segment('DRMahathir')
 
 
 
 
 .. parsed-literal::
 
-    'Dr Mahathir dan Najib Razak'
+    'DR Mahathir'
+
+
+
+.. code:: python
+
+    segmenter.segment('drmahathirdannajibrazak')
+
+
+
+
+.. parsed-literal::
+
+    'dr mahathir dan najib razak'
+
+

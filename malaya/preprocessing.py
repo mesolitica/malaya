@@ -10,7 +10,7 @@ from malaya.text.rules import rules_normalizer
 from malaya.text.regex import _expressions, _money
 from malaya.text.english.words import words as _english_words
 from malaya.path import PATH_PREPROCESSING, S3_PATH_PREPROCESSING
-from malaya.function import check_file, check_available
+from malaya.function import check_file
 from malaya.stem import naive
 from herpetologist import check_type
 from typing import Tuple, List
@@ -312,7 +312,7 @@ class _Segmenter:
         if word.islower():
             return ' '.join(self.find_segment(word)[1])
         else:
-            return self.case_split.sub(r' \1', word).lower()
+            return self.case_split.sub(r' \1', word)
 
 
 class _Preprocessing:
@@ -536,8 +536,8 @@ def preprocessing(
     translate_english_to_bm: bool = True,
     remove_postfix: bool = True,
     maxlen_segmenter: int = 20,
-    validate: bool = True,
     speller = None,
+    **kwargs
 ):
     """
     Load Preprocessing class.
@@ -586,32 +586,15 @@ def preprocessing(
             )
 
     if expand_hashtags:
-        if validate:
-            check_file(PATH_PREPROCESSING[1], S3_PATH_PREPROCESSING[1])
-        else:
-            if not check_available(PATH_PREPROCESSING[1]):
-                raise Exception(
-                    'preprocessing is not available, please `validate = True`'
-                )
-        if validate:
-            check_file(PATH_PREPROCESSING[2], S3_PATH_PREPROCESSING[2])
-        else:
-            if not check_available(PATH_PREPROCESSING[2]):
-                raise Exception(
-                    'preprocessing is not available, please `validate = True`'
-                )
+        check_file(PATH_PREPROCESSING[1], S3_PATH_PREPROCESSING[1], **kwargs)
+        check_file(PATH_PREPROCESSING[2], S3_PATH_PREPROCESSING[2], **kwargs)
 
     if translate_english_to_bm:
-        if validate:
-            check_file(
-                PATH_PREPROCESSING['english-malay'],
-                S3_PATH_PREPROCESSING['english-malay'],
-            )
-        else:
-            if not check_available(PATH_PREPROCESSING['english-malay']):
-                raise Exception(
-                    'translator english-malay is not available, please `validate = True`'
-                )
+        check_file(
+            PATH_PREPROCESSING['english-malay'],
+            S3_PATH_PREPROCESSING['english-malay'],
+            **kwargs
+        )
 
         with open(PATH_PREPROCESSING['english-malay']['model']) as fopen:
             translator = json.load(fopen)
@@ -632,7 +615,7 @@ def preprocessing(
     )
 
 
-def segmenter(max_split_length: int = 20, validate: bool = True):
+def segmenter(max_split_length: int = 20, **kwargs):
     """
     Load Segmenter class.
 
@@ -648,20 +631,8 @@ def segmenter(max_split_length: int = 20, validate: bool = True):
     result : malaya.preprocessing._Segmenter class
     """
 
-    if validate:
-        check_file(PATH_PREPROCESSING[1], S3_PATH_PREPROCESSING[1])
-    else:
-        if not check_available(PATH_PREPROCESSING[1]):
-            raise Exception(
-                'preprocessing is not available, please `validate = True`'
-            )
-    if validate:
-        check_file(PATH_PREPROCESSING[2], S3_PATH_PREPROCESSING[2])
-    else:
-        if not check_available(PATH_PREPROCESSING[2]):
-            raise Exception(
-                'preprocessing is not available, please `validate = True`'
-            )
+    check_file(PATH_PREPROCESSING[1], S3_PATH_PREPROCESSING[1], **kwargs)
+    check_file(PATH_PREPROCESSING[2], S3_PATH_PREPROCESSING[2], **kwargs)
     return _Segmenter(max_split_length = max_split_length)
 
 

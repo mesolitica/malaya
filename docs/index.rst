@@ -48,6 +48,7 @@ Contents:
    Augmentation
    Generator
    Lexicon
+   Paraphrase
    Topic
 
 .. toctree::

@@ -483,3 +483,7 @@ def tag_chunk(seq):
         }
         res['tags'].append(tag)
     return res
+
+
+def upperfirst(string):
+    return string[0].upper() + string[1:]

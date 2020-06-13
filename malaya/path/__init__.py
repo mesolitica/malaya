@@ -357,6 +357,56 @@ S3_PATH_NGRAM = {
     },
 }
 
+PATH_PARAPHRASE = {
+    'transformer': {
+        'base': {
+            'model': home + '/paraphrase/transformer/base/model.pb',
+            'vocab': home + '/paraphrase/transformer/base/vocab.subwords',
+            'version': 'v36',
+        },
+        'tiny': {
+            'model': home + '/paraphrase/transformer/tiny/model.pb',
+            'vocab': home + '/paraphrase/transformer/tiny/vocab.subwords',
+            'version': 'v36',
+        },
+    },
+    't5': {
+        'base': {
+            'path': home + '/paraphrase/t5/base',
+            'directory': home + '/paraphrase/t5/base/model/',
+            'model': {
+                'model': home + '/paraphrase/t5/base/paraphrase-t5-base.tar.gz',
+                'version': 'v36',
+            },
+        },
+        'small': {
+            'path': home + '/paraphrase/t5/small',
+            'directory': home + '/paraphrase/t5/small/model/',
+            'model': {
+                'model': home
+                + '/paraphrase/t5/small/paraphrase-t5-small.tar.gz',
+                'version': 'v36',
+            },
+        },
+    },
+}
+S3_PATH_PARAPHRASE = {
+    'transformer': {
+        'base': {
+            'model': 'v36/paraphrase/transformer-base.pb',
+            'vocab': 'v36/paraphrase/base.subwords',
+        },
+        'tiny': {
+            'model': 'v36/paraphrase/transformer-tiny.pb',
+            'vocab': 'v36/paraphrase/tiny.subwords',
+        },
+    },
+    't5': {
+        'base': {'model': 'v36/paraphrase/paraphrase-t5-base.tar.gz'},
+        'small': {'model': 'v36/paraphrase/paraphrase-t5-small.tar.gz'},
+    },
+}
+
 PATH_POS = {
     'bert': {
         'model': home + '/pos/bert/base/model.pb',

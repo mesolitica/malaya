@@ -72,6 +72,12 @@ malaya.num2word
 .. automodule:: malaya.num2word
     :members:
 
+malaya.paraphrase
+------------------
+
+.. automodule:: malaya.paraphrase
+    :members:
+
 malaya.pos
 -----------------
 
@@ -270,10 +276,16 @@ malaya.model.t5
 .. autoclass:: malaya.model.t5.GENERATOR()
     :members:
 
+.. autoclass:: malaya.model.t5.PARAPHRASE()
+    :members:
+
 malaya.model.tf
 ----------------------------------
 
 .. autoclass:: malaya.model.tf.DEEP_LANG()
+    :members:
+
+.. autoclass:: malaya.model.tf.PARAPHRASE()
     :members:
 
 malaya.model.ml

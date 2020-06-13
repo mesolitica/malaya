@@ -1,6 +1,10 @@
 import tensorflow as tf
 from herpetologist import check_type
-from malaya.text.function import transformer_textcleaning, split_into_sentences
+from malaya.text.function import (
+    transformer_textcleaning,
+    split_into_sentences,
+    upperfirst,
+)
 from typing import List
 import re
 
@@ -20,7 +24,7 @@ class SUMMARIZATION:
     def _summarize(self, string, mode):
         string = f'{mode}: {string}'
 
-        return self._model([string])[0].decode('utf-8')
+        return upperfirst(self._model([string])[0].decode('utf-8'))
 
     @check_type
     def summarize(self, string: str, mode: str = 'ringkasan'):
@@ -55,7 +59,7 @@ class SUMMARIZATION:
                 if len(splitted.split()) < 8:
                     results.append(splitted)
                 else:
-                    results.append(self._summarize(splitted, mode).capitalize())
+                    results.append(self._summarize(splitted, mode))
             results = '. '.join(results)
 
         else:
@@ -89,3 +93,44 @@ class GENERATOR:
         points = ' '.join(points)
         points = f'karangan: {points}'
         return self._model([cleaning(points)])[0].decode('utf-8')
+
+
+class PARAPHRASE:
+    def __init__(self, model):
+        self._model = model
+
+    def _paraphrase(self, string):
+        string = f'parafrasa: {string}'
+
+        return upperfirst(self._model([string])[0].decode('utf-8'))
+
+    @check_type
+    def paraphrase(self, string: str, split_fullstop: bool = True):
+        """
+        paraphrase a string.
+
+        Parameters
+        ----------
+        string: str
+        split_fullstop: bool, (default=True)
+            if True, will generate paraphrase for each strings splitted by fullstop.
+
+        Returns
+        -------
+        result: str
+        """
+
+        if split_fullstop:
+
+            splitted_fullstop = split_into_sentences(string)
+
+            results = []
+            for splitted in splitted_fullstop:
+                if len(splitted.split()) < 4:
+                    results.append(splitted)
+                else:
+                    results.append(self._paraphrase(splitted))
+            return ' '.join(results)
+
+        else:
+            return self._paraphrase(string)

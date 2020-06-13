@@ -1,9 +1,4 @@
-from malaya.function import (
-    check_file,
-    load_graph,
-    generate_session,
-    check_available,
-)
+from malaya.function import check_file, load_graph, generate_session
 from malaya.text.bpe import (
     sentencepiece_tokenizer_bert,
     sentencepiece_tokenizer_xlnet,
@@ -169,7 +164,7 @@ def transformer(model: str = 'xlnet', **kwargs):
     model = model.lower()
     if model not in _availability:
         raise Exception(
-            'model not supported, please check supported models from malaya.dependency.available_transformer_model()'
+            'model not supported, please check supported models from malaya.dependency.available_transformer()'
         )
 
     check_file(PATH_DEPENDENCY[model], S3_PATH_DEPENDENCY[model], **kwargs)

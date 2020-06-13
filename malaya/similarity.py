@@ -5,12 +5,7 @@ from sklearn.metrics.pairwise import (
     euclidean_distances,
     manhattan_distances,
 )
-from malaya.function import (
-    check_file,
-    load_graph,
-    check_available,
-    generate_session,
-)
+from malaya.function import check_file, load_graph, generate_session
 from malaya.text.bpe import (
     sentencepiece_tokenizer_bert,
     sentencepiece_tokenizer_xlnet,
@@ -451,7 +446,7 @@ def _transformer(model, bert_class, xlnet_class, **kwargs):
     model = model.lower()
     if model not in _availability:
         raise Exception(
-            'model not supported, please check supported models from malaya.similarity.available_transformer_model()'
+            'model not supported, please check supported models from malaya.similarity.available_transformer()'
         )
 
     check_file(PATH_SIMILARITY[model], S3_PATH_SIMILARITY[model], **kwargs)

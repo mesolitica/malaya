@@ -1,5 +1,5 @@
 import pickle
-from malaya.function import check_file, check_available
+from malaya.function import check_file
 from malaya.model.ml import LANGUAGE_DETECTION
 from malaya.model.tf import DEEP_LANG
 from malaya.path import PATH_LANG_DETECTION, S3_PATH_LANG_DETECTION

@@ -59,7 +59,7 @@ def transformer(model: str = 'bert', **kwargs):
     model = model.lower()
     if model not in _availability:
         raise Exception(
-            'model not supported, please check supported models from malaya.sentiment.available_transformer_model()'
+            'model not supported, please check supported models from malaya.sentiment.available_transformer()'
         )
     return softmax.transformer(
         PATH_SENTIMENT,
