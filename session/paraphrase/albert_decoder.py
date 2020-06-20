@@ -1029,7 +1029,7 @@ def attention_layer(
     v = tf.transpose(v, [0, 2, 1, 3])
     if attention_mask is not None:
         attention_mask = tf.reshape(
-            attention_mask, [batch_size, 1, to_seq_length, 1]
+            memory_mask, [batch_size, 1, to_seq_length, 1]
         )
         # 'new_embeddings = [B, N, F, H]'
     new_embeddings = dot_product_attention(

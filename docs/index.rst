@@ -22,6 +22,7 @@ Contents:
    Cache
    Deployment
    Api
+   Windows
 
 .. toctree::
    :maxdepth: 2
