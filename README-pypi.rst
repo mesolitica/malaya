@@ -38,6 +38,9 @@ Features
 -  **Generator**
 
    Generate any texts given a context using T5-Bahasa, GPT2-Bahasa or Transformer-Bahasa.
+-  **Keyword Extraction**
+
+   Provide RAKE, TextRank and Attention Mechanism hybrid with Transformer-Bahasa.
 -  **Language Detection**
 
    using Fast-text and Sparse Deep learning Model to classify Malay (formal and social media), Indonesia (formal and social media), Rojak language and Manglish.

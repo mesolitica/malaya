@@ -45,6 +45,12 @@ malaya.generator
 .. automodule:: malaya.generator
     :members:
 
+malaya.keyword_extraction
+--------------------------
+
+.. automodule:: malaya.keyword_extraction
+    :members:
+
 malaya.language_detection
 -------------------------
 
@@ -322,6 +328,9 @@ malaya.model.bert
     :members:
 
 .. autoclass:: malaya.model.bert.ZEROSHOT_BERT()
+    :members:
+
+.. autoclass:: malaya.model.bert.PARAPHRASE_BERT()
     :members:
 
 malaya.model.xlnet

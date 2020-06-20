@@ -89,6 +89,7 @@ Contents:
    :caption: Misc Module
    
    Cluster
+   Keyword
    Stack
 
 .. toctree::

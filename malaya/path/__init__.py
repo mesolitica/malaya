@@ -358,6 +358,18 @@ S3_PATH_NGRAM = {
 }
 
 PATH_PARAPHRASE = {
+    'bert': {
+        'model': home + '/paraphrase/bert/base/model.pb',
+        'vocab': home + '/bert/sp10m.cased.bert.vocab',
+        'tokenizer': home + '/bert/sp10m.cased.bert.model',
+        'version': 'v36',
+    },
+    'tiny-bert': {
+        'model': home + '/paraphrase/bert/tiny/model.pb',
+        'vocab': home + '/bert/sp10m.cased.bert.vocab',
+        'tokenizer': home + '/bert/sp10m.cased.bert.model',
+        'version': 'v36',
+    },
     'transformer': {
         'base': {
             'model': home + '/paraphrase/transformer/base/model.pb',
@@ -391,6 +403,16 @@ PATH_PARAPHRASE = {
     },
 }
 S3_PATH_PARAPHRASE = {
+    'bert': {
+        'model': 'v36/paraphrase/bert-base-paraphrase.pb',
+        'vocab': 'tokenizer/sp10m.cased.bert.vocab',
+        'tokenizer': 'tokenizer/sp10m.cased.bert.model',
+    },
+    'tiny-bert': {
+        'model': 'v36/paraphrase/tiny-bert-paraphrase.pb',
+        'vocab': 'tokenizer/sp10m.cased.bert.vocab',
+        'tokenizer': 'tokenizer/sp10m.cased.bert.model',
+    },
     'transformer': {
         'base': {
             'model': 'v36/paraphrase/transformer-base.pb',

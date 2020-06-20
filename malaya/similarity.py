@@ -90,7 +90,7 @@ class VECTORIZER_SIMILARITY:
         ).diagonal()
 
     @check_type
-    def tree_plot(
+    def heatmap(
         self,
         strings: List[str],
         similarity: str = 'cosine',
@@ -99,7 +99,7 @@ class VECTORIZER_SIMILARITY:
         figsize: Tuple[int, int] = (7, 7),
     ):
         """
-        plot a tree plot based on output from bert similarity.
+        plot a heatmap based on output from bert similarity.
 
         Parameters
         ----------
@@ -137,7 +137,7 @@ class VECTORIZER_SIMILARITY:
             )
 
         plt.figure(figsize = figsize)
-        g = sns.clustermap(
+        g = sns.heatmap(
             results,
             cmap = 'Blues',
             xticklabels = strings,
@@ -312,7 +312,7 @@ class DOC2VEC_SIMILARITY:
         ).diagonal()
 
     @check_type
-    def tree_plot(
+    def heatmap(
         self,
         strings: List[str],
         aggregation: str = 'mean',
@@ -323,7 +323,7 @@ class DOC2VEC_SIMILARITY:
         figsize: Tuple[int, int] = (7, 7),
     ):
         """
-        plot a tree plot based on output from bert similarity.
+        plot a heatmap based on output from bert similarity.
 
         Parameters
         ----------
@@ -377,7 +377,7 @@ class DOC2VEC_SIMILARITY:
             )
 
         plt.figure(figsize = figsize)
-        g = sns.clustermap(
+        g = sns.heatmap(
             results,
             cmap = 'Blues',
             xticklabels = strings,

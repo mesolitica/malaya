@@ -6,8 +6,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 5.26 s, sys: 1.51 s, total: 6.77 s
-    Wall time: 9.58 s
+    CPU times: user 4.39 s, sys: 885 ms, total: 5.27 s
+    Wall time: 4.48 s
 
 
 .. code:: ipython3
@@ -58,6 +58,35 @@ wikipedia much more accurate.
     w2v = malaya.wordvector.load(embedded_news, vocab_news)
     doc2vec = malaya.similarity.doc2vec(w2v)
 
+
+.. parsed-literal::
+
+    downloading frozen /Users/huseinzolkepli/Malaya/wordvector/news vocab
+
+
+.. parsed-literal::
+
+    4.00MB [00:01, 2.03MB/s]                          
+
+
+.. parsed-literal::
+
+    downloading frozen /Users/huseinzolkepli/Malaya/wordvector/news model
+
+
+.. parsed-literal::
+
+    191MB [01:01, 3.13MB/s]                          
+
+
+.. parsed-literal::
+
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/wordvector.py:114: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
+    
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/wordvector.py:125: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
+    
+
+
 predict for 2 strings
 ^^^^^^^^^^^^^^^^^^^^^
 
@@ -90,22 +119,16 @@ predict batch of strings
 
 
 
-visualize tree plot
-^^^^^^^^^^^^^^^^^^^
+visualize heatmap
+^^^^^^^^^^^^^^^^^
 
 .. code:: ipython3
 
-    doc2vec.tree_plot([string1, string2, string3, string4])
+    doc2vec.heatmap([string1, string2, string3, string4])
 
 
 
-.. parsed-literal::
-
-    <Figure size 504x504 with 0 Axes>
-
-
-
-.. image:: load-similarity_files/load-similarity_11_1.png
+.. image:: load-similarity_files/load-similarity_11_0.png
 
 
 Different similarity function different percentage.
@@ -155,7 +178,7 @@ predict for 2 strings
 
 .. parsed-literal::
 
-    array([0.80475146], dtype=float32)
+    array([0.8212017], dtype=float32)
 
 
 
@@ -171,26 +194,20 @@ predict batch of strings
 
 .. parsed-literal::
 
-    array([0.82172215, 0.74461347, 0.7767106 , 0.5949546 ], dtype=float32)
+    array([0.8097714 , 0.78071797, 0.8244793 , 0.5807183 ], dtype=float32)
 
 
 
-visualize tree plot
-^^^^^^^^^^^^^^^^^^^
+visualize heatmap
+^^^^^^^^^^^^^^^^^
 
 .. code:: ipython3
 
-    encoder.tree_plot([string1, string2, string3, string4])
+    encoder.heatmap([string1, string2, string3, string4])
 
 
 
-.. parsed-literal::
-
-    <Figure size 504x504 with 0 Axes>
-
-
-
-.. image:: load-similarity_files/load-similarity_21_1.png
+.. image:: load-similarity_files/load-similarity_21_0.png
 
 
 List available Transformer models
@@ -236,6 +253,15 @@ available models above.
 
     model = malaya.similarity.transformer(model = 'alxlnet')
 
+
+.. parsed-literal::
+
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/function/__init__.py:54: The name tf.gfile.GFile is deprecated. Please use tf.io.gfile.GFile instead.
+    
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/function/__init__.py:55: The name tf.GraphDef is deprecated. Please use tf.compat.v1.GraphDef instead.
+    
+
+
 predict batch
 ^^^^^^^^^^^^^
 
@@ -270,26 +296,20 @@ similarity model only supported ``predict_proba``.
 
 .. parsed-literal::
 
-    array([0.9980831 , 0.08294717, 0.92421347, 0.5633721 ], dtype=float32)
+    array([0.9986665 , 0.04221377, 0.7916767 , 0.98151684], dtype=float32)
 
 
 
-visualize tree plot
-^^^^^^^^^^^^^^^^^^^
+visualize heatmap
+^^^^^^^^^^^^^^^^^
 
 .. code:: ipython3
 
-    model.tree_plot([string1, string2, string3, string4])
+    model.heatmap([string1, string2, string3, string4])
 
 
 
-.. parsed-literal::
-
-    <Figure size 504x504 with 0 Axes>
-
-
-
-.. image:: load-similarity_files/load-similarity_30_1.png
+.. image:: load-similarity_files/load-similarity_30_0.png
 
 
 .. code:: ipython3

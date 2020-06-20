@@ -1,5 +1,9 @@
 import tensorflow as tf
-from malaya.text.function import entities_textcleaning, tag_chunk
+from malaya.text.function import (
+    entities_textcleaning,
+    tag_chunk,
+    split_into_sentences,
+)
 from malaya.text.bpe import (
     bert_tokenization_siamese,
     bert_tokenization,
@@ -593,6 +597,7 @@ class SIAMESE_BERT(BASE):
             label = label,
         )
         self._softmax = tf.nn.softmax(self._logits)
+        self._batch_size = 20
 
     def _base(self, strings_left, strings_right):
         input_ids, input_masks, segment_ids = bert_tokenization_siamese(
@@ -630,22 +635,33 @@ class SIAMESE_BERT(BASE):
 
         return self._base(strings_left, strings_right)[:, 1]
 
-    @check_type
-    def tree_plot(
-        self,
-        strings: List[str],
-        visualize: bool = True,
-        annotate: bool = True,
-        figsize: Tuple[int, int] = (7, 7),
-    ):
+    def _tree_plot(self, strings):
         l, r = [], []
         for s in strings:
             for s_ in strings:
                 l.append(s)
                 r.append(s_)
 
-        results = self._base(l, r)[:, 1]
+        results = []
+        for i in range(0, len(l), self._batch_size):
+            index = min(i + self._batch_size, len(l))
+            x = l[i:index]
+            y = r[i:index]
+            results.append(self._base(x, y)[:, 1])
+
+        results = np.concatenate(results, axis = 0)
         results = np.reshape(results, (len(strings), len(strings)))
+        return results
+
+    @check_type
+    def heatmap(
+        self,
+        strings: List[str],
+        visualize: bool = True,
+        annotate: bool = True,
+        figsize: Tuple[int, int] = (7, 7),
+    ):
+        results = self._tree_plot(strings)
 
         if not visualize:
             return results
@@ -885,3 +901,78 @@ class ZEROSHOT_BERT(BASE):
             raise ValueError('labels must be unique.')
 
         return self._base(strings, labels)
+
+
+class PARAPHRASE_BERT(BASE):
+    def __init__(self, X, segment_ids, input_masks, logits, sess, tokenizer):
+        BASE.__init__(
+            self,
+            X = X,
+            segment_ids = segment_ids,
+            input_masks = input_masks,
+            logits = logits,
+            sess = sess,
+            tokenizer = tokenizer,
+            label = None,
+        )
+
+    def _paraphrase(self, strings):
+        batch_x, input_masks, input_segments, _ = bert_tokenization(
+            self._tokenizer, strings
+        )
+        outputs = self._sess.run(
+            self._logits,
+            feed_dict = {
+                self._X: batch_x,
+                self._segment_ids: input_segments,
+                self._input_masks: input_masks,
+            },
+        )[:, 0, :].tolist()
+        results = []
+        for output in outputs:
+            output = [i for i in output if i > 0]
+            output = self._tokenizer.convert_ids_to_tokens(output)
+            output = [(t, 1) for t in output]
+            output = merge_sentencepiece_tokens(output)
+            output = [t[0] for t in output]
+            results.append(' '.join(output))
+        return results
+
+    @check_type
+    def paraphrase(self, string: str, split_fullstop: bool = True):
+        """
+        Paraphrase a string.
+
+        Parameters
+        ----------
+        string : str
+        split_fullstop: bool, (default=True)
+            if True, will generate paraphrase for each strings splitted by fullstop.
+
+        Returns
+        -------
+        result: str
+        """
+
+        if split_fullstop:
+
+            splitted_fullstop = split_into_sentences(string)
+
+            results, batch, mapping = [], [], {}
+            for no, splitted in enumerate(splitted_fullstop):
+                if len(splitted.split()) < 4:
+                    results.append(splitted)
+                else:
+                    mapping[len(batch)] = no
+                    results.append('REPLACE-ME')
+                    batch.append(splitted)
+
+            if len(batch):
+                output = self._paraphrase(batch)
+                for no in range(len(output)):
+                    results[mapping[no]] = output[no]
+
+            return ' '.join(results)
+
+        else:
+            return self._paraphrase([string])[0]

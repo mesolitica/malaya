@@ -12,7 +12,7 @@ from pathlib import Path
 
 home = os.path.join(str(Path.home()), 'Malaya')
 version = '3.6'
-bump_version = '3.6.1'
+bump_version = '3.6.2'
 version_path = os.path.join(home, 'version')
 __version__ = bump_version
 
@@ -110,6 +110,8 @@ from . import cluster
 from . import dependency
 from . import emotion
 from . import entity
+from . import generator
+from . import keyword_extraction
 from . import language_detection
 from . import lexicon
 from . import normalize

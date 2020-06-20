@@ -12,6 +12,8 @@ _t5_availability = {
 _transformer_availability = {
     'tiny': ['18.4MB', 'BLEU: 0.594'],
     'base': ['234MB', 'BLEU: 0.792'],
+    'tiny-bert': ['60.6MB', 'BLEU: 0.609'],
+    'bert': ['449MB', 'BLUE: 0.696'],
 }
 
 
@@ -102,6 +104,8 @@ def transformer(model = 'base', **kwargs):
 
         * ``'base'`` - transformer Base parameters.
         * ``'tiny'`` - transformer Tiny parameters.
+        * ``'tiny-bert'`` - BERT-BERT Tiny parameters.
+        * ``'bert'`` - BERT-BERT Base parameters.
 
     Returns
     -------
@@ -113,20 +117,48 @@ def transformer(model = 'base', **kwargs):
         raise Exception(
             'model not supported, please check supported models from malaya.paraphrase.available_transformer()'
         )
-    path = PATH_PARAPHRASE['transformer']
-    s3_path = S3_PATH_PARAPHRASE['transformer']
 
-    check_file(path[model], s3_path[model], **kwargs)
-    g = load_graph(path[model]['model'])
+    if 'bert' in model:
 
-    from malaya.text.t2t import text_encoder
-    from malaya.model.tf import PARAPHRASE
+        path = PATH_PARAPHRASE[model]
+        s3_path = S3_PATH_PARAPHRASE[model]
 
-    encoder = text_encoder.SubwordTextEncoder(path[model]['vocab'])
-    return PARAPHRASE(
-        g.get_tensor_by_name('import/Placeholder:0'),
-        g.get_tensor_by_name('import/greedy:0'),
-        g.get_tensor_by_name('import/beam:0'),
-        generate_session(graph = g),
-        encoder,
-    )
+        check_file(path, s3_path, **kwargs)
+        g = load_graph(path['model'])
+
+        if model in ['bert', 'tiny-bert']:
+            from malaya.text.bpe import sentencepiece_tokenizer_bert
+
+            tokenizer = sentencepiece_tokenizer_bert(
+                path['tokenizer'], path['vocab']
+            )
+
+        from malaya.model.bert import PARAPHRASE_BERT
+
+        return PARAPHRASE_BERT(
+            X = g.get_tensor_by_name('import/Placeholder:0'),
+            segment_ids = g.get_tensor_by_name('import/Placeholder_1:0'),
+            input_masks = g.get_tensor_by_name('import/Placeholder_2:0'),
+            logits = g.get_tensor_by_name('import/greedy:0'),
+            sess = generate_session(graph = g),
+            tokenizer = tokenizer,
+        )
+
+    else:
+        path = PATH_PARAPHRASE['transformer']
+        s3_path = S3_PATH_PARAPHRASE['transformer']
+
+        check_file(path[model], s3_path[model], **kwargs)
+        g = load_graph(path[model]['model'])
+
+        from malaya.text.t2t import text_encoder
+        from malaya.model.tf import PARAPHRASE
+
+        encoder = text_encoder.SubwordTextEncoder(path[model]['vocab'])
+        return PARAPHRASE(
+            g.get_tensor_by_name('import/Placeholder:0'),
+            g.get_tensor_by_name('import/greedy:0'),
+            g.get_tensor_by_name('import/beam:0'),
+            generate_session(graph = g),
+            encoder,
+        )

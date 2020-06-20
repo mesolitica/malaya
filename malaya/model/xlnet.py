@@ -611,6 +611,7 @@ class SIAMESE_XLNET(BASE):
             label = label,
         )
         self._softmax = tf.nn.softmax(self._logits)
+        self._batch_size = 20
 
     def _base(self, strings_left, strings_right):
         input_ids, input_masks, segment_ids = xlnet_tokenization_siamese(
@@ -648,22 +649,33 @@ class SIAMESE_XLNET(BASE):
 
         return self._base(strings_left, strings_right)[:, 1]
 
-    @check_type
-    def tree_plot(
-        self,
-        strings: List[str],
-        visualize: bool = True,
-        annotate: bool = True,
-        figsize: Tuple[int, int] = (7, 7),
-    ):
+    def _tree_plot(self, strings):
         l, r = [], []
         for s in strings:
             for s_ in strings:
                 l.append(s)
                 r.append(s_)
 
-        results = self._base(l, r)[:, 1]
+        results = []
+        for i in range(0, len(l), self._batch_size):
+            index = min(i + self._batch_size, len(l))
+            x = l[i:index]
+            y = r[i:index]
+            results.append(self._base(x, y)[:, 1])
+
+        results = np.concatenate(results, axis = 0)
         results = np.reshape(results, (len(strings), len(strings)))
+        return results
+
+    @check_type
+    def heatmap(
+        self,
+        strings: List[str],
+        visualize: bool = True,
+        annotate: bool = True,
+        figsize: Tuple[int, int] = (7, 7),
+    ):
+        results = self._tree_plot(strings)
 
         if not visualize:
             return results
@@ -678,7 +690,7 @@ class SIAMESE_XLNET(BASE):
             )
 
         plt.figure(figsize = figsize)
-        g = sns.clustermap(
+        g = sns.heatmap(
             results,
             cmap = 'Blues',
             xticklabels = strings,
