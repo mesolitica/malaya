@@ -3,7 +3,7 @@ import operator
 import networkx as nx
 from collections import defaultdict
 from sklearn.metrics.pairwise import cosine_similarity
-from malaya.text.keyword import rake as rake_function
+from malaya.text import rake as rake_function
 from sklearn.feature_extraction.text import CountVectorizer
 from malaya.text.vectorizer import SkipGramVectorizer
 from malaya.text.function import (
