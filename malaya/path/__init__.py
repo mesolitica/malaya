@@ -381,6 +381,11 @@ PATH_PARAPHRASE = {
             'vocab': home + '/paraphrase/transformer/tiny/vocab.subwords',
             'version': 'v36',
         },
+        'small': {
+            'model': home + '/paraphrase/transformer/small/model.pb',
+            'vocab': home + '/paraphrase/transformer/small/vocab.subwords',
+            'version': 'v36',
+        },
     },
     't5': {
         'base': {
@@ -421,6 +426,10 @@ S3_PATH_PARAPHRASE = {
         'tiny': {
             'model': 'v36/paraphrase/transformer-tiny.pb',
             'vocab': 'v36/paraphrase/tiny.subwords',
+        },
+        'small': {
+            'model': 'v36/paraphrase/transformer-small.pb',
+            'vocab': 'v36/paraphrase/small.subwords',
         },
     },
     't5': {
@@ -973,6 +982,73 @@ S3_PATH_TOXIC = {
         'model': 'v34/toxicity/alxlnet-base-toxicity.pb',
         'vocab': 'tokenizer/sp10m.cased.v9.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.v9.model',
+    },
+}
+
+PATH_TRANSLATION = {
+    'ms-en': {
+        'base': {
+            'model': home + '/translation/ms-en/base/model.pb',
+            'vocab': home + '/translation/ms-en/base/vocab.subwords',
+            'version': 'v37',
+        },
+        'large': {
+            'model': home + '/translation/ms-en/large/model.pb',
+            'vocab': home + '/translation/ms-en/large/vocab.subwords',
+            'version': 'v37',
+        },
+        'small': {
+            'model': home + '/translation/ms-en/small/model.pb',
+            'vocab': home + '/translation/ms-en/small/vocab.subwords',
+            'version': 'v37',
+        },
+    },
+    'en-ms': {
+        'base': {
+            'model': home + '/translation/en-ms/base/model.pb',
+            'vocab': home + '/translation/en-ms/base/vocab.subwords',
+            'version': 'v37',
+        },
+        'large': {
+            'model': home + '/translation/en-ms/large/model.pb',
+            'vocab': home + '/translation/en-ms/large/vocab.subwords',
+            'version': 'v37',
+        },
+        'small': {
+            'model': home + '/translation/en-ms/small/model.pb',
+            'vocab': home + '/translation/en-ms/small/vocab.subwords',
+            'version': 'v37',
+        },
+    },
+}
+S3_PATH_TRANSLATION = {
+    'ms-en': {
+        'base': {
+            'model': 'v37/translation/ms-en/base-translation.pb',
+            'vocab': 'v37/translation/ms-en/vocab.subwords',
+        },
+        'large': {
+            'model': 'v37/translation/ms-en/large-translation.pb',
+            'vocab': 'v37/translation/ms-en/vocab.subwords',
+        },
+        'small': {
+            'model': 'v37/translation/ms-en/small-translation.pb',
+            'vocab': 'v37/translation/ms-en/vocab.subwords',
+        },
+    },
+    'en-ms': {
+        'base': {
+            'model': 'v37/translation/en-ms/base-translation.pb',
+            'vocab': 'v37/translation/en-ms/vocab.subwords',
+        },
+        'large': {
+            'model': 'v37/translation/en-ms/large-translation.pb',
+            'vocab': 'v37/translation/en-ms/vocab.subwords',
+        },
+        'small': {
+            'model': 'v37/translation/en-ms/small-translation.pb',
+            'vocab': 'v37/translation/en-ms/vocab.subwords',
+        },
     },
 }
 

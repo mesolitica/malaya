@@ -45,8 +45,15 @@ def download_file(url, filename):
             f.write(data)
 
 
-def generate_session(graph):
-    return tf.InteractiveSession(graph = graph)
+def generate_session(graph, **kwargs):
+    if 'gpu' in kwargs:
+        gpu_options = tf.GPUOptions(visible_device_list = kwargs['gpu'])
+        sess = tf.InteractiveSession(
+            config = tf.ConfigProto(gpu_options = gpu_options), graph = graph
+        )
+    else:
+        sess = tf.InteractiveSession(graph = graph)
+    return sess
 
 
 def load_graph(frozen_graph_filename):

@@ -204,6 +204,18 @@ malaya.transformer
 .. automodule:: malaya.transformer
     :members:
 
+malaya.translation.en_ms
+-------------------------
+
+.. automodule:: malaya.translation.en_ms
+    :members:
+
+malaya.translation.ms_en
+-------------------------
+
+.. automodule:: malaya.translation.ms_en
+    :members:
+
 malaya.wordvector
 -------------------------
 
@@ -292,6 +304,9 @@ malaya.model.tf
     :members:
 
 .. autoclass:: malaya.model.tf.PARAPHRASE()
+    :members:
+
+.. autoclass:: malaya.model.tf.TRANSLATION()
     :members:
 
 malaya.model.ml

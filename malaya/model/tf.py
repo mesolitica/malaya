@@ -1,5 +1,7 @@
 import tensorflow as tf
 import numpy as np
+import re
+from unidecode import unidecode
 from malaya.text.function import (
     language_detection_textcleaning,
     split_into_sentences,
@@ -8,6 +10,10 @@ from malaya.text.function import (
 )
 from herpetologist import check_type
 from typing import List
+
+
+def cleaning(string):
+    return re.sub(r'[ ]+', ' ', unidecode(string)).strip()
 
 
 def _convert_sparse_matrix_to_sparse_tensor(X, got_limit = False, limit = 5):
@@ -115,7 +121,9 @@ class PARAPHRASE:
         self._tokenizer = tokenizer
 
     def _paraphrase(self, strings, beam_search = True):
-        encoded = [self._tokenizer.encode(string) + [1] for string in strings]
+        encoded = [
+            self._tokenizer.encode(cleaning(string)) + [1] for string in strings
+        ]
         if beam_search:
             output = self._beam
         else:
@@ -129,6 +137,7 @@ class PARAPHRASE:
             )
         return result
 
+    @check_type
     def paraphrase(
         self, string: str, beam_search: bool = True, split_fullstop: bool = True
     ):
@@ -172,3 +181,47 @@ class PARAPHRASE:
 
         else:
             return self._paraphrase([string], beam_search = beam_search)[0]
+
+
+class TRANSLATION:
+    def __init__(self, X, greedy, beam, sess, tokenizer):
+
+        self._X = X
+        self._greedy = greedy
+        self._beam = beam
+        self._sess = sess
+        self._tokenizer = tokenizer
+
+    def _translate(self, strings, beam_search = True):
+        encoded = [
+            self._tokenizer.encode(cleaning(string)) + [1] for string in strings
+        ]
+        if beam_search:
+            output = self._beam
+        else:
+            output = self._greedy
+        batch_x = pad_sentence_batch(encoded, 0)[0]
+        p = self._sess.run(output, feed_dict = {self._X: batch_x}).tolist()
+        result = []
+        for row in p:
+            result.append(
+                self._tokenizer.decode([i for i in row if i not in [0, 1]])
+            )
+        return result
+
+    @check_type
+    def translate(self, strings: List[str], beam_search: bool = True):
+        """
+        translate list of strings.
+
+        Parameters
+        ----------
+        strings : List[str]
+        beam_search : bool, (optional=True)
+            If True, use beam search decoder, else use greedy decoder.
+
+        Returns
+        -------
+        result: List[str]
+        """
+        return self._translate(strings, beam_search = beam_search)

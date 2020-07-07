@@ -483,7 +483,7 @@ def _transformer(model, bert_class, xlnet_class, **kwargs):
             segment_ids = g.get_tensor_by_name('import/Placeholder_1:0'),
             input_masks = g.get_tensor_by_name('import/Placeholder_2:0'),
             logits = g.get_tensor_by_name('import/logits:0'),
-            sess = generate_session(graph = g),
+            sess = generate_session(graph = g, **kwargs),
             tokenizer = tokenizer,
             label = ['not similar', 'similar'],
         )
@@ -505,7 +505,7 @@ def _transformer(model, bert_class, xlnet_class, **kwargs):
             segment_ids = g.get_tensor_by_name('import/Placeholder_1:0'),
             input_masks = g.get_tensor_by_name('import/Placeholder_2:0'),
             logits = g.get_tensor_by_name('import/logits:0'),
-            sess = generate_session(graph = g),
+            sess = generate_session(graph = g, **kwargs),
             tokenizer = tokenizer,
             label = ['not similar', 'similar'],
         )

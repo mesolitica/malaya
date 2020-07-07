@@ -17,6 +17,7 @@ Contents:
    :caption: Getting Started
 
    Installation
+   GPU
    Dataset
    Accuracy
    Cache
@@ -78,6 +79,13 @@ Contents:
 
    Abstractive
    Extractive
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Translation Module
+
+   MStoEN
+   ENtoMS
 
 .. toctree::
    :maxdepth: 2

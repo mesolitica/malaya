@@ -106,6 +106,9 @@ Features
 -  **Transformer**
 
    Provide easy interface to load BERT-base-bahasa, Tiny-BERT-bahasa, Albert-base-bahasa, Albert-tiny-bahasa, XLNET-base-bahasa, ALXLNET-base-bahasa, ELECTRA-base-bahasa and ELECTRA-small-bahasa.
+-  **Translation**
+
+   provide Neural Machine Translation using Transformer for EN to MS and MS to EN.
 -  **Word2Num**
 
    Convert from cardinal or ordinal representation to numbers.
@@ -160,6 +163,17 @@ Thank you for contributing this library, really helps a lot. Feel free to contac
     <a href="#readme">
         <img alt="logo" width="30%" src="https://contributors-img.firebaseapp.com/image?repo=huseinzol05/malaya">
     </a>
+
+Ads
+--------
+
+.. raw:: html
+
+    <a href="https://tracking.gitads.io/?repo=Malaya">
+        <img src="https://images.gitads.io/Malaya" alt="GitAds" width="50%">
+    </a>
+
+*Ads served ethically.*
 
 License
 --------

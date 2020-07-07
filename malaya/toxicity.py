@@ -159,7 +159,7 @@ def transformer(model: str = 'xlnet', **kwargs):
             input_masks = g.get_tensor_by_name('import/Placeholder_1:0'),
             logits = g.get_tensor_by_name('import/logits:0'),
             logits_seq = g.get_tensor_by_name('import/logits_seq:0'),
-            sess = generate_session(graph = g),
+            sess = generate_session(graph = g, **kwargs),
             tokenizer = tokenizer,
             label = label,
             attns = _extract_attention_weights_import(
@@ -186,7 +186,7 @@ def transformer(model: str = 'xlnet', **kwargs):
             input_masks = g.get_tensor_by_name('import/Placeholder_2:0'),
             logits = g.get_tensor_by_name('import/logits:0'),
             logits_seq = g.get_tensor_by_name('import/logits_seq:0'),
-            sess = generate_session(graph = g),
+            sess = generate_session(graph = g, **kwargs),
             tokenizer = tokenizer,
             label = label,
             attns = _extract_attention_weights_import(g),

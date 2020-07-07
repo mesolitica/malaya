@@ -11,6 +11,7 @@ _t5_availability = {
 }
 _transformer_availability = {
     'tiny': ['18.4MB', 'BLEU: 0.594'],
+    'small': ['43MB', 'BLEU: 0.737'],
     'base': ['234MB', 'BLEU: 0.792'],
     'tiny-bert': ['60.6MB', 'BLEU: 0.609'],
     'bert': ['449MB', 'BLUE: 0.696'],
@@ -102,8 +103,9 @@ def transformer(model = 'base', **kwargs):
     model : str, optional (default='base')
         Model architecture supported. Allowed values:
 
-        * ``'base'`` - transformer Base parameters.
         * ``'tiny'`` - transformer Tiny parameters.
+        * ``'small'`` - transformer Small parameters.
+        * ``'base'`` - transformer Base parameters.
         * ``'tiny-bert'`` - BERT-BERT Tiny parameters.
         * ``'bert'`` - BERT-BERT Base parameters.
 
@@ -140,7 +142,7 @@ def transformer(model = 'base', **kwargs):
             segment_ids = g.get_tensor_by_name('import/Placeholder_1:0'),
             input_masks = g.get_tensor_by_name('import/Placeholder_2:0'),
             logits = g.get_tensor_by_name('import/greedy:0'),
-            sess = generate_session(graph = g),
+            sess = generate_session(graph = g, **kwargs),
             tokenizer = tokenizer,
         )
 
@@ -159,6 +161,6 @@ def transformer(model = 'base', **kwargs):
             g.get_tensor_by_name('import/Placeholder:0'),
             g.get_tensor_by_name('import/greedy:0'),
             g.get_tensor_by_name('import/beam:0'),
-            generate_session(graph = g),
+            generate_session(graph = g, **kwargs),
             encoder,
         )

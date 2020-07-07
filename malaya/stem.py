@@ -173,7 +173,7 @@ def deep_model(**kwargs):
         g.get_tensor_by_name('import/Placeholder:0'),
         g.get_tensor_by_name('import/decode_1/greedy:0'),
         g.get_tensor_by_name('import/decode_2/beam:0'),
-        generate_session(graph = g),
+        generate_session(graph = g, **kwargs),
         bpe,
         subword_mode,
         _tokenizer,

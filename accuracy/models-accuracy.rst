@@ -1,3 +1,46 @@
+**All y-axis been distorted and this can cause misrepresents data and
+incorrect conclusion.**
+
+Abstractive Summarization
+-------------------------
+
+Trained on 80% of dataset, tested on 20% of dataset. Link to download
+dataset available inside the notebooks. All training sessions stored in
+`session/summarization <https://github.com/huseinzol05/Malaya/tree/master/session/summarization>`__
+
+**Below chart is ROUGE-1.**
+
+.. code:: ipython3
+
+    from IPython.core.display import Image, display
+    
+    display(Image('abstractive-accuracy.png', width=500))
+
+
+
+.. image:: models-accuracy_files/models-accuracy_2_0.png
+   :width: 500px
+
+
+Full score at ``malaya.summarization.abstractive._t5_availability``.
+
+.. code:: python
+
+   _t5_availability = {
+       'small': [
+           '122MB',
+           'ROUGE-1: 0.33854',
+           'ROUGE-2: 0.14588',
+           'ROUGE-L: 0.23528',
+       ],
+       'base': [
+           '448MB',
+           'ROUGE-1: 0.34103',
+           'ROUGE-2: 0.14994',
+           'ROUGE-L: 0.23655',
+       ],
+   }
+
 Dependency parsing
 ------------------
 
@@ -9,13 +52,11 @@ dataset available inside the notebooks. All training sessions stored in
 
 .. code:: ipython3
 
-    from IPython.core.display import Image, display
-    
     display(Image('dependency-accuracy.png', width=500))
 
 
 
-.. image:: models-accuracy_files/models-accuracy_1_0.png
+.. image:: models-accuracy_files/models-accuracy_5_0.png
    :width: 500px
 
 
@@ -322,8 +363,8 @@ alxlnet-base
 Emotion Analysis
 ----------------
 
-Trained on 80% of dataset, tested on 20% of dataset. All training
-sessions stored in
+Trained on 80% of dataset, tested on 20% of dataset. Link to download
+dataset available inside the notebooks. All training sessions stored in
 `session/emotion <https://github.com/huseinzol05/Malaya/tree/master/session/emotion>`__
 
 **Graph based on F1-score.**
@@ -336,7 +377,7 @@ sessions stored in
 
 
 
-.. image:: models-accuracy_files/models-accuracy_9_0.png
+.. image:: models-accuracy_files/models-accuracy_13_0.png
    :width: 500px
 
 
@@ -490,7 +531,7 @@ dataset available inside the notebooks. All training sessions stored in
 
 
 
-.. image:: models-accuracy_files/models-accuracy_18_0.png
+.. image:: models-accuracy_files/models-accuracy_22_0.png
    :width: 500px
 
 
@@ -635,8 +676,8 @@ alxlnet-base
 Language Detection
 ------------------
 
-Trained on 80% of dataset, tested on 20% of dataset. All training
-sessions stored in
+Trained on 80% of dataset, tested on 20% of dataset. Link to download
+dataset available inside the notebooks. All training sessions stored in
 `session/language-detection <https://github.com/huseinzol05/Malaya/tree/master/session/language-detection>`__
 
 **Graph based on F1-score.**
@@ -647,7 +688,7 @@ sessions stored in
 
 
 
-.. image:: models-accuracy_files/models-accuracy_26_0.png
+.. image:: models-accuracy_files/models-accuracy_30_0.png
    :width: 500px
 
 
@@ -702,7 +743,7 @@ dataset available inside the notebooks. All training sessions stored in
 
 
 
-.. image:: models-accuracy_files/models-accuracy_30_0.png
+.. image:: models-accuracy_files/models-accuracy_34_0.png
    :width: 500px
 
 
@@ -885,11 +926,30 @@ alxlnet-base
       macro avg    0.92732   0.93046   0.92819   1773722
    weighted avg    0.95168   0.95109   0.95121   1773722
 
+Paraphrase
+----------
+
+Trained on 80% of dataset, tested on 20% of dataset. Link to download
+dataset available inside the notebooks. All training sessions stored in
+`session/paraphrase <https://github.com/huseinzol05/Malaya/tree/master/session/paraphrase>`__
+
+**Graph based on BLEU score from ``tensor2tensor.utils.bleu_hook``**.
+
+.. code:: ipython3
+
+    display(Image('paraphrase-accuracy.png', width=500))
+
+
+
+.. image:: models-accuracy_files/models-accuracy_42_0.png
+   :width: 500px
+
+
 Relevancy
 ---------
 
-Trained on 80% of dataset, tested on 20% of dataset. All training
-sessions stored in
+Trained on 80% of dataset, tested on 20% of dataset. Link to download
+dataset available inside the notebooks. All training sessions stored in
 `session/relevancy <https://github.com/huseinzol05/Malaya/tree/master/session/relevancy>`__
 
 **Graph based on F1-score.**
@@ -900,7 +960,7 @@ sessions stored in
 
 
 
-.. image:: models-accuracy_files/models-accuracy_38_0.png
+.. image:: models-accuracy_files/models-accuracy_44_0.png
    :width: 500px
 
 
@@ -997,8 +1057,8 @@ alxlnet-base
 Sentiment Analysis
 ------------------
 
-Trained on 80% of dataset, tested on 20% of dataset. All training
-sessions stored in
+Trained on 80% of dataset, tested on 20% of dataset. Link to download
+dataset available inside the notebooks. All training sessions stored in
 `session/sentiment <https://github.com/huseinzol05/Malaya/tree/master/session/sentiment>`__
 
 **Graph based on F1-score.**
@@ -1009,7 +1069,7 @@ sessions stored in
 
 
 
-.. image:: models-accuracy_files/models-accuracy_46_0.png
+.. image:: models-accuracy_files/models-accuracy_52_0.png
    :width: 500px
 
 
@@ -1121,8 +1181,8 @@ alxlnet-base
 Similarity
 ----------
 
-Trained on 80% of dataset, tested on 20% of dataset. All training
-sessions stored in
+Trained on 80% of dataset, tested on 20% of dataset. Link to download
+dataset available inside the notebooks. All training sessions stored in
 `session/similarity <https://github.com/huseinzol05/Malaya/tree/master/session/similarity>`__
 
 **Graph based on F1-score.**
@@ -1133,7 +1193,7 @@ sessions stored in
 
 
 
-.. image:: models-accuracy_files/models-accuracy_55_0.png
+.. image:: models-accuracy_files/models-accuracy_61_0.png
    :width: 500px
 
 
@@ -1230,8 +1290,8 @@ alxlnet-base
 Subjectivity Analysis
 ---------------------
 
-Trained on 80% of dataset, tested on 20% of dataset. All training
-sessions stored in
+Trained on 80% of dataset, tested on 20% of dataset. Link to download
+dataset available inside the notebooks. All training sessions stored in
 `session/subjectivity <https://github.com/huseinzol05/Malaya/tree/master/session/subjectivity>`__
 
 **Graph based on F1-score.**
@@ -1242,7 +1302,7 @@ sessions stored in
 
 
 
-.. image:: models-accuracy_files/models-accuracy_63_0.png
+.. image:: models-accuracy_files/models-accuracy_69_0.png
    :width: 500px
 
 
@@ -1353,8 +1413,8 @@ alxlnet-base
 Toxicity Analysis
 -----------------
 
-Trained on 80% of dataset, tested on 20% of dataset. All training
-sessions stored in
+Trained on 80% of dataset, tested on 20% of dataset. Link to download
+dataset available inside the notebooks. All training sessions stored in
 `session/toxic <https://github.com/huseinzol05/Malaya/tree/master/session/toxic>`__
 
 **Graph based on F1-score.**
@@ -1365,7 +1425,7 @@ sessions stored in
 
 
 
-.. image:: models-accuracy_files/models-accuracy_72_0.png
+.. image:: models-accuracy_files/models-accuracy_78_0.png
    :width: 500px
 
 
@@ -1660,3 +1720,32 @@ alxlnet-base
                           weighted avg    0.82757   0.80221   0.81282     78919
                            samples avg    0.16116   0.15980   0.15799     78919
      
+
+Translation EN-MS
+-----------------
+
+Trained on 80% of dataset, tested on 20% of dataset. Link to download
+dataset available inside the notebooks. All training sessions stored in
+`session/translation/en-ms <https://github.com/huseinzol05/Malaya/tree/master/session/translation/en-ms>`__
+
+**Graph based on BLEU score from ``tensor2tensor.utils.bleu_hook``**.
+
+Translation MS-EN
+-----------------
+
+Trained on 80% of dataset, tested on 20% of dataset. Link to download
+dataset available inside the notebooks. All training sessions stored in
+`session/translation/ms-en <https://github.com/huseinzol05/Malaya/tree/master/session/translation/ms-en>`__
+
+**Graph based on BLEU score from ``tensor2tensor.utils.bleu_hook``**.
+
+.. code:: ipython3
+
+    display(Image('msen-accuracy.png', width=500))
+
+
+
+.. image:: models-accuracy_files/models-accuracy_88_0.png
+   :width: 500px
+
+

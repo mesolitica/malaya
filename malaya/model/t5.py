@@ -22,7 +22,7 @@ class SUMMARIZATION:
         self._model = model
 
     def _summarize(self, string, mode):
-        string = f'{mode}: {string}'
+        string = f'{mode}: {cleaning(string)}'
 
         return upperfirst(self._model([string])[0].decode('utf-8'))
 
@@ -63,7 +63,7 @@ class SUMMARIZATION:
             results = '. '.join(results)
 
         else:
-            results = self._summarize(cleaning(string), mode)
+            results = self._summarize(string, mode)
 
         return results
 
@@ -100,7 +100,7 @@ class PARAPHRASE:
         self._model = model
 
     def _paraphrase(self, string):
-        string = f'parafrasa: {string}'
+        string = f'parafrasa: {cleaning(string)}'
 
         return upperfirst(self._model([string])[0].decode('utf-8'))
 
