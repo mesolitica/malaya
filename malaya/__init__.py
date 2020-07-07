@@ -105,6 +105,20 @@ def clear_cache(location):
     return True
 
 
+def clear_session(model):
+    success = False
+    try:
+        if hasattr(model, 'sess'):
+            model.sess.close()
+            success = True
+        elif hasattr(model, '_sess'):
+            model._sess.close()
+            success = True
+    except:
+        pass
+    return success
+
+
 from . import augmentation
 from . import cluster
 from . import dependency

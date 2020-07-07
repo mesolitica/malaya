@@ -48,9 +48,9 @@ def download_file(url, filename):
 def generate_session(graph, **kwargs):
     if 'gpu' in kwargs:
         gpu_options = tf.GPUOptions(visible_device_list = kwargs['gpu'])
-        sess = tf.InteractiveSession(
-            config = tf.ConfigProto(gpu_options = gpu_options), graph = graph
-        )
+        config = tf.ConfigProto(gpu_options = gpu_options)
+        config.gpu_options.allow_growth = True
+        sess = tf.InteractiveSession(config = config, graph = graph)
     else:
         sess = tf.InteractiveSession(graph = graph)
     return sess
@@ -64,11 +64,11 @@ def load_graph(frozen_graph_filename):
         with tf.Graph().as_default() as graph:
             tf.import_graph_def(graph_def)
         return graph
-    except:
+    except Exception as e:
         path = frozen_graph_filename.split('Malaya/')[1]
         path = '/'.join(path.split('/')[:-1])
         raise Exception(
-            f"model corrupted due to some reasons, please run malaya.clear_cache('{path}') and try again"
+            f"{e}, file corrupted due to some reasons, please run malaya.clear_cache('{path}') and try again"
         )
 
 

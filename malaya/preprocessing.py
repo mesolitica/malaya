@@ -234,8 +234,13 @@ class SocialTokenizer:
 
 
 def _read_stats(gram = 1):
-    with open(PATH_PREPROCESSING[gram]['model']) as fopen:
-        return json.load(fopen)
+    try:
+        with open(PATH_PREPROCESSING[gram]['model']) as fopen:
+            return json.load(fopen)
+    except Exception as e:
+        raise Exception(
+            f"{e}, file corrupted due to some reasons, please run malaya.clear_cache('preprocessing') and try again"
+        )
 
 
 class _Pdist(dict):
@@ -537,7 +542,7 @@ def preprocessing(
     remove_postfix: bool = True,
     maxlen_segmenter: int = 20,
     speller = None,
-    **kwargs
+    **kwargs,
 ):
     """
     Load Preprocessing class.
@@ -593,7 +598,7 @@ def preprocessing(
         check_file(
             PATH_PREPROCESSING['english-malay'],
             S3_PATH_PREPROCESSING['english-malay'],
-            **kwargs
+            **kwargs,
         )
 
         with open(PATH_PREPROCESSING['english-malay']['model']) as fopen:
