@@ -61,7 +61,13 @@ else:
 
 def print_cache(location = None):
     """
-    Print cached data, this will print entire cache folder if let location = None
+    Print cached data, this will print entire cache folder if let location = None.
+
+    Parameters
+    ----------
+    location : str, (default=None)
+        if location is None, will print entire cache directory.
+
     """
     path = os.path.join(home, location) if location else home
     paths = DisplayablePath.make_tree(Path(path))
@@ -71,7 +77,7 @@ def print_cache(location = None):
 
 def clear_all_cache():
     """
-    Remove cached data, this will delete entire cache folder
+    Remove cached data, this will delete entire cache folder.
     """
     _delete_macos()
     try:
@@ -88,7 +94,12 @@ def clear_all_cache():
 
 def clear_cache(location):
     """
-    Remove selected cached data, please run malaya.print_cache() to get path
+    Remove selected cached data, please run malaya.print_cache() to get path.
+
+    Parameters
+    ----------
+    location : str
+
     """
     if not isinstance(location, str):
         raise ValueError('location must be a string')
@@ -106,6 +117,14 @@ def clear_cache(location):
 
 
 def clear_session(model):
+    """
+    Clear session from a model to prevent any out-of-memory or segmentation fault issues.
+
+    Parameters
+    ----------
+    model : malaya object.
+
+    """
     success = False
     try:
         if hasattr(model, 'sess'):
