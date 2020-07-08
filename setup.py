@@ -11,7 +11,7 @@ def readme():
 
 setuptools.setup(
     name = __packagename__,
-    packages = setuptools.find_packages(),
+    packages = ['malaya'],
     version = '3.7.0',
     python_requires = '>=3.6.*',
     description = 'Natural-Language-Toolkit for bahasa Malaysia, powered by Deep Learning Tensorflow.',

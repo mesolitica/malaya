@@ -10,11 +10,22 @@ import os
 from shutil import rmtree
 from pathlib import Path
 
+
 home = os.path.join(str(Path.home()), 'Malaya')
 version = '3.7'
 bump_version = '3.7.0'
 version_path = os.path.join(home, 'version')
 __version__ = bump_version
+
+if 'malaya_gpu' in os.path.dirname(__file__):
+    from tensorflow.python.client import device_lib
+
+    local_device_protos = device_lib.list_local_devices()
+    _gpu_devices = [
+        x.name for x in local_device_protos if x.device_type == 'GPU'
+    ]
+else:
+    _gpu_devices = []
 
 
 def _delete_folder(folder):
@@ -39,8 +50,6 @@ except:
     )
 
 _delete_macos()
-from malaya.function import DisplayablePath, download_file
-
 if not os.path.isfile(version_path):
     _delete_folder(home)
     with open(version_path, 'w') as fopen:
@@ -59,6 +68,18 @@ else:
             fopen.write(version)
 
 
+def available_gpu():
+    """
+    Check Malaya is GPU version.
+
+    Returns
+    -------
+    result : list
+    """
+
+    return _gpu_devices
+
+
 def print_cache(location = None):
     """
     Print cached data, this will print entire cache folder if let location = None.
@@ -69,6 +90,9 @@ def print_cache(location = None):
         if location is None, will print entire cache directory.
 
     """
+
+    from malaya.function import DisplayablePath
+
     path = os.path.join(home, location) if location else home
     paths = DisplayablePath.make_tree(Path(path))
     for path in paths:
@@ -100,7 +124,11 @@ def clear_cache(location):
     ----------
     location : str
 
+    Returns
+    -------
+    result : boolean
     """
+
     if not isinstance(location, str):
         raise ValueError('location must be a string')
     location = os.path.join(home, location)
@@ -124,7 +152,11 @@ def clear_session(model):
     ----------
     model : malaya object.
 
+    Returns
+    -------
+    result : boolean
     """
+
     success = False
     try:
         if hasattr(model, 'sess'):

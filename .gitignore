@@ -24,3 +24,4 @@ htmlcov
 test
 .pytest_cache
 misc/crawl/isu*
+a.py
