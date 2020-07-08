@@ -1,21 +1,30 @@
 GPU Environment
 ================
 
-Deep learning Malaya trained on CUDA 10.0 and Tensorflow 1.15, supposedly any new version of CUDA and Tensorflow able to support Tensorflow >= 1.13 features.
+Deep learning Malaya trained on CUDA 10.0 and Tensorflow 1.13, supposedly any new version of CUDA and Tensorflow able to support Tensorflow >= 1.13 features.
 
-Simply install gpu version,
+To prevent any CPU and GPU version conflict, should try to uninstall all Malaya version first,
+::
+
+    $ pip uninstall malaya malaya-gpu
+
+After that simply install gpu version,
 ::
 
     $ pip install malaya-gpu
 
+GPU Version Benefit
+--------------------
 
-Or, manually install tensorflow-gpu,
-::
-
-    $ pip install tensorflow-gpu==1.15
-
-If Tensorflow gpu found in the local, all Malaya models will automatically run in GPU.
+1. Different models different GPUs.
+2. Automatically try to use cugraph for any networkx functions.
 
 Different models different GPUs
 ----------------------------------
 
+.. note::
+
+    This tutorial is available as an IPython notebook
+    `here <https://github.com/huseinzol05/Malaya/tree/master/example/gpu-environment>`_.
+
+.. include:: gpu-environment.rst

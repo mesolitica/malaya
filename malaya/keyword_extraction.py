@@ -11,6 +11,7 @@ from malaya.text.function import (
     transformer_textcleaning,
     STOPWORDS,
 )
+from malaya.graph.pagerank import pagerank
 from typing import Callable, Tuple, List
 from herpetologist import check_type
 
@@ -214,8 +215,7 @@ def textrank(
         vectors = vectorizer.vectorize(list(vocab.keys()))
     similar = cosine_similarity(vectors, vectors)
     similar[similar >= 0.99999] = 0
-    nx_graph = nx.from_numpy_array(similar)
-    scores = nx.pagerank(nx_graph, max_iter = 100)
+    scores = pagerank(similar)
     total = sum(scores)
     ranked_sentences = sorted(
         [
@@ -348,8 +348,7 @@ def similarity_transformer(
 
     similar = model._tree_plot(list(vocab.keys()))
     similar[similar >= 0.99999] = 0
-    nx_graph = nx.from_numpy_array(similar)
-    scores = nx.pagerank(nx_graph, max_iter = 100)
+    scores = pagerank(similar)
     ranked_sentences = sorted(
         [
             (scores[i], s)

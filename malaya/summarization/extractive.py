@@ -13,6 +13,7 @@ from malaya.text.function import (
     simple_textcleaning,
     STOPWORDS,
 )
+from malaya.graph.pagerank import pagerank
 from malaya.stem import sastrawi
 from malaya.model import skip_thought
 from malaya.cluster import cluster_words
@@ -144,8 +145,7 @@ class DEEP_SUMMARIZER:
 
         similar = cosine_similarity(vectors, vectors)
         similar[similar >= 0.99999] = 0
-        nx_graph = nx.from_numpy_array(similar)
-        scores = nx.pagerank(nx_graph, max_iter = 10000)
+        scores = pagerank(similar)
         ranked_sentences = sorted(
             ((scores[i], s) for i, s in enumerate(original_strings)),
             reverse = True,
@@ -262,13 +262,7 @@ def _base_summarizer(
     vectors = decomposition(tf.shape[1] // 2).fit_transform(tf)
     similar = cosine_similarity(vectors, vectors)
     similar[similar >= 0.999] = 0
-    nx_graph = nx.from_numpy_array(similar)
-    for _ in range(retry):
-        try:
-            scores = nx.pagerank(nx_graph, max_iter = 10000)
-            break
-        except:
-            pass
+    scores = pagerank(similar, retry)
     ranked_sentences = sorted(
         ((scores[i], s) for i, s in enumerate(original_strings)), reverse = True
     )
@@ -468,8 +462,7 @@ def doc2vec(
         vectors.append(aggregation_function(inside, axis = 0))
     similar = cosine_similarity(vectors, vectors)
     similar[similar >= 0.999] = 0
-    nx_graph = nx.from_numpy_array(similar)
-    scores = nx.pagerank(nx_graph, max_iter = 10000)
+    scores = pagerank(similar)
     ranked_sentences = sorted(
         ((scores[i], s) for i, s in enumerate(original_strings)), reverse = True
     )

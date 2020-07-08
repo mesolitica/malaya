@@ -16,8 +16,10 @@ version = '3.7'
 bump_version = '3.7.0'
 version_path = os.path.join(home, 'version')
 __version__ = bump_version
+path = os.path.dirname(__file__)
+enable_gpu = False
 
-if 'malaya_gpu' in os.path.dirname(__file__):
+if 'malaya_gpu' in path or 'malaya-gpu' in path or enable_gpu:
     from tensorflow.python.client import device_lib
 
     local_device_protos = device_lib.list_local_devices()
@@ -26,6 +28,18 @@ if 'malaya_gpu' in os.path.dirname(__file__):
     ]
 else:
     _gpu_devices = []
+
+
+def available_gpu():
+    """
+    Check Malaya is GPU version.
+
+    Returns
+    -------
+    result : list
+    """
+
+    return _gpu_devices
 
 
 def _delete_folder(folder):
@@ -66,18 +80,6 @@ else:
         _delete_folder(home)
         with open(version_path, 'w') as fopen:
             fopen.write(version)
-
-
-def available_gpu():
-    """
-    Check Malaya is GPU version.
-
-    Returns
-    -------
-    result : list
-    """
-
-    return _gpu_devices
 
 
 def print_cache(location = None):
