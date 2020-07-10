@@ -42,10 +42,11 @@ def padding_sequence(seq, maxlen, padding = 'post', pad_int = 0):
     return padded_seqs
 
 
-def bert_tokenization(tokenizer, texts):
+def bert_tokenization(tokenizer, texts, cleaning = transformer_textcleaning):
     input_ids, input_masks, segment_ids, s_tokens = [], [], [], []
     for text in texts:
-        text = transformer_textcleaning(text)
+        if cleaning:
+            text = cleaning(text)
         tokens_a = tokenizer.tokenize(text)[:MAXLEN]
         tokens = ['[CLS]'] + tokens_a + ['[SEP]']
         segment_id = [0] * len(tokens)

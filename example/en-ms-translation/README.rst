@@ -6,8 +6,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 4.94 s, sys: 1.22 s, total: 6.16 s
-    Wall time: 7.19 s
+    CPU times: user 5.07 s, sys: 1.29 s, total: 6.35 s
+    Wall time: 7.92 s
 
 
 List available Transformer models
@@ -22,9 +22,9 @@ List available Transformer models
 
 .. parsed-literal::
 
-    {'small': ['18.4MB', 'BLEU: 0.594'],
+    {'small': ['18.4MB', 'BLEU: 0.534'],
      'base': ['234MB', 'BLEU: 0.625'],
-     'large': ['815MB', 'BLEU: 0.792']}
+     'large': ['817MB', 'BLEU: 0.638']}
 
 
 
@@ -36,19 +36,8 @@ Load Transformer models
 .. code:: ipython3
 
     transformer = malaya.translation.en_ms.transformer()
-    # transformer_small = malaya.translation.ms_en.transformer(model = 'small')
-    # transformer_large = malaya.translation.ms_en.transformer(model = 'large')
-
-
-.. parsed-literal::
-
-    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/function/__init__.py:54: The name tf.gfile.GFile is deprecated. Please use tf.io.gfile.GFile instead.
-    
-    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/function/__init__.py:55: The name tf.GraphDef is deprecated. Please use tf.compat.v1.GraphDef instead.
-    
-    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/function/__init__.py:49: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
-    
-
+    transformer_small = malaya.translation.en_ms.transformer(model = 'small')
+    transformer_large = malaya.translation.en_ms.transformer(model = 'large')
 
 Translate
 ^^^^^^^^^
@@ -69,6 +58,9 @@ Translate
        -------
        result: List[str]
        """
+
+**For better results, we suggest do not to try translate more than 200
+words, always split by end of sentences**.
 
 .. code:: ipython3
 
@@ -260,7 +252,15 @@ Translate transformer base
 
 .. code:: ipython3
 
+    %%time
+    
     transformer.translate([string_news1, string_news2, string_news3], beam_search = False)
+
+
+.. parsed-literal::
+
+    CPU times: user 25.4 s, sys: 12.6 s, total: 37.9 s
+    Wall time: 10.7 s
 
 
 
@@ -275,7 +275,15 @@ Translate transformer base
 
 .. code:: ipython3
 
+    %%time
+    
     transformer.translate([string_article1, string_article2], beam_search = False)
+
+
+.. parsed-literal::
+
+    CPU times: user 15.6 s, sys: 8.32 s, total: 23.9 s
+    Wall time: 5.86 s
 
 
 
@@ -289,7 +297,15 @@ Translate transformer base
 
 .. code:: ipython3
 
+    %%time
+    
     transformer.translate([random_string1, random_string2], beam_search = False)
+
+
+.. parsed-literal::
+
+    CPU times: user 9.22 s, sys: 4.57 s, total: 13.8 s
+    Wall time: 3.54 s
 
 
 
@@ -298,6 +314,146 @@ Translate transformer base
 
     ['saya di sekolah perubatan.',
      'Emmerdale adalah album studio sulung, lagu-lagu tidak dikeluarkan di A.S <> Lagu-lagu ini tidak dikeluarkan dalam album edisi AS dan sebelumnya tidak dapat digunakan pada sebarang keluaran A.S.']
+
+
+
+Translate transformer small
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    %%time
+    
+    transformer_small.translate([string_news1, string_news2, string_news3], beam_search = False)
+
+
+.. parsed-literal::
+
+    CPU times: user 3.44 s, sys: 632 ms, total: 4.07 s
+    Wall time: 1.61 s
+
+
+
+
+.. parsed-literal::
+
+    ['KUALA LUMPUR 1 Julai - Datuk Seri Anwar Ibrahim tidak sesuai kerana calon perdana menteri kerana didakwa tidak "popular" dalam kalangan orang Melayu, Tun Dr Mahathir Mohamad mendakwa. Bekas perdana menteri itu dilaporkan berkata Presiden PKR memerlukan seseorang seperti dirinya untuk memperoleh sokongan daripada orang Melayu dan memenangi pilihan raya.',
+     '(CNN)New York Peguam Negara Letitia James pada Isnin mengarahkan Black Lives Matter Foundation-yang dia katakan tidak bergabung dengan pergerakan Black Lives Matter yang lebih besar - untuk berhenti mengumpulkan sumbangan di New York. "Saya mengarahkan Black Lives Matter Foundation untuk menghentikan sumbangan secara haram yang dimaksudkan untuk gerakan #BlackLivesMatter. Yayasan ini tidak bergabung dengan pergerakan, tetapi ia menerima sumbangan yang tidak dikira dan telah ditipu," James tweeted.',
+     'Antara inisiatif yang telah dimulakan secara meluas adalah kerangka makmal makanan yang mampan, suatu pembaharuan makanan yang diproses, dan bab kelestarian dalam semua perjanjian perdagangan dua hala EU. EU juga merancang untuk menerbitkan cadangan rangka perundangan untuk sistem makanan lestari menjelang 2023 untuk memastikan semua makanan di pasaran EU semakin lestari.']
+
+
+
+.. code:: ipython3
+
+    %%time
+    
+    transformer_small.translate([string_article1, string_article2], beam_search = False)
+
+
+.. parsed-literal::
+
+    CPU times: user 2.05 s, sys: 338 ms, total: 2.39 s
+    Wall time: 912 ms
+
+
+
+
+.. parsed-literal::
+
+    ['Laman ini berkongsi artikel terbaik saya untuk membaca topik seperti kesihatan, kebahagiaan, kreativiti, produktiviti dan lain-lain. Soalan pusat yang mendorong kerja saya adalah, "Bagaimana kita dapat hidup lebih baik?" Untuk menjawab soalan itu, saya suka menulis mengenai cara berasaskan sains untuk menyelesaikan masalah praktikal.',
+     'Pemadanan bahan api pada skala. Dari 3.7 jam kepada 0.2 saat. Bagaimana untuk melakukan pemadanan rentetan pintar dengan cara yang boleh skala hingga set data terbesar. Data di dunia sebenar tidak kemas. Menyangi set data tidak kemas. Memberi maklumat tidak kemas dan terbakar melalui masa yang boleh dibelanjakan menganalisis data itu sendiri.']
+
+
+
+.. code:: ipython3
+
+    %%time
+    
+    transformer_small.translate([random_string1, random_string2], beam_search = False)
+
+
+.. parsed-literal::
+
+    CPU times: user 1.4 s, sys: 252 ms, total: 1.65 s
+    Wall time: 555 ms
+
+
+
+
+.. parsed-literal::
+
+    ['saya di sekolah perubatan.',
+     'Emmerdale adalah album studio sulung, lagu-lagu tidak dikeluarkan dalam U.S <> Lagu-lagu ini tidak dikeluarkan dalam album kata A.S. dan sebelum ini tidak tersedia pada sebarang keluaran A.S.']
+
+
+
+Translate transformer large
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    %%time
+    
+    transformer_large.translate([string_news1, string_news2, string_news3], beam_search = False)
+
+
+.. parsed-literal::
+
+    CPU times: user 1min 11s, sys: 28.5 s, total: 1min 39s
+    Wall time: 25.2 s
+
+
+
+
+.. parsed-literal::
+
+    ['KUALA LUMPUR 1 Julai - Datuk Seri Anwar Ibrahim tidak sesuai menjadi calon Perdana Menteri kerana beliau didakwa tidak "popular" dalam kalangan orang Melayu, Tun Dr. Mahathir Mohamad mendakwa bekas Perdana Menteri itu dilaporkan berkata, Presiden PKR memerlukan seseorang seperti dirinya sendiri bagi mendapatkan sokongan daripada orang Melayu dan memenangi pilihan raya.',
+     '(CNN)New York Attorney General Letitia James on Monday ordered the Black Lives Matter Foundation-which she said is not affiliated with the larger Black Lives Matter movement-to stop collecting donations in New York. "I ordered the Black Lives Matter Foundation to stop illegally accepting donations that were intended for the #BlackLivesMatter movement. Yayasan ini tidak bergabung dengan gerakan tersebut, namun ia menerima sumbangan yang tidak terkira banyaknya dan niat baik yang tertipu," tweet James.',
+     'Antara inisiatif meluas yang dicadangkan adalah rangka kerja pelabelan makanan mampan, pembaharuan makanan diproses, dan bab kemampanan dalam semua perjanjian perdagangan dua hala EU. EU juga merancang untuk menerbitkan cadangan rangka kerja perundangan untuk sistem makanan lestari menjelang 2023 untuk memastikan semua makanan di pasaran EU menjadi semakin mampan.']
+
+
+
+.. code:: ipython3
+
+    %%time
+    
+    transformer_large.translate([string_article1, string_article2], beam_search = False)
+
+
+.. parsed-literal::
+
+    CPU times: user 42.6 s, sys: 17 s, total: 59.6 s
+    Wall time: 12.1 s
+
+
+
+
+.. parsed-literal::
+
+    ['Laman ini berkongsi artikel terbaik saya untuk membaca mengenai topik seperti kesihatan, kebahagiaan, kreativiti, produktiviti dan banyak lagi. Soalan utama yang mendorong karya saya adalah, "Bagaimana kita boleh hidup lebih baik?" Untuk menjawab soalan itu, saya suka menulis mengenai cara berasaskan sains untuk menyelesaikan masalah praktikal.',
+     'Pemadanan kabur pada skala. Dari 3.7 jam hingga 0.2 saat. Bagaimana melakukan pemadanan rentetan pintar dengan cara yang dapat skala bahkan set data terbesar. Data di dunia nyata tidak kemas. Berurusan dengan set data yang tidak kemas adalah menyakitkan dan terbakar melalui masa yang boleh dihabiskan untuk menganalisis data itu sendiri.']
+
+
+
+.. code:: ipython3
+
+    %%time
+    
+    transformer_large.translate([random_string1, random_string2], beam_search = False)
+
+
+.. parsed-literal::
+
+    CPU times: user 28.3 s, sys: 11.3 s, total: 39.6 s
+    Wall time: 7.85 s
+
+
+
+
+.. parsed-literal::
+
+    ['saya di sekolah perubatan.',
+     'Emmerdale adalah album studio sulung, lagu tidak dikeluarkan di A.S <> Lagu-lagu ini tidak dikeluarkan dalam edisi A.S. album itu dan sebelumnya tidak tersedia di mana-mana pelepasan A.S.']
 
 
 

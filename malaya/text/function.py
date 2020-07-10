@@ -58,6 +58,10 @@ def make_cleaning(s, c_dict):
     return s
 
 
+def translation_textcleaning(string):
+    return re.sub(r'[ ]+', ' ', unidecode(string)).strip()
+
+
 def transformer_textcleaning(string):
     """
     use by any transformer model before tokenization

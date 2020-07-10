@@ -60,6 +60,9 @@ Translate
        result: List[str]
        """
 
+**For better results, we suggest do not to try translate more than 200
+words, always split by end of sentences**.
+
 .. code:: ipython3
 
     from pprint import pprint

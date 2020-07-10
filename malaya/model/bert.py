@@ -3,6 +3,7 @@ from malaya.text.function import (
     entities_textcleaning,
     tag_chunk,
     split_into_sentences,
+    translation_textcleaning,
 )
 from malaya.text.bpe import (
     bert_tokenization_siamese,
@@ -976,3 +977,57 @@ class PARAPHRASE_BERT(BASE):
 
         else:
             return self._paraphrase([string])[0]
+
+
+class TRANSLATION:
+    def __init__(self, X, greedy, beam, sess, tokenizer):
+
+        self._X = X
+        self._greedy = greedy
+        self._beam = beam
+        self._sess = sess
+        self._tokenizer = tokenizer
+
+    def _translate(self, strings, beam_search = True):
+        input_ids, input_masks, input_segments, _ = bert_tokenization(
+            self._tokenizer, strings, cleaning = translation_textcleaning
+        )
+        if beam_search:
+            output = self._beam
+        else:
+            output = self._greedy
+        p = sess.run(
+            output,
+            feed_dict = {
+                model.X: batch_x,
+                model.input_masks: batch_mask,
+                model.segment_ids: batch_segment,
+            },
+        )
+
+        result = []
+        for output in p:
+            output = [i for i in output if i > 1]
+            output = self._tokenizer.convert_ids_to_tokens(output)
+            output = [(t, 1) for t in output]
+            output = merge_wordpiece_tokens(output)
+            output = [t[0] for t in output]
+            results.append(' '.join(output))
+        return result
+
+    @check_type
+    def translate(self, strings, beam_search = True):
+        """
+        translate list of strings.
+
+        Parameters
+        ----------
+        strings : List[str]
+        beam_search : bool, (optional=True)
+            If True, use beam search decoder, else use greedy decoder.
+
+        Returns
+        -------
+        result: List[str]
+        """
+        return self._translate(strings, beam_search = beam_search)

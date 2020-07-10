@@ -6,14 +6,11 @@ from malaya.text.function import (
     language_detection_textcleaning,
     split_into_sentences,
     transformer_textcleaning,
+    translation_textcleaning,
     pad_sentence_batch,
 )
 from herpetologist import check_type
 from typing import List
-
-
-def cleaning(string):
-    return re.sub(r'[ ]+', ' ', unidecode(string)).strip()
 
 
 def _convert_sparse_matrix_to_sparse_tensor(X, got_limit = False, limit = 5):
@@ -122,7 +119,8 @@ class PARAPHRASE:
 
     def _paraphrase(self, strings, beam_search = True):
         encoded = [
-            self._tokenizer.encode(cleaning(string)) + [1] for string in strings
+            self._tokenizer.encode(translation_textcleaning(string)) + [1]
+            for string in strings
         ]
         if beam_search:
             output = self._beam
@@ -194,7 +192,8 @@ class TRANSLATION:
 
     def _translate(self, strings, beam_search = True):
         encoded = [
-            self._tokenizer.encode(cleaning(string)) + [1] for string in strings
+            self._tokenizer.encode(translation_textcleaning(string)) + [1]
+            for string in strings
         ]
         if beam_search:
             output = self._beam

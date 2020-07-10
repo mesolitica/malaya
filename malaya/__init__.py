@@ -9,6 +9,7 @@
 import os
 from shutil import rmtree
 from pathlib import Path
+import logging
 
 
 home = os.path.join(str(Path.home()), 'Malaya')
@@ -107,7 +108,7 @@ def clear_all_cache():
     """
     _delete_macos()
     try:
-        print('clearing cached models..')
+        logging.info('clearing cached models..')
         _delete_folder(home)
         with open(version_path, 'w') as fopen:
             fopen.write(version)
@@ -167,8 +168,8 @@ def clear_session(model):
         elif hasattr(model, '_sess'):
             model._sess.close()
             success = True
-    except:
-        pass
+    except Exception as e:
+        logging.warning(e)
     return success
 
 

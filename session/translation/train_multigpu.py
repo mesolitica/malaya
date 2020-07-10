@@ -20,16 +20,20 @@ FLAGS = flags.FLAGS
 
 flags.DEFINE_string(
     'input_file',
-    None,
+    'multilanguagebert-train-*.tfrecord',
     'Input TF example files (can be a glob or comma separated).',
 )
 
 flags.DEFINE_string(
     'test_file',
-    None,
+    'multilanguagebert-test-*.tfrecord',
     'Input TF example files (can be a glob or comma separated).',
 )
-
+flags.DEFINE_string(
+    'init_checkpoint',
+    '../multi_cased_L-12_H-768_A-12/bert_model.ckpt',
+    'Initial checkpoint (usually from a pre-trained BERT model).',
+)
 flags.DEFINE_integer(
     'max_seq_length',
     256,
@@ -37,24 +41,73 @@ flags.DEFINE_integer(
     'Sequences longer than this will be truncated, and sequences shorter '
     'than this will be padded. Must match data generation.',
 )
-flags.DEFINE_integer('train_batch_size', 18, 'Total batch size for training.')
+flags.DEFINE_integer(
+    'train_batch_size', 18 * 3, 'Total batch size for training.'
+)
 
 flags.DEFINE_integer('eval_batch_size', 8, 'Total batch size for eval.')
 
-flags.DEFINE_float('learning_rate', 2e-5, 'The initial learning rate for Adam.')
+flags.DEFINE_float('learning_rate', 5e-5, 'The initial learning rate for Adam.')
 
-flags.DEFINE_integer('num_train_steps', 100000, 'Number of training steps.')
+flags.DEFINE_integer('num_train_steps', 500000, 'Number of training steps.')
 
 flags.DEFINE_integer('num_warmup_steps', 10000, 'Number of warmup steps.')
 
 flags.DEFINE_integer(
-    'save_checkpoints_steps', 1000, 'How often to save the model checkpoint.'
+    'save_checkpoints_steps', 25000, 'How often to save the model checkpoint.'
 )
-flags.DEFINE_bool('use_gpu', False, 'Whether to use GPU.')
+flags.DEFINE_bool('use_gpu', True, 'Whether to use GPU.')
 flags.DEFINE_integer(
     'num_gpu_cores',
     3,
     'Only used if `use_gpu` is True. Total number of GPU cores to use.',
+)
+flags.DEFINE_bool('do_train', True, 'Whether to run training.')
+
+flags.DEFINE_bool('do_eval', True, 'Whether to run eval on the dev set.')
+
+flags.DEFINE_string(
+    'output_dir',
+    'multibert-transformer',
+    'The output directory where the model checkpoints will be written.',
+)
+flags.DEFINE_bool('use_tpu', False, 'Whether to use TPU or GPU/CPU.')
+tf.flags.DEFINE_string(
+    'tpu_name',
+    None,
+    'The Cloud TPU to use for training. This should be either the name '
+    'used when creating the Cloud TPU, or a grpc://ip.address.of.tpu:8470 '
+    'url.',
+)
+
+tf.flags.DEFINE_string(
+    'tpu_zone',
+    None,
+    '[Optional] GCE zone where the Cloud TPU is located in. If not '
+    'specified, we will attempt to automatically detect the GCE project from '
+    'metadata.',
+)
+
+tf.flags.DEFINE_string(
+    'gcp_project',
+    None,
+    '[Optional] Project name for the Cloud TPU-enabled project. If not '
+    'specified, we will attempt to automatically detect the GCE project from '
+    'metadata.',
+)
+
+tf.flags.DEFINE_string('master', None, '[Optional] TensorFlow master URL.')
+
+flags.DEFINE_integer(
+    'num_tpu_cores',
+    8,
+    'Only used if `use_tpu` is True. Total number of TPU cores to use.',
+)
+
+flags.DEFINE_integer(
+    'iterations_per_loop',
+    1000,
+    'How many steps to make in each estimator call.',
 )
 
 
@@ -86,8 +139,41 @@ def per_device_batch_size(batch_size, num_gpus):
     return int(batch_size / num_gpus)
 
 
+import collections
+import re
+
+
+def get_assignment_map_from_checkpoint(tvars, init_checkpoint):
+    """Compute the union of the current variables and checkpoint variables."""
+    assignment_map = {}
+    initialized_variable_names = {}
+
+    name_to_variable = collections.OrderedDict()
+    for var in tvars:
+        name = var.name
+        m = re.match('^(.*):\\d+$', name)
+        if m is not None:
+            name = m.group(1)
+        name_to_variable[name] = var
+
+    init_vars = tf.train.list_variables(init_checkpoint)
+
+    assignment_map = collections.OrderedDict()
+    for x in init_vars:
+        (name, var) = (x[0], x[1])
+        if 'bert/' + name in name_to_variable:
+            assignment_map[name] = name_to_variable['bert/' + name]
+            initialized_variable_names[name] = 1
+            initialized_variable_names[name + ':0'] = 1
+        elif name in name_to_variable:
+            assignment_map[name] = name_to_variable[name]
+            initialized_variable_names[name] = 1
+            initialized_variable_names[name + ':0'] = 1
+
+    return (assignment_map, initialized_variable_names)
+
+
 def model_fn_builder(
-    bert_config,
     init_checkpoint,
     learning_rate,
     num_train_steps,
@@ -122,9 +208,20 @@ def model_fn_builder(
             token_type_ids = segment_ids,
             Y = y,
         )
+        o = model.get_sequence_output()
+        Y_seq_len = tf.count_nonzero(y, 1, dtype = tf.int32)
+        masks = tf.sequence_mask(Y_seq_len, tf.shape(y)[1], dtype = tf.float32)
+        total_loss = tf.contrib.seq2seq.sequence_loss(
+            logits = o, targets = y, weights = masks
+        )
+        y_t = tf.argmax(o, axis = 2)
+        y_t = tf.cast(y_t, tf.int32)
+        prediction = tf.boolean_mask(y_t, masks)
+        mask_label = tf.boolean_mask(y, masks)
+        correct_pred = tf.equal(prediction, mask_label)
+        correct_index = tf.cast(correct_pred, tf.float32)
+        total_accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
 
-        total_loss = model.cost
-        total_bleu = model.bleu
         tvars = tf.trainable_variables()
         initialized_variable_names = {}
         scaffold_fn = None
@@ -133,6 +230,7 @@ def model_fn_builder(
                 assignment_map,
                 initialized_variable_names,
             ) = get_assignment_map_from_checkpoint(tvars, init_checkpoint)
+            print(initialized_variable_names)
             if use_tpu:
 
                 def tpu_scaffold():
@@ -184,10 +282,10 @@ def model_fn_builder(
                 )
         elif mode == tf.estimator.ModeKeys.EVAL:
 
-            def metric_fn(loss, bleu):
-                return {'total_loss': loss, 'total_bleu': bleu}
+            def metric_fn(loss, accuracy):
+                return {'total_loss': loss, 'total_accuracy': accuracy}
 
-            eval_metrics = (metric_fn, [total_loss, total_bleu])
+            eval_metrics = (metric_fn, [total_loss, total_accuracy])
             if FLAGS.use_gpu and int(FLAGS.num_gpu_cores) >= 2:
                 output_spec = tf.estimator.EstimatorSpec(
                     mode = mode,
@@ -213,17 +311,12 @@ def model_fn_builder(
 
 
 def input_fn_builder(
-    input_files,
-    max_seq_length,
-    max_predictions_per_seq,
-    is_training,
-    num_cpu_threads = 4,
+    input_files, max_seq_length, is_training, batch_size, num_cpu_threads = 4
 ):
     """Creates an `input_fn` closure to be passed to TPUEstimator."""
 
     def input_fn(params):
         """The actual input function."""
-        batch_size = params['batch_size']
 
         name_to_features = {
             'input_ids': tf.FixedLenFeature([max_seq_length], tf.int64),
@@ -348,7 +441,6 @@ def main(_):
         )
 
     model_fn = model_fn_builder(
-        bert_config = bert_config,
         init_checkpoint = FLAGS.init_checkpoint,
         learning_rate = FLAGS.learning_rate,
         num_train_steps = FLAGS.num_train_steps,
@@ -377,10 +469,9 @@ def main(_):
         tf.logging.info('  Batch size = %d', FLAGS.train_batch_size)
 
         if FLAGS.use_gpu and int(FLAGS.num_gpu_cores) >= 2:
-            train_input_fn = input_fn_builder_gpu(
+            train_input_fn = input_fn_builder(
                 input_files = input_files,
                 max_seq_length = FLAGS.max_seq_length,
-                max_predictions_per_seq = FLAGS.max_predictions_per_seq,
                 is_training = True,
                 batch_size = per_device_batch_size(
                     FLAGS.train_batch_size, FLAGS.num_gpu_cores
@@ -390,7 +481,6 @@ def main(_):
             train_input_fn = input_fn_builder(
                 input_files = input_files,
                 max_seq_length = FLAGS.max_seq_length,
-                max_predictions_per_seq = FLAGS.max_predictions_per_seq,
                 is_training = True,
             )
         estimator.train(
@@ -405,7 +495,6 @@ def main(_):
             train_input_fn = input_fn_builder_gpu(
                 input_files = test_files,
                 max_seq_length = FLAGS.max_seq_length,
-                max_predictions_per_seq = FLAGS.max_predictions_per_seq,
                 is_training = False,
                 batch_size = FLAGS.eval_batch_size,
             )
@@ -413,7 +502,6 @@ def main(_):
             eval_input_fn = input_fn_builder(
                 input_files = test_files,
                 max_seq_length = FLAGS.max_seq_length,
-                max_predictions_per_seq = FLAGS.max_predictions_per_seq,
                 is_training = False,
             )
 
