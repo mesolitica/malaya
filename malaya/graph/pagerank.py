@@ -6,6 +6,7 @@ import logging
 
 def pagerank(array, retry = 5):
     cpu = False
+    fail = True
     if gpu_available():
         try:
             import cugraph
@@ -27,8 +28,14 @@ def pagerank(array, retry = 5):
         for _ in range(retry):
             try:
                 scores = nx.pagerank(nx_graph, max_iter = 10000)
+                fail = False
                 break
-            except:
-                pass
+            except Exception as e:
+                logging.warning(e)
+
+    if fail:
+        raise Exception(
+            'pagerank not able to converge, rerun may able to solve it.'
+        )
 
     return scores

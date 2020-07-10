@@ -16,8 +16,10 @@ After that simply install gpu version,
 GPU Version Benefit
 --------------------
 
-1. Different models different GPUs.
+1. Limit GPU memory.
 2. Automatically try to use cugraph for any networkx functions.
+
+**We will add more GPU benefits in the future**.
 
 Different models different GPUs
 ----------------------------------

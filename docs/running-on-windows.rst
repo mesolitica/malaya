@@ -20,6 +20,12 @@ T5 depends on tensorflow-text, currently there is no official
 tensorflow-text binary released for Windows. So no T5 model for Windows
 users.
 
+List T5 models,
+
+1. `malaya.summarization.abstractive.t5 <https://malaya.readthedocs.io/en/latest/Abstractive.html#load-t5>`__
+2. `malaya.generator.t5 <https://malaya.readthedocs.io/en/latest/Generator.html#load-t5>`__
+3. `malaya.paraphrase.t5 <https://malaya.readthedocs.io/en/latest/Paraphrase.html#load-t5-models>`__
+
 Lack development on Windows
 ---------------------------
 
