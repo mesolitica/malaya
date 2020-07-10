@@ -21,26 +21,19 @@ path = os.path.dirname(__file__)
 enable_gpu = False
 
 if 'malaya_gpu' in path or 'malaya-gpu' in path or enable_gpu:
-    from tensorflow.python.client import device_lib
-
-    local_device_protos = device_lib.list_local_devices()
-    _gpu_devices = [
-        x.name for x in local_device_protos if x.device_type == 'GPU'
-    ]
-else:
-    _gpu_devices = []
+    enable_gpu = True
 
 
-def available_gpu():
+def gpu_available():
     """
     Check Malaya is GPU version.
 
     Returns
     -------
-    result : list
+    result : bool
     """
 
-    return _gpu_devices
+    return enable_gpu
 
 
 def _delete_folder(folder):

@@ -13,7 +13,7 @@ import requests
 import os
 from tqdm import tqdm
 from pathlib import Path
-from malaya import _delete_folder, available_gpu
+from malaya import _delete_folder, gpu_available
 
 try:
     from tensorflow.contrib.seq2seq.python.ops import beam_search_ops
@@ -46,21 +46,20 @@ def download_file(url, filename):
 
 
 def generate_session(graph, **kwargs):
-    if len(available_gpu()):
-        if 'gpu' in kwargs:
-            gpu_options = tf.GPUOptions(visible_device_list = kwargs['gpu'])
+    if gpu_available():
+        if 'gpu_limit' in kwargs:
+            try:
+                gpu_limit = float(kwargs['gpu_limit'])
+            except:
+                raise ValueError('gpu_limit must be a float')
+            if not 0 < gpu_limit < 1:
+                raise ValueError('gpu_limit must 0 < gpu_limit < 1')
+
+            gpu_options = tf.GPUOptions(
+                per_process_gpu_memory_fraction = gpu_limit
+            )
             config = tf.ConfigProto(gpu_options = gpu_options)
             config.gpu_options.allow_growth = True
-
-            if 'gpu_limit' in kwargs:
-                try:
-                    gpu_limit = float(kwargs['gpu_limit'])
-                except:
-                    raise ValueError('gpu_limit must be a float')
-                if not 0 < gpu_limit < 1:
-                    raise ValueError('gpu_limit must 0 < gpu_limit < 1')
-
-                config.gpu_options.per_process_gpu_memory_fraction = gpu_limit
             sess = tf.InteractiveSession(config = config, graph = graph)
 
     else:

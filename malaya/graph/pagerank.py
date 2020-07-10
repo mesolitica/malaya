@@ -1,4 +1,4 @@
-from malaya import available_gpu
+from malaya import gpu_available
 from networkx import nx
 import numpy as np
 import logging
@@ -6,7 +6,7 @@ import logging
 
 def pagerank(array, retry = 5):
     cpu = False
-    if len(available_gpu()):
+    if gpu_available():
         try:
             import cugraph
 
