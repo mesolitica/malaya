@@ -7,13 +7,24 @@
 
 .. parsed-literal::
 
-    CPU times: user 5.79 s, sys: 2.45 s, total: 8.24 s
-    Wall time: 3.63 s
+    CPU times: user 5.14 s, sys: 1.96 s, total: 7.1 s
+    Wall time: 4.42 s
 
+
+Check Malaya is GPU
+-------------------
+
+Make sure install ``malaya-gpu`` to utilize full gpu functions in
+Malaya,
+
+.. code:: bash
+
+
+   pip install malaya-gpu
 
 .. code:: ipython3
 
-    malaya.gpu_available()
+    malaya.check_malaya_gpu()
 
 
 
@@ -24,6 +35,22 @@
 
 
 
+List available GPU
+------------------
+
+.. code:: ipython3
+
+    malaya.__gpu__
+
+
+
+
+.. parsed-literal::
+
+    ['/device:GPU:0', '/device:GPU:1', '/device:GPU:2', '/device:GPU:3']
+
+
+
 .. code:: ipython3
 
     !nvidia-smi
@@ -31,7 +58,7 @@
 
 .. parsed-literal::
 
-    Fri Jul 10 12:39:26 2020       
+    Sun Jul 12 19:25:50 2020       
     +-----------------------------------------------------------------------------+
     | NVIDIA-SMI 410.129      Driver Version: 410.129      CUDA Version: 10.0     |
     |-------------------------------+----------------------+----------------------+
@@ -39,7 +66,7 @@
     | Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
     |===============================+======================+======================|
     |   0  Tesla V100-DGXS...  On   | 00000000:07:00.0  On |                    0 |
-    | N/A   43C    P0    39W / 300W |      0MiB / 32475MiB |      0%      Default |
+    | N/A   44C    P0    39W / 300W |      0MiB / 32475MiB |      0%      Default |
     +-------------------------------+----------------------+----------------------+
     |   1  Tesla V100-DGXS...  On   | 00000000:08:00.0 Off |                    0 |
     | N/A   45C    P0    39W / 300W |      0MiB / 32478MiB |      0%      Default |
@@ -48,7 +75,7 @@
     | N/A   44C    P0    38W / 300W |      0MiB / 32478MiB |      0%      Default |
     +-------------------------------+----------------------+----------------------+
     |   3  Tesla V100-DGXS...  On   | 00000000:0F:00.0 Off |                    0 |
-    | N/A   44C    P0    40W / 300W |      0MiB / 32478MiB |      0%      Default |
+    | N/A   45C    P0    43W / 300W |      0MiB / 32478MiB |      0%      Default |
     +-------------------------------+----------------------+----------------------+
                                                                                    
     +-----------------------------------------------------------------------------+
@@ -61,6 +88,32 @@
 
 Right now all the GPUs in resting mode, no computation happened.
 
+Limit GPU memory
+----------------
+
+By default Malaya will not set max cap for GPU memory, to put a cap,
+override ``gpu_limit`` parameter in any load model API. ``gpu_limit``
+should 0 < ``gpu_limit`` < 1. If ``gpu_limit = 0.3``, it means the model
+will not use more than 30% of GPU memory.
+
+.. code:: python
+
+
+   malaya.sentiment.transformer(gpu_limit = 0.3)
+
+N Models to N gpus
+------------------
+
+To allocate a model to another GPU, use ``gpu`` parameter, default is 0.
+
+.. code:: python
+
+
+   model_sentiment = malaya.sentiment.transformer(model = 'bert', gpu_limit = 0.5, gpu = 0)
+   model_subjectivity = malaya.subjectivity.transformer(model = 'bert', gpu_limit = 0.5, gpu = 1)
+   model_emotion = malaya.emotion.transformer(model = 'bert', gpu_limit = 0.5, gpu = 2)
+   model_translation = malaya.translation.ms_en.transformer(gpu_limit = 0.5, gpu = 3)
+
 GPU Rules
 ---------
 
@@ -70,12 +123,8 @@ GPU Rules
    batch size.
 2. Use ``malaya.clear_session`` to clear session from unused models but
    this will not free GPU memory.
-3. By default Malaya will not set max cap for GPU memory, to put a cap,
-   override ``gpu_limit`` parameter in any load model API. ``gpu_limit``
-   should 0 < ``gpu_limit`` < 1. If ``gpu_limit = 0.3``, it means the
-   model will not use more than 30% of GPU memory.
-4. Even if you installed Malaya CPU version, it will always to load the
-   models in GPU first, if failed, it will load it in CPU.
+3. Even if you installed Malaya CPU version, it will always to load the
+   models in GPU 0 first, if failed, it will load it in CPU.
 
 .. code:: ipython3
 
@@ -88,20 +137,21 @@ GPU Rules
 
 .. code:: ipython3
 
-    model = malaya.emotion.transformer(model = 'bert', gpu_limit = 0.5)
+    model_sentiment = malaya.sentiment.transformer(model = 'bert', gpu_limit = 0.5, gpu = 0)
+    model_subjectivity = malaya.subjectivity.transformer(model = 'bert', gpu_limit = 0.5, gpu = 1)
+    model_emotion = malaya.emotion.transformer(model = 'bert', gpu_limit = 0.5, gpu = 2)
+    model_translation = malaya.translation.ms_en.transformer(gpu_limit = 0.5, gpu = 3)
 
 
 .. parsed-literal::
 
-    WARNING:tensorflow:From /home/husein/malaya/Malaya/malaya/function/__init__.py:72: The name tf.gfile.GFile is deprecated. Please use tf.io.gfile.GFile instead.
+    WARNING:tensorflow:From /home/husein/malaya/Malaya/malaya/function/__init__.py:73: The name tf.gfile.GFile is deprecated. Please use tf.io.gfile.GFile instead.
     
-    WARNING:tensorflow:From /home/husein/malaya/Malaya/malaya/function/__init__.py:73: The name tf.GraphDef is deprecated. Please use tf.compat.v1.GraphDef instead.
+    WARNING:tensorflow:From /home/husein/malaya/Malaya/malaya/function/__init__.py:75: The name tf.GraphDef is deprecated. Please use tf.compat.v1.GraphDef instead.
     
-    WARNING:tensorflow:From /home/husein/malaya/Malaya/malaya/function/__init__.py:58: The name tf.GPUOptions is deprecated. Please use tf.compat.v1.GPUOptions instead.
+    WARNING:tensorflow:From /home/husein/malaya/Malaya/malaya/function/__init__.py:50: The name tf.ConfigProto is deprecated. Please use tf.compat.v1.ConfigProto instead.
     
-    WARNING:tensorflow:From /home/husein/malaya/Malaya/malaya/function/__init__.py:61: The name tf.ConfigProto is deprecated. Please use tf.compat.v1.ConfigProto instead.
-    
-    WARNING:tensorflow:From /home/husein/malaya/Malaya/malaya/function/__init__.py:63: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
+    WARNING:tensorflow:From /home/husein/malaya/Malaya/malaya/function/__init__.py:65: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
     
 
 
@@ -109,57 +159,29 @@ GPU Rules
 
     %%time
     
-    model.predict_proba(
+    model_sentiment.predict_proba(
         [anger_text, fear_text, happy_text, love_text, sadness_text, surprise_text]
     )
+    model_subjectivity.predict_proba(
+        [anger_text, fear_text, happy_text, love_text, sadness_text, surprise_text]
+    )
+    model_emotion.predict_proba(
+        [anger_text, fear_text, happy_text, love_text, sadness_text, surprise_text]
+    )
+    model_translation.translate(['Mahathir buat keputusan terburu-buru'])
 
 
 .. parsed-literal::
 
-    CPU times: user 1.8 s, sys: 504 ms, total: 2.3 s
-    Wall time: 2.3 s
+    CPU times: user 8.61 s, sys: 2.71 s, total: 11.3 s
+    Wall time: 10.8 s
 
 
 
 
 .. parsed-literal::
 
-    [{'anger': 0.99989223,
-      'fear': 1.5843118e-05,
-      'happy': 1.660186e-05,
-      'love': 1.9634477e-05,
-      'sadness': 3.827092e-05,
-      'surprise': 1.7427232e-05},
-     {'anger': 4.894743e-05,
-      'fear': 0.999795,
-      'happy': 6.764499e-05,
-      'love': 3.6289443e-05,
-      'sadness': 1.9702624e-05,
-      'surprise': 3.2430926e-05},
-     {'anger': 0.9997905,
-      'fear': 2.5795038e-05,
-      'happy': 6.7572015e-05,
-      'love': 2.6636817e-05,
-      'sadness': 6.734582e-05,
-      'surprise': 2.2285754e-05},
-     {'anger': 2.4449551e-05,
-      'fear': 2.6033362e-05,
-      'happy': 3.1518703e-05,
-      'love': 0.9998758,
-      'sadness': 1.895303e-05,
-      'surprise': 2.326243e-05},
-     {'anger': 8.095824e-05,
-      'fear': 2.3824483e-05,
-      'happy': 2.1045413e-05,
-      'love': 1.6150812e-05,
-      'sadness': 0.99983835,
-      'surprise': 1.9708685e-05},
-     {'anger': 4.470948e-05,
-      'fear': 0.00010641558,
-      'happy': 2.9055469e-05,
-      'love': 4.5270677e-05,
-      'sadness': 5.7159534e-05,
-      'surprise': 0.9997173}]
+    ['Mahathir made a hasty decision']
 
 
 
@@ -170,7 +192,7 @@ GPU Rules
 
 .. parsed-literal::
 
-    Fri Jul 10 12:39:56 2020       
+    Sun Jul 12 19:26:18 2020       
     +-----------------------------------------------------------------------------+
     | NVIDIA-SMI 410.129      Driver Version: 410.129      CUDA Version: 10.0     |
     |-------------------------------+----------------------+----------------------+
@@ -178,39 +200,25 @@ GPU Rules
     | Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
     |===============================+======================+======================|
     |   0  Tesla V100-DGXS...  On   | 00000000:07:00.0  On |                    0 |
-    | N/A   44C    P0    54W / 300W |   1099MiB / 32475MiB |      0%      Default |
+    | N/A   45C    P0    54W / 300W |   1101MiB / 32475MiB |      0%      Default |
     +-------------------------------+----------------------+----------------------+
     |   1  Tesla V100-DGXS...  On   | 00000000:08:00.0 Off |                    0 |
-    | N/A   45C    P0    52W / 300W |    418MiB / 32478MiB |      0%      Default |
+    | N/A   46C    P0    52W / 300W |   1100MiB / 32478MiB |      0%      Default |
     +-------------------------------+----------------------+----------------------+
     |   2  Tesla V100-DGXS...  On   | 00000000:0E:00.0 Off |                    0 |
-    | N/A   44C    P0    51W / 300W |    418MiB / 32478MiB |      0%      Default |
+    | N/A   45C    P0    52W / 300W |   1100MiB / 32478MiB |      0%      Default |
     +-------------------------------+----------------------+----------------------+
     |   3  Tesla V100-DGXS...  On   | 00000000:0F:00.0 Off |                    0 |
-    | N/A   45C    P0    54W / 300W |    418MiB / 32478MiB |      0%      Default |
+    | N/A   45C    P0    53W / 300W |   1100MiB / 32478MiB |      0%      Default |
     +-------------------------------+----------------------+----------------------+
                                                                                    
     +-----------------------------------------------------------------------------+
     | Processes:                                                       GPU Memory |
     |  GPU       PID   Type   Process name                             Usage      |
     |=============================================================================|
-    |    0     35310      C   /usr/bin/python3                            1087MiB |
-    |    1     35310      C   /usr/bin/python3                             407MiB |
-    |    2     35310      C   /usr/bin/python3                             407MiB |
-    |    3     35310      C   /usr/bin/python3                             407MiB |
+    |    0     12786      C   /usr/bin/python3                            1089MiB |
+    |    1     12786      C   /usr/bin/python3                            1089MiB |
+    |    2     12786      C   /usr/bin/python3                            1089MiB |
+    |    3     12786      C   /usr/bin/python3                            1089MiB |
     +-----------------------------------------------------------------------------+
-
-
-.. code:: ipython3
-
-    malaya.clear_session(model)
-
-
-
-
-.. parsed-literal::
-
-    True
-
-
 

@@ -17,12 +17,10 @@ GPU Version Benefit
 --------------------
 
 1. Limit GPU memory.
-2. Automatically try to use cugraph for any networkx functions.
+2. N Models to N gpus.
+3. Automatically try to use cugraph for any networkx functions.
 
 **We will add more GPU benefits in the future**.
-
-Different models different GPUs
-----------------------------------
 
 .. note::
 
