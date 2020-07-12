@@ -42,7 +42,7 @@ def transformer(model = 'base', **kwargs):
     s3_path = S3_PATH_TRANSLATION['en-ms']
 
     check_file(path[model], s3_path[model], **kwargs)
-    g = load_graph(path[model]['model'])
+    g = load_graph(path[model]['model'], **kwargs)
 
     from malaya.text.t2t import text_encoder
     from malaya.model.tf import TRANSLATION

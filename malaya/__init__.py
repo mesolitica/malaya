@@ -14,14 +14,43 @@ import logging
 
 home = os.path.join(str(Path.home()), 'Malaya')
 version = '3.7'
-bump_version = '3.7.0'
+bump_version = '3.7.1'
 version_path = os.path.join(home, 'version')
 __version__ = bump_version
 path = os.path.dirname(__file__)
-enable_gpu = False
 
-if 'malaya_gpu' in path or 'malaya-gpu' in path or enable_gpu:
-    enable_gpu = True
+
+def available_gpu():
+    """
+    Get list of GPUs from `nvidia-smi`.
+
+    Returns
+    -------
+    result : List[str]
+    """
+    percent = []
+    try:
+        ns = os.popen('nvidia-smi')
+        lines_ns = ns.readlines()
+        for line in lines_ns:
+            if line.find('%') != -1:
+                percent.append(int(line.split('%')[-2][-3:]))
+        percent = [f'/device:GPU:{i}' for i in range(len(percent))]
+    except:
+        pass
+    return percent
+
+
+def check_malaya_gpu():
+    import pkg_resources
+
+    return 'malaya-gpu' in [p.project_name for p in pkg_resources.working_set]
+
+
+if check_malaya_gpu():
+    __gpu__ = available_gpu()
+else:
+    __gpu__ = []
 
 
 def gpu_available():
@@ -33,7 +62,7 @@ def gpu_available():
     result : bool
     """
 
-    return enable_gpu
+    return len(__gpu__) > 0
 
 
 def _delete_folder(folder):

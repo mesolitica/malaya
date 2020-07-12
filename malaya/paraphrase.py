@@ -126,7 +126,7 @@ def transformer(model = 'base', **kwargs):
         s3_path = S3_PATH_PARAPHRASE[model]
 
         check_file(path, s3_path, **kwargs)
-        g = load_graph(path['model'])
+        g = load_graph(path['model'], **kwargs)
 
         if model in ['bert', 'tiny-bert']:
             from malaya.text.bpe import sentencepiece_tokenizer_bert
@@ -151,7 +151,7 @@ def transformer(model = 'base', **kwargs):
         s3_path = S3_PATH_PARAPHRASE['transformer']
 
         check_file(path[model], s3_path[model], **kwargs)
-        g = load_graph(path[model]['model'])
+        g = load_graph(path[model]['model'], **kwargs)
 
         from malaya.text.t2t import text_encoder
         from malaya.model.tf import PARAPHRASE

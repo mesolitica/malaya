@@ -168,7 +168,7 @@ def transformer(model: str = 'xlnet', **kwargs):
         )
 
     check_file(PATH_DEPENDENCY[model], S3_PATH_DEPENDENCY[model], **kwargs)
-    g = load_graph(PATH_DEPENDENCY[model]['model'])
+    g = load_graph(PATH_DEPENDENCY[model]['model'], **kwargs)
 
     if model in ['bert', 'tiny-bert', 'albert', 'tiny-albert']:
         from malaya.model.bert import DEPENDENCY_BERT

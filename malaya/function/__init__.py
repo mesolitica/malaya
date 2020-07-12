@@ -13,7 +13,7 @@ import requests
 import os
 from tqdm import tqdm
 from pathlib import Path
-from malaya import _delete_folder, gpu_available
+from malaya import _delete_folder, gpu_available, __gpu__
 
 try:
     from tensorflow.contrib.seq2seq.python.ops import beam_search_ops
@@ -47,40 +47,56 @@ def download_file(url, filename):
 
 def generate_session(graph, **kwargs):
     if gpu_available():
+        config = tf.ConfigProto()
+        if 'gpu' in kwargs:
+            config.allow_soft_placement = True
+
         if 'gpu_limit' in kwargs:
             try:
-                gpu_limit = float(kwargs['gpu_limit'])
+                gpu_limit = float(kwargs.get('gpu_limit', 0.999))
             except:
                 raise ValueError('gpu_limit must be a float')
             if not 0 < gpu_limit < 1:
                 raise ValueError('gpu_limit must 0 < gpu_limit < 1')
 
-            gpu_options = tf.GPUOptions(
-                per_process_gpu_memory_fraction = gpu_limit
-            )
-            config = tf.ConfigProto(gpu_options = gpu_options)
-            config.gpu_options.allow_growth = True
-            sess = tf.InteractiveSession(config = config, graph = graph)
+            config.gpu_options.per_process_gpu_memory_fraction = gpu_limit
+            
+        config.gpu_options.allow_growth = True
+        sess = tf.InteractiveSession(config = config, graph = graph)
 
     else:
         sess = tf.InteractiveSession(graph = graph)
     return sess
 
 
-def load_graph(frozen_graph_filename):
-    try:
-        with tf.gfile.GFile(frozen_graph_filename, 'rb') as f:
+def load_graph(frozen_graph_filename, **kwargs):
+    with tf.gfile.GFile(frozen_graph_filename, 'rb') as f:
+        try:
             graph_def = tf.GraphDef()
             graph_def.ParseFromString(f.read())
-        with tf.Graph().as_default() as graph:
+        except Exception as e:
+            path = frozen_graph_filename.split('Malaya/')[1]
+            path = '/'.join(path.split('/')[:-1])
+            raise Exception(
+                f"{e}, file corrupted due to some reasons, please run malaya.clear_cache('{path}') and try again"
+            )
+
+    with tf.Graph().as_default() as graph:
+        if gpu_available():
+            if 'gpu' in kwargs:
+                gpu = kwargs.get('gpu', 0)
+                if not isinstance(gpu, int):
+                    raise ValueError('gpu must an int')
+                if not 0 <= gpu < len(__gpu__):
+                    raise ValueError(f'gpu must 0 <= gpu < {len(__gpu__)}')
+                gpu = str(gpu)
+                with tf.device(f'/device:GPU:{gpu}'):
+                    tf.import_graph_def(graph_def)
+            else:
+                tf.import_graph_def(graph_def)
+        else:
             tf.import_graph_def(graph_def)
-        return graph
-    except Exception as e:
-        path = frozen_graph_filename.split('Malaya/')[1]
-        path = '/'.join(path.split('/')[:-1])
-        raise Exception(
-            f"{e}, file corrupted due to some reasons, please run malaya.clear_cache('{path}') and try again"
-        )
+    return graph
 
 
 def check_available(file):

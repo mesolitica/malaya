@@ -10,7 +10,7 @@ from malaya.model.xlnet import TAGGING_XLNET
 
 def transformer(path, s3_path, class_name, model = 'xlnet', **kwargs):
     check_file(path[model], s3_path[model], **kwargs)
-    g = load_graph(path[model]['model'])
+    g = load_graph(path[model]['model'], **kwargs)
 
     try:
         with open(path[model]['setting']) as fopen:

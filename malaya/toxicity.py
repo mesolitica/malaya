@@ -126,7 +126,7 @@ def transformer(model: str = 'xlnet', **kwargs):
         )
 
     check_file(PATH_TOXIC[model], S3_PATH_TOXIC[model], **kwargs)
-    g = load_graph(PATH_TOXIC[model]['model'])
+    g = load_graph(PATH_TOXIC[model]['model'], **kwargs)
 
     path = PATH_TOXIC
 

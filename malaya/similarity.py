@@ -450,7 +450,7 @@ def _transformer(model, bert_class, xlnet_class, **kwargs):
         )
 
     check_file(PATH_SIMILARITY[model], S3_PATH_SIMILARITY[model], **kwargs)
-    g = load_graph(PATH_SIMILARITY[model]['model'])
+    g = load_graph(PATH_SIMILARITY[model]['model'], **kwargs)
 
     path = PATH_SIMILARITY
 

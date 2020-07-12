@@ -164,17 +164,6 @@ Thank you for contributing this library, really helps a lot. Feel free to contac
         <img alt="logo" width="30%" src="https://contributors-img.firebaseapp.com/image?repo=huseinzol05/malaya">
     </a>
 
-Ads
---------
-
-.. raw:: html
-
-    <a href="https://tracking.gitads.io/?repo=Malaya">
-        <img src="https://images.gitads.io/Malaya" alt="GitAds" width="50%">
-    </a>
-
-*Ads served ethically.*
-
 License
 --------
 

@@ -165,7 +165,7 @@ def deep_model(**kwargs):
     from malaya.preprocessing import _tokenizer
 
     check_file(PATH_STEM['deep'], S3_PATH_STEM['deep'], **kwargs)
-    g = load_graph(PATH_STEM['deep']['model'])
+    g = load_graph(PATH_STEM['deep']['model'], **kwargs)
 
     bpe, subword_mode = load_yttm(PATH_STEM['deep']['bpe'], id_mode = True)
 
