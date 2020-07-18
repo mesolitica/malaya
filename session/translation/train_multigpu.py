@@ -13,6 +13,25 @@ from tensorflow.python.distribute.cross_device_ops import (
 import tensorflow as tf
 from tensorflow.python.estimator.run_config import RunConfig
 from tensorflow.python.estimator.estimator import Estimator
+from tensor2tensor.data_generators import problem_hparams
+from tensor2tensor.utils import hparam
+from tensor2tensor.utils import t2t_model
+from tensor2tensor.utils import test_utils
+
+model_hparams = hparam.HParams(
+    prepend_mode = 'none',
+    loss = {},
+    weights_fn = {},
+    label_smoothing = 0.0,
+    shared_embedding_and_softmax_weights = False,
+)
+
+vocab_size = 119547
+ph = problem_hparams.TestProblem(vocab_size, vocab_size).get_hparams(
+    model_hparams
+)
+
+model_t2t = t2t_model.T2TModel(model_hparams, problem_hparams = ph)
 
 flags = tf.flags
 
@@ -211,9 +230,16 @@ def model_fn_builder(
         o = model.get_sequence_output()
         Y_seq_len = tf.count_nonzero(y, 1, dtype = tf.int32)
         masks = tf.sequence_mask(Y_seq_len, tf.shape(y)[1], dtype = tf.float32)
-        total_loss = tf.contrib.seq2seq.sequence_loss(
-            logits = o, targets = y, weights = masks
+        logits = tf.expand_dims(tf.expand_dims(o, axis = 2), axis = 2)
+        feature = tf.expand_dims(tf.expand_dims(y, axis = 2), axis = 2)
+        loss_num, loss_denom = model_t2t._loss_single(
+            logits, 'targets', feature, weights = masks
         )
+        total_loss = loss_num / loss_denom
+
+        #         total_loss = tf.contrib.seq2seq.sequence_loss(
+        #             logits = o, targets = y, weights = masks
+        #         )
         y_t = tf.argmax(o, axis = 2)
         y_t = tf.cast(y_t, tf.int32)
         prediction = tf.boolean_mask(y_t, masks)

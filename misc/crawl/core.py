@@ -18,6 +18,7 @@ from dateutil import parser
 from queue import Queue
 from urllib.parse import quote
 from unidecode import unidecode
+import dateparser
 
 NUMBER_OF_CALLS_TO_GOOGLE_NEWS_ENDPOINT = 0
 
@@ -71,35 +72,16 @@ def extract_links(content):
     soup = BeautifulSoup(content, 'html.parser')
     # return soup
     today = datetime.now().strftime('%m/%d/%Y')
-    links_list = [
-        v.attrs['href']
-        for v in soup.find_all('a', {'class': 'l lLrAF'.split()})
-    ]
-    dates_list = [
-        v.text for v in soup.find_all('div', {'class': 'dhIWPd'.split()})
-    ]
+    links_list = [v.attrs['href'] for v in soup.find_all('a', {'style': 'text-decoration:none;display:block'})]
+    dates_list = [v.text for v in soup.find_all('span', {'class': 'WG9SHc'})]
+    sources_list = [v.text for v in soup.find_all('div', {'class': 'XTjFC WF4CUc'})]
     output = []
-    for (link, date) in zip(links_list, dates_list):
+    for (link, date, source) in zip(links_list, dates_list, sources_list):
         try:
-            date = date.split('-')
-            if (
-                date[1].find('hour') >= 0
-                or date[1].find('minute') >= 0
-                or date[1].find('分鐘') >= 0
-                or date[1].find('小時') >= 0
-            ):
-                date[1] = today
-            elif date[1].find('day') >= 0 or date[1].find('日') >= 0:
-                count = date[1].split(' ')[0]
-            else:
-                try:
-                    date[1] = parser.parse(date[1]).strftime('%m-%d-%Y')
-                except:
-                    date[1] = 'null'
-            output.append((link, date[0].strip(), date[1]))
-        except Exception as e:
-            print(e)
-            continue
+            date = str(dateparser.parse(date))
+        except:
+            pass
+        output.append((link, source, date))
     return output
 
 

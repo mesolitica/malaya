@@ -25,7 +25,7 @@ BASE_PARAMS = defaultdict(
     max_length = 256,  # Maximum number of tokens per example.
     # Model params
     initializer_gain = 1.0,  # Used in trainable variable initialization.
-    vocab_size = 32000,  # Number of tokens defined in the vocabulary file.
+    vocab_size = 119547,  # Number of tokens defined in the vocabulary file.
     hidden_size = 768,  # Model dimension in the hidden layers.
     num_hidden_layers = 6,  # Number of layers in the encoder and decoder stacks.
     num_heads = 8,  # Number of heads to use in multi-headed attention.
