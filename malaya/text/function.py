@@ -397,15 +397,19 @@ alphabets = '([A-Za-z])'
 prefixes = (
     '(Mr|St|Mrs|Ms|Dr|Prof|Capt|Cpt|Lt|Mt|Puan|puan|Tuan|tuan|sir|Sir)[.]'
 )
-suffixes = '(Inc|Ltd|Jr|Sr|Co)'
+suffixes = '(Inc|Ltd|Jr|Sr|Co|Mo)'
 starters = '(Mr|Mrs|Ms|Dr|He\s|She\s|It\s|They\s|Their\s|Our\s|We\s|But\s|However\s|That\s|This\s|Wherever|Dia|Mereka|Tetapi|Kita|Itu|Ini|Dan|Kami|Beliau|Seri|Datuk|Dato|Datin|Tuan|Puan)'
 acronyms = '([A-Z][.][A-Z][.](?:[A-Z][.])?)'
 websites = '[.](com|net|org|io|gov|me|edu|my)'
 another_websites = '(www|http|https)[.]'
 digits = '([0-9])'
+before_digits = '([Nn]o|[Nn]ombor|[Nn]umber)'
+month = '([Jj]an(?:uari)?|[Ff]eb(?:ruari)?|[Mm]a(?:c)?|[Aa]pr(?:il)?|Mei|[Jj]u(?:n)?|[Jj]ula(?:i)?|[Aa]ug(?:ust)?|[Ss]ept?(?:ember)?|[Oo]kt(?:ober)?|[Nn]ov(?:ember)?|[Dd]is(?:ember)?)'
 
 
 def split_into_sentences(text, minimum_length = 5):
+    text = text.replace('\x97', '\n')
+    text = '. '.join([s for s in text.split('\n') if len(s)])
     text = text + '.'
     text = unidecode(text)
     text = ' ' + text + '  '
@@ -413,11 +417,15 @@ def split_into_sentences(text, minimum_length = 5):
     text = re.sub(prefixes, '\\1<prd>', text)
     text = re.sub(websites, '<prd>\\1', text)
     text = re.sub(another_websites, '\\1<prd>', text)
+    text = re.sub('[,][.]+', '<prd>', text)
     if '...' in text:
         text = text.replace('...', '<prd><prd><prd>')
     if 'Ph.D' in text:
         text = text.replace('Ph.D.', 'Ph<prd>D<prd>')
-    text = re.sub('\s' + alphabets + '[.] ', ' \\1<prd> ', text)
+    text = re.sub('[.]\s*[,]', '<prd>,', text)
+    text = re.sub(before_digits + '[.]\s*' + digits, '\\1<prd>\\2', text)
+    text = re.sub(month + '[.]\s*' + digits, '\\1<prd>\\2', text)
+    text = re.sub('\s' + alphabets + '[.][ ]+', ' \\1<prd> ', text)
     text = re.sub(acronyms + ' ' + starters, '\\1<stop> \\2', text)
     text = re.sub(
         alphabets + '[.]' + alphabets + '[.]' + alphabets + '[.]',
@@ -427,7 +435,7 @@ def split_into_sentences(text, minimum_length = 5):
     text = re.sub(
         alphabets + '[.]' + alphabets + '[.]', '\\1<prd>\\2<prd>', text
     )
-    text = re.sub(' ' + suffixes + '[.] ' + starters, ' \\1<stop> \\2', text)
+    text = re.sub(' ' + suffixes + '[.][ ]+' + starters, ' \\1<stop> \\2', text)
     text = re.sub(' ' + suffixes + '[.]', ' \\1<prd>', text)
     text = re.sub(' ' + alphabets + '[.]', ' \\1<prd>', text)
     text = re.sub(digits + '[.]' + digits, '\\1<prd>\\2', text)

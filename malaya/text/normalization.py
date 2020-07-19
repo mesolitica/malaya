@@ -71,6 +71,16 @@ def cardinal(x):
         return x
 
 
+def split_currency(x):
+    results = []
+    for no, u in enumerate(x.split('.')):
+        if no and len(u) == 1:
+            u = u + '0'
+        results.append(cardinal(u))
+    x = [i for i in results if i != 'kosong']
+    return x
+
+
 def digit(x):
     try:
         x = re.sub('[^0-9]', '', x)
@@ -215,6 +225,21 @@ def fraction(x):
         return x
 
 
+def combine_with_cent(
+    x, currency = 'RM', currency_end = 'ringgit', cent = 'sen'
+):
+    text = split_currency(str(x))
+    c = '%s%s' % (currency, str(x))
+    if text[0] != 'kosong':
+        x = '%s %s' % (text[0], currency_end)
+    else:
+        x = ''
+    if len(text) == 2:
+        if text[1] != 'kosong':
+            x = '%s %s %s' % (x, text[1], cent)
+    return x, c
+
+
 def money(x):
     try:
         if (
@@ -240,28 +265,36 @@ def money(x):
                 elif re.match('.*(k|K)$', c):
                     labels.append(1e3)
 
-            x = float(x)
             if cent:
+                x = float(x)
                 x = x / 100
             for l in labels:
+                x = float(x)
                 x = x * l
 
-            text = cardinal(str(x))
-            c = '$%s' % (str(x))
-            x = '%s dollar' % (text)
+            x, c = combine_with_cent(
+                x, currency = '$', currency_end = 'dollar', cent = 'cent'
+            )
+
             return re.sub(r'[ ]+', ' ', x.lower()).strip(), c
 
         elif (
             re.match('^US', x)
             or x.lower().endswith('dollar')
             or x.lower().endswith('cent')
+            or x.lower().endswith('usd')
         ):
             x = x.lower()
             if not x.startswith('US') and x.endswith('cent'):
                 cent = True
             else:
                 cent = False
-            x = x.replace('US', '').replace('dollar', '').replace('cent', '')
+            x = (
+                x.replace('US', '')
+                .replace('usd', '')
+                .replace('dollar', '')
+                .replace('cent', '')
+            )
             x = re.sub(r'[ ]+', ' ', x).strip()
             x, n = re.split("(\d+(?:[\.,']\d+)?)", x)[1:]
             x = re.sub(',', '', x, count = 10)
@@ -274,15 +307,17 @@ def money(x):
                 elif re.match('.*(k|K)$', c):
                     labels.append(1e3)
 
-            x = float(x)
             if cent:
+                x = float(x)
                 x = x / 100
             for l in labels:
+                x = float(x)
                 x = x * l
 
-            text = cardinal(str(x))
-            c = '$%s' % (str(x))
-            x = '%s dollar' % (text)
+            x, c = combine_with_cent(
+                x, currency = '$', currency_end = 'dollar', cent = 'cent'
+            )
+
             return re.sub(r'[ ]+', ' ', x.lower()).strip(), c
 
         elif (
@@ -308,15 +343,16 @@ def money(x):
                 elif re.match('.*(k|K)$', c):
                     labels.append(1e3)
 
-            x = float(x)
             if cent:
+                x = float(x)
                 x = x / 100
             for l in labels:
+                x = float(x)
                 x = x * l
 
-            text = cardinal(str(x))
-            c = '£%s' % (str(x))
-            x = '%s pound' % (text)
+            x, c = combine_with_cent(
+                x, currency = '£', currency_end = 'pound', cent = 'cent'
+            )
             return re.sub(r'[ ]+', ' ', x.lower()).strip(), c
 
         elif (
@@ -348,9 +384,11 @@ def money(x):
             for l in labels:
                 x = x * l
 
-            text = cardinal(str(x))
+            text = split_currency(str(x))
             c = '€%s' % (str(x))
-            x = '%s euro' % (text)
+            x = '%s euro' % (text[0])
+            if len(text) == 2:
+                x = '%s %s cent' % (x, text[1])
             return re.sub(r'[ ]+', ' ', x.lower()).strip(), c
 
         elif (
@@ -377,15 +415,14 @@ def money(x):
                 elif re.match('.*(k|K)$', c):
                     labels.append(1e3)
 
-            x = float(x)
             if cent:
+                x = float(x)
                 x = x / 100
             for l in labels:
+                x = float(x)
                 x = x * l
 
-            text = cardinal(str(x))
-            c = 'RM%s' % (str(x))
-            x = '%s ringgit' % (text)
+            x, c = combine_with_cent(x)
             return re.sub(r'[ ]+', ' ', x.lower()).strip(), c
         return x, None
 

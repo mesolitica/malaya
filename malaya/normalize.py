@@ -88,7 +88,7 @@ class NORMALIZER:
                 result.append(word)
                 index += 1
                 continue
-            if word[0].isupper():
+            if word[0].isupper() and not len(re.findall(_money, word.lower())):
                 if word.upper() not in ['KE', 'PADA', 'RM', 'SEN', 'HINGGA']:
                     result.append(_normalize_title(word))
                     index += 1
@@ -188,7 +188,13 @@ class NORMALIZER:
             if re.findall(_money, word.lower()):
                 money_, _ = money(word)
                 result.append(money_)
-                index += 1
+                if index < (len(tokenized) - 1):
+                    if tokenized[index + 1].lower() in ('sen', 'cent'):
+                        index += 2
+                    else:
+                        index += 1
+                else:
+                    index += 1
                 continue
 
             if re.findall(_date, word.lower()):

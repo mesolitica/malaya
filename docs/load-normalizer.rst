@@ -6,8 +6,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 4.84 s, sys: 1.27 s, total: 6.11 s
-    Wall time: 7.83 s
+    CPU times: user 4.47 s, sys: 891 ms, total: 5.36 s
+    Wall time: 4.63 s
 
 
 .. code:: python
@@ -39,10 +39,10 @@ This normalizer can load any spelling correction model, eg,
 
 .. parsed-literal::
 
-    {'normalize': 'boleh datang lapan pagi esok tak atau minggu depan ? 02/10/2019 14:00:00 , tolong bayar tiga ribu dua ratus perpuluhan kosong ringgit sekali tahu',
-     'date': {'minggu depan': datetime.datetime(2020, 5, 25, 10, 7, 42, 399557),
-      '8 AM esok': datetime.datetime(2020, 5, 19, 8, 0),
-      '2 oktober 2019 2pm': datetime.datetime(2019, 10, 2, 14, 0)},
+    {'normalize': 'boleh datang lapan pagi esok tak atau minggu depan ? 02/10/2019 14:00:00 , tolong bayar tiga ribu dua ratus ringgit sekali tahu',
+     'date': {'2 oktober 2019 2pm': datetime.datetime(2019, 10, 2, 14, 0),
+      '8 AM esok': datetime.datetime(2020, 7, 20, 8, 0),
+      'minggu depan': datetime.datetime(2020, 7, 26, 22, 45, 33, 189628)},
      'money': {'rm 3.2k': 'RM3200.0'}}
 
 
@@ -64,7 +64,7 @@ datetime object, also ``3.2k ringgit`` to ``RM3200``
 
     {'normalize': 'tak jadi ke , kenapa awak tak suka makan HUSEIN kat situ tempat , saya hate it . pelik lah , pada', 'date': {}, 'money': {}}
     {'normalize': 'saya memang tak suka makanan HUSEIN kampung tempat , saya love them . pelik lah saya', 'date': {}, 'money': {}}
-    {'normalize': 'perdana menteri kesebelas sangat suka makan ayam , harganya cuma lima belas perpuluhan lima ringgit', 'date': {}, 'money': {'rm15.50': 'RM15.5'}}
+    {'normalize': 'perdana menteri kesebelas sangat suka makan ayam , harganya cuma lima belas ringgit lima puluh sen', 'date': {}, 'money': {'rm15.50': 'RM15.50'}}
     {'normalize': 'pada sepuluh hari bulan empat , kementerian mengumumkan , satu per seratus', 'date': {}, 'money': {}}
     {'normalize': 'Husein Zolkepli dapat tempat kedua belas lumba lari hari ni', 'date': {}, 'money': {}}
     {'normalize': 'Husein Zolkepli ( dua ribu sebelas hingga dua ribu sembilan belas ) adalah ketua kampung di kedah sekolah King Edward keempat', 'date': {}, 'money': {}}
@@ -262,14 +262,16 @@ Normalizing rules
 
 .. code:: python
 
-    normalizer.normalize('RM 10.5')
+    normalizer.normalize('RM10.5')
 
 
 
 
 .. parsed-literal::
 
-    {'normalize': 'RM 10.5', 'date': {}, 'money': {'rm 10.5': 'RM10.5'}}
+    {'normalize': 'sepuluh ringgit lima puluh sen',
+     'date': {},
+     'money': {'rm10.5': 'RM10.5'}}
 
 
 
@@ -285,7 +287,7 @@ Normalizing rules
 
 .. parsed-literal::
 
-    {'normalize': 'sepuluh perpuluhan lima ringgit sen',
+    {'normalize': 'sepuluh ringgit lima puluh sen',
      'date': {},
      'money': {'rm 10.5': 'RM10.5'}}
 
@@ -296,16 +298,16 @@ Normalizing rules
 
 .. code:: python
 
-    normalizer.normalize('10.5 sen')
+    normalizer.normalize('1015 sen')
 
 
 
 
 .. parsed-literal::
 
-    {'normalize': 'kosong perpuluhan satu kosong lima ringgit',
+    {'normalize': 'sepuluh ringgit lima belas sen',
      'date': {},
-     'money': {'10.5 sen': 'RM0.105'}}
+     'money': {'1015 sen': 'RM10.15'}}
 
 
 
@@ -321,7 +323,7 @@ Normalizing rules
 
 .. parsed-literal::
 
-    {'normalize': 'satu juta empat ratus ribu perpuluhan kosong ringgit',
+    {'normalize': 'sepuluh juta empat ratus ribu ringgit',
      'date': {},
      'money': {'rm10.4m': 'RM10400000.0'}}
 
@@ -336,7 +338,7 @@ Normalizing rules
 
 .. parsed-literal::
 
-    {'normalize': 'seribu empat ratus perpuluhan kosong dollar',
+    {'normalize': 'sepuluh ribu empat ratus dollar',
      'date': {},
      'money': {'$10.4k': '$10400.0'}}
 
@@ -387,7 +389,7 @@ Normalizing rules
 .. parsed-literal::
 
     {'normalize': 'dua hari lepas',
-     'date': {'2 hari lalu': datetime.datetime(2020, 4, 25, 0, 18, 26, 775992)},
+     'date': {'2 hari lalu': datetime.datetime(2020, 7, 17, 22, 45, 46, 74125)},
      'money': {}}
 
 
@@ -402,7 +404,7 @@ Normalizing rules
 .. parsed-literal::
 
     {'normalize': 'esok',
-     'date': {'esok': datetime.datetime(2020, 4, 28, 0, 18, 26, 784789)},
+     'date': {'esok': datetime.datetime(2020, 7, 20, 22, 45, 46, 330714)},
      'money': {}}
 
 
@@ -416,8 +418,8 @@ Normalizing rules
 
 .. parsed-literal::
 
-    {'normalize': '26/10/2019',
-     'date': {'okt 2019': datetime.datetime(2019, 10, 26, 0, 0)},
+    {'normalize': '19/10/2019',
+     'date': {'okt 2019': datetime.datetime(2019, 10, 19, 0, 0)},
      'money': {}}
 
 
@@ -432,7 +434,7 @@ Normalizing rules
 .. parsed-literal::
 
     {'normalize': 'dua pagi',
-     'date': {'2 AM': datetime.datetime(2020, 4, 26, 2, 0)},
+     'date': {'2 AM': datetime.datetime(2020, 7, 19, 2, 0)},
      'money': {}}
 
 
@@ -447,7 +449,7 @@ Normalizing rules
 .. parsed-literal::
 
     {'normalize': 'pukul lapan malam',
-     'date': {'pukul 8': datetime.datetime(2020, 4, 8, 0, 0)},
+     'date': {'pukul 8': datetime.datetime(2020, 7, 8, 0, 0)},
      'money': {}}
 
 
@@ -494,9 +496,7 @@ Normalizing rules
 
 .. parsed-literal::
 
-    {'normalize': 'kosong perpuluhan lima ringgit',
-     'date': {},
-     'money': {'50 sen': 'RM0.5'}}
+    {'normalize': 'lima puluh ringgit', 'date': {}, 'money': {'50 sen': 'RM0.5'}}
 
 
 
@@ -509,7 +509,7 @@ Normalizing rules
 
 .. parsed-literal::
 
-    {'normalize': 'dua puluh perpuluhan lima ringgit',
+    {'normalize': 'dua puluh ringgit lima puluh sen',
      'date': {},
      'money': {'20.5 ringgit': 'RM20.5'}}
 
@@ -524,7 +524,7 @@ Normalizing rules
 
 .. parsed-literal::
 
-    {'normalize': 'dua juta perpuluhan kosong ringgit',
+    {'normalize': 'dua puluh juta ringgit',
      'date': {},
      'money': {'20m ringgit': 'RM20000000.0'}}
 
@@ -539,7 +539,7 @@ Normalizing rules
 
 .. parsed-literal::
 
-    {'normalize': 'dua ribu lima ratus dua belas perpuluhan tiga tiga tiga empat ringgit',
+    {'normalize': 'dua puluh dua ribu lima ratus dua belas ringgit tiga ribu tiga ratus tiga puluh empat sen',
      'date': {},
      'money': {'22.5123334k ringgit': 'RM22512.3334'}}
 
@@ -587,8 +587,8 @@ Normalizing rules
 
 .. parsed-literal::
 
-    {'normalize': '26/01/2019',
-     'date': {'januari 2019': datetime.datetime(2019, 1, 26, 0, 0)},
+    {'normalize': '19/01/2019',
+     'date': {'januari 2019': datetime.datetime(2019, 1, 19, 0, 0)},
      'money': {}}
 
 
@@ -606,7 +606,7 @@ Normalizing rules
 .. parsed-literal::
 
     {'normalize': '14:00:00',
-     'date': {'2pm': datetime.datetime(2020, 4, 26, 14, 0)},
+     'date': {'2pm': datetime.datetime(2020, 7, 19, 14, 0)},
      'money': {}}
 
 
@@ -621,7 +621,7 @@ Normalizing rules
 .. parsed-literal::
 
     {'normalize': '14:01:00',
-     'date': {'2:01pm': datetime.datetime(2020, 4, 26, 14, 1)},
+     'date': {'2:01pm': datetime.datetime(2020, 7, 19, 14, 1)},
      'money': {}}
 
 
@@ -636,7 +636,7 @@ Normalizing rules
 .. parsed-literal::
 
     {'normalize': '02:00:00',
-     'date': {'2am': datetime.datetime(2020, 4, 26, 2, 0)},
+     'date': {'2am': datetime.datetime(2020, 7, 19, 2, 0)},
      'money': {}}
 
 
