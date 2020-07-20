@@ -50,6 +50,89 @@ from malaya.cluster import cluster_words
 from herpetologist import check_type
 
 
+def normalized_entity(normalized):
+    money_ = re.findall(_money, normalized)
+    money_ = [(s, money(s)[1]) for s in money_]
+    dates_ = re.findall(_date, normalized)
+
+    past_date_string_ = re.findall(_past_date_string, normalized)
+    now_date_string_ = re.findall(_now_date_string, normalized)
+    future_date_string_ = re.findall(_future_date_string, normalized)
+    yesterday_date_string_ = re.findall(
+        _yesterday_tomorrow_date_string, normalized
+    )
+    depan_date_string_ = re.findall(_depan_date_string, normalized)
+    today_time_ = re.findall(_today_time, normalized)
+    time_ = re.findall(_expressions['time'], normalized)
+
+    left_datetime_ = [
+        f'{i[0]} {i[1]}' for i in re.findall(_left_datetime, normalized)
+    ]
+    right_datetime_ = [
+        f'{i[0]} {i[1]}' for i in re.findall(_right_datetime, normalized)
+    ]
+    today_left_datetime_ = [
+        f'{i[0]} {i[1]}' for i in re.findall(_left_datetodaytime, normalized)
+    ]
+    today_right_datetime_ = [
+        f'{i[0]} {i[1]}' for i in re.findall(_right_datetodaytime, normalized)
+    ]
+    left_yesterdaydatetime_ = [
+        f'{i[0]} {i[1]}'
+        for i in re.findall(_left_yesterdaydatetime, normalized)
+    ]
+    right_yesterdaydatetime_ = [
+        f'{i[0]} {i[1]}'
+        for i in re.findall(_right_yesterdaydatetime, normalized)
+    ]
+    left_yesterdaydatetodaytime_ = [
+        f'{i[0]} {i[1]}'
+        for i in re.findall(_left_yesterdaydatetodaytime, normalized)
+    ]
+    right_yesterdaydatetodaytime_ = [
+        f'{i[0]} {i[1]}'
+        for i in re.findall(_right_yesterdaydatetodaytime, normalized)
+    ]
+
+    dates_ = (
+        dates_
+        + past_date_string_
+        + now_date_string_
+        + future_date_string_
+        + yesterday_date_string_
+        + depan_date_string_
+        + time_
+        + today_time_
+        + left_datetime_
+        + right_datetime_
+        + today_left_datetime_
+        + today_right_datetime_
+        + left_yesterdaydatetime_
+        + right_yesterdaydatetime_
+        + left_yesterdaydatetodaytime_
+        + right_yesterdaydatetodaytime_
+    )
+    dates_ = [multireplace(s, date_replace) for s in dates_]
+    dates_ = [re.sub(r'[ ]+', ' ', s).strip() for s in dates_]
+    dates_ = cluster_words(dates_)
+    dates_ = {s: dateparser.parse(s) for s in dates_}
+    money_ = {s[0]: s[1] for s in money_}
+
+    return dates_, money_
+
+
+def check_repeat(word):
+    if word[-1].isdigit():
+        repeat = int(word[-1])
+        word = word[:-1]
+    else:
+        repeat = 1
+
+    if repeat < 1:
+        repeat = 1
+    return word, repeat
+
+
 class NORMALIZER:
     def __init__(self, speller):
 
@@ -59,7 +142,9 @@ class NORMALIZER:
         self._tokenizer = _tokenizer
 
     @check_type
-    def normalize(self, string: str, check_english: bool = True):
+    def normalize(
+        self, string: str, check_english: bool = True, normalize_entity = True
+    ):
         """
         Normalize a string
 
@@ -68,6 +153,8 @@ class NORMALIZER:
         string : str
         check_english: bool, (default=True)
             check a word in english dictionary.
+        normalize_entity: bool, (default=True)
+            normalize entities, only effect `date`, `datetime`, `time` and `money` patterns string only.
 
         Returns
         -------
@@ -247,93 +334,29 @@ class NORMALIZER:
                 result.append(normalized_ke)
                 index += 1
                 continue
+
             word, end_result_string = _remove_postfix(word)
+            word, repeat = check_repeat(word)
             if word in sounds:
-                result.append(result_string + sounds[word] + end_result_string)
-                index += 1
-                continue
-            if word in rules_normalizer:
-                result.append(
-                    result_string + rules_normalizer[word] + end_result_string
+                selected = sounds[word]
+            elif word in rules_normalizer:
+                selected = rules_normalizer[word]
+            else:
+                selected = self._speller.correct(
+                    word, string = ' '.join(tokenized), index = index
                 )
-                index += 1
-                continue
-            selected = self._speller.correct(
-                word, string = ' '.join(tokenized), index = index
-            )
+            selected = ' - '.join([selected] * repeat)
             result.append(result_string + selected + end_result_string)
             index += 1
 
         result = ' '.join(result)
         normalized = ' '.join(normalized)
-        money_ = re.findall(_money, normalized)
-        money_ = [(s, money(s)[1]) for s in money_]
-        dates_ = re.findall(_date, normalized)
 
-        past_date_string_ = re.findall(_past_date_string, normalized)
-        now_date_string_ = re.findall(_now_date_string, normalized)
-        future_date_string_ = re.findall(_future_date_string, normalized)
-        yesterday_date_string_ = re.findall(
-            _yesterday_tomorrow_date_string, normalized
-        )
-        depan_date_string_ = re.findall(_depan_date_string, normalized)
-        today_time_ = re.findall(_today_time, normalized)
-        time_ = re.findall(_expressions['time'], normalized)
+        if normalize_entity:
+            dates_, money_ = normalized_entity(normalized)
 
-        left_datetime_ = [
-            f'{i[0]} {i[1]}' for i in re.findall(_left_datetime, normalized)
-        ]
-        right_datetime_ = [
-            f'{i[0]} {i[1]}' for i in re.findall(_right_datetime, normalized)
-        ]
-        today_left_datetime_ = [
-            f'{i[0]} {i[1]}'
-            for i in re.findall(_left_datetodaytime, normalized)
-        ]
-        today_right_datetime_ = [
-            f'{i[0]} {i[1]}'
-            for i in re.findall(_right_datetodaytime, normalized)
-        ]
-        left_yesterdaydatetime_ = [
-            f'{i[0]} {i[1]}'
-            for i in re.findall(_left_yesterdaydatetime, normalized)
-        ]
-        right_yesterdaydatetime_ = [
-            f'{i[0]} {i[1]}'
-            for i in re.findall(_right_yesterdaydatetime, normalized)
-        ]
-        left_yesterdaydatetodaytime_ = [
-            f'{i[0]} {i[1]}'
-            for i in re.findall(_left_yesterdaydatetodaytime, normalized)
-        ]
-        right_yesterdaydatetodaytime_ = [
-            f'{i[0]} {i[1]}'
-            for i in re.findall(_right_yesterdaydatetodaytime, normalized)
-        ]
-
-        dates_ = (
-            dates_
-            + past_date_string_
-            + now_date_string_
-            + future_date_string_
-            + yesterday_date_string_
-            + depan_date_string_
-            + time_
-            + today_time_
-            + left_datetime_
-            + right_datetime_
-            + today_left_datetime_
-            + today_right_datetime_
-            + left_yesterdaydatetime_
-            + right_yesterdaydatetime_
-            + left_yesterdaydatetodaytime_
-            + right_yesterdaydatetodaytime_
-        )
-        dates_ = [multireplace(s, date_replace) for s in dates_]
-        dates_ = [re.sub(r'[ ]+', ' ', s).strip() for s in dates_]
-        dates_ = cluster_words(dates_)
-        dates_ = {s: dateparser.parse(s) for s in dates_}
-        money_ = {s[0]: s[1] for s in money_}
+        else:
+            dates_, money_ = {}, {}
         return {'normalize': result, 'date': dates_, 'money': money_}
 
 
