@@ -6,14 +6,14 @@
 
 .. parsed-literal::
 
-    CPU times: user 4.47 s, sys: 891 ms, total: 5.36 s
-    Wall time: 4.63 s
+    CPU times: user 5.72 s, sys: 1.51 s, total: 7.22 s
+    Wall time: 8.77 s
 
 
 .. code:: ipython3
 
     string1 = 'xjdi ke, y u xsuke makan HUSEIN kt situ tmpt, i hate it. pelikle, pada'
-    string2 = 'i mmg xske mknn HUSEIN kampng tmpat, i love them. pelikle saye'
+    string2 = 'i mmg2 xske mknn HUSEIN kampng tmpat, i love them. pelikle saye'
     string3 = 'perdana menteri ke11 sgt suka makn ayam, harganya cuma rm15.50'
     string4 = 'pada 10/4, kementerian mengumumkan, 1/100'
     string5 = 'Husein Zolkepli dapat tempat ke-12 lumba lari hari ni'
@@ -30,9 +30,37 @@ This normalizer can load any spelling correction model, eg,
     corrector = malaya.spell.probability()
     normalizer = malaya.normalize.normalizer(corrector)
 
+normalize
+^^^^^^^^^
+
+.. code:: python
+
+   def normalize(
+       self, string: str, check_english: bool = True, normalize_entity = True
+   ):
+       """
+       Normalize a string
+
+       Parameters
+       ----------
+       string : str
+       check_english: bool, (default=True)
+           check a word in english dictionary.
+       normalize_entity: bool, (default=True)
+           normalize entities, only effect `date`, `datetime`, `time` and `money` patterns string only.
+
+       Returns
+       -------
+       string: normalized string
+       """
+
 .. code:: ipython3
 
-    normalizer.normalize('boleh dtg 8pagi esok tak atau minggu depan? 2 oktober 2019 2pm, tlong bayar rm 3.2k sekali tau')
+    string = 'boleh dtg 8pagi esok tak atau minggu depan? 2 oktober 2019 2pm, tlong bayar rm 3.2k sekali tau'
+
+.. code:: ipython3
+
+    normalizer.normalize(string)
 
 
 
@@ -40,10 +68,25 @@ This normalizer can load any spelling correction model, eg,
 .. parsed-literal::
 
     {'normalize': 'boleh datang lapan pagi esok tak atau minggu depan ? 02/10/2019 14:00:00 , tolong bayar tiga ribu dua ratus ringgit sekali tahu',
-     'date': {'2 oktober 2019 2pm': datetime.datetime(2019, 10, 2, 14, 0),
-      '8 AM esok': datetime.datetime(2020, 7, 20, 8, 0),
-      'minggu depan': datetime.datetime(2020, 7, 26, 22, 45, 33, 189628)},
+     'date': {'8 AM esok': datetime.datetime(2020, 7, 22, 8, 0),
+      '2 oktober 2019 2pm': datetime.datetime(2019, 10, 2, 14, 0),
+      'minggu depan': datetime.datetime(2020, 7, 28, 10, 41, 51, 991952)},
      'money': {'rm 3.2k': 'RM3200.0'}}
+
+
+
+.. code:: ipython3
+
+    normalizer.normalize(string, normalize_entity = False)
+
+
+
+
+.. parsed-literal::
+
+    {'normalize': 'boleh datang lapan pagi esok tak atau minggu depan ? 02/10/2019 14:00:00 , tolong bayar tiga ribu dua ratus ringgit sekali tahu',
+     'date': {},
+     'money': {}}
 
 
 
@@ -63,7 +106,7 @@ datetime object, also ``3.2k ringgit`` to ``RM3200``
 .. parsed-literal::
 
     {'normalize': 'tak jadi ke , kenapa awak tak suka makan HUSEIN kat situ tempat , saya hate it . pelik lah , pada', 'date': {}, 'money': {}}
-    {'normalize': 'saya memang tak suka makanan HUSEIN kampung tempat , saya love them . pelik lah saya', 'date': {}, 'money': {}}
+    {'normalize': 'saya memang - memang tak suka makanan HUSEIN kampung tempat , saya love them . pelik lah saya', 'date': {}, 'money': {}}
     {'normalize': 'perdana menteri kesebelas sangat suka makan ayam , harganya cuma lima belas ringgit lima puluh sen', 'date': {}, 'money': {'rm15.50': 'RM15.50'}}
     {'normalize': 'pada sepuluh hari bulan empat , kementerian mengumumkan , satu per seratus', 'date': {}, 'money': {}}
     {'normalize': 'Husein Zolkepli dapat tempat kedua belas lumba lari hari ni', 'date': {}, 'money': {}}
@@ -72,6 +115,8 @@ datetime object, also ``3.2k ringgit`` to ``RM3200``
 
 Normalizing rules
 -----------------
+
+**All these rules will ignore if first letter is capital.**
 
 1. Normalize title,
 ^^^^^^^^^^^^^^^^^^^
@@ -389,7 +434,7 @@ Normalizing rules
 .. parsed-literal::
 
     {'normalize': 'dua hari lepas',
-     'date': {'2 hari lalu': datetime.datetime(2020, 7, 17, 22, 45, 46, 74125)},
+     'date': {'2 hari lalu': datetime.datetime(2020, 7, 19, 10, 41, 59, 113558)},
      'money': {}}
 
 
@@ -404,7 +449,7 @@ Normalizing rules
 .. parsed-literal::
 
     {'normalize': 'esok',
-     'date': {'esok': datetime.datetime(2020, 7, 20, 22, 45, 46, 330714)},
+     'date': {'esok': datetime.datetime(2020, 7, 22, 10, 41, 59, 309305)},
      'money': {}}
 
 
@@ -418,8 +463,8 @@ Normalizing rules
 
 .. parsed-literal::
 
-    {'normalize': '19/10/2019',
-     'date': {'okt 2019': datetime.datetime(2019, 10, 19, 0, 0)},
+    {'normalize': '21/10/2019',
+     'date': {'okt 2019': datetime.datetime(2019, 10, 21, 0, 0)},
      'money': {}}
 
 
@@ -434,7 +479,7 @@ Normalizing rules
 .. parsed-literal::
 
     {'normalize': 'dua pagi',
-     'date': {'2 AM': datetime.datetime(2020, 7, 19, 2, 0)},
+     'date': {'2 AM': datetime.datetime(2020, 7, 21, 2, 0)},
      'money': {}}
 
 
@@ -587,8 +632,8 @@ Normalizing rules
 
 .. parsed-literal::
 
-    {'normalize': '19/01/2019',
-     'date': {'januari 2019': datetime.datetime(2019, 1, 19, 0, 0)},
+    {'normalize': '21/01/2019',
+     'date': {'januari 2019': datetime.datetime(2019, 1, 21, 0, 0)},
      'money': {}}
 
 
@@ -606,7 +651,7 @@ Normalizing rules
 .. parsed-literal::
 
     {'normalize': '14:00:00',
-     'date': {'2pm': datetime.datetime(2020, 7, 19, 14, 0)},
+     'date': {'2pm': datetime.datetime(2020, 7, 21, 14, 0)},
      'money': {}}
 
 
@@ -621,7 +666,7 @@ Normalizing rules
 .. parsed-literal::
 
     {'normalize': '14:01:00',
-     'date': {'2:01pm': datetime.datetime(2020, 7, 19, 14, 1)},
+     'date': {'2:01pm': datetime.datetime(2020, 7, 21, 14, 1)},
      'money': {}}
 
 
@@ -636,7 +681,101 @@ Normalizing rules
 .. parsed-literal::
 
     {'normalize': '02:00:00',
-     'date': {'2am': datetime.datetime(2020, 7, 19, 2, 0)},
+     'date': {'2am': datetime.datetime(2020, 7, 21, 2, 0)},
      'money': {}}
+
+
+
+.. code:: ipython3
+
+    ' - '.join(['h', 'h', 'h'])
+
+
+
+
+.. parsed-literal::
+
+    'h - h - h'
+
+
+
+18. expand repetition shortform
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    normalizer.normalize('skit2')
+
+
+
+
+.. parsed-literal::
+
+    {'normalize': 'sakit - sakit', 'date': {}, 'money': {}}
+
+
+
+.. code:: ipython3
+
+    normalizer.normalize('xskit2')
+
+
+
+
+.. parsed-literal::
+
+    {'normalize': 'tak sakit - sakit', 'date': {}, 'money': {}}
+
+
+
+.. code:: ipython3
+
+    normalizer.normalize('xjdi2')
+
+
+
+
+.. parsed-literal::
+
+    {'normalize': 'tak jadi - jadi', 'date': {}, 'money': {}}
+
+
+
+.. code:: ipython3
+
+    normalizer.normalize('xjdi4')
+
+
+
+
+.. parsed-literal::
+
+    {'normalize': 'tak jadi - jadi - jadi - jadi', 'date': {}, 'money': {}}
+
+
+
+.. code:: ipython3
+
+    normalizer.normalize('xjdi0')
+
+
+
+
+.. parsed-literal::
+
+    {'normalize': 'tak jadi', 'date': {}, 'money': {}}
+
+
+
+.. code:: ipython3
+
+    normalizer.normalize('xjdi')
+
+
+
+
+.. parsed-literal::
+
+    {'normalize': 'tak jadi', 'date': {}, 'money': {}}
 
 
