@@ -146,6 +146,11 @@ class SocialTokenizer:
         censored = kwargs.get('censored', True)
         emphasis = kwargs.get('emphasis', True)
         numbers = kwargs.get('numbers', True)
+        temperatures = kwargs.get('temperature', True)
+        distances = kwargs.get('distance', True)
+        volumes = kwargs.get('volume', True)
+        durations = kwargs.get('duration', True)
+        weights = kwargs.get('weight', True)
 
         if urls:
             pipeline.append(self.regexes['url'])
@@ -197,6 +202,21 @@ class SocialTokenizer:
             pipeline.append(
                 self.wrap_non_matching(self.regexes['rest_emoticons'])
             )
+
+        if temperatures:
+            pipeline.append(self.wrap_non_matching(self.regexes['temperature']))
+
+        if distances:
+            pipeline.append(self.wrap_non_matching(self.regexes['distance']))
+
+        if volumes:
+            pipeline.append(self.wrap_non_matching(self.regexes['volume']))
+
+        if durations:
+            pipeline.append(self.wrap_non_matching(self.regexes['duration']))
+
+        if weights:
+            pipeline.append(self.wrap_non_matching(self.regexes['weight']))
 
         if numbers:
             pipeline.append(self.regexes['number'])

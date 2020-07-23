@@ -1,4 +1,4 @@
-.. code:: python
+.. code:: ipython3
 
     %%time
     import malaya
@@ -10,7 +10,7 @@
     Wall time: 7.11 s
 
 
-.. code:: python
+.. code:: ipython3
 
     string1 = 'xjdi ke, y u xsuke makan HUSEIN kt situ tmpt, i hate it. pelikle, pada'
     string2 = 'i mmg2 xske mknn HUSEIN kampng tmpat, i love them. pelikle saye'
@@ -26,7 +26,7 @@ Load normalizer
 This normalizer can load any spelling correction model, eg,
 ``malaya.spell.probability``, or ``malaya.spell.transformer``.
 
-.. code:: python
+.. code:: ipython3
 
     corrector = malaya.spell.probability()
     normalizer = malaya.normalize.normalizer(corrector)
@@ -55,11 +55,11 @@ normalize
        string: normalized string
        """
 
-.. code:: python
+.. code:: ipython3
 
     string = 'boleh dtg 8pagi esok tak atau minggu depan? 2 oktober 2019 2pm, tlong bayar rm 3.2k sekali tau'
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize(string)
 
@@ -76,7 +76,7 @@ normalize
 
 
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize(string, normalize_entity = False)
 
@@ -94,7 +94,7 @@ normalize
 Here you can see, Malaya normalizer will normalize ``minggu depan`` to
 datetime object, also ``3.2k ringgit`` to ``RM3200``
 
-.. code:: python
+.. code:: ipython3
 
     print(normalizer.normalize(string1))
     print(normalizer.normalize(string2))
@@ -140,7 +140,7 @@ Normalizing rules
        'miss': 'Cik',
    }
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('Dr yahaya')
 
@@ -156,7 +156,7 @@ Normalizing rules
 2. expand ``x``
 ^^^^^^^^^^^^^^^
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('xtahu')
 
@@ -172,7 +172,7 @@ Normalizing rules
 3. normalize ``ke -``
 ^^^^^^^^^^^^^^^^^^^^^
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('ke-12')
 
@@ -185,7 +185,7 @@ Normalizing rules
 
 
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('ke - 12')
 
@@ -201,7 +201,7 @@ Normalizing rules
 4. normalize ``ke - roman``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('ke-XXI')
 
@@ -214,7 +214,7 @@ Normalizing rules
 
 
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('ke - XXI')
 
@@ -230,7 +230,7 @@ Normalizing rules
 5. normalize ``NUM - NUM``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('2011 - 2019')
 
@@ -245,7 +245,7 @@ Normalizing rules
 
 
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('2011.01-2019')
 
@@ -263,7 +263,7 @@ Normalizing rules
 6. normalize ``pada NUM (/ | -) NUM``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('pada 10/4')
 
@@ -276,7 +276,7 @@ Normalizing rules
 
 
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('PADA 10 -4')
 
@@ -292,7 +292,7 @@ Normalizing rules
 7. normalize ``NUM / NUM``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('10 /4')
 
@@ -308,7 +308,7 @@ Normalizing rules
 8. normalize ``rm NUM``
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('RM10.5')
 
@@ -326,7 +326,7 @@ Normalizing rules
 9. normalize ``rm NUM sen``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('rm 10.5 sen')
 
@@ -344,7 +344,7 @@ Normalizing rules
 10. normalize ``NUM sen``
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('1015 sen')
 
@@ -362,7 +362,7 @@ Normalizing rules
 11. normalize money
 ^^^^^^^^^^^^^^^^^^^
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('rm10.4m')
 
@@ -377,7 +377,7 @@ Normalizing rules
 
 
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('$10.4K')
 
@@ -395,7 +395,7 @@ Normalizing rules
 12. normalize cardinal
 ^^^^^^^^^^^^^^^^^^^^^^
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('123')
 
@@ -411,7 +411,7 @@ Normalizing rules
 13. normalize ordinal
 ^^^^^^^^^^^^^^^^^^^^^
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('ke123')
 
@@ -427,7 +427,7 @@ Normalizing rules
 14. normalize date / time / datetime string to datetime.datetime
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('2 hari lepas')
 
@@ -442,7 +442,7 @@ Normalizing rules
 
 
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('esok')
 
@@ -457,7 +457,7 @@ Normalizing rules
 
 
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('okt 2019')
 
@@ -472,7 +472,7 @@ Normalizing rules
 
 
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('2pgi')
 
@@ -487,7 +487,7 @@ Normalizing rules
 
 
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('pukul 8 malam')
 
@@ -502,7 +502,7 @@ Normalizing rules
 
 
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('jan 2 2019 12:01pm')
 
@@ -517,7 +517,7 @@ Normalizing rules
 
 
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('2 ptg jan 2 2019')
 
@@ -535,7 +535,7 @@ Normalizing rules
 15. normalize money string to string number representation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('50 sen')
 
@@ -548,7 +548,7 @@ Normalizing rules
 
 
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('20.5 ringgit')
 
@@ -563,7 +563,7 @@ Normalizing rules
 
 
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('20m ringgit')
 
@@ -578,7 +578,7 @@ Normalizing rules
 
 
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('22.5123334k ringgit')
 
@@ -596,7 +596,7 @@ Normalizing rules
 16. normalize date string to %d/%m/%y
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('1 nov 2019')
 
@@ -611,7 +611,7 @@ Normalizing rules
 
 
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('januari 1 1996')
 
@@ -626,7 +626,7 @@ Normalizing rules
 
 
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('januari 2019')
 
@@ -644,7 +644,7 @@ Normalizing rules
 17. normalize time string to %H:%M:%S
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('2pm')
 
@@ -659,7 +659,7 @@ Normalizing rules
 
 
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('2:01pm')
 
@@ -674,7 +674,7 @@ Normalizing rules
 
 
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('2AM')
 
@@ -689,7 +689,7 @@ Normalizing rules
 
 
 
-.. code:: python
+.. code:: ipython3
 
     ' - '.join(['h', 'h', 'h'])
 
@@ -705,7 +705,7 @@ Normalizing rules
 18. expand repetition shortform
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('skit2')
 
@@ -718,7 +718,7 @@ Normalizing rules
 
 
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('xskit2')
 
@@ -731,7 +731,7 @@ Normalizing rules
 
 
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('xjdi2')
 
@@ -744,7 +744,7 @@ Normalizing rules
 
 
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('xjdi4')
 
@@ -757,7 +757,7 @@ Normalizing rules
 
 
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('xjdi0')
 
@@ -770,7 +770,7 @@ Normalizing rules
 
 
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('xjdi')
 
@@ -786,7 +786,7 @@ Normalizing rules
 19. normalize ``NUM SI-UNIT``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('61.2 kg')
 
@@ -801,7 +801,7 @@ Normalizing rules
 
 
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('61.2kg')
 
@@ -816,7 +816,7 @@ Normalizing rules
 
 
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('61kg')
 
@@ -829,7 +829,7 @@ Normalizing rules
 
 
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('61ml')
 
@@ -842,7 +842,7 @@ Normalizing rules
 
 
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('61m')
 
@@ -855,7 +855,7 @@ Normalizing rules
 
 
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('61.3434km')
 
@@ -870,7 +870,7 @@ Normalizing rules
 
 
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('61.3434c')
 
@@ -885,7 +885,7 @@ Normalizing rules
 
 
 
-.. code:: python
+.. code:: ipython3
 
     normalizer.normalize('61.3434 c')
 

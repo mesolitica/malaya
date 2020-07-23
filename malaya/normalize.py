@@ -39,6 +39,7 @@ from malaya.text.normalization import (
     _normalize_money,
     cardinal,
     digit,
+    digit_unit,
     rom_to_int,
     ordinal,
     fraction,
@@ -320,6 +321,18 @@ class NORMALIZER:
 
             if re.findall(_expressions['user'], word.lower()):
                 result.append(word)
+                index += 1
+                continue
+
+            if (
+                re.findall(_expressions['temperature'], word.lower())
+                or re.findall(_expressions['distance'], word.lower())
+                or re.findall(_expressions['volume'], word.lower())
+                or re.findall(_expressions['duration'], word.lower())
+                or re.findall(_expressions['weight'], word.lower())
+            ):
+                word = word.replace(' ', '')
+                result.append(digit_unit(word))
                 index += 1
                 continue
 

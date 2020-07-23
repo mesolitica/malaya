@@ -60,9 +60,9 @@ _percentage = _number + '%'
 _money = r"(?:(?:[$€£¢]|RM|rm)\s*\d+(?:[\.,']\d+)?(?:[MmKkBb](?:n|(?:il(?:lion)?))?)?)|(?:\d+(?:[\.,']\d+)?(?:[MmKkBb](?:n|(?:il(?:lion)?))?)?\s*(?:[$€£¢]|sen|ringgit|cent|penny))"
 _temperature = "-?\d+(?:[\.,']\d+)?\s*(?:K|Kelvin|kelvin|Kvin|F|f|Farenheit|farenheit|C|c|Celcius|celcius|clcius|celsius)\\b"
 _distance = "-?\d+(?:[\.,']\d+)?\s*(?:kaki|mtrs|metres|meters|feet|km|m|cm|feet|feets|miles|batu|inch|inches|feets)\\b"
-_volume = "-?\d+(?:[\.,']\d+)?\s*(?:ml|ML|liters|gallon|gallons|galon)\\b"
+_volume = "-?\d+(?:[\.,']\d+)?\s*(?:ml|ML|l|L|mililiter|Mililiter|millilitre|liter|litre|litres|liters|gallon|gallons|galon)\\b"
 _duration = '\d+\s*(?:jam|minit|hari|minggu|tahun|hours|hour)\\b|(?:sejam|sehari|setahun|sesaat|seminit)\\b'
-_weight = "\d+(?:[\.,']\d+)?\s*(?:kg|kilo|kilogram|g|gram)\\b"
+_weight = "\d+(?:[\.,']\d+)?\s*(?:kg|kilo|kilogram|g|gram|KG)\\b"
 
 _left_datetime = '(%s) (%s)' % (_time, _date)
 _right_datetime = '(%s) (%s)' % (_date, _time)
@@ -117,4 +117,9 @@ _expressions = {
     # REGEX_NORMALIZE_ELONG = '(.)\1+')
     'normalize_elong': r'(.)\1{2,}',
     'word': r'(?:[\w_]+)',
+    'temperature': _temperature,
+    'distance': _distance,
+    'volume': _volume,
+    'duration': _duration,
+    'weight': _weight,
 }

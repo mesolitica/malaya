@@ -12,6 +12,17 @@ from malaya.text.rules import rules_normalizer
 
 ignore_words = ['ringgit', 'sen']
 ignore_postfix = ['adalah']
+unit_mapping = {
+    'kg': 'kilogram',
+    'g': 'gram',
+    'l': 'liter',
+    'ml': 'milliliter',
+    'c': 'celcius',
+    'km': 'kilometer',
+    'm': 'meter',
+    'cm': 'centimeter',
+    'kilo': 'kilogram',
+}
 
 
 def _remove_postfix(word):
@@ -90,6 +101,22 @@ def digit(x):
         result_string = result_string.strip()
         return result_string
     except:
+        return x
+
+
+def digit_unit(x):
+    try:
+        n = re.sub('[^0-9.]', '', x)
+        u = re.sub('[0-9. ]', '', x)
+        u = unit_mapping.get(u.lower(), u)
+        if '.' in n:
+            n = float(n)
+        else:
+            n = int(n)
+        n = to_cardinal(n)
+        return f'{n} {u}'
+    except Exception as e:
+        print(e)
         return x
 
 

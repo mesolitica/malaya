@@ -1042,6 +1042,7 @@ toxic_misspell_dict = {
 }
 
 rules_normalizer = {
+    'plak': 'pula',
     'kekadang': 'kadang - kadang',
     'kau': 'kamu',
     'ngko': 'kamu',
