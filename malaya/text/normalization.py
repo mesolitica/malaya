@@ -116,7 +116,6 @@ def digit_unit(x):
         n = to_cardinal(n)
         return f'{n} {u}'
     except Exception as e:
-        print(e)
         return x
 
 
