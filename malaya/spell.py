@@ -228,11 +228,7 @@ class SPELL:
                 )
 
             # hnto -> hantar, bako -> bkar, sabo -> sabar
-            if (
-                word[-1] == 'o'
-                and word[-3] in vowels
-                and word[-2] in consonants
-            ):
+            if word[-1] == 'o' and word[-2] in consonants:
                 inner = word[:-1] + 'ar'
                 fuzziness.append(inner)
                 pseudo.extend(
@@ -406,7 +402,7 @@ class TRANSFORMER(SPELL):
         Spell-correct word in match, and preserve proper upper/lower/title case.
         """
 
-        return self.case_of(word)(
+        return case_of(word)(
             self.correct(word.lower(), string, batch_size = batch_size)
         )
 
@@ -453,8 +449,9 @@ class PROBABILITY(SPELL):
             return word
         if word in stopword_tatabahasa:
             return word
-        hujung_result = [v for k, v in hujung.items() if word.endswith(k)]
+
         cp_word = word[:]
+        hujung_result = [v for k, v in hujung.items() if word.endswith(k)]
         if len(hujung_result):
             hujung_result = max(hujung_result, key = len)
             if len(hujung_result):
@@ -466,6 +463,8 @@ class PROBABILITY(SPELL):
             permulaan_result = max(permulaan_result, key = len)
             if len(permulaan_result):
                 word = word[len(permulaan_result) :]
+
+        combined = True
         if len(word):
             if word in rules_normalizer:
                 word = rules_normalizer[word]
@@ -479,14 +478,22 @@ class PROBABILITY(SPELL):
 
                 if self.WORDS[word1] > self.WORDS[word2]:
                     word = word1
-                    if len(hujung_result) and not word.endswith(hujung_result):
-                        word = word + hujung_result
-                    if len(permulaan_result) and not word.startswith(
-                        permulaan_result
-                    ):
-                        word = permulaan_result + word
                 else:
                     word = word2
+                    combined = False
+
+            if (
+                len(hujung_result)
+                and not word.endswith(hujung_result)
+                and combined
+            ):
+                word = word + hujung_result
+            if (
+                len(permulaan_result)
+                and not word.startswith(permulaan_result)
+                and combined
+            ):
+                word = permulaan_result + word
 
         else:
             if len(hujung_result) and not word.endswith(hujung_result):
@@ -589,11 +596,7 @@ class SYMSPELL:
                 result.extend(list(_augment_vowel_alternate(word[:-1])))
 
             # hnto -> hantar, bako -> bkar, sabo -> sabar
-            if (
-                word[-1] == 'o'
-                and word[-3] in vowels
-                and word[-2] in consonants
-            ):
+            if word[-1] == 'o' and word[-2] in consonants:
                 inner = word[:-1] + 'ar'
                 result.extend(list(_augment_vowel_alternate(inner)))
 
@@ -666,6 +669,8 @@ class SYMSPELL:
             permulaan_result = max(permulaan_result, key = len)
             if len(permulaan_result):
                 word = word[len(permulaan_result) :]
+
+        combined = True
         if len(word):
             if word in rules_normalizer:
                 word = rules_normalizer[word]
@@ -677,20 +682,18 @@ class SYMSPELL:
 
                 if candidates1[word1] > candidates2[word2]:
                     word = word1
-                    if len(hujung_result) and not word.endswith(hujung_result):
-                        word = word + hujung_result
-                    if len(permulaan_result) and not word.startswith(
-                        permulaan_result
-                    ):
-                        word = permulaan_result + word
                 else:
                     word = word2
+                    combined = False
 
-        else:
-            if len(hujung_result) and not word.endswith(hujung_result):
-                word = word + hujung_result
-            if len(permulaan_result) and not word.startswith(permulaan_result):
-                word = permulaan_result + word
+        if len(hujung_result) and not word.endswith(hujung_result) and combined:
+            word = word + hujung_result
+        if (
+            len(permulaan_result)
+            and not word.startswith(permulaan_result)
+            and combined
+        ):
+            word = permulaan_result + word
         return word
 
     @check_type
@@ -710,21 +713,6 @@ class SYMSPELL:
         if word[0].isupper():
             return word
         return case_of(word)(self.correct(word.lower()))
-
-    def case_of(self, text):
-        """
-        Return the case-function appropriate for text: upper, lower, title, or just str.
-        """
-
-        return (
-            str.upper
-            if text.isupper()
-            else str.lower
-            if text.islower()
-            else str.title
-            if text.istitle()
-            else str
-        )
 
 
 @check_type

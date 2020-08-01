@@ -53,18 +53,13 @@ laughing = {
     'uwu',
     'sksk',
     'ksks',
-    'gituu',
-    'gitu',
-    'mmeeooww',
-    'meow',
-    'alhamdulillah',
-    'muah',
-    'mmuahh',
     'hehe',
     'jahagaha',
     'ahakss',
     'ahksk',
 }
+
+mengeluh = {'haih', 'hais', 'aduh', 'adoi', 'ei', 'uh', 'argh', 'hoih'}
 
 partial_noisy = {
     'uwuu',

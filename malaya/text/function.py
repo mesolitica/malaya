@@ -4,11 +4,13 @@ import numpy as np
 import itertools
 import collections
 from unidecode import unidecode
+from itertools import permutations, combinations
 from malaya.text.tatabahasa import (
     stopword_tatabahasa,
     stopwords,
     stopwords_calon,
     laughing,
+    mengeluh,
 )
 from malaya.text.rules import normalized_chars
 from malaya.text.english.words import words as _english_words
@@ -22,6 +24,40 @@ VOWELS = 'aeiou'
 PHONES = ['sh', 'ch', 'ph', 'sz', 'cz', 'sch', 'rz', 'dz']
 ENGLISH_WORDS = _english_words
 MALAY_WORDS = _malay_words
+
+
+def generate_compound(word):
+    combs = {word}
+    for i in range(1, len(word) + 1):
+        for c in combinations(word, i):
+            cs = ''.join(c)
+            r = []
+
+            for no in range(len(word)):
+                for c in cs:
+
+                    if word[no] == c:
+                        p = c + c
+                    else:
+                        p = word[no]
+                    r.append(p)
+
+            s = ''.join(
+                ''.join(s)[i - 1 : i + 1]
+                for _, s in itertools.groupby(''.join(r))
+            )
+
+            combs.add(s)
+
+    combs.add(''.join([c + c for c in word]))
+    return list(combs)
+
+
+MENGELUH = []
+for word in mengeluh:
+    MENGELUH.extend(generate_compound(word))
+
+MENGELUH = set([word for word in MENGELUH if len(word) > 2])
 
 
 def _isWord(word):
@@ -391,6 +427,25 @@ def case_of(text):
         if text.istitle()
         else str
     )
+
+
+def replace_any(string, lists, replace_with):
+    result = []
+    for word in string.split():
+        word_lower = word.lower()
+        if any([e in word_lower for e in lists]):
+            result.append(case_of(word)(replace_with))
+        else:
+            result.append(word)
+    return ' '.join(result)
+
+
+def replace_laugh(string, replace_with = 'haha'):
+    return replace_any(string, laughing, replace_with)
+
+
+def replace_mengeluh(string, replace_with = 'aduh'):
+    return replace_any(string, MENGELUH, replace_with)
 
 
 alphabets = '([A-Za-z])'

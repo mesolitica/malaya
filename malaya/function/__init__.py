@@ -60,7 +60,7 @@ def generate_session(graph, **kwargs):
                 raise ValueError('gpu_limit must 0 < gpu_limit < 1')
 
             config.gpu_options.per_process_gpu_memory_fraction = gpu_limit
-            
+
         config.gpu_options.allow_growth = True
         sess = tf.InteractiveSession(config = config, graph = graph)
 
@@ -80,6 +80,32 @@ def load_graph(frozen_graph_filename, **kwargs):
             raise Exception(
                 f"{e}, file corrupted due to some reasons, please run malaya.clear_cache('{path}') and try again"
             )
+
+    # https://github.com/onnx/tensorflow-onnx/issues/77#issuecomment-445066091
+    # to fix import T5
+    for node in graph_def.node:
+        if node.op == 'RefSwitch':
+            node.op = 'Switch'
+            for index in xrange(len(node.input)):
+                if 'moving_' in node.input[index]:
+                    node.input[index] = node.input[index] + '/read'
+        elif node.op == 'AssignSub':
+            node.op = 'Sub'
+            if 'use_locking' in node.attr:
+                del node.attr['use_locking']
+        elif node.op == 'AssignAdd':
+            node.op = 'Add'
+            if 'use_locking' in node.attr:
+                del node.attr['use_locking']
+        elif node.op == 'Assign':
+            node.op = 'Identity'
+            if 'use_locking' in node.attr:
+                del node.attr['use_locking']
+            if 'validate_shape' in node.attr:
+                del node.attr['validate_shape']
+            if len(node.input) == 2:
+                node.input[0] = node.input[1]
+                del node.input[1]
 
     with tf.Graph().as_default() as graph:
         if gpu_available():

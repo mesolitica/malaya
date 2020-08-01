@@ -31,7 +31,7 @@ _short_date = r'(?:\b(?<!\d\.)(?:(?:(?:[0123]?[0-9][\.\-\/])?[0123]?[0-9][\.\-\/
 _full_date_parts = [
     # prefix
     r'(?:(?<!:)\b\'?\d{1,4},? ?)',
-    r'\b(?:[Jj]an(?:uari)?|[Ff]eb(?:ruari)?|[Mm]a(?:c)?|[Aa]pr(?:il)?|Mei|[Jj]u(?:n)?|[Jj]ula(?:i)?|[Aa]ug(?:ust)?|[Ss]ept?(?:ember)?|[Oo]kt(?:ober)?|[Nn]ov(?:ember)?|[Dd]is(?:ember)?)\b',
+    r'\b(?:[Jj]an(?:uari)?|[Ff]eb(?:ruari)?|[Mm]a(?:c)?|[Aa]pr(?:il)?|[Mm]ei|[Jj]u(?:n)?|[Jj]ula(?:i)?|[Aa]ug(?:ust)?|[Oo]gos|[Ss]ept?(?:ember)?|[Oo]kt(?:ober)?|[Nn]ov(?:ember)?|[Dd]is(?:ember)?)\b',
     r'(?:(?:,? ?\'?)?\d{1,4}(?:st|nd|rd|n?th)?\b(?:[,\/]? ?\'?\d{2,4}[a-zA-Z]*)?(?: ?- ?\d{2,4}[a-zA-Z]*)?(?!:\d{1,4})\b)',
 ]
 _fd1 = '(?:{})'.format(
@@ -45,7 +45,7 @@ _fd2 = '(?:{})'.format(
     )
 )
 _date = '(?:' + '(?:' + _fd1 + '|' + _fd2 + ')' + '|' + _short_date + ')'
-_time = r'(?:(?:\d+)?\.?\d+(?:AM|PM|am|pm|a\.m\.|p\.m\.))|(?:(?:[0-2]?[0-9]|[2][0-3]):(?:[0-5][0-9])(?::(?:[0-5][0-9]))?(?: ?(?:AM|PM|am|pm|a\.m\.|p\.m\.))?)'
+_time = r'(?:(?:\d+)?\.?\d+\s*(?:AM|PM|am|pm|a\.m\.|p\.m\.))|(?:(?:[0-2]?[0-9]|[2][0-3]):(?:[0-5][0-9])(?::(?:[0-5][0-9]))?(?: ?(?:AM|PM|am|pm|a\.m\.|p\.m\.))?)'
 _today_time = '\d+\s*(?:pagi|pgi|morning|tengahari|tngahari|petang|ptg|malam)\\b|(?:pkul|pukul|kul)\s*(?:\s|\d+)\\b'
 _past_date_string = '(?:\s|\d+)\s*(?:minggu|bulan|tahun|hari|thun|hri|mnggu|jam|minit|saat)\s*(?:lalu|lepas|lps)\\b'
 _now_date_string = '(?:sekarang|skrg|jam|tahun|thun|saat|minit) (?:ini|ni)\\b'

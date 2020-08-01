@@ -8,7 +8,8 @@ from malaya.text.tatabahasa import (
     hujung_malaysian,
     calon_dictionary,
 )
-from malaya.text.rules import rules_normalizer
+from malaya.text.rules import rules_normalizer, rules_compound_normalizer
+from malaya.text.function import ENGLISH_WORDS, MALAY_WORDS
 
 ignore_words = ['ringgit', 'sen']
 ignore_postfix = ['adalah']
@@ -24,8 +25,23 @@ unit_mapping = {
     'kilo': 'kilogram',
 }
 
+rules_compound_normalizer_regex = (
+    '(?:' + '|'.join(list(rules_compound_normalizer.keys())) + ')'
+)
+
+
+def _replace_compoud(string):
+    results = re.findall(
+        rules_compound_normalizer_regex, string, flags = re.IGNORECASE
+    )
+    for r in results:
+        string = string.replace(r, rules_compound_normalizer[r.lower()])
+    return string
+
 
 def _remove_postfix(word):
+    if word in MALAY_WORDS or word in ENGLISH_WORDS or word in rules_normalizer:
+        return word, ''
     if word in ignore_postfix:
         return word, ''
     for p in hujung_malaysian:
@@ -65,6 +81,7 @@ def _string_to_num(word):
 
 
 def cardinal(x):
+    cp_x = x[:]
     try:
         if re.match('.*[A-Za-z]+.*', x):
             return x
@@ -79,7 +96,7 @@ def cardinal(x):
         x = re.sub('-', ' ', x, count = 10)
         return x
     except:
-        return x
+        return cp_x
 
 
 def split_currency(x):
@@ -88,11 +105,11 @@ def split_currency(x):
         if no and len(u) == 1:
             u = u + '0'
         results.append(cardinal(u))
-    x = [i for i in results if i != 'kosong']
-    return x
+    return results
 
 
 def digit(x):
+    cp_x = x[:]
     try:
         x = re.sub('[^0-9]', '', x)
         result_string = ''
@@ -101,10 +118,11 @@ def digit(x):
         result_string = result_string.strip()
         return result_string
     except:
-        return x
+        return cp_x
 
 
 def digit_unit(x):
+    cp_x = x[:]
     try:
         n = re.sub('[^0-9.]', '', x)
         u = re.sub('[0-9. ]', '', x)
@@ -116,10 +134,11 @@ def digit_unit(x):
         n = to_cardinal(n)
         return f'{n} {u}'
     except Exception as e:
-        return x
+        return cp_x
 
 
 def letters(x):
+    cp_x = x[:]
     try:
         x = re.sub('[^a-zA-Z]', '', x)
         x = x.lower()
@@ -128,7 +147,7 @@ def letters(x):
             result_string = result_string + x[i] + ' '
         return result_string.strip()
     except:
-        return x
+        return cp_x
 
 
 def rom_to_int(string):
@@ -169,6 +188,7 @@ def rom_to_int(string):
 
 
 def ordinal(x):
+    cp_x = x[:]
     try:
         result_string = ''
         x = x.replace(',', '')
@@ -194,7 +214,7 @@ def ordinal(x):
             result_string = to_ordinal(int(x))
         return result_string
     except Exception as e:
-        return x
+        return cp_x
 
 
 def telephone(x):
@@ -410,11 +430,9 @@ def money(x):
             for l in labels:
                 x = x * l
 
-            text = split_currency(str(x))
-            c = '€%s' % (str(x))
-            x = '%s euro' % (text[0])
-            if len(text) == 2:
-                x = '%s %s cent' % (x, text[1])
+            x, c = combine_with_cent(
+                x, currency = '€', currency_end = 'euro', cent = 'cent'
+            )
             return re.sub(r'[ ]+', ' ', x.lower()).strip(), c
 
         elif (
@@ -428,6 +446,7 @@ def money(x):
                 cent = True
             else:
                 cent = False
+
             x = x.replace('rm', '').replace('ringgit', '').replace('sen', '')
             x = re.sub(r'[ ]+', ' ', x).strip()
             x, n = re.split("(\d+(?:[\.,']\d+)?)", x)[1:]

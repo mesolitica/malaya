@@ -17,14 +17,30 @@ def remove_repeat_fullstop(string):
     return ' '.join([k.strip() for k in string.split('.') if len(k.strip())])
 
 
-class SUMMARIZATION:
-    def __init__(self, model):
-        self._model = model
+class T5:
+    def __init__(self, X, decode, sess, pred):
+        self._X = X
+        self._decode = decode
+        self._sess = sess
+        self._pred = pred
+
+    def _predict(self, string):
+        if self._pred:
+            r = self._pred([string])[0].decode('utf-8')
+        else:
+            r = self._sess.run(self._decode, feed_dict = {self._X: [string]})[
+                0
+            ].decode('utf-8')
+        return r
+
+
+class SUMMARIZATION(T5):
+    def __init__(self, X, decode, sess, pred):
+        T5.__init__(self, X = X, decode = decode, sess = sess, pred = pred)
 
     def _summarize(self, string, mode):
         string = f'{mode}: {cleaning(string)}'
-
-        return upperfirst(self._model([string])[0].decode('utf-8'))
+        return upperfirst(self._predict(string))
 
     @check_type
     def summarize(self, string: str, mode: str = 'ringkasan'):
@@ -68,9 +84,9 @@ class SUMMARIZATION:
         return results
 
 
-class GENERATOR:
-    def __init__(self, model):
-        self._model = model
+class GENERATOR(T5):
+    def __init__(self, X, decode, sess, pred):
+        T5.__init__(self, X = X, decode = decode, sess = sess, pred = pred)
 
     @check_type
     def generate(self, strings: List[str]):
@@ -92,17 +108,17 @@ class GENERATOR:
         ]
         points = ' '.join(points)
         points = f'karangan: {points}'
-        return self._model([cleaning(points)])[0].decode('utf-8')
+        return upperfirst(self._predict(cleaning(points)))
 
 
-class PARAPHRASE:
-    def __init__(self, model):
-        self._model = model
+class PARAPHRASE(T5):
+    def __init__(self, X, decode, sess, pred):
+        T5.__init__(self, X = X, decode = decode, sess = sess, pred = pred)
 
     def _paraphrase(self, string):
-        string = f'parafrasa: {cleaning(string)}'
 
-        return upperfirst(self._model([string])[0].decode('utf-8'))
+        string = f'parafrasa: {cleaning(string)}'
+        return upperfirst(self._predict(string))
 
     @check_type
     def paraphrase(self, string: str, split_fullstop: bool = True):

@@ -2,10 +2,18 @@ import numpy as np
 import json
 import re
 import dateparser
+import itertools
 from unidecode import unidecode
 from malaya.num2word import to_cardinal, to_ordinal
 from malaya.word2num import word2num
-from malaya.text.function import ENGLISH_WORDS, MALAY_WORDS, multireplace
+from malaya.text.function import (
+    ENGLISH_WORDS,
+    MALAY_WORDS,
+    multireplace,
+    case_of,
+    replace_laugh,
+    replace_mengeluh,
+)
 from malaya.text.regex import (
     _date,
     _past_date_string,
@@ -37,6 +45,7 @@ from malaya.text.normalization import (
     _is_number_regex,
     _string_to_num,
     _normalize_money,
+    _replace_compoud,
     cardinal,
     digit,
     digit_unit,
@@ -162,34 +171,56 @@ class NORMALIZER:
         string: normalized string
         """
 
+        string = ''.join(''.join(s)[:2] for _, s in itertools.groupby(string))
+        string = replace_laugh(string)
+        string = replace_mengeluh(string)
+        string = _replace_compoud(string)
+
+        if hasattr(self._speller, 'normalize_elongated'):
+            string = [
+                self._speller.normalize_elongated(word)
+                if len(re.findall(r'(.)\1{1}', word))
+                and not word[0].isupper()
+                and not word.lower().startswith('ke-')
+                else word
+                for word in string.split()
+            ]
+            string = ' '.join(string)
+
         result, normalized = [], []
+
         tokenized = self._tokenizer(string)
         index = 0
         while index < len(tokenized):
             word = tokenized[index]
+            word_lower = word.lower()
+            word_upper = word.upper()
+            first_c = word[0].isupper()
             if word in '~@#$%^&*()_+{}|[:"\'];<>,.?/-':
                 result.append(word)
                 index += 1
                 continue
-            normalized.append(rules_normalizer.get(word.lower(), word.lower()))
-            if word.lower() in ignore_words:
+            normalized.append(rules_normalizer.get(word_lower, word_lower))
+            if word_lower in ignore_words:
                 result.append(word)
                 index += 1
                 continue
-            if word[0].isupper() and not len(re.findall(_money, word.lower())):
-                if word.upper() not in ['KE', 'PADA', 'RM', 'SEN', 'HINGGA']:
+            if first_c and not len(re.findall(_money, word_lower)):
+                if word_lower in rules_normalizer:
+                    result.append(case_of(word)(rules_normalizer[word_lower]))
+                    index += 1
+                    continue
+                elif word_upper not in ['KE', 'PADA', 'RM', 'SEN', 'HINGGA']:
                     result.append(_normalize_title(word))
                     index += 1
                     continue
+
             if check_english:
-                if word.lower() in ENGLISH_WORDS:
+                if word_lower in ENGLISH_WORDS:
                     result.append(word)
                     index += 1
                     continue
-            if word.lower() in MALAY_WORDS and word.lower() not in [
-                'pada',
-                'ke',
-            ]:
+            if word_lower in MALAY_WORDS and word_lower not in ['pada', 'ke']:
                 result.append(word)
                 index += 1
                 continue
@@ -241,6 +272,7 @@ class NORMALIZER:
                     )
                     index += 3
                     continue
+
             if word.lower() == 'pada' and index < (len(tokenized) - 3):
                 if (
                     _is_number_regex(tokenized[index + 1])
@@ -273,7 +305,7 @@ class NORMALIZER:
                     index += 3
                     continue
 
-            if re.findall(_money, word.lower()):
+            if re.findall(_money, word_lower):
                 money_, _ = money(word)
                 result.append(money_)
                 if index < (len(tokenized) - 1):
@@ -285,8 +317,8 @@ class NORMALIZER:
                     index += 1
                 continue
 
-            if re.findall(_date, word.lower()):
-                word = word.lower()
+            if re.findall(_date, word_lower):
+                word = word_lower
                 word = multireplace(word, date_replace)
                 word = re.sub(r'[ ]+', ' ', word).strip()
                 parsed = dateparser.parse(word)
@@ -297,8 +329,8 @@ class NORMALIZER:
                 index += 1
                 continue
 
-            if re.findall(_expressions['time'], word.lower()):
-                word = word.lower()
+            if re.findall(_expressions['time'], word_lower):
+                word = word_lower
                 word = multireplace(word, date_replace)
                 word = re.sub(r'[ ]+', ' ', word).strip()
                 parsed = dateparser.parse(word)
@@ -309,27 +341,27 @@ class NORMALIZER:
                 index += 1
                 continue
 
-            if re.findall(_expressions['hashtag'], word.lower()):
+            if re.findall(_expressions['hashtag'], word_lower):
                 result.append(word)
                 index += 1
                 continue
 
-            if re.findall(_expressions['url'], word.lower()):
+            if re.findall(_expressions['url'], word_lower):
                 result.append(word)
                 index += 1
                 continue
 
-            if re.findall(_expressions['user'], word.lower()):
+            if re.findall(_expressions['user'], word_lower):
                 result.append(word)
                 index += 1
                 continue
 
             if (
-                re.findall(_expressions['temperature'], word.lower())
-                or re.findall(_expressions['distance'], word.lower())
-                or re.findall(_expressions['volume'], word.lower())
-                or re.findall(_expressions['duration'], word.lower())
-                or re.findall(_expressions['weight'], word.lower())
+                re.findall(_expressions['temperature'], word_lower)
+                or re.findall(_expressions['distance'], word_lower)
+                or re.findall(_expressions['volume'], word_lower)
+                or re.findall(_expressions['duration'], word_lower)
+                or re.findall(_expressions['weight'], word_lower)
             ):
                 word = word.replace(' ', '')
                 result.append(digit_unit(word))
@@ -350,6 +382,7 @@ class NORMALIZER:
 
             word, end_result_string = _remove_postfix(word)
             word, repeat = check_repeat(word)
+
             if word in sounds:
                 selected = sounds[word]
             elif word in rules_normalizer:
@@ -392,3 +425,59 @@ def normalizer(speller):
             'speller must has `correct` or `normalize_elongated` method'
         )
     return NORMALIZER(speller)
+
+
+_transformer_availability = {
+    'small': ['18.4MB', 'BLEU: 0.534'],
+    'base': ['234MB', 'BLEU: 0.625'],
+}
+
+
+def available_transformer():
+    """
+    List available transformer models.
+    """
+    return _transformer_availability
+
+
+# future implementation, on working progress, gathering more dataset
+# def transformer(model, **kwargs):
+#     """
+#     Load transformer encoder-decoder model to normalize.
+
+#     Parameters
+#     ----------
+#     model : str, optional (default='base')
+#         Model architecture supported. Allowed values:
+
+#         * ``'small'`` - transformer Small parameters.
+#         * ``'base'`` - transformer Base parameters.
+
+#     Returns
+#     -------
+#     result: malaya.model.tf.NORMALIZATION class
+#     """
+
+#     model = model.lower()
+#     if model not in _transformer_availability:
+#         raise Exception(
+#             'model not supported, please check supported models from malaya.normalize.available_transformer()'
+#         )
+
+#     path = PATH_NORMALIZATION
+#     s3_path = S3_PATH_NORMALIZATION
+
+#     check_file(path[model], s3_path[model], **kwargs)
+#     g = load_graph(path[model]['model'], **kwargs)
+
+#     from malaya.text.t2t import text_encoder
+#     from malaya.model.tf import NORMALIZATION
+
+#     encoder = text_encoder.SubwordTextEncoder(path[model]['vocab'])
+#     return NORMALIZATION(
+#         g.get_tensor_by_name('import/Placeholder:0'),
+#         g.get_tensor_by_name('import/greedy:0'),
+#         g.get_tensor_by_name('import/beam:0'),
+#         generate_session(graph = g, **kwargs),
+#         encoder,
+#     )

@@ -5,6 +5,7 @@ import numpy as np
 from malaya.text.function import simple_textcleaning
 from malaya.text.bpe import sentencepiece_tokenizer_bert as load_sentencepiece
 from malaya.text.tatabahasa import alphabet, consonants, vowels
+from malaya.supervised import t5 as t5_load
 from malaya.path import PATH_NGRAM, S3_PATH_NGRAM
 from malaya.function import check_file
 from herpetologist import check_type
@@ -195,7 +196,7 @@ def shortform(
     augment_vowel: bool = True,
     augment_consonant: bool = True,
     prob_delete_vowel: float = 0.5,
-    **kwargs
+    **kwargs,
 ):
     """
     augmenting a formal word into socialmedia form. Purposely typo, purposely delete some vowels, 
@@ -396,7 +397,7 @@ def gpt2(
     generate_length: int = 256,
     temperature: float = 1.0,
     top_k: int = 40,
-    **kwargs
+    **kwargs,
 ):
 
     """
@@ -441,7 +442,7 @@ def gpt2(
         generate_length = generate_length,
         temperature = temperature,
         top_k = top_k,
-        **kwargs
+        **kwargs,
     )
 
 
@@ -453,7 +454,7 @@ def available_t5():
 
 
 @check_type
-def t5(model: str = 'base', **kwargs):
+def t5(model: str = 'base', compressed: bool = True, **kwargs):
 
     """
     Load T5 model to generate a string given a isu penting.
@@ -465,6 +466,10 @@ def t5(model: str = 'base', **kwargs):
 
         * ``'base'`` - T5 Base parameters.
         * ``'small'`` - T5 Small parameters.
+
+    compressed: bool, optional (default=True)
+        Load compressed model, but this not able to utilize malaya-gpu function. 
+        This only compressed model size, but when loaded into VRAM / RAM, size uncompressed and compressed are the same.
 
     Returns
     -------
@@ -479,38 +484,19 @@ def t5(model: str = 'base', **kwargs):
 
     from malaya.path import PATH_GENERATOR, S3_PATH_GENERATOR
 
-    path = PATH_GENERATOR['sample']
-    s3_path = S3_PATH_GENERATOR['sample']
-
-    from malaya.function import check_file
-
-    try:
-        import tensorflow_text
-        import tf_sentencepiece
-        import tensorflow as tf
-    except:
+    model = model.lower()
+    if model not in _t5_availability:
         raise Exception(
-            'tensorflow-text and tf-sentencepiece not installed. Please install it by `pip install tensorflow-text tf-sentencepiece` and try again. Also, make sure tensorflow-text version same as tensorflow version.'
+            'model not supported, please check supported models from malaya.summarization.abstractive.available_t5()'
         )
-
-    check_file(path[model]['model'], s3_path[model], **kwargs)
-
-    if not os.path.exists(path[model]['directory'] + 'saved_model.pb'):
-        import tarfile
-
-        with tarfile.open(path[model]['model']['model']) as tar:
-            tar.extractall(path = path[model]['path'])
-
-    sess = tf.InteractiveSession()
-    meta_graph_def = tf.compat.v1.saved_model.load(
-        sess, ['serve'], path[model]['directory']
-    )
-    signature_def = meta_graph_def.signature_def['serving_default']
-    pred = lambda x: sess.run(
-        fetches = signature_def.outputs['outputs'].name,
-        feed_dict = {signature_def.inputs['input'].name: x},
-    )
 
     from malaya.model.t5 import GENERATOR
 
-    return GENERATOR(pred)
+    return t5_load.load(
+        path = PATH_GENERATOR,
+        s3_path = S3_PATH_GENERATOR,
+        model = model,
+        model_class = GENERATOR,
+        compressed = compressed,
+        **kwargs,
+    )

@@ -261,33 +261,47 @@ S3_PATH_ENTITIES = {
 }
 
 PATH_GENERATOR = {
-    'sample': {
+    't5-compressed': {
         'base': {
-            'path': home + '/generator-sample/t5/base',
-            'directory': home + '/generator-sample/t5/base/model/',
+            'path': home + '/generator/t5-compressed/base',
+            'directory': home + '/generator/t5-compressed/base/model/',
             'model': {
                 'model': home
-                + '/generator-sample/t5/base/generator-t5-base.tar.gz',
+                + '/generator/t5-compressed/base/generator-t5-base.tar.gz',
                 'version': 'v35',
             },
         },
         'small': {
-            'path': home + '/generator-sample/t5/small',
-            'directory': home + '/generator-sample/t5/small/model/',
+            'path': home + '/generator/t5-compressed/small',
+            'directory': home + '/generator/t5-compressed/small/model/',
             'model': {
                 'model': home
-                + '/generator-sample/t5/small/generator-t5-small.tar.gz',
+                + '/generator/t5-compressed/small/generator-t5-small.tar.gz',
                 'version': 'v35',
             },
         },
-    }
+    },
+    't5': {
+        'base': {
+            'model': home + '/generator/t5/base/model.pb',
+            'version': 'v38',
+        },
+        'small': {
+            'model': home + '/generator/t5/small/model.pb',
+            'version': 'v38',
+        },
+    },
 }
 
 S3_PATH_GENERATOR = {
-    'sample': {
+    't5-compressed': {
         'base': {'model': 'v35/generator/sample-generator-t5-base.tar.gz'},
         'small': {'model': 'v35/generator/sample-generator-t5-small.tar.gz'},
-    }
+    },
+    't5': {
+        'base': {'model': 'v38/generator/base.pb'},
+        'small': {'model': 'v38/generator/small.pb'},
+    },
 }
 
 PATH_LANG_DETECTION = {
@@ -387,23 +401,34 @@ PATH_PARAPHRASE = {
             'version': 'v36',
         },
     },
-    't5': {
+    't5-compressed': {
         'base': {
-            'path': home + '/paraphrase/t5/base',
-            'directory': home + '/paraphrase/t5/base/model/',
+            'path': home + '/paraphrase/t5-compressed/base',
+            'directory': home + '/paraphrase/t5-compressed/base/model/',
             'model': {
-                'model': home + '/paraphrase/t5/base/paraphrase-t5-base.tar.gz',
+                'model': home
+                + '/paraphrase/t5-compressed/base/paraphrase-t5-base.tar.gz',
                 'version': 'v36',
             },
         },
         'small': {
-            'path': home + '/paraphrase/t5/small',
-            'directory': home + '/paraphrase/t5/small/model/',
+            'path': home + '/paraphrase/t5-compressed/small',
+            'directory': home + '/paraphrase/t5-compressed/small/model/',
             'model': {
                 'model': home
-                + '/paraphrase/t5/small/paraphrase-t5-small.tar.gz',
+                + '/paraphrase/t5-compressed/small/paraphrase-t5-small.tar.gz',
                 'version': 'v36',
             },
+        },
+    },
+    't5': {
+        'base': {
+            'model': home + '/paraphrase/t5/base/model.pb',
+            'version': 'v38',
+        },
+        'small': {
+            'model': home + '/paraphrase/t5/small/model.pb',
+            'version': 'v38',
         },
     },
 }
@@ -432,9 +457,13 @@ S3_PATH_PARAPHRASE = {
             'vocab': 'v36/paraphrase/small.subwords',
         },
     },
-    't5': {
+    't5-compressed': {
         'base': {'model': 'v36/paraphrase/paraphrase-t5-base.tar.gz'},
         'small': {'model': 'v36/paraphrase/paraphrase-t5-small.tar.gz'},
+    },
+    't5': {
+        'base': {'model': 'v38/paraphrase/base.pb'},
+        'small': {'model': 'v38/paraphrase/small.pb'},
     },
 }
 
@@ -875,16 +904,35 @@ PATH_SUMMARIZE = {
         'setting': home + '/summarize/summary-wiki.json',
         'version': 'v13',
     },
-    'argmax': {
+    't5-compressed': {
         'base': {
-            'path': home + '/summarize-argmax/t5/base',
-            'directory': home + '/summarize-argmax/t5/base/model/',
+            'path': home + '/summarize/t5-compressed/base',
+            'directory': home + '/summarize/t5-compressed/base/model/',
             'model': {
                 'model': home
-                + '/summarize-argmax/t5/base/summarize-t5-base.tar.gz',
+                + '/summarize/t5-compressed/base/summarize-t5-base.tar.gz',
                 'version': 'v35',
             },
-        }
+        },
+        'small': {
+            'path': home + '/summarize/t5-compressed/small',
+            'directory': home + '/summarize/t5-compressed/base/model/',
+            'model': {
+                'model': home
+                + '/summarize/t5-compressed/small/summarize-t5-base.tar.gz',
+                'version': 'v35',
+            },
+        },
+    },
+    't5': {
+        'base': {
+            'model': home + '/summarize/t5/base/model.pb',
+            'version': 'v38',
+        },
+        'small': {
+            'model': home + '/summarize/t5/small/model.pb',
+            'version': 'v38',
+        },
     },
 }
 
@@ -897,8 +945,13 @@ S3_PATH_SUMMARIZE = {
         'model': 'v13/summarize/summary-wiki.pb',
         'setting': 'v13/summarize/summary-wiki.json',
     },
-    'argmax': {
-        'base': {'model': 'v35/summarize/argmax-summarize-t5-base.tar.gz'}
+    't5-compressed': {
+        'base': {'model': 'v35/summarize/argmax-summarize-t5-base.tar.gz'},
+        'small': {'model': 'v35/summarize/argmax-summarize-t5-small.tar.gz'},
+    },
+    't5': {
+        'base': {'model': 'v38/summarize/base.pb'},
+        'small': {'model': 'v38/summarize/small.pb'},
     },
 }
 
