@@ -104,7 +104,7 @@ Pretrained Models
 
 Malaya also released Bahasa pretrained models, simply check at `Malaya/pretrained-model <https://github.com/huseinzol05/Malaya/tree/master/pretrained-model>`_
 
-Or can try use huggingface 🤗 Transformers library, https://huggingface.co/models?filter=malay
+Or can try use huggingface 🤗 Transformers library, https://huggingface.co/models?filter=ms
 
 References
 -----------

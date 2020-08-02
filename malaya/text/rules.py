@@ -1056,6 +1056,7 @@ rules_compound_normalizer = {
 }
 
 rules_normalizer = {
+    'basically': 'secara asasnya',
     'dokter': 'doktor',
     'hareeii': 'celaka',
     'hareii': 'celaka',
