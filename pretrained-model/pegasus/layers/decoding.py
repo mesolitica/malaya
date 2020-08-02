@@ -149,6 +149,8 @@ def left2right_decode(
   Returns:
     decodes: Tensor[batch, decode_len]
   """
+    batch_size = tf.cast(batch_size, tf.int64)
+    max_decode_len = tf.cast(max_decode_len, tf.int64)
     dtype = tf.int64
     # When beam_size=1, beam_search does not behave exactly like greedy.
     # This is due to using 2 * beam_size in grow_topk, and keep the top beam_size
@@ -170,7 +172,11 @@ def left2right_decode(
                 i < max_decode_len, tf.logical_not(tf.reduce_all(finished_B))
             )
 
-        init_dec_BxT = tf.zeros([batch_size, max_decode_len], dtype = dtype)
+        zeros_dims = tf.stack([batch_size, max_decode_len])
+        y = tf.fill(zeros_dims, 0)
+        init_dec_BxT = tf.cast(y, dtype)
+
+        # init_dec_BxT = tf.zeros([batch_size, max_decode_len], dtype = dtype)
         _, decodes, _ = tf.while_loop(
             loop_cond,
             decode_loop,
@@ -179,6 +185,8 @@ def left2right_decode(
         return decodes
 
     else:
+
+        raise Exception('beam decoder not supported.')
 
         def symbols_to_logits_fn_with_sampling(decodes_BxT, states_BxU_dict, i):
             logits_BxV = symbols_to_logits_fn(decodes_BxT, states_BxU_dict, i)
