@@ -1730,6 +1730,16 @@ dataset available inside the notebooks. All training sessions stored in
 
 **Graph based on BLEU score from ``tensor2tensor.utils.bleu_hook``**.
 
+.. code:: ipython3
+
+    display(Image('enms-accuracy.png', width=500))
+
+
+
+.. image:: models-accuracy_files/models-accuracy_87_0.png
+   :width: 500px
+
+
 Translation MS-EN
 -----------------
 
@@ -1745,7 +1755,7 @@ dataset available inside the notebooks. All training sessions stored in
 
 
 
-.. image:: models-accuracy_files/models-accuracy_88_0.png
+.. image:: models-accuracy_files/models-accuracy_89_0.png
    :width: 500px
 
 

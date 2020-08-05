@@ -2,9 +2,9 @@ from malaya.path import PATH_TRANSLATION, S3_PATH_TRANSLATION
 from malaya.function import check_file, load_graph, generate_session
 
 _transformer_availability = {
-    'small': ['18.4MB', 'BLEU: 0.534'],
-    'base': ['234MB', 'BLEU: 0.625'],
-    'large': ['817MB', 'BLEU: 0.638'],
+    'small': ['42.7MB', 'BLEU: 0.142'],
+    'base': ['234MB', 'BLEU: 0.696'],
+    'large': ['817MB', 'BLEU: 0.699'],
 }
 
 

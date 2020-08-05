@@ -53,7 +53,7 @@ Make sure you already install latest version herpetologist,
 
    pip install herpetologist -U
 
-If you pick Malaya source code, you can see we check parameters on
+If you check Malaya source code, you can see we check parameters on
 function / method definition,
 https://github.com/huseinzol05/Malaya/blob/master/malaya/model/bert.py#L232
 
@@ -210,4 +210,13 @@ https://github.com/huseinzol05/Malaya/tree/master/misc/deployment/uwsgi-flask-fo
      Socket errors: connect 364, read 345, write 0, timeout 41
    Requests/sec:      0.93
    Transfer/sec:      71.74B
+
+Learn different deployment techniques
+-------------------------------------
+
+Eg, Change concurrent requests into mini-batch realtime processing to
+speed up text classification,
+`repository <https://github.com/huseinzol05/Gather-Deployment/tree/master/tensorflow/26.fastapi-batch-streamz>`__
+
+**This can reduce time taken up to 95%!**
 

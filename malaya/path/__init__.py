@@ -20,7 +20,6 @@ S3_PATH_AUGMENTATION = {
     }
 }
 
-# dependency.py
 PATH_DEPENDENCY = {
     'bert': {
         'model': home + '/dependency/bert/base/model.pb',
@@ -1060,17 +1059,17 @@ PATH_TRANSLATION = {
         'base': {
             'model': home + '/translation/en-ms/base/model.pb',
             'vocab': home + '/translation/en-ms/base/vocab.subwords',
-            'version': 'v37',
+            'version': 'v38',
         },
         'large': {
             'model': home + '/translation/en-ms/large/model.pb',
             'vocab': home + '/translation/en-ms/large/vocab.subwords',
-            'version': 'v37',
+            'version': 'v38',
         },
         'small': {
             'model': home + '/translation/en-ms/small/model.pb',
             'vocab': home + '/translation/en-ms/small/vocab.subwords',
-            'version': 'v37',
+            'version': 'v38',
         },
     },
 }
@@ -1091,16 +1090,16 @@ S3_PATH_TRANSLATION = {
     },
     'en-ms': {
         'base': {
-            'model': 'v37/translation/en-ms/base-translation.pb',
-            'vocab': 'v37/translation/en-ms/vocab.subwords',
+            'model': 'v38/translation/en-ms/base-translation.pb',
+            'vocab': 'v38/translation/en-ms/vocab.subwords',
         },
         'large': {
-            'model': 'v37/translation/en-ms/large-translation.pb',
-            'vocab': 'v37/translation/en-ms/vocab.subwords',
+            'model': 'v38/translation/en-ms/large-translation.pb',
+            'vocab': 'v38/translation/en-ms/vocab.subwords',
         },
         'small': {
-            'model': 'v37/translation/en-ms/small-translation.pb',
-            'vocab': 'v37/translation/en-ms/vocab.subwords',
+            'model': 'v38/translation/en-ms/small-translation.pb',
+            'vocab': 'v38/translation/en-ms/vocab.subwords',
         },
     },
 }
