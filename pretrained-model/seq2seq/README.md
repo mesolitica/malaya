@@ -16,6 +16,12 @@
 
 Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://www.facebook.com/ligblou), [Mesolitica](https://mesolitica.com/) and [KeyReply](https://www.keyreply.com/) for sponsoring AWS, Google and GPU clouds to train BERT for Bahasa.
 
+## How-to
+
+```bash
+python3 run_pretraining.py --bert_config_file=gs://mesolitica-general/b2b-data/BASE_config.json --input_file=gs://mesolitica-general/b2b-data/*.tfrecord --output_dir=gs://mesolitica-general/b2b-base --do_train=True --train_batch_size=160 --save_checkpoints_steps=5000 --tpu_name=node-1 --tpu_zone=us-central1-a --gcp_project=mesolitica-cloud --use_tpu=True --num_train_steps=500000
+```
+
 ## Download
 
 1. 5th August 2020, [b2t.tar.gz](https://f000.backblazeb2.com/file/malaya-model/b2t.tar.gz)

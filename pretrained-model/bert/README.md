@@ -89,35 +89,35 @@ I0910 11:20:31.562414 140220436277056 validation.py:597]   next_sentence_loss = 
 
 ## Download
 
-1. **BASE**, last update 30th July 2019, [bert-bahasa-base.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-bahasa-base.tar.gz)
+1. **BASE**, last update 30th July 2019, [bert-bahasa-base.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/bert-bahasa-base.tar.gz)
 
   - Vocab size 40k.
   - Trained on cleaned wikipedia, raw twitter, raw instagram, raw parliament, raw news.
   - 1.5M steps, single GPU.
   - BASE size (467MB).
 
-2. **SMALL**, last update 2nd August 2019, [bert-bahasa-small.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-bahasa-small.tar.gz)
+2. **SMALL**, last update 2nd August 2019, [bert-bahasa-small.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/bert-bahasa-small.tar.gz)
 
   - Vocab size 40k.
   - Trained on cleaned wikipedia, raw twitter, raw instagram, raw parliament, raw news.
   - 1.5M steps, single GPU.
   - SMALL size (184MB).
 
-3. **BASE**, last update 13th September 2019, [bert-bahasa-base-13-9-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-base-13-9-2019.tar.gz)
+3. **BASE**, last update 13th September 2019, [bert-bahasa-base-13-9-2019.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/bert-base-13-9-2019.tar.gz)
 
   - Vocab size 40k.
   - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news.
   - 1.0M steps, 3 GPUs TESLA V100.
   - BASE size (467MB).
 
-4. **SMALL**, last update 19th September 2019, [bert-small-19-9-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-small-19-9-2019.tar.gz)
+4. **SMALL**, last update 19th September 2019, [bert-small-19-9-2019.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/bert-small-19-9-2019.tar.gz)
 
   - Vocab size 40k.
   - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news.
   - 1.0M steps, 3 GPUs TESLA V100.
   - SMALL size (184MB).
 
-5. **BASE**, last update 19th March 2020, [bert-base-2020-03-19.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/bert-base-2020-03-19.tar.gz)
+5. **BASE**, last update 19th March 2020, [bert-base-2020-03-19.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/bert-base-2020-03-19.tar.gz)
 
   - Vocab size 32k.
   - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.

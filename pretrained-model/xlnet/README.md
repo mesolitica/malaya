@@ -149,7 +149,7 @@ tensorboard --logdir=tensorboard --host=0.0.0.0
 
 ## Download
 
-1.  **BASE**, last update 9th July 2019, [xlnet-9-july-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/xlnet-9-july-2019-v2.tar.gz).
+1.  **BASE**, last update 9th July 2019, [xlnet-9-july-2019.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/xlnet-9-july-2019-v2.tar.gz).
 
   - Vocab size 32k.
   - Trained on cleaned wikipedia, raw twitter, raw instagram, raw parliament, raw news.
@@ -157,7 +157,7 @@ tensorboard --logdir=tensorboard --host=0.0.0.0
   - BASE size (878MB).
   - test loss, 4.XX (last remember).
 
-2. **BASE**, last update 15 July 2019, [xlnet-15-july-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/xlnet-bahasa-small.tar.gz)
+2. **BASE**, last update 15 July 2019, [xlnet-15-july-2019.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/xlnet-bahasa-small.tar.gz)
 
   - Vocab size 32k.
   - Trained on cleaned wikipedia, raw twitter, raw instagram, raw parliament, raw news.
@@ -165,14 +165,14 @@ tensorboard --logdir=tensorboard --host=0.0.0.0
   - BASE size (231MB).
   - test loss, 4.XX (last remember).
 
-3. **BASE** 30, last update 30 September 2019, [xlnet-base-30-september-2019.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/xlnet-base-30-9-2019.tar.gz)
+3. **BASE** 30, last update 30 September 2019, [xlnet-base-30-september-2019.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/xlnet-base-30-9-2019.tar.gz)
 
   - Vocab size 32k.
   - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news.
   - 270k steps, 3 GPUs TESLA V100.
   - BASE size (231MB).
 
-4. **BASE**, last update 29 March 2020, [xlnet-base-29-03-2020.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/xlnet-base-29-03-2020.tar.gz)
+4. **BASE**, last update 29 March 2020, [xlnet-base-29-03-2020.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/xlnet-base-29-03-2020.tar.gz)
 
   - Vocab size 32k.
   - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.

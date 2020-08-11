@@ -34,7 +34,7 @@ Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://w
 
 ## Download
 
-1. 20th May 2020, [t5-base-05-20-2020.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/t5-base-05-20-2020.tar.gz)
+1. 20th May 2020, [t5-base-05-20-2020.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/t5-base-05-20-2020.tar.gz)
 
   - Vocab size 32k.
   - Trained on unsupervised, question-answer, pairing, news-title, stemming, synonym and SNLI tasks.
@@ -42,7 +42,7 @@ Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://w
   - BASE size (427MB).
   - Tensorboard included.
 
-2. 25th May 2020, [t5-small-05-25-2020.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/t5-small-05-25-2020.tar.gz)
+2. 25th May 2020, [t5-small-05-25-2020.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/t5-small-05-25-2020.tar.gz)
 
   - Vocab size 32k.
   - Trained on unsupervised, question-answer, pairing, news-title, stemming, synonym and SNLI tasks.

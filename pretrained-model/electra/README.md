@@ -85,14 +85,14 @@ python3 run_pretraining.py --data-dir directory \
 
 ## Download
 
-1. **SMALL**, last update 27th April 2020, [electra-bahasa-small-27-04-2020.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/electra-bahasa-small-27-04-2020.tar.gz)
+1. **SMALL**, last update 27th April 2020, [electra-bahasa-small-27-04-2020.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/electra-bahasa-small-27-04-2020.tar.gz)
 
   - Vocab size 32k.
   - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.
   - 1.0M steps, 1 GPU TESLA V100.
   - BASE size (55MB).
 
-1. **BASE**, last update 27th April 2020, [electra-bahasa-base-27-04-2020.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/electra-bahasa-base-27-04-2020.tar.gz)
+1. **BASE**, last update 27th April 2020, [electra-bahasa-base-27-04-2020.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/electra-bahasa-base-27-04-2020.tar.gz)
 
   - Vocab size 32k.
   - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.

@@ -66,14 +66,14 @@ tensorboard --logdir=gs://bucket/albert-base-actual --host=0.0.0.0
 
 ## Download
 
-1. **BASE**, last update 10th April 2020, [albert-base-2020-04-10.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/albert-base-2020-04-10.tar.gz)
+1. **BASE**, last update 10th April 2020, [albert-base-2020-04-10.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/albert-base-2020-04-10.tar.gz)
 
   - Vocab size 32k.
   - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.
   - 400k steps, TPU v3-8.
   - BASE size (43.3MB).
 
-1. **TINY**, last update 17th April 2020, [albert-tiny-2020-04-17.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/albert-tiny-2020-04-17.tar.gz)
+1. **TINY**, last update 17th April 2020, [albert-tiny-2020-04-17.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/albert-tiny-2020-04-17.tar.gz)
 
   - Vocab size 32k.
   - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.

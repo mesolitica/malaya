@@ -62,21 +62,21 @@ python3 general_distill.py --pregenerated_data . --num_train_epochs 15 \
 
 ## Download
 
-1. 31st March 2020, [tiny-bert-31-03-2020-twitter.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/tiny-bert-31-03-2020-twitter.tar.gz)
+1. 31st March 2020, [tiny-bert-31-03-2020-twitter.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/tiny-bert-31-03-2020-twitter.tar.gz)
 
   - Vocab size 32k.
   - Distilled on raw twitter.
   - TINY size (53MB).
   - Pytorch model.
 
-2. 1st April 2020, [tiny-bert-01-04-2020-combined.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/tiny-bert-01-04-2020-combined.tar.gz)
+2. 1st April 2020, [tiny-bert-01-04-2020-combined.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/tiny-bert-01-04-2020-combined.tar.gz)
 
   - Vocab size 32k.
   - Distilled on raw wikipedia, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.
   - TINY size (53MB).
   - Pytorch model.
 
-3. 1st April 2020, [tiny-bert-01-04-2020.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/tiny-bert-01-04-2020.tar.gz)
+3. 1st April 2020, [tiny-bert-01-04-2020.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/tiny-bert-01-04-2020.tar.gz)
 
   - Vocab size 32k.
   - Distilled on raw wikipedia, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.

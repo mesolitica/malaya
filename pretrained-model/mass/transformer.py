@@ -114,10 +114,11 @@ class TransformerEncoderDecoderModel(base.BaseModel):
         context = self._encode(features, training)
         self._context = context
         targets_BxT = features['targets']
+        decoder_BxT = features['decoder']
         bias_1xTxT = attention.upper_triangle_bias(
-            tf.shape(targets_BxT)[1], self._dtype
+            tf.shape(decoder_BxT)[1], self._dtype
         )
-        states_BxTxD = self._embedding_layer(targets_BxT, True)
+        states_BxTxD = self._embedding_layer(decoder_BxT, True)
         states_BxTxD = tf.pad(states_BxTxD, [[0, 0], [1, 0], [0, 0]])[:, :-1, :]
         states_BxTxD = timing.add_time_signal(states_BxTxD)
         states_BxTxD = self._dropout_fn(states_BxTxD, training)

@@ -47,7 +47,7 @@ python3 train_tpu.py \
 
 ## Download
 
-1. **117M**, last update 30th April 2020, [117m-bahasa.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/117m-bahasa-v3.tar.gz)
+1. **117M**, last update 30th April 2020, [117m-bahasa.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/117m-bahasa-v3.tar.gz)
 
   - Vocab size 57k.
   - Trained on raw wikipedia, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession and raw common-crawl, ~0.9B words.
@@ -56,7 +56,7 @@ python3 train_tpu.py \
 
 Use [small-hparams.json](small-hparams.json) to load parameter config.
 
-1. **345M**, last update 1st May 2020, [345m-bahasa.tar.gz](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/345m-bahasa.tar.gz)
+1. **345M**, last update 1st May 2020, [345m-bahasa.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/345m-bahasa.tar.gz)
 
   - Vocab size 57k.
   - Trained on raw wikipedia, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession and raw common-crawl, ~0.9B words.

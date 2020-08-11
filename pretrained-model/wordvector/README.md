@@ -58,7 +58,7 @@ optional arguments:
   - 10 epochs.
   - embedding size 256.
 
-[download vector](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/word2vec-wiki-ms-256.npy), [download dictionary](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/word2vec-wiki-ms-256.json)
+[download vector](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/word2vec-wiki-ms-256.npy), [download dictionary](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/word2vec-wiki-ms-256.json)
 
 2. Social media malaysia, last update 8th January 2020.
 
@@ -67,7 +67,7 @@ optional arguments:
   - 10 epochs.
   - embedding size 256.
 
-[download vector](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/word2vec-ms-socialmedia-256.npy), [download dictionary](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/word2vec-ms-socialmedia-256.json)
+[download vector](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/word2vec-ms-socialmedia-256.npy), [download dictionary](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/word2vec-ms-socialmedia-256.json)
 
 3. News malaysia, last update 8th January 2020.
 
@@ -76,7 +76,7 @@ optional arguments:
   - 10 epochs.
   - embedding size 256.
 
-[download vector](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/word2vec-news-ms-256.npy), [download dictionary](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/word2vec-news-ms-256.json)
+[download vector](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/word2vec-news-ms-256.npy), [download dictionary](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/word2vec-news-ms-256.json)
 
 4. Wikipedia + Social media + News, last update 9th January 2020.
 
@@ -85,7 +85,7 @@ optional arguments:
   - 10 epochs.
   - embedding size 256.
 
-[download vector](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/word2vec-combined-256.npy), [download dictionary](https://huseinhouse-storage.s3-ap-southeast-1.amazonaws.com/bert-bahasa/word2vec-combined-256.json)
+[download vector](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/word2vec-combined-256.npy), [download dictionary](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/word2vec-combined-256.json)
 
 ## Citation
 
