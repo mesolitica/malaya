@@ -21,6 +21,12 @@ malaya.cluster
 .. automodule:: malaya.cluster
     :members:
 
+malaya.constituency
+---------------------
+
+.. automodule:: malaya.constituency
+    :members:
+
 malaya.dependency
 ------------------
 
@@ -307,6 +313,9 @@ malaya.model.tf
     :members:
 
 .. autoclass:: malaya.model.tf.TRANSLATION()
+    :members:
+
+.. autoclass:: malaya.model.tf.CONSTITUENCY()
     :members:
 
 malaya.model.ml

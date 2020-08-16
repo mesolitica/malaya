@@ -9,6 +9,13 @@ from malaya.text.function import (
     translation_textcleaning,
     pad_sentence_batch,
 )
+from malaya.text.bpe import (
+    constituency_bert,
+    constituency_xlnet,
+    PTB_TOKEN_ESCAPE,
+)
+from malaya.text import chart_decoder
+from malaya.text.trees import tree_from_str
 from herpetologist import check_type
 from typing import List
 
@@ -224,3 +231,151 @@ class TRANSLATION:
         result: List[str]
         """
         return self._translate(strings, beam_search = beam_search)
+
+
+class CONSTITUENCY:
+    def __init__(
+        self,
+        input_ids,
+        word_end_mask,
+        charts,
+        tags,
+        sess,
+        tokenizer,
+        dictionary,
+        mode,
+    ):
+
+        self._input_ids = input_ids
+        self._word_end_mask = word_end_mask
+        self._charts = charts
+        self._tags = tags
+        self._sess = sess
+        self._tokenizer = tokenizer
+        self._LABEL_VOCAB = dictionary['label']
+        self._TAG_VOCAB = dictionary['tag']
+        self._mode = mode
+
+    def _parse(self, string):
+        s = string.split()
+        sentences = [s]
+        if self._mode == 'bert':
+            i, m = constituency_bert(self._tokenizer, sentences)
+        elif self._mode == 'xlnet':
+            i, m = constituency_xlnet(self._tokenizer, sentences)
+        else:
+            raise Exception(
+                'mode not supported, only supported `bert` or `xlnet`'
+            )
+        charts_val, tags_val = self._sess.run(
+            (self._charts, self._tags),
+            {self._input_ids: i, self._word_end_mask: m},
+        )
+        for snum, sentence in enumerate(sentences):
+            chart_size = len(sentence) + 1
+            chart = charts_val[snum, :chart_size, :chart_size, :]
+        return s, tags_val[0], chart_decoder.decode(chart)
+
+    @check_type
+    def parse_nltk_tree(self, string: str):
+
+        """
+        Parse a string into NLTK Tree, to make it useful, make sure you already installed tktinker.
+
+        Parameters
+        ----------
+        string : str
+
+        Returns
+        -------
+        result: nltk.Tree object
+        """
+
+        try:
+            import nltk
+            from nltk import Tree
+        except:
+            raise Exception(
+                'nltk not installed. Please install it and try again.'
+            )
+
+        sentence, tags, (score, p_i, p_j, p_label) = self._parse(string)
+
+        idx_cell = [-1]
+
+        def make_tree():
+            idx_cell[0] += 1
+            idx = idx_cell[0]
+            i, j, label_idx = p_i[idx], p_j[idx], p_label[idx]
+            label = self._LABEL_VOCAB[label_idx]
+            if (i + 1) >= j:
+                word = sentence[i]
+                tag = self._TAG_VOCAB[tags[i]]
+                tag = PTB_TOKEN_ESCAPE.get(tag, tag)
+                word = PTB_TOKEN_ESCAPE.get(word, word)
+                tree = Tree(tag, [word])
+                for sublabel in label[::-1]:
+                    tree = Tree(sublabel, [tree])
+                return [tree]
+            else:
+                left_trees = make_tree()
+                right_trees = make_tree()
+                children = left_trees + right_trees
+                if label:
+                    tree = Tree(label[-1], children)
+                    for sublabel in reversed(label[:-1]):
+                        tree = Tree(sublabel, [tree])
+                    return [tree]
+                else:
+                    return children
+
+        tree = make_tree()[0]
+        tree.score = score
+        return tree
+
+    @check_type
+    def parse_tree(self, string):
+
+        """
+        Parse a string into string treebank format.
+
+        Parameters
+        ----------
+        string : str
+
+        Returns
+        -------
+        result: malaya.text.trees.InternalTreebankNode class
+        """
+
+        sentence, tags, (score, p_i, p_j, p_label) = self._parse(string)
+
+        idx_cell = [-1]
+
+        def make_str():
+            idx_cell[0] += 1
+            idx = idx_cell[0]
+            i, j, label_idx = p_i[idx], p_j[idx], p_label[idx]
+            label = self._LABEL_VOCAB[label_idx]
+            if (i + 1) >= j:
+                word = sentence[i]
+                tag = self._TAG_VOCAB[tags[i]]
+                tag = PTB_TOKEN_ESCAPE.get(tag, tag)
+                word = PTB_TOKEN_ESCAPE.get(word, word)
+                s = '({} {})'.format(tag, word)
+            else:
+                children = []
+                while (
+                    (idx_cell[0] + 1) < len(p_i)
+                    and i <= p_i[idx_cell[0] + 1]
+                    and p_j[idx_cell[0] + 1] <= j
+                ):
+                    children.append(make_str())
+
+                s = ' '.join(children)
+
+            for sublabel in reversed(label):
+                s = '({} {})'.format(sublabel, s)
+            return s
+
+        return tree_from_str(make_str())

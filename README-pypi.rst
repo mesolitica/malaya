@@ -26,6 +26,9 @@ Features
 -  **Augmentation**
 
    Augment any text using dictionary of synonym, Wordvector or Transformer-Bahasa.
+-  **Constituency Parsing**
+
+   Transfer learning on BERT-base-bahasa, Tiny-BERT-bahasa, Albert-base-bahasa, Albert-tiny-bahasa, XLNET-base-bahasa.  
 -  **Dependency Parsing**
 
    Transfer learning on BERT-base-bahasa, Tiny-BERT-bahasa, Albert-base-bahasa, Albert-tiny-bahasa, XLNET-base-bahasa, ALXLNET-base-bahasa.

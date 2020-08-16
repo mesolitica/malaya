@@ -142,7 +142,7 @@ def available_transformer():
 @check_type
 def transformer(model: str = 'xlnet', **kwargs):
     """
-    Load Transformer Entity Tagging model, transfer learning Transformer + biaffine attention.
+    Load Transformer Dependency Parsing model, transfer learning Transformer + biaffine attention.
 
     Parameters
     ----------

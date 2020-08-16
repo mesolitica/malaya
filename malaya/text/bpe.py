@@ -14,6 +14,38 @@ SPECIAL_TOKENS = {
     'xlnet': {'pad': '<pad>', 'cls': '<cls>', 'sep': '<sep>'},
 }
 
+BERT_TOKEN_MAPPING = {
+    '-LRB-': '(',
+    '-RRB-': ')',
+    '-LCB-': '{',
+    '-RCB-': '}',
+    '-LSB-': '[',
+    '-RSB-': ']',
+    '``': '"',
+    "''": '"',
+    '`': "'",
+    '«': '"',
+    '»': '"',
+    '‘': "'",
+    '’': "'",
+    '“': '"',
+    '”': '"',
+    '„': '"',
+    '‹': "'",
+    '›': "'",
+    '\u2013': '--',  # en dash
+    '\u2014': '--',  # em dash
+}
+
+PTB_TOKEN_ESCAPE = {
+    '(': '-LRB-',
+    ')': '-RRB-',
+    '{': '-LCB-',
+    '}': '-RCB-',
+    '[': '-LSB-',
+    ']': '-RSB-',
+}
+
 
 class SentencePieceTokenizer:
     def __init__(self, v, sp_model):
@@ -484,3 +516,79 @@ def load_yttm(path, id_mode = False):
         raise Exception(
             f"model corrupted due to some reasons, please run malaya.clear_cache('{path}') and try again"
         )
+
+
+def constituency_bert(tokenizer, sentences):
+    all_input_ids, all_word_end_mask = [], []
+
+    subword_max_len = 0
+    for snum, sentence in enumerate(sentences):
+        tokens = []
+        word_end_mask = []
+
+        tokens.append('[CLS]')
+        word_end_mask.append(1)
+
+        cleaned_words = []
+        for word in sentence:
+            word = BERT_TOKEN_MAPPING.get(word, word)
+            if word == "n't" and cleaned_words:
+                cleaned_words[-1] = cleaned_words[-1] + 'n'
+                word = "'t"
+            cleaned_words.append(word)
+
+        for word in cleaned_words:
+            word_tokens = tokenizer.tokenize(word)
+            if not word_tokens:
+                word_tokens = ['[UNK]']
+            for _ in range(len(word_tokens)):
+                word_end_mask.append(0)
+            word_end_mask[-1] = 1
+            tokens.extend(word_tokens)
+        tokens.append('[SEP]')
+        word_end_mask.append(1)
+
+        input_ids = tokenizer.convert_tokens_to_ids(tokens)
+        all_input_ids.append(input_ids)
+        all_word_end_mask.append(word_end_mask)
+
+    return all_input_ids, all_word_end_mask
+
+
+def constituency_xlnet(tokenizer, sentences):
+    all_input_ids, all_word_end_mask = [], []
+
+    subword_max_len = 0
+    for snum, sentence in enumerate(sentences):
+        tokens = []
+        word_end_mask = []
+
+        cleaned_words = []
+        for word in sentence:
+            word = BERT_TOKEN_MAPPING.get(word, word)
+            if word == "n't" and cleaned_words:
+                cleaned_words[-1] = cleaned_words[-1] + 'n'
+                word = "'t"
+            cleaned_words.append(word)
+
+        for word in cleaned_words:
+            word_tokens = encode_pieces(
+                tokenizer, word, return_unicode = False, sample = False
+            )
+            if not word_tokens:
+                word_tokens = ['<unk>']
+            for _ in range(len(word_tokens)):
+                word_end_mask.append(0)
+            word_end_mask[-1] = 1
+            tokens.extend(word_tokens)
+
+        tokens.append('<sep>')
+        word_end_mask.append(1)
+        tokens.append('<cls>')
+        word_end_mask.append(1)
+
+        input_ids = [tokenizer.PieceToId(i) for i in tokens]
+        all_input_ids.append(input_ids)
+        all_word_end_mask.append(word_end_mask)
+
+    return all_input_ids, all_word_end_mask

@@ -20,6 +20,77 @@ S3_PATH_AUGMENTATION = {
     }
 }
 
+PATH_CONSTITUENCY = {
+    'bert': {
+        'model': home + '/constituency/bert/base/model.pb',
+        'dictionary': home + '/constituency/bert/base/vocab.json',
+        'vocab': home + '/bert/sp10m.cased.bert.vocab',
+        'tokenizer': home + '/bert/sp10m.cased.bert.model',
+        'version': 'v38',
+    },
+    'tiny-bert': {
+        'model': home + '/constituency/bert/tiny/model.pb',
+        'dictionary': home + '/constituency/bert/tiny/vocab.json',
+        'vocab': home + '/bert/sp10m.cased.bert.vocab',
+        'tokenizer': home + '/bert/sp10m.cased.bert.model',
+        'version': 'v38',
+    },
+    'albert': {
+        'model': home + '/constituency/albert/base/model.pb',
+        'dictionary': home + '/constituency/albert/base/vocab.json',
+        'vocab': home + '/bert/sp10m.cased.v10.vocab',
+        'tokenizer': home + '/bert/sp10m.cased.v10.model',
+        'version': 'v38',
+    },
+    'tiny-albert': {
+        'model': home + '/constituency/albert/tiny/model.pb',
+        'dictionary': home + '/constituency/albert/tiny/vocab.json',
+        'vocab': home + '/bert/sp10m.cased.v10.vocab',
+        'tokenizer': home + '/bert/sp10m.cased.v10.model',
+        'version': 'v38',
+    },
+    'xlnet': {
+        'model': home + '/constituency/xlnet/base/model.pb',
+        'dictionary': home + '/constituency/xlnet/base/vocab.json',
+        'vocab': home + '/bert/sp10m.cased.v9.vocab',
+        'tokenizer': home + '/bert/sp10m.cased.v9.model',
+        'version': 'v38',
+    },
+}
+
+S3_PATH_CONSTITUENCY = {
+    'bert': {
+        'model': 'v38/constituency/bert-base.pb',
+        'dictionary': 'v38/constituency/vocab-bert-base.json',
+        'vocab': 'tokenizer/sp10m.cased.bert.vocab',
+        'tokenizer': 'tokenizer/sp10m.cased.bert.model',
+    },
+    'tiny-bert': {
+        'model': 'v38/constituency/tiny-bert.pb',
+        'dictionary': 'v38/constituency/vocab-tiny-bert.json',
+        'vocab': 'tokenizer/sp10m.cased.bert.vocab',
+        'tokenizer': 'tokenizer/sp10m.cased.bert.model',
+    },
+    'albert': {
+        'model': 'v38/constituency/albert-base.pb',
+        'dictionary': 'v38/constituency/vocab-albert-base.json',
+        'vocab': 'tokenizer/sp10m.cased.v10.vocab',
+        'tokenizer': 'tokenizer/sp10m.cased.v10.model',
+    },
+    'tiny-albert': {
+        'model': 'v38/constituency/albert-tiny.pb',
+        'dictionary': 'v38/constituency/vocab-albert-tiny.json',
+        'vocab': 'tokenizer/sp10m.cased.v10.vocab',
+        'tokenizer': 'tokenizer/sp10m.cased.v10.model',
+    },
+    'xlnet': {
+        'model': 'v38/constituency/xlnet-base.pb',
+        'dictionary': 'v38/constituency/vocab-xlnet-base.json',
+        'vocab': 'tokenizer/sp10m.cased.v9.vocab',
+        'tokenizer': 'tokenizer/sp10m.cased.v9.model',
+    },
+}
+
 PATH_DEPENDENCY = {
     'bert': {
         'model': home + '/dependency/bert/base/model.pb',
@@ -1133,7 +1204,7 @@ PATH_BERT = {
         'path': home + '/bert-model/base',
         'directory': home + '/bert-model/base/bert-base-v3/',
         'model': {
-            'model': home + '/bert-model/tiny/bert-bahasa-base.tar.gz',
+            'model': home + '/bert-model/base/bert-bahasa-base.tar.gz',
             'version': 'v34',
         },
     },
@@ -1141,7 +1212,7 @@ PATH_BERT = {
         'path': home + '/bert-model/tiny',
         'directory': home + '/bert-model/tiny/tiny-bert-v1/',
         'model': {
-            'model': home + '/bert-model/base/tiny-bert-bahasa.tar.gz',
+            'model': home + '/bert-model/tiny/tiny-bert-bahasa.tar.gz',
             'version': 'v34',
         },
     },

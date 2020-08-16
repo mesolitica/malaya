@@ -1,5 +1,5 @@
-**All y-axis been distorted and this can cause misrepresents data and
-incorrect conclusion.**
+**All y-axis been distorted purposely and this can cause misrepresents
+data and incorrect conclusion.**
 
 Abstractive Summarization
 -------------------------
@@ -15,12 +15,6 @@ dataset available inside the notebooks. All training sessions stored in
     from IPython.core.display import Image, display
     
     display(Image('abstractive-accuracy.png', width=500))
-
-
-
-.. image:: models-accuracy_files/models-accuracy_2_0.png
-   :width: 500px
-
 
 Full score at ``malaya.summarization.abstractive._t5_availability``.
 
@@ -53,12 +47,6 @@ dataset available inside the notebooks. All training sessions stored in
 .. code:: python
 
     display(Image('dependency-accuracy.png', width=500))
-
-
-
-.. image:: models-accuracy_files/models-accuracy_5_0.png
-   :width: 500px
-
 
 bert-base
 ^^^^^^^^^
@@ -374,12 +362,6 @@ dataset available inside the notebooks. All training sessions stored in
     from IPython.core.display import Image, display
     
     display(Image('emotion-accuracy.png', width=500))
-
-
-
-.. image:: models-accuracy_files/models-accuracy_13_0.png
-   :width: 500px
-
 
 multinomial
 ^^^^^^^^^^^
@@ -1758,4 +1740,22 @@ dataset available inside the notebooks. All training sessions stored in
 .. image:: models-accuracy_files/models-accuracy_89_0.png
    :width: 500px
 
+
+Constituency Parsing
+--------------------
+
+Trained on 80% of dataset, tested on 20% of dataset. Link to download
+dataset available inside the notebooks. All training sessions stored in
+`session/constituency <https://github.com/huseinzol05/Malaya/tree/master/session/constituency>`__
+
+**Graph based on FScore**.
+
+.. code:: python
+
+    display(Image('constituency-accuracy.png', width=500))
+
+
+
+.. image:: models-accuracy_files/models-accuracy_91_0.png
+   :width: 500px
 

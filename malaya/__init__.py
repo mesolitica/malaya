@@ -14,7 +14,7 @@ import logging
 
 home = os.path.join(str(Path.home()), 'Malaya')
 version = '3.8'
-bump_version = '3.8.0'
+bump_version = '3.8.1'
 version_path = os.path.join(home, 'version')
 __version__ = bump_version
 path = os.path.dirname(__file__)
@@ -197,6 +197,7 @@ def clear_session(model):
 
 from . import augmentation
 from . import cluster
+from . import constituency
 from . import dependency
 from . import emotion
 from . import entity

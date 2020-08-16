@@ -24,6 +24,7 @@ Contents:
    Deployment
    Api
    Windows
+   Contributing
 
 .. toctree::
    :maxdepth: 2
@@ -69,9 +70,15 @@ Contents:
    :maxdepth: 2
    :caption: Tagging Module
 
-   Dependency
    Entities
    Pos
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Parsing Module
+
+   Constituency
+   Dependency
 
 .. toctree::
    :maxdepth: 2
@@ -105,7 +112,6 @@ Contents:
    :maxdepth: 2
    :caption: Misc
    
-   Contributing
    Crawler
    Donation
    Translator-malaya

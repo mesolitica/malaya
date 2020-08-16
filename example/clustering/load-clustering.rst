@@ -23,49 +23,59 @@
 Generate scatter plot for unsupervised clustering
 -------------------------------------------------
 
-\```python
+.. code:: python
 
-def cluster_scatter( corpus, vectorizer, num_clusters = 5, titles =
-None, colors = None, stemming = True, stop_words = None, cleaning =
-simple_textcleaning, clustering = KMeans, decomposition = MDS, ngram =
-(1, 3), figsize = (17, 9), batch_size = 20, ): """ plot scatter plot on
-similar text clusters.
 
-::
+   def cluster_scatter(
+       corpus,
+       vectorizer,
+       num_clusters = 5,
+       titles = None,
+       colors = None,
+       stemming = True,
+       stop_words = None,
+       cleaning = simple_textcleaning,
+       clustering = KMeans,
+       decomposition = MDS,
+       ngram = (1, 3),
+       figsize = (17, 9),
+       batch_size = 20,
+   ):
+       """
+       plot scatter plot on similar text clusters.
 
-   Parameters
-   ----------
+       Parameters
+       ----------
 
-   corpus: list
-   vectorizer: class
-   num_clusters: int, (default=5)
-       size of unsupervised clusters.
-   titles: list
-       list of titles, length must same with corpus.
-   colors: list
-       list of colors, length must same with num_clusters.
-   stemming: bool, (default=True)
-       If True, sastrawi_stemmer will apply.
-   stop_words: list, (default=None)
-       list of stop words to remove. If None, default is malaya.texts._text_functions.STOPWORDS
-   ngram: tuple, (default=(1,3))
-       n-grams size to train a corpus.
-   cleaning: function, (default=simple_textcleaning)
-       function to clean the corpus.
-   batch_size: int, (default=10)
-       size of strings for each vectorization and attention. Only useful if use transformer vectorizer.
+       corpus: list
+       vectorizer: class
+       num_clusters: int, (default=5)
+           size of unsupervised clusters.
+       titles: list
+           list of titles, length must same with corpus.
+       colors: list
+           list of colors, length must same with num_clusters.
+       stemming: bool, (default=True)
+           If True, sastrawi_stemmer will apply.
+       stop_words: list, (default=None)
+           list of stop words to remove. If None, default is malaya.texts._text_functions.STOPWORDS
+       ngram: tuple, (default=(1,3))
+           n-grams size to train a corpus.
+       cleaning: function, (default=simple_textcleaning)
+           function to clean the corpus.
+       batch_size: int, (default=10)
+           size of strings for each vectorization and attention. Only useful if use transformer vectorizer.
 
-   Returns
-   -------
-   dictionary: {
-       'X': X,
-       'Y': Y,
-       'labels': clusters,
-       'vector': transformed_text_clean,
-       'titles': titles,
-   }
-   """
-   ```
+       Returns
+       -------
+       dictionary: {
+           'X': X,
+           'Y': Y,
+           'labels': clusters,
+           'vector': transformed_text_clean,
+           'titles': titles,
+       }
+       """
 
 .. code:: ipython3
 

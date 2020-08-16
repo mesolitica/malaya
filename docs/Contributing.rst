@@ -12,6 +12,8 @@ Report bugs through `Github issue`_.
 Please report relevant information and preferably code that exhibits the
 problem.
 
+Do not try to email us about the issues, we will not respond to the emails, submit a proper Github issue.
+
 Fix Bugs
 --------
 

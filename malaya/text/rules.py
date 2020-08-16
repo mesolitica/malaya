@@ -1055,9 +1055,14 @@ rules_compound_normalizer = {
     'at first': 'pertama kalinya',
     'je lah': 'sahaja lah',
     'ja lah': 'sahaja lah',
+    'seriously though': 'serius walaupun',
+    'seriously thou': 'serius walaupun',
 }
 
 rules_normalizer = {
+    'seriously': 'biar betul',
+    'sriusly': 'biar betul',
+    'siriusly': 'biar betul',
     'lu': 'kamu',
     'pon': 'pun',
     'jela': 'sahaja lah',
