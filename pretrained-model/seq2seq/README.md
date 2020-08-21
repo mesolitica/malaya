@@ -10,7 +10,7 @@
 
 ## Objective
 
-1. Provide alternative Seq2Seq model like T5. We combined BERT as encoder and vanilla-transformer decoder as decoder.
+1. Provide alternative Seq2Seq model like T5. We use Tensor2Tensor transformer model.
 
 ## Acknowledgement
 
@@ -18,17 +18,21 @@ Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://w
 
 ## How-to
 
+1. Download [sp10m.cased.t5.model](../preprocess/sp10m.cased.t5.model) and [sp10m.cased.t5.vocab](../preprocess/sp10m.cased.t5.vocab).
+
+2. Run all prepare notebooks.
+
+3. Run training session,
+
 ```bash
-python3 run_pretraining.py --bert_config_file=gs://mesolitica-general/b2b-data/BASE_config.json --input_file=gs://mesolitica-general/b2b-data/*.tfrecord --output_dir=gs://mesolitica-general/b2b-base --do_train=True --train_batch_size=160 --save_checkpoints_steps=5000 --tpu_name=node-1 --tpu_zone=us-central1-a --gcp_project=mesolitica-cloud --use_tpu=True --num_train_steps=500000
+python3 b2b-base.py
 ```
 
 ## Download
 
-1. 5th August 2020, [b2t.tar.gz](https://f000.backblazeb2.com/file/malaya-model/b2t.tar.gz)
+1. Base, https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/seq2seq-base.tar-gz
 
 ## Test
-
-Check [test-base.ipynb](test-base.ipynb).
 
 ## Citation
 
