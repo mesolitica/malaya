@@ -413,6 +413,8 @@ def merge_sentencepiece_tokens(paired_tokens, weighted = True, model = 'bert'):
     while i < n_tokens:
 
         current_token, current_weight = paired_tokens[i]
+        if isinstance(current_token, bytes):
+            current_token = current_token.decode()
         if not current_token.startswith('▁') and current_token not in rejected:
             previous_token, previous_weight = new_paired_tokens.pop()
             merged_token = previous_token
@@ -452,6 +454,9 @@ def merge_sentencepiece_tokens_tagging(x, y, model = 'bert'):
     while i < n_tokens:
 
         current_token, current_label = x[i], y[i]
+
+        if isinstance(current_token, bytes):
+            current_token = current_token.decode()
         if not current_token.startswith('▁') and current_token not in rejected:
             previous_token, previous_label = new_paired_tokens.pop()
             merged_token = previous_token

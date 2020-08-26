@@ -12,7 +12,7 @@ def readme():
 setuptools.setup(
     name = __packagename__,
     packages = setuptools.find_packages(),
-    version = '3.8.1',
+    version = '3.8.2',
     python_requires = '>=3.6.*',
     description = 'Natural-Language-Toolkit for bahasa Malaysia, powered by Deep Learning Tensorflow.',
     long_description = readme(),
