@@ -22,15 +22,26 @@ Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://w
 
 2. Run all prepare notebooks.
 
-3. Run training session,
+3. Generate tfrecords, [t2t-data-generate-sentencepiece.ipynb](t2t-data-generate-sentencepiece.ipynb).
 
+4. Run training session,
+
+BASE model,
 ```bash
 python3 b2b-base.py
 ```
 
+SMALL model,
+```bash
+python3 t2t-small.py
+```
+
+
 ## Download
 
-1. Base, https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/seq2seq-base.tar-gz
+1. **BASE**, last update 9th September 2020, [seq2seq-base-500k-09-09-2020.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/seq2seq-base-500k-09-09-2020.tar.gz)
+
+Tensorboard, https://tensorboard.dev/experiment/vZgJmvPXTVGDkWLx8hEk7Q/
 
 ## Test
 
