@@ -61,7 +61,7 @@ class Seq2Seq(text_problems.Text2TextProblem):
         return {'inputs': encoder, 'targets': encoder}
 
 
-# os.system('rm -rf t2t/train-base')
+# os.system('rm -rf t2t/train-small')
 os.system('mkdir t2t/train-small')
 DATA_DIR = os.path.expanduser('t2t/data')
 TMP_DIR = os.path.expanduser('t2t/tmp')
@@ -76,7 +76,7 @@ t2t_problem = problems.problem(PROBLEM)
 
 train_steps = 500000
 eval_steps = 10
-batch_size = 1024 * 12
+batch_size = 1024 * 24
 save_checkpoints_steps = 25000
 ALPHA = 0.01
 schedule = 'continuous_train_and_eval'

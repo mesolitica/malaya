@@ -45,6 +45,8 @@ Tensorboard, https://tensorboard.dev/experiment/vZgJmvPXTVGDkWLx8hEk7Q/
 
 ## Test
 
+BASE model, run [t2t-base.ipynb](t2t-base.ipynb).
+
 ## Citation
 
 1. Please citate the repository if use these checkpoints.
