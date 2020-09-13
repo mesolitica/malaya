@@ -16,7 +16,6 @@ wiki.ms.vec
 *tensorboard
 client_secrets.json
 lid.176.ftz
-load-language-detection.ipynb
 coverage.xml
 .coverage
 .coveragerc
