@@ -64,6 +64,21 @@ class SentencePieceTokenizer:
         return [self.sp_model.IdToPiece(i) for i in ids]
 
 
+class SentencePieceEncoder:
+    def __init__(self, vocab):
+        sp = spm.SentencePieceProcessor()
+        sp.Load(vocab)
+
+        self.sp = sp
+        self.vocab_size = sp.GetPieceSize() + 100
+
+    def encode(self, s):
+        return self.sp.EncodeAsIds(s)
+
+    def decode(self, ids, strip_extraneous = False):
+        return self.sp.DecodeIds(list(ids))
+
+
 def padding_sequence(seq, maxlen, padding = 'post', pad_int = 0):
     padded_seqs = []
     for s in seq:

@@ -60,6 +60,7 @@ Contents:
 
    load-emotion
    load-language-detection
+   load-nsfw
    load-relevancy
    load-sentiment
    load-similarity

@@ -8,16 +8,22 @@ from malaya.text.function import (
     transformer_textcleaning,
     translation_textcleaning,
     pad_sentence_batch,
+    upperfirst,
 )
 from malaya.text.bpe import (
     constituency_bert,
     constituency_xlnet,
     PTB_TOKEN_ESCAPE,
+    padding_sequence,
 )
 from malaya.text import chart_decoder
 from malaya.text.trees import tree_from_str
 from herpetologist import check_type
 from typing import List
+
+
+def cleaning(string):
+    return re.sub(r'[ ]+', ' ', string).strip()
 
 
 def _convert_sparse_matrix_to_sparse_tensor(X, got_limit = False, limit = 5):
@@ -36,7 +42,7 @@ class _LANG_MODEL:
         self.X = tf.sparse_placeholder(tf.int32)
         self.W = tf.sparse_placeholder(tf.int32)
         self.Y = tf.placeholder(tf.int32, [None])
-        embeddings = tf.Variable(tf.truncated_normal([400000, dimension]))
+        embeddings = tf.Variable(tf.truncated_normal([400_000, dimension]))
         embed = tf.nn.embedding_lookup_sparse(
             embeddings, self.X, self.W, combiner = 'mean'
         )
@@ -379,3 +385,76 @@ class CONSTITUENCY:
             return s
 
         return tree_from_str(make_str())
+
+
+class SUMMARIZATION:
+    def __init__(self, X, top_p, greedy, beam, nucleus, sess, tokenizer):
+
+        self._X = X
+        self._top_p = top_p
+        self._greedy = greedy
+        self._beam = beam
+        self._nucleus = nucleus
+        self._sess = sess
+        self._tokenizer = tokenizer
+        self._mapping = {
+            'greedy': self._greedy,
+            'beam': self._beam,
+            'nucleus': self._nucleus,
+        }
+
+    def _summarize(
+        self, strings, mode, decoder = 'greedy', top_p = 0.7, sentiment = None
+    ):
+        mode = mode.lower()
+        if mode not in ['ringkasan', 'tajuk']:
+            raise ValueError('mode only supports [`ringkasan`, `tajuk`]')
+
+        if not 0 < top_p < 1:
+            raise ValueError('top_p must be bigger than 0 and less than 1')
+
+        decoder = decoder.lower()
+        output = self._mapping.get(decoder)
+        if not decoder:
+            raise ValueError('mode only supports [`greedy`, `beam`, `nucleus`]')
+
+        if isinstance(sentiment, str):
+            sentiment = sentiment.lower()
+            if sentiment not in ['negative', 'positive', 'neutral']:
+                raise ValueError(
+                    'sentiment only supports [`negative`, `positive`, `neutral`]'
+                )
+            sentiment = f'sentiment: {sentiment}: '
+        else:
+            sentiment = ''
+
+        strings = [
+            f'{mode}: {sentiment}{cleaning(string)}' for string in strings
+        ]
+
+        batch_x = [self._tokenizer.encode(string) + [1] for string in strings]
+        maxlen = max([len(i) for i in batch_x])
+        batch_x = padding_sequence(batch_x, maxlen)
+
+        p = self._sess.run(
+            output, feed_dict = {self._X: batch_x, self._top_p: top_p}
+        ).tolist()
+
+        results = [self._tokenizer.decode(r) for r in p]
+        return results
+
+    def summarize(
+        self,
+        strings: List[str],
+        mode: str = 'ringkasan',
+        decoder: str = 'greedy',
+        top_p: float = 0.7,
+        sentiment: str = None,
+    ):
+        return self._summarize(
+            strings = strings,
+            mode = mode,
+            decoder = decoder,
+            top_p = top_p,
+            sentiment = sentiment,
+        )

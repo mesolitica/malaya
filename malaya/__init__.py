@@ -206,6 +206,7 @@ from . import keyword_extraction
 from . import language_detection
 from . import lexicon
 from . import normalize
+from . import nsfw
 from . import num2word
 from . import paraphrase
 from . import pos

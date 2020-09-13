@@ -78,6 +78,15 @@ malaya.normalize
 .. autoclass:: malaya.normalize.NORMALIZER()
     :members:
 
+malaya.nsfw
+-------------------------
+
+.. automodule:: malaya.nsfw
+    :members:
+
+.. autoclass:: malaya.lexicon.nsfw.LEXICON()
+    :members:
+
 malaya.num2word
 -----------------
 

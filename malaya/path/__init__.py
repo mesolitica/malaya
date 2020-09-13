@@ -441,6 +441,25 @@ S3_PATH_NGRAM = {
     },
 }
 
+PATH_NSFW = {
+    'lexicon': {'model': home + '/nsfw/lexicon.json', 'version': 'v39'},
+    'multinomial': {
+        'model': home + '/nsfw/multinomial/multinomial.pkl',
+        'vector': home + '/nsfw/multinomial/tfidf.pkl',
+        'bpe': home + '/nsfw/multinomial/bpe.model',
+        'version': 'v39',
+    },
+}
+
+S3_PATH_NSFW = {
+    'lexicon': {'model': 'v39/nsfw/nsfw-corpus.json'},
+    'multinomial': {
+        'model': 'v39/nsfw/multinomial-nsfw.pkl',
+        'vector': 'v39/nsfw/tfidf-nsfw.pkl',
+        'bpe': 'v39/nsfw/nsfw.model',
+    },
+}
+
 PATH_PARAPHRASE = {
     'bert': {
         'model': home + '/paraphrase/bert/base/model.pb',

@@ -62,7 +62,7 @@ class SUMMARIZATION(T5):
         """
         mode = mode.lower()
         if mode not in ['ringkasan', 'tajuk']:
-            raise ValueError('mode only supports `ringkasan` and `tajuk`')
+            raise ValueError('mode only supports [`ringkasan`, `tajuk`]')
 
         results = self._summarize(string, mode)
 
