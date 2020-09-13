@@ -24,9 +24,9 @@ def transformer(model = 'base', **kwargs):
     model : str, optional (default='base')
         Model architecture supported. Allowed values:
 
-        * ``'small'`` - transformer Small parameters.
-        * ``'base'`` - transformer Base parameters.
-        * ``'large'`` - transformer Large parameters.
+        * ``'small'`` - Transformer SMALL parameters.
+        * ``'base'`` - Transformer BASE parameters.
+        * ``'large'`` - Transformer LARGE parameters.
 
     Returns
     -------

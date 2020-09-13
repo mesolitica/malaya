@@ -44,12 +44,13 @@ def t5(model: str = 'base', compressed: bool = True, **kwargs):
     model : str, optional (default='base')
         Model architecture supported. Allowed values:
 
-        * ``'base'`` - T5 Base parameters.
-        * ``'small'`` - T5 Small parameters.
+        * ``'base'`` - T5 BASE parameters.
+        * ``'small'`` - T5 SMALL parameters.
 
     compressed: bool, optional (default=True)
         Load compressed model, but this not able to utilize malaya-gpu function. 
         This only compressed model size, but when loaded into VRAM / RAM, size uncompressed and compressed are the same.
+        We prefer un-compressed model due to compressed model prone to error.
 
     Returns
     -------
@@ -76,18 +77,15 @@ def t5(model: str = 'base', compressed: bool = True, **kwargs):
 
 def transformer(model = 'base', **kwargs):
     """
-    Load transformer encoder-decoder model to generate a paraphrase given a string.
+    Load Malaya transformer encoder-decoder model to generate a paraphrase given a string.
 
     Parameters
     ----------
     model : str, optional (default='base')
         Model architecture supported. Allowed values:
 
-        * ``'tiny'`` - transformer Tiny parameters.
-        * ``'small'`` - transformer Small parameters.
-        * ``'base'`` - transformer Base parameters.
-        * ``'tiny-bert'`` - BERT-BERT Tiny parameters.
-        * ``'bert'`` - BERT-BERT Base parameters.
+        * ``'malaya-small'`` - Malaya Transformer SMALL parameters.
+        * ``'malaya-base'`` - Malaya Transformer BASE parameters.
 
     Returns
     -------
@@ -100,47 +98,20 @@ def transformer(model = 'base', **kwargs):
             'model not supported, please check supported models from malaya.paraphrase.available_transformer()'
         )
 
-    if 'bert' in model:
+    path = PATH_PARAPHRASE['transformer']
+    s3_path = S3_PATH_PARAPHRASE['transformer']
 
-        path = PATH_PARAPHRASE[model]
-        s3_path = S3_PATH_PARAPHRASE[model]
+    check_file(path[model], s3_path[model], **kwargs)
+    g = load_graph(path[model]['model'], **kwargs)
 
-        check_file(path, s3_path, **kwargs)
-        g = load_graph(path['model'], **kwargs)
+    from malaya.text.t2t import text_encoder
+    from malaya.model.tf import PARAPHRASE
 
-        if model in ['bert', 'tiny-bert']:
-            from malaya.text.bpe import sentencepiece_tokenizer_bert
-
-            tokenizer = sentencepiece_tokenizer_bert(
-                path['tokenizer'], path['vocab']
-            )
-
-        from malaya.model.bert import PARAPHRASE_BERT
-
-        return PARAPHRASE_BERT(
-            X = g.get_tensor_by_name('import/Placeholder:0'),
-            segment_ids = g.get_tensor_by_name('import/Placeholder_1:0'),
-            input_masks = g.get_tensor_by_name('import/Placeholder_2:0'),
-            logits = g.get_tensor_by_name('import/greedy:0'),
-            sess = generate_session(graph = g, **kwargs),
-            tokenizer = tokenizer,
-        )
-
-    else:
-        path = PATH_PARAPHRASE['transformer']
-        s3_path = S3_PATH_PARAPHRASE['transformer']
-
-        check_file(path[model], s3_path[model], **kwargs)
-        g = load_graph(path[model]['model'], **kwargs)
-
-        from malaya.text.t2t import text_encoder
-        from malaya.model.tf import PARAPHRASE
-
-        encoder = text_encoder.SubwordTextEncoder(path[model]['vocab'])
-        return PARAPHRASE(
-            g.get_tensor_by_name('import/Placeholder:0'),
-            g.get_tensor_by_name('import/greedy:0'),
-            g.get_tensor_by_name('import/beam:0'),
-            generate_session(graph = g, **kwargs),
-            encoder,
-        )
+    encoder = text_encoder.SubwordTextEncoder(path[model]['vocab'])
+    return PARAPHRASE(
+        g.get_tensor_by_name('import/Placeholder:0'),
+        g.get_tensor_by_name('import/greedy:0'),
+        g.get_tensor_by_name('import/beam:0'),
+        generate_session(graph = g, **kwargs),
+        encoder,
+    )

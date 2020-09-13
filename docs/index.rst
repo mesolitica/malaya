@@ -17,11 +17,11 @@ Contents:
    :caption: Getting Started
 
    Installation
-   GPU
+   gpu-environment
    Dataset
-   Accuracy
-   Cache
-   Deployment
+   models-accuracy
+   load-cache
+   load-deployment
    Api
    Windows
    Contributing
@@ -30,83 +30,83 @@ Contents:
    :maxdepth: 2
    :caption: Pre-trained model
 
-   Transformer
-   Wordvector
+   load-transformer
+   load-wordvector
 
 .. toctree::
    :maxdepth: 2
    :caption: Normalization Module
 
-   Normalizer
-   Num2word
-   Preprocessing
-   Spell
-   Stemmer
-   Word2num
+   load-normalizer
+   load-num2word
+   load-preprocessing
+   load-spell-correction
+   load-stemmer
+   load-word2num
 
 .. toctree::
    :maxdepth: 2
    :caption: Generative Module
 
-   Augmentation
-   Generator
-   Lexicon
-   Paraphrase
-   Topic
+   load-augmentation
+   load-generator
+   load-lexicon
+   load-paraphrase
+   load-topic-modeling
 
 .. toctree::
    :maxdepth: 2
    :caption: Classification Module
 
-   Emotion
-   Language
-   Relevancy
-   Sentiment
-   Similarity
-   Subjective
-   Toxic
+   load-emotion
+   load-language-detection
+   load-relevancy
+   load-sentiment
+   load-similarity
+   load-subjectivity
+   load-toxic
 
 .. toctree::
    :maxdepth: 2
    :caption: Tagging Module
 
-   Entities
-   Pos
+   load-entities
+   load-pos
 
 .. toctree::
    :maxdepth: 2
    :caption: Parsing Module
 
-   Constituency
-   Dependency
+   load-dependency
+   load-constituency
 
 .. toctree::
    :maxdepth: 2
    :caption: Summarization Module
 
-   Abstractive
-   Extractive
+   load-abstractive
+   load-extractive
 
 .. toctree::
    :maxdepth: 2
    :caption: Translation Module
 
-   MStoEN
-   ENtoMS
+   load-translation-ms-en
+   load-translation-en-ms
 
 .. toctree::
    :maxdepth: 2
    :caption: Zero-shot Module
 
-   Classification
+   load-zeroshot-classification
 
 .. toctree::
    :maxdepth: 2
    :caption: Misc Module
    
-   Cluster
-   Keyword
-   Stack
+   load-clustering
+   load-keyword-extraction
+   load-stack
 
 .. toctree::
    :maxdepth: 2

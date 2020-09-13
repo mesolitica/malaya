@@ -464,12 +464,13 @@ def t5(model: str = 'base', compressed: bool = True, **kwargs):
     model : str, optional (default='base')
         Model architecture supported. Allowed values:
 
-        * ``'base'`` - T5 Base parameters.
-        * ``'small'`` - T5 Small parameters.
+        * ``'base'`` - T5 BASE parameters.
+        * ``'small'`` - T5 SMALL parameters.
 
     compressed: bool, optional (default=True)
         Load compressed model, but this not able to utilize malaya-gpu function. 
         This only compressed model size, but when loaded into VRAM / RAM, size uncompressed and compressed are the same.
+        We prefer un-compressed model due to compressed model prone to error.
 
     Returns
     -------

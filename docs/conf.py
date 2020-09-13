@@ -19,7 +19,6 @@ import sys
 SOURCE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__name__)))
 sys.path.insert(0, SOURCE_DIR)
 
-
 # -- Project information -----------------------------------------------------
 
 project = 'malaya'
@@ -46,6 +45,7 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
     'sphinx.ext.mathjax',
+    'nbsphinx',
 ]
 numpydoc_show_class_members = False
 autodoc_member_order = 'bysource'
@@ -78,16 +78,16 @@ exclude_patterns = [
     'Thumbs.db',
     '.DS_Store',
     'load-*.rst',
-    '*.ipynb',
     'references.rst',
     'text-clustering-generator.rst',
     'models-accuracy.rst',
     'translator.rst',
     'generate',
+    #'*.ipynb',
 ]
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = 'colorful'
 
 source_suffix = '.rst'
 # -- Options for HTML output -------------------------------------------------
@@ -95,20 +95,39 @@ source_suffix = '.rst'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinx_rtd_theme'
+html_theme = 'sphinx_material'
 html_logo = 'malaya-only.png'
 
-
+html_show_sourcelink = True
+html_sidebars = {
+    '**': [
+        'logo-text.html',
+        'globaltoc.html',
+        'localtoc.html',
+        'searchbox.html',
+    ]
+}
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
-html_theme_options = {'style_nav_header_background': '#fdbe00'}
+# html_theme_options = {'style_nav_header_background': '#fdbe00'}
+
+html_theme_options = {
+    'repo_url': 'https://github.com/huseinzol05/Malaya',
+    'repo_name': 'Malaya',
+    'nav_title': 'Malaya',
+    'color_primary': 'orange',
+    'color_accent': 'light-orange',
+    'globaltoc_depth': 1,
+    'globaltoc_collapse': False,
+    'repo_type': 'github',
+    'master_doc': False,
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.

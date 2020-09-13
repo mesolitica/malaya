@@ -458,7 +458,7 @@ acronyms = '([A-Z][.][A-Z][.](?:[A-Z][.])?)'
 websites = '[.](com|net|org|io|gov|me|edu|my)'
 another_websites = '(www|http|https)[.]'
 digits = '([0-9])'
-before_digits = '([Nn]o|[Nn]ombor|[Nn]umber)'
+before_digits = '([Nn]o|[Nn]ombor|[Nn]umber|[Kk]e)'
 month = '([Jj]an(?:uari)?|[Ff]eb(?:ruari)?|[Mm]a(?:c)?|[Aa]pr(?:il)?|Mei|[Jj]u(?:n)?|[Jj]ula(?:i)?|[Aa]ug(?:ust)?|[Ss]ept?(?:ember)?|[Oo]kt(?:ober)?|[Nn]ov(?:ember)?|[Dd]is(?:ember)?)'
 
 
@@ -478,7 +478,7 @@ def split_into_sentences(text, minimum_length = 5):
     if 'Ph.D' in text:
         text = text.replace('Ph.D.', 'Ph<prd>D<prd>')
     text = re.sub('[.]\s*[,]', '<prd>,', text)
-    text = re.sub(before_digits + '[.]\s*' + digits, '\\1<prd>\\2', text)
+    text = re.sub(before_digits + '\s*[.]\s*' + digits, '\\1<prd>\\2', text)
     text = re.sub(month + '[.]\s*' + digits, '\\1<prd>\\2', text)
     text = re.sub('\s' + alphabets + '[.][ ]+', ' \\1<prd> ', text)
     text = re.sub(acronyms + ' ' + starters, '\\1<stop> \\2', text)

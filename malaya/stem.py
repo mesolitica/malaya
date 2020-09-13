@@ -53,7 +53,7 @@ class DEEP_STEMMER:
     @check_type
     def stem(self, string: str, beam_search: bool = True):
         """
-        Stem a string.
+        Stem a string, this also include lemmatization.
 
         Parameters
         ----------
@@ -138,7 +138,7 @@ def naive(word: str):
 @check_type
 def sastrawi(string: str):
     """
-    Stem a string using Sastrawi.
+    Stem a string using Sastrawi, this also include lemmatization.
 
     Parameters
     ----------
@@ -156,7 +156,7 @@ def sastrawi(string: str):
 
 def deep_model(**kwargs):
     """
-    Load LSTM + Bahdanau Attention stemming model.
+    Load LSTM + Bahdanau Attention stemming model, this also include lemmatization.
 
     Returns
     -------

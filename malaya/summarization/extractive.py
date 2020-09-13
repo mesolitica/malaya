@@ -481,7 +481,7 @@ def encoder(vectorizer):
 
     Returns
     -------
-    result: malaya.summarize.DEEP_SUMMARIZER
+    result: malaya.summarization.extractive.DEEP_SUMMARIZER
     """
 
     if not hasattr(vectorizer, 'vectorize'):

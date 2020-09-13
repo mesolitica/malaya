@@ -5,13 +5,13 @@ import os
 
 _t5_availability = {
     'small': [
-        '122MB',
+        '355.6MB',
         'ROUGE-1: 0.33854',
         'ROUGE-2: 0.14588',
         'ROUGE-L: 0.23528',
     ],
     'base': [
-        '448MB',
+        '1300MB',
         'ROUGE-1: 0.34103',
         'ROUGE-2: 0.14994',
         'ROUGE-L: 0.23655',
@@ -37,12 +37,13 @@ def t5(model: str = 'base', compressed: bool = True, **kwargs):
     model : str, optional (default='base')
         Model architecture supported. Allowed values:
 
-        * ``'base'`` - T5 Base parameters.
-        * ``'small'`` - T5 Small parameters.
+        * ``'base'`` - T5 BASE parameters.
+        * ``'small'`` - T5 SMALL parameters.
 
     compressed: bool, optional (default=True)
         Load compressed model, but this not able to utilize malaya-gpu function. 
         This only compressed model size, but when loaded into VRAM / RAM, size uncompressed and compressed are the same.
+        We prefer un-compressed model due to compressed model prone to error.
 
     Returns
     -------

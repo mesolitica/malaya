@@ -221,6 +221,7 @@ from . import summarization
 from . import topic_model
 from . import toxicity
 from . import transformer
+from . import true_case
 from . import translation
 from . import word2num
 from . import wordvector

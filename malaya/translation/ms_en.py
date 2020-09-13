@@ -17,16 +17,16 @@ def available_transformer():
 
 def transformer(model = 'base', **kwargs):
     """
-    Load transformer encoder-decoder model to translate MS-to-EN.
+    Load Transformer encoder-decoder model to translate MS-to-EN.
 
     Parameters
     ----------
     model : str, optional (default='base')
         Model architecture supported. Allowed values:
 
-        * ``'small'`` - transformer Small parameters.
-        * ``'base'`` - transformer Base parameters.
-        * ``'large'`` - transformer Large parameters.
+        * ``'small'`` - Transformer SMALL parameters.
+        * ``'base'`` - Transformer BASE parameters.
+        * ``'large'`` - Transformer LARGE parameters.
 
     Returns
     -------

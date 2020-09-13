@@ -69,11 +69,11 @@ def transformer(model: str = 'xlnet', **kwargs):
     model : str, optional (default='bert')
         Model architecture supported. Allowed values:
 
-        * ``'bert'`` - BERT architecture from google.
-        * ``'tiny-bert'`` - BERT architecture from google with smaller parameters.
-        * ``'albert'`` - ALBERT architecture from google.
-        * ``'tiny-albert'`` - ALBERT architecture from google with smaller parameters.
-        * ``'xlnet'`` - XLNET architecture from google.
+        * ``'bert'`` - Google BERT BASE parameters.
+        * ``'tiny-bert'`` - Google BERT TINY parameters.
+        * ``'albert'`` - Google ALBERT BASE parameters.
+        * ``'tiny-albert'`` - Google ALBERT TINY parameters.
+        * ``'xlnet'`` - Google XLNET BASE parameters.
 
     Returns
     -------

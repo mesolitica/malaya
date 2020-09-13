@@ -55,31 +55,16 @@ class SUMMARIZATION(T5):
 
             * ``'ringkasan'`` - summarization for long sentence, eg, news summarization.
             * ``'tajuk'`` - title summarization for long sentence, eg, news title.
-            * ``'perenggan'`` - summarization for each perenggan. This will automatically split sentences by EOS.
 
         Returns
         -------
         result: str
         """
         mode = mode.lower()
-        if mode not in ['ringkasan', 'tajuk', 'perenggan']:
-            raise ValueError(
-                'mode only supports `ringkasan`, `tajuk`, and `perenggan`'
-            )
+        if mode not in ['ringkasan', 'tajuk']:
+            raise ValueError('mode only supports `ringkasan` and `tajuk`')
 
-        if mode == 'perenggan':
-            splitted_fullstop = split_into_sentences(string)
-
-            results = []
-            for splitted in splitted_fullstop:
-                if len(splitted.split()) < 8:
-                    results.append(splitted)
-                else:
-                    results.append(self._summarize(splitted, mode))
-            results = '. '.join(results)
-
-        else:
-            results = self._summarize(string, mode)
+        results = self._summarize(string, mode)
 
         return results
 
