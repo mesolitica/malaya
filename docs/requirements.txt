@@ -19,3 +19,4 @@ malaya
 nbsphinx
 sphinx-material
 ipython
+pygments==2.7.0
