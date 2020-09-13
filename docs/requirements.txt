@@ -18,3 +18,4 @@ albert-tensorflow
 malaya
 nbsphinx
 sphinx-material
+ipython
