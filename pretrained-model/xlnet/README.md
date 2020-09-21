@@ -8,7 +8,6 @@ Thanks to [zihangdai](https://github.com/zihangdai) for opensourcing XLNET, http
   * [How-to](#how-to)
     * [Multigpus](#multigpus)
   * [Download](#download)
-  * [Comparison using Emotion Dataset](#comparison-using-emotion-dataset)
   * [Citation](#citation)
   * [Donation](#donation)
 
@@ -29,10 +28,10 @@ Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://w
 ```bash
 mkdir save-location
 python3 data_utils.py \
-  --bsz_per_host=20 \
+  --bsz_per_host=64 \
   --seq_len=512 \
   --reuse_len=256 \
-  --input_glob=dumping-* \
+  --input_glob=../pure-text/splitted/dumping-cleaned-news.txt00 \
   --save_dir=save-location \
   --num_passes=20 \
   --bi_data=True \
@@ -40,7 +39,7 @@ python3 data_utils.py \
   --mask_alpha=6 \
   --mask_beta=1 \
   --num_predict=85 \
-  --num_core_per_host=1 \
+  --num_core_per_host=8 \
   --uncased=False
 ```
 
@@ -72,6 +71,39 @@ python3 train_gpu.py \
   --num_core_per_host=1 \
   --train_steps=2000000  --iterations=10 --learning_rate=5e-5 \
   --num_gpu_cores=2
+```
+
+**TPU BASE**
+```
+python3 train.py \
+--record_info_dir=gs://mesolitica-tpu-general/xlnet-data/tfrecords \
+--train_batch_size=128 \
+--seq_len=512 \
+--reuse_len=256 \
+--mem_len=384 \
+--perm_size=256 \
+--n_layer=12 \
+--d_model=768 \
+--d_embed=768 \
+--n_head=12 \
+--d_head=64 \
+--d_inner=3072 \
+--untie_r=True \
+--mask_alpha=6 \
+--mask_beta=1 \
+--num_predict=85 \
+--model_dir=gs://mesolitica-tpu-general/xlnet-base \
+--uncased=False \
+--num_core_per_host=8 \
+--train_steps=500000 \
+--learning_rate=4e-4 \
+--ff_activation=gelu \
+--adam_epsilon=1e-6 \
+--weight_decay=0.01 \
+--warmup_steps=40000 \
+--tpu=node-5 \
+--tpu_zone=europe-west4-a \
+--dropout=0.1 --dropatt=0.1
 ```
 
 3. Run validation,
@@ -178,14 +210,6 @@ tensorboard --logdir=tensorboard --host=0.0.0.0
   - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.
   - 300k steps, 3 GPUs TESLA V100.
   - BASE size (467MB).
-
-## Comparison using Emotion Dataset
-
-Link to [emotion dataset](https://github.com/huseinzol05/Malaya-Dataset#emotion).
-
-Link to [notebooks](transfer-learning-emotion-base.ipynb).
-
-<img src="barplot/emotion.png" width="70%" align="">
 
 ## Citation
 

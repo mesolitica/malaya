@@ -156,6 +156,14 @@ Thanks to `Im Big <https://www.facebook.com/imbigofficial/>`_, `LigBlou <https:/
         <img alt="logo" width="50%" src="https://malaya-dataset.s3-ap-southeast-1.amazonaws.com/ligblou-mesolitca-keyreply.png">
     </a>
 
+Also, thanks to `Tensorflow Research Cloud <https://www.tensorflow.org/tfrc>`_ for free TPUs access.
+
+.. raw:: html
+
+    <a href="https://www.tensorflow.org/tfrc">
+        <img alt="logo" width="20%" src="https://2.bp.blogspot.com/-xojf3dn8Ngc/WRubNXxUZJI/AAAAAAAAB1A/0W7o1hR_n20QcWyXHXDI1OTo7vXBR8f7QCLcB/s400/image2.png">
+    </a>
+
 Contributing
 ----------------
 

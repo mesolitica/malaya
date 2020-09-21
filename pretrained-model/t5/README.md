@@ -24,13 +24,17 @@ Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://w
 
 1. Download [sp10m.cased.t5.model](../preprocess/sp10m.cased.t5.model) and [sp10m.cased.t5.vocab](../preprocess/sp10m.cased.t5.vocab).
 
-2. Generate [stemming data](generate-stemming.ipynb), [synonyms data](generate-synonym.ipynb) and [news title](populate-news.ipynb).
+2. Run all generate notebooks in [prepare](prepare).
 
-3. Upload data to GCS, [prepare-upload-gcs.ipynb](prepare-upload-gcs.ipynb).
+3. Upload data to GCS, [upload-gcs.ipynb](prepare-upload-gcs.ipynb).
 
 4. Validate dataset from GCS, [test-dataset-gcs.ipynb](test-dataset-gcs.ipynb).
 
 5. Train using TPU, [train_tpu.py](train_tpu.py).
+
+```
+TPU Type: v3-8, TPU Version: 2.2
+```
 
 ## Download
 

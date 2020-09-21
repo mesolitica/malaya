@@ -8,7 +8,6 @@ Thanks to Google for opensourcing most of the source code to develop BERT, https
   * [How-to](#how-to)
     * [Multigpus](#multigpus)
   * [Download](#download)
-  * [Comparison using Emotion Dataset](#comparison-using-emotion-dataset)
   * [Citation](#citation)
   * [Donation](#donation)
 
@@ -24,23 +23,15 @@ Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://w
 
 ## How-to
 
-1. Run [preprocess](../preprocess).
+1. Run [build-wordpiece.ipynb](build-wordpiece.ipynb).
 
-2. git clone https://github.com/google-research/bert, and,
-
-```bash
-git clone https://github.com/google-research/bert.git
-cd bert
-cp create-pretraining-data.py prepro_utils.py multigpu_pretraining.py custom_optimization.py
-```
-
-3. Create pretraining dataset,
+2. Create pretraining dataset,
 
 ```bash
 python3 create-pretraining-data.py
 ```
 
-4. Execute pretraining,
+3. Execute pretraining,
 
 ```bash
 python3 multigpu_pretraining.py \
@@ -123,14 +114,6 @@ I0910 11:20:31.562414 140220436277056 validation.py:597]   next_sentence_loss = 
   - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.
   - 2.0M steps, 3 GPUs TESLA V100.
   - BASE size (467MB).
-
-## Comparison using Emotion Dataset
-
-Link to [emotion dataset](https://github.com/huseinzol05/Malaya-Dataset#emotion).
-
-Link to [notebooks](transfer-learning-emotion-base.ipynb).
-
-<img src="barplot/emotion.png" width="70%" align="">
 
 ## Citation
 

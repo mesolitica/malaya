@@ -47,14 +47,14 @@ flags.DEFINE_string(
 
 flags.DEFINE_bool(
     'do_lower_case',
-    False,
+    True,
     'Whether to lower case the input text. Should be True for uncased '
     'models and False for cased models.',
 )
 
 flags.DEFINE_bool(
     'do_whole_word_mask',
-    True,
+    False,
     'Whether to use whole word masking rather than per-WordPiece masking.',
 )
 
@@ -299,7 +299,7 @@ def create_instances_from_document(
     """Creates `TrainingInstance`s for a single document."""
     document = all_documents[document_index]
 
-    # Account for <cls>, <sep>, <sep>
+    # Account for [CLS], [SEP], [SEP]
     max_num_tokens = max_seq_length - 3
 
     # We *usually* want to fill up the entire sequence since we are padding
@@ -378,19 +378,19 @@ def create_instances_from_document(
 
                 tokens = []
                 segment_ids = []
-                tokens.append('<cls>')
+                tokens.append('[CLS]')
                 segment_ids.append(0)
                 for token in tokens_a:
                     tokens.append(token)
                     segment_ids.append(0)
 
-                tokens.append('<sep>')
+                tokens.append('[SEP]')
                 segment_ids.append(0)
 
                 for token in tokens_b:
                     tokens.append(token)
                     segment_ids.append(1)
-                tokens.append('<sep>')
+                tokens.append('[SEP]')
                 segment_ids.append(1)
 
                 (
@@ -431,7 +431,7 @@ def create_masked_lm_predictions(
 
     cand_indexes = []
     for (i, token) in enumerate(tokens):
-        if token == '<cls>' or token == '<sep>':
+        if token == '[CLS]' or token == '[SEP]':
             continue
         # Whole Word Masking means that if we mask all of the wordpieces
         # corresponding to an original word. When a word has been split into
@@ -442,7 +442,7 @@ def create_masked_lm_predictions(
         # Note that Whole Word Masking does *not* change the training code
         # at all -- we still predict each WordPiece independently, softmaxed
         # over the entire vocabulary.
-        if len(cand_indexes) >= 1 and not token.startswith('▁'):
+        if len(cand_indexes) >= 1 and token.startswith('##'):
             cand_indexes[-1].append(i)
         else:
             cand_indexes.append([i])
@@ -478,7 +478,7 @@ def create_masked_lm_predictions(
             masked_token = None
             # 80% of the time, replace with [MASK]
             if rng.random() < 0.8:
-                masked_token = '<mask>'
+                masked_token = '[MASK]'
             else:
                 # 10% of the time, keep original
                 if rng.random() < 0.5:

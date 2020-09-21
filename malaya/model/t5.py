@@ -1,6 +1,7 @@
 import tensorflow as tf
 from herpetologist import check_type
 from malaya.text.function import (
+    postprocessing_summarization,
     transformer_textcleaning,
     split_into_sentences,
     upperfirst,
@@ -40,12 +41,12 @@ class SUMMARIZATION(T5):
 
     def _summarize(self, string, mode):
         string = f'{mode}: {cleaning(string)}'
-        return upperfirst(self._predict(string))
+        return postprocessing_summarization(upperfirst(self._predict(string)))
 
     @check_type
     def summarize(self, string: str, mode: str = 'ringkasan'):
         """
-        Summarize a string.
+        Summarize a string. Decoder is beam decoder with beam width size 1, alpha 0.5 .
 
         Parameters
         ----------
@@ -76,7 +77,7 @@ class GENERATOR(T5):
     @check_type
     def generate(self, strings: List[str]):
         """
-        generate a long text given a isi penting.
+        generate a long text given a isi penting. Decoder is beam decoder with beam width size 1, alpha 0.5 .
 
         Parameters
         ----------
@@ -108,7 +109,7 @@ class PARAPHRASE(T5):
     @check_type
     def paraphrase(self, string: str, split_fullstop: bool = True):
         """
-        paraphrase a string.
+        paraphrase a string. Decoder is beam decoder with beam width size 1, alpha 0.5 .
 
         Parameters
         ----------

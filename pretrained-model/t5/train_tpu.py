@@ -6,9 +6,9 @@ import t5
 import gin
 
 
-vocab = 'gs://mesolitica-general/t5-vocab/sp10m.cased.t5.model'
+vocab = 'gs://mesolitica-tpu-general/t5-data/sp10m.cased.t5.model'
 tpu = tf.distribute.cluster_resolver.TPUClusterResolver(
-    'node-1', zone = 'us-central1-a', project = 'mesolitica-cloud'
+    'node-2', zone = 'europe-west4-a', project = 'mesolitica-tpu'
 )
 TPU_ADDRESS = tpu.get_master()
 TPU_TOPOLOGY = '2x2'
@@ -19,12 +19,11 @@ def dumping_dataset(split, shuffle_files = False):
     del shuffle_files
     ds = tf.data.TextLineDataset(
         [
-            'gs://mesolitica-general/t5-data/dumping-iium.tsv',
-            'gs://mesolitica-general/t5-data/dumping-news.tsv',
-            'gs://mesolitica-general/t5-data/dumping-parliament.tsv',
-            'gs://mesolitica-general/t5-data/dumping-pdf.tsv',
-            'gs://mesolitica-general/t5-data/dumping-watpadd.tsv',
-            'gs://mesolitica-general/t5-data/dumping-wiki.tsv',
+            'gs://mesolitica-tpu-general/t5-data-cleaned/cleaned-news.txt.tsv',
+            'gs://mesolitica-tpu-general/t5-data-cleaned/dumping-parliament.txt.tsv',
+            'gs://mesolitica-tpu-general/t5-data-cleaned/filtered-dumping-academia.txt.tsv',
+            'gs://mesolitica-tpu-general/t5-data-cleaned/filtered-dumping-cleaned-common-crawl.txt.tsv',
+            'gs://mesolitica-tpu-general/t5-data-cleaned/filtered-dumping-wiki.txt.tsv',
         ]
     )
 
@@ -59,10 +58,7 @@ t5.data.TaskRegistry.add(
 def question_dataset(split, shuffle_files = False):
     del shuffle_files
     ds = tf.data.TextLineDataset(
-        [
-            'gs://mesolitica-general/t5-data/qa-train.tsv',
-            'gs://mesolitica-general/t5-data/qa-validation.tsv',
-        ]
+        ['gs://mesolitica-tpu-general/t5-data-cleaned/qa.tsv']
     )
 
     ds = ds.map(
@@ -106,12 +102,11 @@ def pair_dataset(split, shuffle_files = False):
     del shuffle_files
     ds = tf.data.TextLineDataset(
         [
-            'gs://mesolitica-general/t5-data/dumping-iium-pair.tsv',
-            'gs://mesolitica-general/t5-data/dumping-news-pair.tsv',
-            'gs://mesolitica-general/t5-data/dumping-parliament-pair.tsv',
-            'gs://mesolitica-general/t5-data/dumping-pdf-pair.tsv',
-            'gs://mesolitica-general/t5-data/dumping-watpadd-pair.tsv',
-            'gs://mesolitica-general/t5-data/dumping-wiki-pair.tsv',
+            'gs://mesolitica-tpu-general/t5-data-cleaned/cleaned-news.txt-pair.tsv',
+            'gs://mesolitica-tpu-general/t5-data-cleaned/dumping-parliament.txt-pair.tsv',
+            'gs://mesolitica-tpu-general/t5-data-cleaned/filtered-dumping-academia.txt-pair.tsv',
+            'gs://mesolitica-tpu-general/t5-data-cleaned/filtered-dumping-cleaned-common-crawl.txt-pair.tsv',
+            'gs://mesolitica-tpu-general/t5-data-cleaned/filtered-dumping-wiki.txt-pair.tsv',
         ]
     )
 
@@ -142,10 +137,7 @@ t5.data.TaskRegistry.add(
 def news_dataset(split, shuffle_files = False):
     del shuffle_files
     ds = tf.data.TextLineDataset(
-        [
-            'gs://mesolitica-general/t5-data/news-title.tsv',
-            'gs://mesolitica-general/t5-data/news-title2.tsv',
-        ]
+        ['gs://mesolitica-tpu-general/t5-data-cleaned/newstitle.tsv']
     )
 
     ds = ds.map(
@@ -188,7 +180,7 @@ t5.data.TaskRegistry.add(
 def stemming_dataset(split, shuffle_files = False):
     del shuffle_files
     ds = tf.data.TextLineDataset(
-        ['gs://mesolitica-general/t5-data/stemming.tsv']
+        ['gs://mesolitica-tpu-general/t5-data-cleaned/stemming.tsv']
     )
 
     ds = ds.map(
@@ -231,7 +223,7 @@ t5.data.TaskRegistry.add(
 def synonym_dataset(split, shuffle_files = False):
     del shuffle_files
     ds = tf.data.TextLineDataset(
-        ['gs://mesolitica-general/t5-data/synonyms.tsv']
+        ['gs://mesolitica-tpu-general/t5-data-cleaned/synonyms.tsv']
     )
 
     ds = ds.map(
@@ -271,14 +263,13 @@ t5.data.TaskRegistry.add(
 )
 
 
-def quora_dataset(split, shuffle_files = False):
+def similarity_dataset(split, shuffle_files = False):
     del shuffle_files
     ds = tf.data.TextLineDataset(
         [
-            'gs://mesolitica-general/t5-data/quora-0-100k.tsv',
-            'gs://mesolitica-general/t5-data/quora-100k-200k.tsv',
-            'gs://mesolitica-general/t5-data/quora-200k-300k.tsv',
-            'gs://mesolitica-general/t5-data/quora-400k-500k.tsv',
+            'gs://mesolitica-tpu-general/t5-data-cleaned/quora.tsv',
+            'gs://mesolitica-tpu-general/t5-data-cleaned/snli.tsv',
+            'gs://mesolitica-tpu-general/t5-data-cleaned/mnli.tsv',
         ]
     )
 
@@ -295,7 +286,7 @@ def quora_dataset(split, shuffle_files = False):
     return ds
 
 
-def quora_preprocessor(ds):
+def similarity_preprocessor(ds):
     def to_inputs_and_targets(ex):
         return {'inputs': ex['question'], 'targets': ex['answer']}
 
@@ -305,60 +296,12 @@ def quora_preprocessor(ds):
     )
 
 
-t5.data.TaskRegistry.remove('quora_dataset')
+t5.data.TaskRegistry.remove('similarity_dataset')
 t5.data.TaskRegistry.add(
-    'quora_dataset',
-    dataset_fn = quora_dataset,
+    'similarity_dataset',
+    dataset_fn = similarity_dataset,
     splits = ['train'],
-    text_preprocessor = [quora_preprocessor],
-    sentencepiece_model_path = vocab,
-    metric_fns = [t5.evaluation.metrics.accuracy],
-)
-
-
-def snli_dataset(split, shuffle_files = False):
-    del shuffle_files
-    ds = tf.data.TextLineDataset(
-        [
-            'gs://mesolitica-general/t5-data/snli-part1.tsv',
-            'gs://mesolitica-general/t5-data/snli-part2.tsv',
-            'gs://mesolitica-general/t5-data/snli-part3.tsv',
-            'gs://mesolitica-general/t5-data/snli-part4.tsv',
-            'gs://mesolitica-general/t5-data/snli-part5.tsv',
-            'gs://mesolitica-general/t5-data/snli-part6.tsv',
-            'gs://mesolitica-general/t5-data/snli-pary7.tsv',
-        ]
-    )
-
-    ds = ds.map(
-        functools.partial(
-            tf.io.decode_csv,
-            record_defaults = ['', ''],
-            field_delim = '\t',
-            use_quote_delim = False,
-        ),
-        num_parallel_calls = tf.data.experimental.AUTOTUNE,
-    )
-    ds = ds.map(lambda *ex: dict(zip(['question', 'answer'], ex)))
-    return ds
-
-
-def snli_preprocessor(ds):
-    def to_inputs_and_targets(ex):
-        return {'inputs': ex['question'], 'targets': ex['answer']}
-
-    return ds.map(
-        to_inputs_and_targets,
-        num_parallel_calls = tf.data.experimental.AUTOTUNE,
-    )
-
-
-t5.data.TaskRegistry.remove('snli_dataset')
-t5.data.TaskRegistry.add(
-    'snli_dataset',
-    dataset_fn = snli_dataset,
-    splits = ['train'],
-    text_preprocessor = [snli_preprocessor],
+    text_preprocessor = [similarity_preprocessor],
     sentencepiece_model_path = vocab,
     metric_fns = [t5.evaluation.metrics.accuracy],
 )
@@ -373,8 +316,7 @@ t5.data.MixtureRegistry.add(
         'news_dataset',
         'stemming_dataset',
         'synonym_dataset',
-        'quora_dataset',
-        'snli_dataset',
+        'similarity_dataset',
     ],
     default_rate = 1.0,
 )
@@ -382,7 +324,9 @@ t5.data.MixtureRegistry.add(
 
 def main(_):
     tf.logging.set_verbosity(tf.logging.DEBUG)
-    gin.parse_config_file('pretrained_models_base_operative_config.gin')
+    gin.parse_config_file(
+        'gs://mesolitica-tpu-general/t5-data/pretrained_models_base_operative_config.gin'
+    )
 
     MODEL_SIZE = 'base'
     model_parallelism, train_batch_size, keep_checkpoint_max = {
@@ -394,13 +338,13 @@ def main(_):
     }[MODEL_SIZE]
 
     model = t5.models.MtfModel(
-        model_dir = 'gs://mesolitica-general/t5-base/',
+        model_dir = 'gs://mesolitica-tpu-general/t5-base/',
         tpu = TPU_ADDRESS,
         tpu_topology = TPU_TOPOLOGY,
         model_parallelism = model_parallelism,
         batch_size = train_batch_size,
         sequence_length = {'inputs': 1024, 'targets': 1024},
-        learning_rate_schedule = 0.003,
+        learning_rate_schedule = 0.001,
         save_checkpoints_steps = 5000,
         keep_checkpoint_max = 5,
         iterations_per_loop = 100,

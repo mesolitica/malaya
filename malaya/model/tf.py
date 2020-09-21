@@ -3,6 +3,7 @@ import numpy as np
 import re
 from unidecode import unidecode
 from malaya.text.function import (
+    postprocessing_summarization,
     language_detection_textcleaning,
     split_into_sentences,
     transformer_textcleaning,
@@ -440,7 +441,9 @@ class SUMMARIZATION:
             output, feed_dict = {self._X: batch_x, self._top_p: top_p}
         ).tolist()
 
-        results = [self._tokenizer.decode(r) for r in p]
+        results = [
+            postprocessing_summarization(self._tokenizer.decode(r)) for r in p
+        ]
         return results
 
     def summarize(
@@ -451,6 +454,33 @@ class SUMMARIZATION:
         top_p: float = 0.7,
         sentiment: str = None,
     ):
+        """
+        Summarize strings.
+
+        Parameters
+        ----------
+        strings: List[str]
+        mode: str
+            mode for summarization. Allowed values:
+
+            * ``'ringkasan'`` - summarization for long sentence, eg, news summarization.
+            * ``'tajuk'`` - title summarization for long sentence, eg, news title.
+
+        decoder: str
+            mode for summarization decoder. Allowed values:
+
+            * ``'greedy'`` - Beam width size 1, alpha 0.
+            * ``'beam'`` - Beam width size 3, alpha 0.5 .
+            * ``'nucleus'`` - Beam width size 1, with nucleus sampling.
+
+        top_p: float, (default=0.7)
+            cumulative distribution and cut off as soon as the CDF exceeds `top_p`, this is only useful if use `nucleus` decoder.
+
+        Returns
+        -------
+        result: List[str]
+        """
+
         return self._summarize(
             strings = strings,
             mode = mode,

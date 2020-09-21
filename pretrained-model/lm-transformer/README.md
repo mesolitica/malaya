@@ -43,6 +43,10 @@ python3 t2t-small.py
 
 Tensorboard, https://tensorboard.dev/experiment/vZgJmvPXTVGDkWLx8hEk7Q/
 
+2. **SMALL**, last update 15th September 2020, [seq2seq-small-500k-15-09-2020.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/seq2seq-base-500k-15-09-2020.tar.gz)
+
+Tensorboard, https://tensorboard.dev/experiment/QpojYycdQNevKJeVfzF2XQ/
+
 ## Test
 
 BASE model, run [t2t-base.ipynb](t2t-base.ipynb).
