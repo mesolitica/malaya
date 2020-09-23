@@ -1194,6 +1194,9 @@ S3_PATH_TRANSLATION = {
     },
 }
 
+PATH_TRUE_CASE = {}
+S3_PATH_TRUE_CASE = {}
+
 PATH_ELECTRA = {
     'electra': {
         'path': home + '/electra-model/base',

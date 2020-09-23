@@ -425,13 +425,13 @@ def encoder(vectorizer):
     return VECTORIZER_SIMILARITY(vectorizer)
 
 
-_availability = {
-    'bert': ['423.4 MB', 'accuracy: 0.885'],
-    'tiny-bert': ['56.6 MB', 'accuracy: 0.873'],
-    'albert': ['46.3 MB', 'accuracy: 0.873'],
-    'tiny-albert': ['21.9 MB', 'accuracy: 0.824'],
-    'xlnet': ['448.7 MB', 'accuracy: 0.784'],
-    'alxlnet': ['49.0 MB', 'accuracy: 0.888'],
+_transformer_availability = {
+    'bert': {'Size (MB)': 423.4, 'Accuracy': 0.885},
+    'tiny-bert': {'Size (MB)': 56.6, 'Accuracy': 0.873},
+    'albert': {'Size (MB)': 48.3, 'Accuracy': 0.873},
+    'tiny-albert': {'Size (MB)': 21.9, 'Accuracy': 0.824},
+    'xlnet': {'Size (MB)': 448.7, 'Accuracy': 0.784},
+    'alxlnet': {'Size (MB)': 49.0, 'Accuracy': 0.888},
 }
 
 
@@ -439,13 +439,15 @@ def available_transformer():
     """
     List available transformer similarity models.
     """
-    return _availability
+    from malaya.function import describe_availability
+
+    return describe_availability(_transformer_availability)
 
 
 def _transformer(model, bert_class, xlnet_class, **kwargs):
     model = model.lower()
-    if model not in _availability:
-        raise Exception(
+    if model not in _transformer_availability:
+        raise ValueError(
             'model not supported, please check supported models from malaya.similarity.available_transformer()'
         )
 

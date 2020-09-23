@@ -79,6 +79,21 @@ class SentencePieceEncoder:
         return self.sp.DecodeIds(list(ids))
 
 
+class YTTMEncoder:
+    def __init__(self, bpe, mode):
+        self.bpe = bpe
+        self.vocab_size = len(self.bpe.vocab())
+        self.mode = mode
+
+    def encode(self, s):
+        s = self.bpe.encode(s, output_type = self.mode)
+        s = [i + [1] for i in s]
+        return s
+
+    def decode(self, ids, strip_extraneous = False):
+        return self.bpe.decode(list(ids))
+
+
 def padding_sequence(seq, maxlen, padding = 'post', pad_int = 0):
     padded_seqs = []
     for s in seq:

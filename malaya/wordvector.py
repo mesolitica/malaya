@@ -52,7 +52,8 @@ def load_news():
 
 def load_social_media():
     """
-    Return malaya pretrained local malaysia social media word2vec size 256. https://github.com/huseinzol05/Malaya/tree/master/pretrained-model/wordvector
+    Return malaya pretrained local malaysia social media word2vec size 256. 
+    https://github.com/huseinzol05/Malaya/tree/master/pretrained-model/wordvector
 
     Returns
     -------
@@ -70,7 +71,8 @@ def load_social_media():
 
 def load_wiki_news_social_media():
     """
-    Return malaya pretrained local malaysia Wikipedia + Social media + News word2vec size 256. https://github.com/huseinzol05/Malaya/tree/master/pretrained-model/wordvector
+    Return malaya pretrained local malaysia Wikipedia + Social media + News word2vec size 256. 
+    https://github.com/huseinzol05/Malaya/tree/master/pretrained-model/wordvector
 
     Returns
     -------

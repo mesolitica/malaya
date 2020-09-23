@@ -69,9 +69,26 @@ dict_function = {
     'median': hdmedian,
 }
 
+_aggregate_availability = {
+    'gmean': {'Description': 'geometrical mean'},
+    'hmean': {'Description': 'harmonic mean'},
+    'mean': {'Description': 'mean'},
+    'min': {'Description': 'minimum'},
+    'max': {'Description': 'maximum'},
+    'median': {'Description': 'Harrell-Davis median'},
+}
+
+
+def available_aggregate_function():
+    from malaya.function import describe_availability
+
+    return describe_availability(_aggregate_availability)
+
 
 @check_type
-def predict_stack(models, strings: List[str], mode: str = 'gmean', **kwargs):
+def predict_stack(
+    models, strings: List[str], aggregate: str = 'gmean', **kwargs
+):
     """
     Stacking for predictive models.
 
@@ -80,8 +97,8 @@ def predict_stack(models, strings: List[str], mode: str = 'gmean', **kwargs):
     models: List[Callable]
         list of models.
     strings: List[str]
-    mode : str, optional (default='gmean')
-        Model architecture supported. Allowed values:
+    aggregate : str, optional (default='gmean')
+        Aggregate function supported. Allowed values:
 
         * ``'gmean'`` - geometrical mean.
         * ``'hmean'`` - harmonic mean.
@@ -90,20 +107,19 @@ def predict_stack(models, strings: List[str], mode: str = 'gmean', **kwargs):
         * ``'max'`` - max.
         * ``'median'`` - Harrell-Davis median.
 
-
     Returns
     -------
     result: dict
     """
-
+    aggregate = aggregate.lower()
     if not isinstance(models, list):
         raise ValueError('models must be a list')
 
-    if mode.lower() not in dict_function:
-        raise Exception(
-            "mode not supported, only support ['gmean','hmean','mean','min','max','median']"
+    if aggregate not in dict_function:
+        raise ValueError(
+            'aggregate is not supported, please check supported functions from malaya.stack.available_aggregate_function()'
         )
-    mode = dict_function[mode.lower()]
+    mode = dict_function[aggregate]
 
     for i in range(len(models)):
         if not 'predict_proba' in dir(models[i]):

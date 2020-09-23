@@ -1,22 +1,45 @@
 from herpetologist import check_type
 
-_availability = [
-    'bert',
-    'tiny-bert',
-    'albert',
-    'tiny-albert',
-    'xlnet',
-    'alxlnet',
-    'electra',
-    'small-electra',
-]
+_transformer_availability = {
+    'bert': {'Size (MB)': 425.6, 'Description': 'Google BERT BASE parameters'},
+    'tiny-bert': {
+        'Size (MB)': 57.4,
+        'Description': 'Google BERT TINY parameters',
+    },
+    'albert': {
+        'Size (MB)': 48.6,
+        'Description': 'Google ALBERT BASE parameters',
+    },
+    'tiny-albert': {
+        'Size (MB)': 22.4,
+        'Description': 'Google ALBERT TINY parameters',
+    },
+    'xlnet': {
+        'Size (MB)': 446.6,
+        'Description': 'Google XLNET BASE parameters',
+    },
+    'alxlnet': {
+        'Size (MB)': 46.8,
+        'Description': 'Malaya ALXLNET BASE parameters',
+    },
+    'electra': {
+        'Size (MB)': 443,
+        'Description': 'Google ELECTRA BASE parameters',
+    },
+    'small-electra': {
+        'Size (MB)': 55,
+        'Description': 'Google ELECTRA SMALL parameters',
+    },
+}
 
 
 def available_transformer():
     """
     List available transformer models.
     """
-    return _availability
+    from malaya.function import describe_availability
+
+    return describe_availability(_transformer_availability)
 
 
 @check_type
@@ -53,9 +76,9 @@ def load(model: str = 'electra', pool_mode: str = 'last', **kwargs):
     """
 
     model = model.lower()
-    if model not in _availability:
-        raise Exception(
-            'model not supported, please check supported models from malaya.transformer.available_model()'
+    if model not in _transformer_availability:
+        raise ValueError(
+            'model not supported, please check supported models from malaya.transformer.available_transformer()'
         )
     if model in ['bert', 'tiny-bert']:
         from malaya.transformers.bert import load

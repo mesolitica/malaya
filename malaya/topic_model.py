@@ -374,6 +374,28 @@ class TOPIC:
         return [self.corpus[i] for i in reverse_sorted[:len_sentence]]
 
 
+_vectorizer_availability = {
+    'tfidf': {'Description': 'TFIDF Vectorizer'},
+    'bow': {'Description': 'Bag-Of-Word Vectorizer'},
+    'skip-gram': {'Description': 'Bag-Of-Word with Gram-Skipping Vectorizer'},
+}
+
+vectorizer_mapping = {
+    'tfidf': TfidfVectorizer,
+    'bow': CountVectorizer,
+    'skip-gram': SkipGramVectorizer,
+}
+
+
+def available_vectorizer():
+    """
+    List available vectorizer topic modeling.
+    """
+    from malaya.function import describe_availability
+
+    return describe_availability(_vectorizer_availability)
+
+
 @check_type
 def _base_topic_modelling(
     corpus: List[str],
@@ -393,9 +415,6 @@ def _base_topic_modelling(
     if not isinstance(cleaning, Callable) and cleaning is not None:
         raise ValueError('cleaning must be a callable type or None')
 
-    vectorizer = vectorizer.lower()
-    if not vectorizer in ['tfidf', 'bow', 'skip-gram']:
-        raise ValueError("vectorizer must be in  ['tfidf', 'bow', 'skip-gram']")
     if min_df < 1:
         raise ValueError('min_df must be bigger than 0')
     if not (max_df <= 1 and max_df > 0):
@@ -413,14 +432,12 @@ def _base_topic_modelling(
     if stemming:
         for i in range(len(corpus)):
             corpus[i] = stemming(corpus[i])
-    if vectorizer == 'tfidf':
-        Vectorizer = TfidfVectorizer
-    elif vectorizer == 'bow':
-        Vectorizer = CountVectorizer
-    elif vectorizer == 'skip-gram':
-        Vectorizer = SkipGramVectorizer
-    else:
-        raise Exception("vectorizer must be in  ['tfidf', 'bow', 'skip-gram']")
+
+    Vectorizer = vectorizer_mapping.get(vectorizer)
+    if not Vectorizer:
+        raise ValueError(
+            'vectorizer is not supported, please check supported vectorizers from malaya.topic_model.available_vectorizer()'
+        )
     tf_vectorizer = Vectorizer(
         max_df = max_df,
         min_df = min_df,
@@ -690,15 +707,11 @@ def lda2vec(
         raise ValueError(
             'max_df must be bigger than 0, less than or equal to 1'
         )
-
-    if vectorizer == 'tfidf':
-        Vectorizer = TfidfVectorizer
-    elif vectorizer == 'bow':
-        Vectorizer = CountVectorizer
-    elif vectorizer == 'skip-gram':
-        Vectorizer = SkipGramVectorizer
-    else:
-        raise Exception("vectorizer must be in  ['tfidf', 'bow', 'skip-gram']")
+    Vectorizer = vectorizer_mapping.get(vectorizer)
+    if not Vectorizer:
+        raise ValueError(
+            'vectorizer is not supported, please check supported vectorizers from malaya.topic_model.available_vectorizer()'
+        )
     tf_vectorizer = Vectorizer(
         ngram_range = ngram,
         min_df = min_df,

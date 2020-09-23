@@ -44,39 +44,88 @@ label = {
     'csubj:pass': 32,
 }
 
+_transformer_availability = {
+    'bert': {
+        'Size (MB)': 426,
+        'Arc Accuracy': 0.855,
+        'Types Accuracy': 0.848,
+        'Root Accuracy': 0.920,
+    },
+    'tiny-bert': {
+        'Size (MB)': 59.5,
+        'Arc Accuracy': 0.718,
+        'Types Accuracy': 0.694,
+        'Root Accuracy': 0.886,
+    },
+    'albert': {
+        'Size (MB)': 50,
+        'Arc Accuracy': 0.811,
+        'Types Accuracy': 0.793,
+        'Root Accuracy': 0.879,
+    },
+    'tiny-albert': {
+        'Size (MB)': 24.8,
+        'Arc Accuracy': 0.708,
+        'Types Accuracy': 0.673,
+        'Root Accuracy': 0.817,
+    },
+    'xlnet': {
+        'Size (MB)': 450.2,
+        'Arc Accuracy': 0.931,
+        'Types Accuracy': 0.925,
+        'Root Accuracy': 0.947,
+    },
+    'alxlnet': {
+        'Size (MB)': 50,
+        'Arc Accuracy': 0.894,
+        'Types Accuracy': 0.886,
+        'Root Accuracy': 0.942,
+    },
+}
+
 
 def describe():
     """
     Describe Dependency supported.
     """
-    print('acl - clausal modifier of noun')
-    print('advcl - adverbial clause modifier')
-    print('advmod - adverbial modifier')
-    print('amod - adjectival modifier')
-    print('appos - appositional modifier')
-    print('aux - auxiliary')
-    print('case - case marking')
-    print('ccomp - clausal complement')
-    print('compound - compound')
-    print('compound:plur - plural compound')
-    print('conj - conjunct')
-    print('cop - cop')
-    print('csubj - clausal subject')
-    print('dep - dependent')
-    print('det - determiner')
-    print('fixed - multi-word expression')
-    print('flat - name')
-    print('iobj - indirect object')
-    print('mark - marker')
-    print('nmod - nominal modifier')
-    print('nsubj - nominal subject')
-    print('obj - direct object')
-    print('parataxis - parataxis')
-    print('root - root')
-    print('xcomp - open clausal complement')
-    print(
+    import logging
+
+    logging.info(
         'you can read more from https://universaldependencies.org/treebanks/id_pud/index.html'
     )
+
+    d = [
+        {'Tag': 'acl', 'Description': 'clausal modifier of noun'},
+        {'Tag': 'advcl', 'Description': 'adverbial clause modifier'},
+        {'Tag': 'advmod', 'Description': 'adverbial modifier'},
+        {'Tag': 'amod', 'Description': 'adjectival modifier'},
+        {'Tag': 'appos', 'Description': 'appositional modifier'},
+        {'Tag': 'aux', 'Description': 'auxiliary'},
+        {'Tag': 'case', 'Description': 'case marking'},
+        {'Tag': 'ccomp', 'Description': 'clausal complement'},
+        {'Tag': 'advmod', 'Description': 'adverbial modifier'},
+        {'Tag': 'compound', 'Description': 'compound'},
+        {'Tag': 'compound:plur', 'Description': 'plural compound'},
+        {'Tag': 'conj', 'Description': 'conjunct'},
+        {'Tag': 'cop', 'Description': 'cop'},
+        {'Tag': 'csubj', 'Description': 'clausal subject'},
+        {'Tag': 'dep', 'Description': 'dependent'},
+        {'Tag': 'det', 'Description': 'determiner'},
+        {'Tag': 'fixed', 'Description': 'multi-word expression'},
+        {'Tag': 'flat', 'Description': 'name'},
+        {'Tag': 'iobj', 'Description': 'indirect object'},
+        {'Tag': 'mark', 'Description': 'marker'},
+        {'Tag': 'nmod', 'Description': 'nominal modifier'},
+        {'Tag': 'nsubj', 'Description': 'nominal subject'},
+        {'Tag': 'obj', 'Description': 'direct object'},
+        {'Tag': 'parataxis', 'Description': 'parataxis'},
+        {'Tag': 'root', 'Description': 'root'},
+        {'Tag': 'xcomp', 'Description': 'open clausal complement'},
+    ]
+
+    from malaya.function import describe_availability
+
+    return describe_availability(d, transpose = False)
 
 
 def dependency_graph(tagging, indexing):
@@ -92,51 +141,13 @@ def dependency_graph(tagging, indexing):
     return DependencyGraph('\n'.join(result), top_relation_label = 'root')
 
 
-_availability = {
-    'bert': [
-        '426.0 MB',
-        'arc accuracy: 0.855',
-        'types accuracy: 0.848',
-        'root accuracy: 0.920',
-    ],
-    'tiny-bert': [
-        '59.5 MB',
-        'arc accuracy: 0.718',
-        'types accuracy: 0.694',
-        'root accuracy: 0.886',
-    ],
-    'albert': [
-        '50.0 MB',
-        'arc accuracy: 0.811',
-        'types accuracy: 0.793',
-        'root accuracy: 0.879',
-    ],
-    'tiny-albert': [
-        '24.8 MB',
-        'arc accuracy: 0.708',
-        'types accuracy: 0.673',
-        'root accuracy: 0.817',
-    ],
-    'xlnet': [
-        '450.2 MB',
-        'arc accuracy: 0.931',
-        'types accuracy: 0.925',
-        'root accuracy: 0.947',
-    ],
-    'alxlnet': [
-        '50.0 MB',
-        'arc accuracy: 0.894',
-        'types accuracy: 0.886',
-        'root accuracy: 0.942',
-    ],
-}
-
-
 def available_transformer():
     """
     List available transformer dependency parsing models.
     """
-    return _availability
+    from malaya.function import describe_availability
+
+    return describe_availability(_transformer_availability)
 
 
 @check_type
@@ -163,7 +174,7 @@ def transformer(model: str = 'xlnet', **kwargs):
 
     model = model.lower()
     if model not in _availability:
-        raise Exception(
+        raise ValueError(
             'model not supported, please check supported models from malaya.dependency.available_transformer()'
         )
 

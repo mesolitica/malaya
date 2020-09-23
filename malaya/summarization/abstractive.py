@@ -4,18 +4,18 @@ from herpetologist import check_type
 import os
 
 _t5_availability = {
-    'small': [
-        '355.6MB',
-        'ROUGE-1: 0.33854',
-        'ROUGE-2: 0.14588',
-        'ROUGE-L: 0.23528',
-    ],
-    'base': [
-        '1300MB',
-        'ROUGE-1: 0.34103',
-        'ROUGE-2: 0.14994',
-        'ROUGE-L: 0.23655',
-    ],
+    'small': {
+        'Size (MB)': 355.6,
+        'ROUGE-1': 0.33854,
+        'ROUGE-2': 0.14588,
+        'ROUGE-L': 0.23528,
+    },
+    'base': {
+        'Size (MB)': 1300,
+        'ROUGE-1': 0.34103,
+        'ROUGE-2': 0.14994,
+        'ROUGE-L': 0.23655,
+    },
 }
 
 
@@ -23,7 +23,10 @@ def available_t5():
     """
     List available T5 models.
     """
-    return _t5_availability
+
+    from malaya.function import describe_availability
+
+    return describe_availability(_t5_availability)
 
 
 @check_type
@@ -52,7 +55,7 @@ def t5(model: str = 'base', compressed: bool = True, **kwargs):
 
     model = model.lower()
     if model not in _t5_availability:
-        raise Exception(
+        raise ValueError(
             'model not supported, please check supported models from malaya.summarization.abstractive.available_t5()'
         )
 

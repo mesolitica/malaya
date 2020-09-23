@@ -1,4 +1,4 @@
-[
+lapor = [
     'lapor Syracuse Post',
     'lapor BBC dan Telegraph',
     'lapor KDFW',

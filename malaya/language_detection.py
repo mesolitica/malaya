@@ -36,7 +36,7 @@ def fasttext(quantization: bool = True, **kwargs):
     try:
         import fasttext
     except:
-        raise Exception(
+        raise ValueError(
             'fasttext not installed. Please install it by `pip install fasttext` and try again.'
         )
     if quantization:
@@ -52,7 +52,7 @@ def fasttext(quantization: bool = True, **kwargs):
             PATH_LANG_DETECTION[model]['model']
         )
     except:
-        raise Exception(
+        raise ValueError(
             f"model corrupted due to some reasons, please run malaya.clear_cache('language-detection/{model}') and try again"
         )
     return LANGUAGE_DETECTION(model_fasttext, lang_labels)
@@ -74,7 +74,7 @@ def deep_model(**kwargs):
         with open(PATH_LANG_DETECTION['deep']['vector'], 'rb') as fopen:
             vector = pickle.load(fopen)
     except:
-        raise Exception(
+        raise ValueError(
             "model corrupted due to some reasons, please run malaya.clear_cache('language-detection/deep') and try again"
         )
 

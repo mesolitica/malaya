@@ -99,8 +99,8 @@ def rake(
         raise ValueError('top_k must bigger than 0')
     if atleast < 1:
         raise ValueError('atleast must bigger than 0')
-    if ngram_method not in ('bow', 'skipgram'):
-        raise ValueError("ngram_method must be in  ['bow', 'skip-gram']")
+    if ngram_method not in methods:
+        raise ValueError("ngram_method must be in ['bow', 'skip-gram']")
     if auto_ngram and not len(stop_words):
         raise ValueError('insert stop_words if auto_ngram')
 
@@ -193,8 +193,8 @@ def textrank(
         raise ValueError('top_k must bigger than 0')
     if atleast < 1:
         raise ValueError('atleast must bigger than 0')
-    if ngram_method not in ('bow', 'skipgram'):
-        raise ValueError("ngram_method must be in  ['bow', 'skip-gram']")
+    if ngram_method not in methods:
+        raise ValueError("ngram_method must be in ['bow', 'skip-gram']")
     if auto_ngram and not len(stop_words):
         raise ValueError('insert stop_words if auto_ngram')
 
@@ -276,8 +276,8 @@ def attention(
         raise ValueError('top_k must bigger than 0')
     if atleast < 1:
         raise ValueError('atleast must bigger than 0')
-    if ngram_method not in ('bow', 'skipgram'):
-        raise ValueError("ngram_method must be in  ['bow', 'skip-gram']")
+    if ngram_method not in methods:
+        raise ValueError("ngram_method must be in ['bow', 'skip-gram']")
     if auto_ngram and not len(stop_words):
         raise ValueError('insert stop_words if auto_ngram')
 
@@ -332,8 +332,8 @@ def similarity_transformer(
         raise ValueError('top_k must bigger than 0')
     if atleast < 1:
         raise ValueError('atleast must bigger than 0')
-    if ngram_method not in ('bow', 'skipgram'):
-        raise ValueError("ngram_method must be in  ['bow', 'skip-gram']")
+    if ngram_method not in methods:
+        raise ValueError("ngram_method must be in ['bow', 'skip-gram']")
 
     if auto_ngram:
         vocab = _auto_ngram(string, stop_words)

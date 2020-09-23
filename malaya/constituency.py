@@ -8,55 +8,57 @@ from malaya.path import PATH_CONSTITUENCY, S3_PATH_CONSTITUENCY
 import json
 from herpetologist import check_type
 
-_availability = {
-    'bert': [
-        '470.0 MB',
-        'Recall: 78.96',
-        'Precision: 81.78',
-        'FScore: 80.35',
-        'CompleteMatch: 10.37',
-        'TaggingAccuracy: 91.59',
-    ],
-    'tiny-bert': [
-        '125 MB',
-        'Recall: 74.89',
-        'Precision: 78.79',
-        'FScore: 76.79',
-        'CompleteMatch: 9.01',
-        'TaggingAccuracy: 91.17',
-    ],
-    'albert': [
-        '180.0 MB',
-        'Recall: 77.57',
-        'Precision: 80.50',
-        'FScore: 79.01',
-        'CompleteMatch: 5.77',
-        'TaggingAccuracy: 90.30',
-    ],
-    'tiny-albert': [
-        '56.7 MB',
-        'Recall: 67.21',
-        'Precision: 74.89',
-        'FScore: 70.84',
-        'CompleteMatch: 2.11',
-        'TaggingAccuracy: 87.75',
-    ],
-    'xlnet': [
-        '498.0 MB',
-        'Recall: 80.65',
-        'Precision: 82.22',
-        'FScore: 81.43',
-        'CompleteMatch: 11.08',
-        'TaggingAccuracy: 92.12',
-    ],
+_transformer_availability = {
+    'bert': {
+        'Size (MB)': 470.0,
+        'Recall': 78.96,
+        'Precision': 81.78,
+        'FScore': 80.35,
+        'CompleteMatch': 10.37,
+        'TaggingAccuracy': 91.59,
+    },
+    'tiny-bert': {
+        'Size (MB)': 125.0,
+        'Recall': 74.89,
+        'Precision': 78.79,
+        'FScore': 76.79,
+        'CompleteMatch': 9.01,
+        'TaggingAccuracy': 91.17,
+    },
+    'albert': {
+        'Size (MB)': 180.0,
+        'Recall': 77.57,
+        'Precision': 80.50,
+        'FScore': 79.01,
+        'CompleteMatch': 5.77,
+        'TaggingAccuracy': 90.30,
+    },
+    'tiny-albert': {
+        'Size (MB)': 56.7,
+        'Recall': 67.21,
+        'Precision': 74.89,
+        'FScore': 70.84,
+        'CompleteMatch': 2.11,
+        'TaggingAccuracy': 87.75,
+    },
+    'xlnet': {
+        'Size (MB)': 498.0,
+        'Recall': 80.65,
+        'Precision': 82.22,
+        'FScore': 81.43,
+        'CompleteMatch': 11.08,
+        'TaggingAccuracy': 92.12,
+    },
 }
 
 
 def available_transformer():
     """
-    List available transformer constituency parsing models.
+    List available transformer models.
     """
-    return _availability
+    from malaya.function import describe_availability
+
+    return describe_availability(_transformer_availability)
 
 
 @check_type
@@ -81,8 +83,8 @@ def transformer(model: str = 'xlnet', **kwargs):
     """
 
     model = model.lower()
-    if model not in _availability:
-        raise Exception(
+    if model not in _transformer_availability:
+        raise ValueError(
             'model not supported, please check supported models from malaya.constituency.available_transformer()'
         )
 

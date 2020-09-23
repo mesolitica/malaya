@@ -39,10 +39,12 @@ _accepted_entities = [
     'event',
 ]
 
-_t5_availability = {'small': ['122MB'], 'base': ['448MB']}
+
+_t5_availability = {'small': {'Size (MB)': 122}, 'base': {'Size (MB)': 448}}
+
 _gpt2_availability = {
-    '117M': ['441.6MB, perplexity: 5.47394'],
-    '345M': ['1.2GB, perplexity: 2.4596'],
+    '117M': {'Size (MB)': 441.6, 'Perplexity': 5.47394},
+    '345M': {'Size (MB)': 1200, 'Perplexity': 2.4596},
 }
 
 
@@ -218,12 +220,12 @@ def shortform(
     """
 
     if not 0 < prob_delete_vowel < 1:
-        raise Exception(
+        raise ValueError(
             'prob_delete_vowel must be bigger than 0 and less than 1'
         )
     word = simple_textcleaning(word)
     if not len(word):
-        raise Exception('word is too short to augment shortform.')
+        raise ValueError('word is too short to augment shortform.')
 
     check_file(
         PATH_NGRAM['sentencepiece'], S3_PATH_NGRAM['sentencepiece'], **kwargs
@@ -358,9 +360,9 @@ def transformer(
     if not hasattr(model, 'samples'):
         raise ValueError('model must has `samples` attribute')
     if generate_length < 10:
-        raise Exception('generate_length must bigger than 10')
+        raise ValueError('generate_length must bigger than 10')
     if not 0 < temperature <= 1.0:
-        raise Exception('temperature must, 0 < temperature <= 1.0')
+        raise ValueError('temperature must, 0 < temperature <= 1.0')
     if not top_k > 0:
         raise ValueError('top_k must be bigger than 0')
     if not burnin > 0:
@@ -388,7 +390,9 @@ def available_gpt2():
     """
     List available gpt2 generator models.
     """
-    return _gpt2_availability
+    from malaya.function import describe_availability
+
+    return describe_availability(_gpt2_availability)
 
 
 @check_type
@@ -424,17 +428,17 @@ def gpt2(
     """
 
     model = model.upper()
-    if model not in ['117M', '345M']:
-        raise Exception(
-            "model not supported, for now only supported ['117M', '345M']"
+    if model not in _gpt2_availability:
+        raise ValueError(
+            'model not supported, please check supported models from malaya.generator.available_gpt2()'
         )
 
     if generate_length < 10:
-        raise Exception('generate_length must bigger than 10')
+        raise ValueError('generate_length must bigger than 10')
     if not 0 < temperature <= 1.0:
-        raise Exception('temperature must, 0 < temperature <= 1.0')
+        raise ValueError('temperature must, 0 < temperature <= 1.0')
     if top_k < 5:
-        raise Exception('top_k must bigger than 5')
+        raise ValueError('top_k must bigger than 5')
     from malaya.transformers.gpt2 import load
 
     return load(
@@ -450,7 +454,9 @@ def available_t5():
     """
     List available T5 models.
     """
-    return _t5_availability
+    from malaya.function import describe_availability
+
+    return describe_availability(_t5_availability)
 
 
 @check_type
@@ -479,7 +485,7 @@ def t5(model: str = 'base', compressed: bool = True, **kwargs):
 
     model = model.lower()
     if model not in _t5_availability:
-        raise Exception(
+        raise ValueError(
             'model not supported, please check supported models from malaya.generator.available_t5()'
         )
 
@@ -487,7 +493,7 @@ def t5(model: str = 'base', compressed: bool = True, **kwargs):
 
     model = model.lower()
     if model not in _t5_availability:
-        raise Exception(
+        raise ValueError(
             'model not supported, please check supported models from malaya.summarization.abstractive.available_t5()'
         )
 

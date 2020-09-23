@@ -14,8 +14,8 @@ from malaya.text.function import (
 from malaya.text.bpe import (
     constituency_bert,
     constituency_xlnet,
-    PTB_TOKEN_ESCAPE,
     padding_sequence,
+    PTB_TOKEN_ESCAPE,
 )
 from malaya.text import chart_decoder
 from malaya.text.trees import tree_from_str
@@ -474,7 +474,8 @@ class SUMMARIZATION:
             * ``'nucleus'`` - Beam width size 1, with nucleus sampling.
 
         top_p: float, (default=0.7)
-            cumulative distribution and cut off as soon as the CDF exceeds `top_p`, this is only useful if use `nucleus` decoder.
+            cumulative distribution and cut off as soon as the CDF exceeds `top_p`.
+            this is only useful if use `nucleus` decoder.
 
         Returns
         -------
@@ -488,3 +489,46 @@ class SUMMARIZATION:
             top_p = top_p,
             sentiment = sentiment,
         )
+
+
+class TRUE_CASE:
+    def __init__(self, X, greedy, beam, sess, encoder):
+
+        self._X = X
+        self._greedy = greedy
+        self._beam = beam
+        self._sess = sess
+        self._encoder = encoder
+
+    def _true_case(self, strings, beam_search = True):
+        encoded = [self._encoder.encode(strings) for string in strings]
+        if beam_search:
+            output = self._beam
+        else:
+            output = self._greedy
+        batch_x = pad_sentence_batch(encoded, 0)[0]
+        p = self._sess.run(output, feed_dict = {self._X: batch_x}).tolist()
+        result = []
+        for row in p:
+            result.append(
+                self._tokenizer.decode([i for i in row if i not in [0, 1]])
+            )
+        return result
+
+    @check_type
+    def true_case(self, strings: List[str], beam_search: bool = True):
+        """
+        True case strings.
+        Example, "saya nak makan di us makanan di sana sedap" -> "Saya nak makan di US, makanan di sana sedap."
+
+        Parameters
+        ----------
+        strings : List[str]
+        beam_search : bool, (optional=True)
+            If True, use beam search decoder, else use greedy decoder.
+
+        Returns
+        -------
+        result: List[str]
+        """
+        return self._true_case(strings, beam_search = beam_search)

@@ -40,14 +40,13 @@ label = [
     'chinese',
 ]
 
-
-_availability = {
-    'bert': ['425.7 MB', 'accuracy: 0.814'],
-    'tiny-bert': ['57.4 MB', 'accuracy: 0.815'],
-    'albert': ['48.7 MB', 'accuracy: 0.812'],
-    'tiny-albert': ['22.4 MB', 'accuracy: 0.808'],
-    'xlnet': ['446.5 MB', 'accuracy: 0.807'],
-    'alxlnet': ['46.8 MB', 'accuracy: 0.817'],
+_transformer_availability = {
+    'bert': {'Size (MB)': 425.6, 'Accuracy': 0.814},
+    'tiny-bert': {'Size (MB)': 57.4, 'Accuracy': 0.815},
+    'albert': {'Size (MB)': 48.6, 'Accuracy': 0.812},
+    'tiny-albert': {'Size (MB)': 22.4, 'Accuracy': 0.808},
+    'xlnet': {'Size (MB)': 446.6, 'Accuracy': 0.807},
+    'alxlnet': {'Size (MB)': 46.8, 'Accuracy': 0.817},
 }
 
 
@@ -55,7 +54,9 @@ def available_transformer():
     """
     List available transformer toxicity analysis models.
     """
-    return _availability
+    from malaya.function import describe_availability
+
+    return describe_availability(_transformer_availability)
 
 
 def multinomial(**kwargs):
@@ -120,9 +121,9 @@ def transformer(model: str = 'xlnet', **kwargs):
     """
 
     model = model.lower()
-    if model not in _availability:
+    if model not in _transformer_availability:
         raise Exception(
-            'model not supported, please check supported models from malaya.sentiment.available_transformer()'
+            'model not supported, please check supported models from malaya.toxicity.available_transformer()'
         )
 
     check_file(PATH_TOXIC[model], S3_PATH_TOXIC[model], **kwargs)

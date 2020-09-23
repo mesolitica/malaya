@@ -4,13 +4,13 @@ from herpetologist import check_type
 
 label = ['not relevant', 'relevant']
 
-_availability = {
-    'bert': ['425.6 MB', 'accuracy: 0.872'],
-    'tiny-bert': ['57.4 MB', 'accuracy: 0.656'],
-    'albert': ['48.6 MB', 'accuracy: 0.871'],
-    'tiny-albert': ['22.4 MB', 'accuracy: 0.843'],
-    'xlnet': ['446.5 MB', 'accuracy: 0.885'],
-    'alxlnet': ['46.8 MB', 'accuracy: 0.874'],
+_transformer_availability = {
+    'bert': {'Size (MB)': 425.6, 'Accuracy': 0.872},
+    'tiny-bert': {'Size (MB)': 57.4, 'Accuracy': 0.656},
+    'albert': {'Size (MB)': 48.6, 'Accuracy': 0.871},
+    'tiny-albert': {'Size (MB)': 22.4, 'Accuracy': 0.843},
+    'xlnet': {'Size (MB)': 446.6, 'Accuracy': 0.885},
+    'alxlnet': {'Size (MB)': 46.8, 'Accuracy': 0.874},
 }
 
 
@@ -18,7 +18,9 @@ def available_transformer():
     """
     List available transformer relevancy analysis models.
     """
-    return _availability
+    from malaya.function import describe_availability
+
+    return describe_availability(_transformer_availability)
 
 
 @check_type
@@ -40,13 +42,13 @@ def transformer(model: str = 'xlnet', **kwargs):
 
     Returns
     -------
-    result : Transformer class
+    result : malaya.supervised.softmax.transformer function
     """
 
     model = model.lower()
-    if model not in _availability:
-        raise Exception(
-            'model not supported, please check supported models from malaya.relevancy.available_transformer()()'
+    if model not in _transformer_availability:
+        raise ValueError(
+            'model not supported, please check supported models from malaya.relevancy.available_transformer()'
         )
     return softmax.transformer(
         PATH_RELEVANCY,

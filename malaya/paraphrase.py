@@ -1,21 +1,16 @@
 from malaya.path import PATH_PARAPHRASE, S3_PATH_PARAPHRASE
-from malaya.function import check_file, load_graph, generate_session
 from malaya.supervised import t5 as t5_load
-import os
-import tensorflow as tf
+from malaya.supervised import transformer as transformer_load
 from herpetologist import check_type
 
 
 _t5_availability = {
-    'small': ['122MB', '*BLEU: 0.953'],
-    'base': ['448MB', '*BLEU: 0.953'],
+    'small': {'Size (MB)': 122, 'BLEU': 0.953},
+    'base': {'Size (MB)': 448, 'BLEU': 0.953},
 }
 _transformer_availability = {
-    'tiny': ['18.4MB', 'BLEU: 0.594'],
-    'small': ['43MB', 'BLEU: 0.737'],
-    'base': ['234MB', 'BLEU: 0.792'],
-    'tiny-bert': ['60.6MB', 'BLEU: 0.609'],
-    'bert': ['449MB', 'BLUE: 0.696'],
+    'small': {'Size (MB)': 122, 'BLEU': 0.953},
+    'base': {'Size (MB)': 448, 'BLEU': 0.953},
 }
 
 
@@ -23,14 +18,18 @@ def available_t5():
     """
     List available T5 models.
     """
-    return _t5_availability
+    from malaya.function import describe_availability
+
+    return describe_availability(_t5_availability)
 
 
 def available_transformer():
     """
     List available transformer models.
     """
-    return _transformer_availability
+    from malaya.function import describe_availability
+
+    return describe_availability(_transformer_availability)
 
 
 @check_type
@@ -59,7 +58,7 @@ def t5(model: str = 'base', compressed: bool = True, **kwargs):
 
     model = model.lower()
     if model not in _t5_availability:
-        raise Exception(
+        raise ValueError(
             'model not supported, please check supported models from malaya.paraphrase.available_t5()'
         )
 
@@ -94,24 +93,6 @@ def transformer(model = 'base', **kwargs):
 
     model = model.lower()
     if model not in _transformer_availability:
-        raise Exception(
+        raise ValueError(
             'model not supported, please check supported models from malaya.paraphrase.available_transformer()'
         )
-
-    path = PATH_PARAPHRASE['transformer']
-    s3_path = S3_PATH_PARAPHRASE['transformer']
-
-    check_file(path[model], s3_path[model], **kwargs)
-    g = load_graph(path[model]['model'], **kwargs)
-
-    from malaya.text.t2t import text_encoder
-    from malaya.model.tf import PARAPHRASE
-
-    encoder = text_encoder.SubwordTextEncoder(path[model]['vocab'])
-    return PARAPHRASE(
-        g.get_tensor_by_name('import/Placeholder:0'),
-        g.get_tensor_by_name('import/greedy:0'),
-        g.get_tensor_by_name('import/beam:0'),
-        generate_session(graph = g, **kwargs),
-        encoder,
-    )

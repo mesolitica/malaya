@@ -2,9 +2,8 @@ import numpy as np
 import re
 import os
 import itertools
-import networkx as nx
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
-from sklearn.decomposition import TruncatedSVD, NMF, LatentDirichletAllocation
+from sklearn.decomposition import TruncatedSVD, LatentDirichletAllocation
 from malaya.text.jarowinkler import JaroWinkler
 from sklearn.metrics.pairwise import cosine_similarity
 from malaya.text.function import (
@@ -159,11 +158,38 @@ class DEEP_SUMMARIZER:
         }
 
 
+_skipthought_availability = {
+    'lstm': {
+        'Description': 'LSTM skip-thought deep learning model trained on news dataset.'
+    },
+    'residual-network': {
+        'Description': 'residual network with Bahdanau Attention skip-thought deep learning model trained on wikipedia dataset.'
+    },
+}
+
+_vectorizer_availability = {
+    'tfidf': {'Description': 'TFIDF Vectorizer'},
+    'bow': {'Description': 'Bag-Of-Word Vectorizer'},
+    'skip-gram': {'Description': 'Bag-Of-Word with Gram-Skipping Vectorizer'},
+}
+
+
 def available_skipthought():
     """
     List available deep skip-thought models.
     """
-    return ['lstm', 'residual-network']
+    from malaya.function import describe_availability
+
+    return describe_availability(_skipthought_availability)
+
+
+def available_vectorizer():
+    """
+    List available vectorizer for malaya.summarization.extractive.lda and malaya.summarization.extractive.lsa .
+    """
+    from malaya.function import describe_availability
+
+    return describe_availability(_vectorizer_availability)
 
 
 @check_type
@@ -176,7 +202,7 @@ def deep_skipthought(model: str = 'lstm'):
     model : str, optional (default='skip-thought')
         Model architecture supported. Allowed values:
 
-        * ``'lstm'`` - LSTM skip-thought deep learning model trained on news dataset. Hopefully we can train on wikipedia dataset.
+        * ``'lstm'`` - LSTM skip-thought deep learning model trained on news dataset.
         * ``'residual-network'`` - residual network with Bahdanau Attention skip-thought deep learning model trained on wikipedia dataset.
 
     Returns
@@ -184,13 +210,14 @@ def deep_skipthought(model: str = 'lstm'):
     DEEP_SKIPTHOUGHT: malaya.summarize.DEEP_SKIPTHOUGHT class
     """
     model = model.lower()
-    if model == 'lstm':
-        model = skip_thought.news_load_model
-    elif model == 'residual-network':
-        model = skip_thought.wiki_load_model
-    else:
-        raise Exception(
-            'model is not supported, please check supported models from malaya.summarize.available_skipthought()'
+    mapping = {
+        'lstm': skip_thought.news_load_model,
+        'residual-network': skip_thought.wiki_load_model,
+    }
+    model = mapping.get(model)
+    if not model:
+        raise ValueError(
+            'model is not supported, please check supported models from malaya.summarization.extractive.available_skipthought()'
         )
     sess, x, logits, attention, dictionary, maxlen = model()
     return DEEP_SKIPTHOUGHT(sess, x, logits, attention, dictionary, maxlen)
@@ -236,14 +263,17 @@ def _base_summarizer(
     cleaned_strings = [i[1] for i in splitted_fullstop]
     stemmed = [sastrawi(i) for i in cleaned_strings]
 
-    if vectorizer == 'tfidf':
-        Vectorizer = TfidfVectorizer
-    elif vectorizer == 'bow':
-        Vectorizer = CountVectorizer
-    elif vectorizer == 'skip-gram':
-        Vectorizer = SkipGramVectorizer
-    else:
-        raise Exception("vectorizer must be in  ['tfidf', 'bow', 'skip-gram']")
+    mapping = {
+        'tfidf': TfidfVectorizer,
+        'bow': CountVectorizer,
+        'skip-gram': SkipGramVectorizer,
+    }
+    Vectorizer = mapping.get(vectorizer)
+    if not Vectorizer:
+        raise ValueError(
+            'vectorizer is not supported, please check supported vectorizers from malaya.summarization.extractive.available_vectorizer()'
+        )
+
     tf_vectorizer = Vectorizer(
         max_df = max_df,
         min_df = min_df,

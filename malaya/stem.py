@@ -120,7 +120,8 @@ def naive(word: str):
 
     Returns
     -------
-    string: stemmed string
+    result : str
+        stemmed string.
     """
     hujung_result = [v for k, v in hujung.items() if word.endswith(k)]
     if len(hujung_result):

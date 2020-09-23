@@ -1,10 +1,12 @@
+from malaya.model.tf import TRANSLATION
 from malaya.path import PATH_TRANSLATION, S3_PATH_TRANSLATION
-from malaya.function import check_file, load_graph, generate_session
+from malaya.supervised import transformer as load_transformer
+from herpetologist import check_type
 
 _transformer_availability = {
-    'small': ['42.7MB', 'BLEU: 0.142'],
-    'base': ['234MB', 'BLEU: 0.696'],
-    'large': ['817MB', 'BLEU: 0.699'],
+    'small': {'Size (MB)': 42.7, 'BLEU': 0.142},
+    'base': {'Size (MB)': 234, 'BLEU': 0.696},
+    'large': {'Size (MB)': 817, 'BLEU': 0.699},
 }
 
 
@@ -12,10 +14,13 @@ def available_transformer():
     """
     List available transformer models.
     """
-    return _transformer_availability
+    from malaya.function import describe_availability
+
+    return describe_availability(_transformer_availability)
 
 
-def transformer(model = 'base', **kwargs):
+@check_type
+def transformer(model: str = 'base', **kwargs):
     """
     Load transformer encoder-decoder model to translate EN-to-MS.
 
@@ -41,17 +46,4 @@ def transformer(model = 'base', **kwargs):
     path = PATH_TRANSLATION['en-ms']
     s3_path = S3_PATH_TRANSLATION['en-ms']
 
-    check_file(path[model], s3_path[model], **kwargs)
-    g = load_graph(path[model]['model'], **kwargs)
-
-    from malaya.text.t2t import text_encoder
-    from malaya.model.tf import TRANSLATION
-
-    encoder = text_encoder.SubwordTextEncoder(path[model]['vocab'])
-    return TRANSLATION(
-        g.get_tensor_by_name('import/Placeholder:0'),
-        g.get_tensor_by_name('import/greedy:0'),
-        g.get_tensor_by_name('import/beam:0'),
-        generate_session(graph = g, **kwargs),
-        encoder,
-    )
+    return load_transformer.load(path, s3_path, model, 'subword', TRANSLATION)

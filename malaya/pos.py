@@ -22,13 +22,13 @@ label = [
     'X',
 ]
 
-_availability = {
-    'bert': ['426.4 MB', 'accuracy: 0.952'],
-    'tiny-bert': ['57.7 MB', 'accuracy: 0.953'],
-    'albert': ['48.7 MB', 'accuracy: 0.951'],
-    'tiny-albert': ['22.4 MB', 'accuracy: 0.933'],
-    'xlnet': ['446.6 MB', 'accuracy: 0.954'],
-    'alxlnet': ['46.8 MB', 'accuracy: 0.951'],
+_transformer_availability = {
+    'bert': {'Size (MB)': 426.4, 'Accuracy': 0.952},
+    'tiny-bert': {'Size (MB)': 57.7, 'Accuracy': 0.953},
+    'albert': {'Size (MB)': 48.7, 'Accuracy': 0.951},
+    'tiny-albert': {'Size (MB)': 22.4, 'Accuracy': 0.933},
+    'xlnet': {'Size (MB)': 446.6, 'Accuracy': 0.954},
+    'alxlnet': {'Size (MB)': 46.8, 'Accuracy': 0.951},
 }
 
 
@@ -36,28 +36,36 @@ def describe():
     """
     Describe Part-Of-Speech supported.
     """
-    print('ADJ - Adjective, kata sifat')
-    print('ADP - Adposition')
-    print('ADV - Adverb, kata keterangan')
-    print('ADX - Auxiliary verb, kata kerja tambahan')
-    print('CCONJ - Coordinating conjuction, kata hubung')
-    print('DET - Determiner, kata penentu')
-    print('NOUN - Noun, kata nama')
-    print('NUM - Number, nombor')
-    print('PART - Particle')
-    print('PRON - Pronoun, kata ganti')
-    print('PROPN - Proper noun, kata ganti nama khas')
-    print('SCONJ - Subordinating conjunction')
-    print('SYM - Symbol')
-    print('VERB - Verb, kata kerja')
-    print('X - Other')
+    d = [
+        {'Tag': 'ADJ', 'Description': 'Adjective, kata sifat'},
+        {'Tag': 'ADP', 'Description': 'Adposition'},
+        {'Tag': 'ADV', 'Description': 'Adverb, kata keterangan'},
+        {'Tag': 'ADX', 'Description': 'Auxiliary verb, kata kerja tambahan'},
+        {'Tag': 'CCONJ', 'Description': 'Coordinating conjuction, kata hubung'},
+        {'Tag': 'DET', 'Description': 'Determiner, kata penentu'},
+        {'Tag': 'NOUN', 'Description': ' Noun, kata nama'},
+        {'Tag': 'NUM', 'Description': 'Number, nombor'},
+        {'Tag': 'PART', 'Description': 'Particle'},
+        {'Tag': 'PRON', 'Description': 'Pronoun, kata ganti'},
+        {'Tag': 'PROPN', 'Description': 'Proper noun, kata ganti nama khas'},
+        {'Tag': 'SCONJ', 'Description': 'Subordinating conjunction'},
+        {'Tag': 'SYM', 'Description': 'Symbol'},
+        {'Tag': 'VERB', 'Description': 'Verb, kata kerja'},
+        {'Tag': 'X', 'Description': 'Other'},
+    ]
+
+    from malaya.function import describe_availability
+
+    return describe_availability(d, transpose = False)
 
 
 def available_transformer():
     """
     List available transformer Part-Of-Speech Tagging models.
     """
-    return _availability
+    from malaya.function import describe_availability
+
+    return describe_availability(_transformer_availability)
 
 
 def _naive_POS_word(word):
@@ -94,7 +102,7 @@ def naive(string: str):
 
     Returns
     -------
-    string : tokenized string with POS related
+    string : List[Tuple[str, str]]
     """
     string = string.lower()
     results = []
@@ -122,12 +130,12 @@ def transformer(model: str = 'xlnet', **kwargs):
 
     Returns
     -------
-    result : malaya.supervised.tag.transformer
+    result : malaya.supervised.tag.transformer function
     """
 
     model = model.lower()
-    if model not in _availability:
-        raise Exception(
+    if model not in _transformer_availability:
+        raise ValueError(
             'model not supported, please check supported models from malaya.pos.available_transformer()'
         )
     return tag.transformer(

@@ -3,13 +3,13 @@ from malaya.path import PATH_EMOTION, S3_PATH_EMOTION
 from herpetologist import check_type
 
 label = ['anger', 'fear', 'happy', 'love', 'sadness', 'surprise']
-_availability = {
-    'bert': ['425.6 MB', 'accuracy: 0.992'],
-    'tiny-bert': ['57.4 MB', 'accuracy: 0.988'],
-    'albert': ['48.6 MB', 'accuracy: 0.997'],
-    'tiny-albert': ['22.4 MB', 'accuracy: 0.981'],
-    'xlnet': ['446.5 MB', 'accuracy: 0.990'],
-    'alxlnet': ['46.8 MB', 'accuracy: 0.989'],
+_transformer_availability = {
+    'bert': {'Size (MB)': 425.6, 'Accuracy': 0.992},
+    'tiny-bert': {'Size (MB)': 57.4, 'Accuracy': 0.988},
+    'albert': {'Size (MB)': 48.6, 'Accuracy': 0.997},
+    'tiny-albert': {'Size (MB)': 22.4, 'Accuracy': 0.981},
+    'xlnet': {'Size (MB)': 446.5, 'Accuracy': 0.990},
+    'alxlnet': {'Size (MB)': 46.8, 'Accuracy': 0.989},
 }
 
 
@@ -17,7 +17,9 @@ def available_transformer():
     """
     List available transformer emotion analysis models.
     """
-    return _availability
+    from malaya.function import describe_availability
+
+    return describe_availability(_transformer_availability)
 
 
 def multinomial(**kwargs):
@@ -52,12 +54,12 @@ def transformer(model: str = 'xlnet', **kwargs):
 
     Returns
     -------
-    result : Transformer class
+    result : malaya.supervised.softmax.transformer function
     """
 
     model = model.lower()
-    if model not in _availability:
-        raise Exception(
+    if model not in _transformer_availability:
+        raise ValueError(
             'model not supported, please check supported models from malaya.emotion.available_transformer()'
         )
     return softmax.transformer(

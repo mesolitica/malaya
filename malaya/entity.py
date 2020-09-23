@@ -1,6 +1,6 @@
 from malaya.supervised import tag
 from malaya.path import PATH_ENTITIES, S3_PATH_ENTITIES
-from malaya.text.entity import _Entity_regex
+from malaya.text.entity import ENTITY_REGEX
 from herpetologist import check_type
 
 label = {
@@ -15,13 +15,13 @@ label = {
     'time': 8,
     'event': 9,
 }
-_availability = {
-    'bert': ['426.4 MB', 'accuracy: 0.994'],
-    'tiny-bert': ['57.7 MB', 'accuracy: 0.986'],
-    'albert': ['48.6 MB', 'accuracy: 0.984'],
-    'tiny-albert': ['22.4 MB', 'accuracy: 0.971'],
-    'xlnet': ['446.6 MB', 'accuracy: 0.992'],
-    'alxlnet': ['46.8 MB', 'accuracy: 0.993'],
+_transformer_availability = {
+    'bert': {'Size (MB)': 425.4, 'Accuracy': 0.994},
+    'tiny-bert': {'Size (MB)': 57.7, 'Accuracy': 0.986},
+    'albert': {'Size (MB)': 48.6, 'Accuracy': 0.984},
+    'tiny-albert': {'Size (MB)': 22.4, 'Accuracy': 0.971},
+    'xlnet': {'Size (MB)': 446.6, 'Accuracy': 0.992},
+    'alxlnet': {'Size (MB)': 46.8, 'Accuracy': 0.993},
 }
 
 
@@ -29,23 +29,38 @@ def describe():
     """
     Describe Entities supported
     """
-    print('OTHER - Other')
-    print('law - law, regulation, related law documents, documents, etc')
-    print('location - location, place')
-    print('organization - organization, company, government, facilities, etc')
-    print(
-        'person - person, group of people, believes, unique arts (eg; food, drink), etc'
-    )
-    print('quantity - numbers, quantity')
-    print('time - date, day, time, etc')
-    print('event - unique event happened, etc')
+    d = [
+        {'Tag': 'OTHER', 'Description': 'other'},
+        {
+            'Tag': 'law',
+            'Description': 'law, regulation, related law documents, documents, etc',
+        },
+        {'Tag': 'location', 'Description': 'location, place'},
+        {
+            'Tag': 'organization',
+            'Description': 'organization, company, government, facilities, etc',
+        },
+        {
+            'Tag': 'person',
+            'Description': 'person, group of people, believes, unique arts (eg; food, drink), etc',
+        },
+        {'Tag': 'quantity', 'Description': 'numbers, quantity'},
+        {'Tag': 'time', 'Description': 'date, day, time, etc'},
+        {'Tag': 'event', 'Description': 'unique event happened, etc'},
+    ]
+
+    from malaya.function import describe_availability
+
+    return describe_availability(d, transpose = False)
 
 
 def available_transformer():
     """
     List available transformer Entity Tagging models.
     """
-    return _availability
+    from malaya.function import describe_availability
+
+    return describe_availability(_transformer_availability)
 
 
 @check_type
@@ -67,12 +82,12 @@ def transformer(model: str = 'xlnet', **kwargs):
 
     Returns
     -------
-    result : Transformer class
+    result : malaya.supervised.tag.transformer function
     """
 
     model = model.lower()
-    if model not in _availability:
-        raise Exception(
+    if model not in _transformer_availability:
+        raise ValueError(
             'model not supported, please check supported models from malaya.entity.available_transformer()'
         )
     return tag.transformer(
@@ -87,12 +102,13 @@ def general_entity(model = None):
     Parameters
     ----------
     model : object
-        model must has `predict` method. Make sure the `predict` method returned [(string, label), (string, label)].
+        model must has `predict` method. 
+        Make sure the `predict` method returned [(string, label), (string, label)].
 
     Returns
     -------
-    result: malaya.text.entity._Entity_regex class
+    result: malaya.text.entity.ENTITY_REGEX class
     """
     if not hasattr(model, 'predict') and model is not None:
         raise ValueError('model must has `predict` method')
-    return _Entity_regex(model = model)
+    return ENTITY_REGEX(model = model)
