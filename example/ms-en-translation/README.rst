@@ -1,3 +1,11 @@
+MS to EN
+========
+
+.. container:: alert alert-info
+
+   This tutorial is available as an IPython notebook at
+   `Malaya/example/ms-en-translation <https://github.com/huseinzol05/Malaya/tree/master/example/ms-en-translation>`__.
+
 .. code:: ipython3
 
     %%time
@@ -7,12 +15,12 @@
 
 .. parsed-literal::
 
-    CPU times: user 5.28 s, sys: 1.45 s, total: 6.73 s
-    Wall time: 8.59 s
+    CPU times: user 5.14 s, sys: 755 ms, total: 5.89 s
+    Wall time: 5.04 s
 
 
 List available Transformer models
----------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
@@ -21,18 +29,56 @@ List available Transformer models
 
 
 
-.. parsed-literal::
+.. raw:: html
 
-    {'small': ['42.5MB', 'BLEU: 0.626'],
-     'base': ['234MB', 'BLEU: 0.792'],
-     'large': ['815MB', 'BLEU: 0.714']}
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>Size (MB)</th>
+          <th>BLEU</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>small</th>
+          <td>42.7</td>
+          <td>0.626</td>
+        </tr>
+        <tr>
+          <th>base</th>
+          <td>234.0</td>
+          <td>0.792</td>
+        </tr>
+        <tr>
+          <th>large</th>
+          <td>815.0</td>
+          <td>0.714</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
 
 
 
 We tested on 100k MY-EN sentences.
 
 Load Transformer models
------------------------
+~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
@@ -207,7 +253,7 @@ so Google Translate in the future might improved.
 
 
 
-.. image:: load-translation-ms-en_files/load-translation-ms-en_17_0.png
+.. image:: load-translation-ms-en_files/load-translation-ms-en_19_0.png
    :width: 450px
 
 
@@ -226,7 +272,7 @@ Gambir Multipurpose Hall today.
 
 
 
-.. image:: load-translation-ms-en_files/load-translation-ms-en_20_0.png
+.. image:: load-translation-ms-en_files/load-translation-ms-en_22_0.png
    :width: 450px
 
 
@@ -249,7 +295,7 @@ provide a wealth of knowledge about this profession.
 
 
 
-.. image:: load-translation-ms-en_files/load-translation-ms-en_23_0.png
+.. image:: load-translation-ms-en_files/load-translation-ms-en_25_0.png
    :width: 450px
 
 
@@ -575,6 +621,5 @@ Translate transformer large
 .. parsed-literal::
 
     0.60805035
-
 
 

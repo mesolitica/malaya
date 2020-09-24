@@ -1,3 +1,11 @@
+Toxicity Analysis
+=================
+
+.. container:: alert alert-info
+
+   This tutorial is available as an IPython notebook at
+   `Malaya/example/toxicity <https://github.com/huseinzol05/Malaya/tree/master/example/toxicity>`__.
+
 .. code:: ipython3
 
     %%time
@@ -6,12 +14,12 @@
 
 .. parsed-literal::
 
-    CPU times: user 4.85 s, sys: 1.28 s, total: 6.13 s
-    Wall time: 7.51 s
+    CPU times: user 4.94 s, sys: 667 ms, total: 5.6 s
+    Wall time: 4.62 s
 
 
 get labels
-----------
+~~~~~~~~~~
 
 .. code:: ipython3
 
@@ -58,7 +66,7 @@ get labels
     another_string = 'melayu bodoh, dah la gay, sokong lgbt lagi, memang tak guna'
 
 Load multinomial model
-----------------------
+~~~~~~~~~~~~~~~~~~~~~~
 
 All model interface will follow sklearn interface started v3.4,
 
@@ -112,7 +120,7 @@ All model interface will follow sklearn interface started v3.4,
 
 
 List available Transformer models
----------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
@@ -121,19 +129,69 @@ List available Transformer models
 
 
 
-.. parsed-literal::
+.. raw:: html
 
-    {'bert': ['425.7 MB', 'accuracy: 0.814'],
-     'tiny-bert': ['57.4 MB', 'accuracy: 0.815'],
-     'albert': ['48.7 MB', 'accuracy: 0.812'],
-     'tiny-albert': ['22.4 MB', 'accuracy: 0.808'],
-     'xlnet': ['446.5 MB', 'accuracy: 0.807'],
-     'alxlnet': ['46.8 MB', 'accuracy: 0.817']}
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>Size (MB)</th>
+          <th>Accuracy</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>bert</th>
+          <td>425.6</td>
+          <td>0.814</td>
+        </tr>
+        <tr>
+          <th>tiny-bert</th>
+          <td>57.4</td>
+          <td>0.815</td>
+        </tr>
+        <tr>
+          <th>albert</th>
+          <td>48.6</td>
+          <td>0.812</td>
+        </tr>
+        <tr>
+          <th>tiny-albert</th>
+          <td>22.4</td>
+          <td>0.808</td>
+        </tr>
+        <tr>
+          <th>xlnet</th>
+          <td>446.6</td>
+          <td>0.807</td>
+        </tr>
+        <tr>
+          <th>alxlnet</th>
+          <td>46.8</td>
+          <td>0.817</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
 
 
 
 Load ALXLNET model
-------------------
+~~~~~~~~~~~~~~~~~~
 
 All model interface will follow sklearn interface started v3.4,
 
@@ -234,12 +292,12 @@ visualization dashboard, you can disable by ``visualization=False``.
 
 
 
-.. image:: load-toxic_files/load-toxic_15_0.png
+.. image:: load-toxic_files/load-toxic_17_0.png
    :width: 800px
 
 
 Stacking models
----------------
+~~~~~~~~~~~~~~~
 
 More information, you can read at
 https://malaya.readthedocs.io/en/latest/Stack.html

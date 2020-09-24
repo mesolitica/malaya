@@ -1,3 +1,11 @@
+Emotion Analysis
+================
+
+.. container:: alert alert-info
+
+   This tutorial is available as an IPython notebook at
+   `Malaya/example/emotion <https://github.com/huseinzol05/Malaya/tree/master/example/emotion>`__.
+
 .. code:: ipython3
 
     %%time
@@ -6,8 +14,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 4.56 s, sys: 998 ms, total: 5.55 s
-    Wall time: 5.5 s
+    CPU times: user 5.1 s, sys: 730 ms, total: 5.83 s
+    Wall time: 5.02 s
 
 
 .. code:: ipython3
@@ -20,7 +28,7 @@
     surprise_text = 'sakit jantung aku, terkejut dengan cerita hantu tadi'
 
 Get label
----------
+~~~~~~~~~
 
 .. code:: ipython3
 
@@ -39,7 +47,7 @@ All models follow same method as sklearn interface, ``predict`` to get
 batch of labels, ``predict_proba`` to get batch of probabilities.
 
 Load multinomial model
-----------------------
+~~~~~~~~~~~~~~~~~~~~~~
 
 All model interface will follow sklearn interface started v3.4,
 
@@ -132,7 +140,7 @@ All model interface will follow sklearn interface started v3.4,
 
 
 List available Transformer models
----------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
@@ -141,14 +149,64 @@ List available Transformer models
 
 
 
-.. parsed-literal::
+.. raw:: html
 
-    {'bert': ['425.6 MB', 'accuracy: 0.992'],
-     'tiny-bert': ['57.4 MB', 'accuracy: 0.988'],
-     'albert': ['48.6 MB', 'accuracy: 0.997'],
-     'tiny-albert': ['22.4 MB', 'accuracy: 0.981'],
-     'xlnet': ['446.5 MB', 'accuracy: 0.990'],
-     'alxlnet': ['46.8 MB', 'accuracy: 0.989']}
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>Size (MB)</th>
+          <th>Accuracy</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>bert</th>
+          <td>425.6</td>
+          <td>0.992</td>
+        </tr>
+        <tr>
+          <th>tiny-bert</th>
+          <td>57.4</td>
+          <td>0.988</td>
+        </tr>
+        <tr>
+          <th>albert</th>
+          <td>48.6</td>
+          <td>0.997</td>
+        </tr>
+        <tr>
+          <th>tiny-albert</th>
+          <td>22.4</td>
+          <td>0.981</td>
+        </tr>
+        <tr>
+          <th>xlnet</th>
+          <td>446.5</td>
+          <td>0.990</td>
+        </tr>
+        <tr>
+          <th>alxlnet</th>
+          <td>46.8</td>
+          <td>0.989</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
 
 
 
@@ -160,7 +218,7 @@ https://malaya.readthedocs.io/en/latest/Accuracy.html#emotion-analysis
 accuracy is still on the top notch.**
 
 Load Albert model
------------------
+~~~~~~~~~~~~~~~~~
 
 All model interface will follow sklearn interface started v3.4,
 
@@ -177,15 +235,7 @@ All model interface will follow sklearn interface started v3.4,
 
 .. parsed-literal::
 
-    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/function/__init__.py:54: The name tf.gfile.GFile is deprecated. Please use tf.io.gfile.GFile instead.
-    
-    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/function/__init__.py:55: The name tf.GraphDef is deprecated. Please use tf.compat.v1.GraphDef instead.
-    
-    WARNING:tensorflow:From /usr/local/lib/python3.7/site-packages/albert/tokenization.py:240: The name tf.logging.info is deprecated. Please use tf.compat.v1.logging.info instead.
-    
     INFO:tensorflow:loading sentence piece model
-    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/function/__init__.py:49: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
-    
 
 
 Predict batch of strings
@@ -259,12 +309,12 @@ visualization dashboard, you can disable by ``visualization=False``.
 
 
 
-.. image:: load-emotion_files/load-emotion_19_0.png
+.. image:: load-emotion_files/load-emotion_21_0.png
    :width: 800px
 
 
 Stacking models
----------------
+~~~~~~~~~~~~~~~
 
 More information, you can read at
 https://malaya.readthedocs.io/en/latest/Stack.html

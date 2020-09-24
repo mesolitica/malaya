@@ -1,3 +1,11 @@
+Extractive
+==========
+
+.. container:: alert alert-info
+
+   This tutorial is available as an IPython notebook at
+   `Malaya/example/extractive-summarization <https://github.com/huseinzol05/Malaya/tree/master/example/extractive-summarization>`__.
+
 .. code:: ipython3
 
     %%time
@@ -7,12 +15,12 @@
 
 .. parsed-literal::
 
-    CPU times: user 4.4 s, sys: 908 ms, total: 5.31 s
-    Wall time: 4.63 s
+    CPU times: user 4.92 s, sys: 644 ms, total: 5.57 s
+    Wall time: 4.58 s
 
 
 List available skip-thought models
-----------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
@@ -21,9 +29,41 @@ List available skip-thought models
 
 
 
-.. parsed-literal::
+.. raw:: html
 
-    ['lstm', 'residual-network']
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>lstm</th>
+          <td>LSTM skip-thought deep learning model trained ...</td>
+        </tr>
+        <tr>
+          <th>residual-network</th>
+          <td>residual network with Bahdanau Attention skip-...</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
 
 
 
@@ -57,7 +97,7 @@ List available skip-thought models
     isu_string = '\n\n\n\nDUA legenda hebat dan ‘The living legend’ ini sudah memartabatkan bidang muzik sejak lebih tiga dekad lalu. Jika Datuk Zainal Abidin, 59, dikenali sebagai penyanyi yang memperjuangkan konsep ‘world music’, Datuk Sheila Majid, 55, pula lebih dikenali dengan irama jazz dan R&B.\n\nNamun, ada satu persamaan yang mengeratkan hubungan mereka kerana sama-sama mencintai bidang muzik sejak dulu.\n\nKetika ditemui dalam sesi fotografi yang diatur di Balai Berita, baru-baru ini, Zainal berkata, dia lebih ‘senior’ daripada Sheila kerana bermula dengan kumpulan Headwind sebelum menempa nama sebagai penyanyi solo.\n\n“Saya mula berkawan rapat dengan Sheila ketika sama-sama bernaung di bawah pengurusan Roslan Aziz Productions (RAP) selepas membina karier sebagai artis solo.\n\n“Namun, selepas tidak lagi bernaung di bawah RAP, kami juga membawa haluan karier seni masing-masing selepas itu,” katanya.\n\nJusteru katanya, dia memang menanti peluang berganding dengan Sheila dalam satu konsert.\n\nPenyanyi yang popular dengan lagu Hijau dan Ikhlas Tapi Jauh itu mengakui mereka memang ada keserasian ketika bergandingan kerana membesar pada era muzik yang sama.\n\n“Kami memang meminati bidang muzik dan saling memahami antara satu sama lain. Mungkin kerana kami berdua sudah berada pada tahap di puncak karier muzik masing-masing.\n\n“Saya bersama Sheila serta Datuk Afdlin Shauki akan terbabit dalam satu segmen yang ditetapkan.\n\n“Selain persembahan solo, saya juga berduet dengan Sheila dan Afdlin dalam segmen interaktif ini. Setiap penyanyi akan menyampaikan enam hingga tujuh lagu setiap seorang sepanjang konsert yang berlangsung tiga hari ini,” katanya.\n\nBagi Sheila pula, dia memang ada terbabit dengan beberapa persembahan bersama Zainal cuma tiada publisiti ketika itu.\n\n“Kami pernah terbabit dengan showcase dan majlis korporat sebelum ini. Selain itu, Zainal juga terbabit dengan Konsert Legenda yang membabitkan jelajah empat lokasi sebelum ini.\n\n“Sebab itu, saya sukar menolak untuk bekerjasama dengannya dalam Festival KL Jamm yang dianjurkan buat julung kali dan berkongsi pentas dalam satu konsert bertaraf antarabangsa,” katanya.\n\n\n\nFESTIVAL KL Jamm bakal menggabungkan pelbagai genre muzik seperti rock, hip hop, jazz dan pop dengan lebih 100 persembahan, 20 ‘showcase’ dan pameran.\n\nKonsert berbayar\n\n\n\nMewakili golongan anak seni, Sheila menaruh harapan semoga Festival KL Jamm akan menjadi platform buat artis yang sudah ada nama dan artis muda untuk membuat persembahan, sekali gus sama-sama memartabatkan industri muzik tempatan.\n\nMenurut Sheila, dia juga mencadangkan lebih banyak tempat diwujudkan untuk menggalakkan artis muda membuat persembahan, sekali gus menggilap bakat mereka.\n\n“Berbanding pada zaman saya dulu, artis muda sekarang tidak banyak tempat khusus untuk mereka menyanyi dan menonjolkan bakat di tempat awam.\n\n“Rata-rata hanya sekadar menyanyi di laman Instagram dan cuma dikenali menerusi satu lagu. Justeru, bagaimana mereka mahu buat showcase kalau hanya dikenali dengan satu lagu?” katanya.\n\nPada masa sama, Sheila juga merayu peminat tempatan untuk sama-sama memberi sokongan pada penganjuran festival KL Jamm sekali gus mencapai objektifnya.\n\n“Peminat perlu ubah persepsi negatif mereka dengan menganggap persembahan artis tempatan tidak bagus.\n\n“Kemasukan artis luar juga perlu dilihat dari sudut yang positif kerana kita perlu belajar bagaimana untuk menjadi bagus seperti mereka,” katanya.\n\nSementara itu, Zainal pula berharap festival itu akan mendidik orang ramai untuk menonton konsert berbayar serta memberi sokongan pada artis tempatan.\n\n“Ramai yang hanya meminati artis tempatan tetapi tidak mahu mengeluarkan sedikit wang untuk membeli tiket konsert mereka.\n\n“Sedangkan artis juga menyanyi untuk kerjaya dan ia juga punca pendapatan bagi menyara hidup,” katanya.\n\nFestival KL Jamm bakal menghimpunkan barisan artis tempatan baru dan nama besar dalam konsert iaitu Datuk Ramli Sarip, Datuk Afdlin Shauki, Zamani, Amelina, Radhi OAG, Dr Burn, Santesh, Rabbit Mac, Sheezy, kumpulan Bunkface, Ruffedge, Pot Innuendo, artis dari Kartel (Joe Flizzow, Sona One, Ila Damia, Yung Raja, Faris Jabba dan Abu Bakarxli) dan Malaysia Pasangge (artis India tempatan).\n\nManakala, artis antarabangsa pula membabitkan J Arie (Hong Kong), NCT Dream (Korea Selatan) dan DJ Sura (Korea Selatan).\n\nKL Jamm dianjurkan Music Unlimited International Sdn Bhd dan bakal menggabungkan pelbagai genre muzik seperti rock, hip hop, jazz dan pop dengan lebih 100 persembahan, 20 ‘showcase’, pameran dan perdagangan berkaitan.\n\nFestival tiga hari itu bakal berlangsung di Pusat Pameran dan Perdagangan Antarabangsa Malaysia (MITEC), Kuala Lumpur pada 26 hingga 28 April ini.\n\nMaklumat mengenai pembelian tiket dan keterangan lanjut boleh melayari www.kljamm.com.'
 
 Encoder summarization
----------------------
+~~~~~~~~~~~~~~~~~~~~~
 
 We leverage the power of deep encoder models like skip-thought or
 Transformer to do extractive summarization for us.
@@ -239,8 +279,60 @@ Load Transformer
 
 Much much better!
 
+List available vectorizer
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    malaya.summarization.extractive.available_vectorizer()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>tfidf</th>
+          <td>TFIDF Vectorizer</td>
+        </tr>
+        <tr>
+          <th>bow</th>
+          <td>Bag-Of-Word Vectorizer</td>
+        </tr>
+        <tr>
+          <th>skip-gram</th>
+          <td>Bag-Of-Word with Gram-Skipping Vectorizer</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
 Feed LSA model
---------------
+~~~~~~~~~~~~~~
 
 .. code:: python
 
@@ -299,7 +391,7 @@ Important parameters,
 
 .. parsed-literal::
 
-    {'summary': 'Timbalan Presiden UMNO, Datuk Seri Mohamad Hasan berkata, kenyataan tersebut tidak mewakili pendirian serta pandangan UMNO   kerana parti itu menghormati serta memahami keperluan sekolah vernakular dalam negara. Mohamad yang menjalankan tugas-tugas Presiden UMNO berkata, UMNO konsisten dengan pendirian itu dalam mengiktiraf kepelbagaian bangsa dan etnik termasuk hak untuk beragama serta mendapat pendidikan. "Saya ingin menegaskan dua perkara penting.',
+    {'summary': 'Timbalan Presiden UMNO, Datuk Seri Mohamad Hasan berkata, kenyataan tersebut tidak mewakili pendirian serta pandangan UMNO . Mohamad yang menjalankan tugas-tugas Presiden UMNO berkata, UMNO konsisten dengan pendirian itu dalam mengiktiraf kepelbagaian bangsa dan etnik termasuk hak untuk beragama serta mendapat pendidikan. "Saya berharap isu ini tidak dipolitikkan secara tidak bertanggungjawab oleh mana-mana pihak terutama dengan cara yang tidak menggambarkan pendirian sebenar UMNO dan BN," katanya.',
      'top-words': ['umno',
       'nyata',
       'sekolah',
@@ -310,12 +402,12 @@ Important parameters,
       'vernakular',
       'mohamed',
       'mohamed nazri'],
-     'cluster-top-words': ['nyata',
-      'umno',
-      'hormat',
-      'mohamed nazri',
+     'cluster-top-words': ['umno',
+      'nyata',
       'sekolah vernakular',
-      'pandang']}
+      'hormat',
+      'pandang',
+      'mohamed nazri']}
 
 
 
@@ -383,7 +475,7 @@ We can use ``skip-gram`` as vectorizer, and can override ``skip`` value.
 
 
 Feed LDA model
---------------
+~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
@@ -446,7 +538,7 @@ Feed LDA model
 
 
 Load doc2vec summarization
---------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 We need to load word vector provided by Malaya. ``doc2vec`` does not
 return ``top-words``, so parameter ``important_words`` cannot be use.

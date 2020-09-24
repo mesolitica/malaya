@@ -1,3 +1,11 @@
+EN to MS
+========
+
+.. container:: alert alert-info
+
+   This tutorial is available as an IPython notebook at
+   `Malaya/example/en-ms-translation <https://github.com/huseinzol05/Malaya/tree/master/example/en-ms-translation>`__.
+
 .. code:: ipython3
 
     %%time
@@ -6,12 +14,12 @@
 
 .. parsed-literal::
 
-    CPU times: user 4.74 s, sys: 1.21 s, total: 5.95 s
-    Wall time: 7.47 s
+    CPU times: user 5.01 s, sys: 749 ms, total: 5.75 s
+    Wall time: 5.09 s
 
 
 List available Transformer models
----------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
@@ -20,11 +28,49 @@ List available Transformer models
 
 
 
-.. parsed-literal::
+.. raw:: html
 
-    {'small': ['42.7MB', 'BLEU: 0.142'],
-     'base': ['234MB', 'BLEU: 0.696'],
-     'large': ['817MB', 'BLEU: 0.699']}
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>Size (MB)</th>
+          <th>BLEU</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>small</th>
+          <td>42.7</td>
+          <td>0.142</td>
+        </tr>
+        <tr>
+          <th>base</th>
+          <td>234.0</td>
+          <td>0.696</td>
+        </tr>
+        <tr>
+          <th>large</th>
+          <td>817.0</td>
+          <td>0.699</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
 
 
 
@@ -34,7 +80,7 @@ examples below. Our test set consist very long texts that ``small`` not
 able to predict it very good.**
 
 Load Transformer models
------------------------
+~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
@@ -197,7 +243,7 @@ so Google Translate in the future might improved.
 
 
 
-.. image:: load-translation-en-ms_files/load-translation-en-ms_16_0.png
+.. image:: load-translation-en-ms_files/load-translation-en-ms_18_0.png
    :width: 450px
 
 
@@ -215,7 +261,7 @@ untuk mendapatkan sokongan orang Melayu dan memenangi pilihan raya.
 
 
 
-.. image:: load-translation-en-ms_files/load-translation-en-ms_19_0.png
+.. image:: load-translation-en-ms_files/load-translation-en-ms_21_0.png
    :width: 450px
 
 
@@ -236,7 +282,7 @@ muhibah,” tweet James.
 
 
 
-.. image:: load-translation-en-ms_files/load-translation-en-ms_22_0.png
+.. image:: load-translation-en-ms_files/load-translation-en-ms_24_0.png
    :width: 450px
 
 
@@ -255,7 +301,7 @@ makanan di pasar EU menjadi semakin
 
 
 
-.. image:: load-translation-en-ms_files/load-translation-en-ms_25_0.png
+.. image:: load-translation-en-ms_files/load-translation-en-ms_27_0.png
    :width: 450px
 
 

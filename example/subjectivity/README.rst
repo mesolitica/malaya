@@ -1,3 +1,11 @@
+Subjectivity Analysis
+=====================
+
+.. container:: alert alert-info
+
+   This tutorial is available as an IPython notebook at
+   `Malaya/example/subjectivity <https://github.com/huseinzol05/Malaya/tree/master/example/subjectivity>`__.
+
 .. code:: ipython3
 
     %%time
@@ -6,12 +14,12 @@
 
 .. parsed-literal::
 
-    CPU times: user 4.68 s, sys: 1.17 s, total: 5.84 s
-    Wall time: 6.97 s
+    CPU times: user 5.41 s, sys: 999 ms, total: 6.41 s
+    Wall time: 6.6 s
 
 
 Explanation
------------
+~~~~~~~~~~~
 
 Positive subjectivity: based on or influenced by personal feelings,
 tastes, or opinions. Can be a positive or negative sentiment.
@@ -29,7 +37,7 @@ probability every classes. Else, it will return highest probability
 class. **Default is False.**
 
 Load multinomial model
-----------------------
+~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
@@ -65,7 +73,7 @@ Load multinomial model
 
 
 List available Transformer models
----------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
@@ -74,14 +82,64 @@ List available Transformer models
 
 
 
-.. parsed-literal::
+.. raw:: html
 
-    {'bert': ['425.6 MB', 'accuracy: 0.916'],
-     'tiny-bert': ['57.4 MB', 'accuracy: 0.903'],
-     'albert': ['48.6 MB', 'accuracy: 0.903'],
-     'tiny-albert': ['22.4 MB', 'accuracy: 0.894'],
-     'xlnet': ['446.5 MB', 'accuracy: 0.917'],
-     'alxlnet': ['46.8 MB', 'accuracy: 0.908']}
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>Size (MB)</th>
+          <th>Accuracy</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>bert</th>
+          <td>425.6</td>
+          <td>0.916</td>
+        </tr>
+        <tr>
+          <th>tiny-bert</th>
+          <td>57.4</td>
+          <td>0.903</td>
+        </tr>
+        <tr>
+          <th>albert</th>
+          <td>48.6</td>
+          <td>0.903</td>
+        </tr>
+        <tr>
+          <th>tiny-albert</th>
+          <td>22.4</td>
+          <td>0.894</td>
+        </tr>
+        <tr>
+          <th>xlnet</th>
+          <td>446.6</td>
+          <td>0.917</td>
+        </tr>
+        <tr>
+          <th>alxlnet</th>
+          <td>46.8</td>
+          <td>0.908</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
 
 
 
@@ -93,7 +151,7 @@ https://malaya.readthedocs.io/en/latest/Accuracy.html#subjectivity-analysis
 accuracy is still on the top notch.**
 
 Load ALBERT model
------------------
+~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
@@ -140,12 +198,12 @@ visualization dashboard, you can disable by ``visualization=False``.
 
 
 
-.. image:: load-subjectivity_files/load-subjectivity_16_0.png
+.. image:: load-subjectivity_files/load-subjectivity_18_0.png
    :width: 800px
 
 
 Stacking models
----------------
+~~~~~~~~~~~~~~~
 
 More information, you can read at
 https://malaya.readthedocs.io/en/latest/Stack.html

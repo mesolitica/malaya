@@ -1,3 +1,11 @@
+Entities Recognition
+====================
+
+.. container:: alert alert-info
+
+   This tutorial is available as an IPython notebook at
+   `Malaya/example/entities <https://github.com/huseinzol05/Malaya/tree/master/example/entities>`__.
+
 .. code:: ipython3
 
     %%time
@@ -6,32 +14,93 @@
 
 .. parsed-literal::
 
-    CPU times: user 4.61 s, sys: 1.03 s, total: 5.64 s
-    Wall time: 5.84 s
+    CPU times: user 4.97 s, sys: 657 ms, total: 5.63 s
+    Wall time: 4.63 s
 
 
 Describe supported entities
----------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
     malaya.entity.describe()
 
 
-.. parsed-literal::
 
-    OTHER - Other
-    law - law, regulation, related law documents, documents, etc
-    location - location, place
-    organization - organization, company, government, facilities, etc
-    person - person, group of people, believes, unique arts (eg; food, drink), etc
-    quantity - numbers, quantity
-    time - date, day, time, etc
-    event - unique event happened, etc
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>Tag</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>OTHER</td>
+          <td>other</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>law</td>
+          <td>law, regulation, related law documents, docume...</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>location</td>
+          <td>location, place</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>organization</td>
+          <td>organization, company, government, facilities,...</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>person</td>
+          <td>person, group of people, believes, unique arts...</td>
+        </tr>
+        <tr>
+          <th>5</th>
+          <td>quantity</td>
+          <td>numbers, quantity</td>
+        </tr>
+        <tr>
+          <th>6</th>
+          <td>time</td>
+          <td>date, day, time, etc</td>
+        </tr>
+        <tr>
+          <th>7</th>
+          <td>event</td>
+          <td>unique event happened, etc</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
 
 
 List available Transformer NER models
--------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
@@ -40,14 +109,64 @@ List available Transformer NER models
 
 
 
-.. parsed-literal::
+.. raw:: html
 
-    {'bert': ['426.4 MB', 'accuracy: 0.994'],
-     'tiny-bert': ['57.7 MB', 'accuracy: 0.986'],
-     'albert': ['48.6 MB', 'accuracy: 0.984'],
-     'tiny-albert': ['22.4 MB', 'accuracy: 0.971'],
-     'xlnet': ['446.6 MB', 'accuracy: 0.992'],
-     'alxlnet': ['46.8 MB', 'accuracy: 0.993']}
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>Size (MB)</th>
+          <th>Accuracy</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>bert</th>
+          <td>425.4</td>
+          <td>0.994</td>
+        </tr>
+        <tr>
+          <th>tiny-bert</th>
+          <td>57.7</td>
+          <td>0.986</td>
+        </tr>
+        <tr>
+          <th>albert</th>
+          <td>48.6</td>
+          <td>0.984</td>
+        </tr>
+        <tr>
+          <th>tiny-albert</th>
+          <td>22.4</td>
+          <td>0.971</td>
+        </tr>
+        <tr>
+          <th>xlnet</th>
+          <td>446.6</td>
+          <td>0.992</td>
+        </tr>
+        <tr>
+          <th>alxlnet</th>
+          <td>46.8</td>
+          <td>0.993</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
 
 
 
@@ -63,7 +182,7 @@ accuracy is still on the top notch.**
     string = 'KUALA LUMPUR: Sempena sambutan Aidilfitri minggu depan, Perdana Menteri Tun Dr Mahathir Mohamad dan Menteri Pengangkutan Anthony Loke Siew Fook menitipkan pesanan khas kepada orang ramai yang mahu pulang ke kampung halaman masing-masing. Dalam video pendek terbitan Jabatan Keselamatan Jalan Raya (JKJR) itu, Dr Mahathir menasihati mereka supaya berhenti berehat dan tidur sebentar  sekiranya mengantuk ketika memandu.'
 
 Load ALBERT model
------------------
+~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
@@ -277,7 +396,7 @@ Load ALBERT model
 
 
 Load general Malaya entity model
---------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This model able to classify,
 
@@ -396,7 +515,7 @@ This is an optional.
 
 
 Voting stack model
-------------------
+~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 

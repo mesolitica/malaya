@@ -1,3 +1,11 @@
+Constituency Parsing
+--------------------
+
+.. container:: alert alert-info
+
+   This tutorial is available as an IPython notebook at
+   `Malaya/example/constituency <https://github.com/huseinzol05/Malaya/tree/master/example/constituency>`__.
+
 .. code:: ipython3
 
     %%time
@@ -7,12 +15,12 @@
 
 .. parsed-literal::
 
-    CPU times: user 4.75 s, sys: 1.24 s, total: 5.99 s
-    Wall time: 7.27 s
+    CPU times: user 5.34 s, sys: 1.01 s, total: 6.34 s
+    Wall time: 7.21 s
 
 
 what is constituency parsing
-----------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Assign a sentence into its own syntactic structure, defined by certain
 standardization. For example,
@@ -25,7 +33,7 @@ standardization. For example,
 
 
 
-.. image:: load-constituency_files/load-constituency_2_0.png
+.. image:: load-constituency_files/load-constituency_4_0.png
    :width: 500px
 
 
@@ -36,7 +44,7 @@ The context free grammar totally depends on language, so for Bahasa, we
 follow https://github.com/famrashel/idn-treebank
 
 List available transformer Constituency models
-----------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
@@ -45,38 +53,83 @@ List available transformer Constituency models
 
 
 
-.. parsed-literal::
+.. raw:: html
 
-    {'bert': ['470.0 MB',
-      'Recall: 78.96',
-      'Precision: 81.78',
-      'FScore: 80.35',
-      'CompleteMatch: 10.37',
-      'TaggingAccuracy: 91.59'],
-     'tiny-bert': ['125 MB',
-      'Recall: 74.89',
-      'Precision: 78.79',
-      'FScore: 76.79',
-      'CompleteMatch: 9.01',
-      'TaggingAccuracy: 91.17'],
-     'albert': ['180.0 MB',
-      'Recall: 77.57',
-      'Precision: 80.50',
-      'FScore: 79.01',
-      'CompleteMatch: 5.77',
-      'TaggingAccuracy: 90.30'],
-     'tiny-albert': ['56.7 MB',
-      'Recall: 67.21',
-      'Precision: 74.89',
-      'FScore: 70.84',
-      'CompleteMatch: 2.11',
-      'TaggingAccuracy: 87.75'],
-     'xlnet': ['498.0 MB',
-      'Recall: 80.65',
-      'Precision: 82.22',
-      'FScore: 81.43',
-      'CompleteMatch: 11.08',
-      'TaggingAccuracy: 92.12']}
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>Size (MB)</th>
+          <th>Recall</th>
+          <th>Precision</th>
+          <th>FScore</th>
+          <th>CompleteMatch</th>
+          <th>TaggingAccuracy</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>bert</th>
+          <td>470.0</td>
+          <td>78.96</td>
+          <td>81.78</td>
+          <td>80.35</td>
+          <td>10.37</td>
+          <td>91.59</td>
+        </tr>
+        <tr>
+          <th>tiny-bert</th>
+          <td>125.0</td>
+          <td>74.89</td>
+          <td>78.79</td>
+          <td>76.79</td>
+          <td>9.01</td>
+          <td>91.17</td>
+        </tr>
+        <tr>
+          <th>albert</th>
+          <td>180.0</td>
+          <td>77.57</td>
+          <td>80.50</td>
+          <td>79.01</td>
+          <td>5.77</td>
+          <td>90.30</td>
+        </tr>
+        <tr>
+          <th>tiny-albert</th>
+          <td>56.7</td>
+          <td>67.21</td>
+          <td>74.89</td>
+          <td>70.84</td>
+          <td>2.11</td>
+          <td>87.75</td>
+        </tr>
+        <tr>
+          <th>xlnet</th>
+          <td>498.0</td>
+          <td>80.65</td>
+          <td>82.22</td>
+          <td>81.43</td>
+          <td>11.08</td>
+          <td>92.12</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
 
 
 
@@ -91,7 +144,7 @@ The best model in term of accuracy is **XLNET**.
     string = 'Dr Mahathir menasihati mereka supaya berhenti berehat dan tidur sebentar sekiranya mengantuk ketika memandu.'
 
 Load xlnet constituency model
------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
@@ -131,7 +184,7 @@ children / subtrees.
 
 
 
-.. image:: load-constituency_files/load-constituency_12_0.png
+.. image:: load-constituency_files/load-constituency_14_0.png
 
 
 

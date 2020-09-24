@@ -1,17 +1,18 @@
+Relevancy Analysis
+==================
+
+.. container:: alert alert-info
+
+   This tutorial is available as an IPython notebook at
+   `Malaya/example/relevancy <https://github.com/huseinzol05/Malaya/tree/master/example/relevancy>`__.
+
 .. code:: ipython3
 
     %%time
     import malaya
 
-
-.. parsed-literal::
-
-    CPU times: user 4.4 s, sys: 893 ms, total: 5.29 s
-    Wall time: 4.74 s
-
-
 Explanation
------------
+~~~~~~~~~~~
 
 Positive relevancy: The article or piece of text is relevant, tendency
 is high to become not a fake news. Can be a positive or negative
@@ -29,25 +30,11 @@ Right now relevancy module only support deep learning model.
     positive_text = 'Jabatan Kemajuan Islam Malaysia memperjelaskan dakwaan sebuah mesej yang dikitar semula, yang mendakwa kononnya kod E dikaitkan dengan kandungan lemak babi sepertimana yang tular di media sosial. . Tular: November 2017 . Tular: Mei 2014 JAKIM ingin memaklumkan kepada masyarakat berhubung maklumat yang telah disebarkan secara meluas khasnya melalui media sosial berhubung kod E yang dikaitkan mempunyai lemak babi. Untuk makluman, KOD E ialah kod untuk bahan tambah (aditif) dan ianya selalu digunakan pada label makanan di negara Kesatuan Eropah. Menurut JAKIM, tidak semua nombor E yang digunakan untuk membuat sesuatu produk makanan berasaskan dari sumber yang haram. Sehubungan itu, sekiranya sesuatu produk merupakan produk tempatan dan mendapat sijil Pengesahan Halal Malaysia, maka ia boleh digunakan tanpa was-was sekalipun mempunyai kod E-kod. Tetapi sekiranya produk tersebut bukan produk tempatan serta tidak mendapat sijil pengesahan halal Malaysia walaupun menggunakan e-kod yang sama, pengguna dinasihatkan agar berhati-hati dalam memilih produk tersebut.'
 
 List available Transformer models
----------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
     malaya.relevancy.available_transformer()
-
-
-
-
-.. parsed-literal::
-
-    {'bert': ['425.6 MB', 'accuracy: 0.872'],
-     'tiny-bert': ['57.4 MB', 'accuracy: 0.656'],
-     'albert': ['48.6 MB', 'accuracy: 0.871'],
-     'tiny-albert': ['22.4 MB', 'accuracy: 0.843'],
-     'xlnet': ['446.5 MB', 'accuracy: 0.885'],
-     'alxlnet': ['46.8 MB', 'accuracy: 0.874']}
-
-
 
 Make sure you can check accuracy chart from here first before select a
 model, https://malaya.readthedocs.io/en/latest/Accuracy.html#relevancy
@@ -56,7 +43,7 @@ model, https://malaya.readthedocs.io/en/latest/Accuracy.html#relevancy
 accuracy is still on the top notch.**
 
 Load ALXLNET model
-------------------
+~~~~~~~~~~~~~~~~~~
 
 All model interface will follow sklearn interface started v3.4,
 
@@ -116,12 +103,12 @@ visualization dashboard, you can disable by ``visualization=False``.
 
 
 
-.. image:: load-relevancy_files/load-relevancy_12_0.png
+.. image:: load-relevancy_files/load-relevancy_14_0.png
    :width: 800px
 
 
 Stacking models
----------------
+~~~~~~~~~~~~~~~
 
 More information, you can read at
 https://malaya.readthedocs.io/en/latest/Stack.html

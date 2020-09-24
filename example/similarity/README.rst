@@ -1,3 +1,11 @@
+Text Similarity
+===============
+
+.. container:: alert alert-info
+
+   This tutorial is available as an IPython notebook at
+   `Malaya/example/similarity <https://github.com/huseinzol05/Malaya/tree/master/example/similarity>`__.
+
 .. code:: ipython3
 
     %%time
@@ -6,8 +14,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 4.39 s, sys: 885 ms, total: 5.27 s
-    Wall time: 4.48 s
+    CPU times: user 4.88 s, sys: 668 ms, total: 5.55 s
+    Wall time: 4.56 s
 
 
 .. code:: ipython3
@@ -23,7 +31,7 @@
     husein = 'DrM sembang pilihan raya tak boleh buat sebab COVID 19'
 
 Calculate similarity using doc2vec
-----------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 We can use any word vector interface provided by Malaya to use doc2vec
 similarity interface.
@@ -128,13 +136,13 @@ visualize heatmap
 
 
 
-.. image:: load-similarity_files/load-similarity_11_0.png
+.. image:: load-similarity_files/load-similarity_13_0.png
 
 
 Different similarity function different percentage.
 
 Calculate similarity using deep encoder
----------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 We can use any encoder models provided by Malaya to use encoder
 similarity interface, example, BERT, XLNET, and skip-thought. Again,
@@ -207,11 +215,11 @@ visualize heatmap
 
 
 
-.. image:: load-similarity_files/load-similarity_21_0.png
+.. image:: load-similarity_files/load-similarity_23_0.png
 
 
 List available Transformer models
----------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
@@ -220,14 +228,64 @@ List available Transformer models
 
 
 
-.. parsed-literal::
+.. raw:: html
 
-    {'bert': ['423.4 MB', 'accuracy: 0.885'],
-     'tiny-bert': ['56.6 MB', 'accuracy: 0.873'],
-     'albert': ['46.3 MB', 'accuracy: 0.873'],
-     'tiny-albert': ['21.9 MB', 'accuracy: 0.824'],
-     'xlnet': ['448.7 MB', 'accuracy: 0.784'],
-     'alxlnet': ['49.0 MB', 'accuracy: 0.888']}
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>Size (MB)</th>
+          <th>Accuracy</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>bert</th>
+          <td>423.4</td>
+          <td>0.885</td>
+        </tr>
+        <tr>
+          <th>tiny-bert</th>
+          <td>56.6</td>
+          <td>0.873</td>
+        </tr>
+        <tr>
+          <th>albert</th>
+          <td>48.3</td>
+          <td>0.873</td>
+        </tr>
+        <tr>
+          <th>tiny-albert</th>
+          <td>21.9</td>
+          <td>0.824</td>
+        </tr>
+        <tr>
+          <th>xlnet</th>
+          <td>448.7</td>
+          <td>0.784</td>
+        </tr>
+        <tr>
+          <th>alxlnet</th>
+          <td>49.0</td>
+          <td>0.888</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
 
 
 
@@ -244,7 +302,7 @@ model, https://malaya.readthedocs.io/en/latest/Accuracy.html#similarity
 accuracy is still on the top notch.**
 
 Load transformer model
-----------------------
+~~~~~~~~~~~~~~~~~~~~~~
 
 In this example, I am going to load ``alxlnet``, feel free to use any
 available models above.
@@ -309,7 +367,7 @@ visualize heatmap
 
 
 
-.. image:: load-similarity_files/load-similarity_30_0.png
+.. image:: load-similarity_files/load-similarity_32_0.png
 
 
 .. code:: ipython3
@@ -333,7 +391,7 @@ visualize heatmap
 
 
 Stacking models
----------------
+~~~~~~~~~~~~~~~
 
 More information, you can read at
 https://malaya.readthedocs.io/en/latest/Stack.html

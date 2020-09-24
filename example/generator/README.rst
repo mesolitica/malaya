@@ -1,3 +1,11 @@
+Generator
+=========
+
+.. container:: alert alert-info
+
+   This tutorial is available as an IPython notebook at
+   `Malaya/example/generator <https://github.com/huseinzol05/Malaya/tree/master/example/generator>`__.
+
 .. code:: ipython3
 
     %%time
@@ -7,12 +15,12 @@
 
 .. parsed-literal::
 
-    CPU times: user 4.83 s, sys: 1.18 s, total: 6.01 s
-    Wall time: 7.1 s
+    CPU times: user 5 s, sys: 718 ms, total: 5.72 s
+    Wall time: 4.87 s
 
 
 List available T5 Model
------------------------
+~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
@@ -21,14 +29,46 @@ List available T5 Model
 
 
 
-.. parsed-literal::
+.. raw:: html
 
-    {'small': ['122MB'], 'base': ['448MB']}
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>Size (MB)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>small</th>
+          <td>122</td>
+        </tr>
+        <tr>
+          <th>base</th>
+          <td>448</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
 
 
 
 Load T5
--------
+~~~~~~~
 
 T5 in Malaya is quite unique, most of the text generative model we found
 on the internet like GPT2 or Markov, simply just continue prefix input
@@ -331,7 +371,7 @@ How about karangan like high school?
 
 
 Load GPT2
----------
+~~~~~~~~~
 
 Malaya provided Pretrained GPT2 model, specific to Malay, we called it
 GPT2-Bahasa. This interface not able us to use it to do custom training.
@@ -375,7 +415,7 @@ from here, https://huggingface.co/models?filter=malay&search=gpt2
 
 
 
-.. image:: load-generator_files/load-generator_21_0.png
+.. image:: load-generator_files/load-generator_23_0.png
    :width: 500px
 
 
@@ -524,7 +564,7 @@ generate
 
 
 Load Transformer
-----------------
+~~~~~~~~~~~~~~~~
 
 We also can generate a text like GPT2 using Transformer-Bahasa. Right
 now only supported BERT, ALBERT and ELECTRA.
@@ -632,7 +672,7 @@ now only supported BERT, ALBERT and ELECTRA.
 
 
 ngrams
-------
+~~~~~~
 
 You can generate ngrams pretty easy using this interface,
 

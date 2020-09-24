@@ -1,7 +1,32 @@
+Transformer
+===========
+
+.. container:: alert alert-info
+
+   This tutorial is available as an IPython notebook at
+   `Malaya/example/transformer <https://github.com/huseinzol05/Malaya/tree/master/example/transformer>`__.
+
 Malaya provided basic interface for Pretrained Transformer encoder
 models, specific to Malay, local social media slang and Manglish
-language, we called it Transformer-Bahasa. This interface not able us to
-use it to do custom training.
+language, we called it Transformer-Bahasa. Below are the list of dataset
+we pretrained,
+
+Standard Bahasa dataset,
+
+1. `Malay-dataset/dumping <https://github.com/huseinzol05/Malay-Dataset/tree/master/dumping>`__.
+2. `Malay-dataset/pure-text <https://github.com/huseinzol05/Malay-Dataset/tree/master/pure-text>`__.
+
+Bahasa social media,
+
+1. `Malay-dataset/dumping/instagram <https://github.com/huseinzol05/Malay-Dataset/tree/master/dumping/instagram>`__.
+2. `Malay-dataset/dumping/twitter <https://github.com/huseinzol05/Malay-Dataset/tree/master/dumping/twitter>`__.
+
+Singlish / Manglish,
+
+1. `Malay-dataset/dumping/singlish <https://github.com/huseinzol05/Malay-Dataset/tree/master/dumping/singlish-text>`__.
+2. `Malay-dataset/dumping/singapore-news <https://github.com/huseinzol05/Malay-Dataset/tree/master/dumping/singapore-news>`__.
+
+**This interface not able us to use it to do custom training**.
 
 If you want to download pretrained model for Transformer-Bahasa and use
 it for custom transfer-learning, you can download it here,
@@ -9,9 +34,9 @@ https://github.com/huseinzol05/Malaya/tree/master/pretrained-model/,
 some notebooks to help you get started.
 
 Or you can simply use `hugging-face
-transformers <https://huggingface.co/models?filter=malay>`__ to try
+transformers <https://huggingface.co/models?filter=ms>`__ to try
 transformer models from Malaya, simply check available models from here,
-https://huggingface.co/models?filter=malay
+https://huggingface.co/models?filter=ms
 
 .. code:: ipython3
 
@@ -21,7 +46,7 @@ https://huggingface.co/models?filter=malay
 
 
 
-.. image:: load-transformer_files/load-transformer_2_0.png
+.. image:: load-transformer_files/load-transformer_4_0.png
    :width: 500px
 
 
@@ -33,12 +58,12 @@ https://huggingface.co/models?filter=malay
 
 .. parsed-literal::
 
-    CPU times: user 4.93 s, sys: 1.31 s, total: 6.25 s
-    Wall time: 8 s
+    CPU times: user 4.88 s, sys: 641 ms, total: 5.52 s
+    Wall time: 4.5 s
 
 
 list Transformer-Bahasa available
----------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
@@ -47,37 +72,76 @@ list Transformer-Bahasa available
 
 
 
-.. parsed-literal::
+.. raw:: html
 
-    ['bert',
-     'tiny-bert',
-     'albert',
-     'tiny-albert',
-     'xlnet',
-     'alxlnet',
-     'electra',
-     'small-electra']
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>Size (MB)</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>bert</th>
+          <td>425.6</td>
+          <td>Google BERT BASE parameters</td>
+        </tr>
+        <tr>
+          <th>tiny-bert</th>
+          <td>57.4</td>
+          <td>Google BERT TINY parameters</td>
+        </tr>
+        <tr>
+          <th>albert</th>
+          <td>48.6</td>
+          <td>Google ALBERT BASE parameters</td>
+        </tr>
+        <tr>
+          <th>tiny-albert</th>
+          <td>22.4</td>
+          <td>Google ALBERT TINY parameters</td>
+        </tr>
+        <tr>
+          <th>xlnet</th>
+          <td>446.6</td>
+          <td>Google XLNET BASE parameters</td>
+        </tr>
+        <tr>
+          <th>alxlnet</th>
+          <td>46.8</td>
+          <td>Malaya ALXLNET BASE parameters</td>
+        </tr>
+        <tr>
+          <th>electra</th>
+          <td>443</td>
+          <td>Google ELECTRA BASE parameters</td>
+        </tr>
+        <tr>
+          <th>small-electra</th>
+          <td>55</td>
+          <td>Google ELECTRA SMALL parameters</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
 
 
-
-1. ``bert`` - BERT architecture from google.
-
-2. ``tiny-bert`` - BERT architecture from google with smaller
-   parameters.
-
-3. ``albert`` - ALBERT architecture from google.
-
-4. ``tiny-albert`` - ALBERT architecture from google with smaller
-   parameters.
-
-5. ``xlnet`` - XLNET architecture from google.
-
-6. ``alxlnet`` Malaya architecture, unpublished model, A-lite XLNET.
-
-7. ``electra`` ELECTRA architecture from google.
-
-8. ``small-electra`` ELECTRA architecture from google with smaller
-   parameters.
 
 .. code:: ipython3
 
@@ -86,7 +150,7 @@ list Transformer-Bahasa available
                "Orang ramai cakap nurse kerajaan garang. So i tell u this. Most of our local ppl will treat us as hamba abdi and they don't respect us as a nurse"]
 
 Load XLNET-Bahasa
------------------
+~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
@@ -95,8 +159,47 @@ Load XLNET-Bahasa
 
 .. parsed-literal::
 
+    WARNING:tensorflow:From /Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/malaya/transformers/xlnet/xlnet.py:70: The name tf.gfile.Open is deprecated. Please use tf.io.gfile.GFile instead.
+    
+    WARNING:tensorflow:From /Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/malaya/transformers/xlnet/__init__.py:81: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
+    
+    WARNING:tensorflow:From /Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/malaya/transformers/xlnet/xlnet.py:253: The name tf.variable_scope is deprecated. Please use tf.compat.v1.variable_scope instead.
+    
+    WARNING:tensorflow:From /Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/malaya/transformers/xlnet/xlnet.py:253: The name tf.AUTO_REUSE is deprecated. Please use tf.compat.v1.AUTO_REUSE instead.
+    
+    WARNING:tensorflow:From /Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/malaya/transformers/xlnet/modeling.py:686: The name tf.logging.info is deprecated. Please use tf.compat.v1.logging.info instead.
+    
     INFO:tensorflow:memory input None
     INFO:tensorflow:Use float type <dtype: 'float32'>
+    WARNING:tensorflow:From /Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/malaya/transformers/xlnet/modeling.py:693: The name tf.get_variable is deprecated. Please use tf.compat.v1.get_variable instead.
+    
+    WARNING:tensorflow:From /Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/malaya/transformers/xlnet/modeling.py:797: dropout (from tensorflow.python.layers.core) is deprecated and will be removed in a future version.
+    Instructions for updating:
+    Use keras.layers.dropout instead.
+    WARNING:tensorflow:From /Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/tensorflow_core/python/layers/core.py:271: Layer.apply (from tensorflow.python.keras.engine.base_layer) is deprecated and will be removed in a future version.
+    Instructions for updating:
+    Please use `layer.__call__` method instead.
+    WARNING:tensorflow:
+    The TensorFlow contrib module will not be included in TensorFlow 2.0.
+    For more information, please see:
+      * https://github.com/tensorflow/community/blob/master/rfcs/20180907-contrib-sunset.md
+      * https://github.com/tensorflow/addons
+      * https://github.com/tensorflow/io (for I/O related ops)
+    If you depend on functionality not listed there, please file an issue.
+    
+    WARNING:tensorflow:From /Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/malaya/transformers/xlnet/modeling.py:99: dense (from tensorflow.python.layers.core) is deprecated and will be removed in a future version.
+    Instructions for updating:
+    Use keras.layers.Dense instead.
+    WARNING:tensorflow:From /Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/malaya/transformers/xlnet/__init__.py:94: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
+    
+    WARNING:tensorflow:From /Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/malaya/transformers/xlnet/__init__.py:95: The name tf.global_variables_initializer is deprecated. Please use tf.compat.v1.global_variables_initializer instead.
+    
+    WARNING:tensorflow:From /Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/malaya/transformers/xlnet/__init__.py:96: The name tf.trainable_variables is deprecated. Please use tf.compat.v1.trainable_variables instead.
+    
+    WARNING:tensorflow:From /Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/malaya/transformers/xlnet/__init__.py:100: The name tf.train.Saver is deprecated. Please use tf.compat.v1.train.Saver instead.
+    
+    WARNING:tensorflow:From /Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/malaya/transformers/xlnet/__init__.py:103: The name tf.get_default_graph is deprecated. Please use tf.compat.v1.get_default_graph instead.
+    
     INFO:tensorflow:Restoring parameters from /Users/huseinzolkepli/Malaya/xlnet-model/base/xlnet-base/model.ckpt
 
 
@@ -285,14 +388,14 @@ https://github.com/jessevig/bertviz .
 
 
 
-.. image:: load-transformer_files/load-transformer_24_0.png
+.. image:: load-transformer_files/load-transformer_25_0.png
    :width: 300px
 
 
 **All attention models able to use these interfaces.**
 
 Load ELECTRA-Bahasa
--------------------
+~~~~~~~~~~~~~~~~~~~
 
 Feel free to use another models.
 

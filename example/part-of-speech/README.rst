@@ -1,3 +1,11 @@
+Part-of-Speech Recognition
+==========================
+
+.. container:: alert alert-info
+
+   This tutorial is available as an IPython notebook at
+   `Malaya/example/part-of-speech <https://github.com/huseinzol05/Malaya/tree/master/example/part-of-speech>`__.
+
 .. code:: ipython3
 
     %%time
@@ -6,39 +14,128 @@
 
 .. parsed-literal::
 
-    CPU times: user 4.38 s, sys: 902 ms, total: 5.28 s
-    Wall time: 4.68 s
+    CPU times: user 5.04 s, sys: 702 ms, total: 5.75 s
+    Wall time: 4.84 s
 
 
 Describe supported POS
-----------------------
+~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
     malaya.pos.describe()
 
 
-.. parsed-literal::
 
-    ADJ - Adjective, kata sifat
-    ADP - Adposition
-    ADV - Adverb, kata keterangan
-    ADX - Auxiliary verb, kata kerja tambahan
-    CCONJ - Coordinating conjuction, kata hubung
-    DET - Determiner, kata penentu
-    NOUN - Noun, kata nama
-    NUM - Number, nombor
-    PART - Particle
-    PRON - Pronoun, kata ganti
-    PROPN - Proper noun, kata ganti nama khas
-    SCONJ - Subordinating conjunction
-    SYM - Symbol
-    VERB - Verb, kata kerja
-    X - Other
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>Tag</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>ADJ</td>
+          <td>Adjective, kata sifat</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>ADP</td>
+          <td>Adposition</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>ADV</td>
+          <td>Adverb, kata keterangan</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>ADX</td>
+          <td>Auxiliary verb, kata kerja tambahan</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>CCONJ</td>
+          <td>Coordinating conjuction, kata hubung</td>
+        </tr>
+        <tr>
+          <th>5</th>
+          <td>DET</td>
+          <td>Determiner, kata penentu</td>
+        </tr>
+        <tr>
+          <th>6</th>
+          <td>NOUN</td>
+          <td>Noun, kata nama</td>
+        </tr>
+        <tr>
+          <th>7</th>
+          <td>NUM</td>
+          <td>Number, nombor</td>
+        </tr>
+        <tr>
+          <th>8</th>
+          <td>PART</td>
+          <td>Particle</td>
+        </tr>
+        <tr>
+          <th>9</th>
+          <td>PRON</td>
+          <td>Pronoun, kata ganti</td>
+        </tr>
+        <tr>
+          <th>10</th>
+          <td>PROPN</td>
+          <td>Proper noun, kata ganti nama khas</td>
+        </tr>
+        <tr>
+          <th>11</th>
+          <td>SCONJ</td>
+          <td>Subordinating conjunction</td>
+        </tr>
+        <tr>
+          <th>12</th>
+          <td>SYM</td>
+          <td>Symbol</td>
+        </tr>
+        <tr>
+          <th>13</th>
+          <td>VERB</td>
+          <td>Verb, kata kerja</td>
+        </tr>
+        <tr>
+          <th>14</th>
+          <td>X</td>
+          <td>Other</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
 
 
 List available Transformer POS models
--------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
@@ -47,14 +144,64 @@ List available Transformer POS models
 
 
 
-.. parsed-literal::
+.. raw:: html
 
-    {'bert': ['426.4 MB', 'accuracy: 0.952'],
-     'tiny-bert': ['57.7 MB', 'accuracy: 0.953'],
-     'albert': ['48.7 MB', 'accuracy: 0.951'],
-     'tiny-albert': ['22.4 MB', 'accuracy: 0.933'],
-     'xlnet': ['446.6 MB', 'accuracy: 0.954'],
-     'alxlnet': ['46.8 MB', 'accuracy: 0.951']}
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>Size (MB)</th>
+          <th>Accuracy</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>bert</th>
+          <td>426.4</td>
+          <td>0.952</td>
+        </tr>
+        <tr>
+          <th>tiny-bert</th>
+          <td>57.7</td>
+          <td>0.953</td>
+        </tr>
+        <tr>
+          <th>albert</th>
+          <td>48.7</td>
+          <td>0.951</td>
+        </tr>
+        <tr>
+          <th>tiny-albert</th>
+          <td>22.4</td>
+          <td>0.933</td>
+        </tr>
+        <tr>
+          <th>xlnet</th>
+          <td>446.6</td>
+          <td>0.954</td>
+        </tr>
+        <tr>
+          <th>alxlnet</th>
+          <td>46.8</td>
+          <td>0.951</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
 
 
 
@@ -70,7 +217,7 @@ accuracy is still on the top notch.**
     string = 'KUALA LUMPUR: Sempena sambutan Aidilfitri minggu depan, Perdana Menteri Tun Dr Mahathir Mohamad dan Menteri Pengangkutan Anthony Loke Siew Fook menitipkan pesanan khas kepada orang ramai yang mahu pulang ke kampung halaman masing-masing. Dalam video pendek terbitan Jabatan Keselamatan Jalan Raya (JKJR) itu, Dr Mahathir menasihati mereka supaya berhenti berehat dan tidur sebentar  sekiranya mengantuk ketika memandu.'
 
 Load ALBERT model
------------------
+~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
@@ -406,7 +553,7 @@ Load ALBERT model
 
 
 Voting stack model
-------------------
+~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 

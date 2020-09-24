@@ -1,3 +1,11 @@
+Sentiment Analysis
+==================
+
+.. container:: alert alert-info
+
+   This tutorial is available as an IPython notebook at
+   `Malaya/example/sentiment <https://github.com/huseinzol05/Malaya/tree/master/example/sentiment>`__.
+
 .. code:: ipython3
 
     %%time
@@ -6,8 +14,8 @@
 
 .. parsed-literal::
 
-    CPU times: user 4.76 s, sys: 1.21 s, total: 5.97 s
-    Wall time: 7.33 s
+    CPU times: user 4.96 s, sys: 655 ms, total: 5.61 s
+    Wall time: 4.7 s
 
 
 .. code:: ipython3
@@ -16,7 +24,7 @@
     string2 = 'Harap kerajaan tak bukak serentak. Slowly release week by week. Focus on economy related industries dulu'
 
 Load multinomial model
-----------------------
+~~~~~~~~~~~~~~~~~~~~~~
 
 All model interface will follow sklearn interface started v3.4,
 
@@ -78,7 +86,7 @@ Disable ``neutral`` probability,
 
 
 List available Transformer models
----------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
@@ -87,14 +95,64 @@ List available Transformer models
 
 
 
-.. parsed-literal::
+.. raw:: html
 
-    {'bert': ['425.6 MB', 'accuracy: 0.993'],
-     'tiny-bert': ['57.4 MB', 'accuracy: 0.987'],
-     'albert': ['48.6 MB', 'accuracy: 0.992'],
-     'tiny-albert': ['22.4 MB', 'accuracy: 0.985'],
-     'xlnet': ['446.5 MB', 'accuracy: 0.993'],
-     'alxlnet': ['46.8 MB', 'accuracy: 0.991']}
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>Size (MB)</th>
+          <th>Accuracy</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>bert</th>
+          <td>425.6</td>
+          <td>0.993</td>
+        </tr>
+        <tr>
+          <th>tiny-bert</th>
+          <td>57.4</td>
+          <td>0.987</td>
+        </tr>
+        <tr>
+          <th>albert</th>
+          <td>48.6</td>
+          <td>0.992</td>
+        </tr>
+        <tr>
+          <th>tiny-albert</th>
+          <td>22.4</td>
+          <td>0.985</td>
+        </tr>
+        <tr>
+          <th>xlnet</th>
+          <td>446.6</td>
+          <td>0.993</td>
+        </tr>
+        <tr>
+          <th>alxlnet</th>
+          <td>46.8</td>
+          <td>0.991</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
 
 
 
@@ -106,7 +164,7 @@ https://malaya.readthedocs.io/en/latest/Accuracy.html#sentiment-analysis
 accuracy is still on the top notch.**
 
 Load XLNET model
-----------------
+~~~~~~~~~~~~~~~~
 
 All model interface will follow sklearn interface started v3.4,
 
@@ -180,12 +238,12 @@ visualization dashboard, you can disable by ``visualization=False``.
 
 
 
-.. image:: load-sentiment_files/load-sentiment_18_0.png
+.. image:: load-sentiment_files/load-sentiment_20_0.png
    :width: 800px
 
 
 Stacking models
----------------
+~~~~~~~~~~~~~~~
 
 More information, you can read at
 https://malaya.readthedocs.io/en/latest/Stack.html

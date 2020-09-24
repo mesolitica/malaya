@@ -1,3 +1,11 @@
+Classification
+==============
+
+.. container:: alert alert-info
+
+   This tutorial is available as an IPython notebook at
+   `Malaya/example/zeroshot-classification <https://github.com/huseinzol05/Malaya/tree/master/example/zeroshot-classification>`__.
+
 .. code:: ipython3
 
     %%time
@@ -6,12 +14,12 @@
 
 .. parsed-literal::
 
-    CPU times: user 4.9 s, sys: 1.26 s, total: 6.16 s
-    Wall time: 7.39 s
+    CPU times: user 4.82 s, sys: 654 ms, total: 5.47 s
+    Wall time: 4.51 s
 
 
 what is zero-shot classification
---------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Commonly we supervised a machine learning on specific labels, negative /
 positive for sentiment, anger / happy / sadness for emotion and etc. The
@@ -33,7 +41,7 @@ So, we are going to use transformer models from
 ``malaya.similarity.transformer`` with a little tweaks.
 
 List available Transformer models
----------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
@@ -42,14 +50,64 @@ List available Transformer models
 
 
 
-.. parsed-literal::
+.. raw:: html
 
-    {'bert': ['423.4 MB', 'accuracy: 0.885'],
-     'tiny-bert': ['56.6 MB', 'accuracy: 0.873'],
-     'albert': ['46.3 MB', 'accuracy: 0.873'],
-     'tiny-albert': ['21.9 MB', 'accuracy: 0.824'],
-     'xlnet': ['448.7 MB', 'accuracy: 0.784'],
-     'alxlnet': ['49.0 MB', 'accuracy: 0.888']}
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>Size (MB)</th>
+          <th>Accuracy</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>bert</th>
+          <td>423.4</td>
+          <td>0.885</td>
+        </tr>
+        <tr>
+          <th>tiny-bert</th>
+          <td>56.6</td>
+          <td>0.873</td>
+        </tr>
+        <tr>
+          <th>albert</th>
+          <td>48.3</td>
+          <td>0.873</td>
+        </tr>
+        <tr>
+          <th>tiny-albert</th>
+          <td>21.9</td>
+          <td>0.824</td>
+        </tr>
+        <tr>
+          <th>xlnet</th>
+          <td>448.7</td>
+          <td>0.784</td>
+        </tr>
+        <tr>
+          <th>alxlnet</th>
+          <td>49.0</td>
+          <td>0.888</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
 
 
 
@@ -66,7 +124,7 @@ model, https://malaya.readthedocs.io/en/latest/Accuracy.html#similarity
 accuracy is still on the top notch.**
 
 Load transformer model
-----------------------
+~~~~~~~~~~~~~~~~~~~~~~
 
 In this example, I am going to load ``alxlnet``, feel free to use any
 available models above.
@@ -184,7 +242,7 @@ the model understood ``order foodpanda`` got close relationship with
 
 
 Stacking models
----------------
+~~~~~~~~~~~~~~~
 
 More information, you can read at
 https://malaya.readthedocs.io/en/latest/Stack.html

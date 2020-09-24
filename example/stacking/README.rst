@@ -1,5 +1,13 @@
+Stacking
+========
+
+.. container:: alert alert-info
+
+   This tutorial is available as an IPython notebook at
+   `Malaya/example/stacking <https://github.com/huseinzol05/Malaya/tree/master/example/stacking>`__.
+
 Why Stacking?
--------------
+~~~~~~~~~~~~~
 
 Sometime a single model is not good enough. So, you need to use multiple
 models to get a better result! It called stacking.
@@ -12,8 +20,8 @@ models to get a better result! It called stacking.
 
 .. parsed-literal::
 
-    CPU times: user 4.98 s, sys: 1.22 s, total: 6.2 s
-    Wall time: 7.31 s
+    CPU times: user 4.97 s, sys: 675 ms, total: 5.64 s
+    Wall time: 4.67 s
 
 
 .. code:: ipython3
@@ -28,8 +36,72 @@ models to get a better result! It called stacking.
     INFO:tensorflow:loading sentence piece model
 
 
+List available aggregate function
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    malaya.stack.available_aggregate_function()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>gmean</th>
+          <td>geometrical mean</td>
+        </tr>
+        <tr>
+          <th>hmean</th>
+          <td>harmonic mean</td>
+        </tr>
+        <tr>
+          <th>mean</th>
+          <td>mean</td>
+        </tr>
+        <tr>
+          <th>min</th>
+          <td>minimum</td>
+        </tr>
+        <tr>
+          <th>max</th>
+          <td>maximum</td>
+        </tr>
+        <tr>
+          <th>median</th>
+          <td>Harrell-Davis median</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
 Stack multiple sentiment models
--------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ``malaya.stack.predict_stack`` provide an easy stacking solution for
 Malaya models. Well, not just for sentiment models, any classification
@@ -95,7 +167,7 @@ To disable ``neutral``, simply, ``add_neutral = False``.
 
 
 Stack tagging models
---------------------
+~~~~~~~~~~~~~~~~~~~~
 
 For tagging models, we use majority voting stacking. So you need to need
 have more than 2 models to make it perfect, or else, it will pick
@@ -209,7 +281,7 @@ and Dependency Parsing recognition.**
 
 
 
-.. image:: load-stack_files/load-stack_12_0.svg
+.. image:: load-stack_files/load-stack_16_0.svg
 
 
 

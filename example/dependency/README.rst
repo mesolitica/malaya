@@ -1,3 +1,11 @@
+Dependency Parsing
+==================
+
+.. container:: alert alert-info
+
+   This tutorial is available as an IPython notebook at
+   `Malaya/example/dependency <https://github.com/huseinzol05/Malaya/tree/master/example/dependency>`__.
+
 .. code:: ipython3
 
     %%time
@@ -6,46 +14,179 @@
 
 .. parsed-literal::
 
-    CPU times: user 4.53 s, sys: 1.05 s, total: 5.58 s
-    Wall time: 5.85 s
+    CPU times: user 5.37 s, sys: 955 ms, total: 6.33 s
+    Wall time: 6.54 s
 
 
 Describe supported dependencies
--------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
     malaya.dependency.describe()
 
 
-.. parsed-literal::
 
-    acl - clausal modifier of noun
-    advcl - adverbial clause modifier
-    advmod - adverbial modifier
-    amod - adjectival modifier
-    appos - appositional modifier
-    aux - auxiliary
-    case - case marking
-    ccomp - clausal complement
-    compound - compound
-    compound:plur - plural compound
-    conj - conjunct
-    cop - cop
-    csubj - clausal subject
-    dep - dependent
-    det - determiner
-    fixed - multi-word expression
-    flat - name
-    iobj - indirect object
-    mark - marker
-    nmod - nominal modifier
-    nsubj - nominal subject
-    obj - direct object
-    parataxis - parataxis
-    root - root
-    xcomp - open clausal complement
-    you can read more from https://universaldependencies.org/treebanks/id_pud/index.html
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>Tag</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>acl</td>
+          <td>clausal modifier of noun</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>advcl</td>
+          <td>adverbial clause modifier</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>advmod</td>
+          <td>adverbial modifier</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>amod</td>
+          <td>adjectival modifier</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>appos</td>
+          <td>appositional modifier</td>
+        </tr>
+        <tr>
+          <th>5</th>
+          <td>aux</td>
+          <td>auxiliary</td>
+        </tr>
+        <tr>
+          <th>6</th>
+          <td>case</td>
+          <td>case marking</td>
+        </tr>
+        <tr>
+          <th>7</th>
+          <td>ccomp</td>
+          <td>clausal complement</td>
+        </tr>
+        <tr>
+          <th>8</th>
+          <td>advmod</td>
+          <td>adverbial modifier</td>
+        </tr>
+        <tr>
+          <th>9</th>
+          <td>compound</td>
+          <td>compound</td>
+        </tr>
+        <tr>
+          <th>10</th>
+          <td>compound:plur</td>
+          <td>plural compound</td>
+        </tr>
+        <tr>
+          <th>11</th>
+          <td>conj</td>
+          <td>conjunct</td>
+        </tr>
+        <tr>
+          <th>12</th>
+          <td>cop</td>
+          <td>cop</td>
+        </tr>
+        <tr>
+          <th>13</th>
+          <td>csubj</td>
+          <td>clausal subject</td>
+        </tr>
+        <tr>
+          <th>14</th>
+          <td>dep</td>
+          <td>dependent</td>
+        </tr>
+        <tr>
+          <th>15</th>
+          <td>det</td>
+          <td>determiner</td>
+        </tr>
+        <tr>
+          <th>16</th>
+          <td>fixed</td>
+          <td>multi-word expression</td>
+        </tr>
+        <tr>
+          <th>17</th>
+          <td>flat</td>
+          <td>name</td>
+        </tr>
+        <tr>
+          <th>18</th>
+          <td>iobj</td>
+          <td>indirect object</td>
+        </tr>
+        <tr>
+          <th>19</th>
+          <td>mark</td>
+          <td>marker</td>
+        </tr>
+        <tr>
+          <th>20</th>
+          <td>nmod</td>
+          <td>nominal modifier</td>
+        </tr>
+        <tr>
+          <th>21</th>
+          <td>nsubj</td>
+          <td>nominal subject</td>
+        </tr>
+        <tr>
+          <th>22</th>
+          <td>obj</td>
+          <td>direct object</td>
+        </tr>
+        <tr>
+          <th>23</th>
+          <td>parataxis</td>
+          <td>parataxis</td>
+        </tr>
+        <tr>
+          <th>24</th>
+          <td>root</td>
+          <td>root</td>
+        </tr>
+        <tr>
+          <th>25</th>
+          <td>xcomp</td>
+          <td>open clausal complement</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
 
 
 .. code:: ipython3
@@ -53,7 +194,7 @@ Describe supported dependencies
     string = 'Dr Mahathir menasihati mereka supaya berhenti berehat dan tidur sebentar sekiranya mengantuk ketika memandu.'
 
 List available transformer Dependency models
---------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
@@ -62,32 +203,78 @@ List available transformer Dependency models
 
 
 
-.. parsed-literal::
+.. raw:: html
 
-    {'bert': ['426.0 MB',
-      'arc accuracy: 0.855',
-      'types accuracy: 0.848',
-      'root accuracy: 0.920'],
-     'tiny-bert': ['59.5 MB',
-      'arc accuracy: 0.718',
-      'types accuracy: 0.694',
-      'root accuracy: 0.886'],
-     'albert': ['50.0 MB',
-      'arc accuracy: 0.811',
-      'types accuracy: 0.793',
-      'root accuracy: 0.879'],
-     'tiny-albert': ['24.8 MB',
-      'arc accuracy: 0.708',
-      'types accuracy: 0.673',
-      'root accuracy: 0.817'],
-     'xlnet': ['450.2 MB',
-      'arc accuracy: 0.931',
-      'types accuracy: 0.925',
-      'root accuracy: 0.947'],
-     'alxlnet': ['50.0 MB',
-      'arc accuracy: 0.894',
-      'types accuracy: 0.886',
-      'root accuracy: 0.942']}
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>Size (MB)</th>
+          <th>Arc Accuracy</th>
+          <th>Types Accuracy</th>
+          <th>Root Accuracy</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>bert</th>
+          <td>426.0</td>
+          <td>0.855</td>
+          <td>0.848</td>
+          <td>0.920</td>
+        </tr>
+        <tr>
+          <th>tiny-bert</th>
+          <td>59.5</td>
+          <td>0.718</td>
+          <td>0.694</td>
+          <td>0.886</td>
+        </tr>
+        <tr>
+          <th>albert</th>
+          <td>50.0</td>
+          <td>0.811</td>
+          <td>0.793</td>
+          <td>0.879</td>
+        </tr>
+        <tr>
+          <th>tiny-albert</th>
+          <td>24.8</td>
+          <td>0.708</td>
+          <td>0.673</td>
+          <td>0.817</td>
+        </tr>
+        <tr>
+          <th>xlnet</th>
+          <td>450.2</td>
+          <td>0.931</td>
+          <td>0.925</td>
+          <td>0.947</td>
+        </tr>
+        <tr>
+          <th>alxlnet</th>
+          <td>50.0</td>
+          <td>0.894</td>
+          <td>0.886</td>
+          <td>0.942</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
 
 
 
@@ -98,7 +285,7 @@ https://malaya.readthedocs.io/en/latest/Accuracy.html#dependency-parsing
 **The best model in term of accuracy is XLNET**.
 
 Load xlnet dependency model
----------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
@@ -123,12 +310,12 @@ Load xlnet dependency model
 
 
 
-.. image:: load-dependency_files/load-dependency_9_0.svg
+.. image:: load-dependency_files/load-dependency_11_0.svg
 
 
 
 Voting stack model
-------------------
+~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
@@ -149,12 +336,12 @@ Voting stack model
 
 
 
-.. image:: load-dependency_files/load-dependency_11_2.svg
+.. image:: load-dependency_files/load-dependency_13_2.svg
 
 
 
 Dependency graph object
------------------------
+~~~~~~~~~~~~~~~~~~~~~~~
 
 To initiate a dependency graph from dependency models, you need to call
 ``malaya.dependency.dependency_graph``.
@@ -183,7 +370,7 @@ generate graphvis
 
 
 
-.. image:: load-dependency_files/load-dependency_15_0.svg
+.. image:: load-dependency_files/load-dependency_17_0.svg
 
 
 
@@ -391,7 +578,11 @@ Check the graph contains cycles
 Generate networkx
 ^^^^^^^^^^^^^^^^^
 
-Make sure you already installed networkx, ``pip install networkx``
+Make sure you already installed networkx,
+
+.. code:: bash
+
+   pip install networkx
 
 .. code:: ipython3
 
@@ -482,6 +673,6 @@ Make sure you already installed networkx, ``pip install networkx``
 
 
 
-.. image:: load-dependency_files/load-dependency_28_0.png
+.. image:: load-dependency_files/load-dependency_30_0.png
 
 
