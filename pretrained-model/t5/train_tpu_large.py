@@ -336,7 +336,7 @@ def main(_):
     }[MODEL_SIZE]
 
     model = t5.models.MtfModel(
-        model_dir = 'gs://mesolitica-tpu-general/t5-large/',
+        model_dir = 'gs://mesolitica-tpu-general/t5-large-v2/',
         tpu = TPU_ADDRESS,
         tpu_topology = TPU_TOPOLOGY,
         model_parallelism = model_parallelism,
