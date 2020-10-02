@@ -2,6 +2,8 @@
 
 Thanks to official implementation from Google, https://github.com/google-research/google-research, Malaya just create custom pretraining and optimizer to support multigpus.
 
+**This directory is very lack of comments, understand Tensorflow, Tensorflow estimator, Tensorflow Dataset really helpful**.
+
 ## Table of contents
   * [Objective](#objective)
   * [Acknowledgement](#acknowledgement)
@@ -12,13 +14,11 @@ Thanks to official implementation from Google, https://github.com/google-researc
 
 ## Objective
 
-1. There is no multilanguage implementation of ALBERT, and obviously no Bahasa Malaysia implemented. So we decided to train ALBERT from scratch and finetune using available dataset we have. [Dataset we use for pretraining](https://github.com/huseinzol05/Malaya-Dataset#dumping).
-
-2. Provide **BASE** and **TINY** ALBERT for Bahasa.
+1. Provide **BASE**, **TINY** and **LARGE** ALBERT for Bahasa.
 
 ## Acknowledgement
 
-Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://www.facebook.com/ligblou), [Mesolitica](https://mesolitica.com/) and [KeyReply](https://www.keyreply.com/) for sponsoring AWS, Google and GPU clouds to train ALBERT for Bahasa.
+Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://www.facebook.com/ligblou), [Mesolitica](https://mesolitica.com/), [KeyReply](https://www.keyreply.com/) and [TensorFlow Research Cloud](https://www.tensorflow.org/tfrc) for sponsoring AWS, Google and GPU clouds to train ALBERT for Bahasa.
 
 ## How-to
 
@@ -36,32 +36,28 @@ For BASE,
 
 ```bash
 python3 run_pretraining.py \
---input_file=gs://bucket/albert-dataset/*.tfrecord \
---output_dir=gs://bucket/albert-base-actual \
+--input_file=gs://mesolitica-tpu-general/albert-data/*.tfrecord \
+--output_dir=gs://mesolitica-tpu-general/albert-base \
 --do_train=True --do_eval=False \
---albert_config_file=gs://bucket/setting/BASE_config.json \
+--albert_config_file=gs://mesolitica-tpu-general/albert-config/BASE_config.json \
 --train_batch_size=1040 --max_seq_length=512 --max_predictions_per_seq=20 \
---num_train_steps=150000 --num_warmup_steps=3125 --learning_rate=1e-4 \
---save_checkpoints_steps=10000 --use_tpu=True --tpu_name=node-1 --tpu_zone=us-central1-a
+--num_train_steps=300000 --num_warmup_steps=3125 --learning_rate=1e-4 \
+--save_checkpoints_steps=25000 --use_tpu=True --tpu_name=node-5 --tpu_zone=europe-west4-a \
+--iterations_per_loop=100
 ```
 
 For TINY,
 
 ```bash
 python3 run_pretraining.py \
---input_file=gs://bucket/albert-dataset/*.tfrecord \
---output_dir=gs://bucket/albert-tiny-actual \
+--input_file=gs://mesolitica-tpu-general/albert-data/*.tfrecord \
+--output_dir=gs://mesolitica-tpu-general/albert-tiny \
 --do_train=True --do_eval=False \
---albert_config_file=gs://bucket/setting/TINY_config.json \
---train_batch_size=2048 --max_seq_length=512 --max_predictions_per_seq=20 \
---num_train_steps=150000 --num_warmup_steps=3125 --learning_rate=1e-4 \
---save_checkpoints_steps=10000 --use_tpu=True --tpu_name=node-1 --tpu_zone=us-central1-a
-```
-
-3. Open tensorboard,
-
-```
-tensorboard --logdir=gs://bucket/albert-base-actual --host=0.0.0.0
+--albert_config_file=gs://mesolitica-tpu-general/albert-config/TINY_config.json \
+--train_batch_size=3120 --max_seq_length=512 --max_predictions_per_seq=20 \
+--num_train_steps=300000 --num_warmup_steps=3125 --learning_rate=1e-4 \
+--save_checkpoints_steps=25000 --use_tpu=True --tpu_name=node-6 --tpu_zone=europe-west4-a \
+--iterations_per_loop=100
 ```
 
 ## Download

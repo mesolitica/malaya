@@ -2,6 +2,8 @@
 
 Thanks to Google for opensourcing most of the source code to develop T5, https://github.com/google-research/text-to-text-transfer-transformer.
 
+**This directory is very lack of comments, understand Tensorflow, Tensorflow estimator, Tensorflow Dataset really helpful**.
+
 ## Table of contents
   * [Objective](#objective)
   * [Acknowledgement](#acknowledgement)
@@ -12,11 +14,11 @@ Thanks to Google for opensourcing most of the source code to develop T5, https:/
 
 ## Objective
 
-1. Provide **SMALL** and **BASE** T5 for Bahasa.
+1. Provide **SMALL**, **BASE** and **LARGE** T5 for Bahasa.
 
 ## Acknowledgement
 
-Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://www.facebook.com/ligblou), [Mesolitica](https://mesolitica.com/) and [KeyReply](https://www.keyreply.com/) for sponsoring AWS, Google and GPU clouds to train BERT for Bahasa.
+Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://www.facebook.com/ligblou), [Mesolitica](https://mesolitica.com/), [KeyReply](https://www.keyreply.com/) and [TensorFlow Research Cloud](https://www.tensorflow.org/tfrc) for sponsoring AWS, Google and GPU clouds to train T5 for Bahasa.
 
 ## How-to
 
@@ -30,10 +32,24 @@ Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://w
 
 4. Validate dataset from GCS, [test-dataset-gcs.ipynb](test-dataset-gcs.ipynb).
 
-5. Train using TPU, [train_tpu.py](train_tpu.py).
+5. Train using TPU,
 
+**SMALL**,
+
+```bash
+python3 train_tpu_small.py
 ```
-TPU Type: v3-8, TPU Version: 2.2
+
+**BASE**,
+
+```bash
+python3 train_tpu_base.py
+```
+
+**LARGE**,
+
+```bash
+python3 train_tpu_large.py
 ```
 
 ## Download
@@ -46,13 +62,13 @@ TPU Type: v3-8, TPU Version: 2.2
   - BASE size (427MB).
   - Tensorboard included.
 
-2. 25th May 2020, [t5-small-05-25-2020.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/t5-small-05-25-2020.tar.gz)
+2. 1st October, [t5-small-10-01-2020.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/t5-small-10-01-2020.tar.gz)
 
   - Vocab size 32k.
   - Trained on unsupervised, question-answer, pairing, news-title, stemming, synonym and SNLI tasks.
-  - 249.9k steps, 256 batch size, 1 V3-8 TPU, stopped early because of loss plateu.
-  - BASE size (112MB).
-  - Tensorboard included.
+  - 500k steps, 256 batch size, 1 V3-8 TPU.
+  - SMALL size (112MB).
+  - Tensorboard, https://tensorboard.dev/experiment/v0ZAAd2cQjOGO6ETmA1IRQ/
 
 
 ## Citation

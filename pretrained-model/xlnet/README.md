@@ -2,6 +2,8 @@
 
 Thanks to [zihangdai](https://github.com/zihangdai) for opensourcing XLNET, https://github.com/zihangdai/xlnet. Malaya just create custom pretraining and optimizer to support multigpus.
 
+**This directory is very lack of comments, understand Tensorflow, Tensorflow estimator, Tensorflow Dataset really helpful**.
+
 ## Table of contents
   * [Objective](#objective)
   * [Acknowledgement](#acknowledgement)
@@ -13,13 +15,11 @@ Thanks to [zihangdai](https://github.com/zihangdai) for opensourcing XLNET, http
 
 ## Objective
 
-1. There is no multilanguage implementation of XLNET, and obviously no Bahasa Malaysia implemented. So we decided to train XLNET from scratch and finetune using available dataset we have. [Dataset we use for pretraining](https://github.com/huseinzol05/Malaya-Dataset#dumping).
-
-2. Provide **BASE** XLNet for Bahasa.
+1. Provide **BASE**, **LARGE** XLNet for Bahasa.
 
 ## Acknowledgement
 
-Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://www.facebook.com/ligblou), [Mesolitica](https://mesolitica.com/) and [KeyReply](https://www.keyreply.com/) for sponsoring AWS, Google and GPU clouds to train XLNET for Bahasa.
+Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://www.facebook.com/ligblou), [Mesolitica](https://mesolitica.com/), [KeyReply](https://www.keyreply.com/) and [TensorFlow Research Cloud](https://www.tensorflow.org/tfrc) for sponsoring AWS, Google and GPU clouds to train XLNET for Bahasa.
 
 ## How-to
 
@@ -31,7 +31,7 @@ python3 data_utils.py \
   --bsz_per_host=64 \
   --seq_len=512 \
   --reuse_len=256 \
-  --input_glob=../pure-text/splitted/dumping-cleaned-news.txt00 \
+  --input_glob=../pure-text/splitted/* \
   --save_dir=save-location \
   --num_passes=20 \
   --bi_data=True \
@@ -77,7 +77,7 @@ python3 train_gpu.py \
 ```
 python3 train.py \
 --record_info_dir=gs://mesolitica-tpu-general/xlnet-data/tfrecords \
---train_batch_size=128 \
+--train_batch_size=64 \
 --seq_len=512 \
 --reuse_len=256 \
 --mem_len=384 \
@@ -101,9 +101,11 @@ python3 train.py \
 --adam_epsilon=1e-6 \
 --weight_decay=0.01 \
 --warmup_steps=40000 \
---tpu=node-5 \
+--tpu=node-7 \
 --tpu_zone=europe-west4-a \
---dropout=0.1 --dropatt=0.1
+--dropout=0.1 --dropatt=0.1 \
+--iterations=100 \
+--save_steps=20000
 ```
 
 3. Run validation,
@@ -173,43 +175,22 @@ python3 multigpu_pretraining.py \
 - `num_gpu_cores`: Number of gpus.
 - `train_batch_size`: If `bsz_per_host` during `data_utils.py` is 20, so `train_batch_size` must `bsz_per_host` * `num_gpu_cores`. Make sure `train_batch_size` % `num_gpu_cores` is 0 and the batch will automatically distribute among gpus. If `num_gpu_cores` is 60 and `num_gpu_cores` is 2, so each gpus will get 30 batch size.
 
-**All training session will be recorded in Tensorboard if use multigpu training**, to open tensorboard,
-
-```bash
-tensorboard --logdir=tensorboard --host=0.0.0.0
-```
-
 ## Download
 
-1.  **BASE**, last update 9th July 2019, [xlnet-9-july-2019.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/xlnet-9-july-2019-v2.tar.gz).
-
-  - Vocab size 32k.
-  - Trained on cleaned wikipedia, raw twitter, raw instagram, raw parliament, raw news.
-  - 700k steps, single GPU.
-  - BASE size (878MB).
-  - test loss, 4.XX (last remember).
-
-2. **BASE**, last update 15 July 2019, [xlnet-15-july-2019.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/xlnet-bahasa-small.tar.gz)
-
-  - Vocab size 32k.
-  - Trained on cleaned wikipedia, raw twitter, raw instagram, raw parliament, raw news.
-  - 700k steps, single GPU.
-  - BASE size (231MB).
-  - test loss, 4.XX (last remember).
-
-3. **BASE** 30, last update 30 September 2019, [xlnet-base-30-september-2019.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/xlnet-base-30-9-2019.tar.gz)
-
-  - Vocab size 32k.
-  - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news.
-  - 270k steps, 3 GPUs TESLA V100.
-  - BASE size (231MB).
-
-4. **BASE**, last update 29 March 2020, [xlnet-base-29-03-2020.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/xlnet-base-29-03-2020.tar.gz)
+1. **BASE**, last update 29 March 2020, [xlnet-base-29-03-2020.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/xlnet-base-29-03-2020.tar.gz)
 
   - Vocab size 32k.
   - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.
   - 300k steps, 3 GPUs TESLA V100.
   - BASE size (467MB).
+
+2. **BASE**, last update 01 October 2020, [xlnet-base-01-10-2020.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/xlnet-base-29-03-2020.tar.gz)
+
+  - Vocab size 32k.
+  - Trained on raw wikipedia, raw common crawl, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.
+  - 500k steps, 1 TPU V3-8.
+  - BASE size (467MB).
+  - Tensorboard, https://tensorboard.dev/experiment/qGNflXX1R22GJ2Pk8ECDmA/
 
 ## Citation
 

@@ -5,12 +5,16 @@ from herpetologist import check_type
 
 
 _t5_availability = {
-    'small': {'Size (MB)': 122, 'BLEU': 0.953},
-    'base': {'Size (MB)': 448, 'BLEU': 0.953},
+    'small': {
+        'Size (MB)': 122,
+        'Uncompressed Size (MB)': 355.6,
+        'BLEU': 0.81801,
+    },
+    'base': {'Size (MB)': 448, 'Uncompressed Size (MB)': 1300, 'BLEU': 0.86698},
 }
 _transformer_availability = {
-    'small': {'Size (MB)': 122, 'BLEU': 0.953},
-    'base': {'Size (MB)': 448, 'BLEU': 0.953},
+    'small': {'Size (MB)': 379, 'BLEU': 0.5534},
+    'base': {'Size (MB)': 832, 'BLEU': 0.597},
 }
 
 
@@ -20,7 +24,9 @@ def available_t5():
     """
     from malaya.function import describe_availability
 
-    return describe_availability(_t5_availability)
+    return describe_availability(
+        _t5_availability, text = 'tested on 1k paraphrase texts.'
+    )
 
 
 def available_transformer():
@@ -29,7 +35,9 @@ def available_transformer():
     """
     from malaya.function import describe_availability
 
-    return describe_availability(_transformer_availability)
+    return describe_availability(
+        _transformer_availability, text = 'tested on 1k paraphrase texts.'
+    )
 
 
 @check_type
@@ -96,3 +104,13 @@ def transformer(model = 'base', **kwargs):
         raise ValueError(
             'model not supported, please check supported models from malaya.paraphrase.available_transformer()'
         )
+
+    from malaya.model.tf import PARAPHRASE
+
+    return transformer_load.load_lm(
+        path = PATH_PARAPHRASE['transformer'],
+        s3_path = S3_PATH_PARAPHRASE['transformer'],
+        model = model,
+        model_class = PARAPHRASE,
+        **kwargs,
+    )

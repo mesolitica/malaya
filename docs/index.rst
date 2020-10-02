@@ -23,7 +23,7 @@ Contents:
    load-cache
    load-deployment
    Api
-   Windows
+   running-on-windows
    Contributing
 
 .. toctree::
@@ -42,6 +42,7 @@ Contents:
    load-preprocessing
    load-spell-correction
    load-stemmer
+   load-true-case
    load-word2num
 
 .. toctree::

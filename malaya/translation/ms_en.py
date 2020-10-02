@@ -16,7 +16,9 @@ def available_transformer():
     """
     from malaya.function import describe_availability
 
-    return describe_availability(_transformer_availability)
+    return describe_availability(
+        _transformer_availability, text = 'tested on 100k MY-EN sentences.'
+    )
 
 
 @check_type

@@ -2,6 +2,8 @@
 
 Thanks to [huawei-noah](https://github.com/huawei-noah) for opensourcing most of the source code to develop Tiny-BERT, https://github.com/huawei-noah/Pretrained-Language-Model/tree/master/TinyBERT. Malaya just edit the scripts to accept sentencepience tokenizer and save it to Tensorflow.
 
+**This directory is very lack of comments, understand Tensorflow, Tensorflow estimator, Tensorflow Dataset really helpful**.
+
 ## Table of contents
   * [Objective](#objective)
   * [Acknowledgement](#acknowledgement)
@@ -16,7 +18,7 @@ Thanks to [huawei-noah](https://github.com/huawei-noah) for opensourcing most of
 
 ## Acknowledgement
 
-Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://www.facebook.com/ligblou), [Mesolitica](https://mesolitica.com/) and [KeyReply](https://www.keyreply.com/) for sponsoring AWS, Google and GPU clouds to train Tiny-BERT for Bahasa.
+Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://www.facebook.com/ligblou), [Mesolitica](https://mesolitica.com/), [KeyReply](https://www.keyreply.com/) and [TensorFlow Research Cloud](https://www.tensorflow.org/tfrc) for sponsoring AWS, Google and GPU clouds to train Tiny-BERT for Bahasa.
 
 ## How-to
 

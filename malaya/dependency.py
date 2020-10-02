@@ -88,11 +88,6 @@ def describe():
     """
     Describe Dependency supported.
     """
-    import logging
-
-    logging.info(
-        'you can read more from https://universaldependencies.org/treebanks/id_pud/index.html'
-    )
 
     d = [
         {'Tag': 'acl', 'Description': 'clausal modifier of noun'},
@@ -125,7 +120,11 @@ def describe():
 
     from malaya.function import describe_availability
 
-    return describe_availability(d, transpose = False)
+    return describe_availability(
+        d,
+        transpose = False,
+        text = 'you can read more from https://universaldependencies.org/treebanks/id_pud/index.html',
+    )
 
 
 def dependency_graph(tagging, indexing):
@@ -147,7 +146,9 @@ def available_transformer():
     """
     from malaya.function import describe_availability
 
-    return describe_availability(_transformer_availability)
+    return describe_availability(
+        _transformer_availability, text = 'tested on 20% test set.'
+    )
 
 
 @check_type

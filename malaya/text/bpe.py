@@ -91,10 +91,13 @@ class YTTMEncoder:
         return s
 
     def decode(self, ids, strip_extraneous = False):
+        ids = [[k for k in i if k > 1] for i in ids]
         return self.bpe.decode(list(ids))
 
 
-def padding_sequence(seq, maxlen, padding = 'post', pad_int = 0):
+def padding_sequence(seq, maxlen = None, padding = 'post', pad_int = 0):
+    if not maxlen:
+        maxlen = max([len(i) for i in seq])
     padded_seqs = []
     for s in seq:
         if padding == 'post':

@@ -20,46 +20,49 @@ vocab = 'sp10m.cased.t5.model'
 sp = spm.SentencePieceProcessor()
 sp.Load(vocab)
 
-
 class Encoder:
     def __init__(self, sp):
         self.sp = sp
         self.vocab_size = sp.GetPieceSize() + 100
-
+    
     def encode(self, s):
         return self.sp.EncodeAsIds(s)
-
-    def decode(self, ids, strip_extraneous = False):
+    
+    def decode(self, ids, strip_extraneous=False):
         return self.sp.DecodeIds(list(ids))
-
-
+    
 encoder = Encoder(sp)
 
 from tqdm import tqdm
 from glob import glob
 
-
 @registry.register_problem
 class Seq2Seq(text_problems.Text2TextProblem):
+
     @property
     def approx_vocab_size(self):
         return 32100
-
+    
     @property
     def is_generate_per_split(self):
         return False
-
+    
     @property
     def dataset_splits(self):
-        return [
-            {'split': problem.DatasetSplit.TRAIN, 'shards': 500},
-            {'split': problem.DatasetSplit.EVAL, 'shards': 1},
-        ]
-
+        return [{
+            "split": problem.DatasetSplit.TRAIN,
+            "shards": 500,
+        }, {
+            "split": problem.DatasetSplit.EVAL,
+            "shards": 1,
+        }]
+            
     def feature_encoders(self, data_dir):
         encoder = Encoder(sp)
-        return {'inputs': encoder, 'targets': encoder}
-
+        return {
+            "inputs": encoder,
+            "targets": encoder
+        }
 
 # os.system('rm -rf t2t-summarization/train-small')
 os.system('mkdir t2t-summarization/train-small')
@@ -130,3 +133,4 @@ tensorflow_exp_fn = create_experiment(
 )
 
 tensorflow_exp_fn.train_and_evaluate()
+

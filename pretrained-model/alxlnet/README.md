@@ -2,6 +2,8 @@
 
 Thanks to Google and Toyota research for released [ALBERT paper](https://arxiv.org/abs/1909.11942). Malaya just change from BERT to XLNET after that create custom pretraining and optimizer to support multigpus.
 
+**This directory is very lack of comments, understand Tensorflow, Tensorflow estimator, Tensorflow Dataset really helpful**.
+
 ## Table of contents
   * [Objective](#objective)
   * [Acknowledgement](#acknowledgement)
@@ -12,11 +14,11 @@ Thanks to Google and Toyota research for released [ALBERT paper](https://arxiv.o
 
 ## Objective
 
-1. Provide **BASE** ALXLNet for Bahasa.
+1. Provide **BASE** and **LARGE** ALXLNet for Bahasa.
 
 ## Acknowledgement
 
-Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://www.facebook.com/ligblou), [Mesolitica](https://mesolitica.com/) and [KeyReply](https://www.keyreply.com/) for sponsoring AWS, Google and GPU clouds to train ALXLNET for Bahasa.
+Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://www.facebook.com/ligblou), [Mesolitica](https://mesolitica.com/), [KeyReply](https://www.keyreply.com/) and [TensorFlow Research Cloud](https://www.tensorflow.org/tfrc) for sponsoring AWS, Google and GPU clouds to train ALXLNET for Bahasa.
 
 ## How-to
 
@@ -78,6 +80,41 @@ python3 multigpu_pretraining.py \
 
 - `num_gpu_cores`: Number of gpus.
 - `train_batch_size`: Make sure `train_batch_size` % `num_gpu_cores` is 0 and the batch will automatically distribute among gpus. If `num_gpu_cores` is 60 and `num_gpu_cores` is 2, so each gpus will get 30 batch size.
+
+**TPU BASE**
+
+```bash
+python3 train.py \
+--record_info_dir=gs://mesolitica-tpu-general/xlnet-data/tfrecords \
+--train_batch_size=64 \
+--seq_len=512 \
+--reuse_len=256 \
+--mem_len=384 \
+--perm_size=256 \
+--n_layer=12 \
+--d_model=768 \
+--d_embed=768 \
+--n_head=12 \
+--d_head=64 \
+--d_inner=3072 \
+--untie_r=True \
+--mask_alpha=6 \
+--mask_beta=1 \
+--num_predict=85 \
+--model_dir=gs://mesolitica-tpu-general/alxlnet-base \
+--uncased=False \
+--num_core_per_host=8 \
+--train_steps=500000 \
+--learning_rate=5e-4 \
+--ff_activation=gelu \
+--adam_epsilon=1e-6 \
+--weight_decay=0.01 \
+--warmup_steps=40000 \
+--tpu=node-7 \
+--tpu_zone=europe-west4-a \
+--iterations=100 \
+--save_steps=20000
+```
 
 ## Download
 

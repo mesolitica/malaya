@@ -2,6 +2,8 @@
 
 Thanks to [microsoft/MASS](https://github.com/microsoft/MASS/tree/master/MASS-supNMT) for wonderful paper. Even we do not use the source code, but we still follow literature steps inside the paper.
 
+**This directory is very lack of comments, understand Tensorflow, Tensorflow estimator, Tensorflow Dataset really helpful**.
+
 ## Table of contents
   * [Objective](#objective)
   * [Acknowledgement](#acknowledgement)

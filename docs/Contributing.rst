@@ -65,6 +65,8 @@ Unit test
 
 Test every possible program flow! You can check `unit tests here`_.
 
+Feel free to help Malaya to write unit-tests, fork it!
+
 .. _Types of Contributions: #types-of-contributions
 .. _Report Bugs: #report-bugs
 .. _Fix Bugs: #fix-bugs

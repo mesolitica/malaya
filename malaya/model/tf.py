@@ -122,91 +122,18 @@ class DEEP_LANG:
         return dicts
 
 
-class PARAPHRASE:
-    def __init__(self, X, greedy, beam, sess, tokenizer):
-
-        self._X = X
-        self._greedy = greedy
-        self._beam = beam
-        self._sess = sess
-        self._tokenizer = tokenizer
-
-    def _paraphrase(self, strings, beam_search = True):
-        encoded = [
-            self._tokenizer.encode(translation_textcleaning(string)) + [1]
-            for string in strings
-        ]
-        if beam_search:
-            output = self._beam
-        else:
-            output = self._greedy
-        batch_x = pad_sentence_batch(encoded, 0)[0]
-        p = self._sess.run(output, feed_dict = {self._X: batch_x}).tolist()
-        result = []
-        for row in p:
-            result.append(
-                self._tokenizer.decode([i for i in row if i not in [0, 1]])
-            )
-        return result
-
-    @check_type
-    def paraphrase(
-        self, string: str, beam_search: bool = True, split_fullstop: bool = True
-    ):
-        """
-        Paraphrase a string.
-
-        Parameters
-        ----------
-        string : str
-        beam_search : bool, (optional=True)
-            If True, use beam search decoder, else use greedy decoder.
-        split_fullstop: bool, (default=True)
-            if True, will generate paraphrase for each strings splitted by fullstop.
-
-        Returns
-        -------
-        result: str
-        """
-
-        if split_fullstop:
-
-            splitted_fullstop = split_into_sentences(
-                transformer_textcleaning(string)
-            )
-
-            results, batch, mapping = [], [], {}
-            for no, splitted in enumerate(splitted_fullstop):
-                if len(splitted.split()) < 4:
-                    results.append(splitted)
-                else:
-                    mapping[len(batch)] = no
-                    results.append('REPLACE-ME')
-                    batch.append(splitted)
-
-            if len(batch):
-                output = self._paraphrase(batch, beam_search = beam_search)
-                for no in range(len(output)):
-                    results[mapping[no]] = output[no]
-
-            return ' '.join(results)
-
-        else:
-            return self._paraphrase([string], beam_search = beam_search)[0]
-
-
 class TRANSLATION:
-    def __init__(self, X, greedy, beam, sess, tokenizer):
+    def __init__(self, X, greedy, beam, sess, encoder):
 
         self._X = X
         self._greedy = greedy
         self._beam = beam
         self._sess = sess
-        self._tokenizer = tokenizer
+        self._encoder = encoder
 
     def _translate(self, strings, beam_search = True):
         encoded = [
-            self._tokenizer.encode(translation_textcleaning(string)) + [1]
+            self._encoder.encode(translation_textcleaning(string)) + [1]
             for string in strings
         ]
         if beam_search:
@@ -218,7 +145,7 @@ class TRANSLATION:
         result = []
         for row in p:
             result.append(
-                self._tokenizer.decode([i for i in row if i not in [0, 1]])
+                self._encoder.decode([i for i in row if i not in [0, 1]])
             )
         return result
 
@@ -404,9 +331,7 @@ class SUMMARIZATION:
             'nucleus': self._nucleus,
         }
 
-    def _summarize(
-        self, strings, mode, decoder = 'greedy', top_p = 0.7, sentiment = None
-    ):
+    def _summarize(self, strings, mode, decoder = 'greedy', top_p = 0.7):
         mode = mode.lower()
         if mode not in ['ringkasan', 'tajuk']:
             raise ValueError('mode only supports [`ringkasan`, `tajuk`]')
@@ -419,23 +344,10 @@ class SUMMARIZATION:
         if not decoder:
             raise ValueError('mode only supports [`greedy`, `beam`, `nucleus`]')
 
-        if isinstance(sentiment, str):
-            sentiment = sentiment.lower()
-            if sentiment not in ['negative', 'positive', 'neutral']:
-                raise ValueError(
-                    'sentiment only supports [`negative`, `positive`, `neutral`]'
-                )
-            sentiment = f'sentiment: {sentiment}: '
-        else:
-            sentiment = ''
-
-        strings = [
-            f'{mode}: {sentiment}{cleaning(string)}' for string in strings
-        ]
+        strings = [f'{mode}: {cleaning(string)}' for string in strings]
 
         batch_x = [self._tokenizer.encode(string) + [1] for string in strings]
-        maxlen = max([len(i) for i in batch_x])
-        batch_x = padding_sequence(batch_x, maxlen)
+        batch_x = padding_sequence(batch_x)
 
         p = self._sess.run(
             output, feed_dict = {self._X: batch_x, self._top_p: top_p}
@@ -446,13 +358,13 @@ class SUMMARIZATION:
         ]
         return results
 
+    @check_type
     def summarize(
         self,
         strings: List[str],
         mode: str = 'ringkasan',
         decoder: str = 'greedy',
         top_p: float = 0.7,
-        sentiment: str = None,
     ):
         """
         Summarize strings.
@@ -483,11 +395,77 @@ class SUMMARIZATION:
         """
 
         return self._summarize(
-            strings = strings,
-            mode = mode,
-            decoder = decoder,
-            top_p = top_p,
-            sentiment = sentiment,
+            strings = strings, mode = mode, decoder = decoder, top_p = top_p
+        )
+
+
+class PARAPHRASE:
+    def __init__(self, X, top_p, greedy, beam, nucleus, sess, tokenizer):
+
+        self._X = X
+        self._top_p = top_p
+        self._greedy = greedy
+        self._beam = beam
+        self._nucleus = nucleus
+        self._sess = sess
+        self._tokenizer = tokenizer
+        self._mapping = {
+            'greedy': self._greedy,
+            'beam': self._beam,
+            'nucleus': self._nucleus,
+        }
+
+    def _paraphrase(self, strings, decoder = 'greedy', top_p = 0.7):
+
+        if not 0 < top_p < 1:
+            raise ValueError('top_p must be bigger than 0 and less than 1')
+
+        decoder = decoder.lower()
+        output = self._mapping.get(decoder)
+        if not decoder:
+            raise ValueError('mode only supports [`greedy`, `beam`, `nucleus`]')
+
+        strings = [f'parafrasa: {cleaning(string)}' for string in strings]
+
+        batch_x = [self._tokenizer.encode(string) + [1] for string in strings]
+        batch_x = padding_sequence(batch_x)
+
+        p = self._sess.run(
+            output, feed_dict = {self._X: batch_x, self._top_p: top_p}
+        ).tolist()
+
+        results = [self._tokenizer.decode(r) for r in p]
+        return results
+
+    @check_type
+    def paraphrase(
+        self, strings: List[str], decoder: str = 'greedy', top_p: float = 0.7
+    ):
+        """
+        Paraphrase strings.
+
+        Parameters
+        ----------
+        strings: List[str]
+
+        decoder: str
+            mode for summarization decoder. Allowed values:
+
+            * ``'greedy'`` - Beam width size 1, alpha 0.
+            * ``'beam'`` - Beam width size 3, alpha 0.5 .
+            * ``'nucleus'`` - Beam width size 1, with nucleus sampling.
+
+        top_p: float, (default=0.7)
+            cumulative distribution and cut off as soon as the CDF exceeds `top_p`.
+            this is only useful if use `nucleus` decoder.
+
+        Returns
+        -------
+        result: List[str]
+        """
+
+        return self._paraphrase(
+            strings = strings, decoder = decoder, top_p = top_p
         )
 
 
@@ -501,18 +479,14 @@ class TRUE_CASE:
         self._encoder = encoder
 
     def _true_case(self, strings, beam_search = True):
-        encoded = [self._encoder.encode(strings) for string in strings]
+        encoded = self._encoder.encode(strings)
         if beam_search:
             output = self._beam
         else:
             output = self._greedy
         batch_x = pad_sentence_batch(encoded, 0)[0]
         p = self._sess.run(output, feed_dict = {self._X: batch_x}).tolist()
-        result = []
-        for row in p:
-            result.append(
-                self._tokenizer.decode([i for i in row if i not in [0, 1]])
-            )
+        result = self._encoder.decode(p)
         return result
 
     @check_type

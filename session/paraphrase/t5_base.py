@@ -5,7 +5,7 @@ import functools
 
 vocab = 'gs://mesolitica-tpu-general/t5-data/sp10m.cased.t5.model'
 tpu = tf.distribute.cluster_resolver.TPUClusterResolver(
-    'node-2', zone = 'europe-west4-a', project = 'mesolitica-tpu'
+    'node-7', zone = 'europe-west4-a', project = 'mesolitica-tpu'
 )
 TPU_ADDRESS = tpu.get_master()
 TPU_TOPOLOGY = '2x2'
@@ -84,7 +84,7 @@ def main(_):
         model_parallelism = model_parallelism,
         batch_size = train_batch_size,
         sequence_length = {'inputs': 1024, 'targets': 1024},
-        learning_rate_schedule = 0.003,
+        learning_rate_schedule = 0.001,
         save_checkpoints_steps = 5000,
         keep_checkpoint_max = 5,
         iterations_per_loop = 100,

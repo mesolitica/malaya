@@ -1,3 +1,11 @@
+Abstractive
+===========
+
+.. container:: alert alert-info
+
+   This tutorial is available as an IPython notebook at
+   `Malaya/example/abstractive-summarization <https://github.com/huseinzol05/Malaya/tree/master/example/abstractive-summarization>`__.
+
 .. code:: ipython3
 
     %%time
@@ -7,38 +15,77 @@
 
 .. parsed-literal::
 
-    CPU times: user 4.54 s, sys: 945 ms, total: 5.49 s
-    Wall time: 4.65 s
+    CPU times: user 4.99 s, sys: 666 ms, total: 5.65 s
+    Wall time: 4.69 s
 
 
 List available T5 models
-------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
     malaya.summarization.abstractive.available_t5()
 
 
-
-
 .. parsed-literal::
 
-    {'small': ['122MB',
-      'ROUGE-1: 0.33854',
-      'ROUGE-2: 0.14588',
-      'ROUGE-L: 0.23528'],
-     'base': ['448MB', 'ROUGE-1: 0.34103', 'ROUGE-2: 0.14994', 'ROUGE-L: 0.23655']}
+    INFO:root:tested on 5k CNN test set.
 
 
 
-For now we do not have a good metrics to calculate ‘abstract’ of
-summaries generated from the model. ROUGE is simply calculate same
-N-GRAM overlap each others, sometime summaries generated are almost
-human perfect but not close to as baseline summaries, so ROUGE score
-will become lower.
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>Size (MB)</th>
+          <th>Uncompressed Size (MB)</th>
+          <th>ROUGE-1</th>
+          <th>ROUGE-2</th>
+          <th>ROUGE-L</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>small</th>
+          <td>122.0</td>
+          <td>355.6</td>
+          <td>0.33854</td>
+          <td>0.14588</td>
+          <td>0.23528</td>
+        </tr>
+        <tr>
+          <th>base</th>
+          <td>448.0</td>
+          <td>1300.0</td>
+          <td>0.34103</td>
+          <td>0.14994</td>
+          <td>0.23655</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
 
 Load T5
--------
+~~~~~~~
 
 T5 is a transformer model that capable to generate abstractive
 summarization. In this example, we are going to use ``base`` model, feel
@@ -46,23 +93,32 @@ free to use ``small`` if you find ``base`` is too slow.
 
 .. code:: python
 
-   def t5(model: str = 'base', **kwargs):
+   def t5(model: str = 'base', compressed: bool = True, **kwargs):
 
        """
-       Load T5 model to generate a summarization given a string.
+       Load T5 model to generate a summary given a string.
 
        Parameters
        ----------
        model : str, optional (default='base')
            Model architecture supported. Allowed values:
 
-           * ``'base'`` - T5 Base parameters.
-           * ``'small'`` - T5 Small parameters.
+           * ``'base'`` - T5 BASE parameters.
+           * ``'small'`` - T5 SMALL parameters.
+
+       compressed: bool, optional (default=True)
+           Load compressed model, but this not able to utilize malaya-gpu function. 
+           This only compressed model size, but when loaded into VRAM / RAM, size uncompressed and compressed are the same.
+           We prefer un-compressed model due to compressed model prone to error.
 
        Returns
        -------
        result: malaya.model.t5.SUMMARIZATION class
        """
+
+**For malaya-gpu user, compressed t5 very fragile and we suggest use
+``compressed=False``. Uncompressed model also can utilise GPU usage more
+efficient**.
 
 .. code:: ipython3
 
@@ -82,7 +138,7 @@ free to use ``small`` if you find ``base`` is too slow.
 summarization mode
 ^^^^^^^^^^^^^^^^^^
 
-T5 in Malaya provided 3 different mode for summarization,
+T5 in Malaya provided 2 different modes for summarization,
 
 1. generate summary,
 
@@ -95,13 +151,6 @@ T5 in Malaya provided 3 different mode for summarization,
 .. code:: python
 
    model.summarize(string, mode = 'tajuk')
-
-3. generate short body (this is simply summarize every sentences in our
-   string, splitted by fullstop),
-
-.. code:: python
-
-   model.summarize(string, mode = 'perenggan')
 
 default is ``ringkasan``,
 
@@ -251,35 +300,6 @@ generate tajuk
 
 
 
-generate perenggan
-^^^^^^^^^^^^^^^^^^
-
-This mode is not really good as ``ringkasan`` and ``tajuk``, it is
-pretty hard to hard to supervised summaries for each sentences. We
-applied ``#`` to mask sensitive issues.
-
-.. code:: ipython3
-
-    pprint(model.summarize(string, mode = 'perenggan'))
-
-
-.. parsed-literal::
-
-    ('Peletakan jawatan dr mahathir di mesyuarat khas. Tidak ada persoalan '
-     'mengenai peletakan jawatan presiden. Bekas ketua un menolak peletakan '
-     'jawatan dr m. Keputusan kami mengenai keputusan ####. Malaysia mengatakan '
-     'peletakan jawatan adalah sah. "Semua keputusan mesti dibuat melalui parti.. '
-     'Perbincangan mengenai keputusan mesyuarat parti tidak ada keputusan parti. '
-     'Locus standy untuk membawa perkara ini kepada jppm. Ketua parti mengatakan '
-     'bahawa dia harus menjadi pentadbir. Pm mengatakan bahawa dia tidak lagi '
-     'menjadi ketua bersatu. Laporan mengatakan bahawa kedudukan muhyiddin yassin '
-     'disahkan. Pm menolak peletakan jawatan tetapi menolak surat peletakan '
-     'jawatan. #### - #### - ####. Marzuki menolak kenyataan media yang menyokong '
-     'parti. "Kenyataan media bukanlah keputusan rasmi.. Keputusan mengenai '
-     'pertemuan afghanistan tetap tidak berubah. Kami catat dalam minit yang '
-     'berlaku di mesyuarat')
-
-
 **Link**: https://www.malaysiakini.com/news/525953
 
 **Title**: Mahathir jangan hipokrit isu kes mahkamah Riza, kata
@@ -394,24 +414,328 @@ sah,” katanya.
 
 
 
+List available LM Transformer models
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Problem with T5 models, it built on top of mesh-tensorflow, so the input
+must size of 1. So we use Tensor2Tensor library to train exact model as
+T5 with dynamic size of batch.
+
+**But, we found out, our pretrained LM Transformer not good as T5**, we
+might skipped some literature in t5 papers.
+
 .. code:: ipython3
 
-    pprint(model.summarize(string, mode = 'perenggan'))
+    malaya.summarization.abstractive.available_transformer()
 
 
 .. parsed-literal::
 
-    ('Menteri mengatakan bahawa dia tertanya-tanya dengan keputusan mahkamah untuk '
-     'membebaskan anak tiri najib. Pas mengatakan peguam negara akan dilantik pada '
-     'akhir tahun. Pm merujuk kepada pembebasan tanpa pembebasan kepada aig. Pm '
-     'berharap tidak ada yang hipokrit dengan keputusan pendakwaan. Riza dilepas '
-     'tanpa dibebaskan dari tuduhan pengubahan wang. Pihak pendakwaan brazil '
-     'bersetuju untuk mengembalikan aset luar negara. Pm mempersoalkan sama ada '
-     'pihak yang dituduh mencuri boleh terlepas tindakan. "Dia curi '
-     'berbilion-bilion...Dia bagi balik kepada kerajaan.. Britain mengatakan duit '
-     'yang dicuri adalah wang yang dicuri. Sekarang ini, jangan ambil tindakan '
-     "terhadap aku.. Aig mengatakan kita 'terus memberi balik duit okey lah'. "
-     'Mahathir mengatakan undang-undang mungkin perlu dipinda. Afghanistan '
-     'mengatakan bahawa kenyataan pm tidak wajar. Pm berharap pm tidak akan '
-     'berbohong. Pm malaysia mengatakan bahawa ia akan mematuhi undang-undang')
+    INFO:root:tested on 5k CNN test set.
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>Size (MB)</th>
+          <th>ROUGE-1</th>
+          <th>ROUGE-2</th>
+          <th>ROUGE-L</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>base</th>
+          <td>832.0</td>
+          <td>0.31863</td>
+          <td>0.12150</td>
+          <td>0.22023</td>
+        </tr>
+        <tr>
+          <th>small</th>
+          <td>379.0</td>
+          <td>0.32215</td>
+          <td>0.12741</td>
+          <td>0.23528</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+Load Transformer
+~~~~~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    model = malaya.summarization.abstractive.transformer(model = 'small')
+
+
+.. parsed-literal::
+
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/function/__init__.py:73: The name tf.gfile.GFile is deprecated. Please use tf.io.gfile.GFile instead.
+    
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/function/__init__.py:75: The name tf.GraphDef is deprecated. Please use tf.compat.v1.GraphDef instead.
+    
+    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/function/__init__.py:68: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
+    
+
+
+summarization mode
+^^^^^^^^^^^^^^^^^^
+
+T5 in Malaya provided 2 different modes for summarization,
+
+1. generate summary,
+
+.. code:: python
+
+   model.summarize(string, mode = 'ringkasan')
+
+2. generate title,
+
+.. code:: python
+
+   model.summarize(string, mode = 'tajuk')
+
+default is ``ringkasan``,
+
+.. code:: python
+
+   def summarize(
+       self,
+       strings: List[str],
+       mode: str = 'ringkasan',
+       decoder: str = 'greedy',
+       top_p: float = 0.7,
+   ):
+       """
+       Summarize strings.
+
+       Parameters
+       ----------
+       strings: List[str]
+       mode: str
+           mode for summarization. Allowed values:
+
+           * ``'ringkasan'`` - summarization for long sentence, eg, news summarization.
+           * ``'tajuk'`` - title summarization for long sentence, eg, news title.
+
+decoder mode
+^^^^^^^^^^^^
+
+LM Transformer provided 3 different decoder for summarization,
+
+1. greedy decoder, simply argmax,
+
+.. code:: python
+
+   model.summarization([string], decoder = 'greedy')
+
+2. beam decoder, Beam width size 3, alpha 0.5 .
+
+.. code:: python
+
+   model.summarization([string], decoder = 'beam')
+
+3. nucleus sampling decoder, Beam width size 1, with nucleus sampling.
+
+.. code:: python
+
+   model.summarization([string], decoder = 'nucleus', top_p = 0.7)
+
+default is ``greedy``,
+
+.. code:: python
+
+   def summarize(
+       self,
+       strings: List[str],
+       mode: str = 'ringkasan',
+       decoder: str = 'greedy',
+       top_p: float = 0.7,
+   ):
+       """
+       Summarize strings.
+
+       Parameters
+       ----------
+
+       decoder: str
+           mode for summarization decoder. Allowed values:
+
+           * ``'greedy'`` - Beam width size 1, alpha 0.
+           * ``'beam'`` - Beam width size 3, alpha 0.5 .
+           * ``'nucleus'`` - Beam width size 1, with nucleus sampling.
+
+       top_p: float, (default=0.7)
+           cumulative distribution and cut off as soon as the CDF exceeds `top_p`.
+           this is only useful if use `nucleus` decoder.
+
+.. code:: ipython3
+
+    string = """
+    PELETAKAN jawatan Tun Dr Mahathir Mohamad sebagai Pengerusi Parti Pribumi Bersatu Malaysia (Bersatu) ditolak di dalam mesyuarat khas Majlis Pimpinan Tertinggi (MPT) pada 24 Februari lalu.
+    
+    Justeru, tidak timbul soal peletakan jawatan itu sah atau tidak kerana ia sudah pun diputuskan pada peringkat parti yang dipersetujui semua termasuk Presiden, Tan Sri Muhyiddin Yassin.
+    
+    Bekas Setiausaha Agung Bersatu Datuk Marzuki Yahya berkata, pada mesyuarat itu MPT sebulat suara menolak peletakan jawatan Dr Mahathir.
+    
+    "Jadi ini agak berlawanan dengan keputusan yang kita sudah buat. Saya tak faham bagaimana Jabatan Pendaftar Pertubuhan Malaysia (JPPM) kata peletakan jawatan itu sah sedangkan kita sudah buat keputusan di dalam mesyuarat, bukan seorang dua yang buat keputusan.
+    
+    "Semua keputusan mesti dibuat melalui parti. Walau apa juga perbincangan dibuat di luar daripada keputusan mesyuarat, ini bukan keputusan parti.
+    
+    "Apa locus standy yang ada pada Setiausaha Kerja untuk membawa perkara ini kepada JPPM. Seharusnya ia dibawa kepada Setiausaha Agung sebagai pentadbir kepada parti," katanya kepada Harian Metro.
+    
+    Beliau mengulas laporan media tempatan hari ini mengenai pengesahan JPPM bahawa Dr Mahathir tidak lagi menjadi Pengerusi Bersatu berikutan peletakan jawatannya di tengah-tengah pergolakan politik pada akhir Februari adalah sah.
+    
+    Laporan itu juga menyatakan, kedudukan Muhyiddin Yassin memangku jawatan itu juga sah.
+    
+    Menurutnya, memang betul Dr Mahathir menghantar surat peletakan jawatan, tetapi ditolak oleh MPT.
+    
+    "Fasal yang disebut itu terpakai sekiranya berhenti atau diberhentikan, tetapi ini mesyuarat sudah menolak," katanya.
+    
+    Marzuki turut mempersoal kenyataan media yang dibuat beberapa pimpinan parti itu hari ini yang menyatakan sokongan kepada Perikatan Nasional.
+    
+    "Kenyataan media bukanlah keputusan rasmi. Walaupun kita buat 1,000 kenyataan sekali pun ia tetap tidak merubah keputusan yang sudah dibuat di dalam mesyuarat. Kita catat di dalam minit apa yang berlaku di dalam mesyuarat," katanya.
+    """
+
+.. code:: ipython3
+
+    import re
+    
+    # minimum cleaning, just simply to remove newlines.
+    def cleaning(string):
+        string = string.replace('\n', ' ')
+        string = re.sub(r'[ ]+', ' ', string).strip()
+        return string
+    
+    string = cleaning(string)
+
+generate tajuk
+^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    pprint(model.summarize([string], mode = 'tajuk'))
+
+
+.. parsed-literal::
+
+    ['Tun M letak jawatan Pengerusi Bersatu']
+
+
+.. code:: ipython3
+
+    pprint(model.summarize([string], mode = 'tajuk', decoder = 'beam'))
+
+
+.. parsed-literal::
+
+    ['Mengapa letak jawatan itu sah?']
+
+
+.. code:: ipython3
+
+    pprint(model.summarize([string], mode = 'tajuk', decoder = 'nucleus', top_p = 0.7))
+
+
+.. parsed-literal::
+
+    ['Tun M letak jawatan Pengerusi Bersatu secara sah']
+
+
+generate ringkasan
+^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    pprint(model.summarize([string], mode = 'ringkasan'))
+
+
+.. parsed-literal::
+
+    ['- Tun M tidak lagi menjadi Pengerusi Bersatu, tetapi dia masih menjadi ketua '
+     'parti itu. Bekas setiausaha Agung Bersatu, Marzuki Yahya mengatakan bahawa '
+     'dia tidak faham bagaimana JPPM mengatakan peletakan jawatan itu sah, Times. '
+     '"Jadi ini agak berlawanan dengan keputusan yang kita sudah buat," katanya. '
+     '"Saya tidak faham bagaimana Jabatan Pendaftar Pertubuhan Malaysia mengatakan '
+     'peletakan jawatan itu sah sedangkan kita sudah membuat keputusan di dalam '
+     'mesyuarat, bukan seorang dua yang membuat keputusan. " Marzuki mengatakan '
+     'bahawa dia tidak faham bagaimana JPPM mengatakan peletakan jawatan itu sah, '
+     'tetapi "apa pun perbincangan dibuat di luar dari keputusan mesyuarat, ini '
+     'bukan keputusan parti. " (Dalam berita lain, seorang lelaki yang mengatakan '
+     'bahawa dia adalah "pembersihan" dengan J. Seharusnya membawa kepada '
+     'Setiausaha Agung.']
+
+
+.. code:: ipython3
+
+    pprint(model.summarize([string], mode = 'ringkasan', decoder = 'beam'))
+
+
+.. parsed-literal::
+
+    ['- Tun M tidak lagi menjadi Pengerusi Bersatu, tetapi dia masih mempunyai '
+     'pekerjaan. Bekas setiausaha Agung Bersatu, Marzuki Yahya mengatakan bahawa '
+     'dia tidak faham bagaimana JPPM mengatakan peletakan jawatan itu sah, Times. '
+     '"Jadi ini agak berlawanan dengan keputusan yang kita sudah buat," katanya. '
+     '"Saya tidak faham bagaimana Jabatan Pendaftar Pertubuhan Malaysia mengatakan '
+     'peletakan jawatan itu sah sedangkan kita sudah membuat keputusan di dalam '
+     'mesyuarat, bukan seorang dua yang membuat keputusan. " Marzuki mengatakan '
+     'bahawa dia tidak faham bagaimana JPPM mengatakan peletakan jawatan itu sah. '
+     '"Apa locus standy yang ada pada Setiausaha Kerja untuk membawa perkara ini '
+     'kepada J. Seharusnya ia dibawa kepada Setiausaha Agung sebagai pentadbir '
+     'kepada parti," katanya.']
+
+
+.. code:: ipython3
+
+    pprint(model.summarize([string], mode = 'ringkasan', decoder = 'nucleus', top_p = 0.7))
+
+
+.. parsed-literal::
+
+    ['- Seorang bekas setiausaha agung Uc yang mengatakan bahawa dia tidak mahu '
+     'jawatan Tun Dr Mahathir sebagai Pengerusi Bersatu pada mesyuarat khas Majlis '
+     'Pimpinan Tertinggi pada 24 Februari mengatakan bahawa dia "agak berlawanan '
+     'dengan keputusan yang kita sudah buat. " Dia mengatakan bahawa tidak ada '
+     '"ketidakmampuan" Jabatan Kelayakan Pertubuhan Malaysia - yang menyatakan '
+     'bahawa Dr Mahathir berhenti atau dipecat - kerana ia sudah diputuskan pada '
+     'peringkat parti yang dipersetujui semua termasuk Presiden, Tan Sri Muhyiddin '
+     'Yassin, laporan Daily Metro. Sekiranya peletakan jawatan itu sah, itu harus '
+     'diputuskan pada peringkat parti yang dipersetujui semua termasuk Presiden, '
+     'Tan Sri Muhyiddin Yassin. "Saya tidak faham bagaimana Jabatan Pendaftar '
+     'Pertubuhan Malaysia (JPPM) kata peletakan jawatan itu sah sedangkan kita '
+     'sudah membuat keputusan di dalam mesyuarat, bukan seorang dua yang membuat '
+     'keputusan," kata Marzuki Yahya. "Semua keputusan mesti dibuat melalui parti. '
+     'Walau apa pun perbincangan dibuat di luar dari keputusan mesyuarat, ini '
+     'bukan keputusan parti. " Dia menambahkan bahawa "apa locus standy yang ada '
+     'pada Setiausaha Kerja untuk membawa perkara ini kepada J. Seharusnya ia '
+     'dibawa kepada Setiausaha Agung sebagai pentadbir kepada parti. " Di tengah '
+     'pergolakan politik pada akhir Februari adalah sah, Marzuki mengatakan '
+     'kedudukan Dr Mahathir yang sebenarnya ditolak adalah sah. "Kenyataan media '
+     'bukanlah keputusan rasmi," katanya. "Walaupun kita membuat 1,000 kenyataan '
+     'sekali pun ia tetap tidak pendahuluan keputusan yang sudah dibuat di dalam '
+     'mesyuarat. Kami catat di dalam minit apa yang berlaku di dalam mesyuarat.']
 

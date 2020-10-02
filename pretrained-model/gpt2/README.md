@@ -2,7 +2,7 @@
 
 Thanks to [openai/gpt2](https://github.com/openai/gpt-2) for opensourcing most of the source code to develop GPT2, https://github.com/openai/gpt-2 and [minimaxir/gpt-2-simple](https://github.com/minimaxir/gpt-2-simple). Malaya just edit the scripts to train on huge dataset.
 
-**Do not finetuned this model to build fake news generator**.
+**This directory is very lack of comments, understand Tensorflow, Tensorflow estimator, Tensorflow Dataset really helpful**.
 
 ## Table of contents
   * [Objective](#objective)
@@ -56,7 +56,7 @@ python3 train_tpu.py \
 
 Use [small-hparams.json](small-hparams.json) to load parameter config.
 
-1. **345M**, last update 1st May 2020, [345m-bahasa.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/345m-bahasa.tar.gz)
+2. **345M**, last update 1st May 2020, [345m-bahasa.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/345m-bahasa.tar.gz)
 
   - Vocab size 57k.
   - Trained on raw wikipedia, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession and raw common-crawl, ~0.9B words.
@@ -65,6 +65,7 @@ Use [small-hparams.json](small-hparams.json) to load parameter config.
 
 Use [base-hparams.json](base-hparams.json) to load parameter config.
 
+**Do not finetuned this model to build fake news generator**.
 
 ## Citation
 

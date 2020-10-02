@@ -54,15 +54,15 @@ class TrueCase(text_problems.Text2TextProblem):
         return {'inputs': encoder, 'targets': encoder}
 
 
-os.system('mkdir t2t-true-case/train-base')
+os.system('mkdir t2t-true-case/train-small')
 DATA_DIR = os.path.expanduser('t2t-true-case/data')
 TMP_DIR = os.path.expanduser('t2t-true-case/tmp')
-TRAIN_DIR = os.path.expanduser('t2t-true-case/train-base')
+TRAIN_DIR = os.path.expanduser('t2t-true-case/train-small')
 
 PROBLEM = 'true_case'
 t2t_problem = problems.problem(PROBLEM)
 
-train_steps = 500000
+train_steps = 350000
 eval_steps = 20
 batch_size = 4096 * 2
 save_checkpoints_steps = 25000

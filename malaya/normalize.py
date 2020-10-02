@@ -153,7 +153,10 @@ class NORMALIZER:
 
     @check_type
     def normalize(
-        self, string: str, check_english: bool = True, normalize_entity = True
+        self,
+        string: str,
+        check_english: bool = True,
+        normalize_entity: bool = True,
     ):
         """
         Normalize a string

@@ -1,5 +1,9 @@
 # Seq2Seq-Bahasa
 
+Provide T5-like using Tensor2Tensor framework.
+
+**This directory is very lack of comments, understand Tensorflow, Tensorflow estimator, Tensorflow Dataset really helpful**.
+
 ## Table of contents
   * [Objective](#objective)
   * [Acknowledgement](#acknowledgement)
@@ -14,17 +18,27 @@
 
 ## Acknowledgement
 
-Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://www.facebook.com/ligblou), [Mesolitica](https://mesolitica.com/) and [KeyReply](https://www.keyreply.com/) for sponsoring AWS, Google and GPU clouds to train BERT for Bahasa.
+Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://www.facebook.com/ligblou), [Mesolitica](https://mesolitica.com/), [KeyReply](https://www.keyreply.com/) and [TensorFlow Research Cloud](https://www.tensorflow.org/tfrc) for sponsoring AWS, Google and GPU clouds to train XLNET for Bahasa.
 
 ## How-to
 
 1. Download [sp10m.cased.t5.model](../preprocess/sp10m.cased.t5.model) and [sp10m.cased.t5.vocab](../preprocess/sp10m.cased.t5.vocab).
 
-2. Run all prepare notebooks.
+2. Run all prepare notebooks in [prepare](prepare).
 
-3. Generate tfrecords, [t2t-data-generate-sentencepiece.ipynb](t2t-data-generate-sentencepiece.ipynb).
+3. Generate tfrecords,
 
-4. Run training session,
+```bash
+cd prepare
+python3 t2t-gcs-dumping.py
+python3 t2t-gcs.py
+```
+
+4. Upload to GCS if use TPU, [prepare/upload-gcs.ipynb](prepare/upload-gcs.ipynb).
+
+5. Run training session,
+
+**If multiGPUs,**
 
 BASE model,
 ```bash
@@ -36,6 +50,17 @@ SMALL model,
 python3 t2t-small.py
 ```
 
+**If TPU**,
+
+BASE model,
+```bash
+python3 b2b-base-tpu.py
+```
+
+SMALL model,
+```bash
+python3 t2t-small-tpu.py
+```
 
 ## Download
 

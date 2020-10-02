@@ -231,6 +231,18 @@ malaya.translation.ms_en
 .. automodule:: malaya.translation.ms_en
     :members:
 
+malaya.true_case
+-------------------------
+
+.. automodule:: malaya.true_case
+    :members:
+
+malaya.word2num
+-------------------------
+
+.. automodule:: malaya.word2num
+    :members:
+
 malaya.wordvector
 -------------------------
 
@@ -318,15 +330,18 @@ malaya.model.tf
 .. autoclass:: malaya.model.tf.DEEP_LANG()
     :members:
 
-.. autoclass:: malaya.model.tf.PARAPHRASE()
-    :members:
-
 .. autoclass:: malaya.model.tf.TRANSLATION()
     :members:
 
 .. autoclass:: malaya.model.tf.CONSTITUENCY()
     :members:
 
+.. autoclass:: malaya.model.tf.TRUE_CASE()
+    :members:
+
+.. autoclass:: malaya.model.tf.PARAPHRASE()
+    :members:
+    
 malaya.model.ml
 ----------------------------------
 

@@ -19,7 +19,9 @@ def available_transformer():
     """
     from malaya.function import describe_availability
 
-    return describe_availability(_transformer_availability)
+    return describe_availability(
+        _transformer_availability, text = 'tested on 20% test set.'
+    )
 
 
 def multinomial(**kwargs):

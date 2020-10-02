@@ -461,35 +461,6 @@ S3_PATH_NSFW = {
 }
 
 PATH_PARAPHRASE = {
-    'bert': {
-        'model': home + '/paraphrase/bert/base/model.pb',
-        'vocab': home + '/bert/sp10m.cased.bert.vocab',
-        'tokenizer': home + '/bert/sp10m.cased.bert.model',
-        'version': 'v36',
-    },
-    'tiny-bert': {
-        'model': home + '/paraphrase/bert/tiny/model.pb',
-        'vocab': home + '/bert/sp10m.cased.bert.vocab',
-        'tokenizer': home + '/bert/sp10m.cased.bert.model',
-        'version': 'v36',
-    },
-    'transformer': {
-        'base': {
-            'model': home + '/paraphrase/transformer/base/model.pb',
-            'vocab': home + '/paraphrase/transformer/base/vocab.subwords',
-            'version': 'v36',
-        },
-        'tiny': {
-            'model': home + '/paraphrase/transformer/tiny/model.pb',
-            'vocab': home + '/paraphrase/transformer/tiny/vocab.subwords',
-            'version': 'v36',
-        },
-        'small': {
-            'model': home + '/paraphrase/transformer/small/model.pb',
-            'vocab': home + '/paraphrase/transformer/small/vocab.subwords',
-            'version': 'v36',
-        },
-    },
     't5-compressed': {
         'base': {
             'path': home + '/paraphrase/t5-compressed/base',
@@ -520,32 +491,20 @@ PATH_PARAPHRASE = {
             'version': 'v38',
         },
     },
-}
-S3_PATH_PARAPHRASE = {
-    'bert': {
-        'model': 'v36/paraphrase/bert-base-paraphrase.pb',
-        'vocab': 'tokenizer/sp10m.cased.bert.vocab',
-        'tokenizer': 'tokenizer/sp10m.cased.bert.model',
-    },
-    'tiny-bert': {
-        'model': 'v36/paraphrase/tiny-bert-paraphrase.pb',
-        'vocab': 'tokenizer/sp10m.cased.bert.vocab',
-        'tokenizer': 'tokenizer/sp10m.cased.bert.model',
-    },
     'transformer': {
         'base': {
-            'model': 'v36/paraphrase/transformer-base.pb',
-            'vocab': 'v36/paraphrase/base.subwords',
-        },
-        'tiny': {
-            'model': 'v36/paraphrase/transformer-tiny.pb',
-            'vocab': 'v36/paraphrase/tiny.subwords',
+            'model': home + '/paraphrase/transformer/base/model.pb',
+            'vocab': home + '/paraphrase/sp10m.cased.t5.model',
+            'version': 'v39',
         },
         'small': {
-            'model': 'v36/paraphrase/transformer-small.pb',
-            'vocab': 'v36/paraphrase/small.subwords',
+            'model': home + '/paraphrase/transformer/small/model.pb',
+            'vocab': home + '/paraphrase/sp10m.cased.t5.model',
+            'version': 'v39',
         },
     },
+}
+S3_PATH_PARAPHRASE = {
     't5-compressed': {
         'base': {'model': 'v36/paraphrase/paraphrase-t5-base.tar.gz'},
         'small': {'model': 'v36/paraphrase/paraphrase-t5-small.tar.gz'},
@@ -553,6 +512,16 @@ S3_PATH_PARAPHRASE = {
     't5': {
         'base': {'model': 'v38/paraphrase/base.pb'},
         'small': {'model': 'v38/paraphrase/small.pb'},
+    },
+    'transformer': {
+        'base': {
+            'model': 'v39/paraphrase/base.pb',
+            'vocab': 'tokenizer/sp10m.cased.t5.model',
+        },
+        'small': {
+            'model': 'v39/paraphrase/small.pb',
+            'vocab': 'tokenizer/sp10m.cased.t5.model',
+        },
     },
 }
 
@@ -1023,6 +992,18 @@ PATH_SUMMARIZE = {
             'version': 'v38',
         },
     },
+    'transformer': {
+        'base': {
+            'model': home + '/summarize/transformer/base/model.pb',
+            'vocab': home + '/summarize/sp10m.cased.t5.model',
+            'version': 'v39',
+        },
+        'small': {
+            'model': home + '/summarize/transformer/small/model.pb',
+            'vocab': home + '/summarize/sp10m.cased.t5.model',
+            'version': 'v39',
+        },
+    },
 }
 
 S3_PATH_SUMMARIZE = {
@@ -1041,6 +1022,16 @@ S3_PATH_SUMMARIZE = {
     't5': {
         'base': {'model': 'v38/summarize/base.pb'},
         'small': {'model': 'v38/summarize/small.pb'},
+    },
+    'transformer': {
+        'base': {
+            'model': 'v39/summarization/base.pb',
+            'vocab': 'tokenizer/sp10m.cased.t5.model',
+        },
+        'small': {
+            'model': 'v39/summarization/small.pb',
+            'vocab': 'tokenizer/sp10m.cased.t5.model',
+        },
     },
 }
 
@@ -1194,8 +1185,28 @@ S3_PATH_TRANSLATION = {
     },
 }
 
-PATH_TRUE_CASE = {}
-S3_PATH_TRUE_CASE = {}
+PATH_TRUE_CASE = {
+    'base': {
+        'model': home + '/true-case/base.pb',
+        'vocab': home + '/true-case/vocab.yttm',
+        'version': 'v39',
+    },
+    'small': {
+        'model': home + '/true-case/small.pb',
+        'vocab': home + '/true-case/vocab.yttm',
+        'version': 'v39',
+    },
+}
+S3_PATH_TRUE_CASE = {
+    'base': {
+        'model': 'v39/true-case/base.pb',
+        'vocab': 'tokenizer/truecase.yttm',
+    },
+    'small': {
+        'model': 'v39/true-case/small.pb',
+        'vocab': 'tokenizer/truecase.yttm',
+    },
+}
 
 PATH_ELECTRA = {
     'electra': {

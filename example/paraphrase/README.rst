@@ -1,80 +1,115 @@
+Paraphrase
+==========
+
+.. container:: alert alert-info
+
+   This tutorial is available as an IPython notebook at
+   `Malaya/example/paraphrase <https://github.com/huseinzol05/Malaya/tree/master/example/paraphrase>`__.
+
 .. code:: ipython3
 
     %%time
     
     import malaya
+    from pprint import pprint
 
 
 .. parsed-literal::
 
-    CPU times: user 4.88 s, sys: 1.29 s, total: 6.17 s
-    Wall time: 7.82 s
+    CPU times: user 5.17 s, sys: 1.02 s, total: 6.19 s
+    Wall time: 7.38 s
 
 
 List available T5 models
-------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
     malaya.paraphrase.available_t5()
 
 
-
-
 .. parsed-literal::
 
-    {'small': ['122MB', '*BLEU: 0.953'], 'base': ['448MB', '*BLEU: 0.953']}
-
-
-
-\* We purposely peaked test set for T5 models because we tested T5
-models are more powerful than encoder-decoder transformer, so we train
-on 100% dataset.
-
-List available Transformer models
----------------------------------
-
-.. code:: ipython3
-
-    malaya.paraphrase.available_transformer()
+    INFO:root:tested on 1k paraphrase texts.
 
 
 
 
-.. parsed-literal::
+.. raw:: html
 
-    {'tiny': ['18.4MB', 'BLEU: 0.594'],
-     'small': ['43MB', 'BLEU: 0.737'],
-     'base': ['234MB', 'BLEU: 0.792'],
-     'tiny-bert': ['60.6MB', 'BLEU: 0.609'],
-     'bert': ['449MB', 'BLUE: 0.696']}
-
-
-
-We tested on 5k paraphrases.
-
-Load Transformer models
------------------------
-
-.. code:: ipython3
-
-    transformer = malaya.paraphrase.transformer()
-    transformer_tiny = malaya.paraphrase.transformer(model = 'tiny')
-    transformer_small = malaya.paraphrase.transformer(model = 'small')
-
-
-.. parsed-literal::
-
-    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/function/__init__.py:54: The name tf.gfile.GFile is deprecated. Please use tf.io.gfile.GFile instead.
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
     
-    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/function/__init__.py:55: The name tf.GraphDef is deprecated. Please use tf.compat.v1.GraphDef instead.
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
     
-    WARNING:tensorflow:From /Users/huseinzolkepli/Documents/Malaya/malaya/function/__init__.py:49: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
-    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>Size (MB)</th>
+          <th>Uncompressed Size (MB)</th>
+          <th>BLEU</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>small</th>
+          <td>122.0</td>
+          <td>355.6</td>
+          <td>0.81801</td>
+        </tr>
+        <tr>
+          <th>base</th>
+          <td>448.0</td>
+          <td>1300.0</td>
+          <td>0.86698</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
 
 
 Load T5 models
---------------
+~~~~~~~~~~~~~~
+
+.. code:: python
+
+   def t5(model: str = 'base', compressed: bool = True, **kwargs):
+
+       """
+       Load T5 model to generate a paraphrase given a string.
+
+       Parameters
+       ----------
+       model : str, optional (default='base')
+           Model architecture supported. Allowed values:
+
+           * ``'base'`` - T5 BASE parameters.
+           * ``'small'`` - T5 SMALL parameters.
+
+       compressed: bool, optional (default=True)
+           Load compressed model, but this not able to utilize malaya-gpu function. 
+           This only compressed model size, but when loaded into VRAM / RAM, size uncompressed and compressed are the same.
+           We prefer un-compressed model due to compressed model prone to error.
+
+       Returns
+       -------
+       result: malaya.model.t5.PARAPHRASE class
+       """
+
+**For malaya-gpu user, compressed t5 very fragile and we suggest use
+``compressed=False``. Uncompressed model also can utilise GPU usage more
+efficient**.
 
 .. code:: ipython3
 
@@ -90,13 +125,9 @@ Load T5 models
 
 
 Paraphrase simple string
-------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 To paraphrase, simply use ``paraphrase`` method.
-
-.. code:: ipython3
-
-    from pprint import pprint
 
 .. code:: ipython3
 
@@ -112,51 +143,6 @@ To paraphrase, simply use ``paraphrase`` method.
 
 .. code:: ipython3
 
-    %%time
-    
-    pprint(transformer.paraphrase(string))
-
-
-.. parsed-literal::
-
-    ('Dia yang juga merupakan seorang saksi pendakwaan kesembilan berkata, bagi '
-     'mengelak daripada isu digunakan terhadap Najib.')
-    CPU times: user 20 s, sys: 7.43 s, total: 27.4 s
-    Wall time: 7.14 s
-
-
-.. code:: ipython3
-
-    %%time
-    
-    pprint(transformer_tiny.paraphrase(string))
-
-
-.. parsed-literal::
-
-    ('Dia juga seorang saksi pendakwaan kesembilan berkata, ia bagi mengelak '
-     'daripada wujud isu digunakan terhadap Najib.')
-    CPU times: user 1.54 s, sys: 1.17 s, total: 2.7 s
-    Wall time: 896 ms
-
-
-.. code:: ipython3
-
-    %%time
-    
-    pprint(transformer_small.paraphrase(string))
-
-
-.. parsed-literal::
-
-    ('Dia juga seorang saksi pendakwaan kesembilan berkata, ia bagi mengelak '
-     'daripada wujud isu digunakan terhadap Najib.')
-    CPU times: user 3.41 s, sys: 2.52 s, total: 5.94 s
-    Wall time: 1.72 s
-
-
-.. code:: ipython3
-
     pprint(t5.paraphrase(string))
 
 
@@ -167,7 +153,7 @@ To paraphrase, simply use ``paraphrase`` method.
 
 
 Paraphrase longer string
-------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
@@ -242,144 +228,8 @@ Paraphrase longer string
      'Kita catat di dalam minit apa yang berlaku di dalam mesyuarat," katanya.')
 
 
-Transformer model
-^^^^^^^^^^^^^^^^^
-
-For transformer model,
-
-.. code:: python
-
-   def paraphrase(
-       self, string: str, beam_search: bool = True, split_fullstop: bool = True
-   ):
-       """
-       Paraphrase a string.
-
-       Parameters
-       ----------
-       string : str
-       beam_search : bool, (optional=True)
-           If True, use beam search decoder, else use greedy decoder.
-       split_fullstop: bool, (default=True)
-           if True, will generate paraphrase for each strings splitted by fullstop.
-
-       Returns
-       -------
-       result: str
-       """
-       
-
-We can choose to use greedy decoder or beam decoder. Again, beam decoder
-is really slow.
-
-.. code:: ipython3
-
-    pprint(transformer.paraphrase(string, beam_search = False))
-
-
-.. parsed-literal::
-
-    ('PELETAKAN Tun Dr. Mahathir Mohamad sebagai ketua Parti Pribumi Bersatu '
-     'Malaysia (Bersatu) ditolak pada 24 Februari lalu di dalam mesyuarat khas '
-     'Majlis Pimpinan Tertinggi (MPT) . Justeru, tidak timbul peletakan jawatan '
-     'itu sah atau tidak kerana ia sudah pun diputuskan pada peringkat parti yang '
-     'dibenarkan semua termasuk Presiden, Sri Muhyiddin Yassin. Bekas Setiausaha '
-     'Agung Bersatu Datuk Marzuki Yahya, berkata pada mesyuarat tahun 1970-an, '
-     'Msebulat suara telah menolak peletakan jawatan Dr Mahathir. "Jadi ini agak '
-     'berlawanan dengan tegas keputusan yang kita sudah buat." peletakan jawatan '
-     'itu sah, sementara kita sudah buat keputusan di dalam mesyuarat, bukan '
-     'seorang dua yang buat keputusan, kata Demokrat ejen Jabatan Tuntutan '
-     'menolegar dari Malaysia. "Semua keputusan" mesti dibuat melalui parti. '
-     'Namun, apa juga perbincangan di luar daripada keputusan berikutnya, ini '
-     'bukan keputusan Parti. Setiausaha kerja itu bunga untuk membawa perkara itu '
-     'kepada JPPM. Seharusnya dilaporkan kepada Setiausaha Negara sebagai '
-     'pentadbir parti itu, kata Harian kepada Setiausaha Agung. Dia mengulas '
-     'mengenai rakan-rakan pelajar media tempatan pada akhir Februari, mengenai '
-     'pengesahan JPM bahawa Dr. Mahathir tidak lagi menjadi Pengerusi Bersatu '
-     'setelah peletakan jawatan di tengah-tengah pergolakan politik. Di sini '
-     'Laporan itu juga, kedudukan Muhyiddin Yassin memangku jawatan itu juga sah. '
-     '"Pada hari Khamis, Dr. Mahathir menghantar surat peletakan jawatan, tetapi '
-     'ditolak oleh MPT. "Fasal yang disebut itu digunakan sekiranya berhenti atau '
-     'diberhentikan, tetapi ini mesyuarat sudah menolak," katanya. Marzuki turut '
-     'mempersoal kenyataan media, yang dibuat beberapa pimpinan Parti hari ini '
-     'yang menyatakan sokongan kepada Perikatan Nasional. `` Kenyataan media '
-     'bukanlah keputusan rasmi. Walaupun kita buat 1,000 kenyataan sekali pun ia '
-     'tetap tidak membenarkan keputusan yang sudah dibuat di perjumpaan. Tetapi '
-     'kita catat di dalam minit apa yang berlaku di dalam mesyuarat, "kata Gemi.')
-
-
-You can see ``Gemi`` out-of-context, this is because the model trying to
-predict who is ``katanya``, so it simply pulled random name from
-training set. To solve this problem, you need to do sliding windows. If
-we have 5 strings, simply give [s1, s2], [s2, s3] and so on the model,
-at least the model got some context from previous string.
-
-.. code:: ipython3
-
-    pprint(transformer_small.paraphrase(string, beam_search = False))
-
-
-.. parsed-literal::
-
-    ('PELETAKAN jawatan Tun Dr Mahathir Mohamad sebagai Pengerusi Parti Pribumi '
-     'Bersatu Malaysia (Bersatu) ditolak di dalam mesyuarat khas Majlis Pimpinan '
-     'Tertinggi (Mahathir) pada 24 Februari lalu. Justeru, tidak timbul pertanyaan '
-     'mengenai jawatan itu sah atau tidak kerana ia sudah pun diputuskan pada '
-     'peringkat parti yang secara umum kepemimpinan termasuk Presiden, Tan Sri '
-     'Muhyiddin Yassin. Bekas Setiausaha Agung Bersatu walikota Marzuki Yahya, '
-     'berkata pada mesyuarat itu MPT sebulat suara menolak perselasi Mahathir. '
-     '"Jadi ini agak menangkan dengan keputusan yang kita sudah buat. Saya tak '
-     'bagaimana seorang Demokrat untuk memindahkan memindahkan memindahkan '
-     'memindahkan memindahkan memindahkan memindahkan memindahkan kata-kata pada '
-     'hari Isnin, sementara kita sudah buat keputusan di dalam pertemuan, bukan '
-     'seorang dua yang buat keputusan. "Semua keputusan harus dibuat melalui '
-     'parti. Namun, apa juga perbincangan dibuat di luar daripada keputusan parti, '
-     'ini bukan keputusan. "Apa locus standy, yang ada pada setiausaha ketaran, '
-     'untuk membawa perkara ini kepada JPM. Seharusnya, seorang pentadbir Amerika '
-     'Syarikat untuk parti, seorang pentadbir bekerja sebagai Harian, seorang '
-     'lelaki. Dia mengatakan seorang lelaki bernama mengulas laporan media '
-     'tempatan mengenai pengesahan JPPM bahawa Dr. Mahathir tidak lagi menjadi '
-     'ketua Bersatu setelah peletakan jawatan di tengah-tengah amalan politik pada '
-     'akhir Februari adalah sah. Ia juga menyatakan, kedudukan Muhyiddin Yassin '
-     'memangku jawatan itu juga sah. Sepertasi Dr. Mahathir, dia membuat surat '
-     'perganti dengan Mahathir, tetapi ditolak oleh MPT. "Fasal yang disebut '
-     'terpakai jika berhenti atau diberhentikan, tetapi ini pertemuan sudah '
-     'menolak," katanya. Marzuki mengambil penjelasan media yang beberapa pimpinan '
-     'parti itu pada hari ini, yang mengumumkan sokongan kepada Perikatan '
-     'Nasional. "Kenyataan media bukanlah keputusan rasmi. Walaupun kita buat '
-     '1,000 kenyataan di mana ia tetap tidak merubah keputusan yang dibuat di '
-     'dalam mesyuarat. Kami catat di dalam minit apa yang berlaku di dalam '
-     'pertemuan ini.')
-
-
-We can see transformer-model brings ``Amerika Syarikat`` to the context,
-which is not really make sense.
-
-What if I tried to paraphrase entire string without split it into
-substrings?
-
-.. code:: ipython3
-
-    pprint(transformer.paraphrase(string, beam_search = False, split_fullstop = False))
-
-
-.. parsed-literal::
-
-    ('Tetapi, pada mesyuarat Sabtu, dia mendakwa bahawa peletakan jawatan '
-     'Pengerusi dan membawanya ke parti-300, setelah keputusan itu tidak sah, dan '
-     'panggilan pengawas berlangsung sekaligus oleh pihak berkuasa tetapi '
-     'keputusan berpecah belah di sini, walikota Belongnya, tidak akan pernah '
-     'dilihat sebagai alasan, tetapi jika tidak ada, dia tidak dapat dilihat pada '
-     'mesyuarat penetapan lapisan media di sini untuk jawatan lain.')
-
-
-It pulled out-of-context related to the string from the training set,
-which is not make any sense.
-
 T5 model
 ^^^^^^^^
-
-In T5, we cannot choose to use greedy decoder or beam decoder.
 
 .. code:: ipython3
 
@@ -439,4 +289,203 @@ at least the model got some context from previous string.
 
 When you try to paraphrase entire string, the output is quite good, a
 summary!
+
+List available LM Transformer models
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Problem with T5 models, it built on top of mesh-tensorflow, so the input
+must size of 1. So we use Tensor2Tensor library to train exact model as
+T5 with dynamic size of batch.
+
+**But, we found out, our pretrained LM Transformer not good as T5**, we
+might skipped some literature in t5 papers.
+
+.. code:: ipython3
+
+    malaya.paraphrase.available_transformer()
+
+
+.. parsed-literal::
+
+    INFO:root:tested on 1k paraphrase texts.
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>Size (MB)</th>
+          <th>BLEU</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>small</th>
+          <td>379.0</td>
+          <td>0.5534</td>
+        </tr>
+        <tr>
+          <th>base</th>
+          <td>832.0</td>
+          <td>0.5970</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+Load Transformer
+~~~~~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    model = malaya.paraphrase.transformer()
+
+decoder mode
+^^^^^^^^^^^^
+
+LM Transformer provided 3 different decoder for summarization,
+
+1. greedy decoder, simply argmax,
+
+.. code:: python
+
+   model.summarization([string], decoder = 'greedy')
+
+2. beam decoder, Beam width size 3, alpha 0.5 .
+
+.. code:: python
+
+   model.summarization([string], decoder = 'beam')
+
+3. nucleus sampling decoder, Beam width size 1, with nucleus sampling.
+
+.. code:: python
+
+   model.summarization([string], decoder = 'nucleus', top_p = 0.7)
+
+default is ``greedy``,
+
+.. code:: python
+
+   def paraphrase(
+       self,
+       strings: List[str],
+       decoder: str = 'greedy',
+       top_p: float = 0.7,
+   ):
+       """
+       Summarize strings.
+
+       Parameters
+       ----------
+
+       decoder: str
+           mode for summarization decoder. Allowed values:
+
+           * ``'greedy'`` - Beam width size 1, alpha 0.
+           * ``'beam'`` - Beam width size 3, alpha 0.5 .
+           * ``'nucleus'`` - Beam width size 1, with nucleus sampling.
+
+       top_p: float, (default=0.7)
+           cumulative distribution and cut off as soon as the CDF exceeds `top_p`.
+           this is only useful if use `nucleus` decoder.
+
+.. code:: ipython3
+
+    string = """
+    PELETAKAN jawatan Tun Dr Mahathir Mohamad sebagai Pengerusi Parti Pribumi Bersatu Malaysia (Bersatu) ditolak di dalam mesyuarat khas Majlis Pimpinan Tertinggi (MPT) pada 24 Februari lalu.
+    
+    Justeru, tidak timbul soal peletakan jawatan itu sah atau tidak kerana ia sudah pun diputuskan pada peringkat parti yang dipersetujui semua termasuk Presiden, Tan Sri Muhyiddin Yassin.
+    
+    Bekas Setiausaha Agung Bersatu Datuk Marzuki Yahya berkata, pada mesyuarat itu MPT sebulat suara menolak peletakan jawatan Dr Mahathir.
+    
+    "Jadi ini agak berlawanan dengan keputusan yang kita sudah buat. Saya tak faham bagaimana Jabatan Pendaftar Pertubuhan Malaysia (JPPM) kata peletakan jawatan itu sah sedangkan kita sudah buat keputusan di dalam mesyuarat, bukan seorang dua yang buat keputusan.
+    
+    "Semua keputusan mesti dibuat melalui parti. Walau apa juga perbincangan dibuat di luar daripada keputusan mesyuarat, ini bukan keputusan parti.
+    
+    "Apa locus standy yang ada pada Setiausaha Kerja untuk membawa perkara ini kepada JPPM. Seharusnya ia dibawa kepada Setiausaha Agung sebagai pentadbir kepada parti," katanya kepada Harian Metro.
+    
+    Beliau mengulas laporan media tempatan hari ini mengenai pengesahan JPPM bahawa Dr Mahathir tidak lagi menjadi Pengerusi Bersatu berikutan peletakan jawatannya di tengah-tengah pergolakan politik pada akhir Februari adalah sah.
+    
+    Laporan itu juga menyatakan, kedudukan Muhyiddin Yassin memangku jawatan itu juga sah.
+    
+    Menurutnya, memang betul Dr Mahathir menghantar surat peletakan jawatan, tetapi ditolak oleh MPT.
+    
+    "Fasal yang disebut itu terpakai sekiranya berhenti atau diberhentikan, tetapi ini mesyuarat sudah menolak," katanya.
+    
+    Marzuki turut mempersoal kenyataan media yang dibuat beberapa pimpinan parti itu hari ini yang menyatakan sokongan kepada Perikatan Nasional.
+    
+    "Kenyataan media bukanlah keputusan rasmi. Walaupun kita buat 1,000 kenyataan sekali pun ia tetap tidak merubah keputusan yang sudah dibuat di dalam mesyuarat. Kita catat di dalam minit apa yang berlaku di dalam mesyuarat," katanya.
+    """
+
+.. code:: ipython3
+
+    import re
+    
+    # minimum cleaning, just simply to remove newlines.
+    def cleaning(string):
+        string = string.replace('\n', ' ')
+        string = re.sub(r'[ ]+', ' ', string).strip()
+        return string
+    
+    string = cleaning(string)
+    splitted = malaya.text.function.split_into_sentences(string)
+
+.. code:: ipython3
+
+    model.paraphrase([' '.join(splitted[:2])], decoder = 'greedy')
+
+
+
+
+.. parsed-literal::
+
+    ['PELETAKAN pengunduran Tun Dr. Mahathir sebagai ketua Parti Pribumi Bersatu Malaysia (Bersatu) dibincangkan pada 24 Februari lalu di dalam mesyuarat khas Majlis Pimpinan Tertinggi (MPT), dan tidak ada keraguan bahawa peletakan jawatan itu sah atau tidak, kerana ia sudah diputuskan pada peringkat parti yang menyetujui semua Presiden, Tan Sri Muhyiddin Yassin.']
+
+
+
+.. code:: ipython3
+
+    model.paraphrase([' '.join(splitted[:2])], decoder = 'beam')
+
+
+
+
+.. parsed-literal::
+
+    ['PELETAKAN pengunduran Tun Dr. Mahathir sebagai ketua Parti Pribumi Bersatu Malaysia (Bersatu) dibincangkan pada 24 Februari lalu di dalam mesyuarat khas Majlis Pimpinan Tertinggi (MPT), dan tentu saja tidak ada keraguan bahawa peletakan jawatan itu sah atau tidak dibuat pada peringkat parti yang menyetujui semua, termasuk Presiden, Tan Sri Muhyiddin Yassin.']
+
+
+
+.. code:: ipython3
+
+    model.paraphrase([' '.join(splitted[:2])], decoder = 'nucleus', top_p = 0.7)
+
+
+
+
+.. parsed-literal::
+
+    ['PELETAKAN pengunduran Tun Dr. Mahathir sebagai ketua Parti Pribumi Bersatu Malaysia (Bersatu) dibincangkan pada 24 Februari lalu di dalam mesyuarat Majlis Pimpinan Tertinggi (MPT), dan tidak ada persoalan bahawa peletakan jawatan itu sah atau tidak, kerana telah diputuskan pada peringkat parti yang menyetujui semua, termasuk Presiden, Tan Sri Muhyiddin Yassin.']
+
 

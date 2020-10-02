@@ -3,9 +3,9 @@ import tensorflow_datasets as tfds
 import t5
 import functools
 
-vocab = 'gs://mesolitica-general/t5-vocab/sp10m.cased.t5.model'
+vocab = 'gs://mesolitica-tpu-general/t5-data/sp10m.cased.t5.model'
 tpu = tf.distribute.cluster_resolver.TPUClusterResolver(
-    'node-1', zone = 'us-central1-a', project = 'mesolitica-cloud'
+    'node-3', zone = 'europe-west4-a', project = 'mesolitica-tpu'
 )
 TPU_ADDRESS = tpu.get_master()
 TPU_TOPOLOGY = '2x2'
@@ -16,10 +16,10 @@ def cnn_dataset(split, shuffle_files = False):
     del shuffle_files
     ds = tf.data.TextLineDataset(
         [
-            'gs://mesolitica-public/t5-data/bahasa-paraphrase-0.tsv',
-            'gs://mesolitica-public/t5-data/bahasa-paraphrase-1.tsv',
-            'gs://mesolitica-public/t5-data/bahasa-paraphrase-2.tsv',
-            'gs://mesolitica-public/t5-data/bahasa-paraphrase-3.tsv',
+            'gs://mesolitica-tpu-general/t5-data/bahasa-paraphrase-0.tsv',
+            'gs://mesolitica-tpu-general/t5-data/bahasa-paraphrase-1.tsv',
+            'gs://mesolitica-tpu-general/t5-data/bahasa-paraphrase-2.tsv',
+            'gs://mesolitica-tpu-general/t5-data/bahasa-paraphrase-3.tsv',
         ]
     )
 
@@ -76,7 +76,7 @@ def main(_):
         '11B': (8, 16, 1),
     }['small']
 
-    BASE_DIR = 'gs://mesolitica-general/t5-small-paraphrase-v1'
+    BASE_DIR = 'gs://mesolitica-tpu-general/t5-small-paraphrase-v1'
     model = t5.models.MtfModel(
         model_dir = BASE_DIR,
         tpu = TPU_ADDRESS,
@@ -91,7 +91,7 @@ def main(_):
     )
 
     FINETUNE_STEPS = 50000
-    MODEL_DIR = 'gs://mesolitica-general/t5-small'
+    MODEL_DIR = 'gs://mesolitica-tpu-general/t5-small'
 
     model.finetune(
         mixture_or_task_name = 'generator_bahasa',

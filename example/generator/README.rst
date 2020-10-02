@@ -15,8 +15,8 @@ Generator
 
 .. parsed-literal::
 
-    CPU times: user 5 s, sys: 718 ms, total: 5.72 s
-    Wall time: 4.87 s
+    CPU times: user 4.87 s, sys: 644 ms, total: 5.52 s
+    Wall time: 4.58 s
 
 
 List available T5 Model
@@ -50,16 +50,19 @@ List available T5 Model
         <tr style="text-align: right;">
           <th></th>
           <th>Size (MB)</th>
+          <th>Uncompressed Size (MB)</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <th>small</th>
-          <td>122</td>
+          <td>122.0</td>
+          <td>355.6</td>
         </tr>
         <tr>
           <th>base</th>
-          <td>448</td>
+          <td>448.0</td>
+          <td>1300.0</td>
         </tr>
       </tbody>
     </table>
@@ -77,7 +80,7 @@ karangan like high school when the users give ‘isi penting’.
 
 .. code:: python
 
-   def t5(model: str = 'base', **kwargs):
+   def t5(model: str = 'base', compressed: bool = True, **kwargs):
 
        """
        Load T5 model to generate a string given a isu penting.
@@ -87,13 +90,22 @@ karangan like high school when the users give ‘isi penting’.
        model : str, optional (default='base')
            Model architecture supported. Allowed values:
 
-           * ``'base'`` - T5 Base parameters.
-           * ``'small'`` - T5 Small parameters.
+           * ``'base'`` - T5 BASE parameters.
+           * ``'small'`` - T5 SMALL parameters.
+
+       compressed: bool, optional (default=True)
+           Load compressed model, but this not able to utilize malaya-gpu function. 
+           This only compressed model size, but when loaded into VRAM / RAM, size uncompressed and compressed are the same.
+           We prefer un-compressed model due to compressed model prone to error.
 
        Returns
        -------
        result: malaya.model.t5.GENERATOR class
        """
+
+**For malaya-gpu user, compressed t5 very fragile and we suggest use
+``compressed=False``. Uncompressed model also can utilise GPU usage more
+efficient**.
 
 .. code:: ipython3
 

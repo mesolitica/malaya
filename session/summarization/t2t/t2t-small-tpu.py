@@ -1,7 +1,6 @@
-import os
+import faulthandler
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '1,2,3'
-
+faulthandler.enable()
 from tensor2tensor.data_generators import problem
 from tensor2tensor.data_generators import text_problems
 from tensor2tensor.data_generators import translate
@@ -24,7 +23,7 @@ sp.Load(vocab)
 class Encoder:
     def __init__(self, sp):
         self.sp = sp
-        self.vocab_size = sp.GetPieceSize()
+        self.vocab_size = sp.GetPieceSize() + 100
 
     def encode(self, s):
         return self.sp.EncodeAsIds(s)
@@ -43,7 +42,7 @@ from glob import glob
 class Seq2Seq(text_problems.Text2TextProblem):
     @property
     def approx_vocab_size(self):
-        return 32000
+        return 32100
 
     @property
     def is_generate_per_split(self):
@@ -51,38 +50,27 @@ class Seq2Seq(text_problems.Text2TextProblem):
 
     @property
     def dataset_splits(self):
-        return [
-            {'split': problem.DatasetSplit.TRAIN, 'shards': 9},
-            {'split': problem.DatasetSplit.EVAL, 'shards': 1},
-        ]
+        return [{'split': problem.DatasetSplit.TRAIN, 'shards': 100}]
 
     def feature_encoders(self, data_dir):
         encoder = Encoder(sp)
         return {'inputs': encoder, 'targets': encoder}
 
 
-os.system('rm -rf t2t/train-base')
-os.system('mkdir t2t/train-base')
-DATA_DIR = os.path.expanduser('t2t/data')
-TMP_DIR = os.path.expanduser('t2t/tmp')
-TRAIN_DIR = os.path.expanduser('t2t/train-base')
-EXPORT_DIR = os.path.expanduser('t2t/export')
-TRANSLATIONS_DIR = os.path.expanduser('t2t/translation')
-EVENT_DIR = os.path.expanduser('t2t/event')
-USR_DIR = os.path.expanduser('t2t/user')
+DATA_DIR = 'gs://mesolitica-tpu-general/t2t-summarization/data'
+TRAIN_DIR = 'gs://mesolitica-tpu-general/t2t-summarization-small'
 
 PROBLEM = 'seq2_seq'
 t2t_problem = problems.problem(PROBLEM)
 
-train_steps = 500000
+train_steps = 50000
 eval_steps = 10
-batch_size = 1024 * 8
-save_checkpoints_steps = 50000
-ALPHA = 0.1
+batch_size = 32
+save_checkpoints_steps = 25000
+ALPHA = 0.0005
 schedule = 'continuous_train_and_eval'
 MODEL = 'transformer'
 HPARAMS = 'transformer_base'
-optimizer = 'adafactor'
 
 from tensor2tensor.utils.trainer_lib import create_run_config, create_experiment
 from tensor2tensor.utils.trainer_lib import create_hparams
@@ -93,16 +81,51 @@ from tensor2tensor import problems
 hparams = create_hparams(HPARAMS)
 hparams.batch_size = batch_size
 hparams.learning_rate = ALPHA
-hparams.optimizer = optimizer
-hparams.max_length = 512
-hparams.filter_size = 3072
-hparams.hidden_size = 768
+hparams.train_batch_size = batch_size
+
+hparams.filter_size = 2048
+hparams.hidden_size = 512
+hparams.num_heads = 8
+hparams.num_hidden_layers = 6
+hparams.vocab_divisor = 128
+hparams.dropout = 0.1
+hparams.max_length = 1024
+
+# LM
+hparams.label_smoothing = 0.0
+hparams.shared_embedding_and_softmax_weights = False
+hparams.eval_drop_long_sequences = True
+hparams.max_length = 1024
+hparams.multiproblem_mixing_schedule = 'pretrain'
+hparams.use_fixed_batch_size = True
+
+# tpu
+hparams.symbol_modality_num_shards = 1
+hparams.attention_dropout_broadcast_dims = '0,1'
+hparams.relu_dropout_broadcast_dims = '1'
+hparams.layer_prepostprocess_dropout_broadcast_dims = '1'
+
+hparams.optimizer = 'Adafactor'
+hparams.learning_rate_warmup_steps = 10000
+hparams.learning_rate_schedule = 'rsqrt_decay'
+
+# hparams.warm_start_from = (
+#     'gs://mesolitica-tpu-general/t2t-small/model.ckpt-500000'
+# )
+hparams.warm_start_from_second = (
+    'gs://mesolitica-tpu-general/t2t-small/model.ckpt-500000'
+)
+
+print(hparams)
 
 RUN_CONFIG = create_run_config(
     model_dir = TRAIN_DIR,
     model_name = MODEL,
     save_checkpoints_steps = save_checkpoints_steps,
-    num_gpus = 3,
+    use_tpu = True,
+    cloud_tpu_name = 'node-6',
+    iterations_per_loop = 100,
+    schedule = 'train',
 )
 
 tensorflow_exp_fn = create_experiment(
@@ -113,7 +136,11 @@ tensorflow_exp_fn = create_experiment(
     data_dir = DATA_DIR,
     train_steps = train_steps,
     eval_steps = eval_steps,
+    use_tpu = True,
+    use_tpu_estimator = False,
+    schedule = 'train',
+    warm_start_from = 'gs://mesolitica-tpu-general/t2t-small/model.ckpt-500000'
     # use_xla=True # For acceleration
 )
 
-tensorflow_exp_fn.train_and_evaluate()
+tensorflow_exp_fn.train()

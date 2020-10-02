@@ -260,7 +260,13 @@ def add_neutral(x, alpha = 1e-2):
     return np.concatenate([x_divide, 1 - sum_axis], axis = 1)
 
 
-def describe_availability(dict, transpose = True):
+def describe_availability(dict, transpose = True, text = ''):
+    if len(text):
+        import logging
+
+        logging.basicConfig(level = logging.INFO)
+
+        logging.info(text)
     try:
         import pandas as pd
 
