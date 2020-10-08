@@ -143,6 +143,19 @@ def check_repeat(word):
     return word, repeat
 
 
+def groupby(string):
+    results = []
+    for word in string.split():
+        if not (
+            _is_number_regex(word)
+            or re.findall(_expressions['url'], word)
+            or re.findall(_money, word.lower())
+        ):
+            word = ''.join([''.join(s)[:2] for _, s in itertools.groupby(word)])
+        results.append(word)
+    return ' '.join(results)
+
+
 class NORMALIZER:
     def __init__(self, speller):
 
@@ -174,7 +187,7 @@ class NORMALIZER:
         string: normalized string
         """
 
-        string = ''.join(''.join(s)[:2] for _, s in itertools.groupby(string))
+        string = groupby(string)
         string = replace_laugh(string)
         string = replace_mengeluh(string)
         string = _replace_compoud(string)
