@@ -1,5 +1,6 @@
 from collections import Counter, defaultdict
 from itertools import product
+import tensorflow as tf
 import numpy as np
 import json
 import re
@@ -298,9 +299,6 @@ class TRANSFORMER(SPELL):
     def __init__(self, model, corpus, sp_tokenizer):
         SPELL.__init__(self, sp_tokenizer, corpus, add_norvig_method = False)
         self._model = model
-
-        import tensorflow as tf
-
         self._padding = tf.keras.preprocessing.sequence.pad_sequences
 
     def _correct(self, word, string, index, batch_size = 20):
