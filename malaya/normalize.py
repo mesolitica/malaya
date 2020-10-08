@@ -147,7 +147,9 @@ def groupby(string):
     results = []
     for word in string.split():
         if not (
-            _is_number_regex(word) or re.findall(_expressions['url'], word)
+            _is_number_regex(word)
+            or re.findall(_expressions['url'], word)
+            or re.findall(_money, word.lower())
         ):
             word = ''.join([''.join(s)[:2] for _, s in itertools.groupby(word)])
         results.append(word)
