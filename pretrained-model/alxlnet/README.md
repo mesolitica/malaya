@@ -116,6 +116,40 @@ python3 train.py \
 --save_steps=20000
 ```
 
+**TPU LARGE**
+```
+python3 train.py \
+--record_info_dir=gs://mesolitica-tpu-general/xlnet-large-data-32/tfrecords \
+--train_batch_size=32 \
+--seq_len=512 \
+--reuse_len=256 \
+--mem_len=384 \
+--perm_size=256 \
+--n_layer=20 \
+--d_model=1024 \
+--d_embed=1024 \
+--n_head=16 \
+--d_head=64 \
+--d_inner=4096 \
+--untie_r=True \
+--mask_alpha=6 \
+--mask_beta=1 \
+--num_predict=85 \
+--model_dir=gs://mesolitica-tpu-general/alxlnet-large \
+--uncased=False \
+--num_core_per_host=8 \
+--train_steps=500000 \
+--learning_rate=1e-5 \
+--ff_activation=gelu \
+--adam_epsilon=1e-6 \
+--weight_decay=0.01 \
+--warmup_steps=40000 \
+--tpu=node-7 \
+--tpu_zone=europe-west4-a \
+--iterations=100 \
+--save_steps=20000
+```
+
 ## Download
 
 1. **BASE**, last update 6th November 2019, [alxlnet-base-6-11-2019.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/alxlnet-base-6-11-2019.tar.gz)
@@ -131,6 +165,14 @@ python3 train.py \
   - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.
   - 300k steps, 3 GPUs TESLA V100.
   - BASE size (42.4MB).
+
+3. **BASE**, last update 8th October 2020, [alxlnet-base-2020-10-08.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/alxlnet-base-2020-10-08.tar.gz)
+
+  - Vocab size 32k.
+  - Trained on raw wikipedia, raw common crawl, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.
+  - 500k steps, 1 TPU V3-8.
+  - BASE size (42.4MB).
+  - Tensorboard, https://tensorboard.dev/experiment/tR51toJYQUakmDX1GOVJfg/
 
 ## Citation
 

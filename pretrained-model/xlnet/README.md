@@ -28,7 +28,7 @@ Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://w
 ```bash
 mkdir save-location
 python3 data_utils.py \
-  --bsz_per_host=64 \
+  --bsz_per_host=32 \
   --seq_len=512 \
   --reuse_len=256 \
   --input_glob=../pure-text/splitted/* \
@@ -102,6 +102,41 @@ python3 train.py \
 --weight_decay=0.01 \
 --warmup_steps=40000 \
 --tpu=node-7 \
+--tpu_zone=europe-west4-a \
+--dropout=0.1 --dropatt=0.1 \
+--iterations=100 \
+--save_steps=20000
+```
+
+**TPU LARGE**
+```
+python3 train.py \
+--record_info_dir=gs://mesolitica-tpu-general/xlnet-large-data-32/tfrecords \
+--train_batch_size=32 \
+--seq_len=512 \
+--reuse_len=256 \
+--mem_len=384 \
+--perm_size=256 \
+--n_layer=20 \
+--d_model=1024 \
+--d_embed=1024 \
+--n_head=16 \
+--d_head=64 \
+--d_inner=4096 \
+--untie_r=True \
+--mask_alpha=6 \
+--mask_beta=1 \
+--num_predict=85 \
+--model_dir=gs://mesolitica-tpu-general/xlnet-large \
+--uncased=False \
+--num_core_per_host=8 \
+--train_steps=500000 \
+--learning_rate=4e-4 \
+--ff_activation=gelu \
+--adam_epsilon=1e-6 \
+--weight_decay=0.01 \
+--warmup_steps=40000 \
+--tpu=node-3 \
 --tpu_zone=europe-west4-a \
 --dropout=0.1 --dropatt=0.1 \
 --iterations=100 \

@@ -64,10 +64,90 @@ python3 run_pretraining.py \
   --do_train=True \
   --do_eval=False \
   --bert_config_file=gs://mesolitica-tpu-general/bert-config/BASE_config.json \
-  --train_batch_size=128 \
+  --train_batch_size=512 \
   --max_seq_length=128 \
   --max_predictions_per_seq=20 \
   --num_train_steps=500000 \
+  --learning_rate=2e-5 \
+  --iterations_per_loop=100 \
+  --tpu_name=node-3 \
+  --tpu_zone=europe-west4-a \
+  --save_checkpoints_steps=25000 \
+  --use_tpu=True
+```
+
+```bash
+# 512 length
+python3 run_pretraining.py \
+  --input_file=gs://mesolitica-tpu-general/bert-data-512/*.tfrecord \
+  --output_dir=gs://mesolitica-tpu-general/bert-base \
+  --do_train=True \
+  --do_eval=False \
+  --bert_config_file=gs://mesolitica-tpu-general/bert-config/BASE_config.json \
+  --train_batch_size=128 \
+  --max_seq_length=512 \
+  --max_predictions_per_seq=20 \
+  --num_train_steps=700000 \
+  --learning_rate=2e-5 \
+  --iterations_per_loop=100 \
+  --tpu_name=node-3 \
+  --tpu_zone=europe-west4-a \
+  --save_checkpoints_steps=25000 \
+  --use_tpu=True
+```
+
+```bash
+python3 run_pretraining.py \
+  --input_file=gs://mesolitica-tpu-general/bert-data/*.tfrecord \
+  --output_dir=gs://mesolitica-tpu-general/bert-base \
+  --do_train=True \
+  --do_eval=False \
+  --bert_config_file=gs://mesolitica-tpu-general/bert-config/BASE_config.json \
+  --train_batch_size=512 \
+  --max_seq_length=128 \
+  --max_predictions_per_seq=20 \
+  --num_train_steps=1000000 \
+  --learning_rate=2e-5 \
+  --iterations_per_loop=100 \
+  --tpu_name=node-3 \
+  --tpu_zone=europe-west4-a \
+  --save_checkpoints_steps=25000 \
+  --use_tpu=True
+```
+
+**TPU LARGE**,
+
+```bash
+python3 run_pretraining.py \
+  --input_file=gs://mesolitica-tpu-general/bert-data/*.tfrecord \
+  --output_dir=gs://mesolitica-tpu-general/bert-large \
+  --do_train=True \
+  --do_eval=False \
+  --bert_config_file=gs://mesolitica-tpu-general/bert-config/LARGE_config.json \
+  --train_batch_size=256 \
+  --max_seq_length=128 \
+  --max_predictions_per_seq=20 \
+  --num_train_steps=500000 \
+  --learning_rate=2e-5 \
+  --iterations_per_loop=100 \
+  --tpu_name=node-7 \
+  --tpu_zone=europe-west4-a \
+  --save_checkpoints_steps=25000 \
+  --use_tpu=True
+```
+
+```bash
+# 512 length
+python3 run_pretraining.py \
+  --input_file=gs://mesolitica-tpu-general/bert-data-512/*.tfrecord \
+  --output_dir=gs://mesolitica-tpu-general/bert-large \
+  --do_train=True \
+  --do_eval=False \
+  --bert_config_file=gs://mesolitica-tpu-general/bert-config/LARGE_config.json \
+  --train_batch_size=128 \
+  --max_seq_length=512 \
+  --max_predictions_per_seq=20 \
+  --num_train_steps=700000 \
   --learning_rate=2e-5 \
   --iterations_per_loop=100 \
   --tpu_name=node-3 \
@@ -101,40 +181,28 @@ I0910 11:20:31.562414 140220436277056 validation.py:597]   next_sentence_loss = 
 
 ## Download
 
-1. **BASE**, last update 30th July 2019, [bert-bahasa-base.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/bert-bahasa-base.tar.gz)
-
-  - Vocab size 40k.
-  - Trained on cleaned wikipedia, raw twitter, raw instagram, raw parliament, raw news.
-  - 1.5M steps, single GPU.
-  - BASE size (467MB).
-
-2. **SMALL**, last update 2nd August 2019, [bert-bahasa-small.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/bert-bahasa-small.tar.gz)
-
-  - Vocab size 40k.
-  - Trained on cleaned wikipedia, raw twitter, raw instagram, raw parliament, raw news.
-  - 1.5M steps, single GPU.
-  - SMALL size (184MB).
-
-3. **BASE**, last update 13th September 2019, [bert-bahasa-base-13-9-2019.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/bert-base-13-9-2019.tar.gz)
-
-  - Vocab size 40k.
-  - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news.
-  - 1.0M steps, 3 GPUs TESLA V100.
-  - BASE size (467MB).
-
-4. **SMALL**, last update 19th September 2019, [bert-small-19-9-2019.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/bert-small-19-9-2019.tar.gz)
-
-  - Vocab size 40k.
-  - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news.
-  - 1.0M steps, 3 GPUs TESLA V100.
-  - SMALL size (184MB).
-
-5. **BASE**, last update 19th March 2020, [bert-base-2020-03-19.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/bert-base-2020-03-19.tar.gz)
+1. **BASE**, last update 19th March 2020, [bert-base-2020-03-19.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/bert-base-2020-03-19.tar.gz)
 
   - Vocab size 32k.
   - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.
   - 2.0M steps, 3 GPUs TESLA V100.
   - BASE size (467MB).
+
+2. **BASE**, last update 8th October 2020, [bert-base-2020-10-08.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/bert-base-2020-10-08.tar.gz)
+
+  - Vocab size 32k.
+  - Trained on raw wikipedia, raw commoncrawl, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.
+  - 1.0M steps, 1 TPU V3-8.
+  - BASE size (467MB).
+  - Tensorboard, https://tensorboard.dev/experiment/txTghOVAS0y2Tgt3BR1hvQ/
+
+2. **LARGE**, last update 8th October 2020, [bert-large-2020-10-08.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/bert-large-2020-10-08.tar.gz)
+
+  - Vocab size 32k.
+  - Trained on raw wikipedia, raw commoncrawl, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.
+  - 700k steps, 1 TPU V3-8.
+  - BASE size (1357MB).
+  - Tensorboard, https://tensorboard.dev/experiment/Zuv2VefdRqm43y0DtkNnQw/
 
 ## Citation
 
