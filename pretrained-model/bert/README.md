@@ -194,7 +194,7 @@ I0910 11:20:31.562414 140220436277056 validation.py:597]   next_sentence_loss = 
   - Trained on raw wikipedia, raw commoncrawl, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.
   - 1.0M steps, 1 TPU V3-8.
   - BASE size (467MB).
-  - Tensorboard, https://tensorboard.dev/experiment/txTghOVAS0y2Tgt3BR1hvQ/
+  - Tensorboard, https://tensorboard.dev/experiment/7lXHPrzwTEGJX41t5MA3bg/
 
 2. **LARGE**, last update 8th October 2020, [bert-large-2020-10-08.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/bert-large-2020-10-08.tar.gz)
 

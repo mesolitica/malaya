@@ -166,13 +166,21 @@ python3 train.py \
   - 300k steps, 3 GPUs TESLA V100.
   - BASE size (42.4MB).
 
-3. **BASE**, last update 8th October 2020, [alxlnet-base-2020-10-08.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/alxlnet-base-2020-10-08.tar.gz)
+3. **BASE**, last update 8th October 2020, [alxlnet-base-500k-20-10-2020.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/alxlnet-base-500k-20-10-2020.gz)
 
   - Vocab size 32k.
   - Trained on raw wikipedia, raw common crawl, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.
   - 500k steps, 1 TPU V3-8.
   - BASE size (42.4MB).
-  - Tensorboard, https://tensorboard.dev/experiment/tR51toJYQUakmDX1GOVJfg/
+  - Tensorboard, https://tensorboard.dev/experiment/7lXHPrzwTEGJX41t5MA3bg/
+
+4. **LARGE**, last update 20th October 2020, [alxlnet-large-500k-20-10-2020.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/alxlnet-large-500k-20-10-2020.gz)
+
+  - Vocab size 32k.
+  - Trained on raw wikipedia, raw common crawl, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.
+  - 500k steps, 1 TPU V3-8.
+  - LARGE size.
+  - Tensorboard, https://tensorboard.dev/experiment/xc5gkzIaQlWY7MyKNbnkSg/
 
 ## Citation
 

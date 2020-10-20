@@ -1,10 +1,14 @@
 import tensorflow as tf
 from herpetologist import check_type
 from malaya.text.function import (
-    postprocessing_summarization,
     transformer_textcleaning,
     split_into_sentences,
     upperfirst,
+)
+from malaya.text.rouge import (
+    filter_rouge,
+    postprocessing_summarization,
+    find_lapor_and_remove,
 )
 from typing import List
 import re
@@ -39,12 +43,22 @@ class SUMMARIZATION(T5):
     def __init__(self, X, decode, sess, pred):
         T5.__init__(self, X = X, decode = decode, sess = sess, pred = pred)
 
-    def _summarize(self, string, mode):
-        string = f'{mode}: {cleaning(string)}'
-        return postprocessing_summarization(upperfirst(self._predict(string)))
+    def _summarize(self, string, mode, postprocess, **kwargs):
+        summary = upperfirst(self._predict(f'{mode}: {cleaning(string)}'))
+        if postprocess:
+            summary = filter_rouge(string, summary, **kwargs)
+            summary = postprocessing_summarization(summary)
+            summary = find_lapor_and_remove(string, summary)
+        return summary
 
     @check_type
-    def summarize(self, string: str, mode: str = 'ringkasan'):
+    def summarize(
+        self,
+        string: str,
+        mode: str = 'ringkasan',
+        postprocess: bool = True,
+        **kwargs,
+    ):
         """
         Summarize a string. Decoder is beam decoder with beam width size 1, alpha 0.5 .
 
@@ -56,6 +70,8 @@ class SUMMARIZATION(T5):
 
             * ``'ringkasan'`` - summarization for long sentence, eg, news summarization.
             * ``'tajuk'`` - title summarization for long sentence, eg, news title.
+        postprocess: bool, optional (default=True)
+            If True, will filter sentence generated using ROUGE score and removed international news publisher.
 
         Returns
         -------
@@ -65,7 +81,7 @@ class SUMMARIZATION(T5):
         if mode not in ['ringkasan', 'tajuk']:
             raise ValueError('mode only supports [`ringkasan`, `tajuk`]')
 
-        results = self._summarize(string, mode)
+        results = self._summarize(string, mode, postprocess, **kwargs)
 
         return results
 

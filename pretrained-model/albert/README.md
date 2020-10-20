@@ -83,12 +83,36 @@ python3 -m albert.run_pretraining \
   - 400k steps, TPU v3-8.
   - BASE size (43.3MB).
 
-1. **TINY**, last update 17th April 2020, [albert-tiny-2020-04-17.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/albert-tiny-2020-04-17.tar.gz)
+2. **TINY**, last update 17th April 2020, [albert-tiny-2020-04-17.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/albert-tiny-2020-04-17.tar.gz)
 
   - Vocab size 32k.
   - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.
   - 1M steps, TPU v3-8.
   - TINY size (21MB).
+
+3. **BASE**, last update 19th October 2020, [albert-base-500k-19-10-2020.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/albert-base-500k-19-10-2020.tar.gz)
+
+  - Vocab size 32k.
+  - Trained on raw wikipedia, raw common crawl, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.
+  - 500k steps, TPU v3-8.
+  - BASE size (43.3MB).
+  - Tensorboard, https://tensorboard.dev/experiment/pOunE2WwSAGroQgNmXDFqQ/
+
+4. **TINY**, last update 19th October 2020, [albert-tiny-700k-19-10-2020.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/albert-tiny-700k-19-10-2020.tar.gz)
+
+  - Vocab size 32k.
+  - Trained on raw wikipedia, raw common crawl, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.
+  - 700k steps, TPU v3-8.
+  - TINY size (21MB).
+  - Tensorboard, https://tensorboard.dev/experiment/Sjx1sEF6TQeDXIJ4J6C5iQ/
+
+5. **LARGE**, last update 19th October 2020, [albert-large-475k-19-10-2020.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/albert-large-475k-19-10-2020.tar.gz)
+
+  - Vocab size 32k.
+  - Trained on raw wikipedia, raw common crawl, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.
+  - 475k steps, TPU v3-8.
+  - LARGE size.
+  - Tensorboard, https://tensorboard.dev/experiment/LT9KbeWHRTOWi6vqqJuqeQ/
 
 ## Citation
 

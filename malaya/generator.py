@@ -43,6 +43,7 @@ _accepted_entities = [
 _t5_availability = {
     'small': {'Size (MB)': 122, 'Uncompressed Size (MB)': 355.6},
     'base': {'Size (MB)': 448, 'Uncompressed Size (MB)': 1300},
+    'large': {'Size (MB)': 448, 'Uncompressed Size (MB)': 1300},
 }
 
 _gpt2_availability = {

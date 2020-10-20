@@ -227,6 +227,14 @@ python3 multigpu_pretraining.py \
   - BASE size (467MB).
   - Tensorboard, https://tensorboard.dev/experiment/qGNflXX1R22GJ2Pk8ECDmA/
 
+3. **LARGE**, last update 20 October 2020, [xlnet-large-500k-20-10-2020.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/xlnet-large-500k-20-10-2020.gz)
+
+  - Vocab size 32k.
+  - Trained on raw wikipedia, raw common crawl, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.
+  - 500k steps, 1 TPU V3-8.
+  - BASE size.
+  - Tensorboard, https://tensorboard.dev/experiment/B2RQd2yATZOjsAayQm8ncA/
+
 ## Citation
 
 1. Please citate the repository if use these checkpoints.

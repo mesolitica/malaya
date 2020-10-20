@@ -15,7 +15,6 @@ from malaya.text.tatabahasa import (
 from malaya.text.rules import normalized_chars
 from malaya.text.english.words import words as _english_words
 from malaya.text.bahasa.words import words as _malay_words
-from malaya.text.bahasa.lapor import lapor as _lapor_words
 from malaya import home
 import json
 
@@ -467,7 +466,7 @@ acronyms = '([A-Z][.][A-Z][.](?:[A-Z][.])?)'
 websites = '[.](com|net|org|io|gov|me|edu|my)'
 another_websites = '(www|http|https)[.]'
 digits = '([0-9])'
-before_digits = '([Nn]o|[Nn]ombor|[Nn]umber|[Kk]e|=|al)'
+before_digits = '([Nn]o|[Nn]ombor|[Nn]umber|[Kk]e|=|al|[Pp]ukul)'
 month = '([Jj]an(?:uari)?|[Ff]eb(?:ruari)?|[Mm]a(?:c)?|[Aa]pr(?:il)?|Mei|[Jj]u(?:n)?|[Jj]ula(?:i)?|[Aa]ug(?:ust)?|[Ss]ept?(?:ember)?|[Oo]kt(?:ober)?|[Nn]ov(?:ember)?|[Dd]is(?:ember)?)'
 
 
@@ -563,12 +562,3 @@ def tag_chunk(seq):
 
 def upperfirst(string):
     return string[0].upper() + string[1:]
-
-
-def postprocessing_summarization(string):
-    for l in _lapor_words:
-        if l in string:
-            string = string.replace(l, '')
-
-    string = re.sub(r'[ ]+', ' ', string).strip()
-    return string

@@ -3,13 +3,17 @@ import numpy as np
 import re
 from unidecode import unidecode
 from malaya.text.function import (
-    postprocessing_summarization,
     language_detection_textcleaning,
     split_into_sentences,
     transformer_textcleaning,
     translation_textcleaning,
     pad_sentence_batch,
     upperfirst,
+)
+from malaya.text.rouge import (
+    filter_rouge,
+    postprocessing_summarization,
+    find_lapor_and_remove,
 )
 from malaya.text.bpe import (
     constituency_bert,
@@ -331,7 +335,15 @@ class SUMMARIZATION:
             'nucleus': self._nucleus,
         }
 
-    def _summarize(self, strings, mode, decoder = 'greedy', top_p = 0.7):
+    def _summarize(
+        self,
+        strings,
+        mode,
+        decoder = 'greedy',
+        top_p = 0.7,
+        postprocess = True,
+        **kwargs,
+    ):
         mode = mode.lower()
         if mode not in ['ringkasan', 'tajuk']:
             raise ValueError('mode only supports [`ringkasan`, `tajuk`]')
@@ -344,18 +356,25 @@ class SUMMARIZATION:
         if not decoder:
             raise ValueError('mode only supports [`greedy`, `beam`, `nucleus`]')
 
-        strings = [f'{mode}: {cleaning(string)}' for string in strings]
+        strings_ = [f'{mode}: {cleaning(string)}' for string in strings]
 
-        batch_x = [self._tokenizer.encode(string) + [1] for string in strings]
+        batch_x = [self._tokenizer.encode(string) + [1] for string in strings_]
         batch_x = padding_sequence(batch_x)
 
         p = self._sess.run(
             output, feed_dict = {self._X: batch_x, self._top_p: top_p}
         ).tolist()
 
-        results = [
-            postprocessing_summarization(self._tokenizer.decode(r)) for r in p
-        ]
+        results = []
+        for no, r in enumerate(p):
+            summary = self._tokenizer.decode(r)
+            if postprocess:
+                summary = filter_rouge(strings[no], summary, **kwargs)
+                summary = postprocessing_summarization(summary)
+                summary = find_lapor_and_remove(strings[no], summary)
+
+            results.append(summary)
+
         return results
 
     @check_type
@@ -365,6 +384,8 @@ class SUMMARIZATION:
         mode: str = 'ringkasan',
         decoder: str = 'greedy',
         top_p: float = 0.7,
+        postprocess: bool = True,
+        **kwargs,
     ):
         """
         Summarize strings.
@@ -377,17 +398,17 @@ class SUMMARIZATION:
 
             * ``'ringkasan'`` - summarization for long sentence, eg, news summarization.
             * ``'tajuk'`` - title summarization for long sentence, eg, news title.
-
         decoder: str
             mode for summarization decoder. Allowed values:
 
             * ``'greedy'`` - Beam width size 1, alpha 0.
             * ``'beam'`` - Beam width size 3, alpha 0.5 .
             * ``'nucleus'`` - Beam width size 1, with nucleus sampling.
-
         top_p: float, (default=0.7)
             cumulative distribution and cut off as soon as the CDF exceeds `top_p`.
             this is only useful if use `nucleus` decoder.
+        postprocess: bool, optional (default=True)
+            If True, will filter sentence generated using ROUGE score and removed international news publisher.
 
         Returns
         -------
@@ -395,7 +416,12 @@ class SUMMARIZATION:
         """
 
         return self._summarize(
-            strings = strings, mode = mode, decoder = decoder, top_p = top_p
+            strings = strings,
+            mode = mode,
+            decoder = decoder,
+            top_p = top_p,
+            postprocess = postprocess,
+            **kwargs,
         )
 
 
