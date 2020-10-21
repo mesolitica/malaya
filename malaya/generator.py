@@ -434,7 +434,7 @@ def gpt2(
     model = model.upper()
     if model not in _gpt2_availability:
         raise ValueError(
-            'model not supported, please check supported models from malaya.generator.available_gpt2()'
+            'model not supported, please check supported models from `malaya.generator.available_gpt2()`.'
         )
 
     if generate_length < 10:
@@ -490,16 +490,10 @@ def t5(model: str = 'base', compressed: bool = True, **kwargs):
     model = model.lower()
     if model not in _t5_availability:
         raise ValueError(
-            'model not supported, please check supported models from malaya.generator.available_t5()'
+            'model not supported, please check supported models from `malaya.generator.available_t5()`.'
         )
 
     from malaya.path import PATH_GENERATOR, S3_PATH_GENERATOR
-
-    model = model.lower()
-    if model not in _t5_availability:
-        raise ValueError(
-            'model not supported, please check supported models from malaya.summarization.abstractive.available_t5()'
-        )
 
     from malaya.model.t5 import GENERATOR
 

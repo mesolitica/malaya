@@ -39,7 +39,7 @@ def transformer(model: str = 'base', **kwargs):
     model = model.lower()
     if model not in _transformer_availability:
         raise Exception(
-            'model not supported, please check supported models from malaya.true_case.available_transformer()'
+            'model not supported, please check supported models from `malaya.true_case.available_transformer()`.'
         )
 
     return load_transformer.load(

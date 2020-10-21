@@ -169,7 +169,7 @@ def transformer(model: str = 'xlnet', **kwargs):
     model = model.lower()
     if model not in _transformer_availability:
         raise ValueError(
-            'model not supported, please check supported models from malaya.entity.available_transformer()'
+            'model not supported, please check supported models from `malaya.entity.available_transformer()`.'
         )
     return tag.transformer(
         PATH_ENTITIES, S3_PATH_ENTITIES, 'entity', model = model, **kwargs

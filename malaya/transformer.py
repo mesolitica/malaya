@@ -78,7 +78,7 @@ def load(model: str = 'electra', pool_mode: str = 'last', **kwargs):
     model = model.lower()
     if model not in _transformer_availability:
         raise ValueError(
-            'model not supported, please check supported models from malaya.transformer.available_transformer()'
+            'model not supported, please check supported models from `malaya.transformer.available_transformer()`.'
         )
     if model in ['bert', 'tiny-bert']:
         from malaya.transformers.bert import load

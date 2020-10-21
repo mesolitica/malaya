@@ -67,7 +67,7 @@ def t5(model: str = 'base', compressed: bool = True, **kwargs):
     model = model.lower()
     if model not in _t5_availability:
         raise ValueError(
-            'model not supported, please check supported models from malaya.paraphrase.available_t5()'
+            'model not supported, please check supported models from `malaya.paraphrase.available_t5()`.'
         )
 
     from malaya.model.t5 import PARAPHRASE
@@ -102,7 +102,7 @@ def transformer(model = 'base', **kwargs):
     model = model.lower()
     if model not in _transformer_availability:
         raise ValueError(
-            'model not supported, please check supported models from malaya.paraphrase.available_transformer()'
+            'model not supported, please check supported models from `malaya.paraphrase.available_transformer()`.'
         )
 
     from malaya.model.tf import PARAPHRASE

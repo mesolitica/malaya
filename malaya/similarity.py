@@ -450,7 +450,7 @@ def _transformer(model, bert_class, xlnet_class, **kwargs):
     model = model.lower()
     if model not in _transformer_availability:
         raise ValueError(
-            'model not supported, please check supported models from malaya.similarity.available_transformer()'
+            'model not supported, please check supported models from `malaya.similarity.available_transformer()`.'
         )
 
     check_file(PATH_SIMILARITY[model], S3_PATH_SIMILARITY[model], **kwargs)

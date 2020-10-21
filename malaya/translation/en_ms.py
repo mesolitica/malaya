@@ -42,7 +42,7 @@ def transformer(model: str = 'base', **kwargs):
     model = model.lower()
     if model not in _transformer_availability:
         raise Exception(
-            'model not supported, please check supported models from malaya.translation.en_ms.available_transformer()'
+            'model not supported, please check supported models from `malaya.translation.en_ms.available_transformer()`.'
         )
 
     path = PATH_TRANSLATION['en-ms']

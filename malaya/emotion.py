@@ -62,7 +62,7 @@ def transformer(model: str = 'xlnet', **kwargs):
     model = model.lower()
     if model not in _transformer_availability:
         raise ValueError(
-            'model not supported, please check supported models from malaya.emotion.available_transformer()'
+            'model not supported, please check supported models from `malaya.emotion.available_transformer()`.'
         )
     return softmax.transformer(
         PATH_EMOTION, S3_PATH_EMOTION, 'emotion', label, model = model, **kwargs

@@ -129,7 +129,7 @@ def describe():
 
 def dependency_graph(tagging, indexing):
     """
-    Return helper object for dependency parser results. Only accept tagging and indexing outputs from dependency models
+    Return helper object for dependency parser results. Only accept tagging and indexing outputs from dependency models.
     """
     result = []
     for i in range(len(tagging)):
@@ -176,7 +176,7 @@ def transformer(model: str = 'xlnet', **kwargs):
     model = model.lower()
     if model not in _transformer_availability:
         raise ValueError(
-            'model not supported, please check supported models from malaya.dependency.available_transformer()'
+            'model not supported, please check supported models from `malaya.dependency.available_transformer()`.'
         )
 
     check_file(PATH_DEPENDENCY[model], S3_PATH_DEPENDENCY[model], **kwargs)

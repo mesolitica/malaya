@@ -125,7 +125,7 @@ def transformer(model: str = 'xlnet', **kwargs):
     model = model.lower()
     if model not in _transformer_availability:
         raise Exception(
-            'model not supported, please check supported models from malaya.toxicity.available_transformer()'
+            'model not supported, please check supported models from `malaya.toxicity.available_transformer()`.'
         )
 
     check_file(PATH_TOXIC[model], S3_PATH_TOXIC[model], **kwargs)

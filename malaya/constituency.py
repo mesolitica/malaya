@@ -87,7 +87,7 @@ def transformer(model: str = 'xlnet', **kwargs):
     model = model.lower()
     if model not in _transformer_availability:
         raise ValueError(
-            'model not supported, please check supported models from malaya.constituency.available_transformer()'
+            'model not supported, please check supported models from `malaya.constituency.available_transformer()`.'
         )
 
     check_file(PATH_CONSTITUENCY[model], S3_PATH_CONSTITUENCY[model], **kwargs)
