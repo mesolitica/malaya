@@ -112,6 +112,14 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
+   :caption: Finetune Pretrained Model
+
+   tf-estimator-alxlnet
+   tf-estimator-bert
+   tf-estimator-xlnet
+
+.. toctree::
+   :maxdepth: 2
    :caption: Misc
    
    Crawler

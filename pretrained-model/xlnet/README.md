@@ -219,7 +219,7 @@ python3 multigpu_pretraining.py \
   - 300k steps, 3 GPUs TESLA V100.
   - BASE size (467MB).
 
-2. **BASE**, last update 01 October 2020, [xlnet-base-01-10-2020.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/xlnet-base-29-03-2020.tar.gz)
+2. **BASE**, last update 20 October 2020, [xlnet-base-500k-20-10-2020.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/xlnet-base-500k-20-10-2020.gz)
 
   - Vocab size 32k.
   - Trained on raw wikipedia, raw common crawl, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.

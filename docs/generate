@@ -1,4 +1,5 @@
 #!/bin/bash
 
+cp ../README.rst .
 rm -rf _build/html && make html
 find . -name "*Magic*"  -exec rm  -rf {} \;
