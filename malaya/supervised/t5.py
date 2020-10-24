@@ -9,7 +9,7 @@ def load(path, s3_path, model, model_class, compressed, **kwargs):
         import tensorflow_text
         import tf_sentencepiece
     except:
-        raise Exception(
+        raise ModuleNotFoundError(
             'tensorflow-text and tf-sentencepiece not installed. Please install it by `pip install tensorflow-text==1.15.0 tf-sentencepiece==0.1.86` and try again. Also, make sure tensorflow-text version same as tensorflow version.'
         )
 

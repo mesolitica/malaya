@@ -349,7 +349,7 @@ class DependencyGraph(object):
         try:
             from graphviz import Source
         except:
-            raise Exception(
+            raise ModuleNotFoundError(
                 'graphiz not installed. Please install it and try again.'
             )
         return Source(self.to_dot())
@@ -358,7 +358,7 @@ class DependencyGraph(object):
         try:
             import networkx
         except:
-            raise Exception(
+            raise ModuleNotFoundError(
                 'networkx not installed. Please install it and try again.'
             )
 

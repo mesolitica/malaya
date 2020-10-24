@@ -672,7 +672,7 @@ class SIAMESE_BERT(BASE):
 
             sns.set()
         except:
-            raise Exception(
+            raise ModuleNotFoundError(
                 'matplotlib and seaborn not installed. Please install it and try again.'
             )
 

@@ -36,7 +36,7 @@ def fasttext(quantization: bool = True, **kwargs):
     try:
         import fasttext
     except:
-        raise ValueError(
+        raise ModuleNotFoundError(
             'fasttext not installed. Please install it by `pip install fasttext` and try again.'
         )
     if quantization:

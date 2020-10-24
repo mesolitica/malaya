@@ -171,7 +171,7 @@ class DEEP_TOPIC:
             import pyLDAvis
             import pyLDAvis.sklearn
         except:
-            raise Exception(
+            raise ModuleNotFoundError(
                 'pyldavis not installed. Please install it and try again.'
             )
 

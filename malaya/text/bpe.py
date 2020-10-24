@@ -539,7 +539,7 @@ def load_yttm(path, id_mode = False):
     try:
         import youtokentome as yttm
     except:
-        raise Exception(
+        raise ModuleNotFoundError(
             'youtokentome not installed. Please install it by `pip install youtokentome` and try again.'
         )
     try:

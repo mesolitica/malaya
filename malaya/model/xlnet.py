@@ -685,7 +685,7 @@ class SIAMESE_XLNET(BASE):
 
             sns.set()
         except:
-            raise Exception(
+            raise ModuleNotFoundError(
                 'matplotlib and seaborn not installed. Please install it and try again.'
             )
 

@@ -770,7 +770,7 @@ def symspell(
     try:
         from symspellpy.symspellpy import SymSpell, Verbosity
     except:
-        raise Exception(
+        raise ModuleNotFoundError(
             'symspellpy not installed. Please install it and try again.'
         )
     sym_spell = SymSpell(max_edit_distance_dictionary, prefix_length)

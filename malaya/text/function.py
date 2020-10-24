@@ -374,7 +374,7 @@ def print_topics_modelling(
         try:
             import pandas as pd
         except:
-            raise Exception(
+            raise ModuleNotFoundError(
                 'pandas not installed. Please install it and try again or set `return_df = False`'
             )
     df = {}

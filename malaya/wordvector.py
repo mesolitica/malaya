@@ -179,7 +179,7 @@ class WORDVECTOR:
 
             sns.set()
         except:
-            raise Exception(
+            raise ModuleNotFoundError(
                 'matplotlib and seaborn not installed. Please install it and try again.'
             )
 
@@ -249,7 +249,7 @@ class WORDVECTOR:
 
             sns.set()
         except:
-            raise Exception(
+            raise ModuleNotFoundError(
                 'matplotlib and seaborn not installed. Please install it and try again.'
             )
 
@@ -657,7 +657,7 @@ class WORDVECTOR:
             import networkx as nx
             import matplotlib.pyplot as plt
         except:
-            raise Exception(
+            raise ModuleNotFoundError(
                 'matplotlib, networkx and pandas not installed. Please install it and try again.'
             )
 

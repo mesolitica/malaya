@@ -283,7 +283,7 @@ def cluster_scatter(
 
         sns.set()
     except:
-        raise Exception(
+        raise ModuleNotFoundError(
             'matplotlib and seaborn not installed. Please install it and try again.'
         )
 
@@ -429,7 +429,7 @@ def cluster_dendogram(
 
         sns.set()
     except:
-        raise Exception(
+        raise ModuleNotFoundError(
             'matplotlib and seaborn not installed. Please install it and try again.'
         )
 
@@ -571,7 +571,7 @@ def cluster_graph(
 
         sns.set()
     except:
-        raise Exception(
+        raise ModuleNotFoundError(
             'matplotlib, seaborn, networkx not installed. Please install it and try again.'
         )
 
@@ -763,7 +763,7 @@ def cluster_entity_linking(
 
         sns.set()
     except:
-        raise Exception(
+        raise ModuleNotFoundError(
             'matplotlib, seaborn, networkx, fuzzywuzzy not installed. Please install it and try again.'
         )
 

@@ -132,7 +132,7 @@ class VECTORIZER_SIMILARITY:
 
             sns.set()
         except:
-            raise Exception(
+            raise ModuleNotFoundError(
                 'matplotlib and seaborn not installed. Please install it and try again.'
             )
 
@@ -372,7 +372,7 @@ class DOC2VEC_SIMILARITY:
 
             sns.set()
         except:
-            raise Exception(
+            raise ModuleNotFoundError(
                 'matplotlib and seaborn not installed. Please install it and try again.'
             )
 

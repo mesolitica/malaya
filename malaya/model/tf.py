@@ -233,7 +233,7 @@ class CONSTITUENCY:
             import nltk
             from nltk import Tree
         except:
-            raise Exception(
+            raise ModuleNotFoundError(
                 'nltk not installed. Please install it and try again.'
             )
 
