@@ -11,9 +11,10 @@ import inspect
 import numpy as np
 import requests
 import os
+import logging
 from tqdm import tqdm
 from pathlib import Path
-from malaya import _delete_folder, gpu_available, __gpu__
+from malaya import home, _delete_folder, gpu_available, __gpu__
 
 try:
     from tensorflow.contrib.seq2seq.python.ops import beam_search_ops
@@ -134,9 +135,21 @@ def check_available(file):
     return True
 
 
-def check_file(file, s3_file, validate = True, **kwargs):
+def get_module(file):
+    f = file.replace(home, '').split('/')
+    return f'Quantized model for {f[1].upper()} module is not available, please load normal model.'
+
+
+def check_file(file, s3_file, validate = True, quantized = False, **kwargs):
+    if quantized:
+        if 'quantized' not in file:
+            raise Exception(get_module(file['model']))
+        model = 'quantized'
+        logging.warning('Load quantized model will cause accuracy drop.')
+    else:
+        model = 'model'
     if validate:
-        base_location = os.path.dirname(file['model'])
+        base_location = os.path.dirname(file[model])
         version = base_location + '/version'
         download = False
         if os.path.isfile(version):
@@ -158,6 +171,10 @@ def check_file(file, s3_file, validate = True, **kwargs):
             for key, item in file.items():
                 if 'version' in key:
                     continue
+                if model == 'quantized' and key == 'model':
+                    continue
+                if model == 'model' and key == 'quantized':
+                    continue
                 if not os.path.isfile(item):
                     print(f'downloading frozen {base_location} {key}')
                     download_file(s3_file[key], item)
@@ -165,7 +182,7 @@ def check_file(file, s3_file, validate = True, **kwargs):
                 fopen.write(file['version'])
     else:
         if not check_available(file):
-            path = '/'.join(file['model'].split('/')[:-1])
+            path = '/'.join(file[model].split('/')[:-1])
             raise Exception(
                 f'{path} is not available, please `validate = True`'
             )

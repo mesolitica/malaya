@@ -5,12 +5,32 @@ from herpetologist import check_type
 label = ['negative', 'positive']
 
 _transformer_availability = {
-    'bert': {'Size (MB)': 425.6, 'Accuracy': 0.993},
-    'tiny-bert': {'Size (MB)': 57.4, 'Accuracy': 0.987},
-    'albert': {'Size (MB)': 48.6, 'Accuracy': 0.992},
-    'tiny-albert': {'Size (MB)': 22.4, 'Accuracy': 0.985},
-    'xlnet': {'Size (MB)': 446.6, 'Accuracy': 0.993},
-    'alxlnet': {'Size (MB)': 46.8, 'Accuracy': 0.991},
+    'bert': {'Size (MB)': 425.6, 'Quantized Size (MB)': 112, 'Accuracy': 0.993},
+    'tiny-bert': {
+        'Size (MB)': 57.4,
+        'Quantized Size (MB)': 15.4,
+        'Accuracy': 0.987,
+    },
+    'albert': {
+        'Size (MB)': 48.6,
+        'Quantized Size (MB)': 13.4,
+        'Accuracy': 0.992,
+    },
+    'tiny-albert': {
+        'Size (MB)': 22.4,
+        'Quantized Size (MB)': 6.2,
+        'Accuracy': 0.985,
+    },
+    'xlnet': {
+        'Size (MB)': 446.6,
+        'Quantized Size (MB)': 120,
+        'Accuracy': 0.993,
+    },
+    'alxlnet': {
+        'Size (MB)': 46.8,
+        'Quantized Size (MB)': 14.4,
+        'Accuracy': 0.991,
+    },
 }
 
 
@@ -39,7 +59,7 @@ def multinomial(**kwargs):
 
 
 @check_type
-def transformer(model: str = 'bert', **kwargs):
+def transformer(model: str = 'bert', quantized = False, **kwargs):
     """
     Load Transformer sentiment model.
 
@@ -71,5 +91,6 @@ def transformer(model: str = 'bert', **kwargs):
         'sentiment',
         label,
         model = model,
+        quantized = quantized,
         **kwargs
     )

@@ -42,9 +42,21 @@ def multinomial(path, s3_path, class_name, label, **kwargs):
     )
 
 
-def transformer(path, s3_path, class_name, label, model = 'bert', **kwargs):
-    check_file(path[model], s3_path[model], **kwargs)
-    g = load_graph(path[model]['model'], **kwargs)
+def transformer(
+    path,
+    s3_path,
+    class_name,
+    label,
+    model = 'bert',
+    quantized = False,
+    **kwargs,
+):
+    check_file(path[model], s3_path[model], quantized = quantized, **kwargs)
+    if quantized:
+        model_path = 'quantized'
+    else:
+        model_path = 'model'
+    g = load_graph(path[model][model_path], **kwargs)
 
     if len(label) > 2 or class_name == 'relevancy':
         if model in ['albert', 'bert', 'tiny-albert', 'tiny-bert']:
