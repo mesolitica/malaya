@@ -22,7 +22,7 @@ def available_transformer():
 
 
 @check_type
-def transformer(model: str = 'base', **kwargs):
+def transformer(model: str = 'base', quantized = quantized, **kwargs):
     """
     Load Transformer encoder-decoder model to translate MS-to-EN.
 
@@ -34,6 +34,10 @@ def transformer(model: str = 'base', **kwargs):
         * ``'small'`` - Transformer SMALL parameters.
         * ``'base'`` - Transformer BASE parameters.
         * ``'large'`` - Transformer LARGE parameters.
+    
+    quantized : bool, optional (default=False)
+        if True, will load 8-bit quantized model. 
+        Quantized model not necessary faster, totally depends on the machine.
 
     Returns
     -------
@@ -48,4 +52,6 @@ def transformer(model: str = 'base', **kwargs):
     path = PATH_TRANSLATION['ms-en']
     s3_path = S3_PATH_TRANSLATION['ms-en']
 
-    return load_transformer.load(path, s3_path, model, 'subword', TRANSLATION)
+    return load_transformer.load(
+        path, s3_path, model, 'subword', TRANSLATION, quantized = quantized
+    )

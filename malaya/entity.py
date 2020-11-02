@@ -145,7 +145,7 @@ def available_transformer():
 
 
 @check_type
-def transformer(model: str = 'xlnet', **kwargs):
+def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
     """
     Load Transformer Entity Tagging model, transfer learning Transformer + CRF.
 
@@ -160,6 +160,10 @@ def transformer(model: str = 'xlnet', **kwargs):
         * ``'tiny-albert'`` - Google ALBERT TINY parameters.
         * ``'xlnet'`` - Google XLNET BASE parameters.
         * ``'alxlnet'`` - Malaya ALXLNET BASE parameters.
+        
+    quantized : bool, optional (default=False)
+        if True, will load 8-bit quantized model. 
+        Quantized model not necessary faster, totally depends on the machine.
 
     Returns
     -------
@@ -172,7 +176,12 @@ def transformer(model: str = 'xlnet', **kwargs):
             'model not supported, please check supported models from `malaya.entity.available_transformer()`.'
         )
     return tag.transformer(
-        PATH_ENTITIES, S3_PATH_ENTITIES, 'entity', model = model, **kwargs
+        PATH_ENTITIES,
+        S3_PATH_ENTITIES,
+        'entity',
+        model = model,
+        quantized = quantized,
+        **kwargs
     )
 
 

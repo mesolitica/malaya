@@ -28,7 +28,7 @@ def available_transformer():
 @check_type
 def transformer(model: str = 'xlnet', **kwargs):
     """
-    Load Transformer emotion model.
+    Load Transformer relevancy model.
 
     Parameters
     ----------

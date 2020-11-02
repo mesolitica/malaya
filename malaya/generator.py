@@ -41,9 +41,16 @@ _accepted_entities = [
 
 
 _t5_availability = {
-    'small': {'Size (MB)': 122, 'Uncompressed Size (MB)': 355.6},
-    'base': {'Size (MB)': 448, 'Uncompressed Size (MB)': 1300},
-    'large': {'Size (MB)': 448, 'Uncompressed Size (MB)': 1300},
+    'small': {
+        'Size (MB)': 122,
+        'Uncompressed Size (MB)': 355.6,
+        'Optimized Size (MB)': 244,
+    },
+    'base': {
+        'Size (MB)': 448,
+        'Uncompressed Size (MB)': 1300,
+        'Optimized Size (MB)': 895,
+    },
 }
 
 _gpt2_availability = {
@@ -464,7 +471,12 @@ def available_t5():
 
 
 @check_type
-def t5(model: str = 'base', compressed: bool = True, **kwargs):
+def t5(
+    model: str = 'base',
+    compressed: bool = True,
+    optimized: bool = False,
+    **kwargs,
+):
 
     """
     Load T5 model to generate a string given a isu penting.
@@ -481,6 +493,11 @@ def t5(model: str = 'base', compressed: bool = True, **kwargs):
         Load compressed model, but this not able to utilize malaya-gpu function. 
         This only compressed model size, but when loaded into VRAM / RAM, size uncompressed and compressed are the same.
         We prefer un-compressed model due to compressed model prone to error.
+    
+    optimized : bool, optional (default=False)
+        if True, will load optimized uncompressed model, remove unnecessary nodes and fold batch norm to reduce model size.
+        Optimized model not necessary faster, totally depends on the machine. 
+        We have no concrete proof optimized model maintain same accuracy as uncompressed model.
 
     Returns
     -------
@@ -503,5 +520,6 @@ def t5(model: str = 'base', compressed: bool = True, **kwargs):
         model = model,
         model_class = GENERATOR,
         compressed = compressed,
+        quantized = optimized,
         **kwargs,
     )

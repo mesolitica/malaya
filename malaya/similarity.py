@@ -446,15 +446,24 @@ def available_transformer():
     )
 
 
-def _transformer(model, bert_class, xlnet_class, **kwargs):
+def _transformer(model, bert_class, xlnet_class, quantized = False, **kwargs):
     model = model.lower()
     if model not in _transformer_availability:
         raise ValueError(
             'model not supported, please check supported models from `malaya.similarity.available_transformer()`.'
         )
 
-    check_file(PATH_SIMILARITY[model], S3_PATH_SIMILARITY[model], **kwargs)
-    g = load_graph(PATH_SIMILARITY[model]['model'], **kwargs)
+    check_file(
+        PATH_SIMILARITY[model],
+        S3_PATH_SIMILARITY[model],
+        quantized = quantized,
+        **kwargs
+    )
+    if quantized:
+        model_path = 'quantized'
+    else:
+        model_path = 'model'
+    g = load_graph(PATH_SIMILARITY[model][model_path], **kwargs)
 
     path = PATH_SIMILARITY
 
@@ -516,7 +525,7 @@ def _transformer(model, bert_class, xlnet_class, **kwargs):
 
 
 @check_type
-def transformer(model: str = 'bert', **kwargs):
+def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
     """
     Load Transformer similarity model.
 
@@ -531,6 +540,10 @@ def transformer(model: str = 'bert', **kwargs):
         * ``'tiny-albert'`` - Google ALBERT TINY parameters.
         * ``'xlnet'`` - Google XLNET BASE parameters.
         * ``'alxlnet'`` - Malaya ALXLNET BASE parameters.
+    
+    quantized : bool, optional (default=False)
+        if True, will load 8-bit quantized model. 
+        Quantized model not necessary faster, totally depends on the machine.
 
     Returns
     -------
@@ -541,5 +554,6 @@ def transformer(model: str = 'bert', **kwargs):
         model = model,
         bert_class = SIAMESE_BERT,
         xlnet_class = SIAMESE_XLNET,
+        quantized = quantized,
         **kwargs
     )

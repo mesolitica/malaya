@@ -172,36 +172,42 @@ PATH_EMOTION = {
     },
     'bert': {
         'model': home + '/emotion/bert/base/model.pb',
+        'quantized': home + '/emotion/bert/base/quantized/model.pb',
         'vocab': home + '/bert/sp10m.cased.bert.vocab',
         'tokenizer': home + '/bert/sp10m.cased.bert.model',
         'version': 'v34',
     },
     'tiny-bert': {
         'model': home + '/emotion/bert/tiny/model.pb',
+        'quantized': home + '/emotion/bert/tiny/quantized/model.pb',
         'vocab': home + '/bert/sp10m.cased.bert.vocab',
         'tokenizer': home + '/bert/sp10m.cased.bert.model',
         'version': 'v34',
     },
     'albert': {
         'model': home + '/emotion/albert/base/model.pb',
+        'quantized': home + '/emotion/albert/base/quantized/model.pb',
         'vocab': home + '/bert/sp10m.cased.v10.vocab',
         'tokenizer': home + '/bert/sp10m.cased.v10.model',
         'version': 'v34',
     },
     'tiny-albert': {
         'model': home + '/emotion/albert/tiny/model.pb',
+        'quantized': home + '/emotion/albert/tiny/quantized/model.pb',
         'vocab': home + '/bert/sp10m.cased.v10.vocab',
         'tokenizer': home + '/bert/sp10m.cased.v10.model',
         'version': 'v34',
     },
     'xlnet': {
         'model': home + '/emotion/xlnet/base/model.pb',
+        'quantized': home + '/emotion/xlnet/base/quantized/model.pb',
         'vocab': home + '/bert/sp10m.cased.v9.vocab',
         'tokenizer': home + '/bert/sp10m.cased.v9.model',
         'version': 'v34',
     },
     'alxlnet': {
         'model': home + '/emotion/alxlnet/base/model.pb',
+        'quantized': home + '/emotion/alxlnet/base/quantized/model.pb',
         'vocab': home + '/bert/sp10m.cased.v9.vocab',
         'tokenizer': home + '/bert/sp10m.cased.v9.model',
         'version': 'v34',
@@ -216,31 +222,37 @@ S3_PATH_EMOTION = {
     },
     'bert': {
         'model': 'v34/emotion/bert-base-emotion.pb',
+        'quantized': 'v40/emotion/bert-base-emotion.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.bert.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.bert.model',
     },
     'tiny-bert': {
         'model': 'v34/emotion/tiny-bert-emotion.pb',
+        'quantized': 'v40/emotion/tiny-bert-emotion.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.bert.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.bert.model',
     },
     'albert': {
         'model': 'v34/emotion/albert-base-emotion.pb',
+        'quantized': 'v40/emotion/albert-base-emotion.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.v10.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.v10.model',
     },
     'tiny-albert': {
         'model': 'v34/emotion/albert-tiny-emotion.pb',
+        'quantized': 'v40/emotion/albert-tiny-emotion.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.v10.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.v10.model',
     },
     'xlnet': {
         'model': 'v34/emotion/xlnet-base-emotion.pb',
+        'quantized': 'v40/emotion/xlnet-base-emotion.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.v9.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.v9.model',
     },
     'alxlnet': {
         'model': 'v34/emotion/alxlnet-base-emotion.pb',
+        'quantized': 'v34/emotion/alxlnet-base-emotion.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.v9.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.v9.model',
     },
@@ -997,21 +1009,27 @@ PATH_SUMMARIZE = {
     't5': {
         'base': {
             'model': home + '/summarize/t5/base/model.pb',
+            'quantized': home + '/summarize/t5/base/quantized/model.pb',
             'version': 'v38',
         },
         'small': {
             'model': home + '/summarize/t5/small/model.pb',
+            'quantized': home + '/summarize/t5/small/quantized/model.pb',
             'version': 'v38',
         },
     },
     'transformer': {
         'base': {
             'model': home + '/summarize/transformer/base/model.pb',
+            'quantized': home
+            + '/summarize/transformer/base/quantized/model.pb',
             'vocab': home + '/summarize/sp10m.cased.t5.model',
             'version': 'v39',
         },
         'small': {
             'model': home + '/summarize/transformer/small/model.pb',
+            'quantized': home
+            + '/summarize/transformer/small/quantized/model.pb',
             'vocab': home + '/summarize/sp10m.cased.t5.model',
             'version': 'v39',
         },
@@ -1032,16 +1050,24 @@ S3_PATH_SUMMARIZE = {
         'small': {'model': 'v35/summarize/argmax-summarize-t5-small.tar.gz'},
     },
     't5': {
-        'base': {'model': 'v38/summarize/base.pb'},
-        'small': {'model': 'v38/summarize/small.pb'},
+        'base': {
+            'model': 'v38/summarize/base.pb',
+            'quantized': 'v40/summarize/base.pb.quantized',
+        },
+        'small': {
+            'model': 'v38/summarize/small.pb',
+            'quantized': 'v40/summarize/small.pb.quantized',
+        },
     },
     'transformer': {
         'base': {
             'model': 'v39/summarization/base.pb',
+            'quantized': 'v40/summarization/transformer-base.pb.quantized',
             'vocab': 'tokenizer/sp10m.cased.t5.model',
         },
         'small': {
             'model': 'v39/summarization/small.pb',
+            'quantized': 'v40/summarization/transformer-small.pb.quantized',
             'vocab': 'tokenizer/sp10m.cased.t5.model',
         },
     },

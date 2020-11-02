@@ -130,6 +130,10 @@ def transformer(model: str = 'xlnet', **kwargs):
         * ``'xlnet'`` - Google XLNET BASE parameters.
         * ``'alxlnet'`` - Malaya ALXLNET BASE parameters.
 
+    quantized : bool, optional (default=False)
+        if True, will load 8-bit quantized model. 
+        Quantized model not necessary faster, totally depends on the machine.
+
     Returns
     -------
     result : malaya.supervised.tag.transformer function

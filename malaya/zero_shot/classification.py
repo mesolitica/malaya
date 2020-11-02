@@ -14,7 +14,7 @@ def available_transformer():
 
 
 @check_type
-def transformer(model: str = 'bert', **kwargs):
+def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
     """
     Load Transformer zero-shot model.
 
@@ -29,6 +29,10 @@ def transformer(model: str = 'bert', **kwargs):
         * ``'tiny-albert'`` - Google ALBERT TINY parameters.
         * ``'xlnet'`` - Google XLNET BASE parameters.
         * ``'alxlnet'`` - Malaya ALXLNET BASE parameters.
+    
+    quantized : bool, optional (default=False)
+        if True, will load 8-bit quantized model. 
+        Quantized model not necessary faster, totally depends on the machine.
 
     Returns
     -------
@@ -39,5 +43,6 @@ def transformer(model: str = 'bert', **kwargs):
         model = model,
         bert_class = ZEROSHOT_BERT,
         xlnet_class = ZEROSHOT_XLNET,
+        quantized = quantized,
         **kwargs
     )

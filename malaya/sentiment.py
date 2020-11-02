@@ -59,7 +59,7 @@ def multinomial(**kwargs):
 
 
 @check_type
-def transformer(model: str = 'bert', quantized = False, **kwargs):
+def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
     """
     Load Transformer sentiment model.
 
@@ -74,6 +74,9 @@ def transformer(model: str = 'bert', quantized = False, **kwargs):
         * ``'tiny-albert'`` - Google ALBERT TINY parameters.
         * ``'xlnet'`` - Google XLNET BASE parameters.
         * ``'alxlnet'`` - Malaya ALXLNET BASE parameters.
+    quantized : bool, optional (default=False)
+        if True, will load 8-bit quantized model. 
+        Quantized model not necessary faster, totally depends on the machine.
 
     Returns
     -------

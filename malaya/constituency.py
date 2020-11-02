@@ -64,7 +64,7 @@ def available_transformer():
 
 
 @check_type
-def transformer(model: str = 'xlnet', **kwargs):
+def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
     """
     Load Transformer Constituency Parsing model, transfer learning Transformer + self attentive parsing.
 
@@ -78,6 +78,10 @@ def transformer(model: str = 'xlnet', **kwargs):
         * ``'albert'`` - Google ALBERT BASE parameters.
         * ``'tiny-albert'`` - Google ALBERT TINY parameters.
         * ``'xlnet'`` - Google XLNET BASE parameters.
+    
+    quantized : bool, optional (default=False)
+        if True, will load 8-bit quantized model. 
+        Quantized model not necessary faster, totally depends on the machine.
 
     Returns
     -------
@@ -90,8 +94,17 @@ def transformer(model: str = 'xlnet', **kwargs):
             'model not supported, please check supported models from `malaya.constituency.available_transformer()`.'
         )
 
-    check_file(PATH_CONSTITUENCY[model], S3_PATH_CONSTITUENCY[model], **kwargs)
-    g = load_graph(PATH_CONSTITUENCY[model]['model'], **kwargs)
+    check_file(
+        PATH_CONSTITUENCY[model],
+        S3_PATH_CONSTITUENCY[model],
+        quantized = quantized,
+        **kwargs,
+    )
+    if quantized:
+        model_path = 'quantized'
+    else:
+        model_path = 'model'
+    g = load_graph(PATH_CONSTITUENCY[model][model_path], **kwargs)
 
     with open(PATH_CONSTITUENCY[model]['dictionary']) as fopen:
         dictionary = json.load(fopen)

@@ -3,7 +3,15 @@ import tensorflow as tf
 import os
 
 
-def load(path, s3_path, model, model_class, compressed, **kwargs):
+def load(
+    path,
+    s3_path,
+    model,
+    model_class,
+    compressed = True,
+    quantized = False,
+    **kwargs
+):
 
     try:
         import tensorflow_text
@@ -13,7 +21,7 @@ def load(path, s3_path, model, model_class, compressed, **kwargs):
             'tensorflow-text and tf-sentencepiece not installed. Please install it by `pip install tensorflow-text==1.15.0 tf-sentencepiece==0.1.86` and try again. Also, make sure tensorflow-text version same as tensorflow version.'
         )
 
-    if compressed:
+    if compressed and not quantized:
         path = path['t5-compressed']
         s3_path = s3_path['t5-compressed']
         check_file(path[model]['model'], s3_path[model], **kwargs)
@@ -39,8 +47,18 @@ def load(path, s3_path, model, model_class, compressed, **kwargs):
     else:
         path = path['t5']
         s3_path = s3_path['t5']
-        check_file(path[model], s3_path[model], **kwargs)
-        g = load_graph(path[model]['model'], **kwargs)
+        check_file(
+            path[model],
+            s3_path[model],
+            quantized = quantized,
+            optimized = True,
+            **kwargs
+        )
+        if quantized:
+            model_path = 'quantized'
+        else:
+            model_path = 'model'
+        g = load_graph(path[model][model_path], **kwargs)
         X = g.get_tensor_by_name('import/inputs:0')
         decode = g.get_tensor_by_name(
             'import/SentenceTokenizer_1/SentenceTokenizer/SentencepieceDetokenizeOp:0'

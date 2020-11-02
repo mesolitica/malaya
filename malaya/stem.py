@@ -155,9 +155,16 @@ def sastrawi(string: str):
     return sastrawi_stemmer.stem(string)
 
 
-def deep_model(**kwargs):
+@check_type
+def deep_model(quantized: bool = False, **kwargs):
     """
     Load LSTM + Bahdanau Attention stemming model, this also include lemmatization.
+
+    Parameters
+    ----------
+    quantized : bool, optional (default=False)
+        if True, will load 8-bit quantized model. 
+        Quantized model not necessary faster, totally depends on the machine.
 
     Returns
     -------
@@ -165,7 +172,9 @@ def deep_model(**kwargs):
     """
     from malaya.preprocessing import _tokenizer
 
-    check_file(PATH_STEM['deep'], S3_PATH_STEM['deep'], **kwargs)
+    check_file(
+        PATH_STEM['deep'], S3_PATH_STEM['deep'], quantized = quantized, **kwargs
+    )
     g = load_graph(PATH_STEM['deep']['model'], **kwargs)
 
     bpe, subword_mode = load_yttm(PATH_STEM['deep']['bpe'], id_mode = True)

@@ -135,17 +135,33 @@ def check_available(file):
     return True
 
 
-def get_module(file):
+def get_module(file, optimized = False):
+    if optimized:
+        m = 'Optimized'
+    else:
+        m = 'Quantized'
     f = file.replace(home, '').split('/')
-    return f'Quantized model for {f[1].upper()} module is not available, please load normal model.'
+    return f'{m} model for {f[1].upper()} module is not available, please load normal model.'
 
 
-def check_file(file, s3_file, validate = True, quantized = False, **kwargs):
+def check_file(
+    file,
+    s3_file,
+    validate = True,
+    quantized = False,
+    optimized = False,
+    **kwargs,
+):
     if quantized:
         if 'quantized' not in file:
-            raise Exception(get_module(file['model']))
+            raise Exception(get_module(file['model'], optimized = optimized))
         model = 'quantized'
-        logging.warning('Load quantized model will cause accuracy drop.')
+        if optimized:
+            logging.warning(
+                'We have no concrete proof optimized model will maintain accuracy as normal model.'
+            )
+        else:
+            logging.warning('Load quantized model will cause accuracy drop.')
     else:
         model = 'model'
     if validate:

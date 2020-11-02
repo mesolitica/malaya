@@ -152,7 +152,7 @@ def available_transformer():
 
 
 @check_type
-def transformer(model: str = 'xlnet', **kwargs):
+def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
     """
     Load Transformer Dependency Parsing model, transfer learning Transformer + biaffine attention.
 
@@ -167,6 +167,10 @@ def transformer(model: str = 'xlnet', **kwargs):
         * ``'tiny-albert'`` - Google ALBERT TINY parameters.
         * ``'xlnet'`` - Google XLNET BASE parameters.
         * ``'alxlnet'`` - Malaya ALXLNET BASE parameters.
+    
+    quantized : bool, optional (default=False)
+        if True, will load 8-bit quantized model. 
+        Quantized model not necessary faster, totally depends on the machine.
 
     Returns
     -------
@@ -179,8 +183,18 @@ def transformer(model: str = 'xlnet', **kwargs):
             'model not supported, please check supported models from `malaya.dependency.available_transformer()`.'
         )
 
-    check_file(PATH_DEPENDENCY[model], S3_PATH_DEPENDENCY[model], **kwargs)
-    g = load_graph(PATH_DEPENDENCY[model]['model'], **kwargs)
+    check_file(
+        PATH_DEPENDENCY[model],
+        S3_PATH_DEPENDENCY[model],
+        quantized = quantized,
+        **kwargs
+    )
+
+    if quantized:
+        model_path = 'quantized'
+    else:
+        model_path = 'model'
+    g = load_graph(PATH_DEPENDENCY[model][model_path], **kwargs)
 
     if model in ['bert', 'tiny-bert', 'albert', 'tiny-albert']:
         from malaya.model.bert import DEPENDENCY_BERT

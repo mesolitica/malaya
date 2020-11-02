@@ -3,13 +3,34 @@ from malaya.path import PATH_EMOTION, S3_PATH_EMOTION
 from herpetologist import check_type
 
 label = ['anger', 'fear', 'happy', 'love', 'sadness', 'surprise']
+
 _transformer_availability = {
-    'bert': {'Size (MB)': 425.6, 'Accuracy': 0.992},
-    'tiny-bert': {'Size (MB)': 57.4, 'Accuracy': 0.988},
-    'albert': {'Size (MB)': 48.6, 'Accuracy': 0.997},
-    'tiny-albert': {'Size (MB)': 22.4, 'Accuracy': 0.981},
-    'xlnet': {'Size (MB)': 446.5, 'Accuracy': 0.990},
-    'alxlnet': {'Size (MB)': 46.8, 'Accuracy': 0.989},
+    'bert': {'Size (MB)': 425.6, 'Quantized Size (MB)': 112, 'Accuracy': 0.992},
+    'tiny-bert': {
+        'Size (MB)': 57.4,
+        'Quantized Size (MB)': 15.4,
+        'Accuracy': 0.988,
+    },
+    'albert': {
+        'Size (MB)': 48.6,
+        'Quantized Size (MB)': 13.4,
+        'Accuracy': 0.997,
+    },
+    'tiny-albert': {
+        'Size (MB)': 22.4,
+        'Quantized Size (MB)': 6.2,
+        'Accuracy': 0.981,
+    },
+    'xlnet': {
+        'Size (MB)': 446.5,
+        'Quantized Size (MB)': 120,
+        'Accuracy': 0.990,
+    },
+    'alxlnet': {
+        'Size (MB)': 46.8,
+        'Quantized Size (MB)': 14.4,
+        'Accuracy': 0.989,
+    },
 }
 
 
@@ -38,7 +59,7 @@ def multinomial(**kwargs):
 
 
 @check_type
-def transformer(model: str = 'xlnet', **kwargs):
+def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
     """
     Load Transformer emotion model.
 
@@ -53,6 +74,9 @@ def transformer(model: str = 'xlnet', **kwargs):
         * ``'tiny-albert'`` - Google ALBERT TINY parameters.
         * ``'xlnet'`` - Google XLNET BASE parameters.
         * ``'alxlnet'`` - Malaya ALXLNET BASE parameters.
+    quantized : bool, optional (default=False)
+        if True, will load 8-bit quantized model. 
+        Quantized model not necessary faster, totally depends on the machine.
 
     Returns
     -------
@@ -65,5 +89,11 @@ def transformer(model: str = 'xlnet', **kwargs):
             'model not supported, please check supported models from `malaya.emotion.available_transformer()`.'
         )
     return softmax.transformer(
-        PATH_EMOTION, S3_PATH_EMOTION, 'emotion', label, model = model, **kwargs
+        PATH_EMOTION,
+        S3_PATH_EMOTION,
+        'emotion',
+        label,
+        model = model,
+        quantized = quantized,
+        **kwargs
     )

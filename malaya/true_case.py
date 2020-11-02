@@ -19,7 +19,7 @@ def available_transformer():
 
 
 @check_type
-def transformer(model: str = 'base', **kwargs):
+def transformer(model: str = 'base', quantized: bool = False, **kwargs):
     """
     Load transformer encoder-decoder model to True Case.
 
@@ -30,6 +30,10 @@ def transformer(model: str = 'base', **kwargs):
 
         * ``'small'`` - Transformer SMALL parameters.
         * ``'base'`` - Transformer BASE parameters.
+
+    quantized : bool, optional (default=False)
+        if True, will load 8-bit quantized model. 
+        Quantized model not necessary faster, totally depends on the machine.
 
     Returns
     -------
@@ -43,5 +47,10 @@ def transformer(model: str = 'base', **kwargs):
         )
 
     return load_transformer.load(
-        PATH_TRUE_CASE, S3_PATH_TRUE_CASE, model, 'yttm', TRUE_CASE
+        PATH_TRUE_CASE,
+        S3_PATH_TRUE_CASE,
+        model,
+        'yttm',
+        TRUE_CASE,
+        quantized = quantized,
     )
