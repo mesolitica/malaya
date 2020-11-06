@@ -20,6 +20,7 @@ from malaya.text.bpe import (
     constituency_xlnet,
     padding_sequence,
     PTB_TOKEN_ESCAPE,
+    merge_sentencepiece_tokens,
 )
 from malaya.text import chart_decoder
 from malaya.text.trees import tree_from_str
@@ -178,6 +179,7 @@ class CONSTITUENCY:
         word_end_mask,
         charts,
         tags,
+        vectorizer,
         sess,
         tokenizer,
         dictionary,
@@ -188,6 +190,7 @@ class CONSTITUENCY:
         self._word_end_mask = word_end_mask
         self._charts = charts
         self._tags = tags
+        self._vectorizer = vectorizer
         self._sess = sess
         self._tokenizer = tokenizer
         self._LABEL_VOCAB = dictionary['label']
@@ -198,13 +201,14 @@ class CONSTITUENCY:
         s = string.split()
         sentences = [s]
         if self._mode == 'bert':
-            i, m = constituency_bert(self._tokenizer, sentences)
+            f = constituency_bert
         elif self._mode == 'xlnet':
-            i, m = constituency_xlnet(self._tokenizer, sentences)
+            f = constituency_xlnet
         else:
-            raise Exception(
+            raise ValueError(
                 'mode not supported, only supported `bert` or `xlnet`'
             )
+        i, m, tokens = f(self._tokenizer, sentences)
         charts_val, tags_val = self._sess.run(
             (self._charts, self._tags),
             {self._input_ids: i, self._word_end_mask: m},
@@ -213,6 +217,45 @@ class CONSTITUENCY:
             chart_size = len(sentence) + 1
             chart = charts_val[snum, :chart_size, :chart_size, :]
         return s, tags_val[0], chart_decoder.decode(chart)
+
+    @check_type
+    def vectorize(self, string: str):
+        """
+        vectorize a string.
+
+        Parameters
+        ----------
+        string: List[str]
+
+        Returns
+        -------
+        result: np.array
+        """
+        s = string.split()
+        sentences = [s]
+        if self._mode == 'bert':
+            f = constituency_bert
+        elif self._mode == 'xlnet':
+            f = constituency_xlnet
+        else:
+            raise ValueError(
+                'mode not supported, only supported `bert` or `xlnet`'
+            )
+        i, m, tokens = f(self._tokenizer, sentences)
+        v = self._sess.run(
+            self._vectorizer, {self._input_ids: i, self._word_end_mask: m}
+        )
+        if self._mode == 'bert':
+            v = v[0]
+        elif self._mode == 'xlnet':
+            v = v[:, 0]
+
+        return merge_sentencepiece_tokens(
+            list(zip(tokens[0], v[: len(tokens[0])])),
+            weighted = False,
+            vectorize = True,
+            model = self._mode,
+        )
 
     @check_type
     def parse_nltk_tree(self, string: str):

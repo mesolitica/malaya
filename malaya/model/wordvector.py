@@ -128,7 +128,7 @@ class Model:
                     g_params['learn_rate']
                 ).minimize(self.cost)
             else:
-                raise Exception(
+                raise ValueError(
                     "Optimizer not supported, only supports ['gradientdescent', 'rmsprop', 'momentum', 'adagrad', 'adam']"
                 )
             self.sess.run(tf.global_variables_initializer())

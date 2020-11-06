@@ -23,6 +23,7 @@ S3_PATH_AUGMENTATION = {
 PATH_CONSTITUENCY = {
     'bert': {
         'model': home + '/constituency/bert/base/model.pb',
+        'quantized': home + '/constituency/bert/base/quantized/model.pb',
         'dictionary': home + '/constituency/bert/base/vocab.json',
         'vocab': home + '/bert/sp10m.cased.bert.vocab',
         'tokenizer': home + '/bert/sp10m.cased.bert.model',
@@ -30,6 +31,7 @@ PATH_CONSTITUENCY = {
     },
     'tiny-bert': {
         'model': home + '/constituency/bert/tiny/model.pb',
+        'quantized': home + '/constituency/bert/tiny/quantized/model.pb',
         'dictionary': home + '/constituency/bert/tiny/vocab.json',
         'vocab': home + '/bert/sp10m.cased.bert.vocab',
         'tokenizer': home + '/bert/sp10m.cased.bert.model',
@@ -37,6 +39,7 @@ PATH_CONSTITUENCY = {
     },
     'albert': {
         'model': home + '/constituency/albert/base/model.pb',
+        'quantized': home + '/constituency/albert/base/quantized/model.pb',
         'dictionary': home + '/constituency/albert/base/vocab.json',
         'vocab': home + '/bert/sp10m.cased.v10.vocab',
         'tokenizer': home + '/bert/sp10m.cased.v10.model',
@@ -44,6 +47,7 @@ PATH_CONSTITUENCY = {
     },
     'tiny-albert': {
         'model': home + '/constituency/albert/tiny/model.pb',
+        'quantized': home + '/constituency/albert/tiny/quantized/model.pb',
         'dictionary': home + '/constituency/albert/tiny/vocab.json',
         'vocab': home + '/bert/sp10m.cased.v10.vocab',
         'tokenizer': home + '/bert/sp10m.cased.v10.model',
@@ -51,6 +55,7 @@ PATH_CONSTITUENCY = {
     },
     'xlnet': {
         'model': home + '/constituency/xlnet/base/model.pb',
+        'quantized': home + '/constituency/xlnet/base/quantized/model.pb',
         'dictionary': home + '/constituency/xlnet/base/vocab.json',
         'vocab': home + '/bert/sp10m.cased.v9.vocab',
         'tokenizer': home + '/bert/sp10m.cased.v9.model',
@@ -61,31 +66,36 @@ PATH_CONSTITUENCY = {
 S3_PATH_CONSTITUENCY = {
     'bert': {
         'model': 'v38/constituency/bert-base.pb',
+        'quantized': 'v40/constituency/bert-base.pb.quantized',
         'dictionary': 'v38/constituency/vocab-bert-base.json',
         'vocab': 'tokenizer/sp10m.cased.bert.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.bert.model',
     },
     'tiny-bert': {
         'model': 'v38/constituency/tiny-bert.pb',
+        'quantized': 'v40/constituency/tiny-bert.pb.quantized',
         'dictionary': 'v38/constituency/vocab-tiny-bert.json',
         'vocab': 'tokenizer/sp10m.cased.bert.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.bert.model',
     },
     'albert': {
         'model': 'v38/constituency/albert-base.pb',
+        'quantized': 'v40/constituency/albert-base.pb.quantized',
         'dictionary': 'v38/constituency/vocab-albert-base.json',
         'vocab': 'tokenizer/sp10m.cased.v10.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.v10.model',
     },
     'tiny-albert': {
         'model': 'v38/constituency/albert-tiny.pb',
+        'quantized': 'v40/constituency/albert-tiny.pb.quantized',
         'dictionary': 'v38/constituency/vocab-albert-tiny.json',
         'vocab': 'tokenizer/sp10m.cased.v10.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.v10.model',
     },
     'xlnet': {
-        'model': 'v38/constituency/xlnet-base.pb',
-        'dictionary': 'v38/constituency/vocab-xlnet-base.json',
+        'model': 'v40/constituency/xlnet-base.pb',
+        'quantized': 'v40/constituency/xlnet-base.pb.quantized',
+        'dictionary': 'v40/constituency/vocab-xlnet-base.json',
         'vocab': 'tokenizer/sp10m.cased.v9.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.v9.model',
     },
@@ -94,36 +104,42 @@ S3_PATH_CONSTITUENCY = {
 PATH_DEPENDENCY = {
     'bert': {
         'model': home + '/dependency/bert/base/model.pb',
+        'quantized': home + '/dependency/bert/base/quantized/model.pb',
         'vocab': home + '/bert/sp10m.cased.bert.vocab',
         'tokenizer': home + '/bert/sp10m.cased.bert.model',
         'version': 'v34',
     },
     'tiny-bert': {
         'model': home + '/dependency/bert/tiny/model.pb',
+        'quantized': home + '/dependency/bert/tiny/quantized/model.pb',
         'vocab': home + '/bert/sp10m.cased.bert.vocab',
         'tokenizer': home + '/bert/sp10m.cased.bert.model',
         'version': 'v34',
     },
     'albert': {
         'model': home + '/dependency/albert/base/model.pb',
+        'quantized': home + '/dependency/albert/base/quantized/model.pb',
         'vocab': home + '/bert/sp10m.cased.v10.vocab',
         'tokenizer': home + '/bert/sp10m.cased.v10.model',
         'version': 'v34',
     },
     'tiny-albert': {
         'model': home + '/dependency/albert/tiny/model.pb',
+        'quantized': home + '/dependency/albert/tiny/quantized/model.pb',
         'vocab': home + '/bert/sp10m.cased.v10.vocab',
         'tokenizer': home + '/bert/sp10m.cased.v10.model',
         'version': 'v34',
     },
     'xlnet': {
         'model': home + '/dependency/xlnet/base/model.pb',
+        'quantized': home + '/dependency/xlnet/base/quantized/model.pb',
         'vocab': home + '/bert/sp10m.cased.v9.vocab',
         'tokenizer': home + '/bert/sp10m.cased.v9.model',
         'version': 'v34',
     },
     'alxlnet': {
         'model': home + '/dependency/alxlnet/base/model.pb',
+        'quantized': home + '/dependency/alxlnet/base/quantized/model.pb',
         'vocab': home + '/bert/sp10m.cased.v9.vocab',
         'tokenizer': home + '/bert/sp10m.cased.v9.model',
         'version': 'v34',
@@ -133,31 +149,37 @@ PATH_DEPENDENCY = {
 S3_PATH_DEPENDENCY = {
     'bert': {
         'model': 'v34/dependency/bert-base-dependency.pb',
+        'quantized': 'v40/dependency/bert-base-dependency.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.bert.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.bert.model',
     },
     'tiny-bert': {
         'model': 'v34/dependency/tiny-bert-dependency.pb',
+        'quantized': 'v40/dependency/tiny-bert-dependency.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.bert.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.bert.model',
     },
     'albert': {
         'model': 'v34/dependency/albert-base-dependency.pb',
+        'quantized': 'v40/dependency/albert-base-dependency.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.v10.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.v10.model',
     },
     'tiny-albert': {
         'model': 'v34/dependency/albert-tiny-dependency.pb',
+        'quantized': 'v40/dependency/albert-tiny-dependency.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.v10.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.v10.model',
     },
     'xlnet': {
         'model': 'v34/dependency/xlnet-base-dependency.pb',
+        'quantized': 'v40/dependency/xlnet-base-dependency.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.v9.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.v9.model',
     },
     'alxlnet': {
         'model': 'v34/dependency/alxlnet-base-dependency.pb',
+        'quantized': 'v34/dependency/alxlnet-base-dependency.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.v9.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.v9.model',
     },
@@ -261,6 +283,7 @@ S3_PATH_EMOTION = {
 PATH_ENTITIES = {
     'bert': {
         'model': home + '/entity/bert/base/model.pb',
+        'quantized': home + '/entity/bert/base/quantized/model.pb',
         'vocab': home + '/bert/sp10m.cased.bert.vocab',
         'tokenizer': home + '/bert/sp10m.cased.bert.model',
         'setting': home + '/entity/dictionary-entities.json',
@@ -268,6 +291,7 @@ PATH_ENTITIES = {
     },
     'tiny-bert': {
         'model': home + '/entity/bert/tiny/model.pb',
+        'quantized': home + '/entity/bert/tiny/quantized/model.pb',
         'vocab': home + '/bert/sp10m.cased.bert.vocab',
         'tokenizer': home + '/bert/sp10m.cased.bert.model',
         'setting': home + '/entity/dictionary-entities.json',
@@ -275,6 +299,7 @@ PATH_ENTITIES = {
     },
     'albert': {
         'model': home + '/entity/albert/base/model.pb',
+        'quantized': home + '/entity/albert/base/quantized/model.pb',
         'vocab': home + '/bert/sp10m.cased.v10.vocab',
         'tokenizer': home + '/bert/sp10m.cased.v10.model',
         'setting': home + '/entity/dictionary-entities.json',
@@ -282,6 +307,7 @@ PATH_ENTITIES = {
     },
     'tiny-albert': {
         'model': home + '/entity/albert/tiny/model.pb',
+        'quantized': home + '/entity/albert/tiny/quantized/model.pb',
         'vocab': home + '/bert/sp10m.cased.v10.vocab',
         'tokenizer': home + '/bert/sp10m.cased.v10.model',
         'setting': home + '/entity/dictionary-entities.json',
@@ -289,6 +315,7 @@ PATH_ENTITIES = {
     },
     'xlnet': {
         'model': home + '/entity/xlnet/base/model.pb',
+        'quantized': home + '/entity/xlnet/base/quantized/model.pb',
         'vocab': home + '/bert/sp10m.cased.v9.vocab',
         'tokenizer': home + '/bert/sp10m.cased.v9.model',
         'setting': home + '/entity/dictionary-entities.json',
@@ -296,6 +323,7 @@ PATH_ENTITIES = {
     },
     'alxlnet': {
         'model': home + '/entity/alxlnet/base/model.pb',
+        'quantized': home + '/entity/alxlnet/base/quantized/model.pb',
         'vocab': home + '/bert/sp10m.cased.v9.vocab',
         'tokenizer': home + '/bert/sp10m.cased.v9.model',
         'setting': home + '/entity/dictionary-entities.json',
@@ -306,36 +334,42 @@ PATH_ENTITIES = {
 S3_PATH_ENTITIES = {
     'bert': {
         'model': 'v34/entity/bert-base-entity.pb',
+        'quantized': 'v40/entity/bert-base-entity.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.bert.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.bert.model',
         'setting': 'bert-bahasa/dictionary-entities.json',
     },
     'tiny-bert': {
         'model': 'v34/entity/tiny-bert-entity.pb',
+        'quantized': 'v40/entity/tiny-bert-entity.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.bert.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.bert.model',
         'setting': 'bert-bahasa/dictionary-entities.json',
     },
     'albert': {
         'model': 'v34/entity/albert-base-entity.pb',
+        'quantized': 'v40/entity/albert-base-entity.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.v10.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.v10.model',
         'setting': 'bert-bahasa/dictionary-entities.json',
     },
     'tiny-albert': {
         'model': 'v34/entity/albert-tiny-entity.pb',
+        'quantized': 'v40/entity/albert-tiny-entity.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.v10.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.v10.model',
         'setting': 'bert-bahasa/dictionary-entities.json',
     },
     'xlnet': {
         'model': 'v34/entity/xlnet-base-entity.pb',
+        'quantized': 'v40/entity/xlnet-base-entity.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.v9.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.v9.model',
         'setting': 'bert-bahasa/dictionary-entities.json',
     },
     'alxlnet': {
         'model': 'v34/entity/alxlnet-base-entity.pb',
+        'quantized': 'v40/entity/alxlnet-base-entity.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.v9.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.v9.model',
         'setting': 'bert-bahasa/dictionary-entities.json',
@@ -540,6 +574,7 @@ S3_PATH_PARAPHRASE = {
 PATH_POS = {
     'bert': {
         'model': home + '/pos/bert/base/model.pb',
+        'quantized': home + '/pos/bert/base/quantized/model.pb',
         'vocab': home + '/bert/sp10m.cased.bert.vocab',
         'tokenizer': home + '/bert/sp10m.cased.bert.model',
         'setting': home + '/pos/dictionary-pos.json',
@@ -547,6 +582,7 @@ PATH_POS = {
     },
     'tiny-bert': {
         'model': home + '/pos/bert/tiny/model.pb',
+        'quantized': home + '/pos/bert/tiny/quantized/model.pb',
         'vocab': home + '/bert/sp10m.cased.bert.vocab',
         'tokenizer': home + '/bert/sp10m.cased.bert.model',
         'setting': home + '/pos/dictionary-pos.json',
@@ -554,6 +590,7 @@ PATH_POS = {
     },
     'albert': {
         'model': home + '/pos/albert/base/model.pb',
+        'quantized': home + '/pos/albert/base/quantized/model.pb',
         'vocab': home + '/bert/sp10m.cased.v10.vocab',
         'tokenizer': home + '/bert/sp10m.cased.v10.model',
         'setting': home + '/pos/dictionary-pos.json',
@@ -561,6 +598,7 @@ PATH_POS = {
     },
     'tiny-albert': {
         'model': home + '/pos/albert/tiny/model.pb',
+        'quantized': home + '/pos/albert/tiny/quantized/model.pb',
         'vocab': home + '/bert/sp10m.cased.v10.vocab',
         'tokenizer': home + '/bert/sp10m.cased.v10.model',
         'setting': home + '/pos/dictionary-pos.json',
@@ -568,6 +606,7 @@ PATH_POS = {
     },
     'xlnet': {
         'model': home + '/pos/xlnet/base/model.pb',
+        'quantized': home + '/pos/xlnet/base/quantized/model.pb',
         'vocab': home + '/bert/sp10m.cased.v9.vocab',
         'tokenizer': home + '/bert/sp10m.cased.v9.model',
         'setting': home + '/pos/dictionary-pos.json',
@@ -575,6 +614,7 @@ PATH_POS = {
     },
     'alxlnet': {
         'model': home + '/pos/alxlnet/base/model.pb',
+        'quantized': home + '/pos/alxlnet/base/quantized/model.pb',
         'vocab': home + '/bert/sp10m.cased.v9.vocab',
         'tokenizer': home + '/bert/sp10m.cased.v9.model',
         'setting': home + '/pos/dictionary-pos.json',
@@ -585,36 +625,42 @@ PATH_POS = {
 S3_PATH_POS = {
     'bert': {
         'model': 'v34/pos/bert-base-pos.pb',
+        'quantized': 'v40/pos/bert-base-pos.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.bert.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.bert.model',
         'setting': 'bert-bahasa/dictionary-pos.json',
     },
     'tiny-bert': {
         'model': 'v34/pos/tiny-bert-pos.pb',
+        'quantized': 'v40/pos/tiny-bert-pos.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.bert.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.bert.model',
         'setting': 'bert-bahasa/dictionary-pos.json',
     },
     'albert': {
         'model': 'v34/pos/albert-base-pos.pb',
+        'quantized': 'v40/pos/albert-base-pos.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.v10.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.v10.model',
         'setting': 'bert-bahasa/dictionary-pos.json',
     },
     'tiny-albert': {
         'model': 'v34/pos/albert-tiny-pos.pb',
+        'quantized': 'v40/pos/albert-tiny-pos.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.v10.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.v10.model',
         'setting': 'bert-bahasa/dictionary-pos.json',
     },
     'xlnet': {
         'model': 'v34/pos/xlnet-base-pos.pb',
+        'quantized': 'v40/pos/xlnet-base-pos.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.v9.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.v9.model',
         'setting': 'bert-bahasa/dictionary-pos.json',
     },
     'alxlnet': {
         'model': 'v34/pos/alxlnet-base-pos.pb',
+        'quantized': 'v40/pos/alxlnet-base-pos.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.v9.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.v9.model',
         'setting': 'bert-bahasa/dictionary-pos.json',
@@ -750,7 +796,7 @@ PATH_SENTIMENT = {
     },
     'xlnet': {
         'model': home + '/sentiment/xlnet/base/model.pb',
-        'quantized': home + '/sentiment/xlnet/tiny/quantized/model.pb',
+        'quantized': home + '/sentiment/xlnet/base/quantized/model.pb',
         'vocab': home + '/xlnet/sp10m.cased.v9.vocab',
         'tokenizer': home + '/xlnet/sp10m.cased.v9.model',
         'version': 'v34',
@@ -901,18 +947,21 @@ PATH_SUBJECTIVE = {
     },
     'bert': {
         'model': home + '/subjective/bert/base/model.pb',
+        'quantized': home + '/subjective/bert/base/quantized/model.pb',
         'vocab': home + '/bert/sp10m.cased.bert.vocab',
         'tokenizer': home + '/bert/sp10m.cased.bert.model',
         'version': 'v34',
     },
     'tiny-bert': {
         'model': home + '/subjective/bert/tiny/model.pb',
+        'quantized': home + '/subjective/bert/tiny/quantized/model.pb',
         'vocab': home + '/bert/sp10m.cased.bert.vocab',
         'tokenizer': home + '/bert/sp10m.cased.bert.model',
         'version': 'v34',
     },
     'albert': {
         'model': home + '/subjective/albert/base/model.pb',
+        'quantized': home + '/subjective/albert/base/quantized/model.pb',
         'vocab': home + '/albert/sp10m.cased.v10.vocab',
         'tokenizer': home + '/albert/sp10m.cased.v10.model',
         'version': 'v34',
@@ -925,12 +974,14 @@ PATH_SUBJECTIVE = {
     },
     'xlnet': {
         'model': home + '/subjective/xlnet/base/model.pb',
+        'quantized': home + '/subjective/xlnet/base/quantized/model.pb',
         'vocab': home + '/xlnet/sp10m.cased.v9.vocab',
         'tokenizer': home + '/xlnet/sp10m.cased.v9.model',
         'version': 'v34',
     },
     'alxlnet': {
         'model': home + '/subjective/alxlnet/base/model.pb',
+        'quantized': home + '/subjective/alxlnet/base/quantized/model.pb',
         'vocab': home + '/xlnet/sp10m.cased.v9.vocab',
         'tokenizer': home + '/xlnet/sp10m.cased.v9.model',
         'version': 'v34',
@@ -945,31 +996,37 @@ S3_PATH_SUBJECTIVE = {
     },
     'bert': {
         'model': 'v34/subjective/bert-base-subjective.pb',
+        'quantized': 'v40/subjective/bert-base-subjective.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.bert.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.bert.model',
     },
     'tiny-bert': {
         'model': 'v34/subjective/tiny-bert-subjective.pb',
+        'quantized': 'v40/subjective/tiny-bert-subjective.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.bert.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.bert.model',
     },
     'albert': {
         'model': 'v34/subjective/albert-base-subjective.pb',
+        'quantized': 'v40/subjective/albert-base-subjective.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.v10.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.v10.model',
     },
     'tiny-albert': {
         'model': 'v34/subjective/albert-tiny-subjective.pb',
+        'quantized': 'v40/subjective/albert-tiny-subjective.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.v10.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.v10.model',
     },
     'xlnet': {
         'model': 'v34/subjective/xlnet-base-subjective.pb',
+        'quantized': 'v40/subjective/xlnet-base-subjective.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.v9.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.v9.model',
     },
     'alxlnet': {
         'model': 'v34/subjective/alxlnet-base-subjective.pb',
+        'quantized': 'v40/subjective/alxlnet-base-subjective.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.v9.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.v9.model',
     },
@@ -1082,36 +1139,42 @@ PATH_TOXIC = {
     },
     'bert': {
         'model': home + '/toxicity/bert/base/model.pb',
+        'quantized': home + '/toxicity/bert/base/quantized/model.pb',
         'vocab': home + '/bert/sp10m.cased.bert.vocab',
         'tokenizer': home + '/bert/sp10m.cased.bert.model',
         'version': 'v34',
     },
     'tiny-bert': {
         'model': home + '/toxicity/bert/tiny/model.pb',
+        'quantized': home + '/toxicity/bert/tiny/quantized/model.pb',
         'vocab': home + '/bert/sp10m.cased.bert.vocab',
         'tokenizer': home + '/bert/sp10m.cased.bert.model',
         'version': 'v34',
     },
     'albert': {
         'model': home + '/toxicity/albert/base/model.pb',
+        'quantized': home + '/toxicity/albert/base/quantized/model.pb',
         'vocab': home + '/bert/sp10m.cased.v10.vocab',
         'tokenizer': home + '/bert/sp10m.cased.v10.model',
         'version': 'v34',
     },
     'tiny-albert': {
         'model': home + '/toxicity/albert/tiny/model.pb',
+        'quantized': home + '/toxicity/albert/tiny/quantized/model.pb',
         'vocab': home + '/bert/sp10m.cased.v10.vocab',
         'tokenizer': home + '/bert/sp10m.cased.v10.model',
         'version': 'v34',
     },
     'xlnet': {
         'model': home + '/toxicity/xlnet/base/model.pb',
+        'quantized': home + '/toxicity/xlnet/base/quantized/model.pb',
         'vocab': home + '/xlnet/sp10m.cased.v9.vocab',
         'tokenizer': home + '/xlnet/sp10m.cased.v9.model',
         'version': 'v34',
     },
     'alxlnet': {
         'model': home + '/toxicity/alxlnet/base/model.pb',
+        'quantized': home + '/toxicity/alxlnet/base/quantized/model.pb',
         'vocab': home + '/alxlnet/sp10m.cased.v9.vocab',
         'tokenizer': home + '/alxlnet/sp10m.cased.v9.model',
         'version': 'v34',
@@ -1126,31 +1189,37 @@ S3_PATH_TOXIC = {
     },
     'bert': {
         'model': 'v34/toxicity/bert-base-toxicity.pb',
+        'quantized': 'v40/toxicity/bert-base-toxicity.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.bert.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.bert.model',
     },
     'tiny-bert': {
         'model': 'v34/toxicity/tiny-bert-toxicity.pb',
+        'quantized': 'v40/toxicity/tiny-bert-toxicity.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.bert.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.bert.model',
     },
     'albert': {
         'model': 'v34/toxicity/albert-base-toxicity.pb',
+        'quantized': 'v40/toxicity/albert-base-toxicity.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.v10.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.v10.model',
     },
     'tiny-albert': {
         'model': 'v34/toxicity/albert-tiny-toxicity.pb',
+        'quantized': 'v40/toxicity/albert-tiny-toxicity.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.v10.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.v10.model',
     },
     'xlnet': {
         'model': 'v34/toxicity/xlnet-base-toxicity.pb',
+        'quantized': 'v40/toxicity/xlnet-base-toxicity.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.v9.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.v9.model',
     },
     'alxlnet': {
         'model': 'v34/toxicity/alxlnet-base-toxicity.pb',
+        'quantized': 'v40/toxicity/alxlnet-base-toxicity.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.v9.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.v9.model',
     },

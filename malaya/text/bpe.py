@@ -436,7 +436,9 @@ def parse_bert_tagging(left, tokenizer):
     return tokenizer.convert_tokens_to_ids(bert_tokens), input_mask, bert_tokens
 
 
-def merge_sentencepiece_tokens(paired_tokens, weighted = True, model = 'bert'):
+def merge_sentencepiece_tokens(
+    paired_tokens, weighted = True, vectorize = False, model = 'bert'
+):
     new_paired_tokens = []
     n_tokens = len(paired_tokens)
     rejected = list(SPECIAL_TOKENS[model].values())
@@ -460,7 +462,10 @@ def merge_sentencepiece_tokens(paired_tokens, weighted = True, model = 'bert'):
                 merged_weight.append(current_weight)
                 i = i + 1
                 current_token, current_weight = paired_tokens[i]
-            merged_weight = np.mean(merged_weight)
+            if vectorize:
+                merged_weight = np.mean(merged_weight, axis = 0)
+            else:
+                merged_weight = np.mean(merged_weight)
             new_paired_tokens.append((merged_token, merged_weight))
 
         else:
@@ -557,7 +562,7 @@ def load_yttm(path, id_mode = False):
 
 
 def constituency_bert(tokenizer, sentences):
-    all_input_ids, all_word_end_mask = [], []
+    all_input_ids, all_word_end_mask, all_tokens = [], [], []
 
     subword_max_len = 0
     for snum, sentence in enumerate(sentences):
@@ -589,12 +594,13 @@ def constituency_bert(tokenizer, sentences):
         input_ids = tokenizer.convert_tokens_to_ids(tokens)
         all_input_ids.append(input_ids)
         all_word_end_mask.append(word_end_mask)
+        all_tokens.append(tokens)
 
-    return all_input_ids, all_word_end_mask
+    return all_input_ids, all_word_end_mask, all_tokens
 
 
 def constituency_xlnet(tokenizer, sentences):
-    all_input_ids, all_word_end_mask = [], []
+    all_input_ids, all_word_end_mask, all_tokens = [], [], []
 
     subword_max_len = 0
     for snum, sentence in enumerate(sentences):
@@ -628,5 +634,6 @@ def constituency_xlnet(tokenizer, sentences):
         input_ids = [tokenizer.PieceToId(i) for i in tokens]
         all_input_ids.append(input_ids)
         all_word_end_mask.append(word_end_mask)
+        all_tokens.append(tokens)
 
-    return all_input_ids, all_word_end_mask
+    return all_input_ids, all_word_end_mask, all_tokens

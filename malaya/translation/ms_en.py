@@ -22,7 +22,7 @@ def available_transformer():
 
 
 @check_type
-def transformer(model: str = 'base', quantized = quantized, **kwargs):
+def transformer(model: str = 'base', quantized: bool = False, **kwargs):
     """
     Load Transformer encoder-decoder model to translate MS-to-EN.
 

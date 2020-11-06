@@ -79,7 +79,7 @@ def load_graph(frozen_graph_filename, **kwargs):
             path = frozen_graph_filename.split('Malaya/')[1]
             path = '/'.join(path.split('/')[:-1])
             raise Exception(
-                f"{e}, file corrupted due to some reasons, please run malaya.clear_cache('{path}') and try again"
+                f"{e}, file corrupted due to some reasons, please run `malaya.clear_cache('{path}')` and try again"
             )
 
     # https://github.com/onnx/tensorflow-onnx/issues/77#issuecomment-445066091

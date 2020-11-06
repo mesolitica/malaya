@@ -61,14 +61,18 @@ def transformer(
     if len(label) > 2 or class_name == 'relevancy':
         if model in ['albert', 'bert', 'tiny-albert', 'tiny-bert']:
             selected_class = MULTICLASS_BERT
+            selected_node = 'import/dense/BiasAdd:0'
         if model in ['xlnet', 'alxlnet']:
             selected_class = MULTICLASS_XLNET
+            selected_node = 'import/transpose_3:0'
 
     else:
         if model in ['albert', 'bert', 'tiny-albert', 'tiny-bert']:
             selected_class = BINARY_BERT
+            selected_node = 'import/dense/BiasAdd:0'
         if model in ['xlnet', 'alxlnet']:
             selected_class = BINARY_XLNET
+            selected_node = 'import/transpose_3:0'
 
     if model in ['albert', 'bert', 'tiny-albert', 'tiny-bert']:
         if model in ['bert', 'tiny-bert']:
@@ -99,6 +103,7 @@ def transformer(
             input_masks = g.get_tensor_by_name('import/Placeholder_1:0'),
             logits = g.get_tensor_by_name('import/logits:0'),
             logits_seq = g.get_tensor_by_name('import/logits_seq:0'),
+            vectorizer = g.get_tensor_by_name(selected_node),
             sess = generate_session(graph = g, **kwargs),
             tokenizer = tokenizer,
             label = label,
@@ -126,6 +131,7 @@ def transformer(
             input_masks = g.get_tensor_by_name('import/Placeholder_2:0'),
             logits = g.get_tensor_by_name('import/logits:0'),
             logits_seq = g.get_tensor_by_name('import/logits_seq:0'),
+            vectorizer = g.get_tensor_by_name(selected_node),
             sess = generate_session(graph = g, **kwargs),
             tokenizer = tokenizer,
             label = label,

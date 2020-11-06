@@ -43,6 +43,7 @@ class BASE:
         logits,
         segment_ids,
         input_masks,
+        vectorizer,
         sess,
         tokenizer,
         label = ['negative', 'positive'],
@@ -51,6 +52,7 @@ class BASE:
         self._logits = logits
         self._segment_ids = segment_ids
         self._input_masks = input_masks
+        self._vectorizer = vectorizer
         self._sess = sess
         self._tokenizer = tokenizer
         self._label = label
@@ -64,6 +66,7 @@ class BERT(BASE):
         input_masks,
         logits,
         logits_seq,
+        vectorizer,
         sess,
         tokenizer,
         attns,
@@ -77,6 +80,7 @@ class BERT(BASE):
             segment_ids = segment_ids,
             input_masks = input_masks,
             logits = logits,
+            vectorizer = vectorizer,
             sess = sess,
             tokenizer = tokenizer,
             label = label,
@@ -109,6 +113,36 @@ class BERT(BASE):
 
         return [label[result] for result in np.argmax(results, axis = 1)]
 
+    def _vectorize(self, strings, method = 'first'):
+        method = method.lower()
+        if method not in ['first', 'last', 'mean', 'word']:
+            raise ValueError(
+                "method not supported, only support 'first', 'last', 'mean' and 'word'"
+            )
+        input_ids, input_masks, _, s_tokens = bert_tokenization(
+            self._tokenizer, strings
+        )
+        v = self._sess.run(
+            self._vectorizer,
+            feed_dict = {self._X: input_ids, self._input_masks: input_masks},
+        )
+        if method == 'first':
+            v = v[:, 0]
+        elif method == 'last':
+            v = v[:, -1]
+        elif method == 'mean':
+            v = np.mean(v, axis = 1)
+        else:
+            v = [
+                merge_sentencepiece_tokens(
+                    list(zip(s_tokens[i], v[i][: len(s_tokens[i])])),
+                    weighted = False,
+                    vectorize = True,
+                )
+                for i in range(len(v))
+            ]
+        return v
+
     def _predict_proba(self, strings, add_neutral = False):
         results = self._classify(strings)
 
@@ -128,7 +162,7 @@ class BERT(BASE):
     ):
         method = method.lower()
         if method not in ['last', 'first', 'mean']:
-            raise Exception(
+            raise ValueError(
                 "method not supported, only support 'last', 'first' and 'mean'"
             )
         if add_neutral:
@@ -214,6 +248,7 @@ class BINARY_BERT(BERT):
         input_masks,
         logits,
         logits_seq,
+        vectorizer,
         sess,
         tokenizer,
         attns,
@@ -227,12 +262,36 @@ class BINARY_BERT(BERT):
             input_masks = input_masks,
             logits = logits,
             logits_seq = logits_seq,
+            vectorizer = vectorizer,
             sess = sess,
             tokenizer = tokenizer,
             attns = attns,
             class_name = class_name,
             label = label,
         )
+
+    @check_type
+    def vectorize(self, strings: List[str], method: str = 'first'):
+        """
+        vectorize list of strings.
+
+        Parameters
+        ----------
+        strings: List[str]
+        method : str, optional (default='first')
+            Vectorization layer supported. Allowed values:
+
+            * ``'last'`` - vector from last sequence.
+            * ``'first'`` - vector from first sequence.
+            * ``'mean'`` - average vectors from all sequences.
+            * ``'word'`` - average vectors based on tokens.
+
+        Returns
+        -------
+        result: np.array
+        """
+
+        return self._vectorize(strings = strings, method = method)
 
     @check_type
     def predict(self, strings: List[str], add_neutral: bool = True):
@@ -310,6 +369,7 @@ class MULTICLASS_BERT(BERT):
         input_masks,
         logits,
         logits_seq,
+        vectorizer,
         sess,
         tokenizer,
         attns,
@@ -323,12 +383,36 @@ class MULTICLASS_BERT(BERT):
             input_masks = input_masks,
             logits = logits,
             logits_seq = logits_seq,
+            vectorizer = vectorizer,
             sess = sess,
             tokenizer = tokenizer,
             attns = attns,
             class_name = class_name,
             label = label,
         )
+
+    @check_type
+    def vectorize(self, strings: List[str], method: str = 'first'):
+        """
+        vectorize list of strings.
+
+        Parameters
+        ----------
+        strings: List[str]
+        method : str, optional (default='first')
+            Vectorization layer supported. Allowed values:
+
+            * ``'last'`` - vector from last sequence.
+            * ``'first'`` - vector from first sequence.
+            * ``'mean'`` - average vectors from all sequences.
+            * ``'word'`` - average vectors based on tokens.
+
+        Returns
+        -------
+        result: np.array
+        """
+
+        return self._vectorize(strings = strings, method = method)
 
     @check_type
     def predict(self, strings: List[str]):
@@ -399,6 +483,7 @@ class SIGMOID_BERT(BASE):
         input_masks,
         logits,
         logits_seq,
+        vectorizer,
         sess,
         tokenizer,
         attns,
@@ -411,6 +496,7 @@ class SIGMOID_BERT(BASE):
             segment_ids = segment_ids,
             input_masks = input_masks,
             logits = logits,
+            vectorizer = vectorizer,
             sess = sess,
             tokenizer = tokenizer,
             label = label,
@@ -431,6 +517,55 @@ class SIGMOID_BERT(BASE):
             self._sigmoid,
             feed_dict = {self._X: input_ids, self._input_masks: input_masks},
         )
+
+    @check_type
+    def vectorize(self, strings: List[str], method: str = 'first'):
+        """
+        vectorize list of strings.
+
+        Parameters
+        ----------
+        strings: List[str]
+        method : str, optional (default='first')
+            Vectorization layer supported. Allowed values:
+
+            * ``'last'`` - vector from last sequence.
+            * ``'first'`` - vector from first sequence.
+            * ``'mean'`` - average vectors from all sequences.
+            * ``'word'`` - average vectors based on tokens.
+
+        Returns
+        -------
+        result: np.array
+        """
+        method = method.lower()
+        if method not in ['first', 'last', 'mean', 'word']:
+            raise ValueError(
+                "method not supported, only support 'first', 'last', 'mean' and 'word'"
+            )
+        input_ids, input_masks, _, s_tokens = bert_tokenization(
+            self._tokenizer, strings
+        )
+        v = self._sess.run(
+            self._vectorizer,
+            feed_dict = {self._X: input_ids, self._input_masks: input_masks},
+        )
+        if method == 'first':
+            v = v[:, 0]
+        elif method == 'last':
+            v = v[:, -1]
+        elif method == 'mean':
+            v = np.mean(v, axis = 1)
+        else:
+            v = [
+                merge_sentencepiece_tokens(
+                    list(zip(s_tokens[i], v[i][: len(s_tokens[i])])),
+                    weighted = False,
+                    vectorize = True,
+                )
+                for i in range(len(v))
+            ]
+        return v
 
     @check_type
     def predict(self, strings: List[str]):
@@ -508,7 +643,7 @@ class SIGMOID_BERT(BASE):
 
         method = method.lower()
         if method not in ['last', 'first', 'mean']:
-            raise Exception(
+            raise ValueError(
                 "method not supported, only support 'last', 'first' and 'mean'"
             )
 
@@ -583,6 +718,7 @@ class SIAMESE_BERT(BASE):
         segment_ids,
         input_masks,
         logits,
+        vectorizer,
         sess,
         tokenizer,
         label = ['not similar', 'similar'],
@@ -597,6 +733,7 @@ class SIAMESE_BERT(BASE):
             tokenizer = tokenizer,
             label = label,
         )
+        self._vectorizer = vectorizer
         self._softmax = tf.nn.softmax(self._logits)
         self._batch_size = 20
 
@@ -607,6 +744,32 @@ class SIAMESE_BERT(BASE):
 
         return self._sess.run(
             self._softmax,
+            feed_dict = {
+                self._X: input_ids,
+                self._segment_ids: segment_ids,
+                self._input_masks: input_masks,
+            },
+        )
+
+    @check_type
+    def vectorize(self, strings: List[str]):
+        """
+        Vectorize list of strings.
+
+        Parameters
+        ----------
+        strings : List[str]
+
+        Returns
+        -------
+        result: np.array
+        """
+        input_ids, input_masks, segment_ids, _ = bert_tokenization(
+            self._tokenizer, strings
+        )
+        segment_ids = np.array(segment_ids) + 1
+        return self._sess.run(
+            self._vectorizer,
             feed_dict = {
                 self._X: input_ids,
                 self._segment_ids: segment_ids,
@@ -630,7 +793,7 @@ class SIAMESE_BERT(BASE):
         """
 
         if len(strings_left) != len(strings_right):
-            raise Exception(
+            raise ValueError(
                 'length `strings_left` must be same as length `strings_right`'
             )
 
@@ -689,7 +852,15 @@ class SIAMESE_BERT(BASE):
 
 class TAGGING_BERT(BASE):
     def __init__(
-        self, X, segment_ids, input_masks, logits, sess, tokenizer, settings
+        self,
+        X,
+        segment_ids,
+        input_masks,
+        logits,
+        vectorizer,
+        sess,
+        tokenizer,
+        settings,
     ):
         BASE.__init__(
             self,
@@ -697,6 +868,7 @@ class TAGGING_BERT(BASE):
             segment_ids = segment_ids,
             input_masks = input_masks,
             logits = logits,
+            vectorizer = vectorizer,
             sess = sess,
             tokenizer = tokenizer,
             label = None,
@@ -707,6 +879,36 @@ class TAGGING_BERT(BASE):
             int(k): v for k, v in self._settings['idx2tag'].items()
         }
         self._pos = 'organization' not in self._settings['tag2idx']
+
+    @check_type
+    def vectorize(self, string: str):
+        """
+        vectorize a string.
+
+        Parameters
+        ----------
+        string: List[str]
+
+        Returns
+        -------
+        result: np.array
+        """
+        parsed_sequence, input_mask, bert_sequence = parse_bert_tagging(
+            string, self._tokenizer
+        )
+        v = self._sess.run(
+            self._vectorizer,
+            feed_dict = {
+                self._X: [parsed_sequence],
+                self._input_masks: [input_mask],
+            },
+        )
+        v = v[0]
+        return merge_sentencepiece_tokens(
+            list(zip(bert_sequence, v[: len(bert_sequence)])),
+            weighted = False,
+            vectorize = True,
+        )
 
     @check_type
     def analyze(self, string: str):
@@ -760,6 +962,7 @@ class DEPENDENCY_BERT(BASE):
         segment_ids,
         input_masks,
         logits,
+        vectorizer,
         sess,
         tokenizer,
         settings,
@@ -771,6 +974,7 @@ class DEPENDENCY_BERT(BASE):
             segment_ids = segment_ids,
             input_masks = input_masks,
             logits = logits,
+            vectorizer = vectorizer,
             sess = sess,
             tokenizer = tokenizer,
             label = None,
@@ -779,6 +983,32 @@ class DEPENDENCY_BERT(BASE):
         self._tag2idx = settings
         self._idx2tag = {int(v): k for k, v in self._tag2idx.items()}
         self._heads_seq = heads_seq
+
+    @check_type
+    def vectorize(self, string: str):
+        """
+        vectorize a string.
+
+        Parameters
+        ----------
+        string: List[str]
+
+        Returns
+        -------
+        result: np.array
+        """
+        parsed_sequence, input_mask, bert_sequence = parse_bert_tagging(
+            string, self._tokenizer
+        )
+        v = self._sess.run(
+            self._vectorizer, feed_dict = {self._X: [parsed_sequence]}
+        )
+        v = v[0]
+        return merge_sentencepiece_tokens(
+            list(zip(bert_sequence, v[: len(bert_sequence)])),
+            weighted = False,
+            vectorize = True,
+        )
 
     @check_type
     def predict(self, string: str):
@@ -794,7 +1024,7 @@ class DEPENDENCY_BERT(BASE):
         result: Tuple
         """
 
-        parsed_sequence, bert_sequence = parse_bert_tagging(
+        parsed_sequence, input_mask, bert_sequence = parse_bert_tagging(
             string, self._tokenizer
         )
         tagging, depend = self._sess.run(

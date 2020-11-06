@@ -121,6 +121,9 @@ Features
 -  **Zero-shot classification**
 
    Provide Zero-shot classification interface using Transformer-Bahasa to recognize texts without any labeled training data.
+-  **Hybrid 8-bit Quantization**
+
+   Provide hybrid 8-bit quantization for all models to speed inference by 2x and reduce model size by 4x.
 
 Pretrained Models
 ------------------

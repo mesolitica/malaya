@@ -41,12 +41,32 @@ label = [
 ]
 
 _transformer_availability = {
-    'bert': {'Size (MB)': 425.6, 'Accuracy': 0.814},
-    'tiny-bert': {'Size (MB)': 57.4, 'Accuracy': 0.815},
-    'albert': {'Size (MB)': 48.6, 'Accuracy': 0.812},
-    'tiny-albert': {'Size (MB)': 22.4, 'Accuracy': 0.808},
-    'xlnet': {'Size (MB)': 446.6, 'Accuracy': 0.807},
-    'alxlnet': {'Size (MB)': 46.8, 'Accuracy': 0.817},
+    'bert': {'Size (MB)': 425.6, 'Quantized Size (MB)': 111, 'Accuracy': 0.814},
+    'tiny-bert': {
+        'Size (MB)': 57.4,
+        'Quantized Size (MB)': 15.4,
+        'Accuracy': 0.815,
+    },
+    'albert': {
+        'Size (MB)': 48.6,
+        'Quantized Size (MB)': 12.8,
+        'Accuracy': 0.812,
+    },
+    'tiny-albert': {
+        'Size (MB)': 22.4,
+        'Quantized Size (MB)': 5.98,
+        'Accuracy': 0.808,
+    },
+    'xlnet': {
+        'Size (MB)': 446.6,
+        'Quantized Size (MB)': 118,
+        'Accuracy': 0.807,
+    },
+    'alxlnet': {
+        'Size (MB)': 46.8,
+        'Quantized Size (MB)': 13.3,
+        'Accuracy': 0.817,
+    },
 }
 
 
@@ -132,8 +152,14 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
             'model not supported, please check supported models from `malaya.toxicity.available_transformer()`.'
         )
 
-    check_file(PATH_TOXIC[model], S3_PATH_TOXIC[model], **kwargs)
-    g = load_graph(PATH_TOXIC[model]['model'], **kwargs)
+    check_file(
+        PATH_TOXIC[model], S3_PATH_TOXIC[model], quantized = quantized, **kwargs
+    )
+    if quantized:
+        model_path = 'quantized'
+    else:
+        model_path = 'model'
+    g = load_graph(PATH_TOXIC[model][model_path], **kwargs)
 
     path = PATH_TOXIC
 
@@ -166,6 +192,7 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
             input_masks = g.get_tensor_by_name('import/Placeholder_1:0'),
             logits = g.get_tensor_by_name('import/logits:0'),
             logits_seq = g.get_tensor_by_name('import/logits_seq:0'),
+            vectorizer = g.get_tensor_by_name('import/dense/BiasAdd:0'),
             sess = generate_session(graph = g, **kwargs),
             tokenizer = tokenizer,
             label = label,
@@ -193,6 +220,7 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
             input_masks = g.get_tensor_by_name('import/Placeholder_2:0'),
             logits = g.get_tensor_by_name('import/logits:0'),
             logits_seq = g.get_tensor_by_name('import/logits_seq:0'),
+            vectorizer = g.get_tensor_by_name('import/transpose_3:0'),
             sess = generate_session(graph = g, **kwargs),
             tokenizer = tokenizer,
             label = label,

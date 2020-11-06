@@ -426,12 +426,32 @@ def encoder(vectorizer):
 
 
 _transformer_availability = {
-    'bert': {'Size (MB)': 423.4, 'Accuracy': 0.885},
-    'tiny-bert': {'Size (MB)': 56.6, 'Accuracy': 0.873},
-    'albert': {'Size (MB)': 48.3, 'Accuracy': 0.873},
-    'tiny-albert': {'Size (MB)': 21.9, 'Accuracy': 0.824},
-    'xlnet': {'Size (MB)': 448.7, 'Accuracy': 0.784},
-    'alxlnet': {'Size (MB)': 49.0, 'Accuracy': 0.888},
+    'bert': {'Size (MB)': 423.4, 'Quantized Size (MB)': 111, 'Accuracy': 0.885},
+    'tiny-bert': {
+        'Size (MB)': 56.6,
+        'Quantized Size (MB)': 15,
+        'Accuracy': 0.873,
+    },
+    'albert': {
+        'Size (MB)': 48.3,
+        'Quantized Size (MB)': 12.8,
+        'Accuracy': 0.873,
+    },
+    'tiny-albert': {
+        'Size (MB)': 21.9,
+        'Quantized Size (MB)': 6,
+        'Accuracy': 0.824,
+    },
+    'xlnet': {
+        'Size (MB)': 448.7,
+        'Quantized Size (MB)': 119,
+        'Accuracy': 0.784,
+    },
+    'alxlnet': {
+        'Size (MB)': 49.0,
+        'Quantized Size (MB)': 13.9,
+        'Accuracy': 0.888,
+    },
 }
 
 
@@ -469,59 +489,36 @@ def _transformer(model, bert_class, xlnet_class, quantized = False, **kwargs):
 
     if model in ['albert', 'bert', 'tiny-albert', 'tiny-bert']:
         if model in ['bert', 'tiny-bert']:
-            from malaya.transformers.bert import (
-                _extract_attention_weights_import,
-            )
-            from malaya.transformers.bert import bert_num_layers
-
             tokenizer = sentencepiece_tokenizer_bert(
                 path[model]['tokenizer'], path[model]['vocab']
             )
 
         if model in ['albert', 'tiny-albert']:
-            from malaya.transformers.albert import (
-                _extract_attention_weights_import,
-            )
-            from malaya.transformers.albert import bert_num_layers
-            from albert import tokenization
-
             tokenizer = tokenization.FullTokenizer(
                 vocab_file = path[model]['vocab'],
                 do_lower_case = False,
                 spm_model_file = path[model]['tokenizer'],
             )
 
-        return bert_class(
-            X = g.get_tensor_by_name('import/Placeholder:0'),
-            segment_ids = g.get_tensor_by_name('import/Placeholder_1:0'),
-            input_masks = g.get_tensor_by_name('import/Placeholder_2:0'),
-            logits = g.get_tensor_by_name('import/logits:0'),
-            sess = generate_session(graph = g, **kwargs),
-            tokenizer = tokenizer,
-            label = ['not similar', 'similar'],
-        )
+        selected_class = bert_class
+        selected_node = 'import/bert/pooler/dense/BiasAdd:0'
 
     if model in ['xlnet', 'alxlnet']:
-        if model in ['xlnet']:
-            from malaya.transformers.xlnet import (
-                _extract_attention_weights_import,
-            )
-        if model in ['alxlnet']:
-            from malaya.transformers.alxlnet import (
-                _extract_attention_weights_import,
-            )
 
         tokenizer = sentencepiece_tokenizer_xlnet(path[model]['tokenizer'])
+        selected_class = xlnet_class
+        selected_node = 'import/model_1/sequnece_summary/summary/BiasAdd:0'
 
-        return xlnet_class(
-            X = g.get_tensor_by_name('import/Placeholder:0'),
-            segment_ids = g.get_tensor_by_name('import/Placeholder_1:0'),
-            input_masks = g.get_tensor_by_name('import/Placeholder_2:0'),
-            logits = g.get_tensor_by_name('import/logits:0'),
-            sess = generate_session(graph = g, **kwargs),
-            tokenizer = tokenizer,
-            label = ['not similar', 'similar'],
-        )
+    return selected_class(
+        X = g.get_tensor_by_name('import/Placeholder:0'),
+        segment_ids = g.get_tensor_by_name('import/Placeholder_1:0'),
+        input_masks = g.get_tensor_by_name('import/Placeholder_2:0'),
+        logits = g.get_tensor_by_name('import/logits:0'),
+        vectorizer = g.get_tensor_by_name(selected_node),
+        sess = generate_session(graph = g, **kwargs),
+        tokenizer = tokenizer,
+        label = ['not similar', 'similar'],
+    )
 
 
 @check_type

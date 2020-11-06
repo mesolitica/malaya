@@ -38,12 +38,32 @@ label_ontonotes5 = {
     'CARDINAL': 19,
 }
 _transformer_availability = {
-    'bert': {'Size (MB)': 425.4, 'Accuracy': 0.994},
-    'tiny-bert': {'Size (MB)': 57.7, 'Accuracy': 0.986},
-    'albert': {'Size (MB)': 48.6, 'Accuracy': 0.984},
-    'tiny-albert': {'Size (MB)': 22.4, 'Accuracy': 0.971},
-    'xlnet': {'Size (MB)': 446.6, 'Accuracy': 0.992},
-    'alxlnet': {'Size (MB)': 46.8, 'Accuracy': 0.993},
+    'bert': {'Size (MB)': 425.4, 'Quantized Size (MB)': 111, 'Accuracy': 0.994},
+    'tiny-bert': {
+        'Size (MB)': 57.7,
+        'Quantized Size (MB)': 15.4,
+        'Accuracy': 0.986,
+    },
+    'albert': {
+        'Size (MB)': 48.6,
+        'Quantized Size (MB)': 12.8,
+        'Accuracy': 0.984,
+    },
+    'tiny-albert': {
+        'Size (MB)': 22.4,
+        'Quantized Size (MB)': 5.98,
+        'Accuracy': 0.971,
+    },
+    'xlnet': {
+        'Size (MB)': 446.6,
+        'Quantized Size (MB)': 118,
+        'Accuracy': 0.992,
+    },
+    'alxlnet': {
+        'Size (MB)': 46.8,
+        'Quantized Size (MB)': 13.3,
+        'Accuracy': 0.993,
+    },
 }
 
 

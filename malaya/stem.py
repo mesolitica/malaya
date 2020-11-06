@@ -175,7 +175,11 @@ def deep_model(quantized: bool = False, **kwargs):
     check_file(
         PATH_STEM['deep'], S3_PATH_STEM['deep'], quantized = quantized, **kwargs
     )
-    g = load_graph(PATH_STEM['deep']['model'], **kwargs)
+    if quantized:
+        model_path = 'quantized'
+    else:
+        model_path = 'model'
+    g = load_graph(PATH_STEM['deep'][model_path], **kwargs)
 
     bpe, subword_mode = load_yttm(PATH_STEM['deep']['bpe'], id_mode = True)
 

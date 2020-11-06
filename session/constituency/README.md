@@ -19,40 +19,46 @@ Original implementation at https://github.com/nikitakit/self-attentive-parser. W
 
 1. Run any pretrained model you want, example as below,
 
-**BERT-BASE**
-
-```
-python3 src/main_bert_base.py train --use-bert --model-path-base models/en_bert --bert-model "bert-large-uncased" --num-layers 2 --learning-rate 0.00005 --batch-size 32 --eval-batch-size 16 --subbatch-max-tokens 500 --predict-tags --train-path train.txt --dev-path test.txt
-```
-
-**TINY-BERT**
-
-```
-python3 src/main_tiny_bert.py train --use-bert --model-path-base models/en_bert --bert-model "bert-large-uncased" --num-layers 2 --learning-rate 0.00005 --batch-size 32 --eval-batch-size 16 --subbatch-max-tokens 500 --predict-tags --train-path train.txt --dev-path test.txt
-```
-
 **ALBERT-BASE**
 
 ```
-python3 src/main_albert_base.py train --use-bert --model-path-base models/en_bert --bert-model "bert-large-uncased" --num-layers 2 --learning-rate 0.00005 --batch-size 32 --eval-batch-size 16 --subbatch-max-tokens 500 --predict-tags --train-path train.txt --dev-path test.txt
+python3 src/main_albert_base.py train --use-bert --model-path-base models/albert --learning-rate 0.00005 --batch-size 32 --eval-batch-size 16 --subbatch-max-tokens 500 --predict-tags --train-path train.txt --dev-path test.txt
 ```
 
 **ALBERT-TINY**
 
 ```
-python3 src/main_albert_tiny.py train --use-bert --model-path-base models/en_bert --bert-model "bert-large-uncased" --num-layers 2 --learning-rate 0.00005 --batch-size 32 --eval-batch-size 16 --subbatch-max-tokens 500 --predict-tags --train-path train.txt --dev-path test.txt
+python3 src/main_albert_tiny.py train --use-bert --model-path-base models/tiny-albert --num-layers 2 --learning-rate 0.00005 --batch-size 32 --eval-batch-size 16 --subbatch-max-tokens 500 --predict-tags --train-path train.txt --dev-path test.txt
+```
+
+**BERT-BASE**
+
+```
+python3 src/main_bert_base.py train --use-bert --model-path-base models/bert --num-layers 2 --learning-rate 0.00005 --batch-size 32 --eval-batch-size 16 --subbatch-max-tokens 500 --predict-tags --train-path train.txt --dev-path test.txt
+```
+
+**TINY-BERT**
+
+```
+python3 src/main_tiny_bert.py train --use-bert --model-path-base models/tiny-bert --num-layers 2 --learning-rate 0.00005 --batch-size 32 --eval-batch-size 16 --subbatch-max-tokens 500 --predict-tags --train-path train.txt --dev-path test.txt
 ```
 
 **XLNET-BASE**
 
 ```
-python3 src/main_xlnet_base.py train --use-bert --model-path-base models/en_bert --bert-model "bert-large-uncased" --num-layers 2 --learning-rate 0.00005 --batch-size 32 --eval-batch-size 16 --subbatch-max-tokens 500 --predict-tags --train-path train.txt --dev-path test.txt
+python3 src/main_xlnet_base.py train --use-bert --model-path-base models/xlnet --num-layers 2 --learning-rate 0.00005 --batch-size 32 --eval-batch-size 16 --subbatch-max-tokens 500 --predict-tags --train-path train.txt --dev-path test.txt
+```
+
+**XLNET-LARGE**
+
+```
+python3 src/main_xlnet_large.py train --use-bert --model-path-base models/xlnet-large --num-layers 2 --learning-rate 0.00005 --batch-size 16 --eval-batch-size 16 --subbatch-max-tokens 500 --predict-tags --train-path train.txt --dev-path test.txt
 ```
 
 **ALXLNET-BASE**
 
 ```
-python3 src/main_alxlnet_base.py train --use-bert --model-path-base models/en_bert --bert-model "bert-large-uncased" --num-layers 2 --learning-rate 0.00005 --batch-size 32 --eval-batch-size 16 --subbatch-max-tokens 500 --predict-tags --train-path train.txt --dev-path test.txt
+python3 src/main_alxlnet_base.py train --use-bert --model-path-base models/en_bert --num-layers 2 --learning-rate 0.00005 --batch-size 32 --eval-batch-size 16 --subbatch-max-tokens 500 --predict-tags --train-path train.txt --dev-path test.txt
 ```
 
 ## test and export the models

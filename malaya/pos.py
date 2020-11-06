@@ -23,12 +23,32 @@ label = [
 ]
 
 _transformer_availability = {
-    'bert': {'Size (MB)': 426.4, 'Accuracy': 0.952},
-    'tiny-bert': {'Size (MB)': 57.7, 'Accuracy': 0.953},
-    'albert': {'Size (MB)': 48.7, 'Accuracy': 0.951},
-    'tiny-albert': {'Size (MB)': 22.4, 'Accuracy': 0.933},
-    'xlnet': {'Size (MB)': 446.6, 'Accuracy': 0.954},
-    'alxlnet': {'Size (MB)': 46.8, 'Accuracy': 0.951},
+    'bert': {'Size (MB)': 426.4, 'Quantized Size (MB)': 111, 'Accuracy': 0.952},
+    'tiny-bert': {
+        'Size (MB)': 57.7,
+        'Quantized Size (MB)': 15.4,
+        'Accuracy': 0.953,
+    },
+    'albert': {
+        'Size (MB)': 48.7,
+        'Quantized Size (MB)': 12.8,
+        'Accuracy': 0.951,
+    },
+    'tiny-albert': {
+        'Size (MB)': 22.4,
+        'Quantized Size (MB)': 5.98,
+        'Accuracy': 0.933,
+    },
+    'xlnet': {
+        'Size (MB)': 446.6,
+        'Quantized Size (MB)': 118,
+        'Accuracy': 0.954,
+    },
+    'alxlnet': {
+        'Size (MB)': 46.8,
+        'Quantized Size (MB)': 13.3,
+        'Accuracy': 0.951,
+    },
 }
 
 
@@ -114,7 +134,7 @@ def naive(string: str):
 
 
 @check_type
-def transformer(model: str = 'xlnet', **kwargs):
+def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
     """
     Load Transformer Entity Tagging model, transfer learning Transformer + CRF.
 
@@ -145,5 +165,10 @@ def transformer(model: str = 'xlnet', **kwargs):
             'model not supported, please check supported models from `malaya.pos.available_transformer()`.'
         )
     return tag.transformer(
-        PATH_POS, S3_PATH_POS, 'pos', model = model, **kwargs
+        PATH_POS,
+        S3_PATH_POS,
+        'pos',
+        model = model,
+        quantized = quantized,
+        **kwargs
     )

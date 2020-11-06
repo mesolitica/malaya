@@ -567,9 +567,9 @@ def get_elmo_class():
 def get_bert(bert_model, bert_do_lower_case):
     # Avoid a hard dependency on BERT by only importing it if it's being used
     from transformers import XLNetTokenizer, XLNetModel
-    model = XLNetModel.from_pretrained('huseinzol05/xlnet-base-bahasa-cased')
+    model = XLNetModel.from_pretrained('huseinzol05/xlnet-base-bahasa-standard-cased')
     tokenizer = XLNetTokenizer.from_pretrained(
-        'huseinzol05/xlnet-base-bahasa-cased', do_lower_case = False
+        'huseinzol05/xlnet-base-bahasa-standard-cased', do_lower_case = False
     )
     return tokenizer, model
 

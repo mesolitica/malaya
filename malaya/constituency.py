@@ -11,6 +11,7 @@ from herpetologist import check_type
 _transformer_availability = {
     'bert': {
         'Size (MB)': 470.0,
+        'Quantized Size (MB)': 118.0,
         'Recall': 78.96,
         'Precision': 81.78,
         'FScore': 80.35,
@@ -19,6 +20,7 @@ _transformer_availability = {
     },
     'tiny-bert': {
         'Size (MB)': 125.0,
+        'Quantized Size (MB)': 31.8,
         'Recall': 74.89,
         'Precision': 78.79,
         'FScore': 76.79,
@@ -27,6 +29,7 @@ _transformer_availability = {
     },
     'albert': {
         'Size (MB)': 180.0,
+        'Quantized Size (MB)': 45.7,
         'Recall': 77.57,
         'Precision': 80.50,
         'FScore': 79.01,
@@ -35,6 +38,7 @@ _transformer_availability = {
     },
     'tiny-albert': {
         'Size (MB)': 56.7,
+        'Quantized Size (MB)': 14.5,
         'Recall': 67.21,
         'Precision': 74.89,
         'FScore': 70.84,
@@ -43,12 +47,21 @@ _transformer_availability = {
     },
     'xlnet': {
         'Size (MB)': 498.0,
-        'Recall': 80.65,
-        'Precision': 82.22,
-        'FScore': 81.43,
-        'CompleteMatch': 11.08,
-        'TaggingAccuracy': 92.12,
+        'Quantized Size (MB)': 126.0,
+        'Recall': 81.52,
+        'Precision': 85.18,
+        'FScore': 83.31,
+        'CompleteMatch': 11.71,
+        'TaggingAccuracy': 91.71,
     },
+}
+
+_vectorizer_mapping = {
+    'bert': 'import/bert/encoder/layer_11/output/LayerNorm/batchnorm/add_1:0',
+    'tiny-bert': 'import/bert/encoder/layer_11/output/LayerNorm/batchnorm/add_1:0',
+    'albert': 'import/bert/encoder/transformer/group_0_11/layer_11/inner_group_0/LayerNorm_1/batchnorm/add_1:0',
+    'tiny-albert': 'import/bert/encoder/transformer/group_0_3/layer_3/inner_group_0/LayerNorm_1/batchnorm/add_1:0',
+    'xlnet': 'import/model/transformer/layer_11/ff/LayerNorm/batchnorm/add_1:0',
 }
 
 
@@ -130,6 +143,7 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
         word_end_mask = g.get_tensor_by_name('import/word_end_mask:0'),
         charts = g.get_tensor_by_name('import/charts:0'),
         tags = g.get_tensor_by_name('import/tags:0'),
+        vectorizer = g.get_tensor_by_name(_vectorizer_mapping[model]),
         sess = generate_session(graph = g, **kwargs),
         tokenizer = tokenizer,
         dictionary = dictionary,

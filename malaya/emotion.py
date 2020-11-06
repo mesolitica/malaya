@@ -5,7 +5,7 @@ from herpetologist import check_type
 label = ['anger', 'fear', 'happy', 'love', 'sadness', 'surprise']
 
 _transformer_availability = {
-    'bert': {'Size (MB)': 425.6, 'Quantized Size (MB)': 112, 'Accuracy': 0.992},
+    'bert': {'Size (MB)': 425.6, 'Quantized Size (MB)': 111, 'Accuracy': 0.992},
     'tiny-bert': {
         'Size (MB)': 57.4,
         'Quantized Size (MB)': 15.4,
@@ -13,22 +13,22 @@ _transformer_availability = {
     },
     'albert': {
         'Size (MB)': 48.6,
-        'Quantized Size (MB)': 13.4,
+        'Quantized Size (MB)': 12.8,
         'Accuracy': 0.997,
     },
     'tiny-albert': {
         'Size (MB)': 22.4,
-        'Quantized Size (MB)': 6.2,
+        'Quantized Size (MB)': 5.98,
         'Accuracy': 0.981,
     },
     'xlnet': {
         'Size (MB)': 446.5,
-        'Quantized Size (MB)': 120,
+        'Quantized Size (MB)': 118,
         'Accuracy': 0.990,
     },
     'alxlnet': {
         'Size (MB)': 46.8,
-        'Quantized Size (MB)': 14.4,
+        'Quantized Size (MB)': 13.3,
         'Accuracy': 0.989,
     },
 }
