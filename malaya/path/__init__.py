@@ -274,7 +274,7 @@ S3_PATH_EMOTION = {
     },
     'alxlnet': {
         'model': 'v34/emotion/alxlnet-base-emotion.pb',
-        'quantized': 'v34/emotion/alxlnet-base-emotion.pb.quantized',
+        'quantized': 'v40/emotion/alxlnet-base-emotion.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.v9.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.v9.model',
     },
@@ -857,36 +857,42 @@ S3_PATH_SENTIMENT = {
 PATH_SIMILARITY = {
     'bert': {
         'model': home + '/similarity/bert/base/model.pb',
+        'quantized': home + '/similarity/bert/base/quantized/model.pb',
         'vocab': home + '/bert/sp10m.cased.bert.vocab',
         'tokenizer': home + '/bert/sp10m.cased.bert.model',
         'version': 'v36',
     },
     'tiny-bert': {
         'model': home + '/similarity/bert/tiny/model.pb',
+        'quantized': home + '/similarity/bert/tiny/quantized/model.pb',
         'vocab': home + '/bert/sp10m.cased.bert.vocab',
         'tokenizer': home + '/bert/sp10m.cased.bert.model',
         'version': 'v36',
     },
     'albert': {
         'model': home + '/similarity/albert/base/model.pb',
+        'quantized': home + '/similarity/albert/base/quantized/model.pb',
         'vocab': home + '/albert/sp10m.cased.v10.vocab',
         'tokenizer': home + '/albert/sp10m.cased.v10.model',
         'version': 'v36',
     },
     'tiny-albert': {
         'model': home + '/similarity/albert/tiny/model.pb',
+        'quantized': home + '/similarity/albert/tiny/quantized/model.pb',
         'vocab': home + '/bert/sp10m.cased.bert.vocab',
         'tokenizer': home + '/bert/sp10m.cased.bert.model',
         'version': 'v36',
     },
     'xlnet': {
         'model': home + '/similarity/xlnet/base/model.pb',
+        'quantized': home + '/similarity/xlnet/base/quantized/model.pb',
         'vocab': home + '/xlnet/sp10m.cased.v9.vocab',
         'tokenizer': home + '/xlnet/sp10m.cased.v9.model',
         'version': 'v36',
     },
     'alxlnet': {
         'model': home + '/similarity/alxlnet/base/model.pb',
+        'quantized': home + '/similarity/alxlnet/base/quantized/model.pb',
         'vocab': home + '/xlnet/sp10m.cased.v9.vocab',
         'tokenizer': home + '/xlnet/sp10m.cased.v9.model',
         'version': 'v36',
@@ -896,31 +902,37 @@ PATH_SIMILARITY = {
 S3_PATH_SIMILARITY = {
     'bert': {
         'model': 'v36/similarity/bert-base-similarity.pb',
+        'quantized': 'v40/similarity/bert-base-similarity.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.bert.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.bert.model',
     },
     'tiny-bert': {
         'model': 'v36/similarity/tiny-bert-similarity.pb',
+        'quantized': 'v40/similarity/tiny-bert-similarity.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.bert.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.bert.model',
     },
     'albert': {
         'model': 'v36/similarity/albert-base-similarity.pb',
+        'quantized': 'v40/similarity/albert-base-similarity.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.v10.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.v10.model',
     },
     'tiny-albert': {
         'model': 'v36/similarity/albert-tiny-similarity.pb',
+        'quantized': 'v40/similarity/albert-tiny-similarity.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.v10.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.v10.model',
     },
     'xlnet': {
         'model': 'v36/similarity/xlnet-base-similarity.pb',
+        'quantized': 'v40/similarity/xlnet-base-similarity.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.v9.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.v9.model',
     },
     'alxlnet': {
         'model': 'v36/similarity/alxlnet-base-similarity.pb',
+        'quantized': 'v40/similarity/alxlnet-base-similarity.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.v9.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.v9.model',
     },

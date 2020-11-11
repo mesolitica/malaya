@@ -752,24 +752,22 @@ class SIAMESE_XLNET(BASE):
             X = X,
             segment_ids = segment_ids,
             input_masks = input_masks,
+            vectorizer = vectorizer,
             logits = logits,
             sess = sess,
             tokenizer = tokenizer,
             label = label,
         )
-        self._vectorizer = vectorizer
         self._softmax = tf.nn.softmax(self._logits)
         self._batch_size = 20
 
     def _base(self, strings_left, strings_right):
-        input_ids, input_masks, segment_ids = xlnet_tokenization_siamese(
+        input_ids, input_masks, segment_ids, _ = xlnet_tokenization_siamese(
             self._tokenizer, strings_left, strings_right
         )
-        segment_ids = np.array(segment_ids)
-        batch_segment[batch_segment == 0] = 1
 
         return self._sess.run(
-            self._vectorizer,
+            self._softmax,
             feed_dict = {
                 self._X: input_ids,
                 self._segment_ids: segment_ids,
@@ -792,6 +790,16 @@ class SIAMESE_XLNET(BASE):
         """
         input_ids, input_masks, segment_ids, _ = xlnet_tokenization(
             self._tokenizer, strings
+        )
+        segment_ids = np.array(segment_ids)
+        segment_ids[segment_ids == 0] = 1
+        return self._sess.run(
+            self._vectorizer,
+            feed_dict = {
+                self._X: input_ids,
+                self._segment_ids: segment_ids,
+                self._input_masks: input_masks,
+            },
         )
 
     @check_type
@@ -1111,6 +1119,7 @@ class ZEROSHOT_XLNET(BASE):
         segment_ids,
         input_masks,
         logits,
+        vectorizer,
         sess,
         tokenizer,
         label = ['not similar', 'similar'],
@@ -1121,6 +1130,7 @@ class ZEROSHOT_XLNET(BASE):
             segment_ids = segment_ids,
             input_masks = input_masks,
             logits = logits,
+            vectorizer = vectorizer,
             sess = sess,
             tokenizer = tokenizer,
             label = label,
@@ -1138,7 +1148,7 @@ class ZEROSHOT_XLNET(BASE):
                 mapping[no].append(index)
                 index += 1
 
-        input_ids, input_masks, segment_ids = xlnet_tokenization_siamese(
+        input_ids, input_masks, segment_ids, _ = xlnet_tokenization_siamese(
             self._tokenizer, strings_left, strings_right
         )
 
@@ -1158,6 +1168,70 @@ class ZEROSHOT_XLNET(BASE):
                 result[labels[no]] = output[index, 1]
             results.append(result)
         return results
+
+    @check_type
+    def vectorize(
+        self, strings: List[str], labels: List[str], method: str = 'first'
+    ):
+        """
+        vectorize a string.
+
+        Parameters
+        ----------
+        strings: List[str]
+        labels : List[str]
+        method : str, optional (default='first')
+            Vectorization layer supported. Allowed values:
+
+            * ``'last'`` - vector from last sequence.
+            * ``'first'`` - vector from first sequence.
+            * ``'mean'`` - average vectors from all sequences.
+            * ``'word'`` - average vectors based on tokens.
+
+
+        Returns
+        -------
+        result: np.array
+        """
+
+        strings_left, strings_right, combined = [], [], []
+        for no, string in enumerate(strings):
+            for label in labels:
+                strings_left.append(string)
+                strings_right.append(f'teks ini adalah mengenai {label}')
+                combined.append((string, label))
+
+        input_ids, input_masks, segment_ids, s_tokens = xlnet_tokenization_siamese(
+            self._tokenizer, strings_left, strings_right
+        )
+
+        v = self._sess.run(
+            self._vectorizer,
+            feed_dict = {
+                self._X: input_ids,
+                self._segment_ids: segment_ids,
+                self._input_masks: input_masks,
+            },
+        )
+        v = np.transpose(v, [1, 0, 2])
+
+        if method == 'first':
+            v = v[:, 0]
+        elif method == 'last':
+            v = v[:, -1]
+        elif method == 'mean':
+            v = np.mean(v, axis = 1)
+        else:
+            v = [
+                merge_sentencepiece_tokens(
+                    list(zip(s_tokens[i], v[i][: len(s_tokens[i])])),
+                    weighted = False,
+                    vectorize = True,
+                    model = 'xlnet',
+                )
+                for i in range(len(v))
+            ]
+        return combined, v
 
     @check_type
     def predict_proba(self, strings: List[str], labels: List[str]):

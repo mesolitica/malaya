@@ -454,6 +454,15 @@ _transformer_availability = {
     },
 }
 
+_vectorizer_mapping = {
+    'bert': 'import/bert/encoder/layer_11/output/LayerNorm/batchnorm/add_1:0',
+    'tiny-bert': 'import/bert/encoder/layer_3/output/LayerNorm/batchnorm/add_1:0',
+    'albert': 'import/bert/encoder/transformer/group_0_11/layer_11/inner_group_0/LayerNorm_1/batchnorm/add_1:0',
+    'tiny-albert': 'import/bert/encoder/transformer/group_0_3/layer_3/inner_group_0/LayerNorm_1/batchnorm/add_1:0',
+    'xlnet': 'import/model/transformer/layer_11/ff/LayerNorm/batchnorm/add_1:0',
+    'alxlnet': 'import/model/transformer/layer_shared_11/ff/LayerNorm/batchnorm/add_1:0',
+}
+
 
 def available_transformer():
     """
@@ -466,7 +475,9 @@ def available_transformer():
     )
 
 
-def _transformer(model, bert_class, xlnet_class, quantized = False, **kwargs):
+def _transformer(
+    model, bert_class, xlnet_class, quantized = False, siamese = False, **kwargs
+):
     model = model.lower()
     if model not in _transformer_availability:
         raise ValueError(
@@ -501,13 +512,18 @@ def _transformer(model, bert_class, xlnet_class, quantized = False, **kwargs):
             )
 
         selected_class = bert_class
-        selected_node = 'import/bert/pooler/dense/BiasAdd:0'
+        if siamese:
+            selected_node = 'import/bert/pooler/dense/BiasAdd:0'
 
     if model in ['xlnet', 'alxlnet']:
 
         tokenizer = sentencepiece_tokenizer_xlnet(path[model]['tokenizer'])
         selected_class = xlnet_class
-        selected_node = 'import/model_1/sequnece_summary/summary/BiasAdd:0'
+        if siamese:
+            selected_node = 'import/model_1/sequnece_summary/summary/BiasAdd:0'
+
+    if not siamese:
+        selected_node = _vectorizer_mapping[model]
 
     return selected_class(
         X = g.get_tensor_by_name('import/Placeholder:0'),
@@ -552,5 +568,6 @@ def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
         bert_class = SIAMESE_BERT,
         xlnet_class = SIAMESE_XLNET,
         quantized = quantized,
+        siamese = True,
         **kwargs
     )

@@ -143,7 +143,7 @@ def _truncate_seq_pair(tokens_a, tokens_b, max_length):
 
 
 def bert_tokenization_siamese(tokenizer, left, right):
-    input_ids, input_masks, segment_ids = [], [], []
+    input_ids, input_masks, segment_ids, s_tokens = [], [], [], []
     a, b = [], []
     for i in range(len(left)):
         tokens_a = tokenizer.tokenize(transformer_textcleaning(left[i]))
@@ -164,6 +164,7 @@ def bert_tokenization_siamese(tokenizer, left, right):
             segment_id.append(0)
 
         tokens.append('[SEP]')
+        s_tokens.append(tokens[:])
         segment_id.append(0)
         for token in tokens_b:
             tokens.append(token)
@@ -182,7 +183,7 @@ def bert_tokenization_siamese(tokenizer, left, right):
     input_masks = padding_sequence(input_masks, maxlen)
     segment_ids = padding_sequence(segment_ids, maxlen)
 
-    return input_ids, input_masks, segment_ids
+    return input_ids, input_masks, segment_ids, s_tokens
 
 
 SEG_ID_A = 0
@@ -324,7 +325,7 @@ def tokenize_fn(text, sp_model):
 
 
 def xlnet_tokenization_siamese(tokenizer, left, right):
-    input_ids, input_mask, all_seg_ids = [], [], []
+    input_ids, input_mask, all_seg_ids, s_tokens = [], [], [], []
     for i in range(len(left)):
         tokens = tokenize_fn(transformer_textcleaning(left[i]), tokenizer)
         tokens_right = tokenize_fn(
@@ -332,6 +333,7 @@ def xlnet_tokenization_siamese(tokenizer, left, right):
         )
         segment_ids = [SEG_ID_A] * len(tokens)
         tokens.append(SEP_ID)
+        s_tokens.append([tokenizer.IdToPiece(i) for i in tokens])
         segment_ids.append(SEG_ID_A)
 
         tokens.extend(tokens_right)
@@ -354,7 +356,7 @@ def xlnet_tokenization_siamese(tokenizer, left, right):
     input_ids = padding_sequence(input_ids, maxlen)
     input_mask = padding_sequence(input_mask, maxlen, pad_int = 1)
     all_seg_ids = padding_sequence(all_seg_ids, maxlen, pad_int = 4)
-    return input_ids, input_mask, all_seg_ids
+    return input_ids, input_mask, all_seg_ids, s_tokens
 
 
 def xlnet_tokenization(tokenizer, texts):

@@ -5,12 +5,32 @@ from herpetologist import check_type
 label = ['not relevant', 'relevant']
 
 _transformer_availability = {
-    'bert': {'Size (MB)': 425.6, 'Accuracy': 0.872},
-    'tiny-bert': {'Size (MB)': 57.4, 'Accuracy': 0.656},
-    'albert': {'Size (MB)': 48.6, 'Accuracy': 0.871},
-    'tiny-albert': {'Size (MB)': 22.4, 'Accuracy': 0.843},
-    'xlnet': {'Size (MB)': 446.6, 'Accuracy': 0.885},
-    'alxlnet': {'Size (MB)': 46.8, 'Accuracy': 0.874},
+    'bert': {'Size (MB)': 425.6, 'Quantized Size (MB)': 111, 'Accuracy': 0.872},
+    'tiny-bert': {
+        'Size (MB)': 57.4,
+        'Quantized Size (MB)': 15.4,
+        'Accuracy': 0.656,
+    },
+    'albert': {
+        'Size (MB)': 48.6,
+        'Quantized Size (MB)': 12.8,
+        'Accuracy': 0.85265,
+    },
+    'tiny-albert': {
+        'Size (MB)': 22.4,
+        'Quantized Size (MB)': 5.98,
+        'Accuracy': 0.843,
+    },
+    'xlnet': {
+        'Size (MB)': 446.6,
+        'Quantized Size (MB)': 118,
+        'Accuracy': 0.885,
+    },
+    'alxlnet': {
+        'Size (MB)': 46.8,
+        'Quantized Size (MB)': 13.3,
+        'Accuracy': 0.9123,
+    },
 }
 
 
@@ -26,7 +46,7 @@ def available_transformer():
 
 
 @check_type
-def transformer(model: str = 'xlnet', **kwargs):
+def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
     """
     Load Transformer relevancy model.
 
@@ -41,6 +61,9 @@ def transformer(model: str = 'xlnet', **kwargs):
         * ``'tiny-albert'`` - Google ALBERT TINY parameters.
         * ``'xlnet'`` - Google XLNET BASE parameters.
         * ``'alxlnet'`` - Malaya ALXLNET BASE parameters.
+    quantized : bool, optional (default=False)
+        if True, will load 8-bit quantized model. 
+        Quantized model not necessary faster, totally depends on the machine.
 
     Returns
     -------
@@ -58,5 +81,6 @@ def transformer(model: str = 'xlnet', **kwargs):
         'relevancy',
         label,
         model = model,
+        quantized = quantized,
         **kwargs
     )
