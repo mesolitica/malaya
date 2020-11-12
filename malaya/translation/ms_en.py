@@ -4,9 +4,9 @@ from malaya.supervised import transformer as load_transformer
 from herpetologist import check_type
 
 _transformer_availability = {
-    'small': {'Size (MB)': 42.7, 'BLEU': 0.626},
-    'base': {'Size (MB)': 234, 'BLEU': 0.792},
-    'large': {'Size (MB)': 815, 'BLEU': 0.714},
+    'small': {'Size (MB)': 42.7, 'Quantized Size (MB)': 13.1, 'BLEU': 0.626},
+    'base': {'Size (MB)': 234, 'Quantized Size (MB)': 63.8, 'BLEU': 0.792},
+    'large': {'Size (MB)': 815, 'Quantized Size (MB)': 254.6, 'BLEU': 0.714},
 }
 
 

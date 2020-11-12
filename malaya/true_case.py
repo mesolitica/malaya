@@ -4,8 +4,16 @@ from malaya.supervised import transformer as load_transformer
 from herpetologist import check_type
 
 _transformer_availability = {
-    'small': {'Size (MB)': 42.7, 'Sequence Accuracy': 0.347},
-    'base': {'Size (MB)': 234, 'Sequence Accuracy': 0.696},
+    'small': {
+        'Size (MB)': 42.7,
+        'Quantized Size (MB)': 13.1,
+        'Sequence Accuracy': 0.347,
+    },
+    'base': {
+        'Size (MB)': 234,
+        'Quantized Size (MB)': 63.8,
+        'Sequence Accuracy': 0.696,
+    },
 }
 
 

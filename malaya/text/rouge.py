@@ -53,7 +53,7 @@ def filter_rouge(article, summary, n = 2, threshold = 0.1, **kwargs):
     results = []
     for s in sents:
         evaluated = _get_word_ngrams(n, [_rouge_clean(s).split()])
-        score = cal_rouge(evaluated_1grams, reference_1grams)['p']
+        score = cal_rouge(evaluated, reference)['p']
         if score >= threshold:
             results.append(s)
     return ' '.join(results)

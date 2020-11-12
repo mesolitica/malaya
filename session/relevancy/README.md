@@ -8,9 +8,7 @@
 
 ## prepare dataset
 
-1. Get the dataset at, [news/fake-news](https://github.com/huseinzol05/Malay-Dataset/tree/master/news/fake-news).
-
-2. Augment and prepare the dataset, [augmenting-news.ipynb](augmenting-news.ipynb).
+1. Download and prepare the dataset, [download-data.ipynb](download-data.ipynb).
 
 ## training pretrained models
 

@@ -12,7 +12,7 @@ def readme():
 setuptools.setup(
     name = __packagename__,
     packages = setuptools.find_packages(),
-    version = '3.9.1',
+    version = '4.0',
     python_requires = '>=3.6.*',
     description = 'Natural-Language-Toolkit for bahasa Malaysia, powered by Deep Learning Tensorflow.',
     long_description = readme(),
@@ -23,14 +23,12 @@ setuptools.setup(
     keywords = ['nlp', 'bm'],
     install_requires = [
         'dateparser',
-        'sklearn',
         'scikit-learn',
         'requests',
         'unidecode',
         'tensorflow>=1.14,<2.0',
         'numpy',
         'scipy',
-        'PySastrawi',
         'ftfy',
         'networkx',
         'sentencepiece',

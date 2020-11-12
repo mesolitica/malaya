@@ -5,31 +5,35 @@ from herpetologist import check_type
 label = ['not relevant', 'relevant']
 
 _transformer_availability = {
-    'bert': {'Size (MB)': 425.6, 'Quantized Size (MB)': 111, 'Accuracy': 0.872},
+    'bert': {
+        'Size (MB)': 425.6,
+        'Quantized Size (MB)': 111,
+        'Accuracy': 0.89740,
+    },
     'tiny-bert': {
         'Size (MB)': 57.4,
         'Quantized Size (MB)': 15.4,
-        'Accuracy': 0.656,
+        'Accuracy': 0.87413,
     },
     'albert': {
         'Size (MB)': 48.6,
         'Quantized Size (MB)': 12.8,
-        'Accuracy': 0.85265,
+        'Accuracy': 0.88268,
     },
     'tiny-albert': {
         'Size (MB)': 22.4,
         'Quantized Size (MB)': 5.98,
-        'Accuracy': 0.843,
+        'Accuracy': 0.82780,
     },
     'xlnet': {
         'Size (MB)': 446.6,
         'Quantized Size (MB)': 118,
-        'Accuracy': 0.885,
+        'Accuracy': 0.92762,
     },
     'alxlnet': {
         'Size (MB)': 46.8,
         'Quantized Size (MB)': 13.3,
-        'Accuracy': 0.9123,
+        'Accuracy': 0.91231,
     },
 }
 

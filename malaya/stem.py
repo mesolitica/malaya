@@ -16,7 +16,12 @@ sastrawi_stemmer = None
 
 
 def _load_sastrawi():
-    from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
+    try:
+        from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
+    except:
+        raise ModuleNotFoundError(
+            'PySastrawi not installed. Please install it by `pip install PySastrawi` and try again.'
+        )
 
     global factory, sastrawi_stemmer
     factory = StemmerFactory()
@@ -102,7 +107,11 @@ class DEEP_STEMMER:
 
             for no, o in enumerate(output):
                 predicted = list(dict.fromkeys(o))
-                predicted = self._bpe.decode(predicted)[0].replace('<EOS>', '')
+                predicted = (
+                    self._bpe.decode(predicted)[0]
+                    .replace('<EOS>', '')
+                    .replace('<PAD>', '')
+                )
                 predicted = case_of(actual[no])(predicted)
                 result[mapping[no]] = predicted
 
@@ -159,6 +168,7 @@ def sastrawi(string: str):
 def deep_model(quantized: bool = False, **kwargs):
     """
     Load LSTM + Bahdanau Attention stemming model, this also include lemmatization.
+    Original size 41.6MB, quantized size 10.6MB .
 
     Parameters
     ----------

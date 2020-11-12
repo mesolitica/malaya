@@ -530,21 +530,27 @@ PATH_PARAPHRASE = {
     't5': {
         'base': {
             'model': home + '/paraphrase/t5/base/model.pb',
+            'quantized': home + '/paraphrase/t5/base/quantized/model.pb',
             'version': 'v38',
         },
         'small': {
             'model': home + '/paraphrase/t5/small/model.pb',
+            'quantized': home + '/paraphrase/t5/small/quantized/model.pb',
             'version': 'v38',
         },
     },
     'transformer': {
         'base': {
             'model': home + '/paraphrase/transformer/base/model.pb',
+            'quantized': home
+            + '/paraphrase/transformer/base/quantized/model.pb',
             'vocab': home + '/paraphrase/sp10m.cased.t5.model',
             'version': 'v39',
         },
         'small': {
             'model': home + '/paraphrase/transformer/small/model.pb',
+            'quantized': home
+            + '/paraphrase/transformer/small/quantized/model.pb',
             'vocab': home + '/paraphrase/sp10m.cased.t5.model',
             'version': 'v39',
         },
@@ -556,16 +562,24 @@ S3_PATH_PARAPHRASE = {
         'small': {'model': 'v36/paraphrase/paraphrase-t5-small.tar.gz'},
     },
     't5': {
-        'base': {'model': 'v38/paraphrase/base.pb'},
-        'small': {'model': 'v38/paraphrase/small.pb'},
+        'base': {
+            'model': 'v38/paraphrase/base.pb',
+            'quantized': 'v40/paraphrase/base.pb.t5.quantized',
+        },
+        'small': {
+            'model': 'v38/paraphrase/small.pb',
+            'quantized': 'v40/paraphrase/small.pb.t5.quantized',
+        },
     },
     'transformer': {
         'base': {
             'model': 'v39/paraphrase/base.pb',
+            'quantized': 'v40/paraphrase/base.pb.quantized',
             'vocab': 'tokenizer/sp10m.cased.t5.model',
         },
         'small': {
             'model': 'v39/paraphrase/small.pb',
+            'quantized': 'v40/paraphrase/small.pb.quantized',
             'vocab': 'tokenizer/sp10m.cased.t5.model',
         },
     },
@@ -691,69 +705,81 @@ S3_PATH_PREPROCESSING = {
 PATH_RELEVANCY = {
     'bert': {
         'model': home + '/relevancy/bert/base/model.pb',
+        'quantized': home + '/relevancy/bert/base/quantized/model.pb',
         'vocab': home + '/bert/sp10m.cased.bert.vocab',
         'tokenizer': home + '/bert/sp10m.cased.bert.model',
-        'version': 'v34',
+        'version': 'v40',
     },
     'tiny-bert': {
         'model': home + '/relevancy/bert/tiny/model.pb',
+        'quantized': home + '/relevancy/bert/tiny/quantized/model.pb',
         'vocab': home + '/bert/sp10m.cased.bert.vocab',
         'tokenizer': home + '/bert/sp10m.cased.bert.model',
-        'version': 'v34',
+        'version': 'v40',
     },
     'albert': {
         'model': home + '/relevancy/albert/base/model.pb',
+        'quantized': home + '/relevancy/albert/base/quantized/model.pb',
         'vocab': home + '/bert/sp10m.cased.v10.vocab',
         'tokenizer': home + '/bert/sp10m.cased.v10.model',
-        'version': 'v34',
+        'version': 'v40',
     },
     'tiny-albert': {
         'model': home + '/relevancy/albert/tiny/model.pb',
+        'quantized': home + '/relevancy/albert/tiny/quantized/model.pb',
         'vocab': home + '/bert/sp10m.cased.v10.vocab',
         'tokenizer': home + '/bert/sp10m.cased.v10.model',
-        'version': 'v34',
+        'version': 'v40',
     },
     'xlnet': {
         'model': home + '/relevancy/xlnet/base/model.pb',
+        'quantized': home + '/relevancy/xlnet/base/quantized/model.pb',
         'vocab': home + '/bert/sp10m.cased.v9.vocab',
         'tokenizer': home + '/bert/sp10m.cased.v9.model',
-        'version': 'v34',
+        'version': 'v40',
     },
     'alxlnet': {
         'model': home + '/relevancy/alxlnet/base/model.pb',
+        'quantized': home + '/relevancy/alxlnet/base/quantized/model.pb',
         'vocab': home + '/bert/sp10m.cased.v9.vocab',
         'tokenizer': home + '/bert/sp10m.cased.v9.model',
-        'version': 'v34',
+        'version': 'v40',
     },
 }
 S3_PATH_RELEVANCY = {
     'bert': {
-        'model': 'v34/relevancy/bert-base-relevancy.pb',
+        'model': 'v40/relevancy/bert-base-relevancy.pb',
+        'quantized': 'v40/relevancy/bert-base-relevancy.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.bert.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.bert.model',
     },
     'tiny-bert': {
-        'model': 'v34/relevancy/tiny-bert-relevancy.pb',
+        'model': 'v40/relevancy/tiny-bert-relevancy.pb',
+        'quantized': 'v40/relevancy/tiny-bert-relevancy.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.bert.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.bert.model',
     },
     'albert': {
-        'model': 'v34/relevancy/albert-base-relevancy.pb',
+        'model': 'v40/relevancy/albert-base-relevancy.pb',
+        'quantized': 'v40/relevancy/albert-base-relevancy.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.v10.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.v10.model',
     },
     'tiny-albert': {
-        'model': 'v34/relevancy/albert-tiny-relevancy.pb',
+        'model': 'v40/relevancy/albert-tiny-relevancy.pb',
+        'quantized': 'v40/relevancy/albert-tiny-relevancy.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.v10.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.v10.model',
     },
     'xlnet': {
-        'model': 'v34/relevancy/xlnet-base-relevancy.pb',
+        'model': 'v40/relevancy/xlnet-base-relevancy.pb',
+        'quantized': 'v40/relevancy/xlnet-base-relevancy.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.v9.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.v9.model',
     },
     'alxlnet': {
-        'model': 'v34/relevancy/alxlnet-base-relevancy.pb',
+        'model': 'v40/relevancy/alxlnet-base-relevancy.pb',
+        'quantized': 'v40/relevancy/alxlnet-base-relevancy.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.v9.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.v9.model',
     },
@@ -941,13 +967,18 @@ S3_PATH_SIMILARITY = {
 PATH_STEM = {
     'deep': {
         'model': home + '/stem/lstm/model.pb',
+        'quantized': home + '/stem/lstm/quantized/model.pb',
         'bpe': home + '/stem/lstm/bpe.model',
         'version': 'v34',
     }
 }
 
 S3_PATH_STEM = {
-    'deep': {'model': 'v34/stem/model.pb', 'bpe': 'v34/stem/bpe.model'}
+    'deep': {
+        'model': 'v34/stem/model.pb',
+        'quantized': 'v40/stem/model.pb.quantized',
+        'bpe': 'v34/stem/bpe.model',
+    }
 }
 
 PATH_SUBJECTIVE = {
@@ -1131,12 +1162,12 @@ S3_PATH_SUMMARIZE = {
     'transformer': {
         'base': {
             'model': 'v39/summarization/base.pb',
-            'quantized': 'v40/summarization/transformer-base.pb.quantized',
+            'quantized': 'v40/summarize/transformer-base.pb.quantized',
             'vocab': 'tokenizer/sp10m.cased.t5.model',
         },
         'small': {
             'model': 'v39/summarization/small.pb',
-            'quantized': 'v40/summarization/transformer-small.pb.quantized',
+            'quantized': 'v40/summarize/transformer-small.pb.quantized',
             'vocab': 'tokenizer/sp10m.cased.t5.model',
         },
     },
@@ -1307,11 +1338,13 @@ S3_PATH_TRANSLATION = {
 PATH_TRUE_CASE = {
     'base': {
         'model': home + '/true-case/base.pb',
+        'quantized': home + '/true-case/quantized/base.pb',
         'vocab': home + '/true-case/vocab.yttm',
         'version': 'v39',
     },
     'small': {
         'model': home + '/true-case/small.pb',
+        'quantized': home + '/true-case/quantized/small.pb',
         'vocab': home + '/true-case/vocab.yttm',
         'version': 'v39',
     },
@@ -1319,10 +1352,12 @@ PATH_TRUE_CASE = {
 S3_PATH_TRUE_CASE = {
     'base': {
         'model': 'v39/true-case/base.pb',
+        'quantized': 'v40/true-case/base.pb.quantized',
         'vocab': 'tokenizer/truecase.yttm',
     },
     'small': {
         'model': 'v39/true-case/small.pb',
+        'quantized': 'v40/true-case/small.pb.quantized',
         'vocab': 'tokenizer/truecase.yttm',
     },
 }

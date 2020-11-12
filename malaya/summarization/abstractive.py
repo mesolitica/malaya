@@ -121,15 +121,15 @@ def t5(
 def transformer(model: str = 'base', quantized: bool = False, **kwargs):
 
     """
-    Load Transformer model to generate a summary given a string.
+    Load Malaya transformer encoder-decoder model to generate a summary given a string.
 
     Parameters
     ----------
     model : str, optional (default='base')
         Model architecture supported. Allowed values:
 
-        * ``'base'`` - Transformer BASE parameters.
-        * ``'small'`` - Transformer SMALL parameters.
+        * ``'small'`` - Malaya Transformer SMALL parameters.
+        * ``'base'`` - Malaya Transformer BASE parameters.
     
     quantized : bool, optional (default=False)
         if True, will load 8-bit quantized model. 
