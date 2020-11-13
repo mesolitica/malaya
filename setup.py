@@ -27,7 +27,7 @@ setuptools.setup(
         'scikit-learn',
         'requests',
         'unidecode',
-        'tensorflow>=1.14,<2.0',
+        'tensorflow>=1.14,<3.0',
         'numpy',
         'scipy',
         'PySastrawi',
