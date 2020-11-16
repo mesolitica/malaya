@@ -400,10 +400,12 @@ PATH_GENERATOR = {
     't5': {
         'base': {
             'model': home + '/generator/t5/base/model.pb',
+            'quantized': home + '/generator/t5/base/quantized/model.pb',
             'version': 'v38',
         },
         'small': {
             'model': home + '/generator/t5/small/model.pb',
+            'quantized': home + '/generator/t5/small/quantized/model.pb',
             'version': 'v38',
         },
     },
@@ -415,8 +417,14 @@ S3_PATH_GENERATOR = {
         'small': {'model': 'v35/generator/sample-generator-t5-small.tar.gz'},
     },
     't5': {
-        'base': {'model': 'v38/generator/base.pb'},
-        'small': {'model': 'v38/generator/small.pb'},
+        'base': {
+            'model': 'v38/generator/base.pb',
+            'quantized': 'v40/generator/base.pb.quantized',
+        },
+        'small': {
+            'model': 'v38/generator/small.pb',
+            'quantized': 'v40/generator/small.pb.quantized',
+        },
     },
 }
 
@@ -1272,16 +1280,19 @@ PATH_TRANSLATION = {
     'ms-en': {
         'base': {
             'model': home + '/translation/ms-en/base/model.pb',
+            'quantized': home + '/translation/ms-en/base/quantized/model.pb',
             'vocab': home + '/translation/ms-en/base/vocab.subwords',
             'version': 'v37',
         },
         'large': {
             'model': home + '/translation/ms-en/large/model.pb',
+            'quantized': home + '/translation/ms-en/large/quantized/model.pb',
             'vocab': home + '/translation/ms-en/large/vocab.subwords',
             'version': 'v37',
         },
         'small': {
             'model': home + '/translation/ms-en/small/model.pb',
+            'quantized': home + '/translation/ms-en/small/quantized/model.pb',
             'vocab': home + '/translation/ms-en/small/vocab.subwords',
             'version': 'v37',
         },
@@ -1289,16 +1300,19 @@ PATH_TRANSLATION = {
     'en-ms': {
         'base': {
             'model': home + '/translation/en-ms/base/model.pb',
+            'quantized': home + '/translation/en-ms/base/quantized/model.pb',
             'vocab': home + '/translation/en-ms/base/vocab.subwords',
             'version': 'v38',
         },
         'large': {
             'model': home + '/translation/en-ms/large/model.pb',
+            'quantized': home + '/translation/en-ms/large/quantized/model.pb',
             'vocab': home + '/translation/en-ms/large/vocab.subwords',
             'version': 'v38',
         },
         'small': {
             'model': home + '/translation/en-ms/small/model.pb',
+            'quantized': home + '/translation/en-ms/small/quantized/model.pb',
             'vocab': home + '/translation/en-ms/small/vocab.subwords',
             'version': 'v38',
         },
@@ -1308,28 +1322,34 @@ S3_PATH_TRANSLATION = {
     'ms-en': {
         'base': {
             'model': 'v37/translation/ms-en/base-translation.pb',
+            'quantized': 'v40/translation/ms-en/base-translation.pb.quantized',
             'vocab': 'v37/translation/ms-en/vocab.subwords',
         },
         'large': {
             'model': 'v37/translation/ms-en/large-translation.pb',
+            'quantized': 'v40/translation/ms-en/large-translation.pb.quantized',
             'vocab': 'v37/translation/ms-en/vocab.subwords',
         },
         'small': {
             'model': 'v37/translation/ms-en/small-translation.pb',
+            'model': 'v40/translation/ms-en/small-translation.pb.quantized',
             'vocab': 'v37/translation/ms-en/vocab.subwords',
         },
     },
     'en-ms': {
         'base': {
             'model': 'v38/translation/en-ms/base-translation.pb',
+            'quantized': 'v40/translation/en-ms/base-translation.pb.quantized',
             'vocab': 'v38/translation/en-ms/vocab.subwords',
         },
         'large': {
             'model': 'v38/translation/en-ms/large-translation.pb',
+            'quantized': 'v40/translation/en-ms/large-translation.pb.quantized',
             'vocab': 'v38/translation/en-ms/vocab.subwords',
         },
         'small': {
             'model': 'v38/translation/en-ms/small-translation.pb',
+            'quantized': 'v38/translation/en-ms/small-translation.pb.quantized',
             'vocab': 'v38/translation/en-ms/vocab.subwords',
         },
     },

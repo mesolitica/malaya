@@ -32,26 +32,6 @@ _transformer_availability = {
     },
 }
 
-_standard_transformer_availability = {
-    'bert': {'Size (MB)': 425.6, 'Description': 'Google BERT BASE parameters'},
-    'albert': {
-        'Size (MB)': 48.6,
-        'Description': 'Google ALBERT BASE parameters',
-    },
-    'tiny-albert': {
-        'Size (MB)': 22.4,
-        'Description': 'Google ALBERT TINY parameters',
-    },
-    'xlnet': {
-        'Size (MB)': 446.6,
-        'Description': 'Google XLNET BASE parameters',
-    },
-    'alxlnet': {
-        'Size (MB)': 46.8,
-        'Description': 'Malaya ALXLNET BASE parameters',
-    },
-}
-
 
 def available_transformer():
     """
@@ -132,61 +112,3 @@ def load(model: str = 'electra', pool_mode: str = 'last', **kwargs):
         from malaya.transformers.electra import load
 
         return load(model = model, **kwargs)
-
-
-@check_type
-def load_standard_language(
-    model: str = 'bert', pool_mode: str = 'last', **kwargs
-):
-
-    """
-    Load transformer model pretrained on standard language only.
-
-    Parameters
-    ----------
-    model : str, optional (default='bert')
-        Model architecture supported. Allowed values:
-
-        * ``'bert'`` - Google BERT BASE parameters.
-        * ``'albert'`` - Google ALBERT BASE parameters.
-        * ``'tiny-albert'`` - Google ALBERT TINY parameters.
-        * ``'xlnet'`` - Google XLNET BASE parameters.
-        * ``'alxlnet'`` - Malaya ALXLNET BASE parameters.
-
-    pool_mode : str, optional (default='last')
-        Model logits architecture supported. Only usable if model in ['xlnet', 'alxlnet']. 
-        Allowed values:
-
-        * ``'last'`` - last of the sequence.
-        * ``'first'`` - first of the sequence.
-        * ``'mean'`` - mean of the sequence.
-        * ``'attn'`` - attention of the sequence.
-
-    Returns
-    -------
-    result: malaya.transformers.* class
-    """
-    model = model.lower()
-    pool_mode = pool_mode.lower()
-    if model not in _standard_transformer_availability:
-        raise ValueError(
-            'model not supported, please check supported models from `malaya.transformer.available_transformer_standard_language()`.'
-        )
-
-    if model in ['bert']:
-        from malaya.transformers.bert import load
-
-        return load(model = model, **kwargs)
-    if model in ['albert', 'tiny-albert']:
-        from malaya.transformers.albert import load
-
-        return load(model = model, **kwargs)
-    if model in ['xlnet']:
-        from malaya.transformers.xlnet import load
-
-        return load(model = model, pool_mode = pool_mode, **kwargs)
-
-    if model in ['alxlnet']:
-        from malaya.transformers.alxlnet import load
-
-        return load(model = model, pool_mode = pool_mode, **kwargs)
