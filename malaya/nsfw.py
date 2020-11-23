@@ -1,7 +1,7 @@
 import json
 from malaya.function import check_file
 from malaya.supervised import softmax
-from malaya.lexicon import nsfw
+from malaya.text.lexicon import nsfw
 from malaya.path import PATH_NSFW, S3_PATH_NSFW
 
 label = ['sex', 'gambling', 'negative']
