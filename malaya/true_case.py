@@ -61,4 +61,5 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
         'yttm',
         TRUE_CASE,
         quantized = quantized,
+        **kwargs
     )

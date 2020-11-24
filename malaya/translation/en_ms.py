@@ -53,5 +53,11 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
     s3_path = S3_PATH_TRANSLATION['en-ms']
 
     return load_transformer.load(
-        path, s3_path, model, 'subword', TRANSLATION, quantized = quantized
+        path,
+        s3_path,
+        model,
+        'subword',
+        TRANSLATION,
+        quantized = quantized,
+        **kwargs
     )
