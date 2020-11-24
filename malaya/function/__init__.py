@@ -126,9 +126,13 @@ def load_graph(frozen_graph_filename, **kwargs):
     return graph
 
 
-def check_available(file):
+def check_available(file, quantized = False):
     for key, item in file.items():
         if 'version' in key:
+            continue
+        if quantized and key == 'model':
+            continue
+        if not quantized and key == 'quantized':
             continue
         if not os.path.isfile(item):
             return False
@@ -197,7 +201,7 @@ def check_file(
             with open(version, 'w') as fopen:
                 fopen.write(file['version'])
     else:
-        if not check_available(file):
+        if not check_available(file, quantized = quantized):
             path = '/'.join(file[model].split('/')[:-1])
             raise Exception(
                 f'{path} is not available, please `validate = True`'

@@ -1332,7 +1332,7 @@ S3_PATH_TRANSLATION = {
         },
         'small': {
             'model': 'v37/translation/ms-en/small-translation.pb',
-            'model': 'v40/translation/ms-en/small-translation.pb.quantized',
+            'quantized': 'v40/translation/ms-en/small-translation.pb.quantized',
             'vocab': 'v37/translation/ms-en/vocab.subwords',
         },
     },
