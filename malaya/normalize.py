@@ -157,7 +157,7 @@ def groupby(string):
 
 
 class NORMALIZER:
-    def __init__(self, speller):
+    def __init__(self, speller = None):
 
         from malaya.preprocessing import _tokenizer
 
@@ -169,16 +169,19 @@ class NORMALIZER:
         self,
         string: str,
         check_english: bool = True,
+        normalize_text: bool = True,
         normalize_entity: bool = True,
     ):
         """
-        Normalize a string
+        Normalize a string.
 
         Parameters
         ----------
         string : str
         check_english: bool, (default=True)
             check a word in english dictionary.
+        normalize_text: bool, (default=True)
+            if True, will try to replace shortforms with internal corpus.
         normalize_entity: bool, (default=True)
             normalize entities, only effect `date`, `datetime`, `time` and `money` patterns string only.
 
@@ -399,14 +402,21 @@ class NORMALIZER:
             word, end_result_string = _remove_postfix(word)
             word, repeat = check_repeat(word)
 
-            if word in sounds:
-                selected = sounds[word]
-            elif word in rules_normalizer:
-                selected = rules_normalizer[word]
+            if normalize_text:
+                if word in sounds:
+                    selected = sounds[word]
+                elif word in rules_normalizer:
+                    selected = rules_normalizer[word]
+                elif self._speller:
+                    selected = self._speller.correct(
+                        word, string = ' '.join(tokenized), index = index
+                    )
+                else:
+                    selected = word
+
             else:
-                selected = self._speller.correct(
-                    word, string = ' '.join(tokenized), index = index
-                )
+                selected = word
+
             selected = ' - '.join([selected] * repeat)
             result.append(result_string + selected + end_result_string)
             index += 1
@@ -422,22 +432,23 @@ class NORMALIZER:
         return {'normalize': result, 'date': dates_, 'money': money_}
 
 
-def normalizer(speller):
+def normalizer(speller = None):
     """
     Load a Normalizer using any spelling correction model.
 
     Parameters
     ----------
-    speller : Malaya spelling correction object
+    speller : spelling correction object, optional (default = None)
 
     Returns
     -------
     result: malaya.normalize.NORMALIZER class
     """
-    if not hasattr(speller, 'correct') and not hasattr(
-        speller, 'normalize_elongated'
-    ):
-        raise ValueError(
-            'speller must has `correct` or `normalize_elongated` method'
-        )
+    if speller:
+        if not hasattr(speller, 'correct') and not hasattr(
+            speller, 'normalize_elongated'
+        ):
+            raise ValueError(
+                'speller must has `correct` or `normalize_elongated` method'
+            )
     return NORMALIZER(speller)
