@@ -156,13 +156,18 @@ def groupby(string):
     return ' '.join(results)
 
 
-class NORMALIZER:
-    def __init__(self, speller = None):
+def put_spacing_num(string):
+    string = re.sub('[A-Za-z]+', lambda ele: ' ' + ele[0] + ' ', string)
+    return re.sub(r'[ ]+', ' ', string).strip()
 
-        from malaya.preprocessing import _tokenizer
+
+class NORMALIZER:
+    def __init__(self, speller = None, **kwargs):
+
+        from malaya.preprocessing import SocialTokenizer
 
         self._speller = speller
-        self._tokenizer = _tokenizer
+        self._tokenizer = SocialTokenizer(**kwargs).tokenize
 
     @check_type
     def normalize(
@@ -171,6 +176,8 @@ class NORMALIZER:
         check_english: bool = True,
         normalize_text: bool = True,
         normalize_entity: bool = True,
+        normalize_url: bool = False,
+        normalize_email: bool = False,
     ):
         """
         Normalize a string.
@@ -184,6 +191,12 @@ class NORMALIZER:
             if True, will try to replace shortforms with internal corpus.
         normalize_entity: bool, (default=True)
             normalize entities, only effect `date`, `datetime`, `time` and `money` patterns string only.
+        normalize_url: bool, (default=False)
+            if True, replace `://` with empty and `.` with `dot`.
+            `https://huseinhouse.com` -> `https huseinhouse dot com`.
+        normalize_email: bool, (default=False)
+            if True, replace `@` with `di`, `.` with `dot`.
+            `husein.zol05@gmail.com` -> `husein dot zol 05 di gmail dot com`.
 
         Returns
         -------
@@ -366,6 +379,21 @@ class NORMALIZER:
                 continue
 
             if re.findall(_expressions['url'], word_lower):
+                if normalize_url:
+                    word = word.replace('://', ' ').replace('.', ' dot ')
+                    word = put_spacing_num(word)
+                result.append(word)
+                index += 1
+                continue
+
+            if re.findall(_expressions['email'], word_lower):
+                if normalize_email:
+                    word = (
+                        word.replace('://', ' ')
+                        .replace('.', ' dot ')
+                        .replace('@', ' di ')
+                    )
+                    word = put_spacing_num(word)
                 result.append(word)
                 index += 1
                 continue
@@ -432,7 +460,7 @@ class NORMALIZER:
         return {'normalize': result, 'date': dates_, 'money': money_}
 
 
-def normalizer(speller = None):
+def normalizer(speller = None, **kwargs):
     """
     Load a Normalizer using any spelling correction model.
 
@@ -451,4 +479,4 @@ def normalizer(speller = None):
             raise ValueError(
                 'speller must has `correct` or `normalize_elongated` method'
             )
-    return NORMALIZER(speller)
+    return NORMALIZER(speller, **kwargs)
