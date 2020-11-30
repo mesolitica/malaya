@@ -87,7 +87,7 @@ exclude_patterns = [
 ]
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'colorful'
+pygments_style = 'default'
 
 source_suffix = '.rst'
 # -- Options for HTML output -------------------------------------------------
