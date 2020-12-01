@@ -151,12 +151,12 @@ If you use our software for research, please cite:
 Acknowledgement
 ----------------
 
-Thanks to `Im Big <https://www.facebook.com/imbigofficial/>`_, `LigBlou <https://www.facebook.com/ligblou>`_, `Mesolitica <https://mesolitica.com/>`_ and `KeyReply <https://www.keyreply.com/>`_ for sponsoring AWS, GCP and private cloud to train Malaya models.
+Thanks to `KeyReply <https://www.keyreply.com/>`_ for sponsoring private cloud to train Malaya models, without it, this library will collapse entirely.  
 
 .. raw:: html
 
     <a href="#readme">
-        <img alt="logo" width="50%" src="https://malaya-dataset.s3-ap-southeast-1.amazonaws.com/ligblou-mesolitca-keyreply.png">
+        <img alt="logo" width="20%" src="https://cdn.techinasia.com/data/images/16234a59ae3f218dc03815a08eaab483.png">
     </a>
 
 Also, thanks to `Tensorflow Research Cloud <https://www.tensorflow.org/tfrc>`_ for free TPUs access.
