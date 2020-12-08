@@ -36,13 +36,14 @@ Contents:
 .. toctree::
    :maxdepth: 2
    :caption: Normalization Module
-
-   load-normalizer
-   load-num2word
-   load-preprocessing
+   
    load-spell-correction
+   load-normalizer
    load-stemmer
    load-true-case
+   load-segmentation
+   load-preprocessing
+   load-num2word
    load-word2num
 
 .. toctree::

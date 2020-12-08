@@ -84,9 +84,6 @@ malaya.nsfw
 .. automodule:: malaya.nsfw
     :members:
 
-.. autoclass:: malaya.lexicon.nsfw.LEXICON()
-    :members:
-
 malaya.num2word
 -----------------
 
@@ -111,13 +108,25 @@ malaya.preprocessing
 .. automodule:: malaya.preprocessing
     :members:
 
-.. autoclass:: malaya.preprocessing.SocialTokenizer()
+.. autoclass:: malaya.preprocessing.TOKENIZER()
+    :members:
+
+.. autoclass:: malaya.preprocessing.PREPROCESSING()
     :members:
 
 malaya.relevancy
 ------------------
 
 .. automodule:: malaya.relevancy
+    :members:
+
+malaya.segmentation
+---------------------
+
+.. automodule:: malaya.segmentation
+    :members:
+
+.. autoclass:: malaya.segmentation.SEGMENTER()
     :members:
 
 malaya.sentiment
@@ -154,6 +163,12 @@ malaya.stem
     :members:
 
 .. autoclass:: malaya.stem.DEEP_STEMMER()
+    :members:
+
+.. autoclass:: malaya.stem.SASTRAWI()
+    :members:
+
+.. autoclass:: malaya.stem.NAIVE()
     :members:
 
 malaya.subjectivity
@@ -337,6 +352,9 @@ malaya.model.tf
     :members:
 
 .. autoclass:: malaya.model.tf.TRUE_CASE()
+    :members:
+
+.. autoclass:: malaya.model.tf.SEGMENTATION()
     :members:
 
 .. autoclass:: malaya.model.tf.PARAPHRASE()

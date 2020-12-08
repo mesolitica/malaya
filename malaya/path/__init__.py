@@ -793,6 +793,33 @@ S3_PATH_RELEVANCY = {
     },
 }
 
+PATH_SEGMENTATION = {
+    'base': {
+        'model': home + '/segmentation/base.pb',
+        'quantized': home + '/segmentation/quantized/base.pb',
+        'vocab': home + '/segmentation/vocab.yttm',
+        'version': 'v40',
+    },
+    'small': {
+        'model': home + '/segmentation/small.pb',
+        'quantized': home + '/segmentation/quantized/small.pb',
+        'vocab': home + '/segmentation/vocab.yttm',
+        'version': 'v40',
+    },
+}
+S3_PATH_SEGMENTATION = {
+    'base': {
+        'model': 'v40/segmentation/base.pb',
+        'quantized': 'v40/segmentation/base.pb.quantized',
+        'vocab': 'tokenizer/segmentation.yttm',
+    },
+    'small': {
+        'model': 'v40/segmentation/small.pb',
+        'quantized': 'v40/segmentation/small.pb.quantized',
+        'vocab': 'tokenizer/segmentation.yttm',
+    },
+}
+
 PATH_SENTIMENT = {
     'multinomial': {
         'model': home + '/sentiment/multinomial/multinomial.pkl',

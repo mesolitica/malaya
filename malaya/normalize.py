@@ -57,6 +57,7 @@ from malaya.text.normalization import (
 )
 from malaya.text.rules import rules_normalizer
 from malaya.cluster import cluster_words
+from malaya.function import validator
 from herpetologist import check_type
 
 
@@ -162,12 +163,9 @@ def put_spacing_num(string):
 
 
 class NORMALIZER:
-    def __init__(self, speller = None, **kwargs):
-
-        from malaya.preprocessing import SocialTokenizer
-
+    def __init__(self, tokenizer, speller = None):
+        self._tokenizer = tokenizer
         self._speller = speller
-        self._tokenizer = SocialTokenizer(**kwargs).tokenize
 
     @check_type
     def normalize(
@@ -472,11 +470,12 @@ def normalizer(speller = None, **kwargs):
     -------
     result: malaya.normalize.NORMALIZER class
     """
-    if speller:
-        if not hasattr(speller, 'correct') and not hasattr(
-            speller, 'normalize_elongated'
-        ):
-            raise ValueError(
-                'speller must has `correct` or `normalize_elongated` method'
-            )
-    return NORMALIZER(speller, **kwargs)
+
+    validator.validate_object_methods(
+        speller, ['correct', 'normalize_elongated'], 'speller'
+    )
+
+    from malaya.preprocessing import TOKENIZER
+
+    tokenizer = TOKENIZER(**kwargs).tokenize
+    return NORMALIZER(tokenizer, speller)

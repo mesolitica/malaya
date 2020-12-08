@@ -1722,6 +1722,7 @@ stopwords = [
     'yakin',
     'yakni',
     'yang',
+    'ya allah',
 ]
 
 group_compound = [

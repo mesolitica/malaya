@@ -14,7 +14,7 @@ import logging
 
 home = os.path.join(str(Path.home()), 'Malaya')
 version = '4.0'
-bump_version = '4.0.5'
+bump_version = '4.0.6'
 version_path = os.path.join(home, 'version')
 __version__ = bump_version
 path = os.path.dirname(__file__)
@@ -212,6 +212,7 @@ from . import paraphrase
 from . import pos
 from . import preprocessing
 from . import relevancy
+from . import segmentation
 from . import sentiment
 from . import similarity
 from . import spell

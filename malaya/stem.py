@@ -11,22 +11,6 @@ from malaya.text.regex import _expressions, _money, _date
 from malaya.path import PATH_STEM, S3_PATH_STEM
 from herpetologist import check_type
 
-factory = None
-sastrawi_stemmer = None
-
-
-def _load_sastrawi():
-    try:
-        from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
-    except:
-        raise ModuleNotFoundError(
-            'PySastrawi not installed. Please install it by `pip install PySastrawi` and try again.'
-        )
-
-    global factory, sastrawi_stemmer
-    factory = StemmerFactory()
-    sastrawi_stemmer = factory.create_stemmer()
-
 
 def _classification_textcleaning_stemmer(string):
     string = re.sub(
@@ -42,6 +26,58 @@ def _classification_textcleaning_stemmer(string):
     string = [rules_normalizer.get(w, w) for w in string.split()]
     string = [(naive(word), word) for word in string]
     return ' '.join([word[0] for word in string if len(word[0]) > 1])
+
+
+class SASTRAWI:
+    def __init__(self):
+        from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
+
+        factory = StemmerFactory()
+        self.sastrawi_stemmer = factory.create_stemmer()
+
+    @check_type
+    def stem(self, string: str):
+        return self.sastrawi_stemmer.stem(string)
+
+
+class NAIVE:
+    def __init__(self, tokenizer):
+        self._tokenizer = tokenizer
+
+    def stem_word(self, word):
+        hujung_result = [v for k, v in hujung.items() if word.endswith(k)]
+        if len(hujung_result):
+            hujung_result = max(hujung_result, key = len)
+            if len(hujung_result):
+                word = word[: -len(hujung_result)]
+        permulaan_result = [
+            v for k, v in permulaan.items() if word.startswith(k)
+        ]
+        if len(permulaan_result):
+            permulaan_result = max(permulaan_result, key = len)
+            if len(permulaan_result):
+                word = word[len(permulaan_result) :]
+        return word
+
+    @check_type
+    def stem(self, string: str):
+        result = []
+        tokenized = self._tokenizer(string)
+        for no, word in enumerate(tokenized):
+            if word in '~@#$%^&*()_+{}|[:"\'];<>,.?/-':
+                result.append(word)
+            elif (
+                re.findall(_money, word.lower())
+                or re.findall(_date, word.lower())
+                or re.findall(_expressions['time'], word.lower())
+                or re.findall(_expressions['hashtag'], word.lower())
+                or re.findall(_expressions['url'], word.lower())
+                or re.findall(_expressions['user'], word.lower())
+            ):
+                result.append(word)
+            else:
+                result.append(self.stem_word(word))
+        return ' '.join(result)
 
 
 class DEEP_STEMMER:
@@ -119,49 +155,35 @@ class DEEP_STEMMER:
 
 
 @check_type
-def naive(word: str):
+def naive():
     """
-    Stem a string using startswith and endswith.
-
-    Parameters
-    ----------
-    string : str
+    Load stemming model using startswith and endswith naively using regex patterns.
 
     Returns
     -------
-    result : str
-        stemmed string.
+    result : malaya.stem.NAIVE class
     """
-    hujung_result = [v for k, v in hujung.items() if word.endswith(k)]
-    if len(hujung_result):
-        hujung_result = max(hujung_result, key = len)
-        if len(hujung_result):
-            word = word[: -len(hujung_result)]
-    permulaan_result = [v for k, v in permulaan.items() if word.startswith(k)]
-    if len(permulaan_result):
-        permulaan_result = max(permulaan_result, key = len)
-        if len(permulaan_result):
-            word = word[len(permulaan_result) :]
-    return word
+    from malaya.preprocessing import _tokenizer
+
+    return NAIVE(tokenizer = _tokenizer)
 
 
 @check_type
-def sastrawi(string: str):
+def sastrawi():
     """
-    Stem a string using Sastrawi, this also include lemmatization.
-
-    Parameters
-    ----------
-    string : str
+    Load stemming model using Sastrawi, this also include lemmatization.
 
     Returns
     -------
-    result: str
-        stemmed string.
+    result: malaya.stem.SASTRAWI class
     """
-    if sastrawi_stemmer is None:
-        _load_sastrawi()
-    return sastrawi_stemmer.stem(string)
+    try:
+        from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
+    except:
+        raise ModuleNotFoundError(
+            'PySastrawi not installed. Please install it by `pip install PySastrawi` and try again.'
+        )
+    return SASTRAWI()
 
 
 @check_type

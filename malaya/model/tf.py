@@ -575,3 +575,42 @@ class TRUE_CASE:
         result: List[str]
         """
         return self._true_case(strings, beam_search = beam_search)
+
+
+class SEGMENTATION:
+    def __init__(self, X, greedy, beam, sess, encoder):
+
+        self._X = X
+        self._greedy = greedy
+        self._beam = beam
+        self._sess = sess
+        self._encoder = encoder
+
+    def _segmentize(self, strings, beam_search = True):
+        encoded = self._encoder.encode(strings)
+        if beam_search:
+            output = self._beam
+        else:
+            output = self._greedy
+        batch_x = pad_sentence_batch(encoded, 0)[0]
+        p = self._sess.run(output, feed_dict = {self._X: batch_x}).tolist()
+        result = self._encoder.decode(p)
+        return result
+
+    @check_type
+    def segment(self, strings: List[str], beam_search: bool = True):
+        """
+        Segment strings.
+        Example, "sayasygkan negarasaya" -> "saya sygkan negara saya"
+
+        Parameters
+        ----------
+        strings : List[str]
+        beam_search : bool, (optional=True)
+            If True, use beam search decoder, else use greedy decoder.
+
+        Returns
+        -------
+        result: List[str]
+        """
+        return self._segmentize(strings, beam_search = beam_search)

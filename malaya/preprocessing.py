@@ -3,15 +3,12 @@ import json
 import ftfy
 import html
 from functools import lru_cache
-from math import log10
 from unidecode import unidecode
-from malaya.text.tatabahasa import hujung
 from malaya.text.rules import rules_normalizer
 from malaya.text.regex import _expressions, _money
 from malaya.text.english.words import words as _english_words
 from malaya.path import PATH_PREPROCESSING, S3_PATH_PREPROCESSING
-from malaya.function import check_file
-from malaya.stem import naive
+from malaya.function import check_file, validator
 from herpetologist import check_type
 from typing import Tuple, List
 
@@ -25,9 +22,6 @@ _annotate = [
 ]
 
 _normalize = list(_expressions.keys())
-
-REGEX_TOKEN = re.compile(r'\b[a-z]{2,}\b')
-NGRAM_SEP = '_'
 
 
 def get_normalize():
@@ -48,15 +42,6 @@ def _case_of(text):
         if text.istitle()
         else str
     )
-
-
-def _naive_stem(word):
-    hujung_result = [e for e in hujung if word.endswith(e)]
-    if len(hujung_result):
-        hujung_result = max(hujung_result, key = len)
-        if len(hujung_result):
-            word = word[: -len(hujung_result)]
-    return word
 
 
 def unpack_english_contractions(text):
@@ -100,7 +85,7 @@ def _get_expression_dict():
     }
 
 
-class SocialTokenizer:
+class TOKENIZER:
     def __init__(self, lowercase = False, **kwargs):
         """
         Args:
@@ -253,94 +238,7 @@ class SocialTokenizer:
         return tokenized
 
 
-def _read_stats(gram = 1):
-    try:
-        with open(PATH_PREPROCESSING[gram]['model']) as fopen:
-            return json.load(fopen)
-    except Exception as e:
-        raise Exception(
-            f"{e}, file corrupted due to some reasons, please run malaya.clear_cache('preprocessing') and try again"
-        )
-
-
-class _Pdist(dict):
-    @staticmethod
-    def default_unk_func(key, total):
-        return 1.0 / total
-
-    def __init__(self, data = None, total = None, unk_func = None, **kwargs):
-        super().__init__(**kwargs)
-
-        data = data or {}
-        for key, count in data.items():
-            self[key] = self.get(key, 0) + int(count)
-
-        self.total = float(total or sum(self.values()))
-        self.unk_prob = unk_func or self.default_unk_func
-
-    def __call__(self, key):
-        if key in self:
-            return self[key] / self.total
-        else:
-            return self.unk_prob(key, self.total)
-
-
-class _Segmenter:
-    def __init__(self, max_split_length = 20):
-        self.unigrams = _read_stats(1)
-        self.bigrams = _read_stats(2)
-        self.N = sum(self.unigrams.values())
-        self.L = max_split_length
-
-        self.Pw = _Pdist(self.unigrams, self.N, self.unk_probability)
-        self.P2w = _Pdist(self.bigrams, self.N)
-
-        self.case_split = _get_expression_dict()['camel_split']
-
-    def condProbWord(self, word, prev):
-        try:
-            return self.P2w[prev + NGRAM_SEP + word] / float(self.Pw[prev])
-        except KeyError:
-            return self.Pw(word)
-
-    @staticmethod
-    def unk_probability(key, total):
-        return 10.0 / (total * 10 ** len(key))
-
-    @staticmethod
-    def combine(first, rem):
-        (first_prob, first_word) = first
-        (rem_prob, rem_words) = rem
-        return first_prob + rem_prob, [first_word] + rem_words
-
-    def splits(self, text):
-        return [
-            (text[: i + 1], text[i + 1 :])
-            for i in range(min(len(text), self.L))
-        ]
-
-    @lru_cache(maxsize = 65536)
-    def find_segment(self, text, prev = '<S>'):
-        if not text:
-            return 0.0, []
-        candidates = [
-            self.combine(
-                (log10(self.condProbWord(first, prev)), first),
-                self.find_segment(rem, first),
-            )
-            for first, rem in self.splits(text)
-        ]
-        return max(candidates)
-
-    @lru_cache(maxsize = 65536)
-    def segment(self, word):
-        if word.islower():
-            return ' '.join(self.find_segment(word)[1])
-        else:
-            return self.case_split.sub(r' \1', word)
-
-
-class _Preprocessing:
+class PREPROCESSING:
     def __init__(
         self,
         normalize = [
@@ -364,26 +262,27 @@ class _Preprocessing:
         ],
         lowercase = True,
         fix_unidecode = True,
-        expand_hashtags = True,
         expand_english_contractions = True,
-        remove_postfix = True,
-        maxlen_segmenter = 20,
         translator = None,
         speller = None,
+        segmenter = None,
+        stemmer = None,
     ):
         self._fix_unidecode = fix_unidecode
         self._normalize = normalize
         self._annotate = annotate
-        self._remove_postfix = remove_postfix
         self._regexes = _get_expression_dict()
-        self._expand_hashtags = expand_hashtags
-        self._tokenizer = SocialTokenizer(lowercase = lowercase).tokenize
-        if self._expand_hashtags:
-            self._segmenter = _Segmenter(maxlen_segmenter)
+        self._tokenizer = TOKENIZER(lowercase = lowercase).tokenize
         self._expand_contractions = expand_english_contractions
         self._all_caps_tag = 'wrap'
         self._translator = translator
         self._speller = speller
+        self._segmenter = segmenter
+        if self._segmenter:
+            self._expand_hashtags = True
+        else:
+            self._expand_hashtags = False
+        self._stemmer = stemmer
 
     def _add_special_tag(self, m, tag, mode = 'single'):
 
@@ -405,15 +304,9 @@ class _Preprocessing:
     def _handle_hashtag_match(self, m):
         expanded = m.group()[1:]
         if self._expand_hashtags:
-            if expanded.islower():
-                expanded = self._segmenter.segment(expanded)
-                expanded = ' '.join(expanded.split('-'))
-                expanded = ' '.join(expanded.split('_'))
-
-            else:
-                expanded = self._regexes['camel_split'].sub(r' \1', expanded)
-                expanded = expanded.replace('-', '')
-                expanded = expanded.replace('_', '')
+            expanded = self._segmenter.segment([expanded])[0]
+            expanded = ' '.join(expanded.split('-'))
+            expanded = ' '.join(expanded.split('_'))
 
         if 'hashtag' in self._annotate:
             expanded = self._add_special_tag(expanded, 'hashtag', mode = 'wrap')
@@ -526,9 +419,16 @@ class _Preprocessing:
         text = self._dict_replace(text, rules_normalizer)
         if self._translator:
             text = self._dict_replace(text, self._translator)
-        if self._remove_postfix:
+        if self._stemmer:
+            rejected = ['<', '</', '>', '>']
             text = [
-                _naive_stem(w) if w not in _english_words else w for w in text
+                self._stemmer.stem(w)
+                if (
+                    w not in _english_words
+                    and all([r not in w for r in rejected])
+                )
+                else w
+                for w in text
             ]
 
         return text
@@ -556,12 +456,11 @@ def preprocessing(
     ],
     lowercase: bool = True,
     fix_unidecode: bool = True,
-    expand_hashtags: bool = True,
     expand_english_contractions: bool = True,
     translate_english_to_bm: bool = True,
-    remove_postfix: bool = True,
-    maxlen_segmenter: int = 20,
     speller = None,
+    segmenter = None,
+    stemmer = None,
     **kwargs,
 ):
     """
@@ -570,28 +469,28 @@ def preprocessing(
     Parameters
     ----------
     normalize: list
-        normalizing tokens, can check all supported normalizing at malaya.preprocessing.get_normalize()
+        normalizing tokens, can check all supported normalizing at `malaya.preprocessing.get_normalize()`.
     annotate: list
-        annonate tokens <open></open>, only accept ['hashtag', 'allcaps', 'elongated', 'repeated', 'emphasis', 'censored']
+        annonate tokens <open></open>, 
+        only accept ['hashtag', 'allcaps', 'elongated', 'repeated', 'emphasis', 'censored'].
     lowercase: bool
     fix_unidecode: bool
-    expand_hashtags: bool
-        expand hashtags using Viterbi algorithm, #mondayblues == monday blues
     expand_english_contractions: bool
         expand english contractions
     translate_english_to_bm: bool
         translate english words to bahasa malaysia words
-    remove_postfix: bool
-        remove postfix from a word, faster way to get root word
     speller: object
         spelling correction object, need to have a method `correct`
-    validate: bool, optional (default=True)
-        if True, malaya will check model availability and download if not available.
-
+    segmenter: object
+        segmentation object, need to have a method `segment`.
+        If provide, it will expand hashtags, #mondayblues == monday blues
+    stemmer: object
+        stemmer object, need to have a method `stem`.
+        If provide, it will stem or lemmatize the string.
 
     Returns
     -------
-    result : malaya.preprocessing._Preprocessing class
+    result : malaya.preprocessing.PREPROCESSING class
     """
 
     if any([e not in _normalize for e in normalize]):
@@ -602,17 +501,11 @@ def preprocessing(
         raise ValueError(
             "annotate only accept ['hashtag', 'allcaps', 'elongated', 'repeated', 'emphasis', 'censored']"
         )
-    if speller is not None:
-        if not hasattr(speller, 'correct') and not hasattr(
-            speller, 'normalize_elongated'
-        ):
-            raise ValueError(
-                'speller must has `correct` or `normalize_elongated` method'
-            )
-
-    if expand_hashtags:
-        check_file(PATH_PREPROCESSING[1], S3_PATH_PREPROCESSING[1], **kwargs)
-        check_file(PATH_PREPROCESSING[2], S3_PATH_PREPROCESSING[2], **kwargs)
+    validator.validate_object_methods(
+        speller, ['correct', 'normalize_elongated'], 'speller'
+    )
+    validator.validate_object(segmenter, 'segment', 'segmenter')
+    validator.validate_object(stemmer, 'stem', 'stemmer')
 
     if translate_english_to_bm:
         check_file(
@@ -626,39 +519,17 @@ def preprocessing(
     else:
         translator = None
 
-    return _Preprocessing(
+    return PREPROCESSING(
         normalize = normalize,
         annotate = annotate,
         lowercase = lowercase,
         fix_unidecode = fix_unidecode,
-        expand_hashtags = expand_hashtags,
         expand_english_contractions = expand_english_contractions,
-        remove_postfix = remove_postfix,
-        maxlen_segmenter = maxlen_segmenter,
         translator = translator,
         speller = speller,
+        segmenter = segmenter,
+        stemmer = stemmer,
     )
 
 
-def segmenter(max_split_length: int = 20, **kwargs):
-    """
-    Load Segmenter class.
-
-    Parameters
-    ----------
-    max_split_length: int, (default=20)
-        max length of words in a sentence to segment
-    validate: bool, optional (default=True)
-        if True, malaya will check model availability and download if not available.
-
-    Returns
-    -------
-    result : malaya.preprocessing._Segmenter class
-    """
-
-    check_file(PATH_PREPROCESSING[1], S3_PATH_PREPROCESSING[1], **kwargs)
-    check_file(PATH_PREPROCESSING[2], S3_PATH_PREPROCESSING[2], **kwargs)
-    return _Segmenter(max_split_length = max_split_length)
-
-
-_tokenizer = SocialTokenizer().tokenize
+_tokenizer = TOKENIZER().tokenize

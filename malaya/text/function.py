@@ -26,6 +26,14 @@ ENGLISH_WORDS = _english_words
 MALAY_WORDS = _malay_words
 
 
+def get_stopwords():
+    return list(STOPWORDS)
+
+
+def get_stopwords_calon():
+    return list(STOPWORD_CALON)
+
+
 def generate_compound(word):
     combs = {word}
     for i in range(1, len(word) + 1):

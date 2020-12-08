@@ -3,12 +3,12 @@ from sklearn.cluster import KMeans
 from sklearn.manifold import MDS
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from malaya.text.vectorizer import SkipGramVectorizer
-from malaya.stem import sastrawi
 from malaya.text.function import (
     simple_textcleaning,
     split_into_sentences,
-    STOPWORDS,
+    get_stopwords,
 )
+from malaya.function import validator
 from herpetologist import check_type
 from typing import List, Tuple, Callable
 
@@ -20,7 +20,7 @@ _accepted_pos = [
     'ADJ',
     'ADP',
     'ADV',
-    'AUX',
+    'ADX',
     'CCONJ',
     'DET',
     'NOUN',
@@ -28,6 +28,7 @@ _accepted_pos = [
     'PART',
     'PRON',
     'PROPN',
+    'PUNCT',
     'SCONJ',
     'SYM',
     'VERB',
@@ -47,13 +48,15 @@ _accepted_entities = [
 
 
 @check_type
-def cluster_words(list_words: List[str]):
+def cluster_words(list_words: List[str], lowercase: bool = False):
     """
     cluster similar words based on structure, eg, ['mahathir mohamad', 'mahathir'] = ['mahathir mohamad']
 
     Parameters
     ----------
     list_words : List[str]
+    lowercase: bool, optional (default=True)
+        if True, will group using lowercase but maintain the original form.
 
     Returns
     -------
@@ -64,9 +67,13 @@ def cluster_words(list_words: List[str]):
     for word in list_words:
         found = False
         for key in dict_words.keys():
-            if word in key or any(
-                [word in inside for inside in dict_words[key]]
-            ):
+            if lowercase:
+                check = [
+                    word.lower() in inside.lower() for inside in dict_words[key]
+                ]
+            else:
+                check = [word in inside for inside in dict_words[key]]
+            if word in key or any(check):
                 dict_words[key].append(word)
                 found = True
             if key in word:
@@ -95,27 +102,47 @@ def cluster_pos(result: List[Tuple[str, str]]):
 
     if not all([i[1] in _accepted_pos for i in result]):
         raise ValueError(
-            'elements of result must be a subset or equal of supported POS, please run malaya.describe_pos() to get supported POS'
+            'elements of result must be a subset or equal of supported POS, please run `malaya.pos.describe()` to get supported POS.'
         )
 
-    output = {
-        'ADJ': [],
-        'ADP': [],
-        'ADV': [],
-        'ADX': [],
-        'AUX': [],
-        'CCONJ': [],
-        'DET': [],
-        'NOUN': [],
-        'NUM': [],
-        'PART': [],
-        'PRON': [],
-        'PROPN': [],
-        'SCONJ': [],
-        'SYM': [],
-        'VERB': [],
-        'X': [],
-    }
+    output = {p: [] for p in _accepted_pos}
+    last_label, words = None, []
+    for word, label in result:
+        if last_label != label and last_label:
+            joined = ' '.join(words)
+            if joined not in output[last_label]:
+                output[last_label].append(joined)
+            words = []
+            last_label = label
+            words.append(word)
+
+        else:
+            if not last_label:
+                last_label = label
+            words.append(word)
+    output[last_label].append(' '.join(words))
+    return output
+
+
+@check_type
+def cluster_entities(result: List[Tuple[str, str]]):
+    """
+    cluster similar Entities.
+
+    Parameters
+    ----------
+    result: List[Tuple[str, str]]
+
+    Returns
+    -------
+    result: Dict[str, List[str]]
+    """
+    if not all([i[1] in _accepted_entities for i in result]):
+        raise ValueError(
+            'elements of result must be a subset or equal of supported Entities, please run `malaya.entity.describe` to get supported Entities.'
+        )
+
+    output = {e: [] for e in _accepted_entities}
     last_label, words = None, []
     for word, label in result:
         if last_label != label and last_label:
@@ -170,61 +197,13 @@ def cluster_tagging(result: List[Tuple[str, str]]):
 
 
 @check_type
-def cluster_entities(result: List[Tuple[str, str]]):
-    """
-    cluster similar Entities.
-
-    Parameters
-    ----------
-    result: List[Tuple[str, str]]
-
-    Returns
-    -------
-    result: Dict[str, List[str]]
-    """
-    if not all([i[1] in _accepted_entities for i in result]):
-        raise ValueError(
-            'elements of result must be a subset or equal of supported Entities, please run malaya.describe_entities() to get supported POS'
-        )
-
-    output = {
-        'OTHER': [],
-        'law': [],
-        'location': [],
-        'organization': [],
-        'person': [],
-        'quantity': [],
-        'time': [],
-        'event': [],
-        'X': [],
-    }
-    last_label, words = None, []
-    for word, label in result:
-        if last_label != label and last_label:
-            joined = ' '.join(words)
-            if joined not in output[last_label]:
-                output[last_label].append(joined)
-            words = []
-            last_label = label
-            words.append(word)
-
-        else:
-            if not last_label:
-                last_label = label
-            words.append(word)
-    output[last_label].append(' '.join(words))
-    return output
-
-
-@check_type
 def cluster_scatter(
     corpus: List[str],
     vectorizer,
     num_clusters: int = 5,
     titles: List[str] = None,
     colors: List[str] = None,
-    stemming = sastrawi,
-    stop_words: List[str] = STOPWORDS,
+    stopwords = get_stopwords,
     cleaning = simple_textcleaning,
     clustering = KMeans,
     decomposition = MDS,
@@ -247,10 +226,8 @@ def cluster_scatter(
         list of titles, length must same with corpus.
     colors: List[str], (default=None)
         list of colors, length must same with num_clusters.
-    stemming: function, (default=malaya.stem.sastrawi)
-        function to stem the corpus.
-    stop_words: List[str], (default=malaya.texts.function.STOPWORDS)
-        list of stop words to remove.
+    stopwords: List[str], (default=malaya.texts.function.get_stopwords)
+        A callable that returned a List[str], or a List[str], or a Tuple[str]
     ngram: Tuple[int, int], (default=(1,3))
         n-grams size to train a corpus.
     cleaning: function, (default=malaya.texts.function.simple_textcleaning)
@@ -262,10 +239,7 @@ def cluster_scatter(
     -------
     dictionary: {'X': X, 'Y': Y, 'labels': clusters, 'vector': transformed_text_clean, 'titles': titles}
     """
-    if not isinstance(stemming, Callable) and stemming is not None:
-        raise ValueError('stemming must be a callable type or None')
-    if not isinstance(cleaning, Callable) and cleaning is not None:
-        raise ValueError('cleaning must be a callable type or None')
+
     if titles:
         if len(titles) != len(corpus):
             raise ValueError('length of titles must be same with corpus')
@@ -274,8 +248,12 @@ def cluster_scatter(
             raise ValueError(
                 'size of colors must be same with number of clusters'
             )
-    if not hasattr(vectorizer, 'vectorize') and not hasattr(vectorizer, 'fit'):
-        raise ValueError('vectorizer must has `fit` and `vectorize` methods')
+
+    validator.validate_object_methods(
+        vectorizer, ['vectorize', 'fit'], 'vectorizer'
+    )
+    stopwords = validator.validate_stopwords(stopwords)
+    validator.validate_function(cleaning, 'cleaning')
 
     try:
         import matplotlib.pyplot as plt
@@ -290,13 +268,10 @@ def cluster_scatter(
     if cleaning:
         for i in range(len(corpus)):
             corpus[i] = cleaning(corpus[i])
-    if stemming:
-        for i in range(len(corpus)):
-            corpus[i] = stemming(corpus[i])
     text_clean = []
     for text in corpus:
         text_clean.append(
-            ' '.join([word for word in text.split() if word not in stop_words])
+            ' '.join([word for word in text.split() if word not in stopwords])
         )
 
     if hasattr(vectorizer, 'fit'):
@@ -310,7 +285,13 @@ def cluster_scatter(
             transformed_text_clean.append(
                 vectorizer.vectorize(text_clean[i:index])
             )
-            attentions.extend(vectorizer.attention(text_clean[i:index]))
+            if hasattr(vectorizer, 'attention'):
+                attentions.extend(vectorizer.attention(text_clean[i:index]))
+            else:
+                t = []
+                for s in text_clean[i:index]:
+                    t.append([(w, 1.0) for w in s.split()])
+                attentions.extend(t)
         transformed_text_clean = np.concatenate(
             transformed_text_clean, axis = 0
         )
@@ -371,8 +352,7 @@ def cluster_dendogram(
     corpus: List[str],
     vectorizer,
     titles: List[str] = None,
-    stemming = sastrawi,
-    stop_words: List[str] = STOPWORDS,
+    stopwords = get_stopwords,
     cleaning = simple_textcleaning,
     random_samples: float = 0.3,
     ngram: Tuple[int, int] = (1, 3),
@@ -392,10 +372,8 @@ def cluster_dendogram(
         size of unsupervised clusters.
     titles: List[str], (default=None)
         list of titles, length must same with corpus.
-    stemming: function, (default=malaya.stem.sastrawi)
-        function to stem the corpus.
-    stop_words: List[str], (default=malaya.text.function.STOPWORDS)
-        list of stop words to remove.
+    stopwords: List[str], (default=malaya.texts.function.get_stopwords)
+        A callable that returned a List[str], or a List[str], or a Tuple[str]
     cleaning: function, (default=malaya.text.function.simple_textcleaning)
         function to clean the corpus.
     random_samples: float, (default=0.3)
@@ -409,16 +387,17 @@ def cluster_dendogram(
     -------
     dictionary: {'linkage_matrix': linkage_matrix, 'titles': titles}
     """
-    if not isinstance(stemming, Callable) and stemming is not None:
-        raise ValueError('stemming must be a callable type or None')
-    if not isinstance(cleaning, Callable) and cleaning is not None:
-        raise ValueError('cleaning must be a callable type or None')
+
     if titles:
         if len(titles) != len(corpus):
             raise ValueError('length of titles must be same with corpus')
 
-    if not hasattr(vectorizer, 'vectorize') and not hasattr(vectorizer, 'fit'):
-        raise ValueError('vectorizer must has `fit` and `vectorize` methods')
+    validator.validate_object_methods(
+        vectorizer, ['vectorize', 'fit'], 'vectorizer'
+    )
+    stopwords = validator.validate_stopwords(stopwords)
+    validator.validate_function(cleaning, 'cleaning')
+
     if not (random_samples < 1 and random_samples > 0):
         raise ValueError('random_samples must be between 0 and 1')
 
@@ -438,13 +417,10 @@ def cluster_dendogram(
     if cleaning is not None:
         for i in range(len(corpus)):
             corpus[i] = cleaning(corpus[i])
-    if stemming:
-        for i in range(len(corpus)):
-            corpus[i] = stemming(corpus[i])
     text_clean = []
     for text in corpus:
         text_clean.append(
-            ' '.join([word for word in text.split() if word not in stop_words])
+            ' '.join([word for word in text.split() if word not in stopwords])
         )
 
     if hasattr(vectorizer, 'fit'):
@@ -458,7 +434,13 @@ def cluster_dendogram(
             transformed_text_clean.append(
                 vectorizer.vectorize(text_clean[i:index])
             )
-            attentions.extend(vectorizer.attention(text_clean[i:index]))
+            if hasattr(vectorizer, 'attention'):
+                attentions.extend(vectorizer.attention(text_clean[i:index]))
+            else:
+                t = []
+                for s in text_clean[i:index]:
+                    t.append([(w, 1.0) for w in s.split()])
+                attentions.extend(t)
         transformed_text_clean = np.concatenate(
             transformed_text_clean, axis = 0
         )
@@ -503,8 +485,7 @@ def cluster_graph(
     num_clusters: int = 5,
     titles: List[str] = None,
     colors: List[str] = None,
-    stop_words: List[str] = STOPWORDS,
-    stemming = sastrawi,
+    stopwords = get_stopwords,
     ngram: Tuple[int, int] = (1, 3),
     cleaning = simple_textcleaning,
     clustering = KMeans,
@@ -527,10 +508,8 @@ def cluster_graph(
         size of unsupervised clusters.
     titles: List[str], (default=True)
         list of titles, length must same with corpus.
-    stemming: function, (default=malaya.stem.sastrawi)
-        function to stem the corpus.
-    stop_words: List[str], (default=malaya.texts.function.STOPWORDS)
-        list of stop words to remove.
+    stopwords: List[str], (default=malaya.texts.function.get_stopwords)
+        A callable that returned a List[str] or List[str] or Tuple[str].
     cleaning: function, (default=malaya.texts.function.simple_textcleaning)
         function to clean the corpus.
     ngram: Tuple[int, int], (default=(1,3))
@@ -542,11 +521,11 @@ def cluster_graph(
     -------
     dictionary: {'G': G, 'pos': pos, 'node_colors': node_colors, 'node_labels': node_labels}
     """
-    if not isinstance(stemming, Callable) and stemming is not None:
-        raise ValueError('stemming must be a callable type or None')
-    if not isinstance(cleaning, Callable) and cleaning is not None:
-        raise ValueError('cleaning must be a callable type or None')
-
+    validator.validate_object_methods(
+        vectorizer, ['vectorize', 'fit'], 'vectorizer'
+    )
+    stopwords = validator.validate_stopwords(stopwords)
+    validator.validate_function(cleaning, 'cleaning')
     if titles:
         if len(titles) != len(corpus):
             raise ValueError('length of titles must be same with corpus')
@@ -555,8 +534,6 @@ def cluster_graph(
             raise ValueError(
                 'size of colors must be same with number of clusters'
             )
-    if not hasattr(vectorizer, 'vectorize') and not hasattr(vectorizer, 'fit'):
-        raise ValueError('vectorizer must has `fit` and `vectorize` methods')
     if not (threshold <= 1 and threshold > 0):
         raise ValueError(
             'threshold must be bigger than 0, less than or equal to 1'
@@ -578,13 +555,10 @@ def cluster_graph(
     if cleaning is not None:
         for i in range(len(corpus)):
             corpus[i] = cleaning(corpus[i])
-    if stemming:
-        for i in range(len(corpus)):
-            corpus[i] = stemming(corpus[i])
     text_clean = []
     for text in corpus:
         text_clean.append(
-            ' '.join([word for word in text.split() if word not in stop_words])
+            ' '.join([word for word in text.split() if word not in stopwords])
         )
 
     if hasattr(vectorizer, 'fit'):
@@ -598,7 +572,13 @@ def cluster_graph(
             transformed_text_clean.append(
                 vectorizer.vectorize(text_clean[i:index])
             )
-            attentions.extend(vectorizer.attention(text_clean[i:index]))
+            if hasattr(vectorizer, 'attention'):
+                attentions.extend(vectorizer.attention(text_clean[i:index]))
+            else:
+                t = []
+                for s in text_clean[i:index]:
+                    t.append([(w, 1.0) for w in s.split()])
+                attentions.extend(t)
         transformed_text_clean = np.concatenate(
             transformed_text_clean, axis = 0
         )
@@ -678,9 +658,8 @@ def cluster_entity_linking(
         'event',
     ],
     cleaning = simple_textcleaning,
-    stemming = sastrawi,
     colors: List[str] = None,
-    stop_words: List[str] = STOPWORDS,
+    stopwords = get_stopwords,
     max_df: float = 1.0,
     min_df: int = 1,
     ngram: Tuple[int, int] = (2, 3),
@@ -706,8 +685,6 @@ def cluster_entity_linking(
         size of topic models.
     fuzzy_ratio: int, (default=70)
         size of ratio for fuzzywuzzy.
-    stemming: bool, (default=True)
-        If True, sastrawi_stemmer will apply.
     max_df: float, (default=0.95)
         maximum of a word selected based on document frequency.
     min_df: int, (default=2)
@@ -716,8 +693,8 @@ def cluster_entity_linking(
         n-grams size to train a corpus.
     cleaning: function, (default=simple_textcleaning)
         function to clean the corpus.
-    stop_words: list, (default=STOPWORDS)
-        list of stop words to remove.
+    stopwords: List[str], (default=malaya.texts.function.get_stopwords)
+        A callable that returned a List[str] or List[str] or Tuple[str]
 
     Returns
     -------
@@ -726,13 +703,12 @@ def cluster_entity_linking(
 
     import inspect
 
-    if not isinstance(stemming, Callable) and stemming is not None:
-        raise ValueError('stemming must be a callable type or None')
-    if not isinstance(cleaning, Callable) and cleaning is not None:
-        raise ValueError('cleaning must be a callable type or None')
+    validator.validate_object_methods(
+        vectorizer, ['vectorize', 'fit'], 'vectorizer'
+    )
+    stopwords = validator.validate_stopwords(stopwords)
+    validator.validate_function(cleaning, 'cleaning')
 
-    if not hasattr(vectorizer, 'vectorize') and not hasattr(vectorizer, 'fit'):
-        raise ValueError('vectorizer must has `fit` and `vectorize` methods')
     if 'max_df' not in inspect.getargspec(topic_modeling_model)[0]:
         raise ValueError('topic_modeling_model must has `max_df` parameter')
 
@@ -828,13 +804,10 @@ def cluster_entity_linking(
     if cleaning:
         for i in range(len(corpus)):
             corpus[i] = cleaning(corpus[i])
-    if stemming:
-        for i in range(len(corpus)):
-            corpus[i] = stemming(corpus[i])
     text_clean = []
     for text in corpus:
         text_clean.append(
-            ' '.join([word for word in text.split() if word not in stop_words])
+            ' '.join([word for word in text.split() if word not in stopwords])
         )
 
     if hasattr(vectorizer, 'fit'):
@@ -848,7 +821,10 @@ def cluster_entity_linking(
             transformed_text_clean.append(
                 vectorizer.vectorize(text_clean[i:index])
             )
-            attentions.extend(vectorizer.attention(text_clean[i:index]))
+            if hasattr(vectorizer, 'attention'):
+                attentions.extend(vectorizer.attention(text_clean[i:index]))
+            else:
+                attentions.extend(text_clean[i:index])
         transformed_text_clean = np.concatenate(
             transformed_text_clean, axis = 0
         )
