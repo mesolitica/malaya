@@ -9,8 +9,9 @@ from malaya.text.vectorizer import SkipGramVectorizer
 from malaya.text.function import (
     simple_textcleaning,
     transformer_textcleaning,
-    STOPWORDS,
+    get_stopwords,
 )
+from malaya.function import validator
 from malaya.graph.pagerank import pagerank
 from typing import Callable, Tuple, List
 from herpetologist import check_type
@@ -18,10 +19,10 @@ from herpetologist import check_type
 methods = {'bow': CountVectorizer, 'skipgram': SkipGramVectorizer}
 
 
-def _auto_ngram(string, stop_words):
+def _auto_ngram(string, stopwords):
     splitted = rake_function.split_sentences(string)
     stop_word_regex_list = []
-    for word in stop_words:
+    for word in stopwords:
         word_regex = r'\b' + word + r'(?![\w-])'
         stop_word_regex_list.append(word_regex)
     stop_word_pattern = re.compile(
@@ -36,11 +37,11 @@ def _auto_ngram(string, stop_words):
     return vocab
 
 
-def _base(string, ngram_method, ngram, stop_words, **kwargs):
+def _base(string, ngram_method, ngram, stopwords, **kwargs):
     s = methods[ngram_method](
         ngram_range = ngram,
         token_pattern = r'[\S]+',
-        stop_words = stop_words,
+        stop_words = stopwords,
         lowercase = False,
         **kwargs
     ).fit([string])
@@ -60,7 +61,7 @@ def rake(
     ngram_method: str = 'bow',
     ngram: Tuple[int, int] = (1, 1),
     atleast: int = 1,
-    stop_words: List[str] = STOPWORDS,
+    stopwords = get_stopwords,
     **kwargs
 ):
     """
@@ -84,13 +85,14 @@ def rake(
         n-grams size.
     atleast: int, optional (default=1)
         at least count appeared in the string to accept as candidate.
-    stop_words: list, (default=malaya.text.function.STOPWORDS)
-        list of stop words to remove. 
+    stopwords: List[str], (default=malaya.texts.function.get_stopwords)
+        A callable that returned a List[str], or a List[str], or a Tuple[str]
 
     Returns
     -------
     result: Tuple[float, str]
     """
+    stopwords = validator.validate_stopwords(stopwords)
 
     if model is not None:
         if not hasattr(model, 'attention'):
@@ -101,8 +103,8 @@ def rake(
         raise ValueError('atleast must bigger than 0')
     if ngram_method not in methods:
         raise ValueError("ngram_method must be in ['bow', 'skip-gram']")
-    if auto_ngram and not len(stop_words):
-        raise ValueError('insert stop_words if auto_ngram')
+    if auto_ngram and not len(stopwords):
+        raise ValueError('insert stopwords if auto_ngram')
 
     if model:
         string = transformer_textcleaning(string)
@@ -115,13 +117,13 @@ def rake(
         d = None
 
     if auto_ngram:
-        vocab = _auto_ngram(string, stop_words)
+        vocab = _auto_ngram(string, stopwords)
     else:
         vocab = _base(
             string,
             ngram_method = ngram_method,
             ngram = ngram,
-            stop_words = stop_words,
+            stopwords = stopwords,
             **kwargs
         )
     phrase_list = list(vocab.keys())
@@ -151,7 +153,7 @@ def textrank(
     ngram_method: str = 'bow',
     ngram: Tuple[int, int] = (1, 1),
     atleast: int = 1,
-    stop_words: List[str] = STOPWORDS,
+    stopwords = get_stopwords,
     **kwargs
 ):
     """
@@ -175,13 +177,14 @@ def textrank(
         n-grams size.
     atleast: int, optional (default=1)
         at least count appeared in the string to accept as candidate.
-    stop_words: list, (default=malaya.text.function.STOPWORDS)
-        list of stop words to remove. 
+    stopwords: List[str], (default=malaya.texts.function.get_stopwords)
+        A callable that returned a List[str], or a List[str], or a Tuple[str]
 
     Returns
     -------
     result: Tuple[float, str]
     """
+    stopwords = validator.validate_stopwords(stopwords)
 
     if not hasattr(vectorizer, 'fit_transform') and not hasattr(
         vectorizer, 'vectorize'
@@ -195,17 +198,17 @@ def textrank(
         raise ValueError('atleast must bigger than 0')
     if ngram_method not in methods:
         raise ValueError("ngram_method must be in ['bow', 'skip-gram']")
-    if auto_ngram and not len(stop_words):
-        raise ValueError('insert stop_words if auto_ngram')
+    if auto_ngram and not len(stopwords):
+        raise ValueError('insert stopwords if auto_ngram')
 
     if auto_ngram:
-        vocab = _auto_ngram(string, stop_words)
+        vocab = _auto_ngram(string, stopwords)
     else:
         vocab = _base(
             string,
             ngram_method = ngram_method,
             ngram = ngram,
-            stop_words = stop_words,
+            stopwords = stopwords,
             **kwargs
         )
 
@@ -238,7 +241,7 @@ def attention(
     ngram_method: str = 'bow',
     ngram: Tuple[int, int] = (1, 1),
     atleast: int = 1,
-    stop_words: List[str] = STOPWORDS,
+    stopwords = get_stopwords,
     **kwargs
 ):
     """
@@ -262,35 +265,37 @@ def attention(
         n-grams size.
     atleast: int, optional (default=1)
         at least count appeared in the string to accept as candidate.
-    stop_words: list, (default=malaya.text.function.STOPWORDS)
-        list of stop words to remove. 
+    stopwords: List[str], (default=malaya.texts.function.get_stopwords)
+        A callable that returned a List[str], or a List[str], or a Tuple[str]
 
     Returns
     -------
     result: Tuple[float, str]
     """
 
+    stopwords = validator.validate_stopwords(stopwords)
+
     if not hasattr(model, 'attention'):
-        raise ValueError('model must has or `attention` method')
+        raise ValueError('model must has `attention` method')
     if top_k < 1:
         raise ValueError('top_k must bigger than 0')
     if atleast < 1:
         raise ValueError('atleast must bigger than 0')
     if ngram_method not in methods:
         raise ValueError("ngram_method must be in ['bow', 'skip-gram']")
-    if auto_ngram and not len(stop_words):
-        raise ValueError('insert stop_words if auto_ngram')
+    if auto_ngram and not len(stopwords):
+        raise ValueError('insert stopwords if auto_ngram')
 
     string = transformer_textcleaning(string)
 
     if auto_ngram:
-        vocab = _auto_ngram(string, stop_words)
+        vocab = _auto_ngram(string, stopwords)
     else:
         vocab = _base(
             string,
             ngram_method = ngram_method,
             ngram = ngram,
-            stop_words = stop_words,
+            stopwords = stopwords,
             **kwargs
         )
 
@@ -323,11 +328,12 @@ def similarity_transformer(
     ngram_method: str = 'bow',
     ngram: Tuple[int, int] = (1, 1),
     atleast: int = 1,
-    stop_words: List[str] = STOPWORDS,
+    stopwords = get_stopwords,
     **kwargs
 ):
+    stopwords = validator.validate_stopwords(stopwords)
     if not hasattr(model, '_tree_plot'):
-        raise ValueError('model must has or `_tree_plot` method')
+        raise ValueError('model must has `_tree_plot` method')
     if top_k < 1:
         raise ValueError('top_k must bigger than 0')
     if atleast < 1:
@@ -336,13 +342,13 @@ def similarity_transformer(
         raise ValueError("ngram_method must be in ['bow', 'skip-gram']")
 
     if auto_ngram:
-        vocab = _auto_ngram(string, stop_words)
+        vocab = _auto_ngram(string, stopwords)
     else:
         vocab = _base(
             string,
             ngram_method = ngram_method,
             ngram = ngram,
-            stop_words = stop_words,
+            stopwords = stopwords,
             **kwargs
         )
 

@@ -18,6 +18,7 @@ Contents:
 
    Installation
    gpu-environment
+   speech-toolkit
    Dataset
    models-accuracy
    load-cache
@@ -25,6 +26,7 @@ Contents:
    Api
    running-on-windows
    Contributing
+   
 
 .. toctree::
    :maxdepth: 2
