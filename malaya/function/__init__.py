@@ -16,14 +16,32 @@ from tqdm import tqdm
 from pathlib import Path
 from malaya import home, _delete_folder, gpu_available, __gpu__
 
-try:
-    from tensorflow.contrib.seq2seq.python.ops import beam_search_ops
-except:
-    import warnings
 
-    warnings.warn(
-        'Cannot import beam_search_ops from tensorflow, some deep learning models may not able to load, make sure Tensorflow version is, 1.10 < version < 2.0'
-    )
+def check_tf_version():
+    version = tf.VERSION
+    return int(version.split('.')[0])
+
+
+if check_tf_version() > 1:
+    try:
+        from tensorflow_addons.seq2seq import beam_search_decoder
+    except:
+        import warnings
+
+        warnings.warn(
+            'Cannot import beam_search_ops from tensorflow, If you are using Tensorflow 2, please install tensorflow-addons by `pip install tensorflow-addons` and try again.'
+        )
+    tf.compat.v1.disable_v2_behavior()
+
+else:
+    try:
+        from tensorflow.contrib.seq2seq.python.ops import beam_search_ops
+    except:
+        import warnings
+
+        warnings.warn(
+            'Cannot import beam_search_ops from tensorflow, some deep learning models may not able to load, make sure Tensorflow version is >= 1.14'
+        )
 
 
 def download_file(url, filename):
@@ -48,7 +66,7 @@ def download_file(url, filename):
 
 def generate_session(graph, **kwargs):
     if gpu_available():
-        config = tf.ConfigProto()
+        config = tf.compat.v1.ConfigProto()
         if 'gpu' in kwargs:
             config.allow_soft_placement = True
 
@@ -63,17 +81,17 @@ def generate_session(graph, **kwargs):
             config.gpu_options.per_process_gpu_memory_fraction = gpu_limit
 
         config.gpu_options.allow_growth = True
-        sess = tf.InteractiveSession(config = config, graph = graph)
+        sess = tf.compat.v1.InteractiveSession(config = config, graph = graph)
 
     else:
-        sess = tf.InteractiveSession(graph = graph)
+        sess = tf.compat.v1.InteractiveSession(graph = graph)
     return sess
 
 
 def load_graph(frozen_graph_filename, **kwargs):
-    with tf.gfile.GFile(frozen_graph_filename, 'rb') as f:
+    with tf.io.gfile.GFile(frozen_graph_filename, 'rb') as f:
         try:
-            graph_def = tf.GraphDef()
+            graph_def = tf.compat.v1.GraphDef()
             graph_def.ParseFromString(f.read())
         except Exception as e:
             path = frozen_graph_filename.split('Malaya/')[1]
@@ -108,7 +126,7 @@ def load_graph(frozen_graph_filename, **kwargs):
                 node.input[0] = node.input[1]
                 del node.input[1]
 
-    with tf.Graph().as_default() as graph:
+    with tf.compat.v1.Graph().as_default() as graph:
         if gpu_available():
             if 'gpu' in kwargs:
                 gpu = kwargs.get('gpu', 0)

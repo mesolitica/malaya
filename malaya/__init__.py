@@ -143,7 +143,7 @@ def clear_all_cache():
 
 def clear_cache(location):
     """
-    Remove selected cached data, please run malaya.print_cache() to get path.
+    Remove selected cached data, please run `malaya.print_cache()` to get path.
 
     Parameters
     ----------
@@ -159,11 +159,11 @@ def clear_cache(location):
     location = os.path.join(home, location)
     if not os.path.exists(location):
         raise Exception(
-            'folder not exist, please check path from malaya.print_cache()'
+            'folder not exist, please check path from `malaya.print_cache()`'
         )
     if not os.path.isdir(location):
         raise Exception(
-            'Please use parent directory, please check path from malaya.print_cache()'
+            'Please use parent directory, please check path from `malaya.print_cache()`'
         )
     _delete_folder(location)
     return True
