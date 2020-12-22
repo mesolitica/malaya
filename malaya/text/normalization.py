@@ -18,10 +18,10 @@ unit_mapping = {
     'g': 'gram',
     'l': 'liter',
     'ml': 'milliliter',
-    'c': 'celcius',
+    'c': 'celsius',
     'km': 'kilometer',
     'm': 'meter',
-    'cm': 'centimeter',
+    'cm': 'sentimeter',
     'kilo': 'kilogram',
 }
 

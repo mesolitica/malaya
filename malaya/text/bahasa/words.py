@@ -23719,7 +23719,6 @@ words = {
     'pondong',
     'bubun',
     'apek',
-    'tahun',
     'dikenalpasti',
     'ilustrator',
     'ubahan',

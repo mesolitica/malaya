@@ -117,6 +117,7 @@ _expressions = {
     # REGEX_NORMALIZE_ELONG = '(.)\1+')
     'normalize_elong': r'(.)\1{2,}',
     'word': r'(?:[\w_]+)',
+    'hypen': r'\w+(?:-\w+)+',
     'temperature': _temperature,
     'distance': _distance,
     'volume': _volume,

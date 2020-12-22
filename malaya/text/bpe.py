@@ -8,6 +8,32 @@ import sentencepiece as spm
 import unicodedata
 import six
 
+SEG_ID_A = 0
+SEG_ID_B = 1
+SEG_ID_CLS = 2
+SEG_ID_SEP = 3
+SEG_ID_PAD = 4
+
+special_symbols = {
+    '<unk>': 0,
+    '<s>': 1,
+    '</s>': 2,
+    '<cls>': 3,
+    '<sep>': 4,
+    '<pad>': 5,
+    '<mask>': 6,
+    '<eod>': 7,
+    '<eop>': 8,
+}
+
+UNK_ID = special_symbols['<unk>']
+CLS_ID = special_symbols['<cls>']
+SEP_ID = special_symbols['<sep>']
+MASK_ID = special_symbols['<mask>']
+EOD_ID = special_symbols['<eod>']
+
+SPIECE_UNDERLINE = '▁'
+
 MAXLEN = 508
 SPECIAL_TOKENS = {
     'bert': {'pad': '[PAD]', 'cls': '[CLS]', 'sep': '[SEP]'},
@@ -186,38 +212,7 @@ def bert_tokenization_siamese(tokenizer, left, right):
     return input_ids, input_masks, segment_ids, s_tokens
 
 
-SEG_ID_A = 0
-SEG_ID_B = 1
-SEG_ID_CLS = 2
-SEG_ID_SEP = 3
-SEG_ID_PAD = 4
-
-special_symbols = {
-    '<unk>': 0,
-    '<s>': 1,
-    '</s>': 2,
-    '<cls>': 3,
-    '<sep>': 4,
-    '<pad>': 5,
-    '<mask>': 6,
-    '<eod>': 7,
-    '<eop>': 8,
-}
-
-UNK_ID = special_symbols['<unk>']
-CLS_ID = special_symbols['<cls>']
-SEP_ID = special_symbols['<sep>']
-MASK_ID = special_symbols['<mask>']
-EOD_ID = special_symbols['<eod>']
-
-SPIECE_UNDERLINE = '▁'
-
-
 def printable_text(text):
-    """Returns text encoded in a way suitable for print or `tf.logging`."""
-
-    # These functions want `str` for both Python2 and Python3, but in one case
-    # it's a Unicode string and in the other it's a byte string.
     if six.PY3:
         if isinstance(text, str):
             return text
@@ -270,9 +265,6 @@ def preprocess_text(
 
 
 def encode_pieces(sp_model, text, return_unicode = True, sample = False):
-    # return_unicode is used only for py2
-
-    # note(zhiliny): in some systems, sentencepiece only accepts str for py2
     if six.PY2 and isinstance(text, unicode):
         text = text.encode('utf-8')
 
@@ -299,7 +291,6 @@ def encode_pieces(sp_model, text, return_unicode = True, sample = False):
         else:
             new_pieces.append(piece)
 
-    # note(zhiliny): convert back to unicode for py2
     if six.PY2 and return_unicode:
         ret_pieces = []
         for piece in new_pieces:
@@ -559,7 +550,7 @@ def load_yttm(path, id_mode = False):
         path = path.split('Malaya/')[1]
         path = '/'.join(path.split('/')[:-1])
         raise Exception(
-            f"model corrupted due to some reasons, please run malaya.clear_cache('{path}') and try again"
+            f"model corrupted due to some reasons, please run `malaya.clear_cache('{path}')` and try again"
         )
 
 

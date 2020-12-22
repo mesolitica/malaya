@@ -158,7 +158,11 @@ def groupby(string):
 
 
 def put_spacing_num(string):
-    string = re.sub('[A-Za-z]+', lambda ele: ' ' + ele[0] + ' ', string)
+    string = re.sub('[A-Za-z]+', lambda ele: ' ' + ele[0] + ' ', string).split()
+    for i in range(len(string)):
+        if _is_number_regex(string[i]):
+            string[i] = ' '.join([to_cardinal(int(n)) for n in string[i]])
+    string = ' '.join(string)
     return re.sub(r'[ ]+', ' ', string).strip()
 
 
@@ -176,6 +180,7 @@ class NORMALIZER:
         normalize_entity: bool = True,
         normalize_url: bool = False,
         normalize_email: bool = False,
+        normalize_year: bool = True,
     ):
         """
         Normalize a string.
@@ -195,6 +200,9 @@ class NORMALIZER:
         normalize_email: bool, (default=False)
             if True, replace `@` with `di`, `.` with `dot`.
             `husein.zol05@gmail.com` -> `husein dot zol 05 di gmail dot com`.
+        normalize_year: bool, (default=True)
+            if True, `tahun 1987` -> `tahun sembilan belas lapan puluh tujuh`.
+            if False, `tahun 1987` -> `tahun seribu sembilan ratus lapan puluh tujuh`.
 
         Returns
         -------
@@ -318,9 +326,25 @@ class NORMALIZER:
                     )
                     index += 4
                     continue
-                else:
-                    result.append('pada')
-                    index += 1
+
+            if (
+                word.lower() in ['tahun', 'thun']
+                and index < (len(tokenized) - 1)
+                and normalize_year
+            ):
+                if (
+                    _is_number_regex(tokenized[index + 1])
+                    and len(tokenized[index + 1]) == 4
+                ):
+                    t = tokenized[index + 1]
+                    if t[1] != '0':
+                        l = to_cardinal(int(t[:2]))
+                        r = to_cardinal(int(t[2:]))
+                        c = f'{l} {r}'
+                    else:
+                        c = to_cardinal(int(t))
+                    result.append(f'tahun {c}')
+                    index += 2
                     continue
 
             if _is_number_regex(word) and index < (len(tokenized) - 2):
@@ -443,7 +467,7 @@ class NORMALIZER:
             else:
                 selected = word
 
-            selected = ' - '.join([selected] * repeat)
+            selected = '-'.join([selected] * repeat)
             result.append(result_string + selected + end_result_string)
             index += 1
 

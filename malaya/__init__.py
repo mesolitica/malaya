@@ -14,7 +14,7 @@ import logging
 
 home = os.path.join(str(Path.home()), 'Malaya')
 version = '4.0'
-bump_version = '4.0.7'
+bump_version = '4.0.8'
 version_path = os.path.join(home, 'version')
 __version__ = bump_version
 path = os.path.dirname(__file__)
@@ -159,11 +159,11 @@ def clear_cache(location):
     location = os.path.join(home, location)
     if not os.path.exists(location):
         raise Exception(
-            'folder not exist, please check path from malaya.print_cache()'
+            'folder not exist, please check path from `malaya.print_cache()`'
         )
     if not os.path.isdir(location):
         raise Exception(
-            'Please use parent directory, please check path from malaya.print_cache()'
+            'Please use parent directory, please check path from `malaya.print_cache()`'
         )
     _delete_folder(location)
     return True

@@ -108,6 +108,12 @@ class TOKENIZER:
             censored (bool): True to keep censored words: f**k
             emphasis (bool): True to keep words with emphasis: *very* good
             numbers (bool): True to keep numbers
+            temperature (bool): True to keep temperatures
+            distance (bool): True to keep distances
+            volume (bool): True to keep volumes
+            duration: (bool): True to keep durations
+            weight: (bool): True to keep weights
+            hypen: (bool): True to keep hypens
         """
 
         self.lowercase = lowercase
@@ -136,6 +142,7 @@ class TOKENIZER:
         volumes = kwargs.get('volume', True)
         durations = kwargs.get('duration', True)
         weights = kwargs.get('weight', True)
+        hypens = kwargs.get('hypen', True)
 
         if urls:
             pipeline.append(self.regexes['url'])
@@ -208,6 +215,9 @@ class TOKENIZER:
 
         if emojis:
             pipeline.append(self.regexes['emoji'])
+
+        if hypens:
+            pipeline.append(self.regexes['hypen'])
 
         # any other word
         pipeline.append(self.regexes['word'])
