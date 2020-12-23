@@ -199,7 +199,7 @@ class NORMALIZER:
             `https://huseinhouse.com` -> `https huseinhouse dot com`.
         normalize_email: bool, (default=False)
             if True, replace `@` with `di`, `.` with `dot`.
-            `husein.zol05@gmail.com` -> `husein dot zol 05 di gmail dot com`.
+            `husein.zol05@gmail.com` -> `husein dot zol kosong lima di gmail dot com`.
         normalize_year: bool, (default=True)
             if True, `tahun 1987` -> `tahun sembilan belas lapan puluh tujuh`.
             if False, `tahun 1987` -> `tahun seribu sembilan ratus lapan puluh tujuh`.
