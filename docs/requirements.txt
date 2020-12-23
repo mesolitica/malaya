@@ -3,7 +3,7 @@ sklearn
 scikit-learn
 requests
 unidecode
-tensorflow==1.14
+tensorflow==2.4.0
 numpy
 scipy
 PySastrawi
