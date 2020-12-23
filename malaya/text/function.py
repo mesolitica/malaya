@@ -471,6 +471,7 @@ prefixes = (
 suffixes = '(Inc|Ltd|Jr|Sr|Co|Mo)'
 starters = '(Mr|Mrs|Ms|Dr|He\s|She\s|It\s|They\s|Their\s|Our\s|We\s|But\s|However\s|That\s|This\s|Wherever|Dia|Mereka|Tetapi|Kita|Itu|Ini|Dan|Kami|Beliau|Seri|Datuk|Dato|Datin|Tuan|Puan)'
 acronyms = '([A-Z][.][A-Z][.](?:[A-Z][.])?)'
+emails = r'(?:^|(?<=[^\w@.)]))(?:[\w+-](?:\.(?!\.))?)*?[\w+-]@(?:\w-?)*?\w+(?:\.(?:[a-z]{2,})){1,3}(?:$|(?=\b))'
 websites = '[.](com|net|org|io|gov|me|edu|my)'
 another_websites = '(www|http|https)[.]'
 digits = '([0-9])'
@@ -479,6 +480,26 @@ month = '([Jj]an(?:uari)?|[Ff]eb(?:ruari)?|[Mm]a(?:c)?|[Aa]pr(?:il)?|Mei|[Jj]u(?
 
 
 def split_into_sentences(text, minimum_length = 5):
+    """
+    Sentence tokenizer.
+
+    Parameters
+    ----------
+    text: str
+    minimum_length: int, optional (default=5)
+        minimum length to assume a string is a string, default 5 characters.
+    
+    Returns
+    -------
+    result: List[str]
+    """
+
+    def replace_sub(pattern, text):
+        alls = re.findall(pattern, text)
+        for a in alls:
+            text = text.replace(a, a.replace('.', '<prd>'))
+        return text
+
     text = text.replace('\x97', '\n')
     text = '. '.join([s for s in text.split('\n') if len(s)])
     text = text + '.'
@@ -486,6 +507,7 @@ def split_into_sentences(text, minimum_length = 5):
     text = ' ' + text + '  '
     text = text.replace('\n', ' ')
     text = re.sub(prefixes, '\\1<prd>', text)
+    text = replace_sub(emails, text)
     text = re.sub(websites, '<prd>\\1', text)
     text = re.sub(another_websites, '\\1<prd>', text)
     text = re.sub('[,][.]+', '<prd>', text)

@@ -108,7 +108,7 @@ _expressions = {
     # 'distance': _distance,
     'number': _number,
     'allcaps': r'(?<![#@$])\b([A-Z][A-Z ]{1,}[A-Z])\b',
-    'url': r'(?:https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})',
+    'url': r'(?:https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,}|[^\s]+\.[^\s]{2,})',
     'date': _date,
     'time': _time,
     # "CAMEL_SPLIT": '((?<=[a-z])[A-Z]|(?<!\A)[A-Z](?=[a-z]))',

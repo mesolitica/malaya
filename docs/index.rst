@@ -39,6 +39,7 @@ Contents:
    :maxdepth: 2
    :caption: Normalization Module
    
+   load-tokenizer
    load-spell-correction
    load-normalizer
    load-stemmer

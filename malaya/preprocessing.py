@@ -88,32 +88,57 @@ def _get_expression_dict():
 class TOKENIZER:
     def __init__(self, lowercase = False, **kwargs):
         """
-        Args:
-            lowercase (bool): set to True in order to lowercase the text
-        Kwargs ():
-            emojis (bool): True to keep emojis
-            urls (bool): True to keep urls
-            tags (bool): True to keep tags: <tag>
-            emails (bool): True to keep emails
-            users (bool): True to keep users handles: @cbaziotis
-            hashtags (bool): True to keep hashtags
-            cashtags (bool): True to keep cashtags
-            phones (bool): True to keep phones
-            percents (bool): True to keep percents
-            money (bool): True to keep money expressions
-            date (bool): True to keep date expressions
-            time (bool): True to keep time expressions
-            acronyms (bool): True to keep acronyms
-            emoticons (bool): True to keep emoticons
-            censored (bool): True to keep censored words: f**k
-            emphasis (bool): True to keep words with emphasis: *very* good
-            numbers (bool): True to keep numbers
-            temperature (bool): True to keep temperatures
-            distance (bool): True to keep distances
-            volume (bool): True to keep volumes
-            duration: (bool): True to keep durations
-            weight: (bool): True to keep weights
-            hypen: (bool): True to keep hypens
+        Load Tokenizer object. 
+        Check supported regex pattern at https://github.com/huseinzol05/Malaya/blob/master/malaya/text/regex.py#L85
+
+        Parameters
+        ----------
+        lowercase: bool, optional (default=False)
+            lowercase tokens.
+        emojis: bool, optional (default=True)
+            True to keep emojis.
+        urls: bool, optional (default=True)
+            True to keep urls.
+        tags: bool, optional (default=True)
+            True to keep tags: <tag>.
+        emails: bool, optional (default=True)
+            True to keep emails.
+        users: bool, optional (default=True)
+            True to keep users handles: @cbaziotis.
+        hashtags: bool, optional (default=True)
+            True to keep hashtags.
+        phones: bool, optional (default=True)
+            True to keep phones.
+        percents: bool, optional (default=True)
+            True to keep percents.
+        money: bool, optional (default=True)
+            True to keep money expressions.
+        date: bool, optional (default=True)
+            True to keep date expressions.
+        time: bool, optional (default=True)
+            True to keep time expressions.
+        acronyms: bool, optional (default=True)
+            True to keep acronyms.
+        emoticons: bool, optional (default=True)
+            True to keep emoticons.
+        censored: bool, optional (default=True)
+            True to keep censored words: f**k.
+        emphasis: bool, optional (default=True)
+            True to keep words with emphasis: *very* good.
+        numbers: bool, optional (default=True)
+            True to keep numbers.
+        temperature: bool, optional (default=True)
+            True to keep temperatures
+        distance: bool, optional (default=True)
+            True to keep distances.
+        volume: bool, optional (default=True)
+            True to keep volumes.
+        duration: bool, optional (default=True)
+            True to keep durations.
+        weight: bool, optional (default=True)
+            True to keep weights.
+        hypen: bool, optional (default=True)
+            True to keep hypens.
         """
 
         self.lowercase = lowercase
@@ -219,7 +244,6 @@ class TOKENIZER:
         if hypens:
             pipeline.append(self.regexes['hypen'])
 
-        # any other word
         pipeline.append(self.regexes['word'])
 
         if emoticons:
@@ -239,6 +263,17 @@ class TOKENIZER:
         return '(?:{})'.format(exp)
 
     def tokenize(self, text):
+        """
+        Tokenize string.
+
+        Parameters
+        ----------
+        text : str
+
+        Returns
+        -------
+        result: List[str]
+        """
         escaped = html.unescape(text)
         tokenized = self.tok.findall(escaped)
 
