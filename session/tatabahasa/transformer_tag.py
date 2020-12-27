@@ -210,15 +210,13 @@ class TransformerTag(t2t_model.T2TModel):
             nonpadding = nonpadding,
             losses = losses,
         )
-        print('hparams.num_decoder_layers', hparams.num_decoder_layers)
-        # if hparams.middle_prediction:
-        #     num_decoder_layers = (
-        #         hparams.num_decoder_layers or hparams.num_hidden_layers
-        #     )
-        #     hparams.num_decoder_layers = int(
-        #         num_decoder_layers / hparams.middle_prediction_layer_factor
-        #     )
-        print('hparams.num_decoder_layers', hparams.num_decoder_layers)
+        if hparams.middle_prediction:
+            num_decoder_layers = (
+                hparams.num_decoder_layers or hparams.num_hidden_layers
+            )
+            hparams.num_decoder_layers = int(
+                num_decoder_layers / hparams.middle_prediction_layer_factor
+            )
 
         decode_kwargs = {}
         decoder_output = self.decode(
@@ -570,7 +568,6 @@ class TransformerTag(t2t_model.T2TModel):
                 targets += positional_encoding[:, i : i + 1]
             return targets
 
-        print('decode_length', decode_length)
         decoder_self_attention_bias = common_attention.attention_bias_lower_triangle(
             decode_length
         )
@@ -629,7 +626,6 @@ class TransformerTag(t2t_model.T2TModel):
                 tf.expand_dims(ids_tag, axis = 2), axis = 3
             )
             targets_tag = preprocess_targets_tag_method(targets_tag, i)
-            print(targets, targets_tag)
 
             bias = decoder_self_attention_bias[:, :, i : i + 1, : i + 1]
 
@@ -640,7 +636,10 @@ class TransformerTag(t2t_model.T2TModel):
                         preproc = lambda z: common_layers.layer_preprocess(
                             z, hparams, layer_collection = None
                         )
-                        layer_inputs = [preproc(x), preproc(targets_tag)]
+                        layer_inputs = [
+                            tf.concat(preproc(x), axis = 0),
+                            tf.concat(preproc(targets_tag), axis = 0),
+                        ]
                         y = transformer_layers.transformer_ffn_layer(
                             tf.concat(layer_inputs, axis = 2),
                             hparams,
@@ -655,14 +654,14 @@ class TransformerTag(t2t_model.T2TModel):
                         )
                         targets = common_layers.layer_postprocess(x, y, hparams)
 
-                # if hparams.middle_prediction:
-                #     num_decoder_layers = (
-                #         hparams.num_decoder_layers or hparams.num_hidden_layers
-                #     )
-                #     hparams.num_decoder_layers = int(
-                #         num_decoder_layers
-                #         / hparams.middle_prediction_layer_factor
-                #     )
+                if hparams.middle_prediction:
+                    num_decoder_layers = (
+                        hparams.num_decoder_layers or hparams.num_hidden_layers
+                    )
+                    hparams.num_decoder_layers = int(
+                        num_decoder_layers
+                        / hparams.middle_prediction_layer_factor
+                    )
 
                 body_outputs = dp(
                     self.decode,
@@ -681,7 +680,7 @@ class TransformerTag(t2t_model.T2TModel):
                     features_to_nonpadding(features, 'targets'),
                     cache.get('encoder_decoder_attention_bias'),
                     cache.get('encoder_output'),
-                    body_outputs[0],
+                    body_outputs,
                 )
                 logits_tag = logits_tag[0]['targets_error_tag']
                 if hparams.middle_prediction:
@@ -712,7 +711,7 @@ class TransformerTag(t2t_model.T2TModel):
                     top, body_outputs, None, hparams, target_vocab_size
                 )[0]
 
-            ret = tf.squeeze(logits, axis = [1, 2, 3])
+            ret = tf.squeeze(logits, axis = [1, 2])
             if partial_targets is not None:
                 vocab_size = tf.shape(ret)[1]
 
@@ -813,7 +812,6 @@ def transformer_edit_ops_layer(
                 common_layers.flatten4d3d(features['targets_error_tag'])
             )
             layer_inputs.append(preproc(error_tags))
-
             y = transformer_layers.transformer_ffn_layer(
                 tf.concat(layer_inputs, axis = 2),
                 hparams,
@@ -1200,6 +1198,7 @@ def fast_decode(
         next_id = sos_id * tf.ones([batch_size, 1], dtype = tf.int64)
         next_id_tag = sos_id * tf.ones([batch_size, 1], dtype = tf.int64)
         initial_log_prob = tf.zeros([batch_size], dtype = tf.float32)
+
         _, _, _, _, decoded_ids, decoded_ids_tag, cache, log_prob = tf.while_loop(
             is_not_finished,
             inner_loop,
