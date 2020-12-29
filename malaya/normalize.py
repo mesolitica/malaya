@@ -181,6 +181,7 @@ class NORMALIZER:
         normalize_url: bool = False,
         normalize_email: bool = False,
         normalize_year: bool = True,
+        normalize_telephone: bool = True,
     ):
         """
         Normalize a string.
@@ -203,6 +204,8 @@ class NORMALIZER:
         normalize_year: bool, (default=True)
             if True, `tahun 1987` -> `tahun sembilan belas lapan puluh tujuh`.
             if False, `tahun 1987` -> `tahun seribu sembilan ratus lapan puluh tujuh`.
+        normalize_telephone: bool, (default=True)
+            if True, `no 012-1234567` -> `no kosong satu dua, satu dua tiga empat lima enam tujuh`
 
         Returns
         -------
@@ -416,6 +419,16 @@ class NORMALIZER:
                         .replace('@', ' di ')
                     )
                     word = put_spacing_num(word)
+                result.append(word)
+                index += 1
+                continue
+
+            if re.findall(_expressions['phone'], word_lower):
+                if normalize_telephone:
+                    splitted = word.split('-')
+                    left = put_spacing_num(splitted[0])
+                    right = put_spacing_num(splitted[1])
+                    word = f'{left}, {right}'
                 result.append(word)
                 index += 1
                 continue

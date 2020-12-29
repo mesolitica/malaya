@@ -73,12 +73,31 @@ Features
 -  **Speech-to-Text**
 
    End-to-End Speech to Text using Pretrained CTC and RNN Transducer Malaya-Speech models.
+-  **Text-to-Speech**
+
+   Text to Speech using Pretrained Tacotron2 and FastSpeech2 Malaya-Speech models.
 -  **Vocoder**
 
-   Convert Mel to Waveform using Pretrained MelGAN and HifiGAN Vocoder Malaya-Speech models.
+   Convert Mel to Waveform using Pretrained MelGAN and Multiband MelGAN Vocoder Malaya-Speech models.
 -  **Voice Activity Detection**
 
    Detect voice activities using Finetuned Speaker Vector Malaya-Speech models.
+
+References
+-----------
+
+If you use our software for research, please cite:
+
+::
+
+  @misc{Malaya, Speech-Toolkit library for bahasa Malaysia, powered by Deep Learning Tensorflow,
+    author = {Husein, Zolkepli},
+    title = {Malaya-Speech},
+    year = {2020},
+    publisher = {GitHub},
+    journal = {GitHub repository},
+    howpublished = {\url{https://github.com/huseinzol05/malaya-speech}}
+  }
 
 Acknowledgement
 ----------------

@@ -27,6 +27,7 @@
 # 26. stopwords, stopwords
 # 27. bi_vowels, bivowels, example, `aa`
 # 28. group_compound, group for biconsonant, example, `ng`
+# 29. penjodoh bilangan, penjodoh_bilangan
 
 GO = 0
 PAD = 1
@@ -145,16 +146,7 @@ bantu_list = [
     'harus',
     'hendak',
 ]
-penguat_list = [
-    'paling',
-    'agak',
-    'sungguh',
-    'amat',
-    'terlalu',
-    'nian',
-    'benar',
-    'paling',
-]
+penguat_list = ['paling', 'agak', 'sungguh', 'amat', 'terlalu', 'nian', 'benar']
 penegas_list = ['jua', 'juga', 'sahaja', 'hanya', 'memang', 'lagi', 'pun']
 nafi_list = ['bukan', 'tidak', 'tak', 'tiada', 'tidaklah', 'tidakkah']
 pemeri_list = ['ialah', 'adalah']
@@ -283,7 +275,7 @@ gantinama_list = [
     'sana',
     'kini',
     'dia',
-    'rm',
+    'kau',
 ]
 
 permulaan = {
@@ -2171,4 +2163,84 @@ quad_vowels = [
     'uuua',
     'uuui',
     'uuuu',
+]
+
+# https://ms.wikipedia.org/wiki/Penjodoh_bilangan_bahasa_Melayu
+penjodoh_bilangan = [
+    'angkatan',
+    'baris',
+    'batang',
+    'bentuk',
+    'bidang',
+    'biji',
+    'bilah',
+    'buah',
+    'buku',
+    'bungkus',
+    'butir',
+    'carik',
+    'cebis',
+    'cekak',
+    'cubit',
+    'cucuk',
+    'das',
+    'deret',
+    'ekor',
+    'gugus',
+    'gelung',
+    'gemal',
+    'genggam',
+    'gulung',
+    'gumpal',
+    'helai',
+    'hidangan',
+    'hiris',
+    'ikat',
+    'jambak',
+    'jambangan',
+    'jemput',
+    'kaki',
+    'kalung',
+    'kandang',
+    'kapur',
+    'kawan',
+    'kelompok',
+    'kepal',
+    'keping',
+    'kepul',
+    'kerat',
+    'ketul',
+    'kotak',
+    'kuntum',
+    'laras',
+    'lembar',
+    'lingkar',
+    'longgok',
+    'naskhah',
+    'orang',
+    'papan',
+    'pasang',
+    'pasukan',
+    'patah',
+    'pintu',
+    'potong',
+    'pucuk',
+    'puntung',
+    'rangkap',
+    'rawan',
+    'ruas',
+    'rumpun',
+    'sikat',
+    'sisir',
+    'suap',
+    'tandan',
+    'tangkai',
+    'teguk',
+    'timbun',
+    'titik',
+    'tongkol',
+    'ulas',
+    'untai',
+    'urat',
+    'utas',
 ]

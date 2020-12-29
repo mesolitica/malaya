@@ -1,5 +1,10 @@
 from herpetologist import check_type
 
+_transformer_availability = {
+    'small': {'Size (MB)': 379, 'Quantized Size (MB)': 120, 'BLEU': 0.5534},
+    'base': {'Size (MB)': 832, 'Quantized Size (MB)': 279, 'BLEU': 0.597},
+}
+
 
 def describe():
     """
@@ -100,42 +105,71 @@ def describe():
         },
         {
             'class': 16,
-            'Description': 'kesalahan kata kerja tak transitif',
-            'salah': 'Dia kata kepada saya',
-            'betul': 'Dia berkata kepada saya',
-        },
-        {
-            'class': 17,
             'Description': 'kesalahan kata kerja transitif',
             'salah': 'Dia suka baca buku',
             'betul': 'Dia suka membaca buku',
         },
         {
-            'class': 18,
+            'class': 17,
             'Description': 'penggunaan kata yang tidak tepat',
             'salah': 'Tembuk Besar negeri Cina dibina oleh Shih Huang Ti.',
             'betul': 'Tembok Besar negeri Cina dibina oleh Shih Huang Ti',
         },
         {
-            'class': 19,
+            'class': 18,
             'Description': 'kesalahan frasa kerja tak transitif',
             'salah': 'berdasarkan pada keterangan ini',
             'betul': 'berdasarkan keterangan ini',
         },
         {
-            'class': 20,
+            'class': 19,
             'Description': 'kesalahan frasa kerja transitif',
             'salah': 'Dia membeli banyak buah',
             'betul': 'Dia banyak membeli buah',
-        },
-        {
-            'class': 21,
-            'Description': 'kesalahan frasa kerja pasif',
-            'salah': 'Surat itu saga akan balas',
-            'betul': 'Surat itu akan saga balas',
         },
     ]
 
     from malaya.function import describe_availability
 
     return describe_availability(d, transpose = False)
+
+
+def available_transformer():
+    """
+    List available transformer models.
+    """
+    from malaya.function import describe_availability
+
+    return describe_availability(
+        _transformer_availability,
+        text = 'tested on 10k kesalahan tatabahasa texts.',
+    )
+
+
+@check_type
+def transformer(model: str = 'base', quantized: bool = False, **kwargs):
+    """
+    Load Malaya transformer encoder-decoder + tagging model to correct a kesalahan tatabahasa text.
+
+    Parameters
+    ----------
+    model : str, optional (default='base')
+        Model architecture supported. Allowed values:
+
+        * ``'small'`` - Malaya Transformer SMALL parameters.
+        * ``'base'`` - Malaya Transformer BASE parameters.
+
+    quantized : bool, optional (default=False)
+        if True, will load 8-bit quantized model. 
+        Quantized model not necessary faster, totally depends on the machine.
+
+    Returns
+    -------
+    result: malaya.model.tf.TATABAHASA class
+    """
+
+    model = model.lower()
+    if model not in _transformer_availability:
+        raise ValueError(
+            'model not supported, please check supported models from `malaya.tatabahasa.available_transformer()`.'
+        )
