@@ -115,18 +115,6 @@ def describe():
             'salah': 'Tembuk Besar negeri Cina dibina oleh Shih Huang Ti.',
             'betul': 'Tembok Besar negeri Cina dibina oleh Shih Huang Ti',
         },
-        {
-            'class': 18,
-            'Description': 'kesalahan frasa kerja tak transitif',
-            'salah': 'berdasarkan pada keterangan ini',
-            'betul': 'berdasarkan keterangan ini',
-        },
-        {
-            'class': 19,
-            'Description': 'kesalahan frasa kerja transitif',
-            'salah': 'Dia membeli banyak buah',
-            'betul': 'Dia banyak membeli buah',
-        },
     ]
 
     from malaya.function import describe_availability
