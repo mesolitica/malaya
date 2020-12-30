@@ -203,6 +203,7 @@ class NORMALIZER:
             `husein.zol05@gmail.com` -> `husein dot zol kosong lima di gmail dot com`.
         normalize_year: bool, (default=True)
             if True, `tahun 1987` -> `tahun sembilan belas lapan puluh tujuh`.
+            if True, `1970-an` -> `sembilan belas tujuh puluh an`.
             if False, `tahun 1987` -> `tahun seribu sembilan ratus lapan puluh tujuh`.
         normalize_telephone: bool, (default=True)
             if True, `no 012-1234567` -> `no kosong satu dua, satu dua tiga empat lima enam tujuh`
@@ -274,7 +275,7 @@ class NORMALIZER:
             else:
                 result_string = ''
 
-            if word.lower() == 'ke' and index < (len(tokenized) - 2):
+            if word_lower == 'ke' and index < (len(tokenized) - 2):
                 if tokenized[index + 1] == '-' and _is_number_regex(
                     tokenized[index + 2]
                 ):
@@ -314,7 +315,7 @@ class NORMALIZER:
                     index += 3
                     continue
 
-            if word.lower() == 'pada' and index < (len(tokenized) - 3):
+            if word_lower == 'pada' and index < (len(tokenized) - 3):
                 if (
                     _is_number_regex(tokenized[index + 1])
                     and tokenized[index + 2] in '/-'
@@ -331,7 +332,7 @@ class NORMALIZER:
                     continue
 
             if (
-                word.lower() in ['tahun', 'thun']
+                word_lower in ['tahun', 'thun']
                 and index < (len(tokenized) - 1)
                 and normalize_year
             ):
@@ -346,8 +347,18 @@ class NORMALIZER:
                         c = f'{l} {r}'
                     else:
                         c = to_cardinal(int(t))
-                    result.append(f'tahun {c}')
-                    index += 2
+                    if (
+                        index < (len(tokenized) - 3)
+                        and tokenized[index + 2] == '-'
+                        and tokenized[index + 3].lower() == 'an'
+                    ):
+                        end = 'an'
+                        plus = 4
+                    else:
+                        end = ''
+                        plus = 2
+                    result.append(f'tahun {c}{end}')
+                    index += plus
                     continue
 
             if _is_number_regex(word) and index < (len(tokenized) - 2):
@@ -359,6 +370,23 @@ class NORMALIZER:
                             word + tokenized[index + 1] + tokenized[index + 2]
                         )
                     )
+                    index += 3
+                    continue
+
+                if (
+                    tokenized[index + 1] == '-'
+                    and tokenized[index + 2].lower() == 'an'
+                    and normalize_year
+                    and len(word) == 4
+                ):
+                    t = word
+                    if t[1] != '0':
+                        l = to_cardinal(int(t[:2]))
+                        r = to_cardinal(int(t[2:]))
+                        c = f'{l} {r}'
+                    else:
+                        c = to_cardinal(int(t))
+                    result.append(f'{c}an')
                     index += 3
                     continue
 
