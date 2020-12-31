@@ -59,6 +59,7 @@ from malaya.text.rules import rules_normalizer
 from malaya.cluster import cluster_words
 from malaya.function import validator
 from herpetologist import check_type
+from logging import warn
 
 
 def normalized_entity(normalized):
@@ -182,6 +183,7 @@ class NORMALIZER:
         normalize_email: bool = False,
         normalize_year: bool = True,
         normalize_telephone: bool = True,
+        logging: bool = False,
     ):
         """
         Normalize a string.
@@ -207,6 +209,8 @@ class NORMALIZER:
             if False, `tahun 1987` -> `tahun seribu sembilan ratus lapan puluh tujuh`.
         normalize_telephone: bool, (default=True)
             if True, `no 012-1234567` -> `no kosong satu dua, satu dua tiga empat lima enam tujuh`
+        logging: bool, (default=False)
+            if True, will log index and token queue using `logging.warn`.
 
         Returns
         -------
@@ -238,22 +242,32 @@ class NORMALIZER:
             word_lower = word.lower()
             word_upper = word.upper()
             first_c = word[0].isupper()
+
+            if logging:
+                s = f'index: {index}, word: {word}, queue: {result}'
+                warn(s)
+
             if word in '~@#$%^&*()_+{}|[:"\'];<>,.?/-':
                 result.append(word)
                 index += 1
                 continue
+
             normalized.append(rules_normalizer.get(word_lower, word_lower))
+
             if word_lower in ignore_words:
                 result.append(word)
                 index += 1
                 continue
+
             if first_c and not len(re.findall(_money, word_lower)):
-                if word_lower in rules_normalizer:
+                if word_lower in rules_normalizer and normalize_text:
                     result.append(case_of(word)(rules_normalizer[word_lower]))
                     index += 1
                     continue
                 elif word_upper not in ['KE', 'PADA', 'RM', 'SEN', 'HINGGA']:
-                    result.append(_normalize_title(word))
+                    result.append(
+                        _normalize_title(word) if normalize_text else word
+                    )
                     index += 1
                     continue
 
@@ -262,13 +276,16 @@ class NORMALIZER:
                     result.append(word)
                     index += 1
                     continue
+
             if word_lower in MALAY_WORDS and word_lower not in ['pada', 'ke']:
                 result.append(word)
                 index += 1
                 continue
+
             if len(word) > 2:
                 if word[-2] in consonants and word[-1] == 'e':
                     word = word[:-1] + 'a'
+
             if word[0] == 'x' and len(word) > 1:
                 result_string = 'tak '
                 word = word[1:]

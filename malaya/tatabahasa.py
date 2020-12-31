@@ -137,7 +137,7 @@ def available_transformer():
 @check_type
 def transformer(model: str = 'base', quantized: bool = False, **kwargs):
     """
-    Load Malaya transformer encoder-decoder + tagging model to correct a kesalahan tatabahasa text.
+    Load Malaya transformer encoder-decoder + tagging model to correct a `kesalahan tatabahasa` text.
 
     Parameters
     ----------
