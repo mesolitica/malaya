@@ -217,10 +217,13 @@ class NORMALIZER:
         string: normalized string
         """
 
+        string = ' '.join(self._tokenizer(string))
         string = groupby(string)
-        string = replace_laugh(string)
-        string = replace_mengeluh(string)
-        string = _replace_compoud(string)
+
+        if normalize_text:
+            string = replace_laugh(string)
+            string = replace_mengeluh(string)
+            string = _replace_compoud(string)
 
         if hasattr(self._speller, 'normalize_elongated'):
             string = [
@@ -228,6 +231,7 @@ class NORMALIZER:
                 if len(re.findall(r'(.)\1{1}', word))
                 and not word[0].isupper()
                 and not word.lower().startswith('ke-')
+                and not _is_number_regex(word)
                 else word
                 for word in string.split()
             ]
