@@ -12,7 +12,7 @@ from malaya.path import PATH_STEM, S3_PATH_STEM
 from herpetologist import check_type
 
 
-def _classification_textcleaning_stemmer(string):
+def _classification_textcleaning_stemmer(string, stemmer):
     string = re.sub(
         'http\S+|www.\S+',
         '',
@@ -24,7 +24,7 @@ def _classification_textcleaning_stemmer(string):
     string = re.sub('[^A-Za-z ]+', ' ', string)
     string = re.sub(r'[ ]+', ' ', string.lower()).strip()
     string = [rules_normalizer.get(w, w) for w in string.split()]
-    string = [(naive(word), word) for word in string]
+    string = [(stemmer.stem(word), word) for word in string]
     return ' '.join([word[0] for word in string if len(word[0]) > 1])
 
 

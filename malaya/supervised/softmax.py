@@ -2,6 +2,7 @@ import json
 import os
 import pickle
 import numpy as np
+from functools import partial
 from malaya.function import check_file, load_graph, generate_session
 from malaya.text.bpe import (
     sentencepiece_tokenizer_bert,
@@ -26,7 +27,10 @@ def multinomial(path, s3_path, class_name, label, **kwargs):
         )
     bpe, subword_mode = load_yttm(path['multinomial']['bpe'])
 
-    from malaya.stem import _classification_textcleaning_stemmer
+    from malaya.stem import _classification_textcleaning_stemmer, naive
+
+    stemmer = naive()
+    cleaning = partial(_classification_textcleaning_stemmer, stemmer = stemmer)
 
     if len(label) > 2:
         selected_class = MULTICLASS_BAYES
@@ -38,7 +42,7 @@ def multinomial(path, s3_path, class_name, label, **kwargs):
         vectorize = vectorize,
         bpe = bpe,
         subword_mode = subword_mode,
-        cleaning = _classification_textcleaning_stemmer,
+        cleaning = cleaning,
     )
 
 

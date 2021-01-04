@@ -41,7 +41,7 @@ class BAYES:
         results = self._classify(strings)
 
         if add_neutral:
-            result = neutral(results)
+            results = neutral(results)
             label = self._label + ['neutral']
         else:
             label = self._label

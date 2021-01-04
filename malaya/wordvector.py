@@ -25,7 +25,8 @@ def load_wiki():
 
     Returns
     -------
-    result: tuple(vocabulary, vector)
+    vocabulary: indices dictionary for `vector`.
+    vector: np.array, 2D.
     """
 
     check_file(PATH_WORDVECTOR['wikipedia'], S3_PATH_WORDVECTOR['wikipedia'])
@@ -41,7 +42,8 @@ def load_news():
 
     Returns
     -------
-    result: tuple(vocabulary, vector)
+    vocabulary: indices dictionary for `vector`.
+    vector: np.array, 2D.
     """
 
     check_file(PATH_WORDVECTOR['news'], S3_PATH_WORDVECTOR['news'])
@@ -57,7 +59,8 @@ def load_social_media():
 
     Returns
     -------
-    result: tuple(vocabulary, vector)
+    vocabulary: indices dictionary for `vector`.
+    vector: np.array, 2D.
     """
 
     check_file(
@@ -76,7 +79,8 @@ def load_wiki_news_social_media():
 
     Returns
     -------
-    result: tuple(vocabulary, vector)
+    vocabulary: indices dictionary for `vector`.
+    vector: np.array, 2D.
     """
 
     check_file(PATH_WORDVECTOR['combine'], S3_PATH_WORDVECTOR['combine'])
@@ -98,7 +102,7 @@ def load(embed_matrix, dictionary: dict):
 
     Returns
     -------
-    result: malaya.wordvector.WORDVECTOR object
+    WORDVECTOR: malaya.wordvector.WORDVECTOR object
     """
 
     return WORDVECTOR(embed_matrix = embed_matrix, dictionary = dictionary)
@@ -127,29 +131,40 @@ class WORDVECTOR:
             self._sess = tf.InteractiveSession()
 
     @check_type
-    def get_vector_by_name(self, word: str):
+    def get_vector_by_name(
+        self, word: str, soft: bool = False, topn_soft: int = 5
+    ):
         """
         get vector based on string.
 
         Parameters
         ----------
         word: str
-
+        soft: bool, (default=True)
+            if True, a word not in the dictionary will be replaced with nearest JaroWinkler ratio.
+            if False, it will throw an exception if a word not in the dictionary.
+        topn_soft: int, (default=5)
+            if word not found in dictionary, will returned `topn_soft` size of similar size using jarowinkler.
+        
         Returns
         -------
-        vector: numpy
+        vector: np.array, 1D
         """
 
         if word not in self._dictionary:
             arr = np.array(
                 [self._jarowinkler.similarity(word, k) for k in self.words]
             )
-            idx = (-arr).argsort()[:5]
-            strings = ', '.join([self.words[i] for i in idx])
-            raise Exception(
-                'input not found in dictionary, here top-5 nearest words [%s]'
-                % (strings)
-            )
+            idx = (-arr).argsort()[:topn_soft]
+            words = [self.words[i] for i in idx]
+            if soft:
+                return words
+            else:
+                strings = ', '.join(words)
+                raise Exception(
+                    'input not found in dictionary, here top-5 nearest words [%s]'
+                    % (strings)
+                )
         return self._embed_matrix[self._dictionary[word]]
 
     @check_type
@@ -170,7 +185,8 @@ class WORDVECTOR:
 
         Returns
         -------
-        results: [embed, labelled]
+        embed: np.array, 2D.
+        labelled: labels for X / Y axis.
         """
 
         try:
@@ -239,7 +255,7 @@ class WORDVECTOR:
 
         Returns
         -------
-        list_dictionaries: list of results
+        tsne: np.array, 2D.
         """
 
         try:
@@ -573,7 +589,7 @@ class WORDVECTOR:
 
         Returns
         -------
-        word_list: list of nearest words
+        word_list: list of nearest words.
         """
         if a not in self._dictionary:
             raise Exception('a not in dictinary')
@@ -603,7 +619,8 @@ class WORDVECTOR:
 
         Returns
         -------
-        tsne decomposition: numpy
+        embed_2d: TSNE decomposition
+        word_list: words in between `start` and `end`.
         """
         tsne = TSNE(n_components = 2)
         embed_2d = tsne.fit_transform(self._embed_matrix[start:end, :])
@@ -649,7 +666,7 @@ class WORDVECTOR:
 
         Returns
         -------
-        g: networkx graph object
+        G: networkx graph object
         """
 
         try:
