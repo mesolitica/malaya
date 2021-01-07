@@ -144,8 +144,8 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
     model : str, optional (default='base')
         Model architecture supported. Allowed values:
 
-        * ``'small'`` - Malaya Transformer SMALL parameters.
-        * ``'base'`` - Malaya Transformer BASE parameters.
+        * ``'small'`` - Malaya Transformer Tag SMALL parameters.
+        * ``'base'`` - Malaya Transformer Tag BASE parameters.
 
     quantized : bool, optional (default=False)
         if True, will load 8-bit quantized model. 
