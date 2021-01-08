@@ -81,12 +81,14 @@ hparams = create_hparams(HPARAMS)
 hparams.batch_size = batch_size
 hparams.learning_rate = ALPHA
 hparams.max_length = 512
+hparams.shared_embedding = True
+hparams.shared_embedding_and_softmax_weights = True
 
 RUN_CONFIG = create_run_config(
     model_dir = TRAIN_DIR,
     model_name = MODEL,
     save_checkpoints_steps = save_checkpoints_steps,
-    num_gpus = 3,
+    num_gpus = 1,
 )
 
 tensorflow_exp_fn = create_experiment(

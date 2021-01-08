@@ -44,16 +44,16 @@ class Attention(object):
             )
 
         self._q_layer = tf.layers.Dense(
-            hidden_size, use_bias = False, name = 'q_proj'
+            hidden_size, use_bias = False, name = 'query'
         )
         self._k_layer = tf.layers.Dense(
-            hidden_size, use_bias = False, name = 'k_proj'
+            hidden_size, use_bias = False, name = 'key'
         )
         self._v_layer = tf.layers.Dense(
-            hidden_size, use_bias = False, name = 'v_proj'
+            hidden_size, use_bias = False, name = 'value'
         )
         self._output_layer = tf.layers.Dense(
-            hidden_size, use_bias = False, name = 'output_proj'
+            hidden_size, use_bias = False, name = 'output/dense'
         )
         self._num_heads = num_heads
         self._hidden_size = hidden_size

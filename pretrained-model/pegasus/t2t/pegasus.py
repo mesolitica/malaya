@@ -297,7 +297,6 @@ class Pegasus(t2t_model.T2TModel):
         decoder_input, decoder_self_attention_bias = self._prepare_decoder_fn(
             targets, hparams, features = features
         )
-        print('encoder_output', encoder_output)
 
         target_modality = self._problem_hparams.modality['targets']
         target_vocab_size = self._problem_hparams.vocab_size['targets']
@@ -315,8 +314,6 @@ class Pegasus(t2t_model.T2TModel):
             encoder_output_ = top(
                 encoder_output, None, hparams, target_vocab_size
             )
-
-        print('encoder_output', encoder_output, encoder_output_)
 
         # Not all subclasses of Transformer support keyword arguments related to
         # recurrent memory, so only pass these arguments if memory is enabled.
@@ -350,7 +347,6 @@ class Pegasus(t2t_model.T2TModel):
             losses = losses,
             **decode_kwargs
         )
-        print('decoder_output', decoder_output)
         expected_attentions = features.get('expected_attentions')
         if expected_attentions is not None:
             attention_loss = common_attention.encoder_decoder_attention_loss(
@@ -362,7 +358,6 @@ class Pegasus(t2t_model.T2TModel):
             return decoder_output, {'attention_loss': attention_loss}
 
         ret = tf.reshape(decoder_output, targets_shape)
-        print(losses)
         if losses:
             return ret, {'extra_loss': tf.add_n(losses)}
         else:

@@ -67,7 +67,7 @@ class TransformerBlock(object):
         decode_i = None,
     ):
         s_BxIxD = inputs_BxIxD
-        with tf.variable_scope('self_attention'):
+        with tf.variable_scope('attention/self'):
             y_BxIxD = contrib_layers.layer_norm(s_BxIxD, begin_norm_axis = 2)
             y_BxIxD = self._self_attn_layer(
                 y_BxIxD,

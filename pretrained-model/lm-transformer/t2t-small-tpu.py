@@ -61,7 +61,7 @@ class Seq2Seq(text_problems.Text2TextProblem):
 
 
 DATA_DIR = 'gs://mesolitica-tpu-general/t2t/data'
-TRAIN_DIR = 'gs://mesolitica-tpu-general/t2t-small'
+TRAIN_DIR = 'gs://mesolitica-tpu-general/t2t-small-v2'
 
 PROBLEM = 'seq2_seq'
 t2t_problem = problems.problem(PROBLEM)
@@ -96,11 +96,12 @@ hparams.max_length = 1024
 
 # LM
 hparams.label_smoothing = 0.0
-hparams.shared_embedding_and_softmax_weights = False
 hparams.eval_drop_long_sequences = True
 hparams.max_length = 1024
 hparams.multiproblem_mixing_schedule = 'pretrain'
 hparams.use_fixed_batch_size = True
+hparams.shared_embedding = True
+hparams.shared_embedding_and_softmax_weights = True
 
 # tpu
 hparams.symbol_modality_num_shards = 1
@@ -119,7 +120,7 @@ RUN_CONFIG = create_run_config(
     model_name = MODEL,
     save_checkpoints_steps = save_checkpoints_steps,
     use_tpu = True,
-    cloud_tpu_name = 'node-6',
+    cloud_tpu_name = 'node-2',
     iterations_per_loop = 100,
     schedule = 'train',
 )

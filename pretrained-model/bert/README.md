@@ -96,25 +96,6 @@ python3 run_pretraining.py \
   --use_tpu=True
 ```
 
-```bash
-python3 run_pretraining.py \
-  --input_file=gs://mesolitica-tpu-general/bert-data/*.tfrecord \
-  --output_dir=gs://mesolitica-tpu-general/bert-base \
-  --do_train=True \
-  --do_eval=False \
-  --bert_config_file=gs://mesolitica-tpu-general/bert-config/BASE_config.json \
-  --train_batch_size=512 \
-  --max_seq_length=128 \
-  --max_predictions_per_seq=20 \
-  --num_train_steps=1000000 \
-  --learning_rate=2e-5 \
-  --iterations_per_loop=100 \
-  --tpu_name=node-3 \
-  --tpu_zone=europe-west4-a \
-  --save_checkpoints_steps=25000 \
-  --use_tpu=True
-```
-
 **TPU LARGE**,
 
 ```bash
