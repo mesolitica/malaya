@@ -50,27 +50,24 @@ class Seq2Seq(text_problems.Text2TextProblem):
 
     @property
     def dataset_splits(self):
-        return [
-            {'split': problem.DatasetSplit.TRAIN, 'shards': 100},
-            {'split': problem.DatasetSplit.EVAL, 'shards': 1},
-        ]
+        return [{'split': problem.DatasetSplit.TRAIN, 'shards': 100}]
 
     def feature_encoders(self, data_dir):
         encoder = Encoder(sp)
         return {'inputs': encoder, 'targets': encoder}
 
 
-DATA_DIR = 'gs://mesolitica-tpu-general/t2t/data'
-TRAIN_DIR = 'gs://mesolitica-tpu-general/t2t-small'
+DATA_DIR = 'gs://mesolitica-tpu-general/t2t-paraphrase/data'
+TRAIN_DIR = 'gs://mesolitica-tpu-general/t2t-parahrase-small'
 
 PROBLEM = 'seq2_seq'
 t2t_problem = problems.problem(PROBLEM)
 
-train_steps = 500000
+train_steps = 50000
 eval_steps = 10
 batch_size = 32
 save_checkpoints_steps = 25000
-ALPHA = 0.003
+ALPHA = 0.0005
 schedule = 'continuous_train_and_eval'
 MODEL = 'transformer'
 HPARAMS = 'transformer_base'
@@ -112,6 +109,13 @@ hparams.optimizer = 'Adafactor'
 hparams.learning_rate_warmup_steps = 10000
 hparams.learning_rate_schedule = 'rsqrt_decay'
 
+# hparams.warm_start_from = (
+#     'gs://mesolitica-tpu-general/t2t-small/model.ckpt-500000'
+# )
+hparams.warm_start_from_second = (
+    'gs://mesolitica-tpu-general/t2t-small/model.ckpt-500000'
+)
+
 print(hparams)
 
 RUN_CONFIG = create_run_config(
@@ -119,7 +123,7 @@ RUN_CONFIG = create_run_config(
     model_name = MODEL,
     save_checkpoints_steps = save_checkpoints_steps,
     use_tpu = True,
-    cloud_tpu_name = 'node-6',
+    cloud_tpu_name = 'node-2',
     iterations_per_loop = 100,
     schedule = 'train',
 )
@@ -135,6 +139,7 @@ tensorflow_exp_fn = create_experiment(
     use_tpu = True,
     use_tpu_estimator = False,
     schedule = 'train',
+    warm_start_from = 'gs://mesolitica-tpu-general/t2t-small/model.ckpt-500000'
     # use_xla=True # For acceleration
 )
 

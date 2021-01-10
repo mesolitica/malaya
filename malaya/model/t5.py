@@ -52,7 +52,7 @@ class SUMMARIZATION(T5):
         return summary
 
     @check_type
-    def summarize(
+    def greedy_decoder(
         self,
         string: str,
         mode: str = 'ringkasan',
@@ -60,7 +60,7 @@ class SUMMARIZATION(T5):
         **kwargs,
     ):
         """
-        Summarize a string. Decoder is beam decoder with beam width size 1, alpha 0.5 .
+        Summarize a string. Decoder is greedy decoder with beam width size 1, alpha 0.5 .
 
         Parameters
         ----------
@@ -91,9 +91,10 @@ class GENERATOR(T5):
         T5.__init__(self, X = X, decode = decode, sess = sess, pred = pred)
 
     @check_type
-    def generate(self, strings: List[str]):
+    def greedy_decoder(self, strings: List[str]):
         """
-        generate a long text given a isi penting. Decoder is beam decoder with beam width size 1, alpha 0.5 .
+        generate a long text given a isi penting. 
+        Decoder is greedy decoder with beam width size 1, alpha 0.5 .
 
         Parameters
         ----------
@@ -123,9 +124,9 @@ class PARAPHRASE(T5):
         return upperfirst(self._predict(string))
 
     @check_type
-    def paraphrase(self, string: str, split_fullstop: bool = True):
+    def greedy_decoder(self, string: str, split_fullstop: bool = True):
         """
-        paraphrase a string. Decoder is beam decoder with beam width size 1, alpha 0.5 .
+        paraphrase a string. Decoder is greedy decoder with beam width size 1, alpha 0.5 .
 
         Parameters
         ----------

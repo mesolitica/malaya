@@ -420,18 +420,15 @@ class SUMMARIZATION:
 
         return results
 
-    @check_type
-    def summarize(
+    def greedy_decoder(
         self,
         strings: List[str],
         mode: str = 'ringkasan',
-        decoder: str = 'greedy',
-        top_p: float = 0.7,
         postprocess: bool = True,
         **kwargs,
     ):
         """
-        Summarize strings.
+        Summarize strings using greedy decoder.
 
         Parameters
         ----------
@@ -441,15 +438,6 @@ class SUMMARIZATION:
 
             * ``'ringkasan'`` - summarization for long sentence, eg, news summarization.
             * ``'tajuk'`` - title summarization for long sentence, eg, news title.
-        decoder: str
-            mode for summarization decoder. Allowed values:
-
-            * ``'greedy'`` - Beam width size 1, alpha 0.
-            * ``'beam'`` - Beam width size 3, alpha 0.5 .
-            * ``'nucleus'`` - Beam width size 1, with nucleus sampling.
-        top_p: float, (default=0.7)
-            cumulative distribution and cut off as soon as the CDF exceeds `top_p`.
-            this is only useful if use `nucleus` decoder.
         postprocess: bool, optional (default=True)
             If True, will filter sentence generated using ROUGE score and removed international news publisher.
 
@@ -457,11 +445,81 @@ class SUMMARIZATION:
         -------
         result: List[str]
         """
-
         return self._summarize(
             strings = strings,
             mode = mode,
-            decoder = decoder,
+            decoder = 'greedy',
+            top_p = 0.7,
+            postprocess = postprocess,
+            **kwargs,
+        )
+
+    def beam_decoder(
+        self,
+        strings: List[str],
+        mode: str = 'ringkasan',
+        postprocess: bool = True,
+        **kwargs,
+    ):
+        """
+        Summarize strings using beam decoder, beam width size 3, alpha 0.5 .
+
+        Parameters
+        ----------
+        strings: List[str]
+        mode: str
+            mode for summarization. Allowed values:
+
+            * ``'ringkasan'`` - summarization for long sentence, eg, news summarization.
+            * ``'tajuk'`` - title summarization for long sentence, eg, news title.
+        postprocess: bool, optional (default=True)
+            If True, will filter sentence generated using ROUGE score and removed international news publisher.
+
+        Returns
+        -------
+        result: List[str]
+        """
+        return self._summarize(
+            strings = strings,
+            mode = mode,
+            decoder = 'beam',
+            top_p = 0.7,
+            postprocess = postprocess,
+            **kwargs,
+        )
+
+    def nucleus_decoder(
+        self,
+        strings: List[str],
+        mode: str = 'ringkasan',
+        top_p: float = 0.7,
+        postprocess: bool = True,
+        **kwargs,
+    ):
+        """
+        Summarize strings using nucleus sampling.
+
+        Parameters
+        ----------
+        strings: List[str]
+        mode: str
+            mode for summarization. Allowed values:
+
+            * ``'ringkasan'`` - summarization for long sentence, eg, news summarization.
+            * ``'tajuk'`` - title summarization for long sentence, eg, news title.
+        top_p: float, (default=0.7)
+            cumulative distribution and cut off as soon as the CDF exceeds `top_p`.
+        postprocess: bool, optional (default=True)
+            If True, will filter sentence generated using ROUGE score and removed international news publisher.
+
+        Returns
+        -------
+        result: List[str]
+        """
+        return self._summarize(
+            strings = strings,
+            mode = mode,
+            decoder = 'nucleus',
             top_p = top_p,
             postprocess = postprocess,
             **kwargs,
@@ -506,39 +564,58 @@ class PARAPHRASE:
         results = [self._tokenizer.decode(r) for r in p]
         return results
 
-    @check_type
-    def paraphrase(
-        self, strings: List[str], decoder: str = 'greedy', top_p: float = 0.7
-    ):
+    def greedy_decoder(self, strings: List[str], **kwargs):
         """
-        Paraphrase strings.
+        Paraphrase strings using greedy decoder.
 
         Parameters
         ----------
         strings: List[str]
 
-        decoder: str
-            mode for summarization decoder. Allowed values:
+        Returns
+        -------
+        result: List[str]
+        """
+        return self._paraphrase(
+            strings = strings, decoder = 'greedy', top_p = 0.7, **kwargs
+        )
 
-            * ``'greedy'`` - Beam width size 1, alpha 0.
-            * ``'beam'`` - Beam width size 3, alpha 0.5 .
-            * ``'nucleus'`` - Beam width size 1, with nucleus sampling.
+    def beam_decoder(self, strings: List[str], **kwargs):
+        """
+        Paraphrase strings using beam decoder, beam width size 3, alpha 0.5 .
 
-        top_p: float, (default=0.7)
-            cumulative distribution and cut off as soon as the CDF exceeds `top_p`.
-            this is only useful if use `nucleus` decoder.
+        Parameters
+        ----------
+        strings: List[str]
 
         Returns
         -------
         result: List[str]
         """
-
         return self._paraphrase(
-            strings = strings, decoder = decoder, top_p = top_p
+            strings = strings, decoder = 'beam', top_p = 0.7, **kwargs
+        )
+
+    def nucleus_decoder(self, strings: List[str], top_p: float = 0.7, **kwargs):
+        """
+        Paraphrase strings using nucleus sampling.
+
+        Parameters
+        ----------
+        strings: List[str]
+        top_p: float, (default=0.7)
+            cumulative distribution and cut off as soon as the CDF exceeds `top_p`.
+
+        Returns
+        -------
+        result: List[str]
+        """
+        return self._paraphrase(
+            strings = strings, decoder = 'nucleus', top_p = top_p, **kwargs
         )
 
 
-class TRUE_CASE:
+class T2T:
     def __init__(self, X, greedy, beam, sess, encoder):
 
         self._X = X
@@ -547,7 +624,7 @@ class TRUE_CASE:
         self._sess = sess
         self._encoder = encoder
 
-    def _true_case(self, strings, beam_search = True):
+    def _predict(self, strings, beam_search = True):
         encoded = self._encoder.encode(strings)
         if beam_search:
             output = self._beam
@@ -558,59 +635,134 @@ class TRUE_CASE:
         result = self._encoder.decode(p)
         return result
 
+    def _greedy_decoder(self, strings: List[str]):
+        return self._predict(strings, beam_search = False)
+
+    def _beam_decoder(self, strings: List[str]):
+        return self._predict(strings, beam_search = True)
+
+
+class TRUE_CASE(T2T):
+    def __init__(self, X, greedy, beam, sess, encoder):
+        T2T.__init__(
+            self,
+            X = X,
+            greedy = greedy,
+            beam = beam,
+            sess = sess,
+            encoder = encoder,
+        )
+
     @check_type
-    def true_case(self, strings: List[str], beam_search: bool = True):
+    def greedy_decoder(self, strings: List[str]):
         """
-        True case strings.
+        True case strings using greedy decoder.
         Example, "saya nak makan di us makanan di sana sedap" -> "Saya nak makan di US, makanan di sana sedap."
 
         Parameters
         ----------
         strings : List[str]
-        beam_search : bool, (optional=True)
-            If True, use beam search decoder, else use greedy decoder.
 
         Returns
         -------
         result: List[str]
         """
-        return self._true_case(strings, beam_search = beam_search)
-
-
-class SEGMENTATION:
-    def __init__(self, X, greedy, beam, sess, encoder):
-
-        self._X = X
-        self._greedy = greedy
-        self._beam = beam
-        self._sess = sess
-        self._encoder = encoder
-
-    def _segmentize(self, strings, beam_search = True):
-        encoded = self._encoder.encode(strings)
-        if beam_search:
-            output = self._beam
-        else:
-            output = self._greedy
-        batch_x = pad_sentence_batch(encoded, 0)[0]
-        p = self._sess.run(output, feed_dict = {self._X: batch_x}).tolist()
-        result = self._encoder.decode(p)
-        return result
+        return self._greedy_decoder(strings)
 
     @check_type
-    def segment(self, strings: List[str], beam_search: bool = True):
+    def beam_decoder(self, strings: List[str]):
         """
-        Segment strings.
+        True case strings using beam decoder, beam width size 3, alpha 0.5 .
+        Example, "saya nak makan di us makanan di sana sedap" -> "Saya nak makan di US, makanan di sana sedap."
+
+        Parameters
+        ----------
+        strings : List[str]
+
+        Returns
+        -------
+        result: List[str]
+        """
+        return self._beam_decoder(strings)
+
+
+class SEGMENTATION(T2T):
+    def __init__(self, X, greedy, beam, sess, encoder):
+        T2T.__init__(
+            self,
+            X = X,
+            greedy = greedy,
+            beam = beam,
+            sess = sess,
+            encoder = encoder,
+        )
+
+    @check_type
+    def greedy_decoder(self, strings: List[str]):
+        """
+        Segment strings using greedy decoder.
         Example, "sayasygkan negarasaya" -> "saya sygkan negara saya"
 
         Parameters
         ----------
         strings : List[str]
-        beam_search : bool, (optional=True)
-            If True, use beam search decoder, else use greedy decoder.
 
         Returns
         -------
         result: List[str]
         """
-        return self._segmentize(strings, beam_search = beam_search)
+        return self._greedy_decoder(strings)
+
+    @check_type
+    def beam_decoder(self, strings: List[str]):
+        """
+        Segment strings using beam decoder, beam width size 3, alpha 0.5 .
+        Example, "sayasygkan negarasaya" -> "saya sygkan negara saya"
+
+        Parameters
+        ----------
+        strings : List[str]
+
+        Returns
+        -------
+        result: List[str]
+        """
+        return self._beam_decoder(strings)
+
+
+class TATABAHASA(T2T):
+    def __init__(self, X, greedy, tag_greedy, sess, tokenizer):
+        self._X = X
+        self._greedy = greedy
+        self._tag_greedy = tag_greedy
+        self._sess = sess
+        self._tokenizer = tokenizer
+
+    def _predict(self, strings):
+        batch_x = [self._tokenizer.encode(string) + [1] for string in strings]
+        batch_x = padding_sequence(batch_x)
+        p, tag = self._sess.run(
+            [self._greedy, self._tag_greedy], feed_dict = {self._X: batch_x}
+        )
+        results = []
+        nonzero = (p != 0).sum(axis = -1)
+        for i in range(len(p)):
+            r = self._tokenizer.decode(p[i, : nonzero[i]])
+            t = tag[i, : nonzero[i]]
+            results.append((r, t))
+        return results
+
+    @check_type
+    def greedy_decoder(self, strings: List[str]):
+        """
+        Fix kesalahan tatatabahasa.
+
+        Parameters
+        ----------
+        strings : List[str]
+
+        Returns
+        -------
+        result: List[str]
+        """
+        return self._greedy_decoder(strings)

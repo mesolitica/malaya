@@ -24,19 +24,19 @@ _t5_availability = {
 }
 
 _transformer_availability = {
-    'base': {
-        'Size (MB)': 832,
-        'Quantized Size (MB)': 279,
-        'ROUGE-1': 0.31863,
-        'ROUGE-2': 0.12150,
-        'ROUGE-L': 0.22023,
-    },
     'small': {
         'Size (MB)': 379,
         'Quantized Size (MB)': 120,
-        'ROUGE-1': 0.32215,
-        'ROUGE-2': 0.12741,
-        'ROUGE-L': 0.23528,
+        'ROUGE-1': 0.33,
+        'ROUGE-2': 0.13417,
+        'ROUGE-L': 0.23059,
+    },
+    'base': {
+        'Size (MB)': 832,
+        'Quantized Size (MB)': 279,
+        'ROUGE-1': 0.33209,
+        'ROUGE-2': 0.13622,
+        'ROUGE-L': 0.23348,
     },
 }
 

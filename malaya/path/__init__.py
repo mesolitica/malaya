@@ -798,7 +798,7 @@ PATH_SEGMENTATION = {
         'model': home + '/segmentation/base.pb',
         'quantized': home + '/segmentation/quantized/base.pb',
         'vocab': home + '/segmentation/vocab.yttm',
-        'version': 'v40',
+        'version': 'v41',
     },
     'small': {
         'model': home + '/segmentation/small.pb',
@@ -809,8 +809,8 @@ PATH_SEGMENTATION = {
 }
 S3_PATH_SEGMENTATION = {
     'base': {
-        'model': 'v40/segmentation/base.pb',
-        'quantized': 'v40/segmentation/base.pb.quantized',
+        'model': 'v41/segmentation/base.pb',
+        'quantized': 'v41/segmentation/base.pb.quantized',
         'vocab': 'tokenizer/segmentation.yttm',
     },
     'small': {

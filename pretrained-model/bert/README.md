@@ -25,13 +25,25 @@ Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://w
 
 1. Run [build-wordpiece.ipynb](build-wordpiece.ipynb).
 
-2. Create pretraining dataset,
+2. Split text file to multiple text files,
+
+```bash
+mkdir splitted
+cd splitted
+split -l 300000 -d --additional-suffix=.txt ../dumping-instagram.txt splitted-instagram
+split -l 300000 -d --additional-suffix=.txt ../dumping-twitter.txt splitted-twitter
+split -l 300000 -d --additional-suffix=.txt ../filtered-dumping-wiki.txt splitted-wiki
+split -l 300000 -d --additional-suffix=.txt ../dumping-cleaned-news.txt splitted-news
+split -l 300000 -d --additional-suffix=.txt ../filtered-dumping-academia.txt splitted-academia
+```
+
+3. Create pretraining dataset,
 
 ```bash
 python3 create-pretraining-data.py
 ```
 
-3. Execute pretraining,
+4. Execute pretraining,
 
 ```bash
 python3 multigpu_pretraining.py \

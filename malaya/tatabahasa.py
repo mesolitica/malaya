@@ -1,8 +1,18 @@
 from herpetologist import check_type
 
 _transformer_availability = {
-    'small': {'Size (MB)': 379, 'Quantized Size (MB)': 120, 'BLEU': 0.5534},
-    'base': {'Size (MB)': 832, 'Quantized Size (MB)': 279, 'BLEU': 0.597},
+    'small': {
+        'Size (MB)': 379,
+        'Quantized Size (MB)': 120,
+        'Sequence Accuracy': 0.347,
+        'Sequence Tagging Accuracy': 0,
+    },
+    'base': {
+        'Size (MB)': 832,
+        'Quantized Size (MB)': 279,
+        'Sequence Accuracy': 0.347,
+        'Sequence Tagging Accuracy': 0,
+    },
 }
 
 

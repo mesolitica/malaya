@@ -23,92 +23,53 @@ Only **Python 3.6.x and above** and **Tensorflow 1.10 and above but not 2.0** ar
 Features
 --------
 
--  **Augmentation**
-
-   Augment any text using dictionary of synonym, Wordvector or Transformer-Bahasa.
--  **Constituency Parsing**
-
-   Transfer learning on BERT-base-bahasa, Tiny-BERT-bahasa, Albert-base-bahasa, Albert-tiny-bahasa, XLNET-base-bahasa.  
--  **Dependency Parsing**
-
-   Transfer learning on BERT-base-bahasa, Tiny-BERT-bahasa, Albert-base-bahasa, Albert-tiny-bahasa, XLNET-base-bahasa, ALXLNET-base-bahasa.
--  **Emotion Analysis**
-
-   Transfer learning on BERT-base-bahasa, Tiny-BERT-bahasa, Albert-base-bahasa, Albert-tiny-bahasa, XLNET-base-bahasa, ALXLNET-base-bahasa.
--  **Entities Recognition**
-
-   Transfer learning on BERT-base-bahasa, Tiny-BERT-bahasa, Albert-base-bahasa, Albert-tiny-bahasa, XLNET-base-bahasa, ALXLNET-base-bahasa.
--  **Generator**
-
-   Generate any texts given a context using T5-Bahasa, GPT2-Bahasa or Transformer-Bahasa.
--  **Keyword Extraction**
-
-   Provide RAKE, TextRank and Attention Mechanism hybrid with Transformer-Bahasa.
--  **Language Detection**
-
-   using Fast-text and Sparse Deep learning Model to classify Malay (formal and social media), Indonesia (formal and social media), Rojak language and Manglish.
--  **Normalizer**
-
-   using local Malaysia NLP researches hybrid with Transformer-Bahasa to normalize any bahasa texts.
--  **Num2Word**
-
-   Convert from numbers to cardinal or ordinal representation.
--  **Paraphrase**
-
-   Provide Abstractive Paraphrase using T5-Bahasa and Transformer-Bahasa.
--  **Part-of-Speech Recognition**
-
-   Transfer learning on BERT-base-bahasa, Tiny-BERT-bahasa, Albert-base-bahasa, Albert-tiny-bahasa, XLNET-base-bahasa, ALXLNET-base-bahasa.
--  **Relevancy Analysis**
-
-   Transfer learning on BERT-base-bahasa, Tiny-BERT-bahasa, Albert-base-bahasa, Albert-tiny-bahasa, XLNET-base-bahasa, ALXLNET-base-bahasa.
--  **Sentiment Analysis**
-
-   Transfer learning on BERT-base-bahasa, Tiny-BERT-bahasa, Albert-base-bahasa, Albert-tiny-bahasa, XLNET-base-bahasa, ALXLNET-base-bahasa.
--  **Similarity**
-
-   Using deep Encoder, Doc2Vec, BERT-base-bahasa, Tiny-BERT-bahasa, Albert-base-bahasa, Albert-tiny-bahasa, XLNET-base-bahasa and ALXLNET-base-bahasa to build deep semantic similarity models.
--  **Spell Correction**
-
-   Using local Malaysia NLP researches hybrid with Transformer-Bahasa to auto-correct any bahasa words.
--  **Stemmer**
-
-   Using BPE LSTM Seq2Seq with attention state-of-art to do Bahasa stemming.
--  **Subjectivity Analysis**
-
-   Transfer learning on BERT-base-bahasa, Tiny-BERT-bahasa, Albert-base-bahasa, Albert-tiny-bahasa, XLNET-base-bahasa, ALXLNET-base-bahasa.
--  **Summarization**
-
-   Provide Abstractive T5-Bahasa also Extractive interface using Transformer-Bahasa, skip-thought, LDA, LSA and Doc2Vec.
--  **Topic Modelling**
-
-   Provide Transformer-Bahasa, LDA2Vec, LDA, NMF and LSA interface for easy topic modelling with topics visualization.
--  **Toxicity Analysis**
-
-   Transfer learning on BERT-base-bahasa, Tiny-BERT-bahasa, Albert-base-bahasa, Albert-tiny-bahasa, XLNET-base-bahasa, ALXLNET-base-bahasa.
--  **Transformer**
-
-   Provide easy interface to load BERT-base-bahasa, Tiny-BERT-bahasa, Albert-base-bahasa, Albert-tiny-bahasa, XLNET-base-bahasa, ALXLNET-base-bahasa, ELECTRA-base-bahasa and ELECTRA-small-bahasa.
--  **Translation**
-
-   provide Neural Machine Translation using Transformer for EN to MS and MS to EN.
--  **Word2Num**
-
-   Convert from cardinal or ordinal representation to numbers.
--  **Word2Vec**
-
-   Provide pretrained bahasa wikipedia and bahasa news Word2Vec, with easy interface and visualization.
--  **Zero-shot classification**
-
-   Provide Zero-shot classification interface using Transformer-Bahasa to recognize texts without any labeled training data.
--  **Hybrid 8-bit Quantization**
-
-   Provide hybrid 8-bit quantization for all models to reduce inference time up to 2x and model size up to 4x.
+-  **Augmentation**, augment any text using dictionary of synonym, Wordvector or Transformer-Bahasa.
+-  **Constituency Parsing**, breaking a text into sub-phrases using finetuned Transformer-Bahasa.  
+-  **Dependency Parsing**, extracting a dependency parse of a sentence using finetuned Transformer-Bahasa.
+-  **Emotion Analysis**, detect and recognize 6 different emotions of texts using finetuned Transformer-Bahasa.
+-  **Entities Recognition**, seeks to locate and classify named entities mentioned in text using finetuned Transformer-Bahasa.
+-  **Generator**, generate any texts given a context using T5-Bahasa, GPT2-Bahasa or Transformer-Bahasa.
+-  **Keyword Extraction**, provide RAKE, TextRank and Attention Mechanism hybrid with Transformer-Bahasa.
+-  **Language Detection**, using Fast-text and Sparse Deep learning Model to classify Malay (formal and social media), Indonesia (formal and social media), Rojak language and Manglish.
+-  **Normalizer**, using local Malaysia NLP researches hybrid with Transformer-Bahasa to normalize any bahasa texts.
+-  **Num2Word**, convert from numbers to cardinal or ordinal representation.
+-  **Paraphrase**, provide Abstractive Paraphrase using T5-Bahasa and Transformer-Bahasa.
+-  **Part-of-Speech Recognition**, grammatical tagging is the process of marking up a word in a text using finetuned Transformer-Bahasa.
+-  **Relevancy Analysis**, detect and recognize relevancy of texts using finetuned Transformer-Bahasa.
+-  **Sentiment Analysis**, detect and recognize polarity of texts using finetuned Transformer-Bahasa.
+-  **Text Similarity**, provide interface for lexical similarity deep semantic similarity using finetuned Transformer-Bahasa.
+-  **Spell Correction**, using local Malaysia NLP researches hybrid with Transformer-Bahasa to auto-correct any bahasa words.
+-  **Stemmer**, using BPE LSTM Seq2Seq with attention state-of-art to do Bahasa stemming.
+-  **Subjectivity Analysis**, detect and recognize self-opinion polarity of texts using finetuned Transformer-Bahasa.
+-  **Kesalahan Tatabahasa**, Fix kesalahan tatabahasa using TransformerTag-Bahasa.
+-  **Summarization**, provide Abstractive T5-Bahasa also Extractive interface using Transformer-Bahasa, skip-thought and Doc2Vec.
+-  **Topic Modelling**, provide Transformer-Bahasa, LDA2Vec, LDA, NMF and LSA interface for easy topic modelling with topics visualization.
+-  **Toxicity Analysis**, detect and recognize 6 different 27 toxicity patterns of texts using finetuned Transformer-Bahasa.
+-  **Transformer**, provide easy interface to load Pretrained Language models Malaya.
+-  **Translation**, provide Neural Machine Translation using Transformer for EN to MS and MS to EN.
+-  **Word2Num**, convert from cardinal or ordinal representation to numbers.
+-  **Word2Vec**, provide pretrained bahasa wikipedia and bahasa news Word2Vec, with easy interface and visualization.
+-  **Zero-shot classification**, provide Zero-shot classification interface using Transformer-Bahasa to recognize texts without any labeled training data.
+-  **Hybrid 8-bit Quantization**, provide hybrid 8-bit quantization for all models to reduce inference time up to 2x and model size up to 4x.
 
 Pretrained Models
 ------------------
 
 Malaya also released Bahasa pretrained models, simply check at `Malaya/pretrained-model <https://github.com/huseinzol05/Malaya/tree/master/pretrained-model>`_
+
+- **ALBERT**, a Lite BERT for Self-supervised Learning of Language Representations, https://arxiv.org/abs/1909.11942
+- **ALXLNET**, a Lite XLNET, no paper produced.
+- **BERT**, Pre-training of Deep Bidirectional Transformers for Language Understanding, https://arxiv.org/abs/1810.04805
+- **BigBird**, Transformers for Longer Sequences, https://arxiv.org/abs/2007.14062
+- **ELECTRA**, Pre-training Text Encoders as Discriminators Rather Than Generators, https://arxiv.org/abs/2003.10555
+- **GPT2**, Language Models are Unsupervised Multitask Learners, https://github.com/openai/gpt-2
+- **LM-Transformer**, Exactly like T5, but use Tensor2Tensor instead Mesh Tensorflow with little tweak, no paper produced.
+- **PEGASUS**, Pre-training with Extracted Gap-sentences for Abstractive Summarization, https://arxiv.org/abs/1912.08777
+- **SMITH**, Siamese Multi-depth Transformer-based Hierarchical Encoder, https://research.google/pubs/pub49617/
+- **T5**, Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer, https://arxiv.org/abs/1910.10683
+- **TinyBERT**, Distilling BERT for Natural Language Understanding, https://arxiv.org/abs/1909.10351
+- **Word2Vec**, Efficient Estimation of Word Representations in Vector Space, https://arxiv.org/abs/1301.3781
+- **XLNET**, Generalized Autoregressive Pretraining for Language Understanding, https://arxiv.org/abs/1906.08237
 
 Or can try use huggingface 🤗 Transformers library, https://huggingface.co/models?filter=ms
 

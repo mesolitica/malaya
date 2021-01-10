@@ -25,12 +25,12 @@ and targets ids.
 # pylint: disable=invalid-name
 # pylint: disable=g-long-lambda
 
-from layers import attention
-from layers import decoding
-from layers import embedding
-from layers import timing
-from layers import transformer_block
-import base
+from .layers import attention
+from .layers import decoding
+from .layers import embedding
+from .layers import timing
+from .layers import transformer_block
+from . import base
 import tensorflow as tf
 from tensorflow.contrib import layers as contrib_layers
 

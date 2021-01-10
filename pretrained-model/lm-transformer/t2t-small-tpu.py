@@ -101,7 +101,7 @@ hparams.max_length = 1024
 hparams.multiproblem_mixing_schedule = 'pretrain'
 hparams.use_fixed_batch_size = True
 hparams.shared_embedding = True
-hparams.shared_embedding_and_softmax_weights = True
+hparams.shared_embedding_and_softmax_weights = False
 
 # tpu
 hparams.symbol_modality_num_shards = 1

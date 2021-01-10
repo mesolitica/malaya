@@ -7,8 +7,7 @@ Thanks to Google for opensourcing most of the source code to develop BigBird, ht
 ## Table of contents
   * [Objective](#objective)
   * [Acknowledgement](#acknowledgement)
-  * [How-to](#how-to)
-    * [Multigpus](#multigpus)
+  * [How-to Encoder](#how-to-encoder)
   * [Download](#download)
   * [Citation](#citation)
   * [Donation](#donation)
@@ -24,6 +23,8 @@ Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://w
 
 ## How-to Encoder
 
+**Optional, you can use BERT pretrained model**.
+
 1. Use [../bert/BERT.wordpiece](../bert/BERT.wordpiece) for wordpiece tokenizer.
 
 2. Split text file to multiple text files,
@@ -33,6 +34,9 @@ mkdir splitted
 cd splitted
 split -l 300000 -d --additional-suffix=.txt ../dumping-instagram.txt splitted-instagram
 split -l 300000 -d --additional-suffix=.txt ../dumping-twitter.txt splitted-twitter
+split -l 300000 -d --additional-suffix=.txt ../filtered-dumping-wiki.txt splitted-wiki
+split -l 300000 -d --additional-suffix=.txt ../dumping-cleaned-news.txt splitted-news
+split -l 300000 -d --additional-suffix=.txt ../filtered-dumping-academia.txt splitted-academia
 ```
 
 3. Create pretraining dataset,
@@ -46,7 +50,7 @@ python3 create-pretraining-data.py
 **TPU BASE**,
 
 ```bash
-python3 run_pretraining.py \
+python3 run-pretraining-base.py \
   --input_file=gs://mesolitica-tpu-general/bert-data/*.tfrecord \
   --output_dir=gs://mesolitica-tpu-general/bigbird-base \
   --do_train=True \
@@ -61,4 +65,21 @@ python3 run_pretraining.py \
   --tpu_zone=europe-west4-a \
   --save_checkpoints_steps=25000 \
   --use_tpu=True
+```
+
+**Single GPU**,
+
+```
+python3 run-pretraining-base.py \
+  --input_file=/home/husein/bert-standard/tfrecord/*.tfrecord \
+  --output_dir=bigbird-base \
+  --do_train=True \
+  --do_eval=False \
+  --train_batch_size=8 \
+  --max_seq_length=512 \
+  --max_predictions_per_seq=20 \
+  --num_train_steps=500000 \
+  --learning_rate=1e-4 \
+  --iterations_per_loop=100 \
+  --save_checkpoints_steps=25000
 ```

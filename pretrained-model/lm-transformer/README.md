@@ -66,11 +66,23 @@ python3 t2t-small-tpu.py
 
 1. **BASE**, last update 9th September 2020, [seq2seq-base-500k-09-09-2020.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/seq2seq-base-500k-09-09-2020.tar.gz)
 
-Tensorboard, https://tensorboard.dev/experiment/vZgJmvPXTVGDkWLx8hEk7Q/
+  - 500k steps, 3 GPUs TESLA V100.
+  - Tensorboard, https://tensorboard.dev/experiment/vZgJmvPXTVGDkWLx8hEk7Q/
 
 2. **SMALL**, last update 15th September 2020, [seq2seq-small-500k-15-09-2020.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/seq2seq-base-500k-15-09-2020.tar.gz)
 
-Tensorboard, https://tensorboard.dev/experiment/QpojYycdQNevKJeVfzF2XQ/
+  - 500k steps, 3 GPUs TESLA V100.
+  - Tensorboard, https://tensorboard.dev/experiment/QpojYycdQNevKJeVfzF2XQ/
+
+3. **BASE**, last update 9th January 2021, [t2t-base-475k-09-01-2021.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/t2t-base-475k-09-01-2021.tar.gz)
+
+  - 475k steps, V3-8 TPU.
+  - Tensorboard, https://tensorboard.dev/experiment/Bn85puv8T9uMj8SwbT8Xig/
+
+4. **SMALL**, last update 9th January 2021, [t2t-small-500k-09-01-2021.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/t2t-small-500k-09-01-2021.tar.gz)
+
+  - 500k steps, V3-8 TPU.
+  - Tensorboard, https://tensorboard.dev/experiment/JAC6AH0BT7yjJDu5GA2LEg/
 
 ## Test
 
