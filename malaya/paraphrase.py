@@ -19,8 +19,8 @@ _t5_availability = {
     },
 }
 _transformer_availability = {
-    'small': {'Size (MB)': 379, 'Quantized Size (MB)': 120, 'BLEU': 0.5534},
-    'base': {'Size (MB)': 832, 'Quantized Size (MB)': 279, 'BLEU': 0.597},
+    'small': {'Size (MB)': 379, 'Quantized Size (MB)': 120, 'BLEU': 0.65849},
+    'base': {'Size (MB)': 832, 'Quantized Size (MB)': 279, 'BLEU': 0.596_123},
 }
 
 

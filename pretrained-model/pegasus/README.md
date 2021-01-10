@@ -10,7 +10,6 @@ Thanks to Google for opensourcing most of the source code to develop Pegasus, ht
 ## Objective
 
 1. Provide **SMALL** and **BASE** Pegasus.
-2. Provide **SMALL** and **BASE** Pegasus for General tasks (T5 style).
 
 
 ## how-to
@@ -31,8 +30,8 @@ split -l 300000 -d --additional-suffix=.txt ../dumping-parliament.txt splitted-p
 3. Create pretraining dataset,
 
 ```bash
-python3 create-pretraining-data.py
-python3 create-pretraining-data-random.py
+python3 create-pretraining-data.py # mask sentence using ROUGE score
+python3 create-pretraining-data-random.py # mask sentence randomly
 ```
 
 Make sure you set proper constants in [create_pretraining_data.py](create_pretraining.py),
@@ -67,14 +66,30 @@ We do not want to mask numbers or words started with `RM`.
 
 ```bash
 python3 pretraining-base.py \
-  --input_file=gs://mesolitica-tpu-general/pegasus-data/*.tfrecord \
-  --output_dir=gs://mesolitica-tpu-general/pegasus-base \
-  --do_train=True \
-  --train_batch_size=256 \
-  --num_train_steps=500000 \
-  --iterations_per_loop=100 \
-  --tpu_name=node-3 \
-  --tpu_zone=europe-west4-a \
-  --save_checkpoints_steps=25000 \
-  --use_tpu=True
+--input_file=gs://mesolitica-tpu-general/pegasus-data/*.tfrecord \
+--output_dir=gs://mesolitica-tpu-general/pegasus-base \
+--do_train=True \
+--train_batch_size=512 \
+--num_train_steps=500000 \
+--iterations_per_loop=100 \
+--tpu_name=node-1 \
+--tpu_zone=europe-west4-a \
+--save_checkpoints_steps=25000 \
+--use_tpu=True
+```
+
+**TPU SMALL**,
+
+```bash
+python3 pretraining-small.py \
+--input_file=gs://mesolitica-tpu-general/pegasus-data/*.tfrecord \
+--output_dir=gs://mesolitica-tpu-general/pegasus-small \
+--do_train=True \
+--train_batch_size=1024 \
+--num_train_steps=500000 \
+--iterations_per_loop=100 \
+--tpu_name=node-2 \
+--tpu_zone=europe-west4-a \
+--save_checkpoints_steps=25000 \
+--use_tpu=True
 ```

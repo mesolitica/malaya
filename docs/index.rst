@@ -46,6 +46,7 @@ Contents:
    load-true-case
    load-segmentation
    load-preprocessing
+   load-tatabahasa
    load-num2word
    load-word2num
 

@@ -20,13 +20,13 @@ def load_lm(path, s3_path, model, model_class, quantized = False, **kwargs):
     tokenizer = SentencePieceEncoder(path[model]['vocab'])
 
     return model_class(
-        X,
-        top_p,
-        greedy,
-        beam,
-        nucleus,
-        generate_session(graph = g, **kwargs),
-        tokenizer,
+        X = X,
+        top_p = top_p,
+        greedy = greedy,
+        beam = beam,
+        nucleus = nucleus,
+        sess = generate_session(graph = g, **kwargs),
+        tokenizer = tokenizer,
     )
 
 
@@ -49,9 +49,31 @@ def load(
         encoder = YTTMEncoder(bpe, subword_mode)
 
     return model_class(
-        g.get_tensor_by_name('import/Placeholder:0'),
-        g.get_tensor_by_name('import/greedy:0'),
-        g.get_tensor_by_name('import/beam:0'),
-        generate_session(graph = g, **kwargs),
-        encoder,
+        X = g.get_tensor_by_name('import/Placeholder:0'),
+        greedy = g.get_tensor_by_name('import/greedy:0'),
+        beam = g.get_tensor_by_name('import/beam:0'),
+        sess = generate_session(graph = g, **kwargs),
+        encoder = encoder,
+    )
+
+
+def load_tatabahasa(
+    path, s3_path, model, model_class, quantized = False, **kwargs
+):
+    check_file(path[model], s3_path[model], quantized = quantized, **kwargs)
+    if quantized:
+        model_path = 'quantized'
+    else:
+        model_path = 'model'
+
+    g = load_graph(path[model][model_path], **kwargs)
+
+    tokenizer = SentencePieceEncoder(path[model]['vocab'])
+
+    return model_class(
+        X = g.get_tensor_by_name('import/x_placeholder:0'),
+        greedy = g.get_tensor_by_name('import/greedy:0'),
+        tag_greedy = g.get_tensor_by_name('import/tag_greedy:0'),
+        sess = generate_session(graph = g, **kwargs),
+        tokenizer = tokenizer,
     )

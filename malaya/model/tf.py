@@ -21,6 +21,8 @@ from malaya.text.bpe import (
     padding_sequence,
     PTB_TOKEN_ESCAPE,
     merge_sentencepiece_tokens,
+    encode_pieces,
+    merge_sentencepiece_tokens_tagging,
 )
 from malaya.text import chart_decoder
 from malaya.text.trees import tree_from_str
@@ -154,22 +156,33 @@ class TRANSLATION:
             )
         return result
 
-    @check_type
-    def translate(self, strings: List[str], beam_search: bool = True):
+    def greedy_decoder(self, strings: List[str]):
         """
         translate list of strings.
 
         Parameters
         ----------
         strings : List[str]
-        beam_search : bool, (optional=True)
-            If True, use beam search decoder, else use greedy decoder.
 
         Returns
         -------
         result: List[str]
         """
-        return self._translate(strings, beam_search = beam_search)
+        return self._translate(strings, beam_search = False)
+
+    def beam_decoder(self, strings: List[str]):
+        """
+        translate list of strings using beam decoder, beam width size 3, alpha 0.5 .
+
+        Parameters
+        ----------
+        strings : List[str]
+
+        Returns
+        -------
+        result: List[str]
+        """
+        return self._translate(strings, beam_search = True)
 
 
 class CONSTITUENCY:
@@ -411,7 +424,7 @@ class SUMMARIZATION:
         results = []
         for no, r in enumerate(p):
             summary = self._tokenizer.decode(r)
-            if postprocess:
+            if postprocess and mode != 'tajuk':
                 summary = filter_rouge(strings[no], summary, **kwargs)
                 summary = postprocessing_summarization(summary)
                 summary = find_lapor_and_remove(strings[no], summary)
@@ -730,7 +743,7 @@ class SEGMENTATION(T2T):
         return self._beam_decoder(strings)
 
 
-class TATABAHASA(T2T):
+class TATABAHASA:
     def __init__(self, X, greedy, tag_greedy, sess, tokenizer):
         self._X = X
         self._greedy = greedy
@@ -739,6 +752,15 @@ class TATABAHASA(T2T):
         self._tokenizer = tokenizer
 
     def _predict(self, strings):
+        sequences = [
+            encode_pieces(
+                self._tokenizer.sp,
+                string,
+                return_unicode = False,
+                sample = False,
+            )
+            for string in strings
+        ]
         batch_x = [self._tokenizer.encode(string) + [1] for string in strings]
         batch_x = padding_sequence(batch_x)
         p, tag = self._sess.run(
@@ -747,9 +769,15 @@ class TATABAHASA(T2T):
         results = []
         nonzero = (p != 0).sum(axis = -1)
         for i in range(len(p)):
-            r = self._tokenizer.decode(p[i, : nonzero[i]])
+            r = self._tokenizer.decode(p[i].tolist())
             t = tag[i, : nonzero[i]]
-            results.append((r, t))
+            s = encode_pieces(
+                self._tokenizer.sp, r, return_unicode = False, sample = False
+            )
+            merged = merge_sentencepiece_tokens_tagging(
+                s + ['<cls>'], t, model = 'xlnet'
+            )
+            results.append(list(zip(merged[0], merged[1])))
         return results
 
     @check_type
@@ -765,4 +793,4 @@ class TATABAHASA(T2T):
         -------
         result: List[str]
         """
-        return self._greedy_decoder(strings)
+        return self._predict(strings)

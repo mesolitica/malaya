@@ -177,6 +177,12 @@ malaya.subjectivity
 .. automodule:: malaya.subjectivity
     :members:
 
+malaya.tatabahasa
+--------------------
+
+.. automodule:: malaya.tatabahasa
+    :members:
+
 malaya.summarization.abstractive
 ---------------------------------
 
@@ -360,6 +366,9 @@ malaya.model.tf
 .. autoclass:: malaya.model.tf.PARAPHRASE()
     :members:
     
+.. autoclass:: malaya.model.tf.TATABAHASA()
+    :members:
+
 malaya.model.ml
 ----------------------------------
 

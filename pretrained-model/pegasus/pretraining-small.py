@@ -107,11 +107,11 @@ flags.DEFINE_string(
 )
 
 vocab_size = 32000
-hidden_size = 768
+hidden_size = 512
 filter_size = 3072
-num_encoder_layers = 12
-num_decoder_layers = 12
-num_heads = 12
+num_encoder_layers = 6
+num_decoder_layers = 6
+num_heads = 8
 label_smoothing = 0.0
 dropout = 0.1
 

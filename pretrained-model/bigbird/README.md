@@ -23,7 +23,7 @@ Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://w
 
 ## How-to Encoder
 
-**Optional, you can use BERT pretrained model**.
+**Optional, you can use BERT pretrained model to finetune using BigBird**, check [bigbird-base-emotion.ipynb](bigbird-base-emotion.ipynb).
 
 1. Use [../bert/BERT.wordpiece](../bert/BERT.wordpiece) for wordpiece tokenizer.
 

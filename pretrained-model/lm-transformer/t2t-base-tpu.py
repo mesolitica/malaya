@@ -86,13 +86,12 @@ hparams.batch_size = batch_size
 hparams.learning_rate = ALPHA
 hparams.train_batch_size = batch_size
 
-hparams.filter_size = 2048
-hparams.hidden_size = 512
-hparams.num_heads = 8
-hparams.num_hidden_layers = 6
+hparams.filter_size = 3072
+hparams.hidden_size = 768
+hparams.num_heads = 12
+hparams.num_hidden_layers = 8
 hparams.vocab_divisor = 128
 hparams.dropout = 0.1
-hparams.max_length = 1024
 
 # LM
 hparams.label_smoothing = 0.0

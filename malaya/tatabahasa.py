@@ -1,11 +1,14 @@
+from malaya.model.tf import TATABAHASA
+from malaya.path import PATH_TATABAHASA, S3_PATH_TATABAHASA
+from malaya.supervised import transformer as load_transformer
 from herpetologist import check_type
 
 _transformer_availability = {
     'small': {
-        'Size (MB)': 379,
-        'Quantized Size (MB)': 120,
-        'Sequence Accuracy': 0.347,
-        'Sequence Tagging Accuracy': 0,
+        'Size (MB)': 397,
+        'Quantized Size (MB)': 100,
+        'Sequence Accuracy': 0.860198,
+        'Sequence Tagging Accuracy': 0.96326745,
     },
     'base': {
         'Size (MB)': 832,
@@ -171,3 +174,12 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
         raise ValueError(
             'model not supported, please check supported models from `malaya.tatabahasa.available_transformer()`.'
         )
+
+    return load_transformer.load_tatabahasa(
+        PATH_TATABAHASA,
+        S3_PATH_TATABAHASA,
+        model,
+        TATABAHASA,
+        quantized = quantized,
+        **kwargs
+    )

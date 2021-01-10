@@ -45,7 +45,7 @@ class SUMMARIZATION(T5):
 
     def _summarize(self, string, mode, postprocess, **kwargs):
         summary = upperfirst(self._predict(f'{mode}: {cleaning(string)}'))
-        if postprocess:
+        if postprocess and mode != 'tajuk':
             summary = filter_rouge(string, summary, **kwargs)
             summary = postprocessing_summarization(summary)
             summary = find_lapor_and_remove(string, summary)

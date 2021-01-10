@@ -553,14 +553,14 @@ PATH_PARAPHRASE = {
             'quantized': home
             + '/paraphrase/transformer/base/quantized/model.pb',
             'vocab': home + '/paraphrase/sp10m.cased.t5.model',
-            'version': 'v39',
+            'version': 'v41',
         },
         'small': {
             'model': home + '/paraphrase/transformer/small/model.pb',
             'quantized': home
             + '/paraphrase/transformer/small/quantized/model.pb',
             'vocab': home + '/paraphrase/sp10m.cased.t5.model',
-            'version': 'v39',
+            'version': 'v41',
         },
     },
 }
@@ -581,13 +581,13 @@ S3_PATH_PARAPHRASE = {
     },
     'transformer': {
         'base': {
-            'model': 'v39/paraphrase/base.pb',
-            'quantized': 'v40/paraphrase/base.pb.quantized',
+            'model': 'v41/paraphrase/transformer-base.pb',
+            'quantized': 'v41/paraphrase/transformer-base.pb.quantized',
             'vocab': 'tokenizer/sp10m.cased.t5.model',
         },
         'small': {
-            'model': 'v39/paraphrase/small.pb',
-            'quantized': 'v40/paraphrase/small.pb.quantized',
+            'model': 'v41/paraphrase/transformer-small.pb',
+            'quantized': 'v41/paraphrase/transformer-small.pb.quantized',
             'vocab': 'tokenizer/sp10m.cased.t5.model',
         },
     },
@@ -795,14 +795,14 @@ S3_PATH_RELEVANCY = {
 
 PATH_SEGMENTATION = {
     'base': {
-        'model': home + '/segmentation/base.pb',
-        'quantized': home + '/segmentation/quantized/base.pb',
+        'model': home + '/segmentation/base/model.pb',
+        'quantized': home + '/segmentation/base/quantized/model.pb',
         'vocab': home + '/segmentation/vocab.yttm',
         'version': 'v41',
     },
     'small': {
-        'model': home + '/segmentation/small.pb',
-        'quantized': home + '/segmentation/quantized/small.pb',
+        'model': home + '/segmentation/small/model.pb',
+        'quantized': home + '/segmentation/quantized/small/model.pb',
         'vocab': home + '/segmentation/vocab.yttm',
         'version': 'v40',
     },
@@ -1110,6 +1110,35 @@ S3_PATH_SUBJECTIVE = {
     },
 }
 
+PATH_TATABAHASA = {
+    'small': {
+        'model': home + '/tatabahasa/transformertag/small/model.pb',
+        'quantized': home
+        + '/tatabahasa/transformertag/small/quantized/model.pb',
+        'vocab': home + '/tatabahasa/sp10m.cased.t5.model',
+        'version': 'v41',
+    },
+    'base': {
+        'model': home + '/tatabahasa/transformertag/base/model.pb',
+        'quantized': home + '/tatabahasa/transformer/base/quantized/model.pb',
+        'vocab': home + '/tatabahasa/sp10m.cased.t5.model',
+        'version': 'v41',
+    },
+}
+
+S3_PATH_TATABAHASA = {
+    'base': {
+        'model': 'v41/tatabahasa/base.pb',
+        'quantized': 'v41/tatabahasa/base.pb.quantized',
+        'vocab': 'tokenizer/sp10m.cased.t5.model',
+    },
+    'small': {
+        'model': 'v41/tatabahasa/small.pb',
+        'quantized': 'v41/tatabahasa/small.pb.quantized',
+        'vocab': 'tokenizer/sp10m.cased.t5.model',
+    },
+}
+
 PATH_SUMMARIZE = {
     'news': {
         'model': home + '/summarize/summary-news.pb',
@@ -1159,14 +1188,14 @@ PATH_SUMMARIZE = {
             'quantized': home
             + '/summarize/transformer/base/quantized/model.pb',
             'vocab': home + '/summarize/sp10m.cased.t5.model',
-            'version': 'v39',
+            'version': 'v41',
         },
         'small': {
             'model': home + '/summarize/transformer/small/model.pb',
             'quantized': home
             + '/summarize/transformer/small/quantized/model.pb',
             'vocab': home + '/summarize/sp10m.cased.t5.model',
-            'version': 'v39',
+            'version': 'v41',
         },
     },
 }
@@ -1196,8 +1225,8 @@ S3_PATH_SUMMARIZE = {
     },
     'transformer': {
         'base': {
-            'model': 'v39/summarization/base.pb',
-            'quantized': 'v40/summarize/transformer-base.pb.quantized',
+            'model': 'v41/summarization/transformer-base.pb',
+            'quantized': 'v41/summarization/transformer-base.pb.quantized',
             'vocab': 'tokenizer/sp10m.cased.t5.model',
         },
         'small': {
