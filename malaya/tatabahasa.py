@@ -11,10 +11,10 @@ _transformer_availability = {
         'Sequence Tagging Accuracy': 0.96326745,
     },
     'base': {
-        'Size (MB)': 832,
-        'Quantized Size (MB)': 279,
-        'Sequence Accuracy': 0.347,
-        'Sequence Tagging Accuracy': 0,
+        'Size (MB)': 875,
+        'Quantized Size (MB)': 220,
+        'Sequence Accuracy': 0.938972,
+        'Sequence Tagging Accuracy': 0.977407,
     },
 }
 

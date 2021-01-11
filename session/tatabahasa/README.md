@@ -6,10 +6,10 @@ Pretrained TransformerTag models to fix kesalahan tatabahasa.
 
 ## Download
 
-1. SMALL, last update 10th January 2021, [small-tatabahasa.tar.gz](https://f000.backblazeb2.com/file/malaya-speech-model/finetuned/small-tatabahasa.tar.gz)
+1. SMALL, last update 10th January 2021, [transformertag-small.tar.gz](https://f000.backblazeb2.com/file/malaya-model/finetuned/transformertag-small.tar.gz)
 
 Tensorboard, https://tensorboard.dev/experiment/U4o8aXsVQXSNjMBua6IdCw/
 
-2. BASE, last update 10th January 2021, [base-tatabahasa.tar.gz](https://f000.backblazeb2.com/file/malaya-speech-model/finetuned/base-tatabahasa.tar.gz)
+2. BASE, last update 10th January 2021, [transformertag-base.tar.gz](https://f000.backblazeb2.com/file/malaya-model/finetuned/transformertag-base.tar.gz)
 
-Tensorboard, https://tensorboard.dev/experiment/U4o8aXsVQXSNjMBua6IdCw/
+Tensorboard, https://tensorboard.dev/experiment/zoBA795KSbyPQNPatDm0oQ/
