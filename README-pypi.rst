@@ -44,7 +44,7 @@ Features
 -  **Kesalahan Tatabahasa**, Fix kesalahan tatabahasa using TransformerTag-Bahasa.
 -  **Summarization**, provide Abstractive T5-Bahasa also Extractive interface using Transformer-Bahasa, skip-thought and Doc2Vec.
 -  **Topic Modelling**, provide Transformer-Bahasa, LDA2Vec, LDA, NMF and LSA interface for easy topic modelling with topics visualization.
--  **Toxicity Analysis**, detect and recognize 6 different 27 toxicity patterns of texts using finetuned Transformer-Bahasa.
+-  **Toxicity Analysis**, detect and recognize 27 different toxicity patterns of texts using finetuned Transformer-Bahasa.
 -  **Transformer**, provide easy interface to load Pretrained Language models Malaya.
 -  **Translation**, provide Neural Machine Translation using Transformer for EN to MS and MS to EN.
 -  **Word2Num**, convert from cardinal or ordinal representation to numbers.
