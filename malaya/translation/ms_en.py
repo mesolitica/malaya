@@ -1,4 +1,4 @@
-from malaya.model.tf import TRANSLATION
+from malaya.model.tf import Translation
 from malaya.path import PATH_TRANSLATION, S3_PATH_TRANSLATION
 from malaya.supervised import transformer as load_transformer
 from herpetologist import check_type
@@ -41,7 +41,7 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
 
     Returns
     -------
-    result: malaya.model.tf.TRANSLATION class
+    result: malaya.model.tf.Translation class
     """
     model = model.lower()
     if model not in _transformer_availability:
@@ -57,7 +57,7 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
         s3_path,
         model,
         'subword',
-        TRANSLATION,
+        Translation,
         quantized = quantized,
         **kwargs
     )

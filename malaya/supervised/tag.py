@@ -4,8 +4,8 @@ from malaya.text.bpe import (
     sentencepiece_tokenizer_bert,
     sentencepiece_tokenizer_xlnet,
 )
-from malaya.model.bert import TAGGING_BERT
-from malaya.model.xlnet import TAGGING_XLNET
+from malaya.model.bert import TaggingBERT
+from malaya.model.xlnet import TaggingXLNET
 
 
 def transformer(
@@ -41,7 +41,7 @@ def transformer(
                 spm_model_file = path[model]['tokenizer'],
             )
 
-        return TAGGING_BERT(
+        return TaggingBERT(
             X = g.get_tensor_by_name('import/Placeholder:0'),
             segment_ids = None,
             input_masks = g.get_tensor_by_name('import/Placeholder_1:0'),
@@ -54,7 +54,7 @@ def transformer(
 
     if model in ['xlnet', 'alxlnet']:
         tokenizer = sentencepiece_tokenizer_xlnet(path[model]['tokenizer'])
-        return TAGGING_XLNET(
+        return TaggingXLNET(
             X = g.get_tensor_by_name('import/Placeholder:0'),
             segment_ids = g.get_tensor_by_name('import/Placeholder_1:0'),
             input_masks = g.get_tensor_by_name('import/Placeholder_2:0'),

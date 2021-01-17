@@ -39,7 +39,7 @@ class T5:
         return r
 
 
-class SUMMARIZATION(T5):
+class Summarization(T5):
     def __init__(self, X, decode, sess, pred):
         T5.__init__(self, X = X, decode = decode, sess = sess, pred = pred)
 
@@ -86,7 +86,7 @@ class SUMMARIZATION(T5):
         return results
 
 
-class GENERATOR(T5):
+class Generator(T5):
     def __init__(self, X, decode, sess, pred):
         T5.__init__(self, X = X, decode = decode, sess = sess, pred = pred)
 
@@ -114,7 +114,7 @@ class GENERATOR(T5):
         return upperfirst(self._predict(cleaning(points)))
 
 
-class PARAPHRASE(T5):
+class Paraphrase(T5):
     def __init__(self, X, decode, sess, pred):
         T5.__init__(self, X = X, decode = decode, sess = sess, pred = pred)
 

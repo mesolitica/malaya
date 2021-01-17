@@ -5,6 +5,7 @@ from malaya.text.bpe import (
 )
 from malaya.text.trees import tree_from_str
 from malaya.path import PATH_CONSTITUENCY, S3_PATH_CONSTITUENCY
+from malaya.model.tf import Constituency
 import json
 from herpetologist import check_type
 
@@ -98,7 +99,7 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
 
     Returns
     -------
-    result : malaya.model.tf.CONSTITUENCY class
+    result : malaya.model.tf.Constituency class
     """
 
     model = model.lower()
@@ -136,9 +137,7 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
         )
         mode = 'xlnet'
 
-    from malaya.model.tf import CONSTITUENCY
-
-    return CONSTITUENCY(
+    return Constituency(
         input_ids = g.get_tensor_by_name('import/input_ids:0'),
         word_end_mask = g.get_tensor_by_name('import/word_end_mask:0'),
         charts = g.get_tensor_by_name('import/charts:0'),

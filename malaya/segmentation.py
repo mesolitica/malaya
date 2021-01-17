@@ -3,7 +3,7 @@ import re
 from functools import lru_cache
 from math import log10
 from malaya.text.regex import _expressions
-from malaya.model.tf import SEGMENTATION
+from malaya.model.tf import Segmentation
 from malaya.path import (
     PATH_SEGMENTATION,
     S3_PATH_SEGMENTATION,
@@ -191,7 +191,7 @@ def transformer(model: str = 'small', quantized: bool = False, **kwargs):
 
     Returns
     -------
-    result: malaya.model.tf.SEGMENTATION class
+    result: malaya.model.tf.Segmentation class
     """
 
     model = model.lower()
@@ -205,7 +205,7 @@ def transformer(model: str = 'small', quantized: bool = False, **kwargs):
         S3_PATH_SEGMENTATION,
         model,
         'yttm',
-        SEGMENTATION,
+        Segmentation,
         quantized = quantized,
         **kwargs,
     )

@@ -564,7 +564,7 @@ def create_self_attention_mask(length):
 
 def inplace_update_i(inp_tensor, updates, i):
     """Inplace update a tensor. B: batch_size, L: tensor length."""
-    batch_size = inp_tensor.shape[0]
+    batch_size = tf.shape(inp_tensor)[0]
     indices = tf.stack(
         [
             tf.range(batch_size, dtype = tf.int32),

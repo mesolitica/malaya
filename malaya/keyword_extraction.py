@@ -5,7 +5,10 @@ from collections import defaultdict
 from sklearn.metrics.pairwise import cosine_similarity
 from malaya.text import rake as rake_function
 from sklearn.feature_extraction.text import CountVectorizer
-from malaya.text.vectorizer import SkipGramVectorizer
+from malaya.text.vectorizer import (
+    SkipGramCountVectorizer,
+    SkipGramTfidfVectorizer,
+)
 from malaya.text.function import (
     simple_textcleaning,
     transformer_textcleaning,
@@ -15,8 +18,6 @@ from malaya.function import validator
 from malaya.graph.pagerank import pagerank
 from typing import Callable, Tuple, List
 from herpetologist import check_type
-
-methods = {'bow': CountVectorizer, 'skipgram': SkipGramVectorizer}
 
 
 def _auto_ngram(string, stopwords):
@@ -37,14 +38,8 @@ def _auto_ngram(string, stopwords):
     return vocab
 
 
-def _base(string, ngram_method, ngram, stopwords, **kwargs):
-    s = methods[ngram_method](
-        ngram_range = ngram,
-        token_pattern = r'[\S]+',
-        stop_words = stopwords,
-        lowercase = False,
-        **kwargs
-    ).fit([string])
+def _base(string, vectorizer, ngram, stopwords, **kwargs):
+    s = vectorizer.fit([string])
     vocab = defaultdict(int)
     tokens = s.build_analyzer()(string)
     for t in tokens:
@@ -56,10 +51,8 @@ def _base(string, ngram_method, ngram, stopwords, **kwargs):
 def rake(
     string: str,
     model = None,
+    vectorizer = None,
     top_k: int = 5,
-    auto_ngram: bool = True,
-    ngram_method: str = 'bow',
-    ngram: Tuple[int, int] = (1, 1),
     atleast: int = 1,
     stopwords = get_stopwords,
     **kwargs
@@ -74,19 +67,13 @@ def rake(
         Transformer model or any model has `attention` method.
     top_k: int, optional (default=5)
         return top-k results.
-    auto_ngram: bool, optional (default=True)
-        If True, will generate keyword candidates using N suitable ngram. Else use `ngram_method`.
-    ngram_method: str, optional (default='bow')
-        Only usable if `auto_ngram` is False. supported ngram generator:
-
-        * ``'bow'`` - bag-of-word.
-        * ``'skipgram'`` - bag-of-word with skip technique.
     ngram: tuple, optional (default=(1,1))
         n-grams size.
     atleast: int, optional (default=1)
         at least count appeared in the string to accept as candidate.
     stopwords: List[str], (default=malaya.texts.function.get_stopwords)
         A callable that returned a List[str], or a List[str], or a Tuple[str]
+        For automatic Ngram generator.
 
     Returns
     -------
@@ -96,13 +83,13 @@ def rake(
 
     if model is not None:
         if not hasattr(model, 'attention'):
-            raise ValueError('model must has or `attention` method')
+            raise ValueError('model must have or `attention` method')
     if top_k < 1:
         raise ValueError('top_k must bigger than 0')
     if atleast < 1:
         raise ValueError('atleast must bigger than 0')
-    if ngram_method not in methods:
-        raise ValueError("ngram_method must be in ['bow', 'skip-gram']")
+    if not vectorizer:
+        auto_ngram = True
     if auto_ngram and not len(stopwords):
         raise ValueError('insert stopwords if auto_ngram')
 
@@ -121,6 +108,7 @@ def rake(
     else:
         vocab = _base(
             string,
+            vectorizer = vectorizer,
             ngram_method = ngram_method,
             ngram = ngram,
             stopwords = stopwords,
@@ -190,7 +178,7 @@ def textrank(
         vectorizer, 'vectorize'
     ):
         raise ValueError(
-            'vectorizer must has `fit_transform` or `vectorize` method'
+            'vectorizer must have `fit_transform` or `vectorize` method'
         )
     if top_k < 1:
         raise ValueError('top_k must bigger than 0')
@@ -276,7 +264,7 @@ def attention(
     stopwords = validator.validate_stopwords(stopwords)
 
     if not hasattr(model, 'attention'):
-        raise ValueError('model must has `attention` method')
+        raise ValueError('model must have `attention` method')
     if top_k < 1:
         raise ValueError('top_k must bigger than 0')
     if atleast < 1:
@@ -324,16 +312,15 @@ def attention(
 def similarity_transformer(
     string,
     model,
+    vectorizer = None,
     top_k: int = 5,
-    ngram_method: str = 'bow',
-    ngram: Tuple[int, int] = (1, 1),
     atleast: int = 1,
     stopwords = get_stopwords,
     **kwargs
 ):
     stopwords = validator.validate_stopwords(stopwords)
     if not hasattr(model, '_tree_plot'):
-        raise ValueError('model must has `_tree_plot` method')
+        raise ValueError('model must have `_tree_plot` method')
     if top_k < 1:
         raise ValueError('top_k must bigger than 0')
     if atleast < 1:

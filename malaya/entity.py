@@ -1,6 +1,6 @@
 from malaya.supervised import tag
 from malaya.path import PATH_ENTITIES, S3_PATH_ENTITIES
-from malaya.text.entity import ENTITY_REGEX
+from malaya.text.entity import EntityRegex
 from herpetologist import check_type
 
 label = {
@@ -212,13 +212,13 @@ def general_entity(model = None):
     Parameters
     ----------
     model : object
-        model must has `predict` method. 
+        model must have `predict` method. 
         Make sure the `predict` method returned [(string, label), (string, label)].
 
     Returns
     -------
-    result: malaya.text.entity.ENTITY_REGEX class
+    result: malaya.text.entity.EntityRegex class
     """
     if not hasattr(model, 'predict') and model is not None:
-        raise ValueError('model must has `predict` method')
-    return ENTITY_REGEX(model = model)
+        raise ValueError('model must have `predict` method')
+    return EntityRegex(model = model)

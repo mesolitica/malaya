@@ -1,5 +1,5 @@
-from malaya.model.bert import ZEROSHOT_BERT
-from malaya.model.xlnet import ZEROSHOT_XLNET
+from malaya.model.bert import ZeroshotBERT
+from malaya.model.xlnet import ZeroshotXLNET
 from herpetologist import check_type
 from malaya.similarity import _transformer_availability, _transformer
 
@@ -36,13 +36,13 @@ def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
 
     Returns
     -------
-    result : malaya.model.bert.ZEROSHOT_BERT class
+    result : malaya.model.bert.ZeroshotBERT class
     """
 
     return _transformer(
         model = model,
-        bert_class = ZEROSHOT_BERT,
-        xlnet_class = ZEROSHOT_XLNET,
+        bert_class = ZeroshotBERT,
+        xlnet_class = ZeroshotXLNET,
         quantized = quantized,
         siamese = False,
         **kwargs

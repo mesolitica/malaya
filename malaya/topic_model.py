@@ -3,7 +3,7 @@ import collections
 from sklearn.utils import shuffle
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.decomposition import TruncatedSVD, NMF, LatentDirichletAllocation
-from malaya.model.lda2vec import LDA2VEC
+from malaya.model.lda2vec import LDA2Vec
 from malaya.text.function import (
     simple_textcleaning,
     get_stopwords,
@@ -12,7 +12,7 @@ from malaya.text.function import (
     build_dataset,
 )
 from malaya.function import validator
-from malaya.text.vectorizer import skipgrams, SkipGramVectorizer
+from malaya.text.vectorizer import skipgrams, SkipGramCountVectorizer
 from malaya.generator import ngrams as ngrams_generator
 from herpetologist import check_type
 from typing import List, Tuple, Callable
@@ -76,7 +76,7 @@ def _prepare_topics(
     return data
 
 
-class ATTENTION_TOPIC:
+class AttentionTopic:
     def __init__(self, features, components):
         self._features = features
         self._components = components
@@ -129,7 +129,7 @@ class ATTENTION_TOPIC:
         return results
 
 
-class DEEP_TOPIC:
+class DeepTopic:
     def __init__(
         self,
         model,
@@ -383,7 +383,7 @@ _vectorizer_availability = {
 vectorizer_mapping = {
     'tfidf': TfidfVectorizer,
     'bow': CountVectorizer,
-    'skip-gram': SkipGramVectorizer,
+    'skip-gram': SkipGramCountVectorizer,
 }
 
 
@@ -671,7 +671,7 @@ def lda2vec(
 
     Returns
     -------
-    result: malaya.topic_modelling.DEEP_TOPIC class
+    result: malaya.topic_modelling.DeepTopic class
     """
     validator.validate_function(cleaning, 'cleaning')
     stopwords = validator.validate_stopwords(stopwords)
@@ -742,7 +742,7 @@ def lda2vec(
     )
     num_unique_documents = len(idx_text_clean)
 
-    model = LDA2VEC(
+    model = LDA2Vec(
         num_unique_documents,
         len(dictionary),
         n_topics,
@@ -753,7 +753,7 @@ def lda2vec(
     model.train(
         pivot_words, target_words, doc_ids, epoch, switch_loss = switch_loss
     )
-    return DEEP_TOPIC(
+    return DeepTopic(
         model,
         dictionary,
         reversed_dictionary,
@@ -764,7 +764,7 @@ def lda2vec(
 
 
 @check_type
-def transformer(
+def attention(
     corpus: List[str],
     n_topics: int,
     vectorizer,
@@ -794,7 +794,7 @@ def transformer(
 
     Returns
     -------
-    result: malaya.topic_modelling.ATTENTION_TOPIC class
+    result: malaya.topic_modelling.AttentionTopic class
     """
 
     stopwords = validator.validate_stopwords(stopwords)
@@ -803,7 +803,7 @@ def transformer(
         vectorizer, 'vectorize'
     ):
         raise ValueError(
-            'vectorizer must has `attention` and `vectorize` methods'
+            'vectorizer must have `attention` and `vectorize` methods'
         )
     validator.validate_function(cleaning, 'cleaning')
 
@@ -855,4 +855,4 @@ def transformer(
             if word in features:
                 components[i, features.index(word)] += score
 
-    return ATTENTION_TOPIC(features, components)
+    return AttentionTopic(features, components)

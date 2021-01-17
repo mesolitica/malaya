@@ -5,9 +5,9 @@ from malaya.text.bpe import (
     sentencepiece_tokenizer_xlnet,
 )
 from malaya.path import PATH_TOXIC, S3_PATH_TOXIC
-from malaya.model.ml import MULTILABEL_BAYES
-from malaya.model.bert import SIGMOID_BERT
-from malaya.model.xlnet import SIGMOID_XLNET
+from malaya.model.ml import MultilabelBayes
+from malaya.model.bert import SigmoidBERT
+from malaya.model.xlnet import SigmoidXLNET
 from malaya.transformers.bert import bert_num_layers
 from herpetologist import check_type
 
@@ -88,7 +88,7 @@ def multinomial(**kwargs):
 
     Returns
     -------
-    result : malaya.model.ml.MULTILABEL_BAYES class
+    result : malaya.model.ml.MultilabelBayes class
     """
     import pickle
 
@@ -114,7 +114,7 @@ def multinomial(**kwargs):
 
     bpe, subword_mode = load_yttm(PATH_TOXIC['multinomial']['bpe'])
 
-    return MULTILABEL_BAYES(
+    return MultilabelBayes(
         multinomial = multinomial,
         label = label,
         vectorize = vectorize,
@@ -147,7 +147,7 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
 
     Returns
     -------
-    result : malaya.model.bert.SIGMOID_BERT class
+    result : malaya.model.bert.SigmoidBERT class
     """
 
     model = model.lower()
@@ -190,7 +190,7 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
                 spm_model_file = path[model]['tokenizer'],
             )
 
-        return SIGMOID_BERT(
+        return SigmoidBERT(
             X = g.get_tensor_by_name('import/Placeholder:0'),
             segment_ids = None,
             input_masks = g.get_tensor_by_name('import/Placeholder_1:0'),
@@ -218,7 +218,7 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
 
         tokenizer = sentencepiece_tokenizer_xlnet(path[model]['tokenizer'])
 
-        return SIGMOID_XLNET(
+        return SigmoidXLNET(
             X = g.get_tensor_by_name('import/Placeholder:0'),
             segment_ids = g.get_tensor_by_name('import/Placeholder_1:0'),
             input_masks = g.get_tensor_by_name('import/Placeholder_2:0'),

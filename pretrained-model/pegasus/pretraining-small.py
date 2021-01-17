@@ -40,7 +40,7 @@ flags.DEFINE_integer(
 
 flags.DEFINE_integer(
     'max_predictions_per_seq',
-    102,
+    30,
     'Maximum number of masked LM predictions per sequence. '
     'Must match data generation.',
 )

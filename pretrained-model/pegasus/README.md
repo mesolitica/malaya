@@ -10,7 +10,7 @@ Thanks to Google for opensourcing most of the source code to develop Pegasus, ht
 ## Objective
 
 1. Provide **SMALL** and **BASE** Pegasus.
-
+1. Provide **SMALL** and **BASE** Pegasus trained multitasks (T5 style).
 
 ## how-to
 
@@ -39,8 +39,8 @@ Make sure you set proper constants in [create_pretraining_data.py](create_pretra
 ```python
 max_seq_length_encoder = 512
 max_seq_length_decoder = 128
-masked_lm_prob = 0.2
-max_predictions_per_seq = int(masked_lm_prob * max_seq_length_encoder)
+masked_lm_prob = 0.15
+max_predictions_per_seq = 30
 do_whole_word_mask = True
 ```
 
@@ -89,6 +89,44 @@ python3 pretraining-small.py \
 --num_train_steps=500000 \
 --iterations_per_loop=100 \
 --tpu_name=node-2 \
+--tpu_zone=europe-west4-a \
+--save_checkpoints_steps=25000 \
+--use_tpu=True
+```
+
+## how-to multitasks
+
+1. Follow step 1-4 from [../lm-transformer](../lm-transformer).
+
+2. Execute pretraining,
+
+**TPU BASE**,
+
+```bash
+python3 pretraining-base-multitasks.py \
+--input_file=gs://mesolitica-tpu-general/t2t/data/seq2* \
+--output_dir=gs://mesolitica-tpu-general/pegasus-base-multitasks \
+--do_train=True \
+--train_batch_size=64 \
+--num_train_steps=1000000 \
+--iterations_per_loop=100 \
+--tpu_name=node-3 \
+--tpu_zone=europe-west4-a \
+--save_checkpoints_steps=25000 \
+--use_tpu=True
+```
+
+**TPU SMALL**,
+
+```bash
+python3 pretraining-small-multitasks.py \
+--input_file=gs://mesolitica-tpu-general/t2t/data/seq2* \
+--output_dir=gs://mesolitica-tpu-general/pegasus-small-multitasks \
+--do_train=True \
+--train_batch_size=128 \
+--num_train_steps=1000000 \
+--iterations_per_loop=100 \
+--tpu_name=node-4 \
 --tpu_zone=europe-west4-a \
 --save_checkpoints_steps=25000 \
 --use_tpu=True

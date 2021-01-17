@@ -92,7 +92,7 @@ def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
     model = model.lower()
     if model not in _transformer_availability:
         raise Exception(
-            'model not supported, please check supported models from `malaya.subjective.available_transformer()`.'
+            'model not supported, please check supported models from `malaya.subjectivity.available_transformer()`.'
         )
     return softmax.transformer(
         PATH_SUBJECTIVE,

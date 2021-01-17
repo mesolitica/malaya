@@ -1,4 +1,4 @@
-from malaya.model.tf import TATABAHASA
+from malaya.model.tf import Tatabahasa
 from malaya.path import PATH_TATABAHASA, S3_PATH_TATABAHASA
 from malaya.supervised import transformer as load_transformer
 from herpetologist import check_type
@@ -166,7 +166,7 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
 
     Returns
     -------
-    result: malaya.model.tf.TATABAHASA class
+    result: malaya.model.tf.Tatabahasa class
     """
 
     model = model.lower()
@@ -179,7 +179,7 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
         PATH_TATABAHASA,
         S3_PATH_TATABAHASA,
         model,
-        TATABAHASA,
+        Tatabahasa,
         quantized = quantized,
         **kwargs
     )

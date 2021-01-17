@@ -11,7 +11,7 @@ from herpetologist import check_type
 from typing import List
 
 
-class BAYES:
+class Bayes:
     def __init__(
         self,
         multinomial,
@@ -63,7 +63,7 @@ class BAYES:
         return outputs
 
 
-class BINARY_BAYES(BAYES):
+class BinaryBayes(Bayes):
     def __init__(
         self,
         multinomial,
@@ -73,7 +73,7 @@ class BINARY_BAYES(BAYES):
         subword_mode,
         cleaning = simple_textcleaning,
     ):
-        BAYES.__init__(
+        Bayes.__init__(
             self, multinomial, label, vectorize, bpe, subword_mode, cleaning
         )
 
@@ -114,7 +114,7 @@ class BINARY_BAYES(BAYES):
         return self._predict_proba(strings = strings, add_neutral = add_neutral)
 
 
-class MULTICLASS_BAYES(BAYES):
+class MulticlassBayes(Bayes):
     def __init__(
         self,
         multinomial,
@@ -124,7 +124,7 @@ class MULTICLASS_BAYES(BAYES):
         subword_mode,
         cleaning = simple_textcleaning,
     ):
-        BAYES.__init__(
+        Bayes.__init__(
             self, multinomial, label, vectorize, bpe, subword_mode, cleaning
         )
 
@@ -161,7 +161,7 @@ class MULTICLASS_BAYES(BAYES):
         return self._predict_proba(strings = strings)
 
 
-class MULTILABEL_BAYES(BAYES):
+class MultilabelBayes(Bayes):
     def __init__(
         self,
         multinomial,
@@ -171,7 +171,7 @@ class MULTILABEL_BAYES(BAYES):
         subword_mode,
         cleaning = simple_textcleaning,
     ):
-        BAYES.__init__(
+        Bayes.__init__(
             self, multinomial, label, vectorize, bpe, subword_mode, cleaning
         )
 
@@ -226,7 +226,7 @@ class MULTILABEL_BAYES(BAYES):
         return results
 
 
-class LANGUAGE_DETECTION:
+class LanguageDetection:
     def __init__(self, model, lang_labels):
         self._model = model
         self._labels = list(lang_labels.values())

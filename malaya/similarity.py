@@ -11,14 +11,14 @@ from malaya.text.bpe import (
     sentencepiece_tokenizer_xlnet,
 )
 from malaya.preprocessing import _tokenizer
-from malaya.model.bert import SIAMESE_BERT
-from malaya.model.xlnet import SIAMESE_XLNET
+from malaya.model.bert import SiameseBERT
+from malaya.model.xlnet import SiameseXLNET
 from malaya.path import PATH_SIMILARITY, S3_PATH_SIMILARITY
 from herpetologist import check_type
 from typing import List, Tuple, Callable
 
 
-class VECTORIZER_SIMILARITY:
+class VectorizerSimilarity:
     def __init__(self, vectorizer):
         self._vectorizer = vectorizer
 
@@ -147,7 +147,7 @@ class VECTORIZER_SIMILARITY:
         plt.show()
 
 
-class DOC2VEC_SIMILARITY:
+class Doc2VecSimilarity:
     def __init__(self, vectorizer):
         self._vectorizer = vectorizer
         self._jarowinkler = JaroWinkler()
@@ -398,12 +398,12 @@ def doc2vec(vectorizer):
 
     Returns
     -------
-    result: malaya.similarity.DOC2VEC_SIMILARITY
+    result: malaya.similarity.Doc2VecSimilarity
     """
 
     if not hasattr(vectorizer, 'get_vector_by_name'):
-        raise ValueError('vectorizer must has `get_vector_by_name` method')
-    return DOC2VEC_SIMILARITY(vectorizer)
+        raise ValueError('vectorizer must have `get_vector_by_name` method')
+    return Doc2VecSimilarity(vectorizer)
 
 
 def encoder(vectorizer):
@@ -417,12 +417,12 @@ def encoder(vectorizer):
 
     Returns
     -------
-    result: malaya.similarity.VECTORIZER_SIMILARITY
+    result: malaya.similarity.VectorizerSimilarity
     """
 
     if not hasattr(vectorizer, 'vectorize'):
-        raise ValueError('vectorizer must has `vectorize` method')
-    return VECTORIZER_SIMILARITY(vectorizer)
+        raise ValueError('vectorizer must have `vectorize` method')
+    return VectorizerSimilarity(vectorizer)
 
 
 _transformer_availability = {
@@ -560,13 +560,13 @@ def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
 
     Returns
     -------
-    result : malaya.model.bert.SIAMESE_BERT class
+    result : malaya.model.bert.SiameseBERT class
     """
 
     return _transformer(
         model = model,
-        bert_class = SIAMESE_BERT,
-        xlnet_class = SIAMESE_XLNET,
+        bert_class = SiameseBERT,
+        xlnet_class = SiameseXLNET,
         quantized = quantized,
         siamese = True,
         **kwargs

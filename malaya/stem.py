@@ -28,7 +28,7 @@ def _classification_textcleaning_stemmer(string, stemmer):
     return ' '.join([word[0] for word in string if len(word[0]) > 1])
 
 
-class SASTRAWI:
+class Sastrawi:
     def __init__(self):
         from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 
@@ -80,7 +80,7 @@ class NAIVE:
         return ' '.join(result)
 
 
-class DEEP_STEMMER:
+class DeepStemmer:
     def __init__(self, X, greedy, beam, sess, bpe, subword_mode, tokenizer):
 
         self._X = X
@@ -175,7 +175,7 @@ def sastrawi():
 
     Returns
     -------
-    result: malaya.stem.SASTRAWI class
+    result: malaya.stem.Sastrawi class
     """
     try:
         from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
@@ -183,7 +183,7 @@ def sastrawi():
         raise ModuleNotFoundError(
             'PySastrawi not installed. Please install it by `pip install PySastrawi` and try again.'
         )
-    return SASTRAWI()
+    return Sastrawi()
 
 
 @check_type
@@ -200,7 +200,7 @@ def deep_model(quantized: bool = False, **kwargs):
 
     Returns
     -------
-    result: malaya.stem.DEEP_STEMMER class
+    result: malaya.stem.DeepStemmer class
     """
     from malaya.preprocessing import _tokenizer
 
@@ -215,7 +215,7 @@ def deep_model(quantized: bool = False, **kwargs):
 
     bpe, subword_mode = load_yttm(PATH_STEM['deep']['bpe'], id_mode = True)
 
-    return DEEP_STEMMER(
+    return DeepStemmer(
         g.get_tensor_by_name('import/Placeholder:0'),
         g.get_tensor_by_name('import/decode_1/greedy:0'),
         g.get_tensor_by_name('import/decode_2/beam:0'),

@@ -24,20 +24,22 @@ _t5_availability = {
 }
 
 _transformer_availability = {
-    'small': {
-        'Size (MB)': 379,
-        'Quantized Size (MB)': 120,
-        'ROUGE-1': 0.33,
-        'ROUGE-2': 0.13417,
-        'ROUGE-L': 0.23059,
-    },
-    'base': {
+    't2t': {
         'Size (MB)': 832,
         'Quantized Size (MB)': 279,
         'ROUGE-1': 0.33209,
         'ROUGE-2': 0.13622,
         'ROUGE-L': 0.23348,
     },
+    'small-t2t': {
+        'Size (MB)': 379,
+        'Quantized Size (MB)': 120,
+        'ROUGE-1': 0.33,
+        'ROUGE-2': 0.13417,
+        'ROUGE-L': 0.23059,
+    },
+    'bigbird': {},
+    'small-bigbird': {},
 }
 
 
@@ -95,7 +97,7 @@ def t5(
 
     Returns
     -------
-    result: malaya.model.t5.SUMMARIZATION class
+    result: malaya.model.t5.Summarization class
     """
 
     model = model.lower()
@@ -104,13 +106,13 @@ def t5(
             'model not supported, please check supported models from `malaya.summarization.abstractive.available_t5()`.'
         )
 
-    from malaya.model.t5 import SUMMARIZATION
+    from malaya.model.t5 import Summarization
 
     return t5_load.load(
         path = PATH_SUMMARIZE,
         s3_path = S3_PATH_SUMMARIZE,
         model = model,
-        model_class = SUMMARIZATION,
+        model_class = Summarization,
         compressed = compressed,
         quantized = optimized,
         **kwargs,
@@ -118,7 +120,7 @@ def t5(
 
 
 @check_type
-def transformer(model: str = 'base', quantized: bool = False, **kwargs):
+def transformer(model: str = 't2t', quantized: bool = False, **kwargs):
 
     """
     Load Malaya transformer encoder-decoder model to generate a summary given a string.
@@ -128,8 +130,10 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
     model : str, optional (default='base')
         Model architecture supported. Allowed values:
 
-        * ``'small'`` - Malaya Transformer SMALL parameters.
-        * ``'base'`` - Malaya Transformer BASE parameters.
+        * ``'t2t'`` - Malaya Transformer BASE parameters.
+        * ``'small-t2t'`` - Malaya Transformer SMALL parameters.
+        * ``'bigbird'`` - Google BigBird BASE parameters.
+        * ``'small-bigbird'`` - Google BigBird SMALL parameters.
     
     quantized : bool, optional (default=False)
         if True, will load 8-bit quantized model. 
@@ -137,7 +141,7 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
 
     Returns
     -------
-    result: malaya.model.tf.SUMMARIZATION class
+    result: malaya.model.tf.Summarization class
     """
 
     model = model.lower()
@@ -145,13 +149,16 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
         raise ValueError(
             'model not supported, please check supported models from `malaya.summarization.abstractive.available_transformer()`.'
         )
-    from malaya.model.tf import SUMMARIZATION
+    from malaya.model.tf import Summarization
 
-    return transformer_load.load_lm(
-        path = PATH_SUMMARIZE['transformer'],
-        s3_path = S3_PATH_SUMMARIZE['transformer'],
-        model = model,
-        model_class = SUMMARIZATION,
-        quantized = quantized,
-        **kwargs,
-    )
+    if 't2t' in model:
+        return transformer_load.load_lm(
+            path = PATH_SUMMARIZE['transformer'],
+            s3_path = S3_PATH_SUMMARIZE['transformer'],
+            model = model,
+            model_class = Summarization,
+            quantized = quantized,
+            **kwargs,
+        )
+    if 'bigbird' in model:
+        return

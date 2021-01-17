@@ -24,7 +24,7 @@ flags.DEFINE_string(
 
 flags.DEFINE_integer(
     'max_seq_length_encoder',
-    512,
+    1024,
     'The maximum total input sequence length after WordPiece tokenization. '
     'Sequences longer than this will be truncated, and sequences shorter '
     'than this will be padded. Must match data generation.',
@@ -32,17 +32,10 @@ flags.DEFINE_integer(
 
 flags.DEFINE_integer(
     'max_seq_length_decoder',
-    128,
+    1024,
     'The maximum total input sequence length after WordPiece tokenization. '
     'Sequences longer than this will be truncated, and sequences shorter '
     'than this will be padded. Must match data generation.',
-)
-
-flags.DEFINE_integer(
-    'max_predictions_per_seq',
-    30,
-    'Maximum number of masked LM predictions per sequence. '
-    'Must match data generation.',
 )
 
 flags.DEFINE_integer('train_batch_size', 32, 'Total batch size for training.')
@@ -51,10 +44,9 @@ flags.DEFINE_float(
     'learning_rate', 0.001, 'The initial learning rate for Adafactor.'
 )
 
+flags.DEFINE_integer('num_train_steps', 1000000, 'Number of training steps.')
 
-flags.DEFINE_integer('num_train_steps', 100000, 'Number of training steps.')
-
-flags.DEFINE_integer('num_warmup_steps', 10000, 'Number of warmup steps.')
+flags.DEFINE_integer('num_warmup_steps', 20000, 'Number of warmup steps.')
 
 flags.DEFINE_integer(
     'save_checkpoints_steps', 10000, 'How often to save the model checkpoint.'
@@ -106,12 +98,12 @@ flags.DEFINE_string(
     'Initial checkpoint (usually from a pre-trained PEGASUS model).',
 )
 
-vocab_size = 32000
-hidden_size = 768
+vocab_size = 32128
+hidden_size = 512
 filter_size = 3072
-num_encoder_layers = 12
-num_decoder_layers = 12
-num_heads = 12
+num_encoder_layers = 6
+num_decoder_layers = 6
+num_heads = 8
 label_smoothing = 0.0
 dropout = 0.1
 
@@ -147,28 +139,36 @@ def input_fn_builder(
     input_files,
     max_seq_length_encoder,
     max_seq_length_decoder,
-    max_predictions_per_seq,
     is_training,
     num_cpu_threads = 4,
 ):
+
+    data_fields = {
+        'inputs': tf.VarLenFeature(tf.int64),
+        'targets': tf.VarLenFeature(tf.int64),
+    }
+    data_len = {
+        'inputs': max_seq_length_encoder,
+        'targets': max_seq_length_decoder,
+    }
+
+    def parse(serialized_example):
+
+        features = tf.parse_single_example(
+            serialized_example, features = data_fields
+        )
+        for k in features.keys():
+            features[k] = features[k].values
+            features[k] = tf.pad(
+                features[k], [[0, data_len[k] - tf.shape(features[k])[0]]]
+            )
+            features[k].set_shape((data_len[k]))
+
+        return features
+
     def input_fn(params):
         batch_size = params['batch_size']
 
-        name_to_features = {
-            'input_ids': tf.FixedLenFeature([max_seq_length_encoder], tf.int64),
-            'target_ids': tf.FixedLenFeature(
-                [max_seq_length_decoder], tf.int64
-            ),
-            'masked_lm_positions': tf.FixedLenFeature(
-                [max_predictions_per_seq], tf.int64
-            ),
-            'masked_lm_ids': tf.FixedLenFeature(
-                [max_predictions_per_seq], tf.int64
-            ),
-            'masked_lm_weights': tf.FixedLenFeature(
-                [max_predictions_per_seq], tf.float32
-            ),
-        }
         if is_training:
             d = tf.data.Dataset.from_tensor_slices(tf.constant(input_files))
             d = d.repeat()
@@ -185,22 +185,25 @@ def input_fn_builder(
         else:
             d = tf.data.TFRecordDataset(input_files)
             d = d.repeat()
+        print(d)
+        d = d.map(parse, num_parallel_calls = 32)
+        print('parse', d)
         d = d.apply(
             tf.contrib.data.map_and_batch(
-                lambda record: _decode_record(record, name_to_features),
+                lambda record: _decode_record(record, data_fields),
                 batch_size = batch_size,
                 num_parallel_batches = num_cpu_threads,
                 drop_remainder = True,
             )
         )
+        print('map_and_batch', d)
         return d
 
     return input_fn
 
 
-def _decode_record(record, name_to_features):
+def _decode_record(example, name_to_features):
     """Decodes a record to a TensorFlow example."""
-    example = tf.parse_single_example(record, name_to_features)
 
     # tf.Example only supports tf.int64, but the TPU only supports tf.int32.
     # So cast all int64 to int32.
@@ -213,118 +216,6 @@ def _decode_record(record, name_to_features):
     return example
 
 
-def assert_rank(tensor, expected_rank, name = None):
-    if name is None:
-        name = tensor.name
-
-    expected_rank_dict = {}
-    if isinstance(expected_rank, six.integer_types):
-        expected_rank_dict[expected_rank] = True
-    else:
-        for x in expected_rank:
-            expected_rank_dict[x] = True
-
-    actual_rank = tensor.shape.ndims
-    if actual_rank not in expected_rank_dict:
-        scope_name = tf.get_variable_scope().name
-        raise ValueError(
-            'For the tensor `%s` in scope `%s`, the actual rank '
-            '`%d` (shape = %s) is not equal to the expected rank `%s`'
-            % (
-                name,
-                scope_name,
-                actual_rank,
-                str(tensor.shape),
-                str(expected_rank),
-            )
-        )
-
-
-def get_shape_list(tensor, expected_rank = None, name = None):
-    if name is None:
-        name = tensor.name
-
-    if expected_rank is not None:
-        assert_rank(tensor, expected_rank, name)
-
-    shape = tensor.shape.as_list()
-
-    non_static_indexes = []
-    for (index, dim) in enumerate(shape):
-        if dim is None:
-            non_static_indexes.append(index)
-
-    if not non_static_indexes:
-        return shape
-
-    dyn_shape = tf.shape(tensor)
-    for index in non_static_indexes:
-        shape[index] = dyn_shape[index]
-    return shape
-
-
-def gather_indexes(sequence_tensor, positions):
-    """Gathers the vectors at the specific positions over a minibatch."""
-    sequence_shape = get_shape_list(sequence_tensor, expected_rank = 3)
-    batch_size = sequence_shape[0]
-    seq_length = sequence_shape[1]
-    width = sequence_shape[2]
-
-    flat_offsets = tf.reshape(
-        tf.range(0, batch_size, dtype = tf.int32) * seq_length, [-1, 1]
-    )
-    flat_positions = tf.reshape(positions + flat_offsets, [-1])
-    flat_sequence_tensor = tf.reshape(
-        sequence_tensor, [batch_size * seq_length, width]
-    )
-    output_tensor = tf.gather(flat_sequence_tensor, flat_positions)
-    return output_tensor
-
-
-def get_masked_lm_output(
-    input_tensor, output_weights, positions, label_ids, label_weights
-):
-    """Get loss and log probs for the masked LM."""
-    input_tensor = gather_indexes(input_tensor, positions)
-
-    with tf.variable_scope('cls/predictions'):
-        with tf.variable_scope('transform'):
-            input_tensor = tf.layers.dense(
-                input_tensor,
-                units = hidden_size,
-                activation = tf.nn.relu,
-                kernel_initializer = tf.random_normal_initializer(
-                    stddev = hidden_size ** -0.5, dtype = tf.float32
-                ),
-            )
-            input_tensor = contrib_layers.layer_norm(input_tensor)
-
-        output_bias = tf.get_variable(
-            'output_bias',
-            shape = [vocab_size],
-            initializer = tf.zeros_initializer(),
-        )
-        logits = tf.matmul(input_tensor, output_weights, transpose_b = True)
-        logits = tf.nn.bias_add(logits, output_bias)
-        log_probs = tf.nn.log_softmax(logits, axis = -1)
-
-        label_ids = tf.reshape(label_ids, [-1])
-        label_weights = tf.reshape(label_weights, [-1])
-
-        one_hot_labels = tf.one_hot(
-            label_ids, depth = vocab_size, dtype = tf.float32
-        )
-
-        per_example_loss = -tf.reduce_sum(
-            log_probs * one_hot_labels, axis = [-1]
-        )
-        numerator = tf.reduce_sum(label_weights * per_example_loss)
-        denominator = tf.reduce_sum(label_weights) + 1e-5
-        loss = numerator / denominator
-
-    return (loss, per_example_loss, log_probs)
-
-
 def model_fn_builder(
     init_checkpoint, learning_rate, num_train_steps, num_warmup_steps, use_tpu
 ):
@@ -335,11 +226,8 @@ def model_fn_builder(
                 '  name = %s, shape = %s' % (name, features[name].shape)
             )
 
-        input_ids = features['input_ids']
-        target_ids = features['target_ids']
-        masked_lm_positions = features['masked_lm_positions']
-        masked_lm_ids = features['masked_lm_ids']
-        masked_lm_weights = features['masked_lm_weights']
+        inputs = features['inputs']
+        targets = features['targets']
 
         is_training = mode == tf.estimator.ModeKeys.TRAIN
 
@@ -355,22 +243,10 @@ def model_fn_builder(
         )
 
         loss, outputs = model(
-            {'inputs': input_ids, 'targets': target_ids}, training = is_training
+            {'inputs': inputs, 'targets': targets}, training = is_training
         )
 
-        (
-            masked_lm_loss,
-            masked_lm_example_loss,
-            masked_lm_log_probs,
-        ) = get_masked_lm_output(
-            model._context['memory'],
-            model._embedding_layer.weights_VxD,
-            masked_lm_positions,
-            masked_lm_ids,
-            masked_lm_weights,
-        )
-
-        total_loss = masked_lm_loss + loss
+        total_loss = loss
 
         tvars = tf.trainable_variables()
 
@@ -412,23 +288,6 @@ def model_fn_builder(
                 / 0.01
                 * tf.rsqrt(tf.maximum(tf.to_float(global_step), 10000))
             )
-
-            if num_warmup_steps:
-                global_steps_int = tf.cast(global_step, tf.int32)
-                warmup_steps_int = tf.constant(
-                    num_warmup_steps, dtype = tf.int32
-                )
-
-                global_steps_float = tf.cast(global_steps_int, tf.float32)
-                warmup_steps_float = tf.cast(warmup_steps_int, tf.float32)
-
-                warmup_percent_done = global_steps_float / warmup_steps_float
-                warmup_learning_rate = init_lr * warmup_percent_done
-
-                is_warmup = tf.cast(
-                    global_steps_int < warmup_steps_int, tf.float32
-                )
-                lr = (1.0 - is_warmup) * lr + is_warmup * warmup_learning_rate
 
             optimizer = adafactor.AdafactorOptimizer(
                 learning_rate = lr,
@@ -565,7 +424,6 @@ def main(_):
             input_files = input_files,
             max_seq_length_encoder = FLAGS.max_seq_length_encoder,
             max_seq_length_decoder = FLAGS.max_seq_length_decoder,
-            max_predictions_per_seq = FLAGS.max_predictions_per_seq,
             is_training = True,
         )
         estimator.train(

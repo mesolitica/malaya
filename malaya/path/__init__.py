@@ -548,14 +548,14 @@ PATH_PARAPHRASE = {
         },
     },
     'transformer': {
-        'base': {
+        't2t': {
             'model': home + '/paraphrase/transformer/base/model.pb',
             'quantized': home
             + '/paraphrase/transformer/base/quantized/model.pb',
             'vocab': home + '/paraphrase/sp10m.cased.t5.model',
             'version': 'v41',
         },
-        'small': {
+        'small-t2t': {
             'model': home + '/paraphrase/transformer/small/model.pb',
             'quantized': home
             + '/paraphrase/transformer/small/quantized/model.pb',
@@ -580,12 +580,12 @@ S3_PATH_PARAPHRASE = {
         },
     },
     'transformer': {
-        'base': {
+        't2t': {
             'model': 'v41/paraphrase/transformer-base.pb',
             'quantized': 'v41/paraphrase/transformer-base.pb.quantized',
             'vocab': 'tokenizer/sp10m.cased.t5.model',
         },
-        'small': {
+        'small-t2t': {
             'model': 'v41/paraphrase/transformer-small.pb',
             'quantized': 'v41/paraphrase/transformer-small.pb.quantized',
             'vocab': 'tokenizer/sp10m.cased.t5.model',
@@ -1183,14 +1183,14 @@ PATH_SUMMARIZE = {
         },
     },
     'transformer': {
-        'base': {
+        't2t': {
             'model': home + '/summarize/transformer/base/model.pb',
             'quantized': home
             + '/summarize/transformer/base/quantized/model.pb',
             'vocab': home + '/summarize/sp10m.cased.t5.model',
             'version': 'v41',
         },
-        'small': {
+        'small-t2t': {
             'model': home + '/summarize/transformer/small/model.pb',
             'quantized': home
             + '/summarize/transformer/small/quantized/model.pb',
@@ -1224,12 +1224,12 @@ S3_PATH_SUMMARIZE = {
         },
     },
     'transformer': {
-        'base': {
+        't2t': {
             'model': 'v41/summarization/transformer-base.pb',
             'quantized': 'v41/summarization/transformer-base.pb.quantized',
             'vocab': 'tokenizer/sp10m.cased.t5.model',
         },
-        'small': {
+        'small-t2t': {
             'model': 'v39/summarization/small.pb',
             'quantized': 'v40/summarize/transformer-small.pb.quantized',
             'vocab': 'tokenizer/sp10m.cased.t5.model',

@@ -2,7 +2,6 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.cluster import KMeans
 from sklearn.manifold import MDS
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
-from malaya.text.vectorizer import SkipGramVectorizer
 from malaya.text.function import (
     simple_textcleaning,
     split_into_sentences,
@@ -710,7 +709,7 @@ def cluster_entity_linking(
     validator.validate_function(cleaning, 'cleaning')
 
     if 'max_df' not in inspect.getargspec(topic_modeling_model)[0]:
-        raise ValueError('topic_modeling_model must has `max_df` parameter')
+        raise ValueError('topic_modeling_model must have `max_df` parameter')
 
     if min_df < 1:
         raise ValueError('min_df must be bigger than 0')

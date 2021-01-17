@@ -176,7 +176,7 @@ def _return_known(word, dicts):
     return set(w for w in word if w in dicts)
 
 
-class SPELL:
+class Spell:
     def __init__(self, sp_tokenizer, corpus, add_norvig_method = True):
         self._sp_tokenizer = sp_tokenizer
         if self._sp_tokenizer:
@@ -223,6 +223,7 @@ class SPELL:
         if len(word) > 2:
             # bapak -> bapa, mintak -> minta, mntak -> mnta
             if word[-2:] == 'ak':
+                inner = word[:-1]
                 fuzziness.append(word[:-1])
                 pseudo.extend(
                     self._augment(word[:-1], sp_tokenizer = self._sp_tokenizer)
@@ -295,9 +296,9 @@ class SPELL:
         return ttt
 
 
-class TRANSFORMER(SPELL):
+class Transformer(Spell):
     def __init__(self, model, corpus, sp_tokenizer):
-        SPELL.__init__(self, sp_tokenizer, corpus, add_norvig_method = False)
+        Spell.__init__(self, sp_tokenizer, corpus, add_norvig_method = False)
         self._model = model
         self._padding = tf.keras.preprocessing.sequence.pad_sequences
 
@@ -405,7 +406,7 @@ class TRANSFORMER(SPELL):
         )
 
 
-class PROBABILITY(SPELL):
+class Probability(Spell):
     """
     The SpellCorrector extends the functionality of the Peter Norvig's
     spell-corrector in http://norvig.com/spell-correct.html
@@ -415,7 +416,7 @@ class PROBABILITY(SPELL):
     """
 
     def __init__(self, corpus, sp_tokenizer = None):
-        SPELL.__init__(self, sp_tokenizer, corpus)
+        Spell.__init__(self, sp_tokenizer, corpus)
 
     def tokens(text):
         return REGEX_TOKEN.findall(text.lower())
@@ -550,7 +551,7 @@ class PROBABILITY(SPELL):
         return case_of(word)(self.best_elong_candidate(word.lower()))
 
 
-class SYMSPELL:
+class Symspell:
     """
     The SymspellCorrector extends the functionality of symspeller, https://github.com/mammothb/symspellpy
     And improve it using some algorithms from Normalization of noisy texts in Malaysian online reviews,
@@ -590,6 +591,7 @@ class SYMSPELL:
         if len(word) > 2:
             # bapak -> bapa, mintak -> minta, mntak -> mnta
             if word[-2:] == 'ak':
+                inner = word[:-1]
                 fuzziness.append(word[:-1])
                 result.extend(list(_augment_vowel_alternate(word[:-1])))
 
@@ -725,7 +727,7 @@ def probability(sentence_piece: bool = False, **kwargs):
 
     Returns
     -------
-    result: malaya.spell.PROBABILITY class
+    result: malaya.spell.Probability class
     """
     check_file(PATH_NGRAM[1], S3_PATH_NGRAM[1], **kwargs)
 
@@ -744,7 +746,7 @@ def probability(sentence_piece: bool = False, **kwargs):
 
     with open(PATH_NGRAM[1]['model']) as fopen:
         corpus = json.load(fopen)
-    return PROBABILITY(corpus, tokenizer)
+    return Probability(corpus, tokenizer)
 
 
 @check_type
@@ -761,7 +763,7 @@ def symspell(
 
     Returns
     -------
-    result: malaya.spell.SYMSPELL class
+    result: malaya.spell.Symspell class
     """
 
     check_file(PATH_NGRAM['symspell'], S3_PATH_NGRAM['symspell'], **kwargs)
@@ -778,7 +780,7 @@ def symspell(
     sym_spell.load_dictionary(dictionary_path, term_index, count_index)
     with open(PATH_NGRAM[1]['model']) as fopen:
         corpus = json.load(fopen)
-    return SYMSPELL(sym_spell, Verbosity.ALL, corpus, k = top_k)
+    return Symspell(sym_spell, Verbosity.ALL, corpus, k = top_k)
 
 
 @check_type
@@ -793,10 +795,10 @@ def transformer(model, sentence_piece: bool = False, **kwargs):
 
     Returns
     -------
-    result: malaya.spell.TRANSFORMER class
+    result: malaya.spell.Transformer class
     """
     if not hasattr(model, '_log_vectorize'):
-        raise ValueError('model must has `_log_vectorize` method')
+        raise ValueError('model must have `_log_vectorize` method')
 
     check_file(PATH_NGRAM[1], S3_PATH_NGRAM[1], **kwargs)
 
@@ -815,4 +817,4 @@ def transformer(model, sentence_piece: bool = False, **kwargs):
 
     with open(PATH_NGRAM[1]['model']) as fopen:
         corpus = json.load(fopen)
-    return TRANSFORMER(model, corpus, tokenizer)
+    return Transformer(model, corpus, tokenizer)

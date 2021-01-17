@@ -7,6 +7,7 @@ from malaya.text.bpe import sentencepiece_tokenizer_bert as load_sentencepiece
 from malaya.text.tatabahasa import alphabet, consonants, vowels
 from malaya.supervised import t5 as t5_load
 from malaya.path import PATH_NGRAM, S3_PATH_NGRAM
+from malaya.path import PATH_GENERATOR, S3_PATH_GENERATOR
 from malaya.function import check_file
 from herpetologist import check_type
 from typing import List, Dict, Tuple, Callable
@@ -369,7 +370,7 @@ def transformer(
     """
 
     if not hasattr(model, 'samples'):
-        raise ValueError('model must has `samples` attribute')
+        raise ValueError('model must have `samples` attribute')
     if generate_length < 10:
         raise ValueError('generate_length must bigger than 10')
     if not 0 < temperature <= 1.0:
@@ -501,7 +502,7 @@ def t5(
 
     Returns
     -------
-    result: malaya.model.t5.GENERATOR class
+    result: malaya.model.t5.Generator class
     """
 
     model = model.lower()
@@ -510,15 +511,13 @@ def t5(
             'model not supported, please check supported models from `malaya.generator.available_t5()`.'
         )
 
-    from malaya.path import PATH_GENERATOR, S3_PATH_GENERATOR
-
-    from malaya.model.t5 import GENERATOR
+    from malaya.model.t5 import Generator
 
     return t5_load.load(
         path = PATH_GENERATOR,
         s3_path = S3_PATH_GENERATOR,
         model = model,
-        model_class = GENERATOR,
+        model_class = Generator,
         compressed = compressed,
         quantized = optimized,
         **kwargs,

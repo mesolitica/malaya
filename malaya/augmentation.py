@@ -148,9 +148,9 @@ def wordvector(
     if not isinstance(cleaning, Callable) and cleaning is not None:
         raise ValueError('cleaning must be a callable type or None')
     if not hasattr(wordvector, 'batch_n_closest'):
-        raise ValueError('wordvector must has `batch_n_closest` method')
+        raise ValueError('wordvector must have `batch_n_closest` method')
     if not hasattr(wordvector, '_dictionary'):
-        raise ValueError('wordvector must has `_dictionary` attribute')
+        raise ValueError('wordvector must have `_dictionary` attribute')
 
     from malaya.preprocessing import _tokenizer
 
@@ -236,7 +236,7 @@ def transformer(
     if not isinstance(cleaning, Callable) and cleaning is not None:
         raise ValueError('cleaning must be a callable type or None')
     if not hasattr(model, 'samples'):
-        raise ValueError('model must has `samples` attribute')
+        raise ValueError('model must have `samples` attribute')
     if not (threshold > 0 and threshold < 1):
         raise ValueError('threshold must be bigger than 0 and less than 1')
     if not top_p > 0:

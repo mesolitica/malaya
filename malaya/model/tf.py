@@ -57,7 +57,7 @@ class _LANG_MODEL:
         self.logits = tf.layers.dense(embed, output)
 
 
-class DEEP_LANG:
+class DeepLang:
     def __init__(self, path, vectorizer, label, bpe, type):
         self._graph = tf.Graph()
         with self._graph.as_default():
@@ -129,7 +129,7 @@ class DEEP_LANG:
         return dicts
 
 
-class TRANSLATION:
+class Translation:
     def __init__(self, X, greedy, beam, sess, encoder):
 
         self._X = X
@@ -185,7 +185,7 @@ class TRANSLATION:
         return self._translate(strings, beam_search = True)
 
 
-class CONSTITUENCY:
+class Constituency:
     def __init__(
         self,
         input_ids,
@@ -375,7 +375,7 @@ class CONSTITUENCY:
         return tree_from_str(make_str())
 
 
-class SUMMARIZATION:
+class Summarization:
     def __init__(self, X, top_p, greedy, beam, nucleus, sess, tokenizer):
 
         self._X = X
@@ -539,7 +539,7 @@ class SUMMARIZATION:
         )
 
 
-class PARAPHRASE:
+class Paraphrase:
     def __init__(self, X, top_p, greedy, beam, nucleus, sess, tokenizer):
 
         self._X = X
@@ -655,7 +655,7 @@ class T2T:
         return self._predict(strings, beam_search = True)
 
 
-class TRUE_CASE(T2T):
+class TrueCase(T2T):
     def __init__(self, X, greedy, beam, sess, encoder):
         T2T.__init__(
             self,
@@ -699,7 +699,7 @@ class TRUE_CASE(T2T):
         return self._beam_decoder(strings)
 
 
-class SEGMENTATION(T2T):
+class Segmentation(T2T):
     def __init__(self, X, greedy, beam, sess, encoder):
         T2T.__init__(
             self,
@@ -743,7 +743,7 @@ class SEGMENTATION(T2T):
         return self._beam_decoder(strings)
 
 
-class TATABAHASA:
+class Tatabahasa:
     def __init__(self, X, greedy, tag_greedy, sess, tokenizer):
         self._X = X
         self._greedy = greedy

@@ -2,7 +2,7 @@ import tensorflow as tf
 import numpy as np
 
 
-class LDA2VEC:
+class LDA2Vec:
     def __init__(
         self,
         num_unique_documents,
