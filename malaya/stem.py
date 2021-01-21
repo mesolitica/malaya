@@ -40,7 +40,7 @@ class Sastrawi:
         return self.sastrawi_stemmer.stem(string)
 
 
-class NAIVE:
+class Naive:
     def __init__(self, tokenizer):
         self._tokenizer = tokenizer
 
@@ -161,11 +161,11 @@ def naive():
 
     Returns
     -------
-    result : malaya.stem.NAIVE class
+    result : malaya.stem.Naive class
     """
     from malaya.preprocessing import _tokenizer
 
-    return NAIVE(tokenizer = _tokenizer)
+    return Naive(tokenizer = _tokenizer)
 
 
 @check_type

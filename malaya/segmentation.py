@@ -64,7 +64,7 @@ class _Pdist(dict):
             return self.unk_prob(key, self.total)
 
 
-class SEGMENTER:
+class Segmenter:
     def __init__(self, max_split_length = 20):
         self.unigrams = _read_stats(1)
         self.bigrams = _read_stats(2)
@@ -155,12 +155,12 @@ def viterbi(max_split_length: int = 20, **kwargs):
 
     Returns
     -------
-    result : malaya.segmentation.SEGMENTER class
+    result : malaya.segmentation.Segmenter class
     """
 
     check_file(PATH_PREPROCESSING[1], S3_PATH_PREPROCESSING[1], **kwargs)
     check_file(PATH_PREPROCESSING[2], S3_PATH_PREPROCESSING[2], **kwargs)
-    return SEGMENTER(max_split_length = max_split_length)
+    return Segmenter(max_split_length = max_split_length)
 
 
 def available_transformer():

@@ -261,7 +261,7 @@ class DeepTopic:
         return [self._corpus[i] for i in reverse_sorted[:len_sentence]]
 
 
-class TOPIC:
+class Topic:
     def __init__(
         self, features, comp, corpus, transformed, vectorizer, vectors
     ):
@@ -441,7 +441,7 @@ def _base_topic_modelling(
     tf = tf_vectorizer.fit_transform(corpus)
     tf_features = tf_vectorizer.get_feature_names()
     compose = decomposition(n_topics).fit(tf)
-    return TOPIC(
+    return Topic(
         tf_features,
         compose,
         [classification_textcleaning(c) for c in corpus],
@@ -489,7 +489,7 @@ def lda(
 
     Returns
     -------
-    result: malaya.topic_modelling.TOPIC class
+    result: malaya.topic_modelling.Topic class
     """
     stopwords = validator.validate_stopwords(stopwords)
     stopwords = list(stopwords)
@@ -545,7 +545,7 @@ def nmf(
 
     Returns
     -------
-    TOPIC: malaya.topic_modelling.TOPIC class
+    Topic: malaya.topic_modelling.Topic class
     """
     stopwords = validator.validate_stopwords(stopwords)
     stopwords = list(stopwords)
@@ -601,7 +601,7 @@ def lsa(
 
     Returns
     -------
-    TOPIC: malaya.topic_modelling.TOPIC class
+    Topic: malaya.topic_modelling.Topic class
     """
     stopwords = validator.validate_stopwords(stopwords)
     stopwords = list(stopwords)

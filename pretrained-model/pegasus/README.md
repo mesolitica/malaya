@@ -66,7 +66,7 @@ We do not want to mask numbers or words started with `RM`.
 
 ```bash
 python3 pretraining-base.py \
---input_file=gs://mesolitica-tpu-general/pegasus-data/*.tfrecord \
+--input_file=gs://mesolitica-tpu-general/pegasus-data-v2/*.tfrecord \
 --output_dir=gs://mesolitica-tpu-general/pegasus-base \
 --do_train=True \
 --train_batch_size=512 \
@@ -82,7 +82,7 @@ python3 pretraining-base.py \
 
 ```bash
 python3 pretraining-small.py \
---input_file=gs://mesolitica-tpu-general/pegasus-data/*.tfrecord \
+--input_file=gs://mesolitica-tpu-general/pegasus-data-v2/*.tfrecord \
 --output_dir=gs://mesolitica-tpu-general/pegasus-small \
 --do_train=True \
 --train_batch_size=1024 \
