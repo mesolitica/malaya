@@ -4,11 +4,6 @@ import networkx as nx
 from collections import defaultdict
 from sklearn.metrics.pairwise import cosine_similarity
 from malaya.text import rake as rake_function
-from sklearn.feature_extraction.text import CountVectorizer
-from malaya.text.vectorizer import (
-    SkipGramCountVectorizer,
-    SkipGramTfidfVectorizer,
-)
 from malaya.text.function import (
     simple_textcleaning,
     transformer_textcleaning,
@@ -38,7 +33,7 @@ def _auto_ngram(string, stopwords):
     return vocab
 
 
-def _base(string, vectorizer, ngram, stopwords, **kwargs):
+def _base(string, vectorizer, **kwargs):
     s = vectorizer.fit([string])
     vocab = defaultdict(int)
     tokens = s.build_analyzer()(string)
@@ -63,8 +58,12 @@ def rake(
     Parameters
     ----------
     string: str
-    model: Object, optional (default='None')
+    model: Object, optional (default=None)
         Transformer model or any model has `attention` method.
+    vectorizer: Object, optional (default=None)
+        Prefer `sklearn.feature_extraction.text.CountVectorizer` or,
+        `malaya.text.vectorizer.SkipGramCountVectorizer`.
+        If None, will generate ngram automatically based on `stopwords`.
     top_k: int, optional (default=5)
         return top-k results.
     ngram: tuple, optional (default=(1,1))
@@ -83,13 +82,17 @@ def rake(
 
     if model is not None:
         if not hasattr(model, 'attention'):
-            raise ValueError('model must have or `attention` method')
+            raise ValueError('model must have `attention` method')
     if top_k < 1:
         raise ValueError('top_k must bigger than 0')
     if atleast < 1:
         raise ValueError('atleast must bigger than 0')
     if not vectorizer:
         auto_ngram = True
+    else:
+        auto_ngram = False
+        if not hasattr(vectorizer, 'fit'):
+            raise ValueError('vectorizer must have `fit` method')
     if auto_ngram and not len(stopwords):
         raise ValueError('insert stopwords if auto_ngram')
 
@@ -106,14 +109,7 @@ def rake(
     if auto_ngram:
         vocab = _auto_ngram(string, stopwords)
     else:
-        vocab = _base(
-            string,
-            vectorizer = vectorizer,
-            ngram_method = ngram_method,
-            ngram = ngram,
-            stopwords = stopwords,
-            **kwargs
-        )
+        vocab = _base(string, vectorizer = vectorizer, **kwargs)
     phrase_list = list(vocab.keys())
     scores = rake_function.calculate_word_scores(phrase_list, attentions = d)
     keywordcandidates = rake_function.generate_candidate_keyword_scores(
@@ -135,11 +131,9 @@ def rake(
 @check_type
 def textrank(
     string: str,
-    vectorizer,
+    model = None,
+    vectorizer = None,
     top_k: int = 5,
-    auto_ngram: bool = True,
-    ngram_method: str = 'bow',
-    ngram: Tuple[int, int] = (1, 1),
     atleast: int = 1,
     stopwords = get_stopwords,
     **kwargs
@@ -150,19 +144,14 @@ def textrank(
     Parameters
     ----------
     string: str
-    vectorizer: Object, optional (default='None')
+    model: Object, optional (default='None')
         model has `fit_transform` or `vectorize` method.
+    vectorizer: Object, optional (default=None)
+        Prefer `sklearn.feature_extraction.text.CountVectorizer` or, 
+        `malaya.text.vectorizer.SkipGramCountVectorizer`.
+        If None, will generate ngram automatically based on `stopwords`.
     top_k: int, optional (default=5)
         return top-k results.
-    auto_ngram: bool, optional (default=True)
-        If True, will generate keyword candidates using N suitable ngram. Else use `ngram_method`.
-    ngram_method: str, optional (default='bow')
-        Only usable if `auto_ngram` is False. supported ngram generator:
-
-        * ``'bow'`` - bag-of-word.
-        * ``'skipgram'`` - bag-of-word with skip technique.
-    ngram: tuple, optional (default=(1,1))
-        n-grams size.
     atleast: int, optional (default=1)
         at least count appeared in the string to accept as candidate.
     stopwords: List[str], (default=malaya.texts.function.get_stopwords)
@@ -174,36 +163,33 @@ def textrank(
     """
     stopwords = validator.validate_stopwords(stopwords)
 
-    if not hasattr(vectorizer, 'fit_transform') and not hasattr(
-        vectorizer, 'vectorize'
-    ):
+    if not hasattr(model, 'fit_transform') and not hasattr(model, 'vectorize'):
         raise ValueError(
-            'vectorizer must have `fit_transform` or `vectorize` method'
+            'model must have `fit_transform` or `vectorize` method'
         )
+
     if top_k < 1:
         raise ValueError('top_k must bigger than 0')
     if atleast < 1:
         raise ValueError('atleast must bigger than 0')
-    if ngram_method not in methods:
-        raise ValueError("ngram_method must be in ['bow', 'skip-gram']")
+    if not vectorizer:
+        auto_ngram = True
+    else:
+        auto_ngram = False
+        if not hasattr(vectorizer, 'fit'):
+            raise ValueError('vectorizer must have `fit` method')
     if auto_ngram and not len(stopwords):
         raise ValueError('insert stopwords if auto_ngram')
 
     if auto_ngram:
         vocab = _auto_ngram(string, stopwords)
     else:
-        vocab = _base(
-            string,
-            ngram_method = ngram_method,
-            ngram = ngram,
-            stopwords = stopwords,
-            **kwargs
-        )
+        vocab = _base(string, vectorizer = vectorizer, **kwargs)
 
-    if hasattr(vectorizer, 'fit_transform'):
-        vectors = vectorizer.fit_transform(list(vocab.keys()))
-    if hasattr(vectorizer, 'vectorize'):
-        vectors = vectorizer.vectorize(list(vocab.keys()))
+    if hasattr(model, 'fit_transform'):
+        vectors = model.fit_transform(list(vocab.keys()))
+    if hasattr(model, 'vectorize'):
+        vectors = model.vectorize(list(vocab.keys()))
     similar = cosine_similarity(vectors, vectors)
     similar[similar >= 0.99999] = 0
     scores = pagerank(similar)
@@ -224,10 +210,8 @@ def textrank(
 def attention(
     string: str,
     model,
+    vectorizer = None,
     top_k: int = 5,
-    auto_ngram: bool = True,
-    ngram_method: str = 'bow',
-    ngram: Tuple[int, int] = (1, 1),
     atleast: int = 1,
     stopwords = get_stopwords,
     **kwargs
@@ -238,19 +222,14 @@ def attention(
     Parameters
     ----------
     string: str
-    model: Object, optional (default='None')
+    model: Object
         Transformer model or any model has `attention` method.
+    vectorizer: Object, optional (default=None)
+        Prefer `sklearn.feature_extraction.text.CountVectorizer` or, 
+        `malaya.text.vectorizer.SkipGramCountVectorizer`.
+        If None, will generate ngram automatically based on `stopwords`.
     top_k: int, optional (default=5)
         return top-k results.
-    auto_ngram: bool, optional (default=True)
-        If True, will generate keyword candidates using N suitable ngram. Else use `ngram_method`.
-    ngram_method: str, optional (default='bow')
-        Only usable if `auto_ngram` is False. supported ngram generator:
-
-        * ``'bow'`` - bag-of-word.
-        * ``'skipgram'`` - bag-of-word with skip technique.
-    ngram: tuple, optional (default=(1,1))
-        n-grams size.
     atleast: int, optional (default=1)
         at least count appeared in the string to accept as candidate.
     stopwords: List[str], (default=malaya.texts.function.get_stopwords)
@@ -269,8 +248,12 @@ def attention(
         raise ValueError('top_k must bigger than 0')
     if atleast < 1:
         raise ValueError('atleast must bigger than 0')
-    if ngram_method not in methods:
-        raise ValueError("ngram_method must be in ['bow', 'skip-gram']")
+    if not vectorizer:
+        auto_ngram = True
+    else:
+        auto_ngram = False
+        if not hasattr(vectorizer, 'fit'):
+            raise ValueError('vectorizer must have `fit` method')
     if auto_ngram and not len(stopwords):
         raise ValueError('insert stopwords if auto_ngram')
 
@@ -279,13 +262,7 @@ def attention(
     if auto_ngram:
         vocab = _auto_ngram(string, stopwords)
     else:
-        vocab = _base(
-            string,
-            ngram_method = ngram_method,
-            ngram = ngram,
-            stopwords = stopwords,
-            **kwargs
-        )
+        vocab = _base(string, vectorizer = vectorizer, **kwargs)
 
     attention = model.attention([string])[0]
     d = defaultdict(float)

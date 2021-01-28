@@ -49,7 +49,8 @@ _accepted_entities = [
 @check_type
 def cluster_words(list_words: List[str], lowercase: bool = False):
     """
-    cluster similar words based on structure, eg, ['mahathir mohamad', 'mahathir'] = ['mahathir mohamad']
+    cluster similar words based on structure, eg, ['mahathir mohamad', 'mahathir'] = ['mahathir mohamad'].
+    big O = n^2
 
     Parameters
     ----------

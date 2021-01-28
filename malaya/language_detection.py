@@ -18,14 +18,14 @@ label = list(lang_labels.values())
 
 
 @check_type
-def fasttext(quantization: bool = True, **kwargs):
+def fasttext(quantized: bool = True, **kwargs):
 
     """
     Load Fasttext language detection model.
     
     Parameters
     ----------
-    quantization: bool, optional (default=True)
+    quantized: bool, optional (default=True)
         if True, load quantized fasttext model. Else, load original fasttext model.
 
     Returns
@@ -39,7 +39,7 @@ def fasttext(quantization: bool = True, **kwargs):
         raise ModuleNotFoundError(
             'fasttext not installed. Please install it by `pip install fasttext` and try again.'
         )
-    if quantization:
+    if quantized:
         model = 'fasttext-quantized'
     else:
         model = 'fasttext-original'

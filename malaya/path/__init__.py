@@ -753,6 +753,20 @@ PATH_RELEVANCY = {
         'tokenizer': home + '/bert/sp10m.cased.v9.model',
         'version': 'v40',
     },
+    'bigbird': {
+        'model': home + '/relevancy/bigbird/base/model.pb',
+        'quantized': home + '/relevancy/bigbird/base/quantized/model.pb',
+        'vocab': home + '/bert/sp10m.cased.bert.vocab',
+        'tokenizer': home + '/bert/sp10m.cased.bert.model',
+        'version': 'v40',
+    },
+    'tiny-bigbird': {
+        'model': home + '/relevancy/bigbird/tiny/model.pb',
+        'quantized': home + '/relevancy/bigbird/tiny/quantized/model.pb',
+        'vocab': home + '/bert/sp10m.cased.bert.vocab',
+        'tokenizer': home + '/bert/sp10m.cased.bert.model',
+        'version': 'v40',
+    },
 }
 S3_PATH_RELEVANCY = {
     'bert': {
@@ -790,6 +804,18 @@ S3_PATH_RELEVANCY = {
         'quantized': 'v40/relevancy/alxlnet-base-relevancy.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.v9.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.v9.model',
+    },
+    'bigbird': {
+        'model': 'v42/relevancy/bigbird-base-relevancy.pb',
+        'quantized': 'v42/relevancy/bigbird-base-relevancy.pb.quantized',
+        'vocab': 'tokenizer/sp10m.cased.bert.vocab',
+        'tokenizer': 'tokenizer/sp10m.cased.bert.model',
+    },
+    'tiny-bigbird': {
+        'model': 'v42/relevancy/tiny-bigbird-relevancy.pb',
+        'quantized': 'v42/relevancy/tiny-bigbird-relevancy.pb.quantized',
+        'vocab': 'tokenizer/sp10m.cased.bert.vocab',
+        'tokenizer': 'tokenizer/sp10m.cased.bert.model',
     },
 }
 

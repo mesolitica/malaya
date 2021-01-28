@@ -27,7 +27,6 @@ class LDA2Vec:
         self.X = tf.placeholder(tf.int32, shape = [None])
         self.Y = tf.placeholder(tf.int64, shape = [None])
         self.DOC = tf.placeholder(tf.int32, shape = [None])
-        step = tf.Variable(0, trainable = False, name = 'global_step')
         self.switch_loss = tf.Variable(0, trainable = False)
         train_labels = tf.reshape(self.Y, [-1, 1])
         sampler = tf.nn.fixed_unigram_candidate_sampler(
@@ -88,12 +87,13 @@ class LDA2Vec:
         log_proportions = tf.nn.log_softmax(self.doc_embedding)
         if alpha is None:
             alpha = 1.0 / n_topics
-        loss = -(alpha - 1) * log_proportions
+        loss = (alpha - 1) * log_proportions
         prior = tf.reduce_sum(loss)
 
         loss_lda = lmbda * self.fraction * prior
+        global_step = tf.Variable(0, trainable = False, name = 'global_step')
         self.cost = tf.cond(
-            step < self.switch_loss,
+            global_step < self.switch_loss,
             lambda: loss_word2vec,
             lambda: loss_word2vec + loss_lda,
         )
@@ -101,7 +101,7 @@ class LDA2Vec:
         with tf.control_dependencies([loss_avgs_op]):
             self.optimizer = tf.contrib.layers.optimize_loss(
                 self.cost,
-                tf.train.get_global_step(),
+                global_step,
                 learning_rate,
                 'Adam',
                 clip_gradients = clip_gradients,

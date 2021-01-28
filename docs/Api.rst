@@ -300,6 +300,12 @@ malaya.model.bert
 .. autoclass:: malaya.model.bert.ParaphraseBERT()
     :members:
 
+malaya.model.bigbird
+----------------------------------
+
+.. autoclass:: malaya.model.bigbird.MulticlassBigBird()
+    :members:
+
 malaya.model.extractive_summarization
 --------------------------------------
 

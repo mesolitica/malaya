@@ -422,7 +422,6 @@ class MulticlassBERT(BERT):
         Parameters
         ----------
         strings: List[str]
-        add_neutral: bool, optional (default=True)
 
         Returns
         -------
@@ -825,6 +824,23 @@ class SiameseBERT(Base):
         annotate: bool = True,
         figsize: Tuple[int, int] = (7, 7),
     ):
+        """
+        plot a heatmap based on output from similarity
+
+        Parameters
+        ----------
+        strings : list of str
+            list of strings.
+        visualize : bool
+            if True, it will render plt.show, else return data.
+        figsize : tuple, (default=(7, 7))
+            figure size for plot.
+
+        Returns
+        -------
+        result: list
+            list of results
+        """
         results = self._tree_plot(strings)
 
         if not visualize:

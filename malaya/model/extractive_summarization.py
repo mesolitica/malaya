@@ -264,7 +264,7 @@ class Doc2Vec:
                     v = self.wordvector.get_vector_by_name(token)
                 else:
                     if not soft:
-                        v = self.wordvector._embed_matrix.shape[1]
+                        v = np.zeros((self.wordvector._embed_matrix.shape[1]))
                     else:
                         arr = np.array(
                             [

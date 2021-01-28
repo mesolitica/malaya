@@ -285,7 +285,15 @@ class Spell:
 
     def edit_candidates(self, word):
         """
-        Generate possible spelling corrections for word.
+        Generate candidates given a word.
+
+        Parameters
+        ----------
+        word: str
+
+        Returns
+        -------
+        result: {candidate1, candidate2}
         """
 
         ttt = self.known(self.edit_step(word)) or {word}
@@ -438,6 +446,14 @@ class Probability(Spell):
     def correct(self, word: str, **kwargs):
         """
         Most probable spelling correction for word.
+
+        Parameters
+        ----------
+        word: str
+
+        Returns
+        -------
+        result: str
         """
 
         if word in ENGLISH_WORDS:
@@ -505,7 +521,16 @@ class Probability(Spell):
     @check_type
     def correct_text(self, text: str):
         """
-        Correct all the words within a text, returning the corrected text."""
+        Correct all the words within a text, returning the corrected text.
+
+        Parameters
+        ----------
+        text: str
+
+        Returns
+        -------
+        result: str
+        """
 
         if not isinstance(text, str):
             raise ValueError('text must be a string')
@@ -574,6 +599,17 @@ class Symspell:
         return suggestions
 
     def edit_step(self, word):
+        """
+        Generate candidates given a word.
+
+        Parameters
+        ----------
+        word: str
+
+        Returns
+        -------
+        result: {candidate1, candidate2}
+        """
         result = list(_augment_vowel_alternate(word))
 
         if len(word):
@@ -630,6 +666,17 @@ class Symspell:
         return words
 
     def edit_candidates(self, word):
+        """
+        Generate candidates given a word.
+
+        Parameters
+        ----------
+        word: str
+
+        Returns
+        -------
+        result: {candidate1, candidate2}
+        """
         ttt = self.edit_step(word) or {word: 10}
         ttt = {
             k: v
@@ -645,6 +692,14 @@ class Symspell:
     def correct(self, word: str, **kwargs):
         """
         Most probable spelling correction for word.
+
+        Parameters
+        ----------
+        word: str
+
+        Returns
+        -------
+        result: str
         """
 
         if word in ENGLISH_WORDS:
@@ -700,6 +755,14 @@ class Symspell:
     def correct_text(self, text: str):
         """
         Correct all the words within a text, returning the corrected text.
+
+        Parameters
+        ----------
+        text: str
+
+        Returns
+        -------
+        result: str
         """
 
         return re.sub('[a-zA-Z]+', self.correct_match, text)

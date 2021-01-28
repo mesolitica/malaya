@@ -148,8 +148,8 @@ class VectorizerSimilarity:
 
 
 class Doc2VecSimilarity:
-    def __init__(self, vectorizer):
-        self._vectorizer = vectorizer
+    def __init__(self, wordvector):
+        self.wordvector = wordvector
         self._jarowinkler = JaroWinkler()
 
     @check_type
@@ -157,7 +157,7 @@ class Doc2VecSimilarity:
         self,
         left_strings: List[str],
         right_strings: List[str],
-        aggregation: str = 'mean',
+        aggregation: Callable = np.mean,
         similarity: str = 'cosine',
         soft: bool = True,
     ):
@@ -167,22 +167,6 @@ class Doc2VecSimilarity:
                 'length list of left strings must be same with length list of right strings'
             )
         identical = left_strings == right_strings
-
-        aggregation = aggregation.lower()
-        if aggregation == 'mean':
-            aggregation_function = np.mean
-        elif aggregation == 'min':
-            aggregation_function = np.min
-        elif aggregation == 'max':
-            aggregation_function = np.max
-        elif aggregation == 'sum':
-            aggregation_function = np.sum
-        elif aggregation == 'sqrt':
-            aggregation_function = np.sqrt
-        else:
-            raise ValueError(
-                "aggregation only supports 'mean', 'min', 'max', 'sum' and 'sqrt'"
-            )
 
         similarity = similarity.lower()
         if similarity == 'cosine':
@@ -209,51 +193,53 @@ class Doc2VecSimilarity:
 
             in_vector = []
             for token in left_tokenized:
-                try:
-                    in_vector.append(self._vectorizer.get_vector_by_name(token))
-                except:
+                if token in self.wordvector._dictionary:
+                    v = self.wordvector.get_vector_by_name(token)
+                else:
                     if not soft:
-                        pass
+                        v = np.zeros((self.wordvector._embed_matrix.shape[1]))
                     else:
                         arr = np.array(
                             [
-                                self._jarowinkler.similarity(token, k)
-                                for k in self._vectorizer.words
+                                self.wordvector._jarowinkler.similarity(
+                                    token, k
+                                )
+                                for k in self.wordvector.words
                             ]
                         )
                         idx = (-arr).argsort()[0]
-                        in_vector.append(
-                            self._vectorizer.get_vector_by_name(
-                                self._vectorizer.words[idx]
-                            )
+                        v = self.wordvector.get_vector_by_name(
+                            self.wordvector.words[idx]
                         )
-            left_vectors.append(aggregation_function(in_vector, axis = 0))
+                in_vector.append(v)
+            left_vectors.append(aggregation(in_vector, axis = 0))
 
             if not identical:
                 in_vector = []
                 for token in right_tokenized:
-                    try:
-                        in_vector.append(
-                            self._vectorizer.get_vector_by_name(token)
-                        )
-                    except:
+                    if token in self.wordvector._dictionary:
+                        v = self.wordvector.get_vector_by_name(token)
+                    else:
                         if not soft:
-                            pass
+                            v = np.zeros(
+                                (self.wordvector._embed_matrix.shape[1])
+                            )
                         else:
                             arr = np.array(
                                 [
-                                    self._jarowinkler.similarity(token, k)
-                                    for k in self._vectorizer.words
+                                    self.wordvector._jarowinkler.similarity(
+                                        token, k
+                                    )
+                                    for k in self.wordvector.words
                                 ]
                             )
                             idx = (-arr).argsort()[0]
-                            in_vector.append(
-                                self._vectorizer.get_vector_by_name(
-                                    self._vectorizer.words[idx]
-                                )
+                            v = self.wordvector.get_vector_by_name(
+                                self.wordvector.words[idx]
                             )
+                    in_vector.append(v)
 
-                right_vectors.append(aggregation_function(in_vector, axis = 0))
+                right_vectors.append(aggregation(in_vector, axis = 0))
 
         if identical:
             similar = similarity_function(left_vectors, left_vectors)
@@ -270,9 +256,9 @@ class Doc2VecSimilarity:
         self,
         left_strings: List[str],
         right_strings: List[str],
-        aggregation: str = 'mean',
+        aggregation: Callable = np.mean,
         similarity: str = 'cosine',
-        soft: bool = True,
+        soft: bool = False,
     ):
         """
         calculate similarity for two different batch of texts.
@@ -281,21 +267,14 @@ class Doc2VecSimilarity:
         ----------
         left_strings : list of str
         right_strings : list of str
-        aggregation : str, optional (default='mean')
-            Aggregation supported. Allowed values:
-
-            * ``'mean'`` - mean.
-            * ``'min'`` - min.
-            * ``'max'`` - max.
-            * ``'sum'`` - sum.
-            * ``'sqrt'`` - square root.
+        aggregation : Callable, optional (default=numpy.mean)
         similarity : str, optional (default='mean')
             similarity supported. Allowed values:
 
             * ``'cosine'`` - cosine similarity.
             * ``'euclidean'`` - euclidean similarity.
             * ``'manhattan'`` - manhattan similarity.
-        soft: bool, optional (default=True)
+        soft: bool, optional (default=False)
             word not inside word vector will replace with nearest word if True, else, will skip.
 
         Returns
@@ -315,9 +294,9 @@ class Doc2VecSimilarity:
     def heatmap(
         self,
         strings: List[str],
-        aggregation: str = 'mean',
+        aggregation: Callable = np.mean,
         similarity: str = 'cosine',
-        soft: bool = True,
+        soft: bool = False,
         visualize: bool = True,
         annotate: bool = True,
         figsize: Tuple[int, int] = (7, 7),
@@ -329,14 +308,7 @@ class Doc2VecSimilarity:
         ----------
         strings : list of str
             list of strings
-        aggregation : str, optional (default='mean')
-            Aggregation supported. Allowed values:
-
-            * ``'mean'`` - mean.
-            * ``'min'`` - min.
-            * ``'max'`` - max.
-            * ``'sum'`` - sum.
-            * ``'sqrt'`` - square root.
+        aggregation : Callable, optional (default=numpy.mean)
         similarity : str, optional (default='mean')
             similarity supported. Allowed values:
 
@@ -387,23 +359,24 @@ class Doc2VecSimilarity:
         plt.show()
 
 
-def doc2vec(vectorizer):
+def doc2vec(wordvector):
     """
     Doc2vec interface for text similarity.
 
     Parameters
     ----------
-    vectorizer : object
-        word vector interface object, fast-text, word2vec, elmo.
+    wordvector : object
+        malaya.wordvector.WordVector object.
+        should have `get_vector_by_name` method.
 
     Returns
     -------
     result: malaya.similarity.Doc2VecSimilarity
     """
 
-    if not hasattr(vectorizer, 'get_vector_by_name'):
-        raise ValueError('vectorizer must have `get_vector_by_name` method')
-    return Doc2VecSimilarity(vectorizer)
+    if not hasattr(wordvector, 'get_vector_by_name'):
+        raise ValueError('wordvector must have `get_vector_by_name` method')
+    return Doc2VecSimilarity(wordvector)
 
 
 def encoder(vectorizer):
@@ -426,33 +399,50 @@ def encoder(vectorizer):
 
 
 _transformer_availability = {
-    'bert': {'Size (MB)': 423.4, 'Quantized Size (MB)': 111, 'Accuracy': 0.885},
+    'bert': {
+        'Size (MB)': 423.4,
+        'Quantized Size (MB)': 111,
+        'macro precision': 0.88315,
+        'macro recall': 0.88656,
+        'macro f1-score': 0.88405,
+    },
     'tiny-bert': {
         'Size (MB)': 56.6,
         'Quantized Size (MB)': 15,
-        'Accuracy': 0.873,
+        'macro precision': 0.87210,
+        'macro recall': 0.87546,
+        'macro f1-score': 0.87292,
     },
     'albert': {
         'Size (MB)': 48.3,
         'Quantized Size (MB)': 12.8,
-        'Accuracy': 0.873,
+        'macro precision': 0.87164,
+        'macro recall': 0.87146,
+        'macro f1-score': 0.87155,
     },
     'tiny-albert': {
         'Size (MB)': 21.9,
         'Quantized Size (MB)': 6,
-        'Accuracy': 0.824,
+        'macro precision': 0.82234,
+        'macro recall': 0.82383,
+        'macro f1-score': 0.82295,
     },
     'xlnet': {
         'Size (MB)': 448.7,
         'Quantized Size (MB)': 119,
-        'Accuracy': 0.784,
+        'macro precision': 0.80866,
+        'macro recall': 0.76775,
+        'macro f1-score': 0.77112,
     },
     'alxlnet': {
         'Size (MB)': 49.0,
         'Quantized Size (MB)': 13.9,
-        'Accuracy': 0.888,
+        'macro precision': 0.88756,
+        'macro recall': 0.88700,
+        'macro f1-score': 0.88727,
     },
 }
+
 
 _vectorizer_mapping = {
     'bert': 'import/bert/encoder/layer_11/output/LayerNorm/batchnorm/add_1:0',

@@ -38,8 +38,6 @@ _transformer_availability = {
         'ROUGE-2': 0.13417,
         'ROUGE-L': 0.23059,
     },
-    'bigbird': {},
-    'small-bigbird': {},
 }
 
 

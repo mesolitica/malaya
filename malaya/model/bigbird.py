@@ -1,6 +1,8 @@
 import tensorflow as tf
 import numpy as np
 from malaya.text.bpe import bert_tokenization
+from herpetologist import check_type
+from typing import List
 
 
 class Base:
@@ -19,7 +21,7 @@ class Base:
         self._sess = sess
         self._tokenizer = tokenizer
         self._label = label
-        self._maxlen = 1536
+        self._maxlen = 1024
 
 
 class BigBird(Base):
@@ -74,6 +76,9 @@ class BigBird(Base):
                 "method not supported, only support 'first', 'last', 'mean' and 'word'"
             )
         input_ids, _, _, s_tokens = bert_tokenization(self._tokenizer, strings)
+        input_ids = tf.keras.preprocessing.sequence.pad_sequences(
+            input_ids, padding = 'post', maxlen = self._maxlen
+        )
         v = self._sess.run(self._vectorizer, feed_dict = {self._X: input_ids})
         if method == 'first':
             v = v[:, 0]
@@ -107,6 +112,81 @@ class BigBird(Base):
         return outputs
 
 
-class MulticlassBigBird(Base):
-    def __init__(self):
-        pass
+class MulticlassBigBird(BigBird):
+    def __init__(
+        self,
+        X,
+        logits,
+        logits_seq,
+        vectorizer,
+        sess,
+        tokenizer,
+        class_name,
+        label = ['negative', 'positive'],
+    ):
+        BigBird.__init__(
+            self,
+            X = X,
+            logits = logits,
+            logits_seq = logits_seq,
+            vectorizer = vectorizer,
+            sess = sess,
+            tokenizer = tokenizer,
+            class_name = class_name,
+            label = label,
+        )
+
+    @check_type
+    def vectorize(self, strings: List[str], method: str = 'first'):
+        """
+        vectorize list of strings.
+
+        Parameters
+        ----------
+        strings: List[str]
+        method : str, optional (default='first')
+            Vectorization layer supported. Allowed values:
+
+            * ``'last'`` - vector from last sequence.
+            * ``'first'`` - vector from first sequence.
+            * ``'mean'`` - average vectors from all sequences.
+            * ``'word'`` - average vectors based on tokens.
+
+        Returns
+        -------
+        result: np.array
+        """
+
+        return self._vectorize(strings = strings, method = method)
+
+    @check_type
+    def predict(self, strings: List[str]):
+        """
+        classify list of strings.
+
+        Parameters
+        ----------
+        strings: List[str]
+
+        Returns
+        -------
+        result: List[str]
+        """
+
+        return self._predict(strings = strings)
+
+    @check_type
+    def predict_proba(self, strings: List[str]):
+        """
+        classify list of strings and return probability.
+
+        Parameters
+        ----------
+        strings : List[str]
+
+        Returns
+        -------
+        result: List[dict[str, float]]
+        """
+
+        return self._predict_proba(strings = strings)

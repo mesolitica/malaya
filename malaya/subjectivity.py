@@ -5,31 +5,47 @@ from herpetologist import check_type
 label = ['negative', 'positive']
 
 _transformer_availability = {
-    'bert': {'Size (MB)': 425.6, 'Quantized Size (MB)': 111, 'Accuracy': 0.916},
+    'bert': {
+        'Size (MB)': 425.6,
+        'Quantized Size (MB)': 111,
+        'macro precision': 0.92004,
+        'macro recall': 0.91748,
+        'macro f1-score': 0.91663,
+    },
     'tiny-bert': {
         'Size (MB)': 57.4,
         'Quantized Size (MB)': 15.4,
-        'Accuracy': 0.903,
+        'macro precision': 0.91023,
+        'macro recall': 0.90228,
+        'macro f1-score': 0.90301,
     },
     'albert': {
         'Size (MB)': 48.6,
         'Quantized Size (MB)': 12.8,
-        'Accuracy': 0.903,
+        'macro precision': 0.90544,
+        'macro recall': 0.90299,
+        'macro f1-score': 0.90300,
     },
     'tiny-albert': {
         'Size (MB)': 22.4,
         'Quantized Size (MB)': 5.98,
-        'Accuracy': 0.894,
+        'macro precision': 0.89457,
+        'macro recall': 0.89469,
+        'macro f1-score': 0.89461,
     },
     'xlnet': {
         'Size (MB)': 446.6,
         'Quantized Size (MB)': 118,
-        'Accuracy': 0.917,
+        'macro precision': 0.91916,
+        'macro recall': 0.91753,
+        'macro f1-score': 0.91761,
     },
     'alxlnet': {
         'Size (MB)': 46.8,
         'Quantized Size (MB)': 13.3,
-        'Accuracy': 0.908,
+        'macro precision': 0.90862,
+        'macro recall': 0.90835,
+        'macro f1-score': 0.90817,
     },
 }
 
@@ -56,7 +72,7 @@ def multinomial(**kwargs):
 
     Returns
     -------
-    result : malaya.model.ml.BAYES class
+    result : malaya.model.ml.Bayes class
     """
     return softmax.multinomial(
         PATH_SUBJECTIVE, S3_PATH_SUBJECTIVE, 'subjective', label, **kwargs

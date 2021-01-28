@@ -25,12 +25,6 @@ _transformer_availability = {
         'Quantized Size (MB)': 120,
         'BLEU': 0.65849,
     },
-    'bigbird': {'Size (MB)': 832, 'Quantized Size (MB)': 279, 'BLEU': 0.59612},
-    'small-bigbird': {
-        'Size (MB)': 379,
-        'Quantized Size (MB)': 120,
-        'BLEU': 0.65849,
-    },
 }
 
 

@@ -149,7 +149,7 @@ class Model:
     def vectorize(self, strings: List[str]):
 
         """
-        Vectorize string inputs using bert attention.
+        Vectorize string inputs.
 
         Parameters
         ----------
@@ -179,7 +179,7 @@ class Model:
     @check_type
     def attention(self, strings: List[str], method: str = 'last', **kwargs):
         """
-        Get attention string inputs from bert attention.
+        Get attention string inputs.
 
         Parameters
         ----------

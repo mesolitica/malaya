@@ -38,31 +38,47 @@ label_ontonotes5 = {
     'CARDINAL': 19,
 }
 _transformer_availability = {
-    'bert': {'Size (MB)': 425.4, 'Quantized Size (MB)': 111, 'Accuracy': 0.994},
+    'bert': {
+        'Size (MB)': 425.4,
+        'Quantized Size (MB)': 111,
+        'macro precision': 0.99291,
+        'macro recall': 0.97864,
+        'macro f1-score': 0.98537,
+    },
     'tiny-bert': {
         'Size (MB)': 57.7,
         'Quantized Size (MB)': 15.4,
-        'Accuracy': 0.986,
+        'macro precision': 0.98151,
+        'macro recall': 0.94754,
+        'macro f1-score': 0.96134,
     },
     'albert': {
         'Size (MB)': 48.6,
         'Quantized Size (MB)': 12.8,
-        'Accuracy': 0.984,
+        'macro precision': 0.98026,
+        'macro recall': 0.95332,
+        'macro f1-score': 0.96492,
     },
     'tiny-albert': {
         'Size (MB)': 22.4,
         'Quantized Size (MB)': 5.98,
-        'Accuracy': 0.971,
+        'macro precision': 0.96100,
+        'macro recall': 0.90363,
+        'macro f1-score': 0.92374,
     },
     'xlnet': {
         'Size (MB)': 446.6,
         'Quantized Size (MB)': 118,
-        'Accuracy': 0.992,
+        'macro precision': 0.99344,
+        'macro recall': 0.98154,
+        'macro f1-score': 0.98725,
     },
     'alxlnet': {
         'Size (MB)': 46.8,
         'Quantized Size (MB)': 13.3,
-        'Accuracy': 0.993,
+        'macro precision': 0.99215,
+        'macro recall': 0.97575,
+        'macro f1-score': 0.98337,
     },
 }
 

@@ -42,31 +42,47 @@ label = [
 ]
 
 _transformer_availability = {
-    'bert': {'Size (MB)': 425.6, 'Quantized Size (MB)': 111, 'Accuracy': 0.814},
+    'bert': {
+        'Size (MB)': 425.6,
+        'Quantized Size (MB)': 111,
+        'micro precision': 0.86098,
+        'micro recall': 0.77313,
+        'micro f1-score': 0.81469,
+    },
     'tiny-bert': {
         'Size (MB)': 57.4,
         'Quantized Size (MB)': 15.4,
-        'Accuracy': 0.815,
+        'micro precision': 0.83535,
+        'micro recall': 0.79611,
+        'micro f1-score': 0.81526,
     },
     'albert': {
         'Size (MB)': 48.6,
         'Quantized Size (MB)': 12.8,
-        'Accuracy': 0.812,
+        'micro precision': 0.86054,
+        'micro recall': 0.76973,
+        'micro f1-score': 0.81261,
     },
     'tiny-albert': {
         'Size (MB)': 22.4,
         'Quantized Size (MB)': 5.98,
-        'Accuracy': 0.808,
+        'micro precision': 0.83535,
+        'micro recall': 0.79611,
+        'micro f1-score': 0.81526,
     },
     'xlnet': {
         'Size (MB)': 446.6,
         'Quantized Size (MB)': 118,
-        'Accuracy': 0.807,
+        'micro precision': 0.77904,
+        'micro recall': 0.83829,
+        'micro f1-score': 0.80758,
     },
     'alxlnet': {
         'Size (MB)': 46.8,
         'Quantized Size (MB)': 13.3,
-        'Accuracy': 0.817,
+        'micro precision': 0.83376,
+        'micro recall': 0.80221,
+        'micro f1-score': 0.81768,
     },
 }
 

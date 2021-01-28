@@ -70,6 +70,9 @@ def transformer(
         if model in ['xlnet', 'alxlnet']:
             selected_class = MulticlassXLNET
             selected_node = 'import/transpose_3:0'
+        if model in ['bigbird', 'tiny-bigbird']:
+            selected_class = MulticlassBigBird
+            selected_node = 'import/dense/BiasAdd:0'
 
     else:
         if model in ['albert', 'bert', 'tiny-albert', 'tiny-bert']:
@@ -141,5 +144,20 @@ def transformer(
             tokenizer = tokenizer,
             label = label,
             attns = _extract_attention_weights_import(g),
+            class_name = class_name,
+        )
+
+    if model in ['bigbird', 'tiny-bigbird']:
+        tokenizer = sentencepiece_tokenizer_bert(
+            path[model]['tokenizer'], path[model]['vocab']
+        )
+        return selected_class(
+            X = g.get_tensor_by_name('import/Placeholder:0'),
+            logits = g.get_tensor_by_name('import/logits:0'),
+            logits_seq = g.get_tensor_by_name('import/logits_seq:0'),
+            vectorizer = g.get_tensor_by_name(selected_node),
+            sess = generate_session(graph = g, **kwargs),
+            tokenizer = tokenizer,
+            label = label,
             class_name = class_name,
         )
