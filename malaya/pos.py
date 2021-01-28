@@ -23,31 +23,47 @@ label = [
 ]
 
 _transformer_availability = {
-    'bert': {'Size (MB)': 426.4, 'Quantized Size (MB)': 111, 'Accuracy': 0.952},
+    'bert': {
+        'Size (MB)': 426.4,
+        'Quantized Size (MB)': 111,
+        'macro precision': 0.93280,
+        'macro recall': 0.93129,
+        'macro f1-score': 0.93181,
+    },
     'tiny-bert': {
         'Size (MB)': 57.7,
         'Quantized Size (MB)': 15.4,
-        'Accuracy': 0.953,
+        'macro precision': 0.92810,
+        'macro recall': 0.92649,
+        'macro f1-score': 0.92704,
     },
     'albert': {
         'Size (MB)': 48.7,
         'Quantized Size (MB)': 12.8,
-        'Accuracy': 0.951,
+        'macro precision': 0.93199,
+        'macro recall': 0.91948,
+        'macro f1-score': 0.92547,
     },
     'tiny-albert': {
         'Size (MB)': 22.4,
         'Quantized Size (MB)': 5.98,
-        'Accuracy': 0.933,
+        'macro precision': 0.90579,
+        'macro recall': 0.89501,
+        'macro f1-score': 0.90002,
     },
     'xlnet': {
         'Size (MB)': 446.6,
         'Quantized Size (MB)': 118,
-        'Accuracy': 0.954,
+        'macro precision': 0.93303,
+        'macro recall': 0.93222,
+        'macro f1-score': 0.93236,
     },
     'alxlnet': {
         'Size (MB)': 46.8,
         'Quantized Size (MB)': 13.3,
-        'Accuracy': 0.951,
+        'macro precision': 0.92732,
+        'macro recall': 0.93046,
+        'macro f1-score': 0.92819,
     },
 }
 
@@ -136,7 +152,7 @@ def naive(string: str):
 @check_type
 def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
     """
-    Load Transformer Entity Tagging model, transfer learning Transformer + CRF.
+    Load Transformer POS Tagging model, transfer learning Transformer + CRF.
 
     Parameters
     ----------

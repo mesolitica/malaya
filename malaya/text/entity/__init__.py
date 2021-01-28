@@ -43,7 +43,7 @@ from malaya.text.normalization import money, _normalize_money
 from malaya.cluster import cluster_tagging
 
 
-class ENTITY_REGEX:
+class EntityRegex:
     def __init__(self, model = None):
         self._model = model
 

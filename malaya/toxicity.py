@@ -5,9 +5,9 @@ from malaya.text.bpe import (
     sentencepiece_tokenizer_xlnet,
 )
 from malaya.path import PATH_TOXIC, S3_PATH_TOXIC
-from malaya.model.ml import MULTILABEL_BAYES
-from malaya.model.bert import SIGMOID_BERT
-from malaya.model.xlnet import SIGMOID_XLNET
+from malaya.model.ml import MultilabelBayes
+from malaya.model.bert import SigmoidBERT
+from malaya.model.xlnet import SigmoidXLNET
 from malaya.transformers.bert import bert_num_layers
 from herpetologist import check_type
 
@@ -42,31 +42,47 @@ label = [
 ]
 
 _transformer_availability = {
-    'bert': {'Size (MB)': 425.6, 'Quantized Size (MB)': 111, 'Accuracy': 0.814},
+    'bert': {
+        'Size (MB)': 425.6,
+        'Quantized Size (MB)': 111,
+        'micro precision': 0.86098,
+        'micro recall': 0.77313,
+        'micro f1-score': 0.81469,
+    },
     'tiny-bert': {
         'Size (MB)': 57.4,
         'Quantized Size (MB)': 15.4,
-        'Accuracy': 0.815,
+        'micro precision': 0.83535,
+        'micro recall': 0.79611,
+        'micro f1-score': 0.81526,
     },
     'albert': {
         'Size (MB)': 48.6,
         'Quantized Size (MB)': 12.8,
-        'Accuracy': 0.812,
+        'micro precision': 0.86054,
+        'micro recall': 0.76973,
+        'micro f1-score': 0.81261,
     },
     'tiny-albert': {
         'Size (MB)': 22.4,
         'Quantized Size (MB)': 5.98,
-        'Accuracy': 0.808,
+        'micro precision': 0.83535,
+        'micro recall': 0.79611,
+        'micro f1-score': 0.81526,
     },
     'xlnet': {
         'Size (MB)': 446.6,
         'Quantized Size (MB)': 118,
-        'Accuracy': 0.807,
+        'micro precision': 0.77904,
+        'micro recall': 0.83829,
+        'micro f1-score': 0.80758,
     },
     'alxlnet': {
         'Size (MB)': 46.8,
         'Quantized Size (MB)': 13.3,
-        'Accuracy': 0.817,
+        'micro precision': 0.83376,
+        'micro recall': 0.80221,
+        'micro f1-score': 0.81768,
     },
 }
 
@@ -88,7 +104,7 @@ def multinomial(**kwargs):
 
     Returns
     -------
-    result : malaya.model.ml.MULTILABEL_BAYES class
+    result : malaya.model.ml.MultilabelBayes class
     """
     import pickle
 
@@ -114,7 +130,7 @@ def multinomial(**kwargs):
 
     bpe, subword_mode = load_yttm(PATH_TOXIC['multinomial']['bpe'])
 
-    return MULTILABEL_BAYES(
+    return MultilabelBayes(
         multinomial = multinomial,
         label = label,
         vectorize = vectorize,
@@ -147,7 +163,7 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
 
     Returns
     -------
-    result : malaya.model.bert.SIGMOID_BERT class
+    result : malaya.model.bert.SigmoidBERT class
     """
 
     model = model.lower()
@@ -190,7 +206,7 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
                 spm_model_file = path[model]['tokenizer'],
             )
 
-        return SIGMOID_BERT(
+        return SigmoidBERT(
             X = g.get_tensor_by_name('import/Placeholder:0'),
             segment_ids = None,
             input_masks = g.get_tensor_by_name('import/Placeholder_1:0'),
@@ -218,7 +234,7 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
 
         tokenizer = sentencepiece_tokenizer_xlnet(path[model]['tokenizer'])
 
-        return SIGMOID_XLNET(
+        return SigmoidXLNET(
             X = g.get_tensor_by_name('import/Placeholder:0'),
             segment_ids = g.get_tensor_by_name('import/Placeholder_1:0'),
             input_masks = g.get_tensor_by_name('import/Placeholder_2:0'),

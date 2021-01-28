@@ -167,7 +167,7 @@ def put_spacing_num(string):
     return re.sub(r'[ ]+', ' ', string).strip()
 
 
-class NORMALIZER:
+class Normalizer:
     def __init__(self, tokenizer, speller = None):
         self._tokenizer = tokenizer
         self._speller = speller
@@ -554,7 +554,7 @@ def normalizer(speller = None, **kwargs):
 
     Returns
     -------
-    result: malaya.normalize.NORMALIZER class
+    result: malaya.normalize.Normalizer class
     """
 
     validator.validate_object_methods(
@@ -564,4 +564,4 @@ def normalizer(speller = None, **kwargs):
     from malaya.preprocessing import TOKENIZER
 
     tokenizer = TOKENIZER(**kwargs).tokenize
-    return NORMALIZER(tokenizer, speller)
+    return Normalizer(tokenizer, speller)

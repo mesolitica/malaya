@@ -1,7 +1,7 @@
 from scipy.stats.mstats import gmean, hmean, hdmedian
 import numpy as np
 from herpetologist import check_type
-from typing import List
+from typing import List, Callable
 
 
 def _most_common(l):
@@ -60,34 +60,9 @@ def voting_stack(models, text: str):
         return output
 
 
-dict_function = {
-    'gmean': gmean,
-    'hmean': hmean,
-    'mean': np.mean,
-    'min': np.amin,
-    'max': np.amax,
-    'median': hdmedian,
-}
-
-_aggregate_availability = {
-    'gmean': {'Description': 'geometrical mean'},
-    'hmean': {'Description': 'harmonic mean'},
-    'mean': {'Description': 'mean'},
-    'min': {'Description': 'minimum'},
-    'max': {'Description': 'maximum'},
-    'median': {'Description': 'Harrell-Davis median'},
-}
-
-
-def available_aggregate_function():
-    from malaya.function import describe_availability
-
-    return describe_availability(_aggregate_availability)
-
-
 @check_type
 def predict_stack(
-    models, strings: List[str], aggregate: str = 'gmean', **kwargs
+    models, strings: List[str], aggregate: Callable = gmean, **kwargs
 ):
     """
     Stacking for predictive models.
@@ -97,29 +72,16 @@ def predict_stack(
     models: List[Callable]
         list of models.
     strings: List[str]
-    aggregate : str, optional (default='gmean')
-        Aggregate function supported. Allowed values:
-
-        * ``'gmean'`` - geometrical mean.
-        * ``'hmean'`` - harmonic mean.
-        * ``'mean'`` - mean.
-        * ``'min'`` - min.
-        * ``'max'`` - max.
-        * ``'median'`` - Harrell-Davis median.
+    aggregate : Callable, optional (default=scipy.stats.mstats.gmean)
+        Aggregate function.
 
     Returns
     -------
     result: dict
     """
-    aggregate = aggregate.lower()
     if not isinstance(models, list):
         raise ValueError('models must be a list')
-
-    if aggregate not in dict_function:
-        raise ValueError(
-            'aggregate is not supported, please check supported functions from malaya.stack.available_aggregate_function()'
-        )
-    mode = dict_function[aggregate]
+    mode = aggregate
 
     for i in range(len(models)):
         if not 'predict_proba' in dir(models[i]):

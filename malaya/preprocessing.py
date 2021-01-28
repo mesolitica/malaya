@@ -85,7 +85,7 @@ def _get_expression_dict():
     }
 
 
-class TOKENIZER:
+class Tokenizer:
     def __init__(self, lowercase = False, **kwargs):
         """
         Load Tokenizer object. 
@@ -283,7 +283,7 @@ class TOKENIZER:
         return tokenized
 
 
-class PREPROCESSING:
+class Preprocessing:
     def __init__(
         self,
         normalize = [
@@ -317,7 +317,7 @@ class PREPROCESSING:
         self._normalize = normalize
         self._annotate = annotate
         self._regexes = _get_expression_dict()
-        self._tokenizer = TOKENIZER(lowercase = lowercase).tokenize
+        self._tokenizer = Tokenizer(lowercase = lowercase).tokenize
         self._expand_contractions = expand_english_contractions
         self._all_caps_tag = 'wrap'
         self._translator = translator
@@ -535,7 +535,7 @@ def preprocessing(
 
     Returns
     -------
-    result : malaya.preprocessing.PREPROCESSING class
+    result : malaya.preprocessing.Preprocessing class
     """
 
     if any([e not in _normalize for e in normalize]):
@@ -564,7 +564,7 @@ def preprocessing(
     else:
         translator = None
 
-    return PREPROCESSING(
+    return Preprocessing(
         normalize = normalize,
         annotate = annotate,
         lowercase = lowercase,
@@ -577,4 +577,4 @@ def preprocessing(
     )
 
 
-_tokenizer = TOKENIZER().tokenize
+_tokenizer = Tokenizer().tokenize

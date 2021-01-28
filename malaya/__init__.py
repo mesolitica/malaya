@@ -14,7 +14,7 @@ import logging
 
 home = os.path.join(str(Path.home()), 'Malaya')
 version = '4.1'
-bump_version = '4.1.0.0'
+bump_version = '4.1.1.0'
 version_path = os.path.join(home, 'version')
 __version__ = bump_version
 path = os.path.dirname(__file__)

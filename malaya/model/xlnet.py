@@ -30,7 +30,7 @@ render_dict = {
 }
 
 
-class BASE:
+class Base:
     def __init__(
         self,
         X,
@@ -52,7 +52,7 @@ class BASE:
         self._label = label
 
 
-class XLNET(BASE):
+class XLNET(Base):
     def __init__(
         self,
         X,
@@ -68,7 +68,7 @@ class XLNET(BASE):
         label = ['negative', 'positive'],
     ):
 
-        BASE.__init__(
+        Base.__init__(
             self,
             X = X,
             segment_ids = segment_ids,
@@ -248,7 +248,7 @@ class XLNET(BASE):
             return dict_result
 
 
-class BINARY_XLNET(XLNET):
+class BinaryXLNET(XLNET):
     def __init__(
         self,
         X,
@@ -369,7 +369,7 @@ class BINARY_XLNET(XLNET):
         )
 
 
-class MULTICLASS_XLNET(XLNET):
+class MulticlassXLNET(XLNET):
     def __init__(
         self,
         X,
@@ -483,7 +483,7 @@ class MULTICLASS_XLNET(XLNET):
         )
 
 
-class SIGMOID_XLNET(BASE):
+class SigmoidXLNET(Base):
     def __init__(
         self,
         X,
@@ -498,7 +498,7 @@ class SIGMOID_XLNET(BASE):
         class_name,
         label = ['negative', 'positive'],
     ):
-        BASE.__init__(
+        Base.__init__(
             self,
             X = X,
             segment_ids = segment_ids,
@@ -735,7 +735,7 @@ class SIGMOID_XLNET(BASE):
             return dict_result
 
 
-class SIAMESE_XLNET(BASE):
+class SiameseXLNET(Base):
     def __init__(
         self,
         X,
@@ -747,7 +747,7 @@ class SIAMESE_XLNET(BASE):
         tokenizer,
         label = ['not similar', 'similar'],
     ):
-        BASE.__init__(
+        Base.__init__(
             self,
             X = X,
             segment_ids = segment_ids,
@@ -850,6 +850,23 @@ class SIAMESE_XLNET(BASE):
         annotate: bool = True,
         figsize: Tuple[int, int] = (7, 7),
     ):
+        """
+        plot a heatmap based on output from similarity
+
+        Parameters
+        ----------
+        strings : list of str
+            list of strings.
+        visualize : bool
+            if True, it will render plt.show, else return data.
+        figsize : tuple, (default=(7, 7))
+            figure size for plot.
+
+        Returns
+        -------
+        result: list
+            list of results
+        """
         results = self._tree_plot(strings)
 
         if not visualize:
@@ -875,7 +892,7 @@ class SIAMESE_XLNET(BASE):
         plt.show()
 
 
-class TAGGING_XLNET(BASE):
+class TaggingXLNET(Base):
     def __init__(
         self,
         X,
@@ -887,7 +904,7 @@ class TAGGING_XLNET(BASE):
         tokenizer,
         settings,
     ):
-        BASE.__init__(
+        Base.__init__(
             self,
             X = X,
             segment_ids = segment_ids,
@@ -990,7 +1007,7 @@ class TAGGING_XLNET(BASE):
         return list(zip(*merged))
 
 
-class DEPENDENCY_XLNET(BASE):
+class DependencyXLNET(Base):
     def __init__(
         self,
         X,
@@ -1003,7 +1020,7 @@ class DEPENDENCY_XLNET(BASE):
         settings,
         heads_seq,
     ):
-        BASE.__init__(
+        Base.__init__(
             self,
             X = X,
             segment_ids = segment_ids,
@@ -1112,7 +1129,7 @@ class DEPENDENCY_XLNET(BASE):
         return d, tagging, indexing_
 
 
-class ZEROSHOT_XLNET(BASE):
+class ZeroshotXLNET(Base):
     def __init__(
         self,
         X,
@@ -1124,7 +1141,7 @@ class ZEROSHOT_XLNET(BASE):
         tokenizer,
         label = ['not similar', 'similar'],
     ):
-        BASE.__init__(
+        Base.__init__(
             self,
             X = X,
             segment_ids = segment_ids,

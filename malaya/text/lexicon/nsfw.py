@@ -2,7 +2,7 @@ from herpetologist import check_type
 from typing import List
 
 
-class LEXICON:
+class Lexicon:
     def __init__(self, corpus):
         self._corpus = corpus
         self.nsfw_sex = self._corpus['nsfw_sex']

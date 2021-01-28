@@ -351,7 +351,7 @@ class TransformerModel(tf.compat.v1.layers.Layer):
             decoder_input = tf.slice(
                 target_ids,
                 [0, tf.maximum(tf.cast(0, i.dtype), i - 1)],
-                [target_ids.shape[0], 1],
+                [tf.shape(target_ids)[0], 1],
             )
             self_attention_mask = tf.slice(
                 decoder_self_attention_mask,

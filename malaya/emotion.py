@@ -5,41 +5,47 @@ from herpetologist import check_type
 label = ['anger', 'fear', 'happy', 'love', 'sadness', 'surprise']
 
 _transformer_availability = {
-    'bert': {'Size (MB)': 425.6, 'Quantized Size (MB)': 111, 'Accuracy': 0.992},
+    'bert': {
+        'Size (MB)': 425.6,
+        'Quantized Size (MB)': 111,
+        'macro precision': 0.99786,
+        'macro recall': 0.99773,
+        'macro f1-score': 0.99779,
+    },
     'tiny-bert': {
         'Size (MB)': 57.4,
         'Quantized Size (MB)': 15.4,
-        'Accuracy': 0.988,
+        'macro precision': 0.99692,
+        'macro recall': 0.99696,
+        'macro f1-score': 0.99694,
     },
     'albert': {
         'Size (MB)': 48.6,
         'Quantized Size (MB)': 12.8,
-        'Accuracy': 0.997,
+        'macro precision': 0.99740,
+        'macro recall': 0.99773,
+        'macro f1-score': 0.99757,
     },
     'tiny-albert': {
         'Size (MB)': 22.4,
         'Quantized Size (MB)': 5.98,
-        'Accuracy': 0.981,
+        'macro precision': 0.99325,
+        'macro recall': 0.99378,
+        'macro f1-score': 0.99351,
     },
     'xlnet': {
         'Size (MB)': 446.5,
         'Quantized Size (MB)': 118,
-        'Accuracy': 0.990,
+        'macro precision': 0.99773,
+        'macro recall': 0.99775,
+        'macro f1-score': 0.99774,
     },
     'alxlnet': {
         'Size (MB)': 46.8,
         'Quantized Size (MB)': 13.3,
-        'Accuracy': 0.989,
-    },
-    'bigbird': {
-        'Size (MB)': 425.6,
-        'Quantized Size (MB)': 111,
-        'Accuracy': 0.992,
-    },
-    'small-bigbird': {
-        'Size (MB)': 425.6,
-        'Quantized Size (MB)': 111,
-        'Accuracy': 0.992,
+        'macro precision': 0.99663,
+        'macro recall': 0.99697,
+        'macro f1-score': 0.99680,
     },
 }
 

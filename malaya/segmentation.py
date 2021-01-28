@@ -3,7 +3,7 @@ import re
 from functools import lru_cache
 from math import log10
 from malaya.text.regex import _expressions
-from malaya.model.tf import SEGMENTATION
+from malaya.model.tf import Segmentation
 from malaya.path import (
     PATH_SEGMENTATION,
     S3_PATH_SEGMENTATION,
@@ -64,7 +64,7 @@ class _Pdist(dict):
             return self.unk_prob(key, self.total)
 
 
-class SEGMENTER:
+class Segmenter:
     def __init__(self, max_split_length = 20):
         self.unigrams = _read_stats(1)
         self.bigrams = _read_stats(2)
@@ -155,12 +155,12 @@ def viterbi(max_split_length: int = 20, **kwargs):
 
     Returns
     -------
-    result : malaya.segmentation.SEGMENTER class
+    result : malaya.segmentation.Segmenter class
     """
 
     check_file(PATH_PREPROCESSING[1], S3_PATH_PREPROCESSING[1], **kwargs)
     check_file(PATH_PREPROCESSING[2], S3_PATH_PREPROCESSING[2], **kwargs)
-    return SEGMENTER(max_split_length = max_split_length)
+    return Segmenter(max_split_length = max_split_length)
 
 
 def available_transformer():
@@ -191,7 +191,7 @@ def transformer(model: str = 'small', quantized: bool = False, **kwargs):
 
     Returns
     -------
-    result: malaya.model.tf.SEGMENTATION class
+    result: malaya.model.tf.Segmentation class
     """
 
     model = model.lower()
@@ -205,7 +205,7 @@ def transformer(model: str = 'small', quantized: bool = False, **kwargs):
         S3_PATH_SEGMENTATION,
         model,
         'yttm',
-        SEGMENTATION,
+        Segmentation,
         quantized = quantized,
         **kwargs,
     )

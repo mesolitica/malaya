@@ -13,13 +13,13 @@ def lexicon(**kwargs):
 
     Returns
     -------
-    result : malaya.lexicon.nsfw.LEXICON class
+    result : malaya.text.lexicon.nsfw.Lexicon class
     """
 
     check_file(PATH_NSFW['lexicon'], S3_PATH_NSFW['lexicon'], **kwargs)
     with open(PATH_NSFW['lexicon']['model']) as fopen:
         corpus = json.load(fopen)
-    return nsfw.LEXICON(corpus)
+    return nsfw.Lexicon(corpus)
 
 
 def multinomial(**kwargs):

@@ -1,7 +1,7 @@
 import pickle
 from malaya.function import check_file
-from malaya.model.ml import LANGUAGE_DETECTION
-from malaya.model.tf import DEEP_LANG
+from malaya.model.ml import LanguageDetection
+from malaya.model.tf import DeepLang
 from malaya.path import PATH_LANG_DETECTION, S3_PATH_LANG_DETECTION
 from herpetologist import check_type
 
@@ -18,19 +18,19 @@ label = list(lang_labels.values())
 
 
 @check_type
-def fasttext(quantization: bool = True, **kwargs):
+def fasttext(quantized: bool = True, **kwargs):
 
     """
     Load Fasttext language detection model.
     
     Parameters
     ----------
-    quantization: bool, optional (default=True)
+    quantized: bool, optional (default=True)
         if True, load quantized fasttext model. Else, load original fasttext model.
 
     Returns
     -------
-    result : malaya.model.ml.LANGUAGE_DETECTION class
+    result : malaya.model.ml.LanguageDetection class
     """
 
     try:
@@ -39,7 +39,7 @@ def fasttext(quantization: bool = True, **kwargs):
         raise ModuleNotFoundError(
             'fasttext not installed. Please install it by `pip install fasttext` and try again.'
         )
-    if quantization:
+    if quantized:
         model = 'fasttext-quantized'
     else:
         model = 'fasttext-original'
@@ -55,7 +55,7 @@ def fasttext(quantization: bool = True, **kwargs):
         raise ValueError(
             f"model corrupted due to some reasons, please run malaya.clear_cache('language-detection/{model}') and try again"
         )
-    return LANGUAGE_DETECTION(model_fasttext, lang_labels)
+    return LanguageDetection(model_fasttext, lang_labels)
 
 
 def deep_model(**kwargs):
@@ -64,7 +64,7 @@ def deep_model(**kwargs):
 
     Returns
     -------
-    result : malaya.model.tf.DEEP_LANG class
+    result : malaya.model.tf.DeepLang class
     """
 
     check_file(
@@ -84,7 +84,7 @@ def deep_model(**kwargs):
 
     import os
 
-    return DEEP_LANG(
+    return DeepLang(
         os.path.dirname(PATH_LANG_DETECTION['deep']['model']),
         vector,
         lang_labels,

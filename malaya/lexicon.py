@@ -187,9 +187,9 @@ def random_walk(
     """
 
     if not hasattr(wordvector, 'batch_n_closest'):
-        raise ValueError('wordvector must has `batch_n_closest` method')
+        raise ValueError('wordvector must have `batch_n_closest` method')
     if not hasattr(wordvector, '_dictionary'):
-        raise ValueError('wordvector must has `_dictionary` attribute')
+        raise ValueError('wordvector must have `_dictionary` attribute')
     if not (beta > 0 and beta < 1):
         raise ValueError('beta must be bigger than 0 and less than 1')
 
@@ -282,9 +282,9 @@ def propagate_probabilistic(
     """
 
     if not hasattr(wordvector, 'batch_n_closest'):
-        raise ValueError('wordvector must has `batch_n_closest` method')
+        raise ValueError('wordvector must have `batch_n_closest` method')
     if not hasattr(wordvector, '_dictionary'):
-        raise ValueError('wordvector must has `_dictionary` attribute')
+        raise ValueError('wordvector must have `_dictionary` attribute')
 
     results, seeds, embeddings = _populate(
         lexicon = lexicon,
@@ -366,9 +366,9 @@ def propagate_graph(
     """
 
     if not hasattr(wordvector, 'batch_n_closest'):
-        raise ValueError('wordvector must has `batch_n_closest` method')
+        raise ValueError('wordvector must have `batch_n_closest` method')
     if not hasattr(wordvector, '_dictionary'):
-        raise ValueError('wordvector must has `_dictionary` attribute')
+        raise ValueError('wordvector must have `_dictionary` attribute')
 
     results, seeds, embeddings = _populate(
         lexicon = lexicon,

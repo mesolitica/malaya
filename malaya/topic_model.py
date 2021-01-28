@@ -1,9 +1,8 @@
 import numpy as np
 import collections
 from sklearn.utils import shuffle
-from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.decomposition import TruncatedSVD, NMF, LatentDirichletAllocation
-from malaya.model.lda2vec import LDA2VEC
+from malaya.model.lda2vec import LDA2Vec
 from malaya.text.function import (
     simple_textcleaning,
     get_stopwords,
@@ -12,7 +11,7 @@ from malaya.text.function import (
     build_dataset,
 )
 from malaya.function import validator
-from malaya.text.vectorizer import skipgrams, SkipGramVectorizer
+from malaya.text.vectorizer import skipgrams
 from malaya.generator import ngrams as ngrams_generator
 from herpetologist import check_type
 from typing import List, Tuple, Callable
@@ -76,7 +75,7 @@ def _prepare_topics(
     return data
 
 
-class ATTENTION_TOPIC:
+class AttentionTopic:
     def __init__(self, features, components):
         self._features = features
         self._components = components
@@ -91,6 +90,11 @@ class ATTENTION_TOPIC:
         Parameters
         ----------
         len_topic: int
+            size of topics.
+        top_n: int, optional (default=10)
+            top n of each topic.
+        return_df: bool, optional (default=True)
+            return as pandas.DataFrame, else JSON.
         """
         return print_topics_modelling(
             len_topic,
@@ -108,6 +112,7 @@ class ATTENTION_TOPIC:
         Parameters
         ----------
         len_topic: int
+            size of topics.
 
         Returns
         -------
@@ -129,7 +134,7 @@ class ATTENTION_TOPIC:
         return results
 
 
-class DEEP_TOPIC:
+class DeepTopic:
     def __init__(
         self,
         model,
@@ -172,7 +177,7 @@ class DEEP_TOPIC:
             import pyLDAvis.sklearn
         except:
             raise ModuleNotFoundError(
-                'pyldavis not installed. Please install it and try again.'
+                'pyldavis not installed. Please install it by `pip install pyldavis` and try again.'
             )
 
         if notebook_mode:
@@ -203,6 +208,11 @@ class DEEP_TOPIC:
         Parameters
         ----------
         len_topic: int
+            size of topics.
+        top_n: int, optional (default=10)
+            top n of each topic.
+        return_df: bool, optional (default=True)
+            return as pandas.DataFrame, else JSON.
         """
         return print_topics_modelling(
             len_topic,
@@ -220,6 +230,7 @@ class DEEP_TOPIC:
         Parameters
         ----------
         len_topic: int
+            size of topics.
 
         Returns
         -------
@@ -261,7 +272,7 @@ class DEEP_TOPIC:
         return [self._corpus[i] for i in reverse_sorted[:len_sentence]]
 
 
-class TOPIC:
+class Topic:
     def __init__(
         self, features, comp, corpus, transformed, vectorizer, vectors
     ):
@@ -314,6 +325,11 @@ class TOPIC:
         Parameters
         ----------
         len_topic: int
+            size of topics.
+        top_n: int, optional (default=10)
+            top n of each topic.
+        return_df: bool, optional (default=True)
+            return as pandas.DataFrame, else JSON.
         """
         return print_topics_modelling(
             len_topic,
@@ -374,19 +390,6 @@ class TOPIC:
         return [self.corpus[i] for i in reverse_sorted[:len_sentence]]
 
 
-_vectorizer_availability = {
-    'tfidf': {'Description': 'TFIDF Vectorizer'},
-    'bow': {'Description': 'Bag-Of-Word Vectorizer'},
-    'skip-gram': {'Description': 'Bag-Of-Word with Gram-Skipping Vectorizer'},
-}
-
-vectorizer_mapping = {
-    'tfidf': TfidfVectorizer,
-    'bow': CountVectorizer,
-    'skip-gram': SkipGramVectorizer,
-}
-
-
 def available_vectorizer():
     """
     List available vectorizer topic modeling.
@@ -397,26 +400,51 @@ def available_vectorizer():
 
 
 @check_type
-def _base_topic_modelling(
+def sklearn(
     corpus: List[str],
+    model,
+    vectorizer,
     n_topics: int,
-    decomposition,
-    max_df: float = 0.95,
-    min_df: int = 2,
-    ngram: Tuple[int, int] = (1, 3),
-    vectorizer: str = 'bow',
     cleaning = simple_textcleaning,
-    stopwords: List[str] = None,
+    stopwords = get_stopwords,
     **kwargs,
 ):
-    validator.validate_function(cleaning, 'cleaning')
+    """
+    Train a SKlearn model to do topic modelling based on corpus / list of strings given.
 
-    if min_df < 1:
-        raise ValueError('min_df must be bigger than 0')
-    if not (max_df <= 1 and max_df > 0):
-        raise ValueError(
-            'max_df must be bigger than 0, less than or equal to 1'
-        )
+    Parameters
+    ----------
+    corpus: list
+    model : object
+        Should have `fit_transform` method. Commonly:
+
+        * ``sklearn.decomposition.TruncatedSVD`` - LSA algorithm.
+        * ``sklearn.decomposition.LatentDirichletAllocation`` - LDA algorithm.
+        * ``sklearn.decomposition.NMF`` - NMF algorithm.
+    vectorizer : object
+        Should have `fit_transform` method. Commonly:
+
+        * ``sklearn.feature_extraction.text.TfidfVectorizer`` - TFIDF algorithm.
+        * ``sklearn.feature_extraction.text.CountVectorizer`` - Bag-of-Word algorithm.
+        * ``malaya.text.vectorizer.SkipGramCountVectorizer`` - Skip Gram Bag-of-Word algorithm.
+        * ``malaya.text.vectorizer.SkipGramTfidfVectorizer`` - Skip Gram TFIDF algorithm.
+    n_topics: int, (default=10)
+        size of decomposition column.
+    cleaning: function, (default=malaya.text.function.simple_textcleaning)
+        function to clean the corpus.
+    stopwords: List[str], (default=malaya.texts.function.get_stopwords)
+        A callable that returned a List[str], or a List[str], or a Tuple[str]
+
+    Returns
+    -------
+    result: malaya.topic_modelling.Topic class
+    """
+    stopwords = validator.validate_stopwords(stopwords)
+    stopwords = list(stopwords)
+    validator.validate_function(cleaning, 'cleaning')
+    if not hasattr(vectorizer, 'fit_transform'):
+        raise ValueError('vectorizer must have `fit_transform` method')
+
     if len(corpus) < n_topics:
         raise ValueError(
             'length corpus must be bigger than or equal to n_topics'
@@ -426,214 +454,25 @@ def _base_topic_modelling(
         for i in range(len(corpus)):
             corpus[i] = cleaning(corpus[i])
 
-    Vectorizer = vectorizer_mapping.get(vectorizer)
-    if not Vectorizer:
-        raise ValueError(
-            'vectorizer is not supported, please check supported vectorizers from `malaya.topic_model.available_vectorizer()`'
-        )
-    tf_vectorizer = Vectorizer(
-        max_df = max_df,
-        min_df = min_df,
-        ngram_range = ngram,
-        stop_words = stopwords,
-        **kwargs,
-    )
-    tf = tf_vectorizer.fit_transform(corpus)
-    tf_features = tf_vectorizer.get_feature_names()
-    compose = decomposition(n_topics).fit(tf)
-    return TOPIC(
-        tf_features,
-        compose,
-        [classification_textcleaning(c) for c in corpus],
-        compose.transform(tf),
-        tf_vectorizer,
-        tf,
-    )
-
-
-def lda(
-    corpus,
-    n_topics = 10,
-    max_df = 0.95,
-    min_df = 2,
-    ngram = (1, 3),
-    vectorizer = 'bow',
-    cleaning = simple_textcleaning,
-    stopwords = get_stopwords,
-    **kwargs,
-):
-    """
-    Train a LDA model to do topic modelling based on corpus / list of strings given.
-
-    Parameters
-    ----------
-    corpus: list
-    n_topics: int, (default=10)
-        size of decomposition column.
-    max_df: float, (default=0.95)
-        maximum of a word selected based on document frequency.
-    min_df: int, (default=2)
-        minimum of a word selected on based on document frequency.
-    ngram: tuple, (default=(1,3))
-        n-grams size to train a corpus.
-    vectorizer: str, (default='bow')
-        vectorizer technique. Allowed values:
-
-        * ``'bow'`` - Bag of Word.
-        * ``'tfidf'`` - Term frequency inverse Document Frequency.
-        * ``'skip-gram'`` - Bag of Word with skipping certain n-grams.
-    cleaning: function, (default=malaya.text.function.simple_textcleaning)
-        function to clean the corpus.
-    stopwords: List[str], (default=malaya.texts.function.get_stopwords)
-        A callable that returned a List[str], or a List[str], or a Tuple[str]
-
-    Returns
-    -------
-    result: malaya.topic_modelling.TOPIC class
-    """
-    stopwords = validator.validate_stopwords(stopwords)
-    stopwords = list(stopwords)
-    return _base_topic_modelling(
-        corpus,
-        n_topics,
-        LatentDirichletAllocation,
-        max_df = max_df,
-        min_df = min_df,
-        ngram = ngram,
-        vectorizer = vectorizer,
-        cleaning = cleaning,
-        stopwords = stopwords,
-        **kwargs,
-    )
-
-
-def nmf(
-    corpus,
-    n_topics = 10,
-    max_df = 0.95,
-    min_df = 2,
-    ngram = (1, 3),
-    vectorizer = 'bow',
-    cleaning = simple_textcleaning,
-    stopwords = get_stopwords,
-    **kwargs,
-):
-    """
-    Train a NMF model to do topic modelling based on corpus / list of strings given.
-
-    Parameters
-    ----------
-    corpus: list
-    n_topics: int, (default=10)
-        size of decomposition column.
-    max_df: float, (default=0.95)
-        maximum of a word selected based on document frequency.
-    min_df: int, (default=2)
-        minimum of a word selected on based on document frequency.
-    ngram: tuple, (default=(1,3))
-        n-grams size to train a corpus.
-    vectorizer: str, (default='bow')
-        vectorizer technique. Allowed values:
-
-        * ``'bow'`` - Bag of Word.
-        * ``'tfidf'`` - Term frequency inverse Document Frequency.
-        * ``'skip-gram'`` - Bag of Word with skipping certain n-grams.
-    cleaning: function, (default=malaya.text.function.simple_textcleaning)
-        function to clean the corpus.
-    stopwords: List[str], (default=malaya.texts.function.get_stopwords)
-        A callable that returned a List[str], or a List[str], or a Tuple[str]
-
-    Returns
-    -------
-    TOPIC: malaya.topic_modelling.TOPIC class
-    """
-    stopwords = validator.validate_stopwords(stopwords)
-    stopwords = list(stopwords)
-    return _base_topic_modelling(
-        corpus,
-        n_topics,
-        NMF,
-        max_df = max_df,
-        min_df = min_df,
-        ngram = ngram,
-        vectorizer = vectorizer,
-        cleaning = cleaning,
-        stopwords = stopwords,
-        **kwargs,
-    )
-
-
-def lsa(
-    corpus,
-    n_topics,
-    max_df = 0.95,
-    min_df = 2,
-    ngram = (1, 3),
-    vectorizer = 'bow',
-    cleaning = simple_textcleaning,
-    stopwords = get_stopwords,
-    **kwargs,
-):
-    """
-    Train a LSA model to do topic modelling based on corpus / list of strings given.
-
-    Parameters
-    ----------
-    corpus: list
-    n_topics: int, (default=10)
-        size of decomposition column.
-    max_df: float, (default=0.95)
-        maximum of a word selected based on document frequency.
-    min_df: int, (default=2)
-        minimum of a word selected on based on document frequency.
-    ngram: tuple, (default=(1,3))
-        n-grams size to train a corpus.
-    vectorizer: str, (default='bow')
-        vectorizer technique. Allowed values:
-
-        * ``'bow'`` - Bag of Word.
-        * ``'tfidf'`` - Term frequency inverse Document Frequency.
-        * ``'skip-gram'`` - Bag of Word with skipping certain n-grams.
-    cleaning: function, (default=malaya.text.function.simple_textcleaning)
-        function to clean the corpus.
-    stopwords: List[str], (default=malaya.texts.function.get_stopwords)
-        A callable that returned a List[str], or a List[str], or a Tuple[str]
-
-    Returns
-    -------
-    TOPIC: malaya.topic_modelling.TOPIC class
-    """
-    stopwords = validator.validate_stopwords(stopwords)
-    stopwords = list(stopwords)
-    return _base_topic_modelling(
-        corpus,
-        n_topics,
-        TruncatedSVD,
-        max_df = max_df,
-        min_df = min_df,
-        ngram = ngram,
-        vectorizer = vectorizer,
-        cleaning = cleaning,
-        stopwords = stopwords,
-        **kwargs,
+    tf = vectorizer.fit_transform(corpus)
+    tf_features = vectorizer.get_feature_names()
+    compose = model(n_topics).fit(tf)
+    return Topic(
+        tf_features, compose, corpus, compose.transform(tf), vectorizer, tf
     )
 
 
 @check_type
 def lda2vec(
     corpus: List[str],
-    n_topics: int,
-    max_df: float = 0.95,
-    min_df: int = 2,
-    ngram: Tuple[int, int] = (1, 3),
+    vectorizer,
+    n_topics: int = 10,
     cleaning = simple_textcleaning,
-    vectorizer: str = 'bow',
     stopwords = get_stopwords,
     window_size: int = 2,
     embedding_size: int = 128,
     epoch: int = 10,
-    switch_loss: int = 3,
-    skip: int = 5,
+    switch_loss: int = 1000,
     **kwargs,
 ):
     """
@@ -642,62 +481,35 @@ def lda2vec(
     Parameters
     ----------
     corpus: list
+    vectorizer : object
+        Should have `fit_transform` method. Commonly:
+
+        * ``sklearn.feature_extraction.text.TfidfVectorizer`` - TFIDF algorithm.
+        * ``sklearn.feature_extraction.text.CountVectorizer`` - Bag-of-Word algorithm.
+        * ``malaya.text.vectorizer.SkipGramCountVectorizer`` - Skip Gram Bag-of-Word algorithm.
+        * ``malaya.text.vectorizer.SkipGramTfidfVectorizer`` - Skip Gram TFIDF algorithm.
     n_topics: int, (default=10)
         size of decomposition column.
-    max_df: float, (default=0.95)
-        maximum of a word selected based on document frequency.
-    min_df: int, (default=2)
-        minimum of a word selected on based on document frequency.
-    ngram: tuple, (default=(1,3))
-        n-grams size to train a corpus.
     cleaning: function, (default=malaya.text.function.simple_textcleaning)
         function to clean the corpus.
     stopwords: List[str], (default=malaya.texts.function.get_stopwords)
         A callable that returned a List[str], or a List[str], or a Tuple[str]
     embedding_size: int, (default=128)
         embedding size of lda2vec tensors.
-    training_iteration: int, (default=10)
+    epoch: int, (default=10)
         training iteration, how many loop need to train.
     switch_loss: int, (default=3)
         baseline to switch from document based loss to document + word based loss.
-    vectorizer: str, (default='bow')
-        vectorizer technique. Allowed values:
-
-        * ``'bow'`` - Bag of Word.
-        * ``'tfidf'`` - Term frequency inverse Document Frequency.
-        * ``'skip-gram'`` - Bag of Word with skipping certain n-grams.
-    skip: int, (default=5)
-        skip value if vectorizer = 'skip-gram'
 
     Returns
     -------
-    result: malaya.topic_modelling.DEEP_TOPIC class
+    result: malaya.topic_modelling.DeepTopic class
     """
     validator.validate_function(cleaning, 'cleaning')
     stopwords = validator.validate_stopwords(stopwords)
     stopwords = list(stopwords)
 
-    vectorizer = vectorizer.lower()
-    if not vectorizer in ['tfidf', 'bow', 'skip-gram']:
-        raise ValueError("vectorizer must be in  ['tfidf', 'bow', 'skip-gram']")
-
-    if min_df < 1:
-        raise ValueError('min_df must be bigger than 0')
-    if not (max_df <= 1 and max_df > 0):
-        raise ValueError(
-            'max_df must be bigger than 0, less than or equal to 1'
-        )
-    Vectorizer = vectorizer_mapping.get(vectorizer)
-    if not Vectorizer:
-        raise ValueError(
-            'vectorizer is not supported, please check supported vectorizers from `malaya.topic_model.available_vectorizer()`'
-        )
-    tf_vectorizer = Vectorizer(
-        ngram_range = ngram,
-        min_df = min_df,
-        max_df = max_df,
-        stop_words = stopwords,
-    )
+    tf_vectorizer = vectorizer
 
     if cleaning:
         for i in range(len(corpus)):
@@ -742,7 +554,7 @@ def lda2vec(
     )
     num_unique_documents = len(idx_text_clean)
 
-    model = LDA2VEC(
+    model = LDA2Vec(
         num_unique_documents,
         len(dictionary),
         n_topics,
@@ -753,7 +565,7 @@ def lda2vec(
     model.train(
         pivot_words, target_words, doc_ids, epoch, switch_loss = switch_loss
     )
-    return DEEP_TOPIC(
+    return DeepTopic(
         model,
         dictionary,
         reversed_dictionary,
@@ -764,7 +576,7 @@ def lda2vec(
 
 
 @check_type
-def transformer(
+def attention(
     corpus: List[str],
     n_topics: int,
     vectorizer,
@@ -794,7 +606,7 @@ def transformer(
 
     Returns
     -------
-    result: malaya.topic_modelling.ATTENTION_TOPIC class
+    result: malaya.topic_modelling.AttentionTopic class
     """
 
     stopwords = validator.validate_stopwords(stopwords)
@@ -803,7 +615,7 @@ def transformer(
         vectorizer, 'vectorize'
     ):
         raise ValueError(
-            'vectorizer must has `attention` and `vectorize` methods'
+            'vectorizer must have `attention` and `vectorize` methods'
         )
     validator.validate_function(cleaning, 'cleaning')
 
@@ -855,4 +667,4 @@ def transformer(
             if word in features:
                 components[i, features.index(word)] += score
 
-    return ATTENTION_TOPIC(features, components)
+    return AttentionTopic(features, components)

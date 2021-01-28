@@ -36,7 +36,7 @@ render_dict = {
 }
 
 
-class BASE:
+class Base:
     def __init__(
         self,
         X,
@@ -58,7 +58,7 @@ class BASE:
         self._label = label
 
 
-class BERT(BASE):
+class BERT(Base):
     def __init__(
         self,
         X,
@@ -74,7 +74,7 @@ class BERT(BASE):
         label = ['negative', 'positive'],
     ):
 
-        BASE.__init__(
+        Base.__init__(
             self,
             X = X,
             segment_ids = segment_ids,
@@ -240,7 +240,7 @@ class BERT(BASE):
             return dict_result
 
 
-class BINARY_BERT(BERT):
+class BinaryBERT(BERT):
     def __init__(
         self,
         X,
@@ -361,7 +361,7 @@ class BINARY_BERT(BERT):
         )
 
 
-class MULTICLASS_BERT(BERT):
+class MulticlassBERT(BERT):
     def __init__(
         self,
         X,
@@ -422,7 +422,6 @@ class MULTICLASS_BERT(BERT):
         Parameters
         ----------
         strings: List[str]
-        add_neutral: bool, optional (default=True)
 
         Returns
         -------
@@ -475,7 +474,7 @@ class MULTICLASS_BERT(BERT):
         )
 
 
-class SIGMOID_BERT(BASE):
+class SigmoidBERT(Base):
     def __init__(
         self,
         X,
@@ -490,7 +489,7 @@ class SIGMOID_BERT(BASE):
         class_name,
         label = ['negative', 'positive'],
     ):
-        BASE.__init__(
+        Base.__init__(
             self,
             X = X,
             segment_ids = segment_ids,
@@ -711,7 +710,7 @@ class SIGMOID_BERT(BASE):
             return dict_result
 
 
-class SIAMESE_BERT(BASE):
+class SiameseBERT(Base):
     def __init__(
         self,
         X,
@@ -723,7 +722,7 @@ class SIAMESE_BERT(BASE):
         tokenizer,
         label = ['not similar', 'similar'],
     ):
-        BASE.__init__(
+        Base.__init__(
             self,
             X = X,
             segment_ids = segment_ids,
@@ -825,6 +824,23 @@ class SIAMESE_BERT(BASE):
         annotate: bool = True,
         figsize: Tuple[int, int] = (7, 7),
     ):
+        """
+        plot a heatmap based on output from similarity
+
+        Parameters
+        ----------
+        strings : list of str
+            list of strings.
+        visualize : bool
+            if True, it will render plt.show, else return data.
+        figsize : tuple, (default=(7, 7))
+            figure size for plot.
+
+        Returns
+        -------
+        result: list
+            list of results
+        """
         results = self._tree_plot(strings)
 
         if not visualize:
@@ -850,7 +866,7 @@ class SIAMESE_BERT(BASE):
         plt.show()
 
 
-class TAGGING_BERT(BASE):
+class TaggingBERT(Base):
     def __init__(
         self,
         X,
@@ -862,7 +878,7 @@ class TAGGING_BERT(BASE):
         tokenizer,
         settings,
     ):
-        BASE.__init__(
+        Base.__init__(
             self,
             X = X,
             segment_ids = segment_ids,
@@ -955,7 +971,7 @@ class TAGGING_BERT(BASE):
         return list(zip(merged[0], merged[1]))
 
 
-class DEPENDENCY_BERT(BASE):
+class DependencyBERT(Base):
     def __init__(
         self,
         X,
@@ -968,7 +984,7 @@ class DEPENDENCY_BERT(BASE):
         settings,
         heads_seq,
     ):
-        BASE.__init__(
+        Base.__init__(
             self,
             X = X,
             segment_ids = segment_ids,
@@ -1059,7 +1075,7 @@ class DEPENDENCY_BERT(BASE):
         return d, tagging, indexing_
 
 
-class ZEROSHOT_BERT(BASE):
+class ZeroshotBERT(Base):
     def __init__(
         self,
         X,
@@ -1071,7 +1087,7 @@ class ZEROSHOT_BERT(BASE):
         tokenizer,
         label = ['not similar', 'similar'],
     ):
-        BASE.__init__(
+        Base.__init__(
             self,
             X = X,
             segment_ids = segment_ids,
@@ -1199,9 +1215,9 @@ class ZEROSHOT_BERT(BASE):
         return self._base(strings, labels)
 
 
-class PARAPHRASE_BERT(BASE):
+class ParaphraseBERT(Base):
     def __init__(self, X, segment_ids, input_masks, logits, sess, tokenizer):
-        BASE.__init__(
+        Base.__init__(
             self,
             X = X,
             segment_ids = segment_ids,
@@ -1274,7 +1290,7 @@ class PARAPHRASE_BERT(BASE):
             return self._paraphrase([string])[0]
 
 
-class TRANSLATION:
+class TranslationBERT:
     def __init__(self, X, greedy, beam, sess, tokenizer):
 
         self._X = X

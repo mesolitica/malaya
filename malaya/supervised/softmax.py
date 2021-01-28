@@ -9,9 +9,10 @@ from malaya.text.bpe import (
     sentencepiece_tokenizer_xlnet,
     load_yttm,
 )
-from malaya.model.ml import BINARY_BAYES, MULTICLASS_BAYES
-from malaya.model.bert import MULTICLASS_BERT, BINARY_BERT
-from malaya.model.xlnet import MULTICLASS_XLNET, BINARY_XLNET
+from malaya.model.ml import BinaryBayes, MulticlassBayes
+from malaya.model.bert import MulticlassBERT, BinaryBERT
+from malaya.model.xlnet import MulticlassXLNET, BinaryXLNET
+from malaya.model.bigbird import MulticlassBigBird
 
 
 def multinomial(path, s3_path, class_name, label, **kwargs):
@@ -33,9 +34,9 @@ def multinomial(path, s3_path, class_name, label, **kwargs):
     cleaning = partial(_classification_textcleaning_stemmer, stemmer = stemmer)
 
     if len(label) > 2:
-        selected_class = MULTICLASS_BAYES
+        selected_class = MulticlassBayes
     else:
-        selected_class = BINARY_BAYES
+        selected_class = BinaryBayes
     return selected_class(
         multinomial = multinomial,
         label = label,
@@ -64,18 +65,21 @@ def transformer(
 
     if len(label) > 2 or class_name == 'relevancy':
         if model in ['albert', 'bert', 'tiny-albert', 'tiny-bert']:
-            selected_class = MULTICLASS_BERT
+            selected_class = MulticlassBERT
             selected_node = 'import/dense/BiasAdd:0'
         if model in ['xlnet', 'alxlnet']:
-            selected_class = MULTICLASS_XLNET
+            selected_class = MulticlassXLNET
             selected_node = 'import/transpose_3:0'
+        if model in ['bigbird', 'tiny-bigbird']:
+            selected_class = MulticlassBigBird
+            selected_node = 'import/dense/BiasAdd:0'
 
     else:
         if model in ['albert', 'bert', 'tiny-albert', 'tiny-bert']:
-            selected_class = BINARY_BERT
+            selected_class = BinaryBERT
             selected_node = 'import/dense/BiasAdd:0'
         if model in ['xlnet', 'alxlnet']:
-            selected_class = BINARY_XLNET
+            selected_class = BinaryXLNET
             selected_node = 'import/transpose_3:0'
 
     if model in ['albert', 'bert', 'tiny-albert', 'tiny-bert']:
@@ -140,5 +144,20 @@ def transformer(
             tokenizer = tokenizer,
             label = label,
             attns = _extract_attention_weights_import(g),
+            class_name = class_name,
+        )
+
+    if model in ['bigbird', 'tiny-bigbird']:
+        tokenizer = sentencepiece_tokenizer_bert(
+            path[model]['tokenizer'], path[model]['vocab']
+        )
+        return selected_class(
+            X = g.get_tensor_by_name('import/Placeholder:0'),
+            logits = g.get_tensor_by_name('import/logits:0'),
+            logits_seq = g.get_tensor_by_name('import/logits_seq:0'),
+            vectorizer = g.get_tensor_by_name(selected_node),
+            sess = generate_session(graph = g, **kwargs),
+            tokenizer = tokenizer,
+            label = label,
             class_name = class_name,
         )

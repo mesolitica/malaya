@@ -93,7 +93,7 @@ def load_wiki_news_social_media():
 def load(embed_matrix, dictionary: dict):
 
     """
-    Return malaya.wordvector.WORDVECTOR object.
+    Return malaya.wordvector.WordVector object.
 
     Parameters
     ----------
@@ -102,13 +102,13 @@ def load(embed_matrix, dictionary: dict):
 
     Returns
     -------
-    WORDVECTOR: malaya.wordvector.WORDVECTOR object
+    WordVector: malaya.wordvector.WordVector object
     """
 
-    return WORDVECTOR(embed_matrix = embed_matrix, dictionary = dictionary)
+    return WordVector(embed_matrix = embed_matrix, dictionary = dictionary)
 
 
-class WORDVECTOR:
+class WordVector:
     def __init__(self, embed_matrix, dictionary):
         self._embed_matrix = embed_matrix
         self._dictionary = dictionary

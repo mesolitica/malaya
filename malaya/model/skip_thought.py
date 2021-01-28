@@ -7,6 +7,54 @@ import json
 import os
 from malaya.path import PATH_SUMMARIZE, S3_PATH_SUMMARIZE
 from malaya.function import download_file, load_graph
+from malaya.text.function import summary_textcleaning
+
+
+class DeepSkipThought:
+    def __init__(
+        self, sess, x, logits, attention, dictionary, maxlen, model = None
+    ):
+        self._sess = sess
+        self._X = x
+        self._logits = logits
+        self._attention = attention
+        self.dictionary = dictionary
+        self._maxlen = maxlen
+        self._rev_dictionary = {v: k for k, v in self.dictionary.items()}
+        self._model = model
+
+    def vectorize(self, strings):
+
+        """
+        Vectorize string inputs using bert attention.
+
+        Parameters
+        ----------
+        strings : str / list of str
+
+        Returns
+        -------
+        array: vectorized strings
+        """
+
+        if isinstance(strings, list):
+            if not isinstance(strings[0], str):
+                raise ValueError('input must be a list of strings or a string')
+        else:
+            if not isinstance(strings, str):
+                raise ValueError('input must be a list of strings or a string')
+        if isinstance(strings, str):
+            strings = [strings]
+
+        splitted_fullstop = [summary_textcleaning(i) for i in strings]
+        original_strings = [i[0] for i in splitted_fullstop]
+        cleaned_strings = [i[1] for i in splitted_fullstop]
+        sequences = skip_thought.batch_sequence(
+            cleaned_strings, self.dictionary, maxlen = self._maxlen
+        )
+        return self._sess.run(
+            self._logits, feed_dict = {self._X: np.array(sequences)}
+        )
 
 
 def batch_sequence(sentences, dictionary, maxlen = 50):

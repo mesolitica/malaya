@@ -1,4 +1,4 @@
-from malaya.model.tf import TRUE_CASE
+from malaya.model.tf import TrueCase
 from malaya.path import PATH_TRUE_CASE, S3_PATH_TRUE_CASE
 from malaya.supervised import transformer as load_transformer
 from herpetologist import check_type
@@ -45,7 +45,7 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
 
     Returns
     -------
-    result: malaya.model.tf.TRUE_CASE class
+    result: malaya.model.tf.TrueCase class
     """
 
     model = model.lower()
@@ -59,7 +59,7 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
         S3_PATH_TRUE_CASE,
         model,
         'yttm',
-        TRUE_CASE,
+        TrueCase,
         quantized = quantized,
         **kwargs
     )

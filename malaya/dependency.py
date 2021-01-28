@@ -5,7 +5,8 @@ from malaya.text.bpe import (
 )
 from malaya.function.parse_dependency import DependencyGraph
 from malaya.path import PATH_DEPENDENCY, S3_PATH_DEPENDENCY
-
+from malaya.model.xlnet import DependencyXLNET
+from malaya.model.bert import DependencyBERT
 from herpetologist import check_type
 
 label = {
@@ -203,13 +204,12 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
     g = load_graph(PATH_DEPENDENCY[model][model_path], **kwargs)
 
     if model in ['bert', 'tiny-bert', 'albert', 'tiny-albert']:
-        from malaya.model.bert import DEPENDENCY_BERT
 
         tokenizer = sentencepiece_tokenizer_bert(
             PATH_DEPENDENCY[model]['tokenizer'], PATH_DEPENDENCY[model]['vocab']
         )
 
-        return DEPENDENCY_BERT(
+        return DependencyBERT(
             X = g.get_tensor_by_name('import/Placeholder:0'),
             segment_ids = None,
             input_masks = None,
@@ -222,13 +222,12 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
         )
 
     if model in ['xlnet', 'alxlnet']:
-        from malaya.model.xlnet import DEPENDENCY_XLNET
 
         tokenizer = sentencepiece_tokenizer_xlnet(
             PATH_DEPENDENCY[model]['tokenizer']
         )
 
-        return DEPENDENCY_XLNET(
+        return DependencyXLNET(
             X = g.get_tensor_by_name('import/Placeholder:0'),
             segment_ids = g.get_tensor_by_name('import/Placeholder_1:0'),
             input_masks = g.get_tensor_by_name('import/Placeholder_2:0'),

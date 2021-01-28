@@ -19,8 +19,12 @@ _t5_availability = {
     },
 }
 _transformer_availability = {
-    'small': {'Size (MB)': 379, 'Quantized Size (MB)': 120, 'BLEU': 0.65849},
-    'base': {'Size (MB)': 832, 'Quantized Size (MB)': 279, 'BLEU': 0.596_123},
+    't2t': {'Size (MB)': 832, 'Quantized Size (MB)': 279, 'BLEU': 0.59612},
+    'small-t2t': {
+        'Size (MB)': 379,
+        'Quantized Size (MB)': 120,
+        'BLEU': 0.65849,
+    },
 }
 
 
@@ -77,7 +81,7 @@ def t5(
 
     Returns
     -------
-    result: malaya.model.t5.PARAPHRASE class
+    result: malaya.model.t5.Paraphrase class
     """
 
     model = model.lower()
@@ -86,13 +90,13 @@ def t5(
             'model not supported, please check supported models from `malaya.paraphrase.available_t5()`.'
         )
 
-    from malaya.model.t5 import PARAPHRASE
+    from malaya.model.t5 import Paraphrase
 
     return t5_load.load(
         path = PATH_PARAPHRASE,
         s3_path = S3_PATH_PARAPHRASE,
         model = model,
-        model_class = PARAPHRASE,
+        model_class = Paraphrase,
         compressed = compressed,
         quantized = optimized,
         **kwargs,
@@ -100,17 +104,19 @@ def t5(
 
 
 @check_type
-def transformer(model: str = 'base', quantized: bool = False, **kwargs):
+def transformer(model: str = 't2t', quantized: bool = False, **kwargs):
     """
     Load Malaya transformer encoder-decoder model to generate a paraphrase given a string.
 
     Parameters
     ----------
-    model : str, optional (default='base')
+    model : str, optional (default='t2t')
         Model architecture supported. Allowed values:
 
-        * ``'small'`` - Malaya Transformer SMALL parameters.
-        * ``'base'`` - Malaya Transformer BASE parameters.
+        * ``'t2t'`` - Malaya Transformer BASE parameters.
+        * ``'small-t2t'`` - Malaya Transformer SMALL parameters.
+        * ``'bigbird'`` - Google BigBird BASE parameters.
+        * ``'small-bigbird'`` - Google BigBird SMALL parameters.
 
     quantized : bool, optional (default=False)
         if True, will load 8-bit quantized model. 
@@ -118,7 +124,7 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
 
     Returns
     -------
-    result: malaya.model.tf.PARAPHRASE class
+    result: malaya.model.tf.Paraphrase class
     """
 
     model = model.lower()
@@ -127,13 +133,17 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
             'model not supported, please check supported models from `malaya.paraphrase.available_transformer()`.'
         )
 
-    from malaya.model.tf import PARAPHRASE
+    from malaya.model.tf import Paraphrase
 
-    return transformer_load.load_lm(
-        path = PATH_PARAPHRASE['transformer'],
-        s3_path = S3_PATH_PARAPHRASE['transformer'],
-        model = model,
-        model_class = PARAPHRASE,
-        quantized = quantized,
-        **kwargs,
-    )
+    if 't2t' in model:
+        return transformer_load.load_lm(
+            path = PATH_PARAPHRASE['transformer'],
+            s3_path = S3_PATH_PARAPHRASE['transformer'],
+            model = model,
+            model_class = Paraphrase,
+            quantized = quantized,
+            **kwargs,
+        )
+
+    if 'bigbird' in model:
+        return

@@ -75,7 +75,7 @@ malaya.normalize
 .. automodule:: malaya.normalize
     :members:
 
-.. autoclass:: malaya.normalize.NORMALIZER()
+.. autoclass:: malaya.normalize.Normalizer()
     :members:
 
 malaya.nsfw
@@ -108,10 +108,10 @@ malaya.preprocessing
 .. automodule:: malaya.preprocessing
     :members:
 
-.. autoclass:: malaya.preprocessing.TOKENIZER()
+.. autoclass:: malaya.preprocessing.Tokenizer()
     :members:
 
-.. autoclass:: malaya.preprocessing.PREPROCESSING()
+.. autoclass:: malaya.preprocessing.Preprocessing()
     :members:
 
 malaya.relevancy
@@ -126,7 +126,7 @@ malaya.segmentation
 .. automodule:: malaya.segmentation
     :members:
 
-.. autoclass:: malaya.segmentation.SEGMENTER()
+.. autoclass:: malaya.segmentation.Segmenter()
     :members:
 
 malaya.sentiment
@@ -141,13 +141,13 @@ malaya.spell
 .. automodule:: malaya.spell
     :members:
 
-.. autoclass:: malaya.spell.TRANSFORMER()
+.. autoclass:: malaya.spell.Transformer()
     :members:
 
-.. autoclass:: malaya.spell.PROBABILITY()
+.. autoclass:: malaya.spell.Probability()
     :members:
 
-.. autoclass:: malaya.spell.SYMSPELL()
+.. autoclass:: malaya.spell.Symspell()
     :members:
 
 malaya.stack
@@ -162,13 +162,13 @@ malaya.stem
 .. automodule:: malaya.stem
     :members:
 
-.. autoclass:: malaya.stem.DEEP_STEMMER()
+.. autoclass:: malaya.stem.DeepStemmer()
     :members:
 
-.. autoclass:: malaya.stem.SASTRAWI()
+.. autoclass:: malaya.stem.Sastrawi()
     :members:
 
-.. autoclass:: malaya.stem.NAIVE()
+.. autoclass:: malaya.stem.Naive()
     :members:
 
 malaya.subjectivity
@@ -195,22 +195,16 @@ malaya.summarization.extractive
 .. automodule:: malaya.summarization.extractive
     :members:
 
-.. autoclass:: malaya.summarization.extractive.DEEP_SUMMARIZER()
-    :members:
-
-.. autoclass:: malaya.summarization.extractive.DEEP_SKIPTHOUGHT()
-    :members:
-
 malaya.similarity
 -------------------------
 
 .. automodule:: malaya.similarity
     :members:
 
-.. autoclass:: malaya.similarity.VECTORIZER_SIMILARITY()
+.. autoclass:: malaya.similarity.VectorizerSimilarity()
     :members:
 
-.. autoclass:: malaya.similarity.DOC2VEC_SIMILARITY()
+.. autoclass:: malaya.similarity.Doc2VecSimilarity()
     :members:
 
 malaya.topic_model
@@ -219,13 +213,13 @@ malaya.topic_model
 .. automodule:: malaya.topic_model
     :members:
 
-.. autoclass:: malaya.topic_model.ATTENTION_TOPIC()
+.. autoclass:: malaya.topic_model.AttentionTopic()
     :members:
 
-.. autoclass:: malaya.topic_model.DEEP_TOPIC()
+.. autoclass:: malaya.topic_model.DeepTopic()
     :members:
 
-.. autoclass:: malaya.topic_model.TOPIC()
+.. autoclass:: malaya.topic_model.Topic()
     :members:
 
 malaya.toxicity
@@ -270,13 +264,135 @@ malaya.wordvector
 .. automodule:: malaya.wordvector
     :members:
 
-.. autoclass:: malaya.wordvector.WORDVECTOR()
+.. autoclass:: malaya.wordvector.WordVector()
     :members:
 
 malaya.zero_shot.classification
 --------------------------------
 
 .. automodule:: malaya.zero_shot.classification
+    :members:
+
+malaya.model.bert
+----------------------------------
+
+.. autoclass:: malaya.model.bert.BinaryBERT()
+    :members:
+
+.. autoclass:: malaya.model.bert.MulticlassBERT()
+    :members:
+
+.. autoclass:: malaya.model.bert.SigmoidBERT()
+    :members:
+
+.. autoclass:: malaya.model.bert.SiameseBERT()
+    :members:
+
+.. autoclass:: malaya.model.bert.TaggingBERT()
+    :members:
+
+.. autoclass:: malaya.model.bert.DependencyBERT()
+    :members:
+
+.. autoclass:: malaya.model.bert.ZeroshotBERT()
+    :members:
+
+.. autoclass:: malaya.model.bert.ParaphraseBERT()
+    :members:
+
+malaya.model.bigbird
+----------------------------------
+
+.. autoclass:: malaya.model.bigbird.MulticlassBigBird()
+    :members:
+
+malaya.model.extractive_summarization
+--------------------------------------
+
+.. autoclass:: malaya.model.extractive_summarization.SKLearn()
+    :members:
+
+.. autoclass:: malaya.model.extractive_summarization.Doc2Vec()
+    :members:
+
+.. autoclass:: malaya.model.extractive_summarization.Encoder()
+
+malaya.model.ml
+----------------------------------
+
+.. autoclass:: malaya.model.ml.MulticlassBayes()
+    :members:
+
+.. autoclass:: malaya.model.ml.BinaryBayes()
+    :members:
+
+.. autoclass:: malaya.model.ml.MultilabelBayes()
+    :members:
+
+malaya.model.skip_thought
+----------------------------------
+
+.. autoclass:: malaya.model.skip_thought.DeepSkipThought()
+    :members:
+
+malaya.model.t5
+----------------------------------
+
+.. autoclass:: malaya.model.t5.Summarization()
+    :members:
+
+.. autoclass:: malaya.model.t5.Generator()
+    :members:
+
+.. autoclass:: malaya.model.t5.Paraphrase()
+    :members:
+
+malaya.model.tf
+----------------------------------
+
+.. autoclass:: malaya.model.tf.DeepLang()
+    :members:
+
+.. autoclass:: malaya.model.tf.Translation()
+    :members:
+
+.. autoclass:: malaya.model.tf.Constituency()
+    :members:
+
+.. autoclass:: malaya.model.tf.TrueCase()
+    :members:
+
+.. autoclass:: malaya.model.tf.Segmentation()
+    :members:
+
+.. autoclass:: malaya.model.tf.Paraphrase()
+    :members:
+    
+.. autoclass:: malaya.model.tf.Tatabahasa()
+    :members:
+
+malaya.model.xlnet
+----------------------------------
+
+.. autoclass:: malaya.model.xlnet.BinaryXLNET()
+    :members:
+
+.. autoclass:: malaya.model.xlnet.MulticlassXLNET()
+    :members:
+
+.. autoclass:: malaya.model.xlnet.SigmoidXLNET()
+    :members:
+
+.. autoclass:: malaya.model.xlnet.SiameseXLNET()
+    :members:
+
+.. autoclass:: malaya.model.xlnet.TaggingXLNET()
+    :members:
+
+.. autoclass:: malaya.model.xlnet.DependencyXLNET()
+    :members:
+
+.. autoclass:: malaya.model.xlnet.ZeroshotXLNET()
     :members:
 
 malaya.transformers.albert
@@ -331,103 +447,4 @@ malaya.transformers.xlnet
     :members:
 
 .. autoclass:: malaya.transformers.xlnet.Model()
-    :members:
-
-malaya.model.t5
-----------------------------------
-
-.. autoclass:: malaya.model.t5.SUMMARIZATION()
-    :members:
-
-.. autoclass:: malaya.model.t5.GENERATOR()
-    :members:
-
-.. autoclass:: malaya.model.t5.PARAPHRASE()
-    :members:
-
-malaya.model.tf
-----------------------------------
-
-.. autoclass:: malaya.model.tf.DEEP_LANG()
-    :members:
-
-.. autoclass:: malaya.model.tf.TRANSLATION()
-    :members:
-
-.. autoclass:: malaya.model.tf.CONSTITUENCY()
-    :members:
-
-.. autoclass:: malaya.model.tf.TRUE_CASE()
-    :members:
-
-.. autoclass:: malaya.model.tf.SEGMENTATION()
-    :members:
-
-.. autoclass:: malaya.model.tf.PARAPHRASE()
-    :members:
-    
-.. autoclass:: malaya.model.tf.TATABAHASA()
-    :members:
-
-malaya.model.ml
-----------------------------------
-
-.. autoclass:: malaya.model.ml.MULTICLASS_BAYES()
-    :members:
-
-.. autoclass:: malaya.model.ml.BINARY_BAYES()
-    :members:
-
-.. autoclass:: malaya.model.ml.MULTILABEL_BAYES()
-    :members:
-
-malaya.model.bert
-----------------------------------
-
-.. autoclass:: malaya.model.bert.BINARY_BERT()
-    :members:
-
-.. autoclass:: malaya.model.bert.MULTICLASS_BERT()
-    :members:
-
-.. autoclass:: malaya.model.bert.SIGMOID_BERT()
-    :members:
-
-.. autoclass:: malaya.model.bert.SIAMESE_BERT()
-    :members:
-
-.. autoclass:: malaya.model.bert.TAGGING_BERT()
-    :members:
-
-.. autoclass:: malaya.model.bert.DEPENDENCY_BERT()
-    :members:
-
-.. autoclass:: malaya.model.bert.ZEROSHOT_BERT()
-    :members:
-
-.. autoclass:: malaya.model.bert.PARAPHRASE_BERT()
-    :members:
-
-malaya.model.xlnet
-----------------------------------
-
-.. autoclass:: malaya.model.xlnet.BINARY_XLNET()
-    :members:
-
-.. autoclass:: malaya.model.xlnet.MULTICLASS_XLNET()
-    :members:
-
-.. autoclass:: malaya.model.xlnet.SIGMOID_XLNET()
-    :members:
-
-.. autoclass:: malaya.model.xlnet.SIAMESE_XLNET()
-    :members:
-
-.. autoclass:: malaya.model.xlnet.TAGGING_XLNET()
-    :members:
-
-.. autoclass:: malaya.model.xlnet.DEPENDENCY_XLNET()
-    :members:
-
-.. autoclass:: malaya.model.xlnet.ZEROSHOT_XLNET()
     :members:

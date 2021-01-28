@@ -138,7 +138,7 @@ def to_cardinal(number):
 
     Parameters
     ----------
-    number: int
+    number: real number
 
     Returns
     -------
@@ -163,7 +163,7 @@ def to_ordinal(number):
 
     Parameters
     ----------
-    number: int
+    number: real number
 
     Returns
     -------

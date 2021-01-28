@@ -12,8 +12,8 @@ from tqdm import tqdm
 
 max_seq_length_encoder = 512
 max_seq_length_decoder = 128
-masked_lm_prob = 0.2
-max_predictions_per_seq = int(masked_lm_prob * max_seq_length_encoder)
+masked_lm_prob = 0.15
+max_predictions_per_seq = 30
 do_whole_word_mask = True
 EOS_ID = 1
 
