@@ -1,3 +1,6 @@
+Speech Toolkit
+================
+
 .. raw:: html
 
     <p align="center">
@@ -53,6 +56,7 @@ Features
 -  **Text-to-Speech**, using Pretrained Tacotron2 and FastSpeech2 Malaya-Speech models.
 -  **Vocoder**, convert Mel to Waveform using Pretrained MelGAN, Multiband MelGAN and Universal MelGAN Vocoder Malaya-Speech models.
 -  **Voice Activity Detection**, detect voice activities using Finetuned Speaker Vector Malaya-Speech models.
+-  **Voice Conversion**, Many-to-One, One-to-Many, Many-to-Many, and Zero-shot Voice Conversion.
 
 Pretrained Models
 ------------------
@@ -75,6 +79,7 @@ Malaya-Speech also released pretrained models, simply check at `malaya-speech/pr
 -  **SRGAN**, Modified version of SRGAN to do 1D Convolution, Photo-Realistic Single Image Super-Resolution Using a Generative Adversarial Network, https://arxiv.org/abs/1609.04802
 -  **Speech Enhancement UNET**, https://github.com/haoxiangsnr/Wave-U-Net-for-Speech-Enhancement
 -  **Universal MelGAN**, Universal MelGAN: A Robust Neural Vocoder for High-Fidelity Waveform Generation in Multiple Domains, https://arxiv.org/abs/2011.09631
+-  **FastVC**, Faster and Accurate Voice Conversion using Transformer, no paper produced.
 
 References
 -----------
