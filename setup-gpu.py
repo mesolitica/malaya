@@ -9,10 +9,13 @@ def readme():
         return f.read().decode('UTF-8')
 
 
+with open('requirements.txt') as fopen:
+    req = list(filter(None, fopen.read().split('\n')))
+
 setuptools.setup(
     name = __packagename__,
     packages = setuptools.find_packages(),
-    version = '4.1.1',
+    version = '4.1.1.1',
     python_requires = '>=3.6.*',
     description = 'Natural-Language-Toolkit for bahasa Malaysia, powered by Deep Learning Tensorflow. GPU Version',
     long_description = readme(),
@@ -21,22 +24,7 @@ setuptools.setup(
     url = 'https://github.com/huseinzol05/Malaya',
     download_url = 'https://github.com/huseinzol05/Malaya/archive/master.zip',
     keywords = ['nlp', 'bm'],
-    install_requires = [
-        'dateparser',
-        'scikit-learn',
-        'requests',
-        'unidecode',
-        'tensorflow-gpu>=1.14,<2.0',
-        'numpy',
-        'scipy',
-        'ftfy',
-        'networkx',
-        'sentencepiece',
-        'bert-tensorflow',
-        'tqdm',
-        'herpetologist',
-        'albert-tensorflow',
-    ],
+    install_requires = req + ['tensorflow-gpu>=1.14,<2.0'],
     license = 'MIT',
     classifiers = [
         'Programming Language :: Python :: 3.6',

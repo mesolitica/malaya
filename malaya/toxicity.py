@@ -1,4 +1,6 @@
 from functools import partial
+from malaya.text.bpe import load_yttm
+from malaya.stem import _classification_textcleaning_stemmer, naive
 from malaya.function import check_file, load_graph, generate_session
 from malaya.text.bpe import (
     sentencepiece_tokenizer_bert,
@@ -8,7 +10,6 @@ from malaya.path import PATH_TOXIC, S3_PATH_TOXIC
 from malaya.model.ml import MultilabelBayes
 from malaya.model.bert import SigmoidBERT
 from malaya.model.xlnet import SigmoidXLNET
-from malaya.transformers.bert import bert_num_layers
 from herpetologist import check_type
 
 label = [
@@ -119,11 +120,8 @@ def multinomial(**kwargs):
             vectorize = pickle.load(fopen)
     except:
         raise Exception(
-            f"model corrupted due to some reasons, please run malaya.clear_cache('toxic/multinomial') and try again"
+            f"model corrupted due to some reasons, please run `malaya.clear_cache('toxic/multinomial')` and try again."
         )
-
-    from malaya.text.bpe import load_yttm
-    from malaya.stem import _classification_textcleaning_stemmer, naive
 
     stemmer = naive()
     cleaning = partial(_classification_textcleaning_stemmer, stemmer = stemmer)

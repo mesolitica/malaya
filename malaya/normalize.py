@@ -561,7 +561,7 @@ def normalizer(speller = None, **kwargs):
         speller, ['correct', 'normalize_elongated'], 'speller'
     )
 
-    from malaya.preprocessing import TOKENIZER
+    from malaya.preprocessing import Tokenizer
 
-    tokenizer = TOKENIZER(**kwargs).tokenize
+    tokenizer = Tokenizer(**kwargs).tokenize
     return Normalizer(tokenizer, speller)

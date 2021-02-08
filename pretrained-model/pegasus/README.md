@@ -67,12 +67,12 @@ We do not want to mask numbers or words started with `RM`.
 ```bash
 python3 pretraining-base.py \
 --input_file=gs://mesolitica-tpu-general/pegasus-data-v2/*.tfrecord \
---output_dir=gs://mesolitica-tpu-general/pegasus-base \
+--output_dir=gs://mesolitica-tpu-general/pegasus-base-v2 \
 --do_train=True \
---train_batch_size=512 \
---num_train_steps=500000 \
+--train_batch_size=128 \
+--num_train_steps=700000 \
 --iterations_per_loop=100 \
---tpu_name=node-1 \
+--tpu_name=node-2 \
 --tpu_zone=europe-west4-a \
 --save_checkpoints_steps=25000 \
 --use_tpu=True
@@ -83,12 +83,12 @@ python3 pretraining-base.py \
 ```bash
 python3 pretraining-small.py \
 --input_file=gs://mesolitica-tpu-general/pegasus-data-v2/*.tfrecord \
---output_dir=gs://mesolitica-tpu-general/pegasus-small \
+--output_dir=gs://mesolitica-tpu-general/pegasus-small-v2 \
 --do_train=True \
---train_batch_size=1024 \
---num_train_steps=500000 \
+--train_batch_size=256 \
+--num_train_steps=700000 \
 --iterations_per_loop=100 \
---tpu_name=node-2 \
+--tpu_name=node-1 \
 --tpu_zone=europe-west4-a \
 --save_checkpoints_steps=25000 \
 --use_tpu=True
@@ -105,10 +105,10 @@ python3 pretraining-small.py \
 ```bash
 python3 pretraining-base-multitasks.py \
 --input_file=gs://mesolitica-tpu-general/t2t/data/seq2* \
---output_dir=gs://mesolitica-tpu-general/pegasus-base-multitasks \
+--output_dir=gs://mesolitica-tpu-general/pegasus-base-multitasks-v2 \
 --do_train=True \
---train_batch_size=64 \
---num_train_steps=1000000 \
+--train_batch_size=32 \
+--num_train_steps=700000 \
 --iterations_per_loop=100 \
 --tpu_name=node-3 \
 --tpu_zone=europe-west4-a \
@@ -121,10 +121,10 @@ python3 pretraining-base-multitasks.py \
 ```bash
 python3 pretraining-small-multitasks.py \
 --input_file=gs://mesolitica-tpu-general/t2t/data/seq2* \
---output_dir=gs://mesolitica-tpu-general/pegasus-small-multitasks \
+--output_dir=gs://mesolitica-tpu-general/pegasus-small-multitasks-v2 \
 --do_train=True \
---train_batch_size=128 \
---num_train_steps=1000000 \
+--train_batch_size=64 \
+--num_train_steps=700000 \
 --iterations_per_loop=100 \
 --tpu_name=node-4 \
 --tpu_zone=europe-west4-a \

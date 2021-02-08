@@ -16,14 +16,31 @@ from tqdm import tqdm
 from pathlib import Path
 from malaya import home, _delete_folder, gpu_available, __gpu__
 
-try:
-    from tensorflow.contrib.seq2seq.python.ops import beam_search_ops
-except:
-    import warnings
 
-    warnings.warn(
-        'Cannot import beam_search_ops from tensorflow, some deep learning models may not able to load, make sure Tensorflow version is, 1.10 < version < 2.0'
-    )
+def check_tf_version():
+    version = tf.__version__
+    return int(version.split('.')[0])
+
+
+if check_tf_version() > 1:
+    try:
+        from tensorflow_addons.seq2seq import beam_search_decoder
+    except:
+        import warnings
+
+        warnings.warn(
+            'Cannot import beam_search_ops from tensorflow, some deep learning models may not able to load, make sure tensorflow-addons already installed by `pip install tensorflow-addons`.'
+        )
+
+else:
+    try:
+        from tensorflow.contrib.seq2seq.python.ops import beam_search_ops
+    except:
+        import warnings
+
+        warnings.warn(
+            'Cannot import beam_search_ops from tensorflow, some deep learning models may not able to load, make sure Tensorflow 1 version >= 1.15'
+        )
 
 
 def download_file(url, filename):

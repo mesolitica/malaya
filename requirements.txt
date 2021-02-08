@@ -1,0 +1,11 @@
+dateparser
+scikit-learn
+requests
+unidecode
+numpy
+scipy
+ftfy
+networkx
+sentencepiece
+tqdm
+herpetologist

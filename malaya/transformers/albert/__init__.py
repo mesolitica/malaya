@@ -7,7 +7,7 @@
 # For license information, see https://github.com/huseinzol05/Malaya/blob/master/LICENSE
 
 import tensorflow as tf
-from albert import modeling
+from . import modeling
 from malaya.text.bpe import (
     bert_tokenization,
     padding_sequence,

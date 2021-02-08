@@ -8,7 +8,7 @@
 
 
 import tensorflow as tf
-from bert import modeling
+from . import modeling
 from malaya.text.bpe import (
     bert_tokenization,
     padding_sequence,

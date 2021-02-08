@@ -1,10 +1,11 @@
 import tensorflow as tf
-from tensor2tensor.utils import adafactor
 from pegasus import transformer
+from tensor2tensor.utils import adafactor
 from tensorflow.contrib import layers as contrib_layers
-import re
 import collections
+import re
 import six
+import optimization
 
 flags = tf.flags
 
@@ -48,7 +49,7 @@ flags.DEFINE_integer(
 flags.DEFINE_integer('train_batch_size', 32, 'Total batch size for training.')
 
 flags.DEFINE_float(
-    'learning_rate', 0.001, 'The initial learning rate for Adafactor.'
+    'learning_rate', 2e-5, 'The initial learning rate for Adafactor.'
 )
 
 
@@ -290,14 +291,8 @@ def get_masked_lm_output(
     with tf.variable_scope('cls/predictions'):
         with tf.variable_scope('transform'):
             input_tensor = tf.layers.dense(
-                input_tensor,
-                units = hidden_size,
-                activation = tf.nn.relu,
-                kernel_initializer = tf.random_normal_initializer(
-                    stddev = hidden_size ** -0.5, dtype = tf.float32
-                ),
+                input_tensor, units = hidden_size, activation = tf.nn.relu
             )
-            input_tensor = contrib_layers.layer_norm(input_tensor)
 
         output_bias = tf.get_variable(
             'output_bias',
@@ -323,6 +318,26 @@ def get_masked_lm_output(
         loss = numerator / denominator
 
     return (loss, per_example_loss, log_probs)
+
+
+def learning_rate_schedule_noam(
+    step,
+    total_train_steps,
+    warmup_steps = 10000,
+    linear_decay_fraction = 0.1,
+    multiplier = 1.0,
+    offset = 0,
+):
+    train_steps = float(total_train_steps) - offset
+    step_num = tf.cast(step, tf.float32) - offset
+    learning_rate = tf.math.rsqrt(tf.maximum(step_num, warmup_steps))
+    learning_rate *= multiplier
+    if linear_decay_fraction > 0:
+        learning_rate *= tf.minimum(
+            1.0,
+            (train_steps - step_num) / (train_steps * linear_decay_fraction),
+        )
+    return learning_rate
 
 
 def model_fn_builder(
@@ -405,40 +420,28 @@ def model_fn_builder(
         output_spec = None
         if mode == tf.estimator.ModeKeys.TRAIN:
 
-            init_lr = learning_rate
-            global_step = tf.train.get_global_step()
-            lr = (
-                init_lr
-                / 0.01
-                * tf.rsqrt(tf.maximum(tf.to_float(global_step), 10000))
+            # global_step = tf.train.get_global_step()
+            # lr = learning_rate_schedule_noam(
+            #     global_step,
+            #     total_train_steps = num_train_steps,
+            #     warmup_steps = num_warmup_steps,
+            # )
+
+            # optimizer = adafactor.AdafactorOptimizer(
+            #     learning_rate = lr, beta1 = 0.0
+            # )
+            # if use_tpu:
+            #     optimizer = tf.contrib.tpu.CrossShardOptimizer(optimizer)
+
+            # train_op = optimizer.minimize(loss, global_step = global_step)
+
+            train_op = optimization.create_optimizer(
+                total_loss,
+                learning_rate,
+                num_train_steps,
+                num_warmup_steps,
+                use_tpu,
             )
-
-            if num_warmup_steps:
-                global_steps_int = tf.cast(global_step, tf.int32)
-                warmup_steps_int = tf.constant(
-                    num_warmup_steps, dtype = tf.int32
-                )
-
-                global_steps_float = tf.cast(global_steps_int, tf.float32)
-                warmup_steps_float = tf.cast(warmup_steps_int, tf.float32)
-
-                warmup_percent_done = global_steps_float / warmup_steps_float
-                warmup_learning_rate = init_lr * warmup_percent_done
-
-                is_warmup = tf.cast(
-                    global_steps_int < warmup_steps_int, tf.float32
-                )
-                lr = (1.0 - is_warmup) * lr + is_warmup * warmup_learning_rate
-
-            optimizer = adafactor.AdafactorOptimizer(
-                learning_rate = lr,
-                decay_rate = adafactor.adafactor_decay_rate_pow(0.8),
-                beta1 = 0.0,
-            )
-            if use_tpu:
-                optimizer = tf.contrib.tpu.CrossShardOptimizer(optimizer)
-
-            train_op = optimizer.minimize(loss, global_step = global_step)
 
             output_spec = tf.contrib.tpu.TPUEstimatorSpec(
                 mode = mode,
