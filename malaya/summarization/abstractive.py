@@ -1,6 +1,7 @@
 from malaya.path import PATH_SUMMARIZE, S3_PATH_SUMMARIZE
 from malaya.supervised import t5 as t5_load
 from malaya.supervised import transformer as transformer_load
+from malaya.model.tf import Summarization
 from herpetologist import check_type
 import os
 
@@ -130,8 +131,6 @@ def transformer(model: str = 't2t', quantized: bool = False, **kwargs):
 
         * ``'t2t'`` - Malaya Transformer BASE parameters.
         * ``'small-t2t'`` - Malaya Transformer SMALL parameters.
-        * ``'bigbird'`` - Google BigBird BASE parameters.
-        * ``'small-bigbird'`` - Google BigBird SMALL parameters.
     
     quantized : bool, optional (default=False)
         if True, will load 8-bit quantized model. 
@@ -147,16 +146,12 @@ def transformer(model: str = 't2t', quantized: bool = False, **kwargs):
         raise ValueError(
             'model not supported, please check supported models from `malaya.summarization.abstractive.available_transformer()`.'
         )
-    from malaya.model.tf import Summarization
 
-    if 't2t' in model:
-        return transformer_load.load_lm(
-            path = PATH_SUMMARIZE['transformer'],
-            s3_path = S3_PATH_SUMMARIZE['transformer'],
-            model = model,
-            model_class = Summarization,
-            quantized = quantized,
-            **kwargs,
-        )
-    if 'bigbird' in model:
-        return
+    return transformer_load.load_lm(
+        path = PATH_SUMMARIZE['transformer'],
+        s3_path = S3_PATH_SUMMARIZE['transformer'],
+        model = model,
+        model_class = Summarization,
+        quantized = quantized,
+        **kwargs,
+    )
