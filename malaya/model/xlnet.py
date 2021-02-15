@@ -3,10 +3,10 @@ from malaya.text.function import entities_textcleaning, tag_chunk
 from malaya.text.bpe import (
     xlnet_tokenization_siamese,
     xlnet_tokenization,
+    xlnet_tokenization_token,
     padding_sequence,
     merge_sentencepiece_tokens,
     merge_sentencepiece_tokens_tagging,
-    parse_bert_tagging,
 )
 from malaya.function import add_neutral as neutral
 from malaya.function.parse_dependency import DependencyGraph
@@ -903,6 +903,7 @@ class TaggingXLNET(Base):
         sess,
         tokenizer,
         settings,
+        tok = None,
     ):
         Base.__init__(
             self,
@@ -917,10 +918,23 @@ class TaggingXLNET(Base):
         )
 
         self._settings = settings
+        self._tok = tok
         self._settings['idx2tag'] = {
             int(k): v for k, v in self._settings['idx2tag'].items()
         }
         self._pos = 'organization' not in self._settings['tag2idx']
+
+    def _tokenize(self, string):
+        if self._tok:
+            input_ids, input_masks, segment_ids, s_tokens = xlnet_tokenization_token(
+                self._tokenizer, self._tok, [string]
+            )
+        else:
+            input_ids, input_masks, segment_ids, s_tokens = xlnet_tokenization(
+                self._tokenizer, [string]
+            )
+        s_tokens = s_tokens[0]
+        return input_ids, input_masks, segment_ids, s_tokens
 
     @check_type
     def vectorize(self, string: str):
@@ -935,10 +949,7 @@ class TaggingXLNET(Base):
         -------
         result: np.array
         """
-        input_ids, input_masks, segment_ids, s_tokens = xlnet_tokenization(
-            self._tokenizer, [string]
-        )
-        s_tokens = s_tokens[0]
+        input_ids, input_masks, segment_ids, s_tokens = self._tokenize(string)
 
         v = self._sess.run(
             self._vectorizer,
@@ -985,11 +996,7 @@ class TaggingXLNET(Base):
         -------
         result : Tuple[str, str]
         """
-
-        input_ids, input_masks, segment_ids, s_tokens = xlnet_tokenization(
-            self._tokenizer, [string]
-        )
-        s_tokens = s_tokens[0]
+        input_ids, input_masks, segment_ids, s_tokens = self._tokenize(string)
 
         predicted = self._sess.run(
             self._logits,

@@ -376,6 +376,103 @@ S3_PATH_ENTITIES = {
     },
 }
 
+PATH_ENTITIES_ONTONOTES5 = {
+    'bert': {
+        'model': home + '/entity-ontonotes5/bert/base/model.pb',
+        'quantized': home + '/entity-ontonotes5/bert/base/quantized/model.pb',
+        'vocab': home + '/bert/sp10m.cased.bert.vocab',
+        'tokenizer': home + '/bert/sp10m.cased.bert.model',
+        'setting': home + '/entity-ontonotes5/dictionary-entities.json',
+        'version': 'v42',
+    },
+    'tiny-bert': {
+        'model': home + '/entity-ontonotes5/bert/tiny/model.pb',
+        'quantized': home + '/entity-ontonotes5/bert/tiny/quantized/model.pb',
+        'vocab': home + '/bert/sp10m.cased.bert.vocab',
+        'tokenizer': home + '/bert/sp10m.cased.bert.model',
+        'setting': home + '/entity-ontonotes5/dictionary-entities.json',
+        'version': 'v42',
+    },
+    'albert': {
+        'model': home + '/entity-ontonotes5/albert/base/model.pb',
+        'quantized': home + '/entity-ontonotes5/albert/base/quantized/model.pb',
+        'vocab': home + '/bert/sp10m.cased.v10.vocab',
+        'tokenizer': home + '/bert/sp10m.cased.v10.model',
+        'setting': home + '/entity-ontonotes5/dictionary-entities.json',
+        'version': 'v42',
+    },
+    'tiny-albert': {
+        'model': home + '/entity-ontonotes5/albert/tiny/model.pb',
+        'quantized': home + '/entity-ontonotes5/albert/tiny/quantized/model.pb',
+        'vocab': home + '/bert/sp10m.cased.v10.vocab',
+        'tokenizer': home + '/bert/sp10m.cased.v10.model',
+        'setting': home + '/entity-ontonotes5/dictionary-entities.json',
+        'version': 'v42',
+    },
+    'xlnet': {
+        'model': home + '/entity-ontonotes5/xlnet/base/model.pb',
+        'quantized': home + '/entity-ontonotes5/xlnet/base/quantized/model.pb',
+        'vocab': home + '/bert/sp10m.cased.v9.vocab',
+        'tokenizer': home + '/bert/sp10m.cased.v9.model',
+        'setting': home + '/entity-ontonotes5/dictionary-entities.json',
+        'version': 'v42',
+    },
+    'alxlnet': {
+        'model': home + '/entity-ontonotes5/alxlnet/base/model.pb',
+        'quantized': home
+        + '/entity-ontonotes5/alxlnet/base/quantized/model.pb',
+        'vocab': home + '/bert/sp10m.cased.v9.vocab',
+        'tokenizer': home + '/bert/sp10m.cased.v9.model',
+        'setting': home + '/entity-ontonotes5/dictionary-entities.json',
+        'version': 'v42',
+    },
+}
+
+S3_PATH_ENTITIES_ONTONOTES5 = {
+    'bert': {
+        'model': 'v42/entity-ontonotes5/bert-base-entity.pb',
+        'quantized': 'v42/entity-ontonotes5/bert-base-entity.pb.quantized',
+        'vocab': 'tokenizer/sp10m.cased.bert.vocab',
+        'tokenizer': 'tokenizer/sp10m.cased.bert.model',
+        'setting': 'bert-bahasa/dictionary-entities-ontonotes5.json',
+    },
+    'tiny-bert': {
+        'model': 'v42/entity-ontonotes5/tiny-bert-entity.pb',
+        'quantized': 'v42/entity-ontonotes5/tiny-bert-entity.pb.quantized',
+        'vocab': 'tokenizer/sp10m.cased.bert.vocab',
+        'tokenizer': 'tokenizer/sp10m.cased.bert.model',
+        'setting': 'bert-bahasa/dictionary-entities-ontonotes5.json',
+    },
+    'albert': {
+        'model': 'v42/entity-ontonotes5/albert-base-entity.pb',
+        'quantized': 'v42/entity-ontonotes5/albert-base-entity.pb.quantized',
+        'vocab': 'tokenizer/sp10m.cased.v10.vocab',
+        'tokenizer': 'tokenizer/sp10m.cased.v10.model',
+        'setting': 'bert-bahasa/dictionary-entities-ontonotes5.json',
+    },
+    'tiny-albert': {
+        'model': 'v42/entity-ontonotes5/albert-tiny-entity.pb',
+        'quantized': 'v42/entity-ontonotes5/albert-tiny-entity.pb.quantized',
+        'vocab': 'tokenizer/sp10m.cased.v10.vocab',
+        'tokenizer': 'tokenizer/sp10m.cased.v10.model',
+        'setting': 'bert-bahasa/dictionary-entities-ontonotes5.json',
+    },
+    'xlnet': {
+        'model': 'v42/entity-ontonotes5/xlnet-base-entity.pb',
+        'quantized': 'v42/entity-ontonotes5/xlnet-base-entity.pb.quantized',
+        'vocab': 'tokenizer/sp10m.cased.v9.vocab',
+        'tokenizer': 'tokenizer/sp10m.cased.v9.model',
+        'setting': 'bert-bahasa/dictionary-entities-ontonotes5.json',
+    },
+    'alxlnet': {
+        'model': 'v42/entity-ontonotes5/alxlnet-base-entity.pb',
+        'quantized': 'v42/entity-ontonotes5/alxlnet-base-entity.pb.quantized',
+        'vocab': 'tokenizer/sp10m.cased.v9.vocab',
+        'tokenizer': 'tokenizer/sp10m.cased.v9.model',
+        'setting': 'bert-bahasa/dictionary-entities-ontonotes5.json',
+    },
+}
+
 PATH_GENERATOR = {
     't5-compressed': {
         'base': {

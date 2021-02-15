@@ -382,6 +382,31 @@ def xlnet_tokenization(tokenizer, texts):
     return input_ids, input_masks, segment_ids, s_tokens
 
 
+def xlnet_tokenization_token(tokenizer, tok, texts):
+    input_ids, input_masks, segment_ids, s_tokens = [], [], [], []
+    for text in texts:
+        tokens = []
+        for no, orig_token in enumerate(tok(text)):
+            tokens_a = tokenize_fn(orig_token, tokenizer)
+            tokens.extend(tokens_a)
+        tokens.extend([SEP_ID, CLS_ID])
+        segment = [SEG_ID_A] * (len(tokens) - 1) + [SEG_ID_CLS]
+        input_id = tokens
+        input_mask = [0] * len(input_id)
+
+        input_ids.append(input_id)
+        input_masks.append(input_mask)
+        segment_ids.append(segment)
+        s_tokens.append([tokenizer.IdToPiece(i) for i in tokens])
+
+    maxlen = max([len(i) for i in input_ids])
+    input_ids = padding_sequence(input_ids, maxlen)
+    input_masks = padding_sequence(input_masks, maxlen, pad_int = 1)
+    segment_ids = padding_sequence(segment_ids, maxlen, pad_int = SEG_ID_PAD)
+
+    return input_ids, input_masks, segment_ids, s_tokens
+
+
 def merge_wordpiece_tokens(paired_tokens, weighted = True):
     new_paired_tokens = []
     n_tokens = len(paired_tokens)
@@ -425,6 +450,16 @@ def merge_wordpiece_tokens(paired_tokens, weighted = True):
 def parse_bert_tagging(left, tokenizer):
     left = transformer_textcleaning(left)
     bert_tokens = ['[CLS]'] + tokenizer.tokenize(left) + ['[SEP]']
+    input_mask = [1] * len(bert_tokens)
+    return tokenizer.convert_tokens_to_ids(bert_tokens), input_mask, bert_tokens
+
+
+def parse_bert_token_tagging(left, tok, tokenizer):
+    bert_tokens = ['[CLS]']
+    for no, orig_token in enumerate(tok(left)):
+        t = tokenizer.tokenize(orig_token)
+        bert_tokens.extend(t)
+    bert_tokens.append('[SEP]')
     input_mask = [1] * len(bert_tokens)
     return tokenizer.convert_tokens_to_ids(bert_tokens), input_mask, bert_tokens
 

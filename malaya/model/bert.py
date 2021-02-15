@@ -13,6 +13,7 @@ from malaya.text.bpe import (
     merge_sentencepiece_tokens,
     merge_sentencepiece_tokens_tagging,
     parse_bert_tagging,
+    parse_bert_token_tagging,
 )
 from malaya.function import add_neutral as neutral
 from malaya.function.parse_dependency import DependencyGraph
@@ -877,6 +878,7 @@ class TaggingBERT(Base):
         sess,
         tokenizer,
         settings,
+        tok = None,
     ):
         Base.__init__(
             self,
@@ -891,10 +893,21 @@ class TaggingBERT(Base):
         )
 
         self._settings = settings
+        self._tok = tok
         self._settings['idx2tag'] = {
             int(k): v for k, v in self._settings['idx2tag'].items()
         }
-        self._pos = 'organization' not in self._settings['tag2idx']
+
+    def _tokenize(self, string):
+        if self._tok:
+            parsed_sequence, input_mask, bert_sequence = parse_bert_token_tagging(
+                string, self._tok, self._tokenizer
+            )
+        else:
+            parsed_sequence, input_mask, bert_sequence = parse_bert_tagging(
+                string, self._tokenizer
+            )
+        return parsed_sequence, input_mask, bert_sequence
 
     @check_type
     def vectorize(self, string: str):
@@ -909,9 +922,8 @@ class TaggingBERT(Base):
         -------
         result: np.array
         """
-        parsed_sequence, input_mask, bert_sequence = parse_bert_tagging(
-            string, self._tokenizer
-        )
+        parsed_sequence, input_mask, bert_sequence = self._tokenize(string)
+
         v = self._sess.run(
             self._vectorizer,
             feed_dict = {
@@ -955,10 +967,7 @@ class TaggingBERT(Base):
         -------
         result: Tuple[str, str]
         """
-
-        parsed_sequence, input_mask, bert_sequence = parse_bert_tagging(
-            string, self._tokenizer
-        )
+        parsed_sequence, input_mask, bert_sequence = self._tokenize(string)
         predicted = self._sess.run(
             self._logits,
             feed_dict = {

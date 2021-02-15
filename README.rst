@@ -38,7 +38,9 @@ GPU version
 
     $ pip install malaya-gpu
 
-Only **Python 3.6.x and above** and **Tensorflow 1.10 and above but not 2.0** are supported.
+Only **Python 3.6 and above** and **Tensorflow 1.15 and above but not 2.0** are supported.
+
+We recommend to use **virtualenv** for development.
 
 Features
 --------

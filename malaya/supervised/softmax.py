@@ -24,7 +24,7 @@ def multinomial(path, s3_path, class_name, label, **kwargs):
             vectorize = pickle.load(fopen)
     except:
         raise Exception(
-            f"model corrupted due to some reasons, please run malaya.clear_cache('{class_name}/multinomial') and try again"
+            f"model corrupted due to some reasons, please run `malaya.clear_cache('{class_name}/multinomial')` and try again"
         )
     bpe, subword_mode = load_yttm(path['multinomial']['bpe'])
 
