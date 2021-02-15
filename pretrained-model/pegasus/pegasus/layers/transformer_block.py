@@ -50,7 +50,9 @@ class TransformerBlock(object):
         self._output_layer = tf.layers.Dense(hidden_size)
         self._dropout_fn = (
             lambda x, training: tf.compat.v2.nn.dropout(
-                x, dropout, noise_shape = [tf.shape(x)[0], 1, tf.shape(x)[2]]
+                x,
+                rate = dropout,
+                noise_shape = [tf.shape(x)[0], 1, tf.shape(x)[2]],
             )
             if training
             else x

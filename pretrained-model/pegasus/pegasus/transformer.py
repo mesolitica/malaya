@@ -65,7 +65,9 @@ class TransformerEncoderDecoderModel(base.BaseModel):
         self._decoder_layers = [block_fn() for _ in range(num_decoder_layers)]
         self._dropout_fn = (
             lambda x, training: tf.compat.v2.nn.dropout(
-                x, dropout, noise_shape = [tf.shape(x)[0], 1, tf.shape(x)[2]]
+                x,
+                rate = dropout,
+                noise_shape = [tf.shape(x)[0], 1, tf.shape(x)[2]],
             )
             if training
             else x

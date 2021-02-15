@@ -425,6 +425,7 @@ def dropout(input_tensor, dropout_prob, training = True):
   Returns:
     A version of `input_tensor` with dropout applied.
   """
+
     if not training or dropout_prob is None or dropout_prob == 0.0:
         return input_tensor
 
@@ -590,7 +591,7 @@ class EmbeddingLayer(tf.compat.v1.layers.Layer):
             output += tf.expand_dims(position_embeddings, axis = 0)
 
         if training and self.dropout_prob > 0:
-            output = tf.nn.dropout(output, self.dropout_prob)
+            output = tf.nn.dropout(output, rate = self.dropout_prob)
         return output
 
     def linear(self, x):

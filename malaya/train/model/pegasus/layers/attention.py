@@ -99,7 +99,7 @@ class Attention(object):
         if training:
             alignment_BxHxIxM = tf.compat.v2.nn.dropout(
                 alignment_BxHxIxM,
-                self._attention_dropout,
+                rate = self._attention_dropout,
                 noise_shape = [1, 1, I, M],
             )
         outputs_BxHxIxDh = tf.matmul(alignment_BxHxIxM, v_BxHxMxDh)
