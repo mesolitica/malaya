@@ -131,3 +131,25 @@ python3 pretraining-small-multitasks.py \
 --save_checkpoints_steps=25000 \
 --use_tpu=True
 ```
+
+## Downloads
+
+1. **Multitasks BASE**, last update 16th February 2021, [pegasus-base-multitasks-2021-02-16.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/pegasus-base-multitasks-2021-02-16.tar.gz)
+
+  - Vocab size 32k.
+  - 1M steps, V3-8 TPU.
+
+2. **Multitasks SMALL**, last update 16th February 2021, [pegasus-small-multitasks-2021-02-16.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/pegasus-base-multitasks-2021-02-16.tar.gz)
+
+  - Vocab size 32k.
+  - 1M steps, V3-8 TPU.
+
+1. **Sentence gap BASE**, last update 16th February 2021, [pegasus-base-sentencegap-2021-02-16.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/pegasus-base-multitasks-2021-02-16.tar.gz)
+
+  - Vocab size 32k.
+  - 1.5M steps, V3-8 TPU.
+
+2. **Sentence gap SMALL**, last update 16th February 2021, [pegasus-small-sentencegap-2021-02-16.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/pegasus-base-multitasks-2021-02-16.tar.gz)
+
+  - Vocab size 32k.
+  - 1.5M steps, V3-8 TPU.

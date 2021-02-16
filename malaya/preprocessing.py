@@ -575,6 +575,3 @@ def preprocessing(
         segmenter = segmenter,
         stemmer = stemmer,
     )
-
-
-_tokenizer = Tokenizer().tokenize

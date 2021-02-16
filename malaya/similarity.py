@@ -10,7 +10,7 @@ from malaya.text.bpe import (
     sentencepiece_tokenizer_bert,
     sentencepiece_tokenizer_xlnet,
 )
-from malaya.preprocessing import _tokenizer
+from malaya.preprocessing import Tokenizer
 from malaya.model.bert import SiameseBERT
 from malaya.model.xlnet import SiameseXLNET
 from malaya.path import PATH_SIMILARITY, S3_PATH_SIMILARITY
@@ -151,6 +151,7 @@ class Doc2VecSimilarity:
     def __init__(self, wordvector):
         self.wordvector = wordvector
         self._jarowinkler = JaroWinkler()
+        self._tokenizer = Tokenizer().tokenize
 
     @check_type
     def _predict(
@@ -184,10 +185,10 @@ class Doc2VecSimilarity:
         for i in range(len(left_strings)):
             left_string = left_strings[i]
             right_string = right_strings[i]
-            left_tokenized = _tokenizer(left_string)
+            left_tokenized = self._tokenizer(left_string)
             if not len(left_tokenized):
                 raise ValueError('insert not empty left string')
-            right_tokenized = _tokenizer(right_string)
+            right_tokenized = self._tokenizer(right_string)
             if not len(right_tokenized):
                 raise ValueError('insert not empty right string')
 

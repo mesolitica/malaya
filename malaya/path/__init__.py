@@ -1,7 +1,20 @@
 from malaya import home
 
 MALAY_TEXT = home + '/dictionary/malay-text.txt'
-MALAY_TEXT_200K = home + '/dictionary-200k/malay-text.txt'
+MALAY_TEXT_200K = home + '/dictionary/200k-malay-text.txt'
+
+BERT_BPE_VOCAB = 'bpe/sp10m.cased.bert.vocab'
+BERT_BPE_MODEL = 'bpe/sp10m.cased.bert.model'
+ALBERT_BPE_VOCAB = 'bpe/sp10m.cased.v10.vocab'
+ALBERT_BPE_MODEL = 'bpe/sp10m.cased.v10.model'
+XLNET_BPE_VOCAB = 'bpe/sp10m.cased.v9.vocab'
+XLNET_BPE_MODEL = 'bpe/sp10m.cased.v9.model'
+T2T_BPE_VOCAB = 'bpe/sp10m.cased.t5.vocab'
+T2T_BPE_MODEL = 'bpe/sp10m.cased.t5.model'
+
+ENTITIY_SETTING = 'setting/entities.json'
+ENTITIY_ONTONOTES5_SETTING = 'setting/entities-ontonotes5.json'
+POS_SETTING = 'setting/pos.json'
 
 # sorted based on modules, started from augmentation until toxic
 
@@ -25,8 +38,8 @@ PATH_CONSTITUENCY = {
         'model': home + '/constituency/bert/base/model.pb',
         'quantized': home + '/constituency/bert/base/quantized/model.pb',
         'dictionary': home + '/constituency/bert/base/vocab.json',
-        'vocab': home + '/bert/sp10m.cased.bert.vocab',
-        'tokenizer': home + '/bert/sp10m.cased.bert.model',
+        'vocab': BERT_BPE_VOCAB,
+        'tokenizer': BERT_BPE_MODEL,
         'version': 'v38',
     },
     'tiny-bert': {
@@ -41,7 +54,7 @@ PATH_CONSTITUENCY = {
         'model': home + '/constituency/albert/base/model.pb',
         'quantized': home + '/constituency/albert/base/quantized/model.pb',
         'dictionary': home + '/constituency/albert/base/vocab.json',
-        'vocab': home + '/bert/sp10m.cased.v10.vocab',
+        'vocab': ALBERT_BPE_VOCAB,
         'tokenizer': home + '/bert/sp10m.cased.v10.model',
         'version': 'v38',
     },

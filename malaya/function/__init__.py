@@ -14,6 +14,7 @@ import os
 import logging
 from tqdm import tqdm
 from pathlib import Path
+from datetime import datetime
 from malaya import home, _delete_folder, gpu_available, __gpu__
 
 
@@ -43,15 +44,12 @@ else:
         )
 
 
-def download_file(url, filename):
-    if 'http' in url:
-        r = requests.get(url, stream = True)
-    else:
-        r = requests.get(
-            'https://f000.backblazeb2.com/file/malaya-model/' + url,
-            stream = True,
-        )
+def download_file_cloud(url, filename):
+    if 'http' not in url:
+        url = 'https://f000.backblazeb2.com/file/malaya-model/' + url
+    r = requests.get(url, stream = True)
     total_size = int(r.headers['content-length'])
+    version = int(r.headers.get('X-Bz-Upload-Timestamp', 0))
     os.makedirs(os.path.dirname(filename), exist_ok = True)
     with open(filename, 'wb') as f:
         for data in tqdm(
@@ -61,6 +59,22 @@ def download_file(url, filename):
             unit_scale = True,
         ):
             f.write(data)
+    return version
+
+
+def check_file_cloud(url):
+    url = 'https://f000.backblazeb2.com/file/malaya-model/' + url
+    r = requests.head(r)
+    return r.status_code == 200
+
+
+def check_files_local(file):
+    for key, item in file.items():
+        if 'version' in key:
+            continue
+        if not os.path.isfile(item):
+            return False
+    return True
 
 
 def generate_session(graph, **kwargs):
@@ -143,51 +157,20 @@ def load_graph(frozen_graph_filename, **kwargs):
     return graph
 
 
-def check_available(file, quantized = False):
-    for key, item in file.items():
-        if 'version' in key:
-            continue
-        if quantized and key == 'model':
-            continue
-        if not quantized and key == 'quantized':
-            continue
-        if not os.path.isfile(item):
-            return False
-    return True
-
-
-def get_module(file, optimized = False):
-    if optimized:
-        m = 'Optimized'
-    else:
-        m = 'Quantized'
-    f = file.replace(home, '').split('/')
-    return f'{m} model for {f[1].upper()} module is not available, please load normal model.'
-
-
-def check_file(
-    file,
-    s3_file,
-    validate = True,
-    quantized = False,
-    optimized = False,
-    **kwargs,
-):
+def download_from_dict(file, s3_file, validate = True, quantized = False):
     if quantized:
         if 'quantized' not in file:
-            raise Exception(get_module(file['model'], optimized = optimized))
-        model = 'quantized'
-        if optimized:
-            logging.warning(
-                'We have no concrete proof optimized model will maintain accuracy as normal model.'
+            f = file.replace(home, '').split('/')
+            raise Exception(
+                f'Quantized model for {f[1].upper()} module is not available, please load normal model.'
             )
-        else:
-            logging.warning('Load quantized model will cause accuracy drop.')
+        model = 'quantized'
+        logging.warning('Load quantized model will cause accuracy drop.')
     else:
         model = 'model'
     if validate:
         base_location = os.path.dirname(file[model])
-        version = base_location + '/version'
+        version = os.path.join(base_location, 'version')
         download = False
         if os.path.isfile(version):
             with open(version) as fopen:
@@ -214,15 +197,101 @@ def check_file(
                     continue
                 if not os.path.isfile(item):
                     print(f'downloading frozen {base_location} {key}')
-                    download_file(s3_file[key], item)
+                    download_file_cloud(s3_file[key], item)
             with open(version, 'w') as fopen:
                 fopen.write(file['version'])
     else:
-        if not check_available(file, quantized = quantized):
+        if not check_files_local(file):
             path = '/'.join(file[model].split('/')[:-1])
             raise Exception(
                 f'{path} is not available, please `validate = True`'
             )
+
+
+def download_from_string(
+    path, module, keys, validate = True, quantized = False
+):
+    path = os.path.join(module, path)
+    if quantized:
+        quantized_path = os.path.join(path, 'quantized/model.pb')
+        if not check_file_cloud(quantized_path):
+            f = file.replace(home, '').split('/')
+            raise Exception(
+                f'Quantized model for {f[1].upper()} module is not available, please load normal model.'
+            )
+        model = 'quantized'
+        logging.warning('Load quantized model will cause accuracy drop.')
+    else:
+        model = ''
+    path_local = os.path.join(home, path)
+    base_location = os.path.dirname(path_local)
+    files_local = {'version': base_location + '/version'}
+    files_cloud = {}
+    for key, value in keys.items():
+        # if absolute path, means, shared file
+        if '/' in value:
+            f_local = os.path.join(home, value)
+            f_cloud = value
+        # combine using `module` parameter
+        else:
+            if key == 'model':
+                f_local = os.path.join(path_local, model)
+                f_cloud = os.path.join(path, model)
+            else:
+                f_local = path_local
+                f_cloud = path
+            f_local = os.path.join(f_local, value)
+            f_cloud = os.path.join(f_cloud, value)
+        files_local[key] = f_local
+        files_cloud[key] = f_cloud
+    if validate:
+        download = False
+        if os.path.isfile(version):
+            with open(version) as fopen:
+                if not file['version'] in fopen.read():
+                    print(f'Found old version of {base_location}, deleting..')
+                    _delete_folder(base_location)
+                    print('Done.')
+                    download = True
+                else:
+                    for key, item in file.items():
+                        if not os.path.exists(item):
+                            download = True
+                            break
+    else:
+        if not check_files_local(files_local):
+            path = '/'.join(files_local['model'].split('/')[:-1])
+            raise Exception(
+                f'{path} is not available, please `validate = True`'
+            )
+    return files_local
+
+
+def check_file(
+    file,
+    s3_file = None,
+    module = None,
+    keys = None,
+    validate = True,
+    quantized = False,
+    **kwargs,
+):
+    if isinstance(file, dict) and isinstance(s3_file, dict):
+        download_from_dict(
+            file = file,
+            s3_file = s3_file,
+            validate = validate,
+            quantized = quantized,
+        )
+    else:
+        file = download_from_string(
+            path = file,
+            module = module,
+            keys = keys,
+            validate = validate,
+            quantized = quantized,
+        )
+    return file
 
 
 class DisplayablePath(object):

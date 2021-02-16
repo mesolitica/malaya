@@ -1,7 +1,6 @@
 import numpy as np
-import collections
 from sklearn.utils import shuffle
-from sklearn.decomposition import TruncatedSVD, NMF, LatentDirichletAllocation
+from sklearn.decomposition import LatentDirichletAllocation
 from malaya.model.lda2vec import LDA2Vec
 from malaya.text.function import (
     simple_textcleaning,
@@ -12,7 +11,7 @@ from malaya.text.function import (
 )
 from malaya.function import validator
 from malaya.text.vectorizer import skipgrams
-from malaya.generator import ngrams as ngrams_generator
+from malaya.text.ngram import ngrams as ngrams_generator
 from herpetologist import check_type
 from typing import List, Tuple, Callable
 
@@ -299,7 +298,7 @@ class Topic:
         """
 
         if not isinstance(self.comp, LatentDirichletAllocation):
-            raise ValueError('only support lda_topic_modelling()')
+            raise ValueError('only support LatentDirichletAllocation model.')
 
         import pyLDAvis
         import pyLDAvis.sklearn

@@ -1,10 +1,10 @@
 import tensorflow as tf
 from tensor2tensor.utils import adafactor
 from pegasus import transformer
+from tensorflow.contrib import layers as contrib_layers
 import re
 import collections
 import six
-import optimization
 
 flags = tf.flags
 
@@ -41,12 +41,12 @@ flags.DEFINE_integer(
 flags.DEFINE_integer('train_batch_size', 32, 'Total batch size for training.')
 
 flags.DEFINE_float(
-    'learning_rate', 2e-5, 'The initial learning rate for Adafactor.'
+    'learning_rate', 0.001, 'The initial learning rate for Adafactor.'
 )
 
-flags.DEFINE_integer('num_train_steps', 700000, 'Number of training steps.')
+flags.DEFINE_integer('num_train_steps', 1000000, 'Number of training steps.')
 
-flags.DEFINE_integer('num_warmup_steps', 10000, 'Number of warmup steps.')
+flags.DEFINE_integer('num_warmup_steps', 20000, 'Number of warmup steps.')
 
 flags.DEFINE_integer(
     'save_checkpoints_steps', 10000, 'How often to save the model checkpoint.'
@@ -281,31 +281,23 @@ def model_fn_builder(
         output_spec = None
         if mode == tf.estimator.ModeKeys.TRAIN:
 
-            # init_lr = learning_rate
-            # global_step = tf.train.get_global_step()
-            # lr = (
-            #     init_lr
-            #     / 0.01
-            #     * tf.rsqrt(tf.maximum(tf.to_float(global_step), 10000))
-            # )
-
-            # optimizer = adafactor.AdafactorOptimizer(
-            #     learning_rate = lr,
-            #     decay_rate = adafactor.adafactor_decay_rate_pow(0.8),
-            #     beta1 = 0.0,
-            # )
-            # if use_tpu:
-            #     optimizer = tf.contrib.tpu.CrossShardOptimizer(optimizer)
-
-            # train_op = optimizer.minimize(loss, global_step = global_step)
-
-            train_op = optimization.create_optimizer(
-                total_loss,
-                learning_rate,
-                num_train_steps,
-                num_warmup_steps,
-                use_tpu,
+            init_lr = learning_rate
+            global_step = tf.train.get_global_step()
+            lr = (
+                init_lr
+                / 0.01
+                * tf.rsqrt(tf.maximum(tf.to_float(global_step), 10000))
             )
+
+            optimizer = adafactor.AdafactorOptimizer(
+                learning_rate = lr,
+                decay_rate = adafactor.adafactor_decay_rate_pow(0.8),
+                beta1 = 0.0,
+            )
+            if use_tpu:
+                optimizer = tf.contrib.tpu.CrossShardOptimizer(optimizer)
+
+            train_op = optimizer.minimize(loss, global_step = global_step)
 
             output_spec = tf.contrib.tpu.TPUEstimatorSpec(
                 mode = mode,

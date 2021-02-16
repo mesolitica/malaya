@@ -1,11 +1,10 @@
-import itertools
-import os
 import random
-import numpy as np
 from malaya.text.function import simple_textcleaning
 from malaya.text.bpe import sentencepiece_tokenizer_bert as load_sentencepiece
 from malaya.text.tatabahasa import alphabet, consonants, vowels
+from malaya.text.ngram import ngrams as generate_ngrams
 from malaya.supervised import t5 as t5_load
+from malaya.model.t5 import Generator
 from malaya.path import PATH_NGRAM, S3_PATH_NGRAM
 from malaya.path import PATH_GENERATOR, S3_PATH_GENERATOR
 from malaya.function import check_file
@@ -41,43 +40,15 @@ _accepted_entities = [
 ]
 
 
-_t5_availability = {
-    'small': {
-        'Size (MB)': 122,
-        'Uncompressed Size (MB)': 355.6,
-        'Optimized Size (MB)': 244,
-    },
-    'base': {
-        'Size (MB)': 448,
-        'Uncompressed Size (MB)': 1300,
-        'Optimized Size (MB)': 895,
-    },
+_transformer_availability = {
+    'small-t5': {'Size (MB)': 355.6, 'Optimized Size (MB)': 244},
+    't5': {'Size (MB)': 1300, 'Optimized Size (MB)': 895},
 }
 
 _gpt2_availability = {
     '117M': {'Size (MB)': 441.6, 'Perplexity': 5.47394},
     '345M': {'Size (MB)': 1200, 'Perplexity': 2.4596},
 }
-
-
-def _check_digit(string):
-    return any(i.isdigit() for i in string)
-
-
-def _pad_sequence(
-    sequence,
-    n,
-    pad_left = False,
-    pad_right = False,
-    left_pad_symbol = None,
-    right_pad_symbol = None,
-):
-    sequence = iter(sequence)
-    if pad_left:
-        sequence = itertools.chain((left_pad_symbol,) * (n - 1), sequence)
-    if pad_right:
-        sequence = itertools.chain(sequence, (right_pad_symbol,) * (n - 1))
-    return sequence
 
 
 @check_type
@@ -103,22 +74,14 @@ def ngrams(
     -------
     result: List[Tuple[str, str]]
     """
-    sequence = _pad_sequence(
-        sequence, n, pad_left, pad_right, left_pad_symbol, right_pad_symbol
+    return generate_ngrams(
+        sequence = sequence,
+        n = n,
+        pad_left = pad_left,
+        pad_right = pad_right,
+        left_pad_symbol = left_pad_symbol,
+        right_pad_symbol = right_pad_symbol,
     )
-
-    history = []
-    while n > 1:
-        try:
-            next_item = next(sequence)
-        except StopIteration:
-            return
-        history.append(next_item)
-        n -= 1
-    for item in sequence:
-        history.append(item)
-        yield tuple(history)
-        del history[0]
 
 
 @check_type
@@ -332,7 +295,7 @@ def shortform(
 
 
 @check_type
-def transformer(
+def babble(
     string: str,
     model,
     generate_length: int = 30,
@@ -462,9 +425,9 @@ def gpt2(
     )
 
 
-def available_t5():
+def available_transformer():
     """
-    List available T5 models.
+    List available transformer models.
     """
     from malaya.function import describe_availability
 
@@ -472,12 +435,7 @@ def available_t5():
 
 
 @check_type
-def t5(
-    model: str = 'base',
-    compressed: bool = True,
-    optimized: bool = False,
-    **kwargs,
-):
+def transformer(model: str = 't5', quantized: bool = False, **kwargs):
 
     """
     Load T5 model to generate a string given a isu penting.
@@ -487,18 +445,12 @@ def t5(
     model : str, optional (default='base')
         Model architecture supported. Allowed values:
 
-        * ``'base'`` - T5 BASE parameters.
-        * ``'small'`` - T5 SMALL parameters.
+        * ``'t5'`` - T5 BASE parameters.
+        * ``'small-t5'`` - T5 SMALL parameters.
 
-    compressed: bool, optional (default=True)
-        Load compressed model, but this not able to utilize malaya-gpu function. 
-        This only compressed model size, but when loaded into VRAM / RAM, size uncompressed and compressed are the same.
-        We prefer un-compressed model due to compressed model prone to error.
-    
-    optimized : bool, optional (default=False)
-        if True, will load optimized uncompressed model, remove unnecessary nodes and fold batch norm to reduce model size.
-        Optimized model not necessary faster, totally depends on the machine. 
-        We have no concrete proof optimized model maintain same accuracy as uncompressed model.
+    quantized : bool, optional (default=False)
+        if True, will load 8-bit quantized model. 
+        Quantized model not necessary faster, totally depends on the machine.
 
     Returns
     -------
@@ -506,19 +458,16 @@ def t5(
     """
 
     model = model.lower()
-    if model not in _t5_availability:
+    if model not in _transformer_availability:
         raise ValueError(
-            'model not supported, please check supported models from `malaya.generator.available_t5()`.'
+            'model not supported, please check supported models from `malaya.generator.available_transformer()`.'
         )
-
-    from malaya.model.t5 import Generator
 
     return t5_load.load(
         path = PATH_GENERATOR,
         s3_path = S3_PATH_GENERATOR,
         model = model,
         model_class = Generator,
-        compressed = compressed,
-        quantized = optimized,
+        quantized = quantized,
         **kwargs,
     )

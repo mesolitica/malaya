@@ -34,6 +34,7 @@ def deep_skipthought(model: str = 'lstm'):
     -------
     DeepSkipThought: malaya.model.skip_thought.DeepSkipThought class
     """
+
     model = model.lower()
     mapping = {
         'lstm': skip_thought.news_load_model,

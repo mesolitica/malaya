@@ -1,23 +1,26 @@
 from malaya.function import check_file, load_graph, generate_session
 from malaya.text.bpe import SentencePieceEncoder, YTTMEncoder, load_yttm
 from malaya.text.t2t import text_encoder
+from malaya.path import T2T_BPE_MODEL
 
 
-def load_lm(path, s3_path, model, model_class, quantized = False, **kwargs):
-    check_file(path[model], s3_path[model], quantized = quantized, **kwargs)
-    if quantized:
-        model_path = 'quantized'
-    else:
-        model_path = 'model'
+def load_lm(module, model, model_class, quantized = False, **kwargs):
+    path = check_file(
+        path = model,
+        module = module,
+        keys = {'model': 'model.pb', 'vocab': T2T_BPE_MODEL},
+        quantized = quantized,
+        **kwargs,
+    )
 
-    g = load_graph(path[model][model_path], **kwargs)
+    g = load_graph(path['model'], **kwargs)
     X = g.get_tensor_by_name('import/Placeholder:0')
     top_p = g.get_tensor_by_name('import/Placeholder_2:0')
     greedy = g.get_tensor_by_name('import/greedy:0')
     beam = g.get_tensor_by_name('import/beam:0')
     nucleus = g.get_tensor_by_name('import/nucleus:0')
 
-    tokenizer = SentencePieceEncoder(path[model]['vocab'])
+    tokenizer = SentencePieceEncoder(path['vocab'])
 
     return model_class(
         X = X,

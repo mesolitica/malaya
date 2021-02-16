@@ -1,23 +1,11 @@
 from malaya.path import PATH_PARAPHRASE, S3_PATH_PARAPHRASE
 from malaya.supervised import t5 as t5_load
 from malaya.supervised import transformer as transformer_load
+from malaya.model.t5 import Paraphrase as T5_Paraphrase
+from malaya.model.tf import Paraphrase as TF_Paraphrase
 from herpetologist import check_type
 
 
-_t5_availability = {
-    'small': {
-        'Size (MB)': 122,
-        'Uncompressed Size (MB)': 355.6,
-        'Optimized Size (MB)': 244,
-        'BLEU': 0.81801,
-    },
-    'base': {
-        'Size (MB)': 448,
-        'Uncompressed Size (MB)': 1300,
-        'Optimized Size (MB)': 895,
-        'BLEU': 0.86698,
-    },
-}
 _transformer_availability = {
     't2t': {'Size (MB)': 832, 'Quantized Size (MB)': 279, 'BLEU': 0.59612},
     'small-t2t': {
@@ -25,18 +13,13 @@ _transformer_availability = {
         'Quantized Size (MB)': 120,
         'BLEU': 0.65849,
     },
+    't5': {'Size (MB)': 1300, 'Optimized Size (MB)': 895, 'BLEU': 0.86698},
+    'small-t5': {
+        'Size (MB)': 355.6,
+        'Optimized Size (MB)': 244,
+        'BLEU': 0.81801,
+    },
 }
-
-
-def available_t5():
-    """
-    List available T5 models.
-    """
-    from malaya.function import describe_availability
-
-    return describe_availability(
-        _t5_availability, text = 'tested on 1k paraphrase texts.'
-    )
 
 
 def available_transformer():
@@ -47,59 +30,6 @@ def available_transformer():
 
     return describe_availability(
         _transformer_availability, text = 'tested on 1k paraphrase texts.'
-    )
-
-
-@check_type
-def t5(
-    model: str = 'base',
-    compressed: bool = True,
-    optimized: bool = False,
-    **kwargs,
-):
-
-    """
-    Load T5 model to generate a paraphrase given a string.
-
-    Parameters
-    ----------
-    model : str, optional (default='base')
-        Model architecture supported. Allowed values:
-
-        * ``'base'`` - T5 BASE parameters.
-        * ``'small'`` - T5 SMALL parameters.
-
-    compressed: bool, optional (default=True)
-        Load compressed model, but this not able to utilize malaya-gpu function. 
-        This only compressed model size, but when loaded into VRAM / RAM, size uncompressed and compressed are the same.
-        We prefer un-compressed model due to compressed model prone to error.
-
-    optimized : bool, optional (default=False)
-        if True, will load optimized uncompressed model, remove unnecessary nodes and fold batch norm to reduce model size.
-        Optimized model not necessary faster, totally depends on the machine. 
-        We have no concrete proof optimized model maintain same accuracy as uncompressed model.
-
-    Returns
-    -------
-    result: malaya.model.t5.Paraphrase class
-    """
-
-    model = model.lower()
-    if model not in _t5_availability:
-        raise ValueError(
-            'model not supported, please check supported models from `malaya.paraphrase.available_t5()`.'
-        )
-
-    from malaya.model.t5 import Paraphrase
-
-    return t5_load.load(
-        path = PATH_PARAPHRASE,
-        s3_path = S3_PATH_PARAPHRASE,
-        model = model,
-        model_class = Paraphrase,
-        compressed = compressed,
-        quantized = optimized,
-        **kwargs,
     )
 
 
@@ -115,8 +45,8 @@ def transformer(model: str = 't2t', quantized: bool = False, **kwargs):
 
         * ``'t2t'`` - Malaya Transformer BASE parameters.
         * ``'small-t2t'`` - Malaya Transformer SMALL parameters.
-        * ``'bigbird'`` - Google BigBird BASE parameters.
-        * ``'small-bigbird'`` - Google BigBird SMALL parameters.
+        * ``'t5'`` - T5 BASE parameters.
+        * ``'small-t5'`` - T5 SMALL parameters.
 
     quantized : bool, optional (default=False)
         if True, will load 8-bit quantized model. 
@@ -133,17 +63,21 @@ def transformer(model: str = 't2t', quantized: bool = False, **kwargs):
             'model not supported, please check supported models from `malaya.paraphrase.available_transformer()`.'
         )
 
-    from malaya.model.tf import Paraphrase
-
     if 't2t' in model:
         return transformer_load.load_lm(
             path = PATH_PARAPHRASE['transformer'],
             s3_path = S3_PATH_PARAPHRASE['transformer'],
             model = model,
-            model_class = Paraphrase,
+            model_class = TF_Paraphrase,
             quantized = quantized,
             **kwargs,
         )
-
-    if 'bigbird' in model:
-        return
+    if 't5' in model:
+        return t5_load.load(
+            path = PATH_PARAPHRASE,
+            s3_path = S3_PATH_PARAPHRASE,
+            model = model,
+            model_class = T5_Paraphrase,
+            quantized = quantized,
+            **kwargs,
+        )

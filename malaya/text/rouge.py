@@ -1,7 +1,7 @@
 import re
 from malaya.text.bahasa.lapor import lapor as _lapor_words
 from malaya.text.function import split_into_sentences
-from malaya.generator import ngrams
+from malaya.text.ngram import ngrams
 
 
 def _rouge_clean(s):
