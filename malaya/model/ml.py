@@ -6,6 +6,7 @@ from malaya.text.function import (
     language_detection_textcleaning,
     tag_chunk,
 )
+from malaya.model.abstract import Classification, Seq2Seq, Tagging
 from malaya.function import add_neutral as neutral
 from herpetologist import check_type
 from typing import List
@@ -63,7 +64,7 @@ class Bayes:
         return outputs
 
 
-class BinaryBayes(Bayes):
+class BinaryBayes(Bayes, Classification):
     def __init__(
         self,
         multinomial,
@@ -114,7 +115,7 @@ class BinaryBayes(Bayes):
         return self._predict_proba(strings = strings, add_neutral = add_neutral)
 
 
-class MulticlassBayes(Bayes):
+class MulticlassBayes(Bayes, Classification):
     def __init__(
         self,
         multinomial,
@@ -161,7 +162,7 @@ class MulticlassBayes(Bayes):
         return self._predict_proba(strings = strings)
 
 
-class MultilabelBayes(Bayes):
+class MultilabelBayes(Bayes, Classification):
     def __init__(
         self,
         multinomial,
@@ -226,7 +227,7 @@ class MultilabelBayes(Bayes):
         return results
 
 
-class LanguageDetection:
+class LanguageDetection(Classification):
     def __init__(self, model, lang_labels):
         self._model = model
         self._labels = list(lang_labels.values())

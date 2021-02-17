@@ -4,7 +4,7 @@ from malaya.text.bpe import (
     sentencepiece_tokenizer_xlnet,
 )
 from malaya.function.parse_dependency import DependencyGraph
-from malaya.path import PATH_DEPENDENCY, S3_PATH_DEPENDENCY
+from malaya.path import MODEL_VOCAB, MODEL_BPE
 from malaya.model.xlnet import DependencyXLNET
 from malaya.model.bert import DependencyBERT
 from herpetologist import check_type
@@ -190,18 +190,18 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
             'model not supported, please check supported models from `malaya.dependency.available_transformer()`.'
         )
 
-    check_file(
-        PATH_DEPENDENCY[model],
-        S3_PATH_DEPENDENCY[model],
+    path = check_file(
+        file = model,
+        module = 'dependency',
+        keys = {
+            'model': 'model.pb',
+            'vocab': MODEL_VOCAB[model],
+            'tokenizer': MODEL_BPE[model],
+        },
         quantized = quantized,
-        **kwargs
+        **kwargs,
     )
-
-    if quantized:
-        model_path = 'quantized'
-    else:
-        model_path = 'model'
-    g = load_graph(PATH_DEPENDENCY[model][model_path], **kwargs)
+    g = load_graph(path['model'], **kwargs)
 
     if model in ['bert', 'tiny-bert', 'albert', 'tiny-albert']:
 

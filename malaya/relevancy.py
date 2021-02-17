@@ -64,9 +64,9 @@ _transformer_availability = {
     'tiny-bigbird': {
         'Size (MB)': 65,
         'Quantized Size (MB)': 16.9,
-        'macro precision': 0.86074,
-        'macro recall': 0.80252,
-        'macro f1-score': 0.81613,
+        'macro precision': 0.86558,
+        'macro recall': 0.85871,
+        'macro f1-score': 0.86176,
         'max length': 1024,
     },
 }

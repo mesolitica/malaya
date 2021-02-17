@@ -6,7 +6,6 @@ from malaya.text.function import (
     simple_textcleaning,
     STOPWORDS,
 )
-from malaya.model import skip_thought
 from malaya.cluster import cluster_words
 from malaya.graph.pagerank import pagerank
 from sklearn.metrics.pairwise import cosine_similarity
@@ -496,18 +495,7 @@ class Encoder:
         for i in range(0, len(l), batch_size):
             index = min(i + batch_size, len(l))
             batch_x = l[i:index]
-            if 'DeepSkipThought' in str(self.vectorizer):
-                sequences = skip_thought.batch_sequence(
-                    batch_x,
-                    self.vectorizer.dictionary,
-                    maxlen = self.vectorizer._maxlen,
-                )
-                vectors, _ = self.vectorizer._sess.run(
-                    [self.vectorizer._logits, self.vectorizer._attention],
-                    feed_dict = {self.vectorizer._X: np.array(sequences)},
-                )
-            else:
-                vectors = self.vectorizer.vectorize(batch_x)
+            vectors = self.vectorizer.vectorize(batch_x)
             vs.append(vectors)
         return np.concatenate(vs, axis = 0)
 

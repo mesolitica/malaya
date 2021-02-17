@@ -1,10 +1,4 @@
 from malaya.supervised import tag
-from malaya.path import (
-    PATH_ENTITIES,
-    S3_PATH_ENTITIES,
-    PATH_ENTITIES_ONTONOTES5,
-    S3_PATH_ENTITIES_ONTONOTES5,
-)
 from malaya.text.entity import EntityRegex
 from herpetologist import check_type
 
@@ -276,12 +270,7 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
             'model not supported, please check supported models from `malaya.entity.available_transformer()`.'
         )
     return tag.transformer(
-        PATH_ENTITIES,
-        S3_PATH_ENTITIES,
-        'entity',
-        model = model,
-        quantized = quantized,
-        **kwargs
+        class_name = 'entity', model = model, quantized = quantized, **kwargs
     )
 
 
@@ -318,10 +307,8 @@ def transformer_ontonotes5(
         raise ValueError(
             'model not supported, please check supported models from `malaya.entity.available_transformer_ontonotes5()`.'
         )
-    return tag.transformer_ontonotes5(
-        PATH_ENTITIES_ONTONOTES5,
-        S3_PATH_ENTITIES_ONTONOTES5,
-        'entity-ontonotes5',
+    return tag.transformer(
+        class_name = 'entity-ontonotes5',
         model = model,
         quantized = quantized,
         **kwargs

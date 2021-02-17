@@ -1,54 +1,5 @@
-from malaya.model import skip_thought
 from malaya.model.extractive_summarization import SKLearn, Doc2Vec, Encoder
 from herpetologist import check_type
-
-_skipthought_availability = {
-    'lstm': {'Size (MB)': 55.4},
-    'residual-network': {'Size (MB)': 99.7},
-}
-
-
-def available_skipthought():
-    """
-    List available deep skip-thought models.
-    """
-    from malaya.function import describe_availability
-
-    return describe_availability(_skipthought_availability)
-
-
-@check_type
-def deep_skipthought(model: str = 'lstm'):
-    """
-    Load deep learning skipthought model.
-
-    Parameters
-    ----------
-    model : str, optional (default='skip-thought')
-        Model architecture supported. Allowed values:
-
-        * ``'lstm'`` - LSTM skip-thought deep learning model trained on news dataset.
-        * ``'residual-network'`` - residual network with Bahdanau Attention skip-thought deep learning model trained on wikipedia dataset.
-
-    Returns
-    -------
-    DeepSkipThought: malaya.model.skip_thought.DeepSkipThought class
-    """
-
-    model = model.lower()
-    mapping = {
-        'lstm': skip_thought.news_load_model,
-        'residual-network': skip_thought.wiki_load_model,
-    }
-    model = mapping.get(model)
-    if not model:
-        raise ValueError(
-            'model is not supported, please check supported models from malaya.summarization.extractive.available_skipthought()'
-        )
-    sess, x, logits, attention, dictionary, maxlen = model()
-    return skip_thought.DeepSkipThought(
-        sess, x, logits, attention, dictionary, maxlen
-    )
 
 
 def encoder(vectorizer):
@@ -58,7 +9,7 @@ def encoder(vectorizer):
     Parameters
     ----------
     vectorizer : object
-        encoder interface object, eg, BERT, skip-thought, XLNET, ALBERT, ALXLNET.
+        encoder interface object, eg, BERT, XLNET, ALBERT, ALXLNET.
         should have `vectorize` method.
 
     Returns

@@ -1,6 +1,6 @@
 import os
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '0,1'
+os.environ['CUDA_VISIBLE_DEVICES'] = '2,3'
 
 import tensorflow as tf
 import malaya.train as train
@@ -13,14 +13,14 @@ bert_config = {
     'attention_probs_dropout_prob': 0.1,
     'hidden_act': 'gelu',
     'hidden_dropout_prob': 0.1,
-    'hidden_size': 512,
+    'hidden_size': 256,
     'initializer_range': 0.02,
-    'intermediate_size': 2048,
+    'intermediate_size': 1024,
     'max_position_embeddings': 2048,
     'max_encoder_length': 1024,
     'max_decoder_length': 1024,
-    'num_attention_heads': 8,
-    'num_hidden_layers': 6,
+    'num_attention_heads': 4,
+    'num_hidden_layers': 2,
     'type_vocab_size': 2,
     'scope': 'bert',
     'use_bias': True,
@@ -38,8 +38,8 @@ bert_config = {
 }
 
 learning_rate_constant = 2.0
-learning_rate_warmup_steps = 80000.0
-total_steps = 100010
+learning_rate_warmup_steps = 100000.0
+total_steps = 500000
 
 
 def learning_rate_schedule(step_num):
@@ -147,7 +147,7 @@ def generate():
 # next(g)
 
 
-def get_dataset(batch_size = 8):
+def get_dataset(batch_size = 16):
     def get():
         dataset = tf.data.Dataset.from_generator(
             generate_random,
@@ -235,7 +235,9 @@ def model_fn(features, labels, mode, params):
         lr = learning_rate_schedule(global_step)
 
         tf.summary.scalar('learning_rate', lr)
-        optimizer = tf.train.AdamOptimizer(learning_rate = lr)
+        optimizer = tf.train.AdamOptimizer(
+            learning_rate = lr, beta1 = 0.9, beta2 = 0.997, epsilon = 1e-09
+        )
         train_op = optimizer.minimize(total_loss, global_step = global_step)
         estimator_spec = tf.estimator.EstimatorSpec(
             mode = mode, loss = total_loss, train_op = train_op
@@ -252,7 +254,7 @@ def model_fn(features, labels, mode, params):
 train_hooks = [tf.train.LoggingTensorHook(['total_loss'], every_n_iter = 100)]
 train_dataset = get_dataset()
 
-save_directory = 'bigbird-base-ms-en'
+save_directory = 'bigbird-small-ms-en'
 
 train.run_training(
     train_fn = train_dataset,

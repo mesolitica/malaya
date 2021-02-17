@@ -105,10 +105,8 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
             'model not supported, please check supported models from `malaya.emotion.available_transformer()`.'
         )
     return softmax.transformer(
-        PATH_EMOTION,
-        S3_PATH_EMOTION,
-        'emotion',
-        label,
+        class_name = 'emotion',
+        label = label,
         model = model,
         quantized = quantized,
         **kwargs

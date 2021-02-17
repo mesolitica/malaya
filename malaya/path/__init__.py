@@ -11,10 +11,41 @@ XLNET_BPE_VOCAB = 'bpe/sp10m.cased.v9.vocab'
 XLNET_BPE_MODEL = 'bpe/sp10m.cased.v9.model'
 T2T_BPE_VOCAB = 'bpe/sp10m.cased.t5.vocab'
 T2T_BPE_MODEL = 'bpe/sp10m.cased.t5.model'
+TRANSLATION_EN_MS_VOCAB = 'bpe/en-ms.subwords'
+TRANSLATION_MS_EN_VOCAB = 'bpe/ms-en.subwords'
 
 ENTITIY_SETTING = 'setting/entities.json'
 ENTITIY_ONTONOTES5_SETTING = 'setting/entities-ontonotes5.json'
 POS_SETTING = 'setting/pos.json'
+
+CONSTITUENCY_SETTING = 'setting/constituency.json'
+
+MODEL_VOCAB = {
+    'albert': ALBERT_BPE_VOCAB,
+    'bert': BERT_BPE_VOCAB,
+    'tiny-albert': ALBERT_BPE_VOCAB,
+    'tiny-bert': BERT_BPE_VOCAB,
+    'xlnet': XLNET_BPE_VOCAB,
+    'alxlnet': XLNET_BPE_VOCAB,
+    'bigbird': BERT_BPE_VOCAB,
+    'tiny-bigbird': BERT_BPE_VOCAB,
+}
+
+MODEL_BPE = {
+    'albert': ALBERT_BPE_MODEL,
+    'bert': BERT_BPE_MODEL,
+    'tiny-albert': ALBERT_BPE_MODEL,
+    'tiny-bert': BERT_BPE_MODEL,
+    'xlnet': XLNET_BPE_MODEL,
+    'alxlnet': XLNET_BPE_MODEL,
+    'bigbird': BERT_BPE_MODEL,
+    'tiny-bigbird': BERT_BPE_MODEL,
+}
+
+TRANSLATION_VOCAB = {
+    'translation-en-ms': TRANSLATION_EN_MS_VOCAB,
+    'translation-ms-en': TRANSLATION_MS_EN_VOCAB,
+}
 
 # sorted based on modules, started from augmentation until toxic
 
@@ -41,77 +72,7 @@ PATH_CONSTITUENCY = {
         'vocab': BERT_BPE_VOCAB,
         'tokenizer': BERT_BPE_MODEL,
         'version': 'v38',
-    },
-    'tiny-bert': {
-        'model': home + '/constituency/bert/tiny/model.pb',
-        'quantized': home + '/constituency/bert/tiny/quantized/model.pb',
-        'dictionary': home + '/constituency/bert/tiny/vocab.json',
-        'vocab': home + '/bert/sp10m.cased.bert.vocab',
-        'tokenizer': home + '/bert/sp10m.cased.bert.model',
-        'version': 'v38',
-    },
-    'albert': {
-        'model': home + '/constituency/albert/base/model.pb',
-        'quantized': home + '/constituency/albert/base/quantized/model.pb',
-        'dictionary': home + '/constituency/albert/base/vocab.json',
-        'vocab': ALBERT_BPE_VOCAB,
-        'tokenizer': home + '/bert/sp10m.cased.v10.model',
-        'version': 'v38',
-    },
-    'tiny-albert': {
-        'model': home + '/constituency/albert/tiny/model.pb',
-        'quantized': home + '/constituency/albert/tiny/quantized/model.pb',
-        'dictionary': home + '/constituency/albert/tiny/vocab.json',
-        'vocab': home + '/bert/sp10m.cased.v10.vocab',
-        'tokenizer': home + '/bert/sp10m.cased.v10.model',
-        'version': 'v38',
-    },
-    'xlnet': {
-        'model': home + '/constituency/xlnet/base/model.pb',
-        'quantized': home + '/constituency/xlnet/base/quantized/model.pb',
-        'dictionary': home + '/constituency/xlnet/base/vocab.json',
-        'vocab': home + '/bert/sp10m.cased.v9.vocab',
-        'tokenizer': home + '/bert/sp10m.cased.v9.model',
-        'version': 'v38',
-    },
-}
-
-S3_PATH_CONSTITUENCY = {
-    'bert': {
-        'model': 'v38/constituency/bert-base.pb',
-        'quantized': 'v40/constituency/bert-base.pb.quantized',
-        'dictionary': 'v38/constituency/vocab-bert-base.json',
-        'vocab': 'tokenizer/sp10m.cased.bert.vocab',
-        'tokenizer': 'tokenizer/sp10m.cased.bert.model',
-    },
-    'tiny-bert': {
-        'model': 'v38/constituency/tiny-bert.pb',
-        'quantized': 'v40/constituency/tiny-bert.pb.quantized',
-        'dictionary': 'v38/constituency/vocab-tiny-bert.json',
-        'vocab': 'tokenizer/sp10m.cased.bert.vocab',
-        'tokenizer': 'tokenizer/sp10m.cased.bert.model',
-    },
-    'albert': {
-        'model': 'v38/constituency/albert-base.pb',
-        'quantized': 'v40/constituency/albert-base.pb.quantized',
-        'dictionary': 'v38/constituency/vocab-albert-base.json',
-        'vocab': 'tokenizer/sp10m.cased.v10.vocab',
-        'tokenizer': 'tokenizer/sp10m.cased.v10.model',
-    },
-    'tiny-albert': {
-        'model': 'v38/constituency/albert-tiny.pb',
-        'quantized': 'v40/constituency/albert-tiny.pb.quantized',
-        'dictionary': 'v38/constituency/vocab-albert-tiny.json',
-        'vocab': 'tokenizer/sp10m.cased.v10.vocab',
-        'tokenizer': 'tokenizer/sp10m.cased.v10.model',
-    },
-    'xlnet': {
-        'model': 'v40/constituency/xlnet-base.pb',
-        'quantized': 'v40/constituency/xlnet-base.pb.quantized',
-        'dictionary': 'v40/constituency/vocab-xlnet-base.json',
-        'vocab': 'tokenizer/sp10m.cased.v9.vocab',
-        'tokenizer': 'tokenizer/sp10m.cased.v9.model',
-    },
+    }
 }
 
 PATH_DEPENDENCY = {
@@ -121,42 +82,7 @@ PATH_DEPENDENCY = {
         'vocab': home + '/bert/sp10m.cased.bert.vocab',
         'tokenizer': home + '/bert/sp10m.cased.bert.model',
         'version': 'v34',
-    },
-    'tiny-bert': {
-        'model': home + '/dependency/bert/tiny/model.pb',
-        'quantized': home + '/dependency/bert/tiny/quantized/model.pb',
-        'vocab': home + '/bert/sp10m.cased.bert.vocab',
-        'tokenizer': home + '/bert/sp10m.cased.bert.model',
-        'version': 'v34',
-    },
-    'albert': {
-        'model': home + '/dependency/albert/base/model.pb',
-        'quantized': home + '/dependency/albert/base/quantized/model.pb',
-        'vocab': home + '/bert/sp10m.cased.v10.vocab',
-        'tokenizer': home + '/bert/sp10m.cased.v10.model',
-        'version': 'v34',
-    },
-    'tiny-albert': {
-        'model': home + '/dependency/albert/tiny/model.pb',
-        'quantized': home + '/dependency/albert/tiny/quantized/model.pb',
-        'vocab': home + '/bert/sp10m.cased.v10.vocab',
-        'tokenizer': home + '/bert/sp10m.cased.v10.model',
-        'version': 'v34',
-    },
-    'xlnet': {
-        'model': home + '/dependency/xlnet/base/model.pb',
-        'quantized': home + '/dependency/xlnet/base/quantized/model.pb',
-        'vocab': home + '/bert/sp10m.cased.v9.vocab',
-        'tokenizer': home + '/bert/sp10m.cased.v9.model',
-        'version': 'v34',
-    },
-    'alxlnet': {
-        'model': home + '/dependency/alxlnet/base/model.pb',
-        'quantized': home + '/dependency/alxlnet/base/quantized/model.pb',
-        'vocab': home + '/bert/sp10m.cased.v9.vocab',
-        'tokenizer': home + '/bert/sp10m.cased.v9.model',
-        'version': 'v34',
-    },
+    }
 }
 
 S3_PATH_DEPENDENCY = {
@@ -204,49 +130,7 @@ PATH_EMOTION = {
         'vector': home + '/emotion/multinomial/tfidf.pkl',
         'bpe': home + '/emotion/multinomial/bpe.model',
         'version': 'v34',
-    },
-    'bert': {
-        'model': home + '/emotion/bert/base/model.pb',
-        'quantized': home + '/emotion/bert/base/quantized/model.pb',
-        'vocab': home + '/bert/sp10m.cased.bert.vocab',
-        'tokenizer': home + '/bert/sp10m.cased.bert.model',
-        'version': 'v34',
-    },
-    'tiny-bert': {
-        'model': home + '/emotion/bert/tiny/model.pb',
-        'quantized': home + '/emotion/bert/tiny/quantized/model.pb',
-        'vocab': home + '/bert/sp10m.cased.bert.vocab',
-        'tokenizer': home + '/bert/sp10m.cased.bert.model',
-        'version': 'v34',
-    },
-    'albert': {
-        'model': home + '/emotion/albert/base/model.pb',
-        'quantized': home + '/emotion/albert/base/quantized/model.pb',
-        'vocab': home + '/bert/sp10m.cased.v10.vocab',
-        'tokenizer': home + '/bert/sp10m.cased.v10.model',
-        'version': 'v34',
-    },
-    'tiny-albert': {
-        'model': home + '/emotion/albert/tiny/model.pb',
-        'quantized': home + '/emotion/albert/tiny/quantized/model.pb',
-        'vocab': home + '/bert/sp10m.cased.v10.vocab',
-        'tokenizer': home + '/bert/sp10m.cased.v10.model',
-        'version': 'v34',
-    },
-    'xlnet': {
-        'model': home + '/emotion/xlnet/base/model.pb',
-        'quantized': home + '/emotion/xlnet/base/quantized/model.pb',
-        'vocab': home + '/bert/sp10m.cased.v9.vocab',
-        'tokenizer': home + '/bert/sp10m.cased.v9.model',
-        'version': 'v34',
-    },
-    'alxlnet': {
-        'model': home + '/emotion/alxlnet/base/model.pb',
-        'quantized': home + '/emotion/alxlnet/base/quantized/model.pb',
-        'vocab': home + '/bert/sp10m.cased.v9.vocab',
-        'tokenizer': home + '/bert/sp10m.cased.v9.model',
-        'version': 'v34',
-    },
+    }
 }
 
 S3_PATH_EMOTION = {
@@ -254,43 +138,7 @@ S3_PATH_EMOTION = {
         'model': 'v34/emotion/multinomial.pkl',
         'vector': 'v34/emotion/tfidf.pkl',
         'bpe': 'v34/emotion/bpe.model',
-    },
-    'bert': {
-        'model': 'v34/emotion/bert-base-emotion.pb',
-        'quantized': 'v40/emotion/bert-base-emotion.pb.quantized',
-        'vocab': 'tokenizer/sp10m.cased.bert.vocab',
-        'tokenizer': 'tokenizer/sp10m.cased.bert.model',
-    },
-    'tiny-bert': {
-        'model': 'v34/emotion/tiny-bert-emotion.pb',
-        'quantized': 'v40/emotion/tiny-bert-emotion.pb.quantized',
-        'vocab': 'tokenizer/sp10m.cased.bert.vocab',
-        'tokenizer': 'tokenizer/sp10m.cased.bert.model',
-    },
-    'albert': {
-        'model': 'v34/emotion/albert-base-emotion.pb',
-        'quantized': 'v40/emotion/albert-base-emotion.pb.quantized',
-        'vocab': 'tokenizer/sp10m.cased.v10.vocab',
-        'tokenizer': 'tokenizer/sp10m.cased.v10.model',
-    },
-    'tiny-albert': {
-        'model': 'v34/emotion/albert-tiny-emotion.pb',
-        'quantized': 'v40/emotion/albert-tiny-emotion.pb.quantized',
-        'vocab': 'tokenizer/sp10m.cased.v10.vocab',
-        'tokenizer': 'tokenizer/sp10m.cased.v10.model',
-    },
-    'xlnet': {
-        'model': 'v34/emotion/xlnet-base-emotion.pb',
-        'quantized': 'v40/emotion/xlnet-base-emotion.pb.quantized',
-        'vocab': 'tokenizer/sp10m.cased.v9.vocab',
-        'tokenizer': 'tokenizer/sp10m.cased.v9.model',
-    },
-    'alxlnet': {
-        'model': 'v34/emotion/alxlnet-base-emotion.pb',
-        'quantized': 'v40/emotion/alxlnet-base-emotion.pb.quantized',
-        'vocab': 'tokenizer/sp10m.cased.v9.vocab',
-        'tokenizer': 'tokenizer/sp10m.cased.v9.model',
-    },
+    }
 }
 
 PATH_ENTITIES = {
@@ -1275,104 +1123,6 @@ S3_PATH_TATABAHASA = {
     },
 }
 
-PATH_SUMMARIZE = {
-    'news': {
-        'model': home + '/summarize/summary-news.pb',
-        'setting': home + '/summarize/summary-news.json',
-        'version': 'v13',
-    },
-    'wiki': {
-        'model': home + '/summarize/summary-wiki.pb',
-        'setting': home + '/summarize/summary-wiki.json',
-        'version': 'v13',
-    },
-    't5-compressed': {
-        'base': {
-            'path': home + '/summarize/t5-compressed/base',
-            'directory': home + '/summarize/t5-compressed/base/model/',
-            'model': {
-                'model': home
-                + '/summarize/t5-compressed/base/summarize-t5-base.tar.gz',
-                'version': 'v35',
-            },
-        },
-        'small': {
-            'path': home + '/summarize/t5-compressed/small',
-            'directory': home + '/summarize/t5-compressed/base/model/',
-            'model': {
-                'model': home
-                + '/summarize/t5-compressed/small/summarize-t5-base.tar.gz',
-                'version': 'v35',
-            },
-        },
-    },
-    't5': {
-        'base': {
-            'model': home + '/summarize/t5/base/model.pb',
-            'quantized': home + '/summarize/t5/base/quantized/model.pb',
-            'version': 'v38',
-        },
-        'small': {
-            'model': home + '/summarize/t5/small/model.pb',
-            'quantized': home + '/summarize/t5/small/quantized/model.pb',
-            'version': 'v38',
-        },
-    },
-    'transformer': {
-        't2t': {
-            'model': home + '/summarize/transformer/base/model.pb',
-            'quantized': home
-            + '/summarize/transformer/base/quantized/model.pb',
-            'vocab': home + '/summarize/sp10m.cased.t5.model',
-            'version': 'v41',
-        },
-        'small-t2t': {
-            'model': home + '/summarize/transformer/small/model.pb',
-            'quantized': home
-            + '/summarize/transformer/small/quantized/model.pb',
-            'vocab': home + '/summarize/sp10m.cased.t5.model',
-            'version': 'v41',
-        },
-    },
-}
-
-S3_PATH_SUMMARIZE = {
-    'news': {
-        'model': 'v13/summarize/summary-news.pb',
-        'setting': 'v13/summarize/summary-news.json',
-    },
-    'wiki': {
-        'model': 'v13/summarize/summary-wiki.pb',
-        'setting': 'v13/summarize/summary-wiki.json',
-    },
-    't5-compressed': {
-        'base': {'model': 'v35/summarize/argmax-summarize-t5-base.tar.gz'},
-        'small': {'model': 'v35/summarize/argmax-summarize-t5-small.tar.gz'},
-    },
-    't5': {
-        'base': {
-            'model': 'v38/summarize/base.pb',
-            'quantized': 'v40/summarize/base.pb.quantized',
-        },
-        'small': {
-            'model': 'v38/summarize/small.pb',
-            'quantized': 'v40/summarize/small.pb.quantized',
-        },
-    },
-    'transformer': {
-        't2t': {
-            'model': 'v41/summarization/transformer-base.pb',
-            'quantized': 'v41/summarization/transformer-base.pb.quantized',
-            'vocab': 'tokenizer/sp10m.cased.t5.model',
-        },
-        'small-t2t': {
-            'model': 'v39/summarization/small.pb',
-            'quantized': 'v40/summarize/transformer-small.pb.quantized',
-            'vocab': 'tokenizer/sp10m.cased.t5.model',
-        },
-    },
-}
-
 PATH_TOXIC = {
     'multinomial': {
         'model': home + '/toxicity/multinomial/multinomial.pkl',
@@ -1465,85 +1215,6 @@ S3_PATH_TOXIC = {
         'quantized': 'v40/toxicity/alxlnet-base-toxicity.pb.quantized',
         'vocab': 'tokenizer/sp10m.cased.v9.vocab',
         'tokenizer': 'tokenizer/sp10m.cased.v9.model',
-    },
-}
-
-PATH_TRANSLATION = {
-    'ms-en': {
-        'base': {
-            'model': home + '/translation/ms-en/base/model.pb',
-            'quantized': home + '/translation/ms-en/base/quantized/model.pb',
-            'vocab': home + '/translation/ms-en/base/vocab.subwords',
-            'version': 'v37',
-        },
-        'large': {
-            'model': home + '/translation/ms-en/large/model.pb',
-            'quantized': home + '/translation/ms-en/large/quantized/model.pb',
-            'vocab': home + '/translation/ms-en/large/vocab.subwords',
-            'version': 'v37',
-        },
-        'small': {
-            'model': home + '/translation/ms-en/small/model.pb',
-            'quantized': home + '/translation/ms-en/small/quantized/model.pb',
-            'vocab': home + '/translation/ms-en/small/vocab.subwords',
-            'version': 'v37',
-        },
-    },
-    'en-ms': {
-        'base': {
-            'model': home + '/translation/en-ms/base/model.pb',
-            'quantized': home + '/translation/en-ms/base/quantized/model.pb',
-            'vocab': home + '/translation/en-ms/base/vocab.subwords',
-            'version': 'v38',
-        },
-        'large': {
-            'model': home + '/translation/en-ms/large/model.pb',
-            'quantized': home + '/translation/en-ms/large/quantized/model.pb',
-            'vocab': home + '/translation/en-ms/large/vocab.subwords',
-            'version': 'v38',
-        },
-        'small': {
-            'model': home + '/translation/en-ms/small/model.pb',
-            'quantized': home + '/translation/en-ms/small/quantized/model.pb',
-            'vocab': home + '/translation/en-ms/small/vocab.subwords',
-            'version': 'v38',
-        },
-    },
-}
-S3_PATH_TRANSLATION = {
-    'ms-en': {
-        'base': {
-            'model': 'v37/translation/ms-en/base-translation.pb',
-            'quantized': 'v40/translation/ms-en/base-translation.pb.quantized',
-            'vocab': 'v37/translation/ms-en/vocab.subwords',
-        },
-        'large': {
-            'model': 'v37/translation/ms-en/large-translation.pb',
-            'quantized': 'v40/translation/ms-en/large-translation.pb.quantized',
-            'vocab': 'v37/translation/ms-en/vocab.subwords',
-        },
-        'small': {
-            'model': 'v37/translation/ms-en/small-translation.pb',
-            'quantized': 'v40/translation/ms-en/small-translation.pb.quantized',
-            'vocab': 'v37/translation/ms-en/vocab.subwords',
-        },
-    },
-    'en-ms': {
-        'base': {
-            'model': 'v38/translation/en-ms/base-translation.pb',
-            'quantized': 'v40/translation/en-ms/base-translation.pb.quantized',
-            'vocab': 'v38/translation/en-ms/vocab.subwords',
-        },
-        'large': {
-            'model': 'v38/translation/en-ms/large-translation.pb',
-            'quantized': 'v40/translation/en-ms/large-translation.pb.quantized',
-            'vocab': 'v38/translation/en-ms/vocab.subwords',
-        },
-        'small': {
-            'model': 'v38/translation/en-ms/small-translation.pb',
-            'quantized': 'v38/translation/en-ms/small-translation.pb.quantized',
-            'vocab': 'v38/translation/en-ms/vocab.subwords',
-        },
     },
 }
 

@@ -1,5 +1,4 @@
 from malaya.model.tf import Translation
-from malaya.path import PATH_TRANSLATION, S3_PATH_TRANSLATION
 from malaya.supervised import transformer as load_transformer
 from herpetologist import check_type
 
@@ -7,7 +6,7 @@ _transformer_availability = {
     'small': {
         'Size (MB)': 42.7,
         'Quantized Size (MB)': 13.4,
-        'BLEU': 0.142,
+        'BLEU': 0.512,
         'Suggested length': 256,
     },
     'base': {
@@ -22,6 +21,18 @@ _transformer_availability = {
         'BLEU': 0.699,
         'Suggested length': 256,
     },
+    'bigbird': {
+        'Size (MB)': 246,
+        'Quantized Size (MB)': 63.7,
+        'BLEU': 0.714,
+        'Suggested length': 1024,
+    },
+    'small-bigbird': {
+        'Size (MB)': 815,
+        'Quantized Size (MB)': 244,
+        'BLEU': 0.714,
+        'Suggested length': 1024,
+    },
 }
 
 
@@ -32,7 +43,7 @@ def available_transformer():
     from malaya.function import describe_availability
 
     return describe_availability(
-        _transformer_availability, text = 'tested on 77k EN-MY sentences.'
+        _transformer_availability, text = 'tested on 77k EN-MS sentences.'
     )
 
 
@@ -49,6 +60,8 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
         * ``'small'`` - Transformer SMALL parameters.
         * ``'base'`` - Transformer BASE parameters.
         * ``'large'`` - Transformer LARGE parameters.
+        * ``'bigbird'`` - BigBird BASE parameters.
+        * ``'small-bigbird'`` - BigBird SMALL parameters.
         
     quantized : bool, optional (default=False)
         if True, will load 8-bit quantized model. 
@@ -64,15 +77,11 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
             'model not supported, please check supported models from `malaya.translation.en_ms.available_transformer()`.'
         )
 
-    path = PATH_TRANSLATION['en-ms']
-    s3_path = S3_PATH_TRANSLATION['en-ms']
-
     return load_transformer.load(
-        path,
-        s3_path,
-        model,
-        'subword',
-        Translation,
+        module = 'translation-en-ms',
+        model = model,
+        encoder = 'subword',
+        model_class = Translation,
         quantized = quantized,
         **kwargs
     )

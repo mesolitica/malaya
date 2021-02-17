@@ -4,7 +4,7 @@ from malaya.text.bpe import (
     sentencepiece_tokenizer_xlnet,
 )
 from malaya.text.trees import tree_from_str
-from malaya.path import PATH_CONSTITUENCY, S3_PATH_CONSTITUENCY
+from malaya.path import MODEL_VOCAB, MODEL_BPE, CONSTITUENCY_SETTING
 from malaya.model.tf import Constituency
 import json
 from herpetologist import check_type
@@ -108,33 +108,32 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
             'model not supported, please check supported models from `malaya.constituency.available_transformer()`.'
         )
 
-    check_file(
-        PATH_CONSTITUENCY[model],
-        S3_PATH_CONSTITUENCY[model],
+    path = check_file(
+        file = model,
+        module = 'constituency',
+        keys = {
+            'model': 'model.pb',
+            'vocab': MODEL_VOCAB[model],
+            'tokenizer': MODEL_BPE[model],
+            'setting': CONSTITUENCY_SETTING,
+        },
         quantized = quantized,
         **kwargs,
     )
-    if quantized:
-        model_path = 'quantized'
-    else:
-        model_path = 'model'
-    g = load_graph(PATH_CONSTITUENCY[model][model_path], **kwargs)
+    g = load_graph(path['model'], **kwargs)
 
-    with open(PATH_CONSTITUENCY[model]['dictionary']) as fopen:
+    with open(path['setting']) as fopen:
         dictionary = json.load(fopen)
 
     if model in ['bert', 'tiny-bert', 'albert', 'tiny-albert']:
 
         tokenizer = sentencepiece_tokenizer_bert(
-            PATH_CONSTITUENCY[model]['tokenizer'],
-            PATH_CONSTITUENCY[model]['vocab'],
+            path['tokenizer'], path['vocab']
         )
         mode = 'bert'
 
     if model in ['xlnet']:
-        tokenizer = sentencepiece_tokenizer_xlnet(
-            PATH_CONSTITUENCY[model]['tokenizer']
-        )
+        tokenizer = sentencepiece_tokenizer_xlnet(path['tokenizer'])
         mode = 'xlnet'
 
     return Constituency(

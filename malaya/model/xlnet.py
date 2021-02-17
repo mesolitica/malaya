@@ -16,6 +16,7 @@ from malaya.function.html import (
     _render_emotion,
     _render_relevancy,
 )
+from malaya.model.abstract import Classification, Seq2Seq, Tagging
 import numpy as np
 from collections import defaultdict
 from herpetologist import check_type
@@ -248,7 +249,7 @@ class XLNET(Base):
             return dict_result
 
 
-class BinaryXLNET(XLNET):
+class BinaryXLNET(XLNET, Classification):
     def __init__(
         self,
         X,
@@ -369,7 +370,7 @@ class BinaryXLNET(XLNET):
         )
 
 
-class MulticlassXLNET(XLNET):
+class MulticlassXLNET(XLNET, Classification):
     def __init__(
         self,
         X,
@@ -483,7 +484,7 @@ class MulticlassXLNET(XLNET):
         )
 
 
-class SigmoidXLNET(Base):
+class SigmoidXLNET(Base, Classification):
     def __init__(
         self,
         X,
@@ -892,7 +893,7 @@ class SiameseXLNET(Base):
         plt.show()
 
 
-class TaggingXLNET(Base):
+class TaggingXLNET(Base, Tagging):
     def __init__(
         self,
         X,

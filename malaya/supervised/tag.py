@@ -8,20 +8,34 @@ from malaya.text.bpe import (
 from malaya.model.bert import TaggingBERT
 from malaya.model.xlnet import TaggingXLNET
 from malaya.text.regex import _expressions
+from malaya.path import (
+    MODEL_VOCAB,
+    MODEL_BPE,
+    ENTITIY_SETTING,
+    ENTITIY_ONTONOTES5_SETTING,
+    POS_SETTING,
+)
+
+tagging_mapping = {'entity': ENTITIY_SETTING, 'pos': POS_SETTING}
 
 
-def transformer(
-    path, s3_path, class_name, model = 'xlnet', quantized = False, **kwargs
-):
-    check_file(path[model], s3_path[model], quantized = quantized, **kwargs)
-    if quantized:
-        model_path = 'quantized'
-    else:
-        model_path = 'model'
-    g = load_graph(path[model][model_path], **kwargs)
+def transformer(class_name, model = 'xlnet', quantized = False, **kwargs):
+    path = check_file(
+        file = model,
+        module = class_name,
+        keys = {
+            'model': 'model.pb',
+            'vocab': MODEL_VOCAB[model],
+            'tokenizer': MODEL_BPE[model],
+            'setting': tagging_mapping[model],
+        },
+        quantized = quantized,
+        **kwargs,
+    )
+    g = load_graph(path['model'], **kwargs)
 
     try:
-        with open(path[model]['setting']) as fopen:
+        with open(path['setting']) as fopen:
             nodes = json.load(fopen)
     except:
         raise Exception(
@@ -31,16 +45,16 @@ def transformer(
     if model in ['albert', 'bert', 'tiny-albert', 'tiny-bert']:
         if model in ['bert', 'tiny-bert']:
             tokenizer = sentencepiece_tokenizer_bert(
-                path[model]['tokenizer'], path[model]['vocab']
+                path['tokenizer'], path['vocab']
             )
 
         if model in ['albert', 'tiny-albert']:
             from albert import tokenization
 
             tokenizer = tokenization.FullTokenizer(
-                vocab_file = path[model]['vocab'],
+                vocab_file = path['vocab'],
                 do_lower_case = False,
-                spm_model_file = path[model]['tokenizer'],
+                spm_model_file = path['tokenizer'],
             )
 
         return TaggingBERT(
@@ -55,7 +69,7 @@ def transformer(
         )
 
     if model in ['xlnet', 'alxlnet']:
-        tokenizer = sentencepiece_tokenizer_xlnet(path[model]['tokenizer'])
+        tokenizer = sentencepiece_tokenizer_xlnet(path['tokenizer'])
         return TaggingXLNET(
             X = g.get_tensor_by_name('import/Placeholder:0'),
             segment_ids = g.get_tensor_by_name('import/Placeholder_1:0'),
@@ -69,14 +83,21 @@ def transformer(
 
 
 def transformer_ontonotes5(
-    path, s3_path, class_name, model = 'xlnet', quantized = False, **kwargs
+    class_name, model = 'xlnet', quantized = False, **kwargs
 ):
-    check_file(path[model], s3_path[model], quantized = quantized, **kwargs)
-    if quantized:
-        model_path = 'quantized'
-    else:
-        model_path = 'model'
-    g = load_graph(path[model][model_path], **kwargs)
+    path = check_file(
+        file = model,
+        module = class_name,
+        keys = {
+            'model': 'model.pb',
+            'vocab': MODEL_VOCAB[model],
+            'tokenizer': MODEL_BPE[model],
+            'setting': ENTITIY_ONTONOTES5_SETTING,
+        },
+        quantized = quantized,
+        **kwargs,
+    )
+    g = load_graph(path['model'], **kwargs)
 
     hypen = r'\w+(?:-\w+)+'
     hypen_left = r'\w+(?: -\w+)+'
@@ -104,7 +125,7 @@ def transformer_ontonotes5(
         return [t[0] for t in tokens]
 
     try:
-        with open(path[model]['setting']) as fopen:
+        with open(path['setting']) as fopen:
             nodes = json.load(fopen)
     except:
         raise Exception(
@@ -114,16 +135,16 @@ def transformer_ontonotes5(
     if model in ['albert', 'bert', 'tiny-albert', 'tiny-bert']:
         if model in ['bert', 'tiny-bert']:
             tokenizer = sentencepiece_tokenizer_bert(
-                path[model]['tokenizer'], path[model]['vocab']
+                path['tokenizer'], path['vocab']
             )
 
         if model in ['albert', 'tiny-albert']:
             from albert import tokenization
 
             tokenizer = tokenization.FullTokenizer(
-                vocab_file = path[model]['vocab'],
+                vocab_file = path['vocab'],
                 do_lower_case = False,
-                spm_model_file = path[model]['tokenizer'],
+                spm_model_file = path['tokenizer'],
             )
 
         return TaggingBERT(
@@ -139,7 +160,7 @@ def transformer_ontonotes5(
         )
 
     if model in ['xlnet', 'alxlnet']:
-        tokenizer = sentencepiece_tokenizer_xlnet(path[model]['tokenizer'])
+        tokenizer = sentencepiece_tokenizer_xlnet(path['tokenizer'])
         return TaggingXLNET(
             X = g.get_tensor_by_name('import/Placeholder:0'),
             segment_ids = g.get_tensor_by_name('import/Placeholder_1:0'),

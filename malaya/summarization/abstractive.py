@@ -1,4 +1,3 @@
-from malaya.path import PATH_SUMMARIZE, S3_PATH_SUMMARIZE
 from malaya.supervised import t5 as t5_load
 from malaya.supervised import transformer as transformer_load
 from malaya.model.tf import Summarization as TF_Summarization
@@ -13,6 +12,7 @@ _transformer_availability = {
         'ROUGE-1': 0.33209,
         'ROUGE-2': 0.13622,
         'ROUGE-L': 0.23348,
+        'Suggested length': 768,
     },
     'small-t2t': {
         'Size (MB)': 379,
@@ -20,6 +20,7 @@ _transformer_availability = {
         'ROUGE-1': 0.33,
         'ROUGE-2': 0.13417,
         'ROUGE-L': 0.23059,
+        'Suggested length': 768,
     },
     't5': {
         'Size (MB)': 1250,
@@ -27,6 +28,7 @@ _transformer_availability = {
         'ROUGE-1': 0.34103,
         'ROUGE-2': 0.14994,
         'ROUGE-L': 0.23655,
+        'Suggested length': 1024,
     },
     'small-t5': {
         'Size (MB)': 355.6,
@@ -34,6 +36,7 @@ _transformer_availability = {
         'ROUGE-1': 0.33854,
         'ROUGE-2': 0.14588,
         'ROUGE-L': 0.23528,
+        'Suggested length': 1024,
     },
 }
 
@@ -96,6 +99,6 @@ def transformer(model: str = 't2t', quantized: bool = False, **kwargs):
             module = 'abstractive-summarization',
             model = model,
             model_class = T5_Summarization,
-            quantized = optimized,
+            quantized = quantized,
             **kwargs,
         )

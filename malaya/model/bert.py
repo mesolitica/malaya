@@ -23,6 +23,7 @@ from malaya.function.html import (
     _render_emotion,
     _render_relevancy,
 )
+from malaya.model.abstract import Classification, Seq2Seq, Tagging
 import numpy as np
 from collections import defaultdict
 from herpetologist import check_type
@@ -241,7 +242,7 @@ class BERT(Base):
             return dict_result
 
 
-class BinaryBERT(BERT):
+class BinaryBERT(BERT, Classification):
     def __init__(
         self,
         X,
@@ -362,7 +363,7 @@ class BinaryBERT(BERT):
         )
 
 
-class MulticlassBERT(BERT):
+class MulticlassBERT(BERT, Classification):
     def __init__(
         self,
         X,
@@ -475,7 +476,7 @@ class MulticlassBERT(BERT):
         )
 
 
-class SigmoidBERT(Base):
+class SigmoidBERT(Base, Classification):
     def __init__(
         self,
         X,
@@ -867,7 +868,7 @@ class SiameseBERT(Base):
         plt.show()
 
 
-class TaggingBERT(Base):
+class TaggingBERT(Base, Tagging):
     def __init__(
         self,
         X,

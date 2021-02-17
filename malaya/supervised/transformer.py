@@ -1,12 +1,12 @@
 from malaya.function import check_file, load_graph, generate_session
 from malaya.text.bpe import SentencePieceEncoder, YTTMEncoder, load_yttm
 from malaya.text.t2t import text_encoder
-from malaya.path import T2T_BPE_MODEL
+from malaya.path import T2T_BPE_MODEL, TRANSLATION_VOCAB
 
 
 def load_lm(module, model, model_class, quantized = False, **kwargs):
     path = check_file(
-        path = model,
+        file = model,
         module = module,
         keys = {'model': 'model.pb', 'vocab': T2T_BPE_MODEL},
         quantized = quantized,
@@ -33,22 +33,22 @@ def load_lm(module, model, model_class, quantized = False, **kwargs):
     )
 
 
-def load(
-    path, s3_path, model, encoder, model_class, quantized = False, **kwargs
-):
-    check_file(path[model], s3_path[model], quantized = quantized, **kwargs)
-    if quantized:
-        model_path = 'quantized'
-    else:
-        model_path = 'model'
+def load(module, model, encoder, model_class, quantized = False, **kwargs):
 
-    g = load_graph(path[model][model_path], **kwargs)
+    path = check_file(
+        file = model,
+        module = module,
+        keys = {'model': 'model.pb', 'vocab': TRANSLATION_VOCAB[module]},
+        quantized = quantized,
+        **kwargs,
+    )
+    g = load_graph(path['model'], **kwargs)
 
     if encoder == 'subword':
-        encoder = text_encoder.SubwordTextEncoder(path[model]['vocab'])
+        encoder = text_encoder.SubwordTextEncoder(path['vocab'])
 
     if encoder == 'yttm':
-        bpe, subword_mode = load_yttm(path[model]['vocab'], True)
+        bpe, subword_mode = load_yttm(path['vocab'], True)
         encoder = YTTMEncoder(bpe, subword_mode)
 
     return model_class(
@@ -60,18 +60,17 @@ def load(
     )
 
 
-def load_tatabahasa(
-    path, s3_path, model, model_class, quantized = False, **kwargs
-):
-    check_file(path[model], s3_path[model], quantized = quantized, **kwargs)
-    if quantized:
-        model_path = 'quantized'
-    else:
-        model_path = 'model'
+def load_tatabahasa(module, model, model_class, quantized = False, **kwargs):
+    path = check_file(
+        file = model,
+        module = module,
+        keys = {'model': 'model.pb', 'vocab': T2T_BPE_MODEL},
+        quantized = quantized,
+        **kwargs,
+    )
 
-    g = load_graph(path[model][model_path], **kwargs)
-
-    tokenizer = SentencePieceEncoder(path[model]['vocab'])
+    g = load_graph(path['model'], **kwargs)
+    tokenizer = SentencePieceEncoder(path['vocab'])
 
     return model_class(
         X = g.get_tensor_by_name('import/x_placeholder:0'),

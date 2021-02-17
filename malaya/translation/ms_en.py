@@ -1,5 +1,4 @@
 from malaya.model.tf import Translation
-from malaya.path import PATH_TRANSLATION, S3_PATH_TRANSLATION
 from malaya.supervised import transformer as load_transformer
 from herpetologist import check_type
 
@@ -22,6 +21,18 @@ _transformer_availability = {
         'BLEU': 0.714,
         'Suggested length': 256,
     },
+    'bigbird': {
+        'Size (MB)': 246,
+        'Quantized Size (MB)': 63.7,
+        'BLEU': 0.714,
+        'Suggested length': 1024,
+    },
+    'small-bigbird': {
+        'Size (MB)': 815,
+        'Quantized Size (MB)': 244,
+        'BLEU': 0.714,
+        'Suggested length': 1024,
+    },
 }
 
 
@@ -32,7 +43,7 @@ def available_transformer():
     from malaya.function import describe_availability
 
     return describe_availability(
-        _transformer_availability, text = 'tested on 100k MY-EN sentences.'
+        _transformer_availability, text = 'tested on 100k MS-EN sentences.'
     )
 
 
@@ -64,15 +75,11 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
             'model not supported, please check supported models from `malaya.translation.ms_en.available_transformer()`.'
         )
 
-    path = PATH_TRANSLATION['ms-en']
-    s3_path = S3_PATH_TRANSLATION['ms-en']
-
     return load_transformer.load(
-        path,
-        s3_path,
-        model,
-        'subword',
-        Translation,
+        module = 'translation-ms-en',
+        model = model,
+        encoder = 'subword',
+        model_class = Translation,
         quantized = quantized,
         **kwargs
     )

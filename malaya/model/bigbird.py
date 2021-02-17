@@ -1,6 +1,7 @@
 import tensorflow as tf
 import numpy as np
 from malaya.text.bpe import bert_tokenization
+from malaya.model.abstract import Classification, Seq2Seq
 from herpetologist import check_type
 from typing import List
 
@@ -112,7 +113,7 @@ class BigBird(Base):
         return outputs
 
 
-class MulticlassBigBird(BigBird):
+class MulticlassBigBird(BigBird, Classification):
     def __init__(
         self,
         X,

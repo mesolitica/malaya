@@ -5,20 +5,19 @@ def load(module, model, model_class, quantized = False, **kwargs):
 
     try:
         import tensorflow_text
-        import tf_sentencepiece
     except:
         raise ModuleNotFoundError(
-            'tensorflow-text and tf-sentencepiece not installed. Please install it by `pip install tensorflow-text==1.15.0 tf-sentencepiece==0.1.86` and try again. Also, make sure tensorflow-text version same as tensorflow version.'
+            'tensorflow-text not installed. Please install it by `pip install tensorflow-text==1.15.1` and try again. Also, make sure tensorflow-text version same as tensorflow version.'
         )
 
     path = check_file(
-        path = model,
+        file = model,
         module = module,
         keys = {'model': 'model.pb'},
         quantized = quantized,
         **kwargs,
     )
-    g = load_graph(path[model]['model'], **kwargs)
+    g = load_graph(path['model'], **kwargs)
     X = g.get_tensor_by_name('import/inputs:0')
     decode = g.get_tensor_by_name(
         'import/SentenceTokenizer_1/SentenceTokenizer/SentencepieceDetokenizeOp:0'

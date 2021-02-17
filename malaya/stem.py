@@ -163,9 +163,11 @@ def naive():
     -------
     result : malaya.stem.Naive class
     """
-    from malaya.preprocessing import _tokenizer
+    from malaya.preprocessing import Tokenizer
 
-    return Naive(tokenizer = _tokenizer)
+    tokenizer = Tokenizer().tokenize
+
+    return Naive(tokenizer = tokenizer)
 
 
 @check_type

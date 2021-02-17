@@ -1,5 +1,4 @@
 import tensorflow as tf
-from herpetologist import check_type
 from malaya.text.function import (
     transformer_textcleaning,
     split_into_sentences,
@@ -10,6 +9,8 @@ from malaya.text.rouge import (
     postprocessing_summarization,
     find_lapor_and_remove,
 )
+from malaya.model.abstract import Seq2Seq
+from herpetologist import check_type
 from typing import List
 import re
 
@@ -39,7 +40,7 @@ class T5:
         return r
 
 
-class Summarization(T5):
+class Summarization(T5, Seq2Seq):
     def __init__(self, X, decode, sess, pred):
         T5.__init__(self, X = X, decode = decode, sess = sess, pred = pred)
 
@@ -54,17 +55,17 @@ class Summarization(T5):
     @check_type
     def greedy_decoder(
         self,
-        string: str,
+        strings: List[str],
         mode: str = 'ringkasan',
         postprocess: bool = True,
         **kwargs,
     ):
         """
-        Summarize a string. Decoder is greedy decoder with beam width size 1, alpha 0.5 .
+        Summarize strings. Decoder is greedy decoder with beam width size 1, alpha 0.5 .
 
         Parameters
         ----------
-        string: str
+        strings: List[str]
         mode: str
             mode for summarization. Allowed values:
 
@@ -75,18 +76,20 @@ class Summarization(T5):
 
         Returns
         -------
-        result: str
+        result: List[str]
         """
         mode = mode.lower()
         if mode not in ['ringkasan', 'tajuk']:
             raise ValueError('mode only supports [`ringkasan`, `tajuk`]')
 
-        results = self._summarize(string, mode, postprocess, **kwargs)
+        results = []
+        for string in strings:
+            results.append(self._summarize(string, mode, postprocess, **kwargs))
 
         return results
 
 
-class Generator(T5):
+class Generator(T5, Seq2Seq):
     def __init__(self, X, decode, sess, pred):
         T5.__init__(self, X = X, decode = decode, sess = sess, pred = pred)
 
@@ -114,7 +117,7 @@ class Generator(T5):
         return upperfirst(self._predict(cleaning(points)))
 
 
-class Paraphrase(T5):
+class Paraphrase(T5, Seq2Seq):
     def __init__(self, X, decode, sess, pred):
         T5.__init__(self, X = X, decode = decode, sess = sess, pred = pred)
 
@@ -124,32 +127,38 @@ class Paraphrase(T5):
         return upperfirst(self._predict(string))
 
     @check_type
-    def greedy_decoder(self, string: str, split_fullstop: bool = True):
+    def greedy_decoder(self, strings: List[str], split_fullstop: bool = True):
         """
-        paraphrase a string. Decoder is greedy decoder with beam width size 1, alpha 0.5 .
+        paraphrase strings. Decoder is greedy decoder with beam width size 1, alpha 0.5 .
 
         Parameters
         ----------
-        string: str
+        strings: List[str]
         split_fullstop: bool, (default=True)
             if True, will generate paraphrase for each strings splitted by fullstop.
 
         Returns
         -------
-        result: str
+        result: List[str]
         """
+        results = []
 
-        if split_fullstop:
+        for string in strings:
 
-            splitted_fullstop = split_into_sentences(string)
+            if split_fullstop:
 
-            results = []
-            for splitted in splitted_fullstop:
-                if len(splitted.split()) < 4:
-                    results.append(splitted)
-                else:
-                    results.append(self._paraphrase(splitted))
-            return ' '.join(results)
+                splitted_fullstop = split_into_sentences(string)
 
-        else:
-            return self._paraphrase(string)
+                results = []
+                for splitted in splitted_fullstop:
+                    if len(splitted.split()) < 4:
+                        results.append(splitted)
+                    else:
+                        results.append(self._paraphrase(splitted))
+                r = ' '.join(results)
+
+            else:
+                r = self._paraphrase(string)
+            results.append(r)
+
+        return results

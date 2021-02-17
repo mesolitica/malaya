@@ -26,6 +26,7 @@ from malaya.text.bpe import (
 )
 from malaya.text import chart_decoder
 from malaya.text.trees import tree_from_str
+from malaya.model.abstract import Seq2Seq, Classification
 from herpetologist import check_type
 from typing import List
 
@@ -57,7 +58,7 @@ class _LANG_MODEL:
         self.logits = tf.layers.dense(embed, output)
 
 
-class DeepLang:
+class DeepLang(Classification):
     def __init__(self, path, vectorizer, label, bpe, type):
         self._graph = tf.Graph()
         with self._graph.as_default():
@@ -129,7 +130,7 @@ class DeepLang:
         return dicts
 
 
-class Translation:
+class Translation(Seq2Seq):
     def __init__(self, X, greedy, beam, sess, encoder):
 
         self._X = X
@@ -375,7 +376,7 @@ class Constituency:
         return tree_from_str(make_str())
 
 
-class Summarization:
+class Summarization(Seq2Seq):
     def __init__(self, X, top_p, greedy, beam, nucleus, sess, tokenizer):
 
         self._X = X
@@ -539,7 +540,7 @@ class Summarization:
         )
 
 
-class Paraphrase:
+class Paraphrase(Seq2Seq):
     def __init__(self, X, top_p, greedy, beam, nucleus, sess, tokenizer):
 
         self._X = X
@@ -655,7 +656,7 @@ class T2T:
         return self._predict(strings, beam_search = True)
 
 
-class TrueCase(T2T):
+class TrueCase(T2T, Seq2Seq):
     def __init__(self, X, greedy, beam, sess, encoder):
         T2T.__init__(
             self,
@@ -699,7 +700,7 @@ class TrueCase(T2T):
         return self._beam_decoder(strings)
 
 
-class Segmentation(T2T):
+class Segmentation(T2T, Seq2Seq):
     def __init__(self, X, greedy, beam, sess, encoder):
         T2T.__init__(
             self,
@@ -743,7 +744,7 @@ class Segmentation(T2T):
         return self._beam_decoder(strings)
 
 
-class Tatabahasa:
+class Tatabahasa(Seq2Seq):
     def __init__(self, X, greedy, tag_greedy, sess, tokenizer):
         self._X = X
         self._greedy = greedy

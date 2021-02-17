@@ -3,6 +3,7 @@ import os
 import pickle
 import numpy as np
 from functools import partial
+from malaya.stem import _classification_textcleaning_stemmer, naive
 from malaya.function import check_file, load_graph, generate_session
 from malaya.text.bpe import (
     sentencepiece_tokenizer_bert,
@@ -13,6 +14,7 @@ from malaya.model.ml import BinaryBayes, MulticlassBayes
 from malaya.model.bert import MulticlassBERT, BinaryBERT
 from malaya.model.xlnet import MulticlassXLNET, BinaryXLNET
 from malaya.model.bigbird import MulticlassBigBird
+from malaya.path import MODEL_VOCAB, MODEL_BPE
 
 
 def multinomial(path, s3_path, class_name, label, **kwargs):
@@ -27,8 +29,6 @@ def multinomial(path, s3_path, class_name, label, **kwargs):
             f"model corrupted due to some reasons, please run `malaya.clear_cache('{class_name}/multinomial')` and try again"
         )
     bpe, subword_mode = load_yttm(path['multinomial']['bpe'])
-
-    from malaya.stem import _classification_textcleaning_stemmer, naive
 
     stemmer = naive()
     cleaning = partial(_classification_textcleaning_stemmer, stemmer = stemmer)
@@ -47,21 +47,19 @@ def multinomial(path, s3_path, class_name, label, **kwargs):
     )
 
 
-def transformer(
-    path,
-    s3_path,
-    class_name,
-    label,
-    model = 'bert',
-    quantized = False,
-    **kwargs,
-):
-    check_file(path[model], s3_path[model], quantized = quantized, **kwargs)
-    if quantized:
-        model_path = 'quantized'
-    else:
-        model_path = 'model'
-    g = load_graph(path[model][model_path], **kwargs)
+def transformer(class_name, label, model = 'bert', quantized = False, **kwargs):
+    path = check_file(
+        file = model,
+        module = class_name,
+        keys = {
+            'model': 'model.pb',
+            'vocab': MODEL_VOCAB[model],
+            'tokenizer': MODEL_BPE[model],
+        },
+        quantized = quantized,
+        **kwargs,
+    )
+    g = load_graph(path['model'], **kwargs)
 
     if len(label) > 2 or class_name == 'relevancy':
         if model in ['albert', 'bert', 'tiny-albert', 'tiny-bert']:
@@ -90,7 +88,7 @@ def transformer(
             from malaya.transformers.bert import bert_num_layers
 
             tokenizer = sentencepiece_tokenizer_bert(
-                path[model]['tokenizer'], path[model]['vocab']
+                path['tokenizer'], path['vocab']
             )
         if model in ['albert', 'tiny-albert']:
             from malaya.transformers.albert import (
@@ -100,9 +98,9 @@ def transformer(
             from albert import tokenization
 
             tokenizer = tokenization.FullTokenizer(
-                vocab_file = path[model]['vocab'],
+                vocab_file = path['vocab'],
                 do_lower_case = False,
-                spm_model_file = path[model]['tokenizer'],
+                spm_model_file = path['tokenizer'],
             )
 
         return selected_class(
@@ -131,7 +129,7 @@ def transformer(
                 _extract_attention_weights_import,
             )
 
-        tokenizer = sentencepiece_tokenizer_xlnet(path[model]['tokenizer'])
+        tokenizer = sentencepiece_tokenizer_xlnet(path['tokenizer'])
 
         return selected_class(
             X = g.get_tensor_by_name('import/Placeholder:0'),
@@ -149,7 +147,7 @@ def transformer(
 
     if model in ['bigbird', 'tiny-bigbird']:
         tokenizer = sentencepiece_tokenizer_bert(
-            path[model]['tokenizer'], path[model]['vocab']
+            path['tokenizer'], path['vocab']
         )
         return selected_class(
             X = g.get_tensor_by_name('import/Placeholder:0'),
