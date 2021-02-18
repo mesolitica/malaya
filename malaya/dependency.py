@@ -206,7 +206,7 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
     if model in ['bert', 'tiny-bert', 'albert', 'tiny-albert']:
 
         tokenizer = sentencepiece_tokenizer_bert(
-            PATH_DEPENDENCY[model]['tokenizer'], PATH_DEPENDENCY[model]['vocab']
+            path['tokenizer'], path['vocab']
         )
 
         return DependencyBERT(
@@ -223,9 +223,7 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
 
     if model in ['xlnet', 'alxlnet']:
 
-        tokenizer = sentencepiece_tokenizer_xlnet(
-            PATH_DEPENDENCY[model]['tokenizer']
-        )
+        tokenizer = sentencepiece_tokenizer_xlnet(path['tokenizer'])
 
         return DependencyXLNET(
             X = g.get_tensor_by_name('import/Placeholder:0'),

@@ -6,7 +6,6 @@ from malaya.text.ngram import ngrams as generate_ngrams
 from malaya.supervised import t5 as t5_load
 from malaya.model.t5 import Generator
 from malaya.path import PATH_NGRAM, S3_PATH_NGRAM
-from malaya.path import PATH_GENERATOR, S3_PATH_GENERATOR
 from malaya.function import check_file
 from herpetologist import check_type
 from typing import List, Dict, Tuple, Callable
@@ -41,8 +40,8 @@ _accepted_entities = [
 
 
 _transformer_availability = {
-    'small-t5': {'Size (MB)': 355.6, 'Optimized Size (MB)': 244},
-    't5': {'Size (MB)': 1300, 'Optimized Size (MB)': 895},
+    't5': {'Size (MB)': 1250, 'Quantized Size (MB)': 481},
+    'small-t5': {'Size (MB)': 355.6, 'Quantized Size (MB)': 195},
 }
 
 _gpt2_availability = {
@@ -431,14 +430,14 @@ def available_transformer():
     """
     from malaya.function import describe_availability
 
-    return describe_availability(_t5_availability)
+    return describe_availability(_transformer_availability)
 
 
 @check_type
 def transformer(model: str = 't5', quantized: bool = False, **kwargs):
 
     """
-    Load T5 model to generate a string given a isu penting.
+    Load Transformer model to generate a string given a isu penting.
 
     Parameters
     ----------
@@ -464,8 +463,7 @@ def transformer(model: str = 't5', quantized: bool = False, **kwargs):
         )
 
     return t5_load.load(
-        path = PATH_GENERATOR,
-        s3_path = S3_PATH_GENERATOR,
+        module = 'generator',
         model = model,
         model_class = Generator,
         quantized = quantized,

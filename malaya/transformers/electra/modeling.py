@@ -30,6 +30,7 @@ import re
 import numpy as np
 import six
 import tensorflow.compat.v1 as tf
+from tensorflow.contrib import layers as contrib_layers
 
 
 class BertConfig(object):
@@ -149,6 +150,8 @@ class BertModel(object):
         input_reprs = None,
         update_embeddings = True,
         untied_embeddings = False,
+        ltr = False,
+        rtl = False,
     ):
         """Constructor for BertModel.
 
@@ -246,6 +249,16 @@ class BertModel(object):
                 attention_mask = create_attention_mask_from_input_mask(
                     token_type_ids, input_mask
                 )
+
+                # Add causal masking to the attention for running the transformer
+                # left-to-right or right-to-left
+                if ltr or rtl:
+                    causal_mask = tf.ones((seq_length, seq_length))
+                    if ltr:
+                        causal_mask = tf.matrix_band_part(causal_mask, -1, 0)
+                    else:
+                        causal_mask = tf.matrix_band_part(causal_mask, 0, -1)
+                    attention_mask *= tf.expand_dims(causal_mask, 0)
 
                 # Run the stacked transformer. Output shapes
                 # sequence_output: [batch_size, seq_length, hidden_size]
@@ -396,9 +409,12 @@ def dropout(input_tensor, dropout_prob):
 
 def layer_norm(input_tensor, name = None):
     """Run layer normalization on the last dimension of the tensor."""
-    return tf.keras.layers.LayerNormalization(
-        name = name, axis = -1, dtype = tf.float32
-    )(input_tensor)
+    return contrib_layers.layer_norm(
+        inputs = input_tensor,
+        begin_norm_axis = -1,
+        begin_params_axis = -1,
+        scope = name,
+    )
 
 
 def layer_norm_and_dropout(input_tensor, dropout_prob, name = None):

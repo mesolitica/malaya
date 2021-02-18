@@ -1,7 +1,6 @@
 import re
 from malaya.text.tatabahasa import tatabahasa_dict, hujung, permulaan
 from malaya.supervised import tag
-from malaya.path import PATH_POS, S3_PATH_POS
 from herpetologist import check_type
 
 label = [
@@ -181,10 +180,5 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
             'model not supported, please check supported models from `malaya.pos.available_transformer()`.'
         )
     return tag.transformer(
-        PATH_POS,
-        S3_PATH_POS,
-        'pos',
-        model = model,
-        quantized = quantized,
-        **kwargs
+        class_name = 'pos', model = model, quantized = quantized, **kwargs
     )

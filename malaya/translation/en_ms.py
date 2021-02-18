@@ -28,8 +28,8 @@ _transformer_availability = {
         'Suggested length': 1024,
     },
     'small-bigbird': {
-        'Size (MB)': 815,
-        'Quantized Size (MB)': 244,
+        'Size (MB)': 50.4,
+        'Quantized Size (MB)': 13.1,
         'BLEU': 0.714,
         'Suggested length': 1024,
     },

@@ -1,7 +1,7 @@
 from malaya.function import check_file, load_graph, generate_session
 from malaya.text.bpe import SentencePieceEncoder, YTTMEncoder, load_yttm
 from malaya.text.t2t import text_encoder
-from malaya.path import T2T_BPE_MODEL, TRANSLATION_VOCAB
+from malaya.path import T2T_BPE_MODEL, LM_VOCAB
 
 
 def load_lm(module, model, model_class, quantized = False, **kwargs):
@@ -38,7 +38,7 @@ def load(module, model, encoder, model_class, quantized = False, **kwargs):
     path = check_file(
         file = model,
         module = module,
-        keys = {'model': 'model.pb', 'vocab': TRANSLATION_VOCAB[module]},
+        keys = {'model': 'model.pb', 'vocab': LM_VOCAB[module]},
         quantized = quantized,
         **kwargs,
     )

@@ -1,4 +1,3 @@
-from malaya.path import PATH_PARAPHRASE, S3_PATH_PARAPHRASE
 from malaya.supervised import t5 as t5_load
 from malaya.supervised import transformer as transformer_load
 from malaya.model.t5 import Paraphrase as T5_Paraphrase
@@ -13,10 +12,10 @@ _transformer_availability = {
         'Quantized Size (MB)': 120,
         'BLEU': 0.65849,
     },
-    't5': {'Size (MB)': 1300, 'Optimized Size (MB)': 895, 'BLEU': 0.86698},
+    't5': {'Size (MB)': 1250, 'Quantized Size (MB)': 481, 'BLEU': 0.86698},
     'small-t5': {
         'Size (MB)': 355.6,
-        'Optimized Size (MB)': 244,
+        'Quantized Size (MB)': 195,
         'BLEU': 0.81801,
     },
 }
@@ -65,8 +64,7 @@ def transformer(model: str = 't2t', quantized: bool = False, **kwargs):
 
     if 't2t' in model:
         return transformer_load.load_lm(
-            path = PATH_PARAPHRASE['transformer'],
-            s3_path = S3_PATH_PARAPHRASE['transformer'],
+            module = 'paraphrase',
             model = model,
             model_class = TF_Paraphrase,
             quantized = quantized,
@@ -74,8 +72,7 @@ def transformer(model: str = 't2t', quantized: bool = False, **kwargs):
         )
     if 't5' in model:
         return t5_load.load(
-            path = PATH_PARAPHRASE,
-            s3_path = S3_PATH_PARAPHRASE,
+            module = 'paraphrase',
             model = model,
             model_class = T5_Paraphrase,
             quantized = quantized,

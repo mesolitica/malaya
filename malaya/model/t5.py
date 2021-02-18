@@ -149,13 +149,13 @@ class Paraphrase(T5, Seq2Seq):
 
                 splitted_fullstop = split_into_sentences(string)
 
-                results = []
+                output = []
                 for splitted in splitted_fullstop:
                     if len(splitted.split()) < 4:
-                        results.append(splitted)
+                        output.append(splitted)
                     else:
-                        results.append(self._paraphrase(splitted))
-                r = ' '.join(results)
+                        output.append(self._paraphrase(splitted))
+                r = ' '.join(output)
 
             else:
                 r = self._paraphrase(string)

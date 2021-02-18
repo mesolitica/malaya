@@ -1,9 +1,12 @@
 import tensorflow as tf
 import numpy as np
+from malaya.text.function import translation_textcleaning
 from malaya.text.bpe import bert_tokenization
 from malaya.model.abstract import Classification, Seq2Seq
 from herpetologist import check_type
 from typing import List
+
+pad_sequences = tf.keras.preprocessing.sequence.pad_sequences
 
 
 class Base:
@@ -191,3 +194,45 @@ class MulticlassBigBird(BigBird, Classification):
         """
 
         return self._predict_proba(strings = strings)
+
+
+class Translation(Seq2Seq):
+    def __init__(self, X, greedy, sess, encoder, maxlen):
+
+        self._X = X
+        self._greedy = greedy
+        self._sess = sess
+        self._encoder = encoder
+        self._maxlen = maxlen
+
+    def _translate(self, strings):
+        encoded = [
+            self._encoder.encode(translation_textcleaning(string)) + [1]
+            for string in strings
+        ]
+        batch_x = pad_sequences(
+            encoded, padding = 'post', maxlen = self._maxlen
+        )
+        p = self._sess.run(
+            self._greedy, feed_dict = {self._X: batch_x}
+        ).tolist()
+        result = []
+        for r in result:
+            result.append(
+                self._encoder.decode([i for i in r.tolist() if i > 0])
+            )
+        return result
+
+    def greedy_decoder(self, strings: List[str]):
+        """
+        translate list of strings.
+
+        Parameters
+        ----------
+        strings : List[str]
+
+        Returns
+        -------
+        result: List[str]
+        """
+        return self._translate(strings)

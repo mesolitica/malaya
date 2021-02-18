@@ -8,15 +8,7 @@ from malaya.text.bpe import (
 from malaya.model.bert import TaggingBERT
 from malaya.model.xlnet import TaggingXLNET
 from malaya.text.regex import _expressions
-from malaya.path import (
-    MODEL_VOCAB,
-    MODEL_BPE,
-    ENTITIY_SETTING,
-    ENTITIY_ONTONOTES5_SETTING,
-    POS_SETTING,
-)
-
-tagging_mapping = {'entity': ENTITIY_SETTING, 'pos': POS_SETTING}
+from malaya.path import MODEL_VOCAB, MODEL_BPE, TAGGING_SETTING
 
 
 def transformer(class_name, model = 'xlnet', quantized = False, **kwargs):
@@ -27,7 +19,7 @@ def transformer(class_name, model = 'xlnet', quantized = False, **kwargs):
             'model': 'model.pb',
             'vocab': MODEL_VOCAB[model],
             'tokenizer': MODEL_BPE[model],
-            'setting': tagging_mapping[model],
+            'setting': TAGGING_SETTING[class_name],
         },
         quantized = quantized,
         **kwargs,
@@ -92,7 +84,7 @@ def transformer_ontonotes5(
             'model': 'model.pb',
             'vocab': MODEL_VOCAB[model],
             'tokenizer': MODEL_BPE[model],
-            'setting': ENTITIY_ONTONOTES5_SETTING,
+            'setting': TAGGING_SETTING[class_name],
         },
         quantized = quantized,
         **kwargs,
