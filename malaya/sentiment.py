@@ -96,7 +96,11 @@ def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
 
     Returns
     -------
-    result : malaya.supervised.softmax.transformer function
+    result: model
+        List of model classes:
+        
+        * if `bert` in model, will return `malaya.model.bert.BinaryBERT`.
+        * if `xlnet` in model, will return `malaya.model.xlnet.BinaryXLNET`.
     """
 
     model = model.lower()
@@ -105,10 +109,8 @@ def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
             'model not supported, please check supported models from `malaya.sentiment.available_transformer()`.'
         )
     return softmax.transformer(
-        PATH_SENTIMENT,
-        S3_PATH_SENTIMENT,
-        'sentiment',
-        label,
+        class_name = 'sentiment',
+        label = label,
         model = model,
         quantized = quantized,
         **kwargs

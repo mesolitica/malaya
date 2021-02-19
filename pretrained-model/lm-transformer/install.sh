@@ -1,10 +1,10 @@
 # run in cloud shell
 ctpu up --zone=europe-west4-a \
 --vm-only \
---disk-size-gb=300 \
---machine-type=n1-standard-2 \
+--disk-size-gb=100 \
+--machine-type=n1-standard-1 \
 --tf-version=1.15.3 \
---name=transformer-tutorial \
+--name=tpu-vm \
 --project=mesolitica-tpu
 
 sudo pip3 install sentencepiece

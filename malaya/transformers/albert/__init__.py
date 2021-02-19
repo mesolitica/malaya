@@ -7,7 +7,7 @@
 # For license information, see https://github.com/huseinzol05/Malaya/blob/master/LICENSE
 
 import tensorflow as tf
-from . import modeling
+from . import modeling, tokenization
 from malaya.text.bpe import (
     bert_tokenization,
     padding_sequence,
@@ -291,8 +291,6 @@ def load(model: str = 'albert', **kwargs):
 
         with tarfile.open(PATH_ALBERT[model]['model']['model']) as tar:
             tar.extractall(path = PATH_ALBERT[model]['path'])
-
-    from albert import tokenization
 
     bert_checkpoint = PATH_ALBERT[model]['directory'] + 'model.ckpt'
     vocab_model = PATH_ALBERT[model]['directory'] + 'sp10m.cased.v10.model'

@@ -1,5 +1,4 @@
 from malaya.supervised import softmax
-from malaya.path import PATH_RELEVANCY, S3_PATH_RELEVANCY
 from herpetologist import check_type
 
 label = ['not relevant', 'relevant']
@@ -107,7 +106,12 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
 
     Returns
     -------
-    result : malaya.supervised.softmax.transformer function
+    result: model
+        List of model classes:
+        
+        * if `bert` in model, will return `malaya.model.bert.MulticlassBERT`.
+        * if `xlnet` in model, will return `malaya.model.xlnet.MulticlassXLNET`.
+        * if `bigbird` in model, will return `malaya.model.xlnet.MulticlassBigBird`.
     """
 
     model = model.lower()
@@ -116,7 +120,7 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
             'model not supported, please check supported models from `malaya.relevancy.available_transformer()`.'
         )
     return softmax.transformer(
-        model_class = 'relevancy',
+        class_name = 'relevancy',
         label = label,
         model = model,
         quantized = quantized,

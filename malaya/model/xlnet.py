@@ -26,8 +26,8 @@ render_dict = {
     'sentiment': _render_binary,
     'relevancy': _render_relevancy,
     'emotion': _render_emotion,
-    'toxic': _render_toxic,
-    'subjective': _render_binary,
+    'toxicity': _render_toxic,
+    'subjectivity': _render_binary,
 }
 
 

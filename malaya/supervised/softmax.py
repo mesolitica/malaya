@@ -10,14 +10,14 @@ from malaya.text.bpe import (
     sentencepiece_tokenizer_xlnet,
     load_yttm,
 )
-from malaya.model.ml import BinaryBayes, MulticlassBayes
-from malaya.model.bert import MulticlassBERT, BinaryBERT
-from malaya.model.xlnet import MulticlassXLNET, BinaryXLNET
+from malaya.model.ml import BinaryBayes, MulticlassBayes, MultilabelBayes
+from malaya.model.bert import MulticlassBERT, BinaryBERT, SigmoidBERT
+from malaya.model.xlnet import MulticlassXLNET, BinaryXLNET, SigmoidXLNET
 from malaya.model.bigbird import MulticlassBigBird
 from malaya.path import MODEL_VOCAB, MODEL_BPE
 
 
-def multinomial(path, s3_path, class_name, label, **kwargs):
+def multinomial(path, s3_path, class_name, label, sigmoid = False, **kwargs):
     check_file(path['multinomial'], s3_path['multinomial'], **kwargs)
     try:
         with open(path['multinomial']['model'], 'rb') as fopen:
@@ -33,10 +33,13 @@ def multinomial(path, s3_path, class_name, label, **kwargs):
     stemmer = naive()
     cleaning = partial(_classification_textcleaning_stemmer, stemmer = stemmer)
 
-    if len(label) > 2:
-        selected_class = MulticlassBayes
+    if sigmoid:
+        selected_class = MultilabelBayes
     else:
-        selected_class = BinaryBayes
+        if len(label) > 2:
+            selected_class = MulticlassBayes
+        else:
+            selected_class = BinaryBayes
     return selected_class(
         multinomial = multinomial,
         label = label,
@@ -47,7 +50,14 @@ def multinomial(path, s3_path, class_name, label, **kwargs):
     )
 
 
-def transformer(class_name, label, model = 'bert', quantized = False, **kwargs):
+def transformer(
+    class_name,
+    label,
+    model = 'bert',
+    sigmoid = False,
+    quantized = False,
+    **kwargs,
+):
     path = check_file(
         file = model,
         module = class_name,
@@ -61,26 +71,28 @@ def transformer(class_name, label, model = 'bert', quantized = False, **kwargs):
     )
     g = load_graph(path['model'], **kwargs)
 
-    if len(label) > 2 or class_name == 'relevancy':
+    if sigmoid:
         if model in ['albert', 'bert', 'tiny-albert', 'tiny-bert']:
-            selected_class = MulticlassBERT
-            selected_node = 'import/dense/BiasAdd:0'
+            selected_class = SigmoidBERT
         if model in ['xlnet', 'alxlnet']:
-            selected_class = MulticlassXLNET
-            selected_node = 'import/transpose_3:0'
-        if model in ['bigbird', 'tiny-bigbird']:
-            selected_class = MulticlassBigBird
-            selected_node = 'import/dense/BiasAdd:0'
-
+            selected_class = SigmoidXLNET
     else:
-        if model in ['albert', 'bert', 'tiny-albert', 'tiny-bert']:
-            selected_class = BinaryBERT
-            selected_node = 'import/dense/BiasAdd:0'
-        if model in ['xlnet', 'alxlnet']:
-            selected_class = BinaryXLNET
-            selected_node = 'import/transpose_3:0'
+        if len(label) > 2 or class_name == 'relevancy':
+            if model in ['albert', 'bert', 'tiny-albert', 'tiny-bert']:
+                selected_class = MulticlassBERT
+            if model in ['xlnet', 'alxlnet']:
+                selected_class = MulticlassXLNET
+            if model in ['bigbird', 'tiny-bigbird']:
+                selected_class = MulticlassBigBird
+
+        else:
+            if model in ['albert', 'bert', 'tiny-albert', 'tiny-bert']:
+                selected_class = BinaryBERT
+            if model in ['xlnet', 'alxlnet']:
+                selected_class = BinaryXLNET
 
     if model in ['albert', 'bert', 'tiny-albert', 'tiny-bert']:
+        selected_node = 'import/dense/BiasAdd:0'
         if model in ['bert', 'tiny-bert']:
             from malaya.transformers.bert import (
                 _extract_attention_weights_import,
@@ -95,7 +107,7 @@ def transformer(class_name, label, model = 'bert', quantized = False, **kwargs):
                 _extract_attention_weights_import,
             )
             from malaya.transformers.albert import bert_num_layers
-            from albert import tokenization
+            from malaya.transformers.albert import tokenization
 
             tokenizer = tokenization.FullTokenizer(
                 vocab_file = path['vocab'],
@@ -120,6 +132,7 @@ def transformer(class_name, label, model = 'bert', quantized = False, **kwargs):
         )
 
     if model in ['xlnet', 'alxlnet']:
+        selected_node = 'import/transpose_3:0'
         if model in ['xlnet']:
             from malaya.transformers.xlnet import (
                 _extract_attention_weights_import,
@@ -146,6 +159,7 @@ def transformer(class_name, label, model = 'bert', quantized = False, **kwargs):
         )
 
     if model in ['bigbird', 'tiny-bigbird']:
+        selected_node = 'import/dense/BiasAdd:0'
         tokenizer = sentencepiece_tokenizer_bert(
             path['tokenizer'], path['vocab']
         )

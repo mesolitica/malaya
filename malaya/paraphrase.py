@@ -53,7 +53,11 @@ def transformer(model: str = 't2t', quantized: bool = False, **kwargs):
 
     Returns
     -------
-    result: malaya.model.tf.Paraphrase class
+    result: model
+        List of model classes:
+        
+        * if `t2t` in model, will return `malaya.model.tf.Paraphrase`.
+        * if `t5` in model, will return `malaya.model.t5.Paraphrase`.
     """
 
     model = model.lower()

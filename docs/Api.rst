@@ -306,6 +306,9 @@ malaya.model.bigbird
 .. autoclass:: malaya.model.bigbird.MulticlassBigBird()
     :members:
 
+.. autoclass:: malaya.model.bigbird.Translation()
+    :members:
+
 malaya.model.extractive_summarization
 --------------------------------------
 
@@ -327,12 +330,6 @@ malaya.model.ml
     :members:
 
 .. autoclass:: malaya.model.ml.MultilabelBayes()
-    :members:
-
-malaya.model.skip_thought
-----------------------------------
-
-.. autoclass:: malaya.model.skip_thought.DeepSkipThought()
     :members:
 
 malaya.model.t5

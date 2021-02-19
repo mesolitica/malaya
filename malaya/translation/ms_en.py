@@ -1,4 +1,5 @@
 from malaya.model.tf import Translation
+from malaya.model.bigbird import Translation as BigBird_Translation
 from malaya.supervised import transformer as load_transformer
 from malaya.supervised import bigbird as load_bigbird
 from herpetologist import check_type
@@ -31,7 +32,7 @@ _transformer_availability = {
     'small-bigbird': {
         'Size (MB)': 50.4,
         'Quantized Size (MB)': 13.1,
-        'BLEU': 0.714,
+        'BLEU': 0.586,
         'Suggested length': 1024,
     },
 }
@@ -61,6 +62,8 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
         * ``'small'`` - Transformer SMALL parameters.
         * ``'base'`` - Transformer BASE parameters.
         * ``'large'`` - Transformer LARGE parameters.
+        * ``'bigbird'`` - BigBird BASE parameters.
+        * ``'small-bigbird'`` - BigBird SMALL parameters.
     
     quantized : bool, optional (default=False)
         if True, will load 8-bit quantized model. 
@@ -68,7 +71,11 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
 
     Returns
     -------
-    result: malaya.model.tf.Translation class
+    result: model
+        List of model classes:
+        
+        * if `bigbird` in model, return `malaya.model.bigbird.Translation`.
+        * else, return `malaya.model.tf.Translation`.
     """
     model = model.lower()
     if model not in _transformer_availability:
@@ -80,8 +87,8 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
         return load_bigbird.load(
             module = 'translation-ms-en',
             model = model,
-            model_class = Translation,
-            maxlen = _transformer_availability['Suggested length'],
+            model_class = BigBird_Translation,
+            maxlen = _transformer_availability[model]['Suggested length'],
             quantized = quantized,
             **kwargs
         )

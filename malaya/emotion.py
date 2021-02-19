@@ -96,7 +96,11 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
 
     Returns
     -------
-    result : malaya.supervised.softmax.transformer function
+    result: model
+        List of model classes:
+        
+        * if `bert` in model, will return `malaya.model.bert.MulticlassBERT`.
+        * if `xlnet` in model, will return `malaya.model.xlnet.MulticlassXLNET`.
     """
 
     model = model.lower()

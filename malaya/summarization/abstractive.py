@@ -74,9 +74,11 @@ def transformer(model: str = 't2t', quantized: bool = False, **kwargs):
 
     Returns
     -------
-    result: class
-        if `t2t` in model, will return malaya.model.tf.Summarization.
-        if `t5` in model, will return malaya.model.t5.Summarization.
+    result: model
+        List of model classes:
+        
+        * if `t2t` in model, will return `malaya.model.tf.Summarization`.
+        * if `t5` in model, will return `malaya.model.t5.Summarization`.
     """
 
     model = model.lower()

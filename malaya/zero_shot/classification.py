@@ -36,7 +36,11 @@ def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
 
     Returns
     -------
-    result : malaya.model.bert.ZeroshotBERT class
+    result: model
+        List of model classes:
+        
+        * if `bert` in model, will return `malaya.model.bert.ZeroshotBERT`.
+        * if `xlnet` in model, will return `malaya.model.xlnet.ZeroshotXLNET`.
     """
 
     return _transformer(

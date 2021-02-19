@@ -181,7 +181,11 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
 
     Returns
     -------
-    result : Transformer class
+    result: model
+        List of model classes:
+        
+        * if `bert` in model, will return `malaya.model.bert.DependencyBERT`.
+        * if `xlnet` in model, will return `malaya.model.xlnet.DependencyXLNET`.
     """
 
     model = model.lower()

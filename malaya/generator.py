@@ -453,7 +453,10 @@ def transformer(model: str = 't5', quantized: bool = False, **kwargs):
 
     Returns
     -------
-    result: malaya.model.t5.Generator class
+    result: model
+        List of model classes:
+        
+        * if `t5` in model, will return `malaya.model.t5.Generator`.
     """
 
     model = model.lower()

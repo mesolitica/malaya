@@ -171,7 +171,11 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
 
     Returns
     -------
-    result : malaya.supervised.tag.transformer function
+    result: model
+        List of model classes:
+        
+        * if `bert` in model, will return `malaya.model.bert.TaggingBERT`.
+        * if `xlnet` in model, will return `malaya.model.xlnet.TaggingXLNET`.
     """
 
     model = model.lower()

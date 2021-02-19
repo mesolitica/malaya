@@ -4,12 +4,7 @@ from functools import lru_cache
 from math import log10
 from malaya.text.regex import _expressions
 from malaya.model.tf import Segmentation
-from malaya.path import (
-    PATH_SEGMENTATION,
-    S3_PATH_SEGMENTATION,
-    PATH_PREPROCESSING,
-    S3_PATH_PREPROCESSING,
-)
+from malaya.path import PATH_PREPROCESSING, S3_PATH_PREPROCESSING
 from malaya.supervised import transformer as load_transformer
 from malaya.function import check_file
 from herpetologist import check_type
@@ -201,11 +196,10 @@ def transformer(model: str = 'small', quantized: bool = False, **kwargs):
         )
 
     return load_transformer.load(
-        PATH_SEGMENTATION,
-        S3_PATH_SEGMENTATION,
-        model,
-        'yttm',
-        Segmentation,
+        module = 'segmentation',
+        model = model,
+        encoder = 'yttm',
+        model_class = Segmentation,
         quantized = quantized,
         **kwargs,
     )

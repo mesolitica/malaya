@@ -41,7 +41,7 @@ def transformer(class_name, model = 'xlnet', quantized = False, **kwargs):
             )
 
         if model in ['albert', 'tiny-albert']:
-            from albert import tokenization
+            from malaya.transformers.albert import tokenization
 
             tokenizer = tokenization.FullTokenizer(
                 vocab_file = path['vocab'],
@@ -131,7 +131,7 @@ def transformer_ontonotes5(
             )
 
         if model in ['albert', 'tiny-albert']:
-            from albert import tokenization
+            from malaya.transformers.albert import tokenization
 
             tokenizer = tokenization.FullTokenizer(
                 vocab_file = path['vocab'],

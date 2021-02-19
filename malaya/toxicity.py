@@ -1,15 +1,5 @@
-from functools import partial
-from malaya.text.bpe import load_yttm
-from malaya.stem import _classification_textcleaning_stemmer, naive
-from malaya.function import check_file, load_graph, generate_session
-from malaya.text.bpe import (
-    sentencepiece_tokenizer_bert,
-    sentencepiece_tokenizer_xlnet,
-)
+from malaya.supervised import softmax
 from malaya.path import PATH_TOXIC, S3_PATH_TOXIC
-from malaya.model.ml import MultilabelBayes
-from malaya.model.bert import SigmoidBERT
-from malaya.model.xlnet import SigmoidXLNET
 from herpetologist import check_type
 
 label = [
@@ -107,34 +97,8 @@ def multinomial(**kwargs):
     -------
     result : malaya.model.ml.MultilabelBayes class
     """
-    import pickle
-
-    check_file(
-        PATH_TOXIC['multinomial'], S3_PATH_TOXIC['multinomial'], **kwargs
-    )
-
-    try:
-        with open(PATH_TOXIC['multinomial']['model'], 'rb') as fopen:
-            multinomial = pickle.load(fopen)
-        with open(PATH_TOXIC['multinomial']['vector'], 'rb') as fopen:
-            vectorize = pickle.load(fopen)
-    except:
-        raise Exception(
-            f"model corrupted due to some reasons, please run `malaya.clear_cache('toxic/multinomial')` and try again."
-        )
-
-    stemmer = naive()
-    cleaning = partial(_classification_textcleaning_stemmer, stemmer = stemmer)
-
-    bpe, subword_mode = load_yttm(PATH_TOXIC['multinomial']['bpe'])
-
-    return MultilabelBayes(
-        multinomial = multinomial,
-        label = label,
-        vectorize = vectorize,
-        bpe = bpe,
-        subword_mode = subword_mode,
-        cleaning = cleaning,
+    return softmax.multinomial(
+        PATH_TOXIC, S3_PATH_TOXIC, 'toxicity', label, sigmoid = True, **kwargs
     )
 
 
@@ -161,7 +125,11 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
 
     Returns
     -------
-    result : malaya.model.bert.SigmoidBERT class
+    result: model
+        List of model classes:
+        
+        * if `bert` in model, will return `malaya.model.bert.SigmoidBERT`.
+        * if `xlnet` in model, will return `malaya.model.xlnet.SigmoidXLNET`.
     """
 
     model = model.lower()
@@ -169,6 +137,15 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
         raise Exception(
             'model not supported, please check supported models from `malaya.toxicity.available_transformer()`.'
         )
+
+    return softmax.transformer(
+        class_name = 'toxicity',
+        label = label,
+        model = model,
+        sigmoid = True,
+        quantized = quantized,
+        **kwargs
+    )
 
     check_file(
         PATH_TOXIC[model], S3_PATH_TOXIC[model], quantized = quantized, **kwargs

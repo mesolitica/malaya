@@ -100,6 +100,7 @@ Contents:
 
    load-translation-ms-en
    load-translation-en-ms
+   load-long-text-translation
 
 .. toctree::
    :maxdepth: 2

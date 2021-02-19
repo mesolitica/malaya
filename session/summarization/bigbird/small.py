@@ -42,7 +42,7 @@ flags.DEFINE_integer(
 flags.DEFINE_integer('train_batch_size', 32, 'Total batch size for training.')
 
 flags.DEFINE_float(
-    'learning_rate', 5e-5, 'The initial learning rate for Adafactor.'
+    'learning_rate', 0.0001, 'The initial learning rate for Adafactor.'
 )
 
 flags.DEFINE_integer('num_train_steps', 100000, 'Number of training steps.')
@@ -127,8 +127,8 @@ bert_config = {
     'alpha': 0.0,
     'couple_encoder_decoder': False,
     'num_warmup_steps': 10000,
-    'learning_rate': 5e-5,
-    'label_smoothing': 0.0,
+    'learning_rate': 0.0001,
+    'label_smoothing': 0.1,
     'optimizer': 'Adafactor',
     'use_tpu': True,
 }
@@ -348,23 +348,23 @@ def model_fn_builder(
         output_spec = None
         if mode == tf.estimator.ModeKeys.TRAIN:
 
-            # init_lr = learning_rate
-            # global_step = tf.train.get_global_step()
-            # lr = (
-            #     init_lr
-            #     / 0.01
-            #     * tf.rsqrt(tf.maximum(tf.to_float(global_step), 10000))
-            # )
+            init_lr = learning_rate
+            global_step = tf.train.get_global_step()
+            lr = (
+                init_lr
+                / 0.01
+                * tf.rsqrt(tf.maximum(tf.to_float(global_step), 10000))
+            )
 
-            # optimizer = adafactor.AdafactorOptimizer(
-            #     learning_rate = lr,
-            #     decay_rate = adafactor.adafactor_decay_rate_pow(0.8),
-            #     beta1 = 0.0,
-            # )
-            # if use_tpu:
-            #     optimizer = tf.contrib.tpu.CrossShardOptimizer(optimizer)
+            optimizer = adafactor.AdafactorOptimizer(
+                learning_rate = lr,
+                decay_rate = adafactor.adafactor_decay_rate_pow(0.8),
+                beta1 = 0.0,
+            )
+            if use_tpu:
+                optimizer = tf.contrib.tpu.CrossShardOptimizer(optimizer)
 
-            # train_op = optimizer.minimize(total_loss, global_step = global_step)
+            train_op = optimizer.minimize(total_loss, global_step = global_step)
 
             # if not bert_config['use_bias']:
             #     logging.info('Fixing position embedding, i.e. not trainable.')

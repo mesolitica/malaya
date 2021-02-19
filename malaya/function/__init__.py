@@ -101,17 +101,17 @@ def generate_session(graph, **kwargs):
             config.gpu_options.per_process_gpu_memory_fraction = gpu_limit
 
         config.gpu_options.allow_growth = True
-        sess = tf.InteractiveSession(config = config, graph = graph)
+        sess = tf.compat.v1.InteractiveSession(config = config, graph = graph)
 
     else:
-        sess = tf.InteractiveSession(graph = graph)
+        sess = tf.compat.v1.InteractiveSession(graph = graph)
     return sess
 
 
 def load_graph(frozen_graph_filename, **kwargs):
-    with tf.gfile.GFile(frozen_graph_filename, 'rb') as f:
+    with tf.io.gfile.GFile(frozen_graph_filename, 'rb') as f:
         try:
-            graph_def = tf.GraphDef()
+            graph_def = tf.compat.v1.GraphDef()
             graph_def.ParseFromString(f.read())
         except Exception as e:
             path = frozen_graph_filename.split('Malaya/')[1]

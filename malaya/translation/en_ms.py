@@ -69,7 +69,11 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
 
     Returns
     -------
-    result: malaya.model.tf.Translation class
+    result: model
+        List of model classes:
+        
+        * if `bigbird` in model, return `malaya.model.bigbird.Translation`.
+        * else, return `malaya.model.tf.Translation`.
     """
     model = model.lower()
     if model not in _transformer_availability:

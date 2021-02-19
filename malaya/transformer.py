@@ -81,7 +81,13 @@ def load(model: str = 'electra', pool_mode: str = 'last', **kwargs):
 
     Returns
     -------
-    result: malaya.transformers.* class
+    result: model
+        List of model classes:
+        
+        * if `bert` in model, will return `malaya.transformers.bert.Model`.
+        * if `xlnet` in model, will return `malaya.transformers.xlnet.Model`.
+        * if `albert` in model, will return `malaya.transformers.albert.Model`.
+        * if `electra` in model, will return `malaya.transformers.electra.Model`.
     """
 
     model = model.lower()

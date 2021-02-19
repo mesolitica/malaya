@@ -42,7 +42,7 @@ flags.DEFINE_integer(
 flags.DEFINE_integer('train_batch_size', 32, 'Total batch size for training.')
 
 flags.DEFINE_float(
-    'learning_rate', 5e-5, 'The initial learning rate for Adafactor.'
+    'learning_rate', 0.0001, 'The initial learning rate for Adafactor.'
 )
 
 flags.DEFINE_integer('num_train_steps', 100000, 'Number of training steps.')
@@ -127,8 +127,8 @@ bert_config = {
     'alpha': 0.0,
     'couple_encoder_decoder': False,
     'num_warmup_steps': 10000,
-    'learning_rate': 5e-5,
-    'label_smoothing': 0.0,
+    'learning_rate': 0.0001,
+    'label_smoothing': 0.1,
     'optimizer': 'Adafactor',
     'use_tpu': True,
 }
@@ -138,7 +138,6 @@ def padded_cross_entropy_loss(logits, labels, smoothing, vocab_size):
     with tf.name_scope('loss'):
 
         if labels is not None:
-            # Calculate smoothing cross entropy
             with tf.name_scope('smoothing_cross_entropy'):
                 confidence = 1.0 - smoothing
                 vocab_float = tf.cast(vocab_size - 1, tf.float32)
@@ -153,8 +152,6 @@ def padded_cross_entropy_loss(logits, labels, smoothing, vocab_size):
                     logits = logits, labels = soft_targets
                 )
 
-                # Calculate the best (lowest) possible value of cross entropy, and
-                # subtract from the cross entropy loss.
                 normalizing_constant = -(
                     confidence * tf.math.log(confidence)
                     + vocab_float
@@ -164,7 +161,7 @@ def padded_cross_entropy_loss(logits, labels, smoothing, vocab_size):
                 xentropy -= normalizing_constant
 
             weights = tf.cast(tf.not_equal(labels, 0), tf.float32)
-            loss = tf.reduce_sum(xentropy) / tf.reduce_sum(weights)
+            loss = tf.reduce_sum(xentropy * weights) / tf.reduce_sum(weights)
 
         else:
             loss = tf.constant(0.0)
@@ -348,23 +345,23 @@ def model_fn_builder(
         output_spec = None
         if mode == tf.estimator.ModeKeys.TRAIN:
 
-            # init_lr = learning_rate
-            # global_step = tf.train.get_global_step()
-            # lr = (
-            #     init_lr
-            #     / 0.01
-            #     * tf.rsqrt(tf.maximum(tf.to_float(global_step), 10000))
-            # )
+            init_lr = learning_rate
+            global_step = tf.train.get_global_step()
+            lr = (
+                init_lr
+                / 0.01
+                * tf.rsqrt(tf.maximum(tf.to_float(global_step), 10000))
+            )
 
-            # optimizer = adafactor.AdafactorOptimizer(
-            #     learning_rate = lr,
-            #     decay_rate = adafactor.adafactor_decay_rate_pow(0.8),
-            #     beta1 = 0.0,
-            # )
-            # if use_tpu:
-            #     optimizer = tf.contrib.tpu.CrossShardOptimizer(optimizer)
+            optimizer = adafactor.AdafactorOptimizer(
+                learning_rate = lr,
+                decay_rate = adafactor.adafactor_decay_rate_pow(0.8),
+                beta1 = 0.0,
+            )
+            if use_tpu:
+                optimizer = tf.contrib.tpu.CrossShardOptimizer(optimizer)
 
-            # train_op = optimizer.minimize(total_loss, global_step = global_step)
+            train_op = optimizer.minimize(total_loss, global_step = global_step)
 
             # if not bert_config['use_bias']:
             #     logging.info('Fixing position embedding, i.e. not trainable.')
@@ -375,13 +372,13 @@ def model_fn_builder(
 
             # gradients = optimizer.compute_gradients(total_loss, tvars)
 
-            train_op = optimization.create_optimizer(
-                total_loss,
-                learning_rate,
-                num_train_steps,
-                num_warmup_steps,
-                use_tpu,
-            )
+            # train_op = optimization.create_optimizer(
+            #     total_loss,
+            #     learning_rate,
+            #     num_train_steps,
+            #     num_warmup_steps,
+            #     use_tpu,
+            # )
 
             output_spec = tf.contrib.tpu.TPUEstimatorSpec(
                 mode = mode,

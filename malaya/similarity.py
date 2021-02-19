@@ -13,7 +13,7 @@ from malaya.text.bpe import (
 from malaya.preprocessing import Tokenizer
 from malaya.model.bert import SiameseBERT
 from malaya.model.xlnet import SiameseXLNET
-from malaya.path import PATH_SIMILARITY, S3_PATH_SIMILARITY
+from malaya.path import MODEL_VOCAB, MODEL_BPE
 from herpetologist import check_type
 from typing import List, Tuple, Callable
 
@@ -475,31 +475,30 @@ def _transformer(
             'model not supported, please check supported models from `malaya.similarity.available_transformer()`.'
         )
 
-    check_file(
-        PATH_SIMILARITY[model],
-        S3_PATH_SIMILARITY[model],
+    path = check_file(
+        file = model,
+        module = 'similarity',
+        keys = {
+            'model': 'model.pb',
+            'vocab': MODEL_VOCAB[model],
+            'tokenizer': MODEL_BPE[model],
+        },
         quantized = quantized,
-        **kwargs
+        **kwargs,
     )
-    if quantized:
-        model_path = 'quantized'
-    else:
-        model_path = 'model'
-    g = load_graph(PATH_SIMILARITY[model][model_path], **kwargs)
-
-    path = PATH_SIMILARITY
+    g = load_graph(path['model'], **kwargs)
 
     if model in ['albert', 'bert', 'tiny-albert', 'tiny-bert']:
         if model in ['bert', 'tiny-bert']:
             tokenizer = sentencepiece_tokenizer_bert(
-                path[model]['tokenizer'], path[model]['vocab']
+                path['tokenizer'], path['vocab']
             )
 
         if model in ['albert', 'tiny-albert']:
             tokenizer = tokenization.FullTokenizer(
-                vocab_file = path[model]['vocab'],
+                vocab_file = path['vocab'],
                 do_lower_case = False,
-                spm_model_file = path[model]['tokenizer'],
+                spm_model_file = path['tokenizer'],
             )
 
         selected_class = bert_class
@@ -508,7 +507,7 @@ def _transformer(
 
     if model in ['xlnet', 'alxlnet']:
 
-        tokenizer = sentencepiece_tokenizer_xlnet(path[model]['tokenizer'])
+        tokenizer = sentencepiece_tokenizer_xlnet(path['tokenizer'])
         selected_class = xlnet_class
         if siamese:
             selected_node = 'import/model_1/sequnece_summary/summary/BiasAdd:0'
@@ -551,7 +550,11 @@ def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
 
     Returns
     -------
-    result : malaya.model.bert.SiameseBERT class
+    result: model
+        List of model classes:
+        
+        * if `bert` in model, will return `malaya.model.bert.SiameseBERT`.
+        * if `xlnet` in model, will return `malaya.model.xlnet.SiameseXLNET`.
     """
 
     return _transformer(
@@ -560,5 +563,5 @@ def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
         xlnet_class = SiameseXLNET,
         quantized = quantized,
         siamese = True,
-        **kwargs
+        **kwargs,
     )

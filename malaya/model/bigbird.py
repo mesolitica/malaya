@@ -213,11 +213,9 @@ class Translation(Seq2Seq):
         batch_x = pad_sequences(
             encoded, padding = 'post', maxlen = self._maxlen
         )
-        p = self._sess.run(
-            self._greedy, feed_dict = {self._X: batch_x}
-        ).tolist()
+        p = self._sess.run(self._greedy, feed_dict = {self._X: batch_x})
         result = []
-        for r in result:
+        for r in p:
             result.append(
                 self._encoder.decode([i for i in r.tolist() if i > 0])
             )

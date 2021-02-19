@@ -1,6 +1,6 @@
 import os
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '2,3'
+os.environ['CUDA_VISIBLE_DEVICES'] = '0,1'
 
 import tensorflow as tf
 import malaya.train as train
@@ -39,7 +39,7 @@ bert_config = {
 
 learning_rate_constant = 2.0
 learning_rate_warmup_steps = 100000.0
-total_steps = 300000
+total_steps = 500000
 
 
 def learning_rate_schedule(step_num):
@@ -71,14 +71,15 @@ class Encoder:
 
 encoder = Encoder(sp)
 
+# !wget https://f000.backblazeb2.com/file/malay-dataset/train-en-ms.tar.gz
 # !wget https://f000.backblazeb2.com/file/malay-dataset/train-ms-en-long-text.tar.gz
-# !wget https://f000.backblazeb2.com/file/malay-dataset/train-ms-en.tar.gz
 # !tar -zxf train-ms-en-long-text.tar.gz
-# !tar -zxf train-ms-en.tar.gz
+# !mkdir english
+# !tar -zxf train-en-ms.tar.gz -C english
 
 files = [
-    ('train-long-text/left.txt', 'train-long-text/right.txt'),
-    ('train/left.txt', 'train/right.txt'),
+    ('train-long-text/right.txt', 'train-long-text/left.txt'),
+    ('english/train-en/left.txt', 'english/train-en/right.txt'),
 ]
 
 lengths = {}
@@ -252,7 +253,7 @@ def model_fn(features, labels, mode, params):
 train_hooks = [tf.train.LoggingTensorHook(['total_loss'], every_n_iter = 100)]
 train_dataset = get_dataset()
 
-save_directory = 'bigbird-base-ms-en'
+save_directory = 'bigbird-small-en-ms'
 
 train.run_training(
     train_fn = train_dataset,
