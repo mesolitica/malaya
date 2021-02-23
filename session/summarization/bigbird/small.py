@@ -164,7 +164,7 @@ def padded_cross_entropy_loss(logits, labels, smoothing, vocab_size):
                 xentropy -= normalizing_constant
 
             weights = tf.cast(tf.not_equal(labels, 0), tf.float32)
-            loss = tf.reduce_sum(xentropy) / tf.reduce_sum(weights)
+            loss = tf.reduce_sum(xentropy * weights) / tf.reduce_sum(weights)
 
         else:
             loss = tf.constant(0.0)

@@ -35,6 +35,13 @@ Notations:
 import tensorflow as tf
 
 
+def shape_list(x):
+    """Deal with dynamic shape in tensorflow cleanly."""
+    static = x.shape.as_list()
+    dynamic = tf.shape(x)
+    return [dynamic[i] if s is None else s for i, s in enumerate(static)]
+
+
 def length_normalization(start, alpha, min_len, max_len, out_of_range_penalty):
     r"""Create length normalization function.
 
@@ -102,6 +109,7 @@ def beam_search(
     Tuple of (beams_BxMxT, scores_BxM). Beam searched sequences and scores.
   """
     B, T = init_seq_BxT.shape
+    B = tf.shape(init_seq_BxT)[0]
     M, V = beam_size, vocab_size
     dtype = tf.float32
     int_dtype = init_seq_BxT.dtype
@@ -195,6 +203,8 @@ def beam_search(
     )
     init_finished_scores_BxM = tf.zeros([B, M], dtype = dtype) + dtype.min
 
+    tf.nest.map_structure(_flatten_beam_dim, init_alive_seq_BxMxT)
+
     # run loop.
     (
         _,
@@ -237,7 +247,7 @@ def beam_search(
 
 
 def _update_i(tensor_BxNxT, updates_BxN, i):
-    B, N, T = tensor_BxNxT.shape
+    B, N, T = shape_list(tensor_BxNxT)
     tensor_BNxT = tf.reshape(tensor_BxNxT, [-1, T])
     updates_BN = tf.reshape(updates_BxN, [-1])
     batch_BN = tf.range(B * N, dtype = tf.int32)
@@ -256,13 +266,13 @@ def _expand_to_beam_size(tensor_BxU, beam_size):
 
 
 def _flatten_beam_dim(tensor_BxMxU):
-    shape = tensor_BxMxU.shape.as_list()
+    shape = shape_list(tensor_BxMxU)
     tensor_BMxU = tf.reshape(tensor_BxMxU, [shape[0] * shape[1]] + shape[2:])
     return tensor_BMxU
 
 
 def _unflatten_beam_dim(tensor_BMxU, M):
-    shape = tensor_BMxU.shape.as_list()
+    shape = shape_list(tensor_BMxU)
     tensor_BxMxU = tf.reshape(tensor_BMxU, [shape[0] // M, M] + shape[1:])
     return tensor_BxMxU
 

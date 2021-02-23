@@ -92,6 +92,7 @@ Contents:
    :caption: Summarization Module
 
    load-abstractive
+   long-text-abstractive-summarization
    load-extractive
 
 .. toctree::

@@ -26,7 +26,7 @@ _transformer_availability = {
     'bigbird': {
         'Size (MB)': 246,
         'Quantized Size (MB)': 63.7,
-        'BLEU': 0.714,
+        'BLEU': 0.678,
         'Suggested length': 1024,
     },
     'small-bigbird': {

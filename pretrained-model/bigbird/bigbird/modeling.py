@@ -169,7 +169,7 @@ class TransformerModel(tf.compat.v1.layers.Layer):
     Args:
       params: `BigBirdConfig` dictionary.
     """
-        self.params = copy.deepcopy(params)
+        self.params = params
         self.scope = params['scope']
 
         with tf.compat.v1.variable_scope(
@@ -430,6 +430,8 @@ class TransformerModel(tf.compat.v1.layers.Layer):
             batch_size,
             self.params['max_decoder_length'],
             vocab_size = self.params['vocab_size'],
+            top_p = self.params['top_p'],
+            temperature = self.params['temperature'],
             beam_size = self.params['beam_size'],
             beam_start = 5,
             beam_alpha = self.params['alpha'],

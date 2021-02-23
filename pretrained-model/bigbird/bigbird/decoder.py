@@ -575,6 +575,37 @@ def inplace_update_i(inp_tensor, updates, i):
     return tf.tensor_scatter_nd_update(inp_tensor, indices, updates)
 
 
+def nucleus_sampling(logits_BxN, top_p):
+    sort_indices_BxN = tf.argsort(
+        logits_BxN, axis = -1, direction = 'DESCENDING'
+    )
+    probs_BxN = tf.gather(
+        tf.nn.softmax(logits_BxN), sort_indices_BxN, batch_dims = 1
+    )
+    cumprobs_BxN = tf.cumsum(probs_BxN, axis = -1, exclusive = True)
+    # The top 1 candidate always will not be masked.
+    # This way ensures at least 1 indices will be selected.
+    sort_mask_BxN = tf.cast(tf.greater(cumprobs_BxN, top_p), logits_BxN.dtype)
+    batch_indices_BxN = tf.tile(
+        tf.expand_dims(tf.range(tf.shape(logits_BxN)[0]), axis = -1),
+        [1, tf.shape(logits_BxN)[1]],
+    )
+    top_p_mask_BxN = tf.scatter_nd(
+        tf.stack([batch_indices_BxN, sort_indices_BxN], axis = -1),
+        sort_mask_BxN,
+        tf.shape(logits_BxN),
+    )
+    logits_BxN -= top_p_mask_BxN * logits_BxN.dtype.max
+    return logits_BxN
+
+
+def mul_temperature(logits_BxN, temperature):
+    logits_shape = tf.shape(logits_BxN)
+    uniform_noise_BxN = tf.random_uniform(logits_shape)
+    logits_BxN += -tf.log(-tf.log(uniform_noise_BxN)) * temperature
+    return logits_BxN
+
+
 # pylint: disable=invalid-name
 def left2right_decode(
     symbols_to_logits_fn,
@@ -583,6 +614,8 @@ def left2right_decode(
     batch_size,
     max_decode_len,
     vocab_size,
+    top_p,
+    temperature,
     beam_size = 1,
     beam_start = 5,
     beam_alpha = 0.6,
@@ -624,6 +657,17 @@ def left2right_decode(
 
         def decode_loop(i, decodes_BxT, cache_BxU_dict):
             logits_BxV = symbols_to_logits_fn(decodes_BxT, cache_BxU_dict, i)
+            logits_BxV = tf.cond(
+                top_p > 0,
+                lambda: nucleus_sampling(logits_BxV, top_p),
+                lambda: logits_BxV,
+            )
+            logits_BxV = tf.cond(
+                temperature > 0,
+                lambda: mul_temperature(logits_BxV, temperature),
+                lambda: logits_BxV,
+            )
+
             decodes_BxT = inplace_update_i(
                 decodes_BxT,
                 tf.argmax(logits_BxV, -1, output_type = tf.int32),
