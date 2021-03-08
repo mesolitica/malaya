@@ -489,7 +489,7 @@ def sentencepiece_tokenizer_bert(path_tokenizer, path_vocab):
     sp_model = spm.SentencePieceProcessor()
     sp_model.Load(path_tokenizer)
 
-    with open(path_vocab) as fopen:
+    with open(path_vocab, encoding='UTF-8') as fopen:
         v = fopen.read().split('\n')[:-1]
     v = [i.split('\t') for i in v]
     v = {i[0]: i[1] for i in v}
