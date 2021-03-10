@@ -22,6 +22,9 @@ ENTITY_SETTING = 'setting/entities.json'
 ENTITY_ONTONOTES5_SETTING = 'setting/entities-ontonotes5.json'
 POS_SETTING = 'setting/pos.json'
 
+LANGUAGE_DETECTION_BOW = 'bpe/bow-language-detection.pkl'
+LANGUAGE_DETECTION_VOCAB = 'bpe/language-detection.yttm'
+
 CONSTITUENCY_SETTING = 'setting/constituency.json'
 
 MODEL_VOCAB = {
@@ -102,16 +105,6 @@ PATH_LANG_DETECTION = {
         'model': home + '/language-detection/fasttext-quantized/fasstext.tfz',
         'version': 'v34',
     },
-    'deep': {
-        'model': home
-        + '/language-detection/deep/model.ckpt.data-00000-of-00001',
-        'index': home + '/language-detection/deep/model.ckpt.index',
-        'meta': home + '/language-detection/deep/model.ckpt.meta',
-        'vector': home
-        + '/language-detection/deep/vectorizer-language-detection.pkl',
-        'bpe': home + '/language-detection/deep/bpe.model',
-        'version': 'v34',
-    },
 }
 
 S3_PATH_LANG_DETECTION = {
@@ -120,13 +113,6 @@ S3_PATH_LANG_DETECTION = {
     },
     'fasttext-quantized': {
         'model': 'v34/language-detection/fasttext-malaya.ftz'
-    },
-    'deep': {
-        'model': 'v34/language-detection/model.ckpt.data-00000-of-00001',
-        'index': 'v34/language-detection/model.ckpt.index',
-        'meta': 'v34/language-detection/model.ckpt.meta',
-        'vector': 'v34/language-detection/bow-language-detection.pkl',
-        'bpe': 'v34/language-detection/language-detection.model',
     },
 }
 

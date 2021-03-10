@@ -1,12 +1,10 @@
 import tensorflow as tf
 import numpy as np
 import re
-from unidecode import unidecode
 from malaya.text.function import (
     language_detection_textcleaning,
     split_into_sentences,
     transformer_textcleaning,
-    translation_textcleaning,
     pad_sentence_batch,
     upperfirst,
 )
@@ -26,7 +24,8 @@ from malaya.text.bpe import (
 )
 from malaya.text import chart_decoder
 from malaya.text.trees import tree_from_str
-from malaya.model.abstract import Seq2Seq, Classification
+from malaya.function.activation import softmax
+from malaya.model.abstract import Seq2Seq, Classification, T2T, Abstract
 from herpetologist import check_type
 from typing import List
 
@@ -37,41 +36,24 @@ def cleaning(string):
 
 def _convert_sparse_matrix_to_sparse_tensor(X, got_limit = False, limit = 5):
     coo = X.tocoo()
-    indices = np.mat([coo.row, coo.col]).transpose()
+    indices = np.array([coo.row, coo.col]).transpose()
     if got_limit:
         coo.data[coo.data > limit] = limit
-    return (
-        tf.SparseTensorValue(indices, coo.col, coo.shape),
-        tf.SparseTensorValue(indices, coo.data, coo.shape),
-    )
 
-
-class _LANG_MODEL:
-    def __init__(self, dimension = 32, output = 6):
-        self.X = tf.sparse_placeholder(tf.int32)
-        self.W = tf.sparse_placeholder(tf.int32)
-        self.Y = tf.placeholder(tf.int32, [None])
-        embeddings = tf.Variable(tf.truncated_normal([400_000, dimension]))
-        embed = tf.nn.embedding_lookup_sparse(
-            embeddings, self.X, self.W, combiner = 'mean'
-        )
-        self.logits = tf.layers.dense(embed, output)
+    return coo.shape, coo.col, indices, coo.shape, coo.data, indices
 
 
 class DeepLang(Classification):
-    def __init__(self, path, vectorizer, label, bpe, type):
-        self._graph = tf.Graph()
-        with self._graph.as_default():
-            self._model = _LANG_MODEL()
-            self._sess = tf.InteractiveSession()
-            self._sess.run(tf.global_variables_initializer())
-            saver = tf.train.Saver(tf.trainable_variables())
-            saver.restore(self._sess, path + '/model.ckpt')
+    def __init__(
+        self, input_nodes, output_nodes, sess, vectorizer, bpe, type, label
+    ):
+        self._input_nodes = input_nodes
+        self._output_nodes = output_nodes
+        self._sess = sess
         self._vectorizer = vectorizer
-        self._label = label
-        self._softmax = tf.nn.softmax(self._model.logits)
         self._bpe = bpe
         self._type = type
+        self._label = label
 
     def _classify(self, strings):
         strings = [language_detection_textcleaning(i) for i in strings]
@@ -81,10 +63,19 @@ class DeepLang(Classification):
         ]
         transformed = self._vectorizer.transform(subs)
         batch_x = _convert_sparse_matrix_to_sparse_tensor(transformed)
-        probs = self._sess.run(
-            self._softmax,
-            feed_dict = {self._model.X: batch_x[0], self._model.W: batch_x[1]},
+        r = self._execute(
+            inputs = batch_x,
+            input_labels = [
+                'X_Placeholder/shape',
+                'X_Placeholder/values',
+                'X_Placeholder/indices',
+                'W_Placeholder/shape',
+                'W_Placeholder/values',
+                'W_Placeholder/indices',
+            ],
+            output_labels = ['logits'],
         )
+        probs = softmax(r['logits'], axis = -1)
         return probs
 
     @check_type
@@ -130,81 +121,13 @@ class DeepLang(Classification):
         return dicts
 
 
-class Translation(Seq2Seq):
-    def __init__(self, X, greedy, beam, sess, encoder):
-
-        self._X = X
-        self._greedy = greedy
-        self._beam = beam
-        self._sess = sess
-        self._encoder = encoder
-
-    def _translate(self, strings, beam_search = True):
-        encoded = [
-            self._encoder.encode(translation_textcleaning(string)) + [1]
-            for string in strings
-        ]
-        if beam_search:
-            output = self._beam
-        else:
-            output = self._greedy
-        batch_x = pad_sentence_batch(encoded, 0)[0]
-        p = self._sess.run(output, feed_dict = {self._X: batch_x}).tolist()
-        result = []
-        for row in p:
-            result.append(
-                self._encoder.decode([i for i in row if i not in [0, 1]])
-            )
-        return result
-
-    def greedy_decoder(self, strings: List[str]):
-        """
-        translate list of strings.
-
-        Parameters
-        ----------
-        strings : List[str]
-
-        Returns
-        -------
-        result: List[str]
-        """
-        return self._translate(strings, beam_search = False)
-
-    def beam_decoder(self, strings: List[str]):
-        """
-        translate list of strings using beam decoder, beam width size 3, alpha 0.5 .
-
-        Parameters
-        ----------
-        strings : List[str]
-
-        Returns
-        -------
-        result: List[str]
-        """
-        return self._translate(strings, beam_search = True)
-
-
-class Constituency:
+class Constituency(Abstract):
     def __init__(
-        self,
-        input_ids,
-        word_end_mask,
-        charts,
-        tags,
-        vectorizer,
-        sess,
-        tokenizer,
-        dictionary,
-        mode,
+        self, input_nodes, output_nodes, sess, tokenizer, dictionary, mode
     ):
 
-        self._input_ids = input_ids
-        self._word_end_mask = word_end_mask
-        self._charts = charts
-        self._tags = tags
-        self._vectorizer = vectorizer
+        self._input_nodes = input_nodes
+        self._output_nodes = output_nodes
         self._sess = sess
         self._tokenizer = tokenizer
         self._LABEL_VOCAB = dictionary['label']
@@ -223,10 +146,14 @@ class Constituency:
                 'mode not supported, only supported `bert` or `xlnet`'
             )
         i, m, tokens = f(self._tokenizer, sentences)
-        charts_val, tags_val = self._sess.run(
-            (self._charts, self._tags),
-            {self._input_ids: i, self._word_end_mask: m},
+
+        r = self._execute(
+            inputs = [i, m],
+            input_labels = ['input_ids', 'word_end_mask'],
+            output_labels = ['charts', 'tags'],
         )
+        charts_val, tags_val = r['charts'], r['tags']
+
         for snum, sentence in enumerate(sentences):
             chart_size = len(sentence) + 1
             chart = charts_val[snum, :chart_size, :chart_size, :]
@@ -256,9 +183,12 @@ class Constituency:
                 'mode not supported, only supported `bert` or `xlnet`'
             )
         i, m, tokens = f(self._tokenizer, sentences)
-        v = self._sess.run(
-            self._vectorizer, {self._input_ids: i, self._word_end_mask: m}
+        r = self._execute(
+            inputs = [i, m],
+            input_labels = ['input_ids', 'word_end_mask'],
+            output_labels = ['vectorizer'],
         )
+        v = r['vectorizer']
         if self._mode == 'bert':
             v = v[0]
         elif self._mode == 'xlnet':
@@ -377,20 +307,12 @@ class Constituency:
 
 
 class Summarization(Seq2Seq):
-    def __init__(self, X, top_p, greedy, beam, nucleus, sess, tokenizer):
+    def __init__(self, input_nodes, output_nodes, sess, tokenizer):
 
-        self._X = X
-        self._top_p = top_p
-        self._greedy = greedy
-        self._beam = beam
-        self._nucleus = nucleus
+        self._input_nodes = input_nodes
+        self._output_nodes = output_nodes
         self._sess = sess
         self._tokenizer = tokenizer
-        self._mapping = {
-            'greedy': self._greedy,
-            'beam': self._beam,
-            'nucleus': self._nucleus,
-        }
 
     def _summarize(
         self,
@@ -409,8 +331,7 @@ class Summarization(Seq2Seq):
             raise ValueError('top_p must be bigger than 0 and less than 1')
 
         decoder = decoder.lower()
-        output = self._mapping.get(decoder)
-        if not decoder:
+        if decoder not in ['greedy', 'beam', 'nucleus']:
             raise ValueError('mode only supports [`greedy`, `beam`, `nucleus`]')
 
         strings_ = [f'{mode}: {cleaning(string)}' for string in strings]
@@ -418,9 +339,12 @@ class Summarization(Seq2Seq):
         batch_x = [self._tokenizer.encode(string) + [1] for string in strings_]
         batch_x = padding_sequence(batch_x)
 
-        p = self._sess.run(
-            output, feed_dict = {self._X: batch_x, self._top_p: top_p}
-        ).tolist()
+        r = self._execute(
+            inputs = [batch_x, top_p],
+            input_labels = ['Placeholder', 'Placeholder_2'],
+            output_labels = [decoder],
+        )
+        p = r[decoder].tolist()
 
         results = []
         for no, r in enumerate(p):
@@ -541,20 +465,12 @@ class Summarization(Seq2Seq):
 
 
 class Paraphrase(Seq2Seq):
-    def __init__(self, X, top_p, greedy, beam, nucleus, sess, tokenizer):
+    def __init__(self, input_nodes, output_nodes, sess, tokenizer):
 
-        self._X = X
-        self._top_p = top_p
-        self._greedy = greedy
-        self._beam = beam
-        self._nucleus = nucleus
+        self._input_nodes = input_nodes
+        self._output_nodes = output_nodes
         self._sess = sess
         self._tokenizer = tokenizer
-        self._mapping = {
-            'greedy': self._greedy,
-            'beam': self._beam,
-            'nucleus': self._nucleus,
-        }
 
     def _paraphrase(self, strings, decoder = 'greedy', top_p = 0.7):
 
@@ -562,8 +478,7 @@ class Paraphrase(Seq2Seq):
             raise ValueError('top_p must be bigger than 0 and less than 1')
 
         decoder = decoder.lower()
-        output = self._mapping.get(decoder)
-        if not decoder:
+        if decoder not in ['greedy', 'beam', 'nucleus']:
             raise ValueError('mode only supports [`greedy`, `beam`, `nucleus`]')
 
         strings = [f'parafrasa: {cleaning(string)}' for string in strings]
@@ -571,9 +486,12 @@ class Paraphrase(Seq2Seq):
         batch_x = [self._tokenizer.encode(string) + [1] for string in strings]
         batch_x = padding_sequence(batch_x)
 
-        p = self._sess.run(
-            output, feed_dict = {self._X: batch_x, self._top_p: top_p}
-        ).tolist()
+        r = self._execute(
+            inputs = [batch_x, top_p],
+            input_labels = ['Placeholder', 'Placeholder_2'],
+            output_labels = [decoder],
+        )
+        p = r[decoder].tolist()
 
         results = [self._tokenizer.decode(r) for r in p]
         return results
@@ -629,40 +547,53 @@ class Paraphrase(Seq2Seq):
         )
 
 
-class T2T:
-    def __init__(self, X, greedy, beam, sess, encoder):
+class Translation(T2T, Seq2Seq):
+    def __init__(self, input_nodes, output_nodes, sess, encoder):
 
-        self._X = X
-        self._greedy = greedy
-        self._beam = beam
-        self._sess = sess
-        self._encoder = encoder
+        T2T.__init__(
+            self,
+            input_nodes = input_nodes,
+            output_nodes = output_nodes,
+            sess = sess,
+            encoder = encoder,
+            translation_model = True,
+        )
 
-    def _predict(self, strings, beam_search = True):
-        encoded = self._encoder.encode(strings)
-        if beam_search:
-            output = self._beam
-        else:
-            output = self._greedy
-        batch_x = pad_sentence_batch(encoded, 0)[0]
-        p = self._sess.run(output, feed_dict = {self._X: batch_x}).tolist()
-        result = self._encoder.decode(p)
-        return result
+    def greedy_decoder(self, strings: List[str]):
+        """
+        translate list of strings.
 
-    def _greedy_decoder(self, strings: List[str]):
-        return self._predict(strings, beam_search = False)
+        Parameters
+        ----------
+        strings : List[str]
 
-    def _beam_decoder(self, strings: List[str]):
-        return self._predict(strings, beam_search = True)
+        Returns
+        -------
+        result: List[str]
+        """
+        return self._greedy_decoder(strings)
+
+    def beam_decoder(self, strings: List[str]):
+        """
+        translate list of strings using beam decoder, beam width size 3, alpha 0.5 .
+
+        Parameters
+        ----------
+        strings : List[str]
+
+        Returns
+        -------
+        result: List[str]
+        """
+        return self._beam_decoder(strings)
 
 
 class TrueCase(T2T, Seq2Seq):
-    def __init__(self, X, greedy, beam, sess, encoder):
+    def __init__(self, input_nodes, output_nodes, sess, encoder):
         T2T.__init__(
             self,
-            X = X,
-            greedy = greedy,
-            beam = beam,
+            input_nodes = input_nodes,
+            output_nodes = output_nodes,
             sess = sess,
             encoder = encoder,
         )
@@ -701,12 +632,11 @@ class TrueCase(T2T, Seq2Seq):
 
 
 class Segmentation(T2T, Seq2Seq):
-    def __init__(self, X, greedy, beam, sess, encoder):
+    def __init__(self, input_nodes, output_nodes, sess, encoder):
         T2T.__init__(
             self,
-            X = X,
-            greedy = greedy,
-            beam = beam,
+            input_nodes = input_nodes,
+            output_nodes = output_nodes,
             sess = sess,
             encoder = encoder,
         )
@@ -745,10 +675,9 @@ class Segmentation(T2T, Seq2Seq):
 
 
 class Tatabahasa(Seq2Seq):
-    def __init__(self, X, greedy, tag_greedy, sess, tokenizer):
-        self._X = X
-        self._greedy = greedy
-        self._tag_greedy = tag_greedy
+    def __init__(self, input_nodes, output_nodes, sess, tokenizer):
+        self._input_nodes = input_nodes
+        self._output_nodes = output_nodes
         self._sess = sess
         self._tokenizer = tokenizer
 
@@ -764,9 +693,12 @@ class Tatabahasa(Seq2Seq):
         ]
         batch_x = [self._tokenizer.encode(string) + [1] for string in strings]
         batch_x = padding_sequence(batch_x)
-        p, tag = self._sess.run(
-            [self._greedy, self._tag_greedy], feed_dict = {self._X: batch_x}
+        r = self._execute(
+            inputs = [batch_x],
+            input_labels = ['x_placeholder'],
+            output_labels = ['greedy', 'tag_greedy'],
         )
+        p, tag = r['greedy'], r['tag_greedy']
         results = []
         nonzero = (p != 0).sum(axis = -1)
         for i in range(len(p)):

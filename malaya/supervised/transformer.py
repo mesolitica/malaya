@@ -1,4 +1,9 @@
-from malaya.function import check_file, load_graph, generate_session
+from malaya.function import (
+    check_file,
+    load_graph,
+    generate_session,
+    nodes_session,
+)
 from malaya.text.bpe import SentencePieceEncoder, YTTMEncoder, load_yttm
 from malaya.text.t2t import text_encoder
 from malaya.path import T2T_BPE_MODEL, LM_VOCAB
@@ -22,12 +27,13 @@ def load_lm(module, model, model_class, quantized = False, **kwargs):
 
     tokenizer = SentencePieceEncoder(path['vocab'])
 
+    inputs = ['Placeholder', 'Placeholder_2']
+    outputs = ['greedy', 'beam', 'nucleus']
+    input_nodes, output_nodes = nodes_session(g, inputs, outputs)
+
     return model_class(
-        X = X,
-        top_p = top_p,
-        greedy = greedy,
-        beam = beam,
-        nucleus = nucleus,
+        input_nodes = input_nodes,
+        output_nodes = output_nodes,
         sess = generate_session(graph = g, **kwargs),
         tokenizer = tokenizer,
     )
@@ -51,10 +57,13 @@ def load(module, model, encoder, model_class, quantized = False, **kwargs):
         bpe, subword_mode = load_yttm(path['vocab'], True)
         encoder = YTTMEncoder(bpe, subword_mode)
 
+    inputs = ['Placeholder']
+    outputs = ['greedy', 'beam']
+    input_nodes, output_nodes = nodes_session(g, inputs, outputs)
+
     return model_class(
-        X = g.get_tensor_by_name('import/Placeholder:0'),
-        greedy = g.get_tensor_by_name('import/greedy:0'),
-        beam = g.get_tensor_by_name('import/beam:0'),
+        input_nodes = input_nodes,
+        output_nodes = output_nodes,
         sess = generate_session(graph = g, **kwargs),
         encoder = encoder,
     )
@@ -72,10 +81,13 @@ def load_tatabahasa(module, model, model_class, quantized = False, **kwargs):
     g = load_graph(path['model'], **kwargs)
     tokenizer = SentencePieceEncoder(path['vocab'])
 
+    inputs = ['x_placeholder']
+    outputs = ['greedy', 'tag_greedy']
+    input_nodes, output_nodes = nodes_session(g, inputs, outputs)
+
     return model_class(
-        X = g.get_tensor_by_name('import/x_placeholder:0'),
-        greedy = g.get_tensor_by_name('import/greedy:0'),
-        tag_greedy = g.get_tensor_by_name('import/tag_greedy:0'),
+        input_nodes = input_nodes,
+        output_nodes = output_nodes,
         sess = generate_session(graph = g, **kwargs),
         tokenizer = tokenizer,
     )

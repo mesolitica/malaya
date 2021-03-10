@@ -13,6 +13,7 @@ from malaya.text.bpe import (
     padding_sequence,
     merge_sentencepiece_tokens,
 )
+from malaya.function import get_device, generate_session
 from malaya.transformers.sampling import top_k_logits, top_p_logits
 from collections import defaultdict
 import numpy as np
@@ -55,82 +56,93 @@ def _extract_attention_weights_import(num_layers, tf_graph):
 
 
 class Model:
-    def __init__(self, bert_config, tokenizer):
+    def __init__(self, bert_config, tokenizer, **kwargs):
+
+        device = get_device(**kwargs)
         _graph = tf.Graph()
+
         with _graph.as_default():
-            self.X = tf.placeholder(tf.int32, [None, None])
-            self.segment_ids = tf.placeholder(tf.int32, [None, None])
-            self.top_p = tf.placeholder(tf.float32, None)
-            self.top_k = tf.placeholder(tf.int32, None)
-            self.k = tf.placeholder(tf.int32, None)
-            self.temperature = tf.placeholder(tf.float32, None)
-            self.indices = tf.placeholder(tf.int32, [None, None])
-            self.MASK = tf.placeholder(tf.int32, [None, None])
-            self._tokenizer = tokenizer
+            with tf.device(device):
+                self.X = tf.compat.v1.placeholder(tf.int32, [None, None])
+                self.segment_ids = tf.compat.v1.placeholder(
+                    tf.int32, [None, None]
+                )
+                self.top_p = tf.compat.v1.placeholder(tf.float32, None)
+                self.top_k = tf.compat.v1.placeholder(tf.int32, None)
+                self.k = tf.compat.v1.placeholder(tf.int32, None)
+                self.temperature = tf.compat.v1.placeholder(tf.float32, None)
+                self.indices = tf.compat.v1.placeholder(tf.int32, [None, None])
+                self.MASK = tf.compat.v1.placeholder(tf.int32, [None, None])
+                self._tokenizer = tokenizer
 
-            self.model = modeling.AlbertModel(
-                config = bert_config,
-                is_training = False,
-                input_ids = self.X,
-                input_mask = self.MASK,
-                use_one_hot_embeddings = False,
-            )
-            self.logits = self.model.get_pooled_output()
-            input_tensor = self.model.get_sequence_output()
-            output_weights = self.model.get_embedding_table()
+                self.model = modeling.AlbertModel(
+                    config = bert_config,
+                    is_training = False,
+                    input_ids = self.X,
+                    input_mask = self.MASK,
+                    use_one_hot_embeddings = False,
+                )
+                self.logits = self.model.get_pooled_output()
+                input_tensor = self.model.get_sequence_output()
+                output_weights = self.model.get_embedding_table()
 
-            with tf.variable_scope('cls/predictions'):
-                with tf.variable_scope('transform'):
-                    input_tensor = tf.layers.dense(
-                        input_tensor,
-                        units = bert_config.embedding_size,
-                        activation = modeling.get_activation(
-                            bert_config.hidden_act
-                        ),
-                        kernel_initializer = modeling.create_initializer(
-                            bert_config.initializer_range
-                        ),
+                with tf.compat.v1.variable_scope('cls/predictions'):
+                    with tf.compat.v1.variable_scope('transform'):
+                        input_tensor = tf.compat.v1.layers.dense(
+                            input_tensor,
+                            units = bert_config.embedding_size,
+                            activation = modeling.get_activation(
+                                bert_config.hidden_act
+                            ),
+                            kernel_initializer = modeling.create_initializer(
+                                bert_config.initializer_range
+                            ),
+                        )
+                        input_tensor = modeling.layer_norm(input_tensor)
+
+                    output_bias = tf.compat.v1.get_variable(
+                        'output_bias',
+                        shape = [bert_config.vocab_size],
+                        initializer = tf.zeros_initializer(),
                     )
-                    input_tensor = modeling.layer_norm(input_tensor)
+                    logits = tf.matmul(
+                        input_tensor, output_weights, transpose_b = True
+                    )
+                    self._logits = tf.nn.bias_add(logits, output_bias)
+                    self._log_softmax = tf.nn.log_softmax(
+                        self._logits, axis = -1
+                    )
 
-                output_bias = tf.get_variable(
-                    'output_bias',
-                    shape = [bert_config.vocab_size],
-                    initializer = tf.zeros_initializer(),
+                logits = tf.gather_nd(self._logits, self.indices)
+                logits = logits / self.temperature
+
+                def necleus():
+                    return top_p_logits(logits, self.top_p)
+
+                def select_k():
+                    return top_k_logits(logits, self.top_k)
+
+                logits = tf.cond(self.top_p > 0, necleus, select_k)
+                self.samples = tf.compat.v1.multinomial(
+                    logits, num_samples = self.k, output_dtype = tf.int32
                 )
-                logits = tf.matmul(
-                    input_tensor, output_weights, transpose_b = True
+                self._sess = generate_session(_graph, **kwargs)
+                self._sess.run(tf.compat.v1.global_variables_initializer())
+                var_lists = tf.compat.v1.get_collection(
+                    tf.compat.v1.GraphKeys.TRAINABLE_VARIABLES, scope = 'bert'
                 )
-                self._logits = tf.nn.bias_add(logits, output_bias)
-                self._log_softmax = tf.nn.log_softmax(self._logits, axis = -1)
-
-            logits = tf.gather_nd(self._logits, self.indices)
-            logits = logits / self.temperature
-
-            def necleus():
-                return top_p_logits(logits, self.top_p)
-
-            def select_k():
-                return top_k_logits(logits, self.top_k)
-
-            logits = tf.cond(self.top_p > 0, necleus, select_k)
-            self.samples = tf.multinomial(
-                logits, num_samples = self.k, output_dtype = tf.int32
-            )
-
-            self._sess = tf.InteractiveSession()
-            self._sess.run(tf.global_variables_initializer())
-            var_lists = tf.get_collection(
-                tf.GraphKeys.TRAINABLE_VARIABLES, scope = 'bert'
-            )
-            cls = tf.get_collection(
-                tf.GraphKeys.TRAINABLE_VARIABLES, scope = 'cls'
-            )
-            self._saver = tf.train.Saver(var_list = var_lists + cls)
-            attns = _extract_attention_weights(
-                bert_config.num_hidden_layers, tf.get_default_graph()
-            )
-            self.attns = attns
+                var_lists.extend(
+                    tf.compat.v1.get_collection(
+                        tf.compat.v1.GraphKeys.TRAINABLE_VARIABLES,
+                        scope = 'cls',
+                    )
+                )
+                self._saver = tf.compat.v1.train.Saver(var_list = var_lists)
+                attns = _extract_attention_weights(
+                    bert_config.num_hidden_layers,
+                    tf.compat.v1.get_default_graph(),
+                )
+                self.attns = attns
 
     def _log_vectorize(self, s_tokens, s_masks):
 
@@ -302,6 +314,6 @@ def load(model: str = 'albert', **kwargs):
     )
 
     bert_config = modeling.AlbertConfig.from_json_file(bert_config)
-    model = Model(bert_config, tokenizer)
+    model = Model(bert_config, tokenizer, **kwargs)
     model._saver.restore(model._sess, bert_checkpoint)
     return model

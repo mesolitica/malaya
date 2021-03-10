@@ -1,4 +1,9 @@
-from malaya.function import check_file, load_graph, generate_session
+from malaya.function import (
+    check_file,
+    load_graph,
+    generate_session,
+    nodes_session,
+)
 from malaya.text.bpe import (
     sentencepiece_tokenizer_bert,
     sentencepiece_tokenizer_xlnet,
@@ -212,31 +217,28 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
         tokenizer = sentencepiece_tokenizer_bert(
             path['tokenizer'], path['vocab']
         )
+        inputs = ['Placeholder']
+        vectorizer = {'vectorizer': 'import/dense/BiasAdd:0'}
 
-        return DependencyBERT(
-            X = g.get_tensor_by_name('import/Placeholder:0'),
-            segment_ids = None,
-            input_masks = None,
-            logits = g.get_tensor_by_name('import/logits:0'),
-            vectorizer = g.get_tensor_by_name('import/dense/BiasAdd:0'),
-            sess = generate_session(graph = g, **kwargs),
-            tokenizer = tokenizer,
-            settings = label,
-            heads_seq = g.get_tensor_by_name('import/heads_seq:0'),
-        )
+        Model = DependencyBERT
 
     if model in ['xlnet', 'alxlnet']:
 
         tokenizer = sentencepiece_tokenizer_xlnet(path['tokenizer'])
+        inputs = ['Placeholder', 'Placeholder_1', 'Placeholder_2']
+        vectorizer = {'vectorizer': 'import/transpose_3:0'}
 
-        return DependencyXLNET(
-            X = g.get_tensor_by_name('import/Placeholder:0'),
-            segment_ids = g.get_tensor_by_name('import/Placeholder_1:0'),
-            input_masks = g.get_tensor_by_name('import/Placeholder_2:0'),
-            logits = g.get_tensor_by_name('import/logits:0'),
-            vectorizer = g.get_tensor_by_name('import/transpose_3:0'),
-            sess = generate_session(graph = g, **kwargs),
-            tokenizer = tokenizer,
-            settings = label,
-            heads_seq = g.get_tensor_by_name('import/heads_seq:0'),
-        )
+        Model = DependencyXLNET
+
+    outputs = ['logits', 'heads_seq']
+    input_nodes, output_nodes = nodes_session(
+        g, inputs, outputs, extra = vectorizer
+    )
+
+    return Model(
+        input_nodes = input_nodes,
+        output_nodes = output_nodes,
+        sess = generate_session(graph = g, **kwargs),
+        tokenizer = tokenizer,
+        settings = label,
+    )

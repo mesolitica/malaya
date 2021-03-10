@@ -16,7 +16,7 @@ from malaya.function.html import (
     _render_emotion,
     _render_relevancy,
 )
-from malaya.model.abstract import Classification, Seq2Seq, Tagging
+from malaya.model.abstract import Classification, Seq2Seq, Tagging, Abstract
 import numpy as np
 from collections import defaultdict
 from herpetologist import check_type
@@ -31,23 +31,17 @@ render_dict = {
 }
 
 
-class Base:
+class Base(Abstract):
     def __init__(
         self,
-        X,
-        logits,
-        segment_ids,
-        input_masks,
-        vectorizer,
+        input_nodes,
+        output_nodes,
         sess,
         tokenizer,
         label = ['negative', 'positive'],
     ):
-        self._X = X
-        self._logits = logits
-        self._segment_ids = segment_ids
-        self._input_masks = input_masks
-        self._vectorizer = vectorizer
+        self._input_nodes = input_nodes
+        self._output_nodes = output_nodes
         self._sess = sess
         self._tokenizer = tokenizer
         self._label = label
@@ -1016,25 +1010,11 @@ class TaggingXLNET(Base, Tagging):
 
 
 class DependencyXLNET(Base):
-    def __init__(
-        self,
-        X,
-        segment_ids,
-        input_masks,
-        logits,
-        vectorizer,
-        sess,
-        tokenizer,
-        settings,
-        heads_seq,
-    ):
+    def __init__(self, input_nodes, output_nodes, sess, tokenizer, settings):
         Base.__init__(
             self,
-            X = X,
-            segment_ids = segment_ids,
-            input_masks = input_masks,
-            logits = logits,
-            vectorizer = vectorizer,
+            input_nodes = input_nodes,
+            output_nodes = output_nodes,
             sess = sess,
             tokenizer = tokenizer,
             label = None,
@@ -1042,7 +1022,6 @@ class DependencyXLNET(Base):
 
         self._tag2idx = settings
         self._idx2tag = {int(v): k for k, v in self._tag2idx.items()}
-        self._heads_seq = heads_seq
 
     @check_type
     def vectorize(self, string: str):
@@ -1061,15 +1040,12 @@ class DependencyXLNET(Base):
             self._tokenizer, [string]
         )
         s_tokens = s_tokens[0]
-
-        v = self._sess.run(
-            self._vectorizer,
-            feed_dict = {
-                self._X: input_ids,
-                self._segment_ids: segment_ids,
-                self._input_masks: input_masks,
-            },
+        r = self._execute(
+            inputs = [input_ids, segment_ids, input_masks],
+            input_labels = ['Placeholder', 'Placeholder_1', 'Placeholder_2'],
+            output_labels = ['vectorizer'],
         )
+        v = r['vectorizer']
         v = v[0]
         return merge_sentencepiece_tokens(
             list(zip(s_tokens, v[: len(s_tokens)])),
@@ -1096,15 +1072,12 @@ class DependencyXLNET(Base):
             self._tokenizer, [string]
         )
         s_tokens = s_tokens[0]
-
-        tagging, depend = self._sess.run(
-            [self._logits, self._heads_seq],
-            feed_dict = {
-                self._X: input_ids,
-                self._segment_ids: segment_ids,
-                self._input_masks: input_masks,
-            },
+        r = self._execute(
+            inputs = [input_ids, segment_ids, input_masks],
+            input_labels = ['Placeholder', 'Placeholder_1', 'Placeholder_2'],
+            output_labels = ['logits', 'heads_seq'],
         )
+        tagging, depend = r['logits'], r['heads_seq']
         tagging = [self._idx2tag[i] for i in tagging[0]]
         depend = depend[0] - 1
 

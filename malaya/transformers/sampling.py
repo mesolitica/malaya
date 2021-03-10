@@ -18,7 +18,7 @@ def top_k_logits(logits, k):
 
 
 def top_p_logits(logits, p):
-    with tf.variable_scope('top_p_logits'):
+    with tf.compat.v1.variable_scope('top_p_logits'):
         logits_sort = tf.sort(logits, direction = 'DESCENDING')
         probs_sort = tf.nn.softmax(logits_sort)
         probs_sums = tf.cumsum(probs_sort, axis = 1, exclusive = True)
@@ -39,7 +39,7 @@ def sample(translate_model, features):
     logits, losses = translate_model(features)
     logits = logits / translate_model.hparams.sampling_temp
     logits = top_p_logits(logits, translate_model.hparams.top_p)
-    samples = tf.multinomial(
+    samples = tf.compat.v1.multinomial(
         logits,
         num_samples = translate_model.hparams.top_k,
         output_dtype = tf.int32,

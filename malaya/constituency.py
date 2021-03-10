@@ -1,4 +1,9 @@
-from malaya.function import check_file, load_graph, generate_session
+from malaya.function import (
+    check_file,
+    load_graph,
+    generate_session,
+    nodes_session,
+)
 from malaya.text.bpe import (
     sentencepiece_tokenizer_bert,
     sentencepiece_tokenizer_xlnet,
@@ -136,12 +141,15 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
         tokenizer = sentencepiece_tokenizer_xlnet(path['tokenizer'])
         mode = 'xlnet'
 
+    inputs = ['input_ids', 'word_end_mask']
+    outputs = ['charts', 'tags']
+    input_nodes, output_nodes = nodes_session(
+        g, inputs, outputs, extra = {'vectorizer': _vectorizer_mapping[model]}
+    )
+
     return Constituency(
-        input_ids = g.get_tensor_by_name('import/input_ids:0'),
-        word_end_mask = g.get_tensor_by_name('import/word_end_mask:0'),
-        charts = g.get_tensor_by_name('import/charts:0'),
-        tags = g.get_tensor_by_name('import/tags:0'),
-        vectorizer = g.get_tensor_by_name(_vectorizer_mapping[model]),
+        input_nodes = input_nodes,
+        output_nodes = output_nodes,
         sess = generate_session(graph = g, **kwargs),
         tokenizer = tokenizer,
         dictionary = dictionary,

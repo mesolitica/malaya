@@ -53,14 +53,14 @@ class Model:
     def __init__(self, bert_config, tokenizer):
         _graph = tf.Graph()
         with _graph.as_default():
-            self.X = tf.placeholder(tf.int32, [None, None])
-            self.segment_ids = tf.placeholder(tf.int32, [None, None])
-            self.top_p = tf.placeholder(tf.float32, None)
-            self.top_k = tf.placeholder(tf.int32, None)
-            self.k = tf.placeholder(tf.int32, None)
-            self.temperature = tf.placeholder(tf.float32, None)
-            self.indices = tf.placeholder(tf.int32, [None, None])
-            self.MASK = tf.placeholder(tf.int32, [None, None])
+            self.X = tf.compat.v1.placeholder(tf.int32, [None, None])
+            self.segment_ids = tf.compat.v1.placeholder(tf.int32, [None, None])
+            self.top_p = tf.compat.v1.placeholder(tf.float32, None)
+            self.top_k = tf.compat.v1.placeholder(tf.int32, None)
+            self.k = tf.compat.v1.placeholder(tf.int32, None)
+            self.temperature = tf.compat.v1.placeholder(tf.float32, None)
+            self.indices = tf.compat.v1.placeholder(tf.int32, [None, None])
+            self.MASK = tf.compat.v1.placeholder(tf.int32, [None, None])
             self._tokenizer = tokenizer
 
             self.model = modeling.BertModel(
