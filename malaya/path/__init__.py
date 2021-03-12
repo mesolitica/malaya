@@ -25,6 +25,8 @@ POS_SETTING = 'setting/pos.json'
 LANGUAGE_DETECTION_BOW = 'bpe/bow-language-detection.pkl'
 LANGUAGE_DETECTION_VOCAB = 'bpe/language-detection.yttm'
 
+STEMMER_VOCAB = 'bpe/stemmer.yttm'
+
 CONSTITUENCY_SETTING = 'setting/constituency.json'
 
 MODEL_VOCAB = {

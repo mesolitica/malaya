@@ -58,46 +58,35 @@ class Base(Abstract):
 class BERT(Base):
     def __init__(
         self,
-        X,
-        segment_ids,
-        input_masks,
-        logits,
-        logits_seq,
-        vectorizer,
+        input_nodes,
+        output_nodes,
         sess,
         tokenizer,
-        attns,
         class_name,
         label = ['negative', 'positive'],
     ):
 
         Base.__init__(
             self,
-            X = X,
-            segment_ids = segment_ids,
-            input_masks = input_masks,
-            logits = logits,
-            vectorizer = vectorizer,
+            input_nodes = input_nodes,
+            output_nodes = output_nodes,
             sess = sess,
             tokenizer = tokenizer,
             label = label,
         )
 
-        self._attns = attns
-        self._logits_seq = logits_seq
         self._class_name = class_name
-        self._softmax = tf.nn.softmax(self._logits)
-        self._softmax_seq = tf.nn.softmax(self._logits_seq)
 
     def _classify(self, strings):
         input_ids, input_masks, _, _ = bert_tokenization(
             self._tokenizer, strings
         )
-
-        return self._sess.run(
-            self._softmax,
-            feed_dict = {self._X: input_ids, self._input_masks: input_masks},
+        r = self._execute(
+            inputs = [input_ids, input_masks],
+            input_labels = ['Placeholder', 'Placeholder_1'],
+            output_labels = ['logits'],
         )
+        return softmax(r['logits'], axis = -1)
 
     def _predict(self, strings, add_neutral = False):
         results = self._classify(strings)
@@ -119,10 +108,12 @@ class BERT(Base):
         input_ids, input_masks, _, s_tokens = bert_tokenization(
             self._tokenizer, strings
         )
-        v = self._sess.run(
-            self._vectorizer,
-            feed_dict = {self._X: input_ids, self._input_masks: input_masks},
+        r = self._execute(
+            inputs = [input_ids, input_masks],
+            input_labels = ['Placeholder', 'Placeholder_1'],
+            output_labels = ['vectorizer'],
         )
+        v = r['vectorizer']
         if method == 'first':
             v = v[:, 0]
         elif method == 'last':
@@ -167,13 +158,18 @@ class BERT(Base):
         else:
             label = self._label
 
-        batch_x, batch_mask, _, s_tokens = bert_tokenization(
+        input_ids, input_masks, _, s_tokens = bert_tokenization(
             self._tokenizer, [string]
         )
-        result, attentions, words = self._sess.run(
-            [self._softmax, self._attns, self._softmax_seq],
-            feed_dict = {self._X: batch_x, self._input_masks: batch_mask},
+        r = self._execute(
+            inputs = [input_ids, input_masks],
+            input_labels = ['Placeholder', 'Placeholder_1'],
+            output_labels = ['logits', 'attention', 'logits_seq'],
         )
+        result = softmax(r['logits'], axis = -1)
+        words = softmax(r['logits_seq'], axis = -1)
+        attentions = r['attention']
+
         if method == 'first':
             cls_attn = list(attentions[0].values())[0][:, :, 0, :]
 
@@ -240,29 +236,19 @@ class BERT(Base):
 class BinaryBERT(BERT, Classification):
     def __init__(
         self,
-        X,
-        segment_ids,
-        input_masks,
-        logits,
-        logits_seq,
-        vectorizer,
+        input_nodes,
+        output_nodes,
         sess,
         tokenizer,
-        attns,
         class_name,
         label = ['negative', 'positive'],
     ):
         BERT.__init__(
             self,
-            X = X,
-            segment_ids = segment_ids,
-            input_masks = input_masks,
-            logits = logits,
-            logits_seq = logits_seq,
-            vectorizer = vectorizer,
+            input_nodes = input_nodes,
+            output_nodes = output_nodes,
             sess = sess,
             tokenizer = tokenizer,
-            attns = attns,
             class_name = class_name,
             label = label,
         )
@@ -361,29 +347,19 @@ class BinaryBERT(BERT, Classification):
 class MulticlassBERT(BERT, Classification):
     def __init__(
         self,
-        X,
-        segment_ids,
-        input_masks,
-        logits,
-        logits_seq,
-        vectorizer,
+        input_nodes,
+        output_nodes,
         sess,
         tokenizer,
-        attns,
         class_name,
         label = ['negative', 'positive'],
     ):
         BERT.__init__(
             self,
-            X = X,
-            segment_ids = segment_ids,
-            input_masks = input_masks,
-            logits = logits,
-            logits_seq = logits_seq,
-            vectorizer = vectorizer,
+            input_nodes = input_nodes,
+            output_nodes = output_nodes,
             sess = sess,
             tokenizer = tokenizer,
-            attns = attns,
             class_name = class_name,
             label = label,
         )
@@ -474,45 +450,34 @@ class MulticlassBERT(BERT, Classification):
 class SigmoidBERT(Base, Classification):
     def __init__(
         self,
-        X,
-        segment_ids,
-        input_masks,
-        logits,
-        logits_seq,
-        vectorizer,
+        input_nodes,
+        output_nodes,
         sess,
         tokenizer,
-        attns,
         class_name,
         label = ['negative', 'positive'],
     ):
         Base.__init__(
             self,
-            X = X,
-            segment_ids = segment_ids,
-            input_masks = input_masks,
-            logits = logits,
-            vectorizer = vectorizer,
+            input_nodes = input_nodes,
+            output_nodes = output_nodes,
             sess = sess,
             tokenizer = tokenizer,
             label = label,
         )
-        self._attns = attns
-        self._logits_seq = logits_seq
         self._class_name = class_name
-        self._sigmoid = tf.nn.sigmoid(self._logits)
-        self._sigmoid_seq = tf.nn.sigmoid(self._logits_seq)
 
     def _classify(self, strings):
 
         input_ids, input_masks, _, _ = bert_tokenization(
             self._tokenizer, strings
         )
-
-        return self._sess.run(
-            self._sigmoid,
-            feed_dict = {self._X: input_ids, self._input_masks: input_masks},
+        r = self._execute(
+            inputs = [input_ids, input_masks],
+            input_labels = ['Placeholder', 'Placeholder_1'],
+            output_labels = ['logits'],
         )
+        return sigmoid(r['logits'])
 
     @check_type
     def vectorize(self, strings: List[str], method: str = 'first'):
@@ -542,10 +507,12 @@ class SigmoidBERT(Base, Classification):
         input_ids, input_masks, _, s_tokens = bert_tokenization(
             self._tokenizer, strings
         )
-        v = self._sess.run(
-            self._vectorizer,
-            feed_dict = {self._X: input_ids, self._input_masks: input_masks},
+        r = self._execute(
+            inputs = [input_ids, input_masks],
+            input_labels = ['Placeholder', 'Placeholder_1'],
+            output_labels = ['vectorizer'],
         )
+        v = r['vectorizer']
         if method == 'first':
             v = v[:, 0]
         elif method == 'last':
@@ -643,13 +610,18 @@ class SigmoidBERT(Base, Classification):
                 "method not supported, only support 'last', 'first' and 'mean'"
             )
 
-        batch_x, input_masks, _, s_tokens = bert_tokenization(
+        input_ids, input_masks, _, s_tokens = bert_tokenization(
             self._tokenizer, [string]
         )
-        result, attentions, words = self._sess.run(
-            [self._sigmoid, self._attns, self._sigmoid_seq],
-            feed_dict = {self._X: batch_x, self._input_masks: input_masks},
+        r = self._execute(
+            inputs = [input_ids, input_masks],
+            input_labels = ['Placeholder', 'Placeholder_1'],
+            output_labels = ['logits', 'attention', 'logits_seq'],
         )
+        result = sigmoid(r['logits'])
+        words = sigmoid(r['logits_seq'])
+        attentions = r['attention']
+
         if method == 'first':
             cls_attn = list(attentions[0].values())[0][:, :, 0, :]
 
@@ -710,42 +682,32 @@ class SigmoidBERT(Base, Classification):
 class SiameseBERT(Base):
     def __init__(
         self,
-        X,
-        segment_ids,
-        input_masks,
-        logits,
-        vectorizer,
+        input_nodes,
+        output_nodes,
         sess,
         tokenizer,
         label = ['not similar', 'similar'],
     ):
         Base.__init__(
             self,
-            X = X,
-            segment_ids = segment_ids,
-            input_masks = input_masks,
-            logits = logits,
-            vectorizer = vectorizer,
+            input_nodes = input_nodes,
+            output_nodes = output_nodes,
             sess = sess,
             tokenizer = tokenizer,
             label = label,
         )
-        self._softmax = tf.nn.softmax(self._logits)
         self._batch_size = 20
 
     def _base(self, strings_left, strings_right):
         input_ids, input_masks, segment_ids, _ = bert_tokenization_siamese(
             self._tokenizer, strings_left, strings_right
         )
-
-        return self._sess.run(
-            self._softmax,
-            feed_dict = {
-                self._X: input_ids,
-                self._segment_ids: segment_ids,
-                self._input_masks: input_masks,
-            },
+        r = self._execute(
+            inputs = [input_ids, segment_ids, input_masks],
+            input_labels = ['Placeholder', 'Placeholder_1', 'Placeholder_2'],
+            output_labels = ['logits'],
         )
+        return softmax(r['logits'], axis = -1)
 
     @check_type
     def vectorize(self, strings: List[str]):
@@ -764,14 +726,12 @@ class SiameseBERT(Base):
             self._tokenizer, strings
         )
         segment_ids = np.array(segment_ids) + 1
-        return self._sess.run(
-            self._vectorizer,
-            feed_dict = {
-                self._X: input_ids,
-                self._segment_ids: segment_ids,
-                self._input_masks: input_masks,
-            },
+        r = self._execute(
+            inputs = [input_ids, segment_ids, input_masks],
+            input_labels = ['Placeholder', 'Placeholder_1', 'Placeholder_2'],
+            output_labels = ['vectorizer'],
         )
+        return r['vectorizer']
 
     @check_type
     def predict_proba(self, strings_left: List[str], strings_right: List[str]):
@@ -865,24 +825,12 @@ class SiameseBERT(Base):
 
 class TaggingBERT(Base, Tagging):
     def __init__(
-        self,
-        X,
-        segment_ids,
-        input_masks,
-        logits,
-        vectorizer,
-        sess,
-        tokenizer,
-        settings,
-        tok = None,
+        self, input_nodes, output_nodes, sess, tokenizer, settings, tok = None
     ):
         Base.__init__(
             self,
-            X = X,
-            segment_ids = segment_ids,
-            input_masks = input_masks,
-            logits = logits,
-            vectorizer = vectorizer,
+            input_nodes = input_nodes,
+            output_nodes = output_nodes,
             sess = sess,
             tokenizer = tokenizer,
             label = None,
@@ -920,13 +868,12 @@ class TaggingBERT(Base, Tagging):
         """
         parsed_sequence, input_mask, bert_sequence = self._tokenize(string)
 
-        v = self._sess.run(
-            self._vectorizer,
-            feed_dict = {
-                self._X: [parsed_sequence],
-                self._input_masks: [input_mask],
-            },
+        r = self._execute(
+            inputs = [[parsed_sequence], [input_mask]],
+            input_labels = ['Placeholder', 'Placeholder_1'],
+            output_labels = ['vectorizer'],
         )
+        v = r['vectorizer']
         v = v[0]
         return merge_sentencepiece_tokens(
             list(zip(bert_sequence, v[: len(bert_sequence)])),
@@ -964,13 +911,12 @@ class TaggingBERT(Base, Tagging):
         result: Tuple[str, str]
         """
         parsed_sequence, input_mask, bert_sequence = self._tokenize(string)
-        predicted = self._sess.run(
-            self._logits,
-            feed_dict = {
-                self._X: [parsed_sequence],
-                self._input_masks: [input_mask],
-            },
-        )[0]
+        r = self._execute(
+            inputs = [[parsed_sequence], [input_mask]],
+            input_labels = ['Placeholder', 'Placeholder_1'],
+            output_labels = ['logits'],
+        )
+        predicted = r['logits'][0]
         t = [self._settings['idx2tag'][d] for d in predicted]
         merged = merge_sentencepiece_tokens_tagging(bert_sequence, t)
         return list(zip(merged[0], merged[1]))
@@ -1073,27 +1019,20 @@ class DependencyBERT(Base):
 class ZeroshotBERT(Base):
     def __init__(
         self,
-        X,
-        segment_ids,
-        input_masks,
-        logits,
-        vectorizer,
+        input_nodes,
+        output_nodes,
         sess,
         tokenizer,
         label = ['not similar', 'similar'],
     ):
         Base.__init__(
             self,
-            X = X,
-            segment_ids = segment_ids,
-            input_masks = input_masks,
-            logits = logits,
-            vectorizer = vectorizer,
+            input_nodes = input_nodes,
+            output_nodes = output_nodes,
             sess = sess,
             tokenizer = tokenizer,
             label = label,
         )
-        self._softmax = tf.nn.softmax(self._logits)
 
     def _base(self, strings, labels):
         strings_left, strings_right, mapping = [], [], defaultdict(list)
@@ -1109,14 +1048,12 @@ class ZeroshotBERT(Base):
             self._tokenizer, strings_left, strings_right
         )
 
-        output = self._sess.run(
-            self._softmax,
-            feed_dict = {
-                self._X: input_ids,
-                self._segment_ids: segment_ids,
-                self._input_masks: input_masks,
-            },
+        r = self._execute(
+            inputs = [parsed_sequence, segment_ids, input_mask],
+            input_labels = ['Placeholder', 'Placeholder_1', 'Placeholder_2'],
+            output_labels = ['logits'],
         )
+        output = softmax(r['logits'], axis = -1)
 
         results = []
         for k, v in mapping.items():
@@ -1161,14 +1098,13 @@ class ZeroshotBERT(Base):
             self._tokenizer, strings_left, strings_right
         )
 
-        v = self._sess.run(
-            self._vectorizer,
-            feed_dict = {
-                self._X: input_ids,
-                self._segment_ids: segment_ids,
-                self._input_masks: input_masks,
-            },
+        r = self._execute(
+            inputs = [parsed_sequence, segment_ids, input_mask],
+            input_labels = ['Placeholder', 'Placeholder_1', 'Placeholder_2'],
+            output_labels = ['vectorizer'],
         )
+        v = r['vectorizer']
+
         if len(v.shape) == 2:
             v = v.reshape((*np.array(input_ids).shape, -1))
 
@@ -1208,132 +1144,3 @@ class ZeroshotBERT(Base):
             raise ValueError('labels must be unique.')
 
         return self._base(strings, labels)
-
-
-class ParaphraseBERT(Base):
-    def __init__(self, X, segment_ids, input_masks, logits, sess, tokenizer):
-        Base.__init__(
-            self,
-            X = X,
-            segment_ids = segment_ids,
-            input_masks = input_masks,
-            logits = logits,
-            sess = sess,
-            tokenizer = tokenizer,
-            label = None,
-        )
-
-    def _paraphrase(self, strings):
-        batch_x, input_masks, input_segments, _ = bert_tokenization(
-            self._tokenizer, strings
-        )
-        outputs = self._sess.run(
-            self._logits,
-            feed_dict = {
-                self._X: batch_x,
-                self._segment_ids: input_segments,
-                self._input_masks: input_masks,
-            },
-        )[:, 0, :].tolist()
-        results = []
-        for output in outputs:
-            output = [i for i in output if i > 0]
-            output = self._tokenizer.convert_ids_to_tokens(output)
-            output = [(t, 1) for t in output]
-            output = merge_sentencepiece_tokens(output)
-            output = [t[0] for t in output]
-            results.append(' '.join(output))
-        return results
-
-    @check_type
-    def paraphrase(self, string: str, split_fullstop: bool = True):
-        """
-        Paraphrase a string.
-
-        Parameters
-        ----------
-        string : str
-        split_fullstop: bool, (default=True)
-            if True, will generate paraphrase for each strings splitted by fullstop.
-
-        Returns
-        -------
-        result: str
-        """
-
-        if split_fullstop:
-
-            splitted_fullstop = split_into_sentences(string)
-
-            results, batch, mapping = [], [], {}
-            for no, splitted in enumerate(splitted_fullstop):
-                if len(splitted.split()) < 4:
-                    results.append(splitted)
-                else:
-                    mapping[len(batch)] = no
-                    results.append('REPLACE-ME')
-                    batch.append(splitted)
-
-            if len(batch):
-                output = self._paraphrase(batch)
-                for no in range(len(output)):
-                    results[mapping[no]] = output[no]
-
-            return ' '.join(results)
-
-        else:
-            return self._paraphrase([string])[0]
-
-
-class TranslationBERT:
-    def __init__(self, X, greedy, beam, sess, tokenizer):
-
-        self._X = X
-        self._greedy = greedy
-        self._beam = beam
-        self._sess = sess
-        self._tokenizer = tokenizer
-
-    def _translate(self, strings, beam_search = True):
-        input_ids, input_masks, input_segments, _ = bert_tokenization(
-            self._tokenizer, strings, cleaning = translation_textcleaning
-        )
-        if beam_search:
-            output = self._beam
-        else:
-            output = self._greedy
-        p = sess.run(
-            output,
-            feed_dict = {
-                model.X: batch_x,
-                model.input_masks: batch_mask,
-                model.segment_ids: batch_segment,
-            },
-        )
-
-        result = []
-        for output in p:
-            output = [i for i in output if i > 1]
-            output = self._tokenizer.convert_ids_to_tokens(output)
-            output = [(t, 1) for t in output]
-            output = merge_wordpiece_tokens(output)
-            output = [t[0] for t in output]
-            results.append(' '.join(output))
-        return result
-
-    @check_type
-    def translate(self, strings, beam_search = True):
-        """
-        translate list of strings.
-
-        Parameters
-        ----------
-        strings : List[str]
-        beam_search : bool, (optional=True)
-            If True, use beam search decoder, else use greedy decoder.
-
-        Returns
-        -------
-        result: List[str]
-        """
-        return self._translate(strings, beam_search = beam_search)

@@ -27,8 +27,7 @@ Look through the `Github issue`_ or `Malaya-project`_ for features. Any
 unassigned ``improvement`` issue is open to whoever wants to implement
 it.
 
-Remember, **100% Tensorflow (version 1.10 and above, not 2.0, yet), no
-Keras**.
+We use frozen graph Tensorflow, should able to freeze any Tensorflow (version 1.15 and above) or Keras models.
 
 Dataset
 -------

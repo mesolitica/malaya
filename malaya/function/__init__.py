@@ -26,14 +26,11 @@ def check_tf_version():
 
 
 if check_tf_version() > 1:
-    try:
-        from tensorflow_addons.seq2seq import beam_search_decoder
-    except:
-        import warnings
+    import warnings
 
-        warnings.warn(
-            'Cannot import beam_search_ops from tensorflow, some deep learning models may not able to load, make sure tensorflow-addons already installed by `pip install tensorflow-addons`.'
-        )
+    warnings.warn(
+        'Cannot import beam_search_ops not available for Tensorflow 2, `deep_model` for stemmer will not available to use.'
+    )
 
 else:
     try:
@@ -42,7 +39,7 @@ else:
         import warnings
 
         warnings.warn(
-            'Cannot import beam_search_ops from tensorflow, some deep learning models may not able to load, make sure Tensorflow 1 version >= 1.15'
+            'Cannot import beam_search_ops from tensorflow, `deep_model` for stemmer will not available to use, make sure Tensorflow 1 version >= 1.15'
         )
 
 
@@ -84,7 +81,7 @@ def check_files_local(file):
     return True
 
 
-def nodes_session(graph, inputs, outputs, extra = None):
+def nodes_session(graph, inputs, outputs, extra = None, attention = None):
     input_nodes = {i: graph.get_tensor_by_name(f'import/{i}:0') for i in inputs}
     output_nodes = {
         o: graph.get_tensor_by_name(f'import/{o}:0') for o in outputs
@@ -92,6 +89,8 @@ def nodes_session(graph, inputs, outputs, extra = None):
     if extra:
         extra = {k: graph.get_tensor_by_name(v) for k, v in extra.items()}
         output_nodes = {**output_nodes, **extra}
+    if attention:
+        output_nodes = {**output_nodes, **attention}
     return input_nodes, output_nodes
 
 

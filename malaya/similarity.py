@@ -5,7 +5,12 @@ from sklearn.metrics.pairwise import (
     euclidean_distances,
     manhattan_distances,
 )
-from malaya.function import check_file, load_graph, generate_session
+from malaya.function import (
+    check_file,
+    load_graph,
+    generate_session,
+    nodes_session,
+)
 from malaya.text.bpe import (
     sentencepiece_tokenizer_bert,
     sentencepiece_tokenizer_xlnet,
@@ -502,6 +507,7 @@ def _transformer(
             )
 
         selected_class = bert_class
+        inputs = ['Placeholder', 'Placeholder_1']
         if siamese:
             selected_node = 'import/bert/pooler/dense/BiasAdd:0'
 
@@ -509,18 +515,21 @@ def _transformer(
 
         tokenizer = sentencepiece_tokenizer_xlnet(path['tokenizer'])
         selected_class = xlnet_class
+        inputs = ['Placeholder', 'Placeholder_1', 'Placeholder_2']
         if siamese:
             selected_node = 'import/model_1/sequnece_summary/summary/BiasAdd:0'
 
     if not siamese:
         selected_node = _vectorizer_mapping[model]
 
+    outputs = ['logits']
+    input_nodes, output_nodes = nodes_session(
+        g, inputs, outputs, extra = {'vectorizer': selected_node}
+    )
+
     return selected_class(
-        X = g.get_tensor_by_name('import/Placeholder:0'),
-        segment_ids = g.get_tensor_by_name('import/Placeholder_1:0'),
-        input_masks = g.get_tensor_by_name('import/Placeholder_2:0'),
-        logits = g.get_tensor_by_name('import/logits:0'),
-        vectorizer = g.get_tensor_by_name(selected_node),
+        input_nodes = input_nodes,
+        output_nodes = output_nodes,
         sess = generate_session(graph = g, **kwargs),
         tokenizer = tokenizer,
         label = ['not similar', 'similar'],

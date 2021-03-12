@@ -4,11 +4,19 @@ import os
 from unidecode import unidecode
 from malaya.text.tatabahasa import permulaan, hujung
 from malaya.text.rules import rules_normalizer
-from malaya.function import load_graph, check_file, generate_session
+from malaya.function import (
+    check_file,
+    load_graph,
+    generate_session,
+    nodes_session,
+    check_tf_version,
+)
 from malaya.text.function import pad_sentence_batch, case_of
 from malaya.text.bpe import load_yttm
 from malaya.text.regex import _expressions, _money, _date
-from malaya.path import PATH_STEM, S3_PATH_STEM
+from malaya.model.abstract import Abstract
+from malaya.path import STEMMER_VOCAB
+from malaya.preprocessing import Tokenizer
 from herpetologist import check_type
 
 
@@ -80,26 +88,27 @@ class Naive:
         return ' '.join(result)
 
 
-class DeepStemmer:
-    def __init__(self, X, greedy, beam, sess, bpe, subword_mode, tokenizer):
+class DeepStemmer(Abstract):
+    def __init__(
+        self, input_nodes, output_nodes, sess, bpe, subword_mode, tokenizer
+    ):
 
-        self._X = X
-        self._greedy = greedy
-        self._beam = beam
+        self._input_nodes = input_nodes
+        self._output_nodes = output_nodes
         self._sess = sess
         self._bpe = bpe
         self._subword_mode = subword_mode
         self._tokenizer = tokenizer
 
     @check_type
-    def stem(self, string: str, beam_search: bool = True):
+    def stem(self, string: str, beam_search: bool = False):
         """
         Stem a string, this also include lemmatization.
 
         Parameters
         ----------
         string : str
-        beam_search : bool, (optional=True)
+        beam_search : bool, (optional=False)
             If True, use beam search decoder, else use greedy decoder.
 
         Returns
@@ -134,12 +143,16 @@ class DeepStemmer:
             batch = pad_sentence_batch(batch, 0)[0]
 
             if beam_search:
-                output = self._beam
+                output = 'beam'
             else:
-                output = self._greedy
+                output = 'greedy'
 
-            output = self._sess.run(output, feed_dict = {self._X: batch})
-            output = output.tolist()
+            r = self._execute(
+                inputs = [batch],
+                input_labels = ['Placeholder'],
+                output_labels = [output],
+            )
+            output = r[output].tolist()
 
             for no, o in enumerate(output):
                 predicted = list(dict.fromkeys(o))
@@ -163,8 +176,6 @@ def naive():
     -------
     result : malaya.stem.Naive class
     """
-    from malaya.preprocessing import Tokenizer
-
     tokenizer = Tokenizer().tokenize
 
     return Naive(tokenizer = tokenizer)
@@ -204,25 +215,41 @@ def deep_model(quantized: bool = False, **kwargs):
     -------
     result: malaya.stem.DeepStemmer class
     """
-    from malaya.preprocessing import _tokenizer
 
-    check_file(
-        PATH_STEM['deep'], S3_PATH_STEM['deep'], quantized = quantized, **kwargs
+    if check_tf_version() > 1:
+        raise Exception(
+            f'Tensorflow 2.0 and above not able to use `deep_model` for stemmer, use Tensorflow 1.15 instead.'
+        )
+
+    path = check_file(
+        file = 'lstm-bahdanau',
+        module = 'stem',
+        keys = {'model': 'model.pb', 'vocab': STEMMER_VOCAB},
+        quantized = quantized,
+        **kwargs,
     )
-    if quantized:
-        model_path = 'quantized'
-    else:
-        model_path = 'model'
-    g = load_graph(PATH_STEM['deep'][model_path], **kwargs)
+    g = load_graph(path['model'], **kwargs)
 
-    bpe, subword_mode = load_yttm(PATH_STEM['deep']['bpe'], id_mode = True)
+    bpe, subword_mode = load_yttm(path['vocab'], id_mode = True)
+    inputs = ['Placeholder']
+    outputs = []
+    input_nodes, output_nodes = nodes_session(
+        g,
+        inputs,
+        outputs,
+        extra = {
+            'greedy': 'import/decode_1/greedy:0',
+            'beam': 'import/decode_2/beam:0',
+        },
+    )
+
+    tokenizer = Tokenizer().tokenize
 
     return DeepStemmer(
-        g.get_tensor_by_name('import/Placeholder:0'),
-        g.get_tensor_by_name('import/decode_1/greedy:0'),
-        g.get_tensor_by_name('import/decode_2/beam:0'),
-        generate_session(graph = g, **kwargs),
-        bpe,
-        subword_mode,
-        _tokenizer,
+        input_nodes = input_nodes,
+        output_nodes = output_nodes,
+        sess = generate_session(graph = g, **kwargs),
+        bpe = bpe,
+        subword_mode = subword_mode,
+        tokenizer = tokenizer,
     )

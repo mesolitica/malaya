@@ -1,6 +1,7 @@
 import tensorflow as tf
 import numpy as np
 import re
+from malaya.function.activation import softmax, sigmoid
 from malaya.text.function import translation_textcleaning
 from malaya.text.rouge import (
     filter_rouge,
@@ -8,7 +9,7 @@ from malaya.text.rouge import (
     find_lapor_and_remove,
 )
 from malaya.text.bpe import bert_tokenization
-from malaya.model.abstract import Classification, Seq2Seq
+from malaya.model.abstract import Classification, Seq2Seq, Abstract
 from herpetologist import check_type
 from typing import List
 
@@ -19,19 +20,17 @@ def cleaning(string):
     return re.sub(r'[ ]+', ' ', string).strip()
 
 
-class Base:
+class Base(Abstract):
     def __init__(
         self,
-        X,
-        logits,
-        vectorizer,
+        input_nodes,
+        output_nodes,
         sess,
         tokenizer,
         label = ['negative', 'positive'],
     ):
-        self._X = X
-        self._logits = logits
-        self._vectorizer = vectorizer
+        self._input_nodes = input_nodes
+        self._output_nodes = output_nodes
         self._sess = sess
         self._tokenizer = tokenizer
         self._label = label
@@ -41,10 +40,8 @@ class Base:
 class BigBird(Base):
     def __init__(
         self,
-        X,
-        logits,
-        logits_seq,
-        vectorizer,
+        input_nodes,
+        output_nodes,
         sess,
         tokenizer,
         class_name,
@@ -53,24 +50,25 @@ class BigBird(Base):
 
         Base.__init__(
             self,
-            X = X,
-            logits = logits,
-            vectorizer = vectorizer,
+            input_nodes = input_nodes,
+            output_nodes = output_nodes,
             sess = sess,
             tokenizer = tokenizer,
             label = label,
         )
-        self._logits_seq = logits_seq
         self._class_name = class_name
-        self._softmax = tf.nn.softmax(self._logits)
-        self._softmax_seq = tf.nn.softmax(self._logits_seq)
 
     def _classify(self, strings):
         input_ids, _, _, _ = bert_tokenization(self._tokenizer, strings)
         input_ids = tf.keras.preprocessing.sequence.pad_sequences(
             input_ids, padding = 'post', maxlen = self._maxlen
         )
-        return self._sess.run(self._softmax, feed_dict = {self._X: input_ids})
+        r = self._execute(
+            inputs = [input_ids],
+            input_labels = ['Placeholder'],
+            output_labels = ['logits'],
+        )
+        return softmax(r['logits'], axis = -1)
 
     def _predict(self, strings, add_neutral = False):
         results = self._classify(strings)
@@ -93,7 +91,12 @@ class BigBird(Base):
         input_ids = tf.keras.preprocessing.sequence.pad_sequences(
             input_ids, padding = 'post', maxlen = self._maxlen
         )
-        v = self._sess.run(self._vectorizer, feed_dict = {self._X: input_ids})
+        r = self._execute(
+            inputs = [input_ids],
+            input_labels = ['Placeholder'],
+            output_labels = ['vectorizer'],
+        )
+        v = r['vectorizer']
         if method == 'first':
             v = v[:, 0]
         elif method == 'last':
@@ -129,10 +132,8 @@ class BigBird(Base):
 class MulticlassBigBird(BigBird, Classification):
     def __init__(
         self,
-        X,
-        logits,
-        logits_seq,
-        vectorizer,
+        input_nodes,
+        output_nodes,
         sess,
         tokenizer,
         class_name,
@@ -140,10 +141,8 @@ class MulticlassBigBird(BigBird, Classification):
     ):
         BigBird.__init__(
             self,
-            X = X,
-            logits = logits,
-            logits_seq = logits_seq,
-            vectorizer = vectorizer,
+            input_nodes = input_nodes,
+            output_nodes = output_nodes,
             sess = sess,
             tokenizer = tokenizer,
             class_name = class_name,
@@ -207,10 +206,10 @@ class MulticlassBigBird(BigBird, Classification):
 
 
 class Translation(Seq2Seq):
-    def __init__(self, X, greedy, sess, encoder, maxlen):
+    def __init__(self, input_nodes, output_nodes, sess, encoder, maxlen):
 
-        self._X = X
-        self._greedy = greedy
+        self._input_nodes = input_nodes
+        self._output_nodes = output_nodes
         self._sess = sess
         self._encoder = encoder
         self._maxlen = maxlen
@@ -223,7 +222,12 @@ class Translation(Seq2Seq):
         batch_x = pad_sequences(
             encoded, padding = 'post', maxlen = self._maxlen
         )
-        p = self._sess.run(self._greedy, feed_dict = {self._X: batch_x})
+        r = self._execute(
+            inputs = [batch_x],
+            input_labels = ['Placeholder'],
+            output_labels = ['logits'],
+        )
+        p = r['logits']
         result = []
         for r in p:
             result.append(
@@ -247,12 +251,10 @@ class Translation(Seq2Seq):
 
 
 class Summarization(Seq2Seq):
-    def __init__(self, X, greedy, temperature, top_p, sess, tokenizer, maxlen):
+    def __init__(self, input_nodes, output_nodes, sess, tokenizer, maxlen):
 
-        self._X = X
-        self._greedy = greedy
-        self._temperature = temperature
-        self._top_p = top_p
+        self._input_nodes = input_nodes
+        self._output_nodes = output_nodes
         self._sess = sess
         self._tokenizer = tokenizer
         self._maxlen = maxlen
@@ -276,14 +278,13 @@ class Summarization(Seq2Seq):
             batch_x, padding = 'post', maxlen = self._maxlen
         )
 
-        p = self._sess.run(
-            self._greedy,
-            feed_dict = {
-                self._X: batch_x,
-                self._temperature: temperature,
-                self._top_p: top_p,
-            },
-        ).tolist()
+        r = self._execute(
+            inputs = [batch_x, top_p, temperature],
+            input_labels = ['Placeholder', 'top_p', 'temperature'],
+            output_labels = ['logits'],
+        )
+        p = r['logits'].tolist()
+
         results = []
         for no, r in enumerate(p):
             summary = self._tokenizer.decode(r)

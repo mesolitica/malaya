@@ -4,7 +4,12 @@ import pickle
 import numpy as np
 from functools import partial
 from malaya.stem import _classification_textcleaning_stemmer, naive
-from malaya.function import check_file, load_graph, generate_session
+from malaya.function import (
+    check_file,
+    load_graph,
+    generate_session,
+    nodes_session,
+)
 from malaya.text.bpe import (
     sentencepiece_tokenizer_bert,
     sentencepiece_tokenizer_xlnet,
@@ -92,7 +97,6 @@ def transformer(
                 selected_class = BinaryXLNET
 
     if model in ['albert', 'bert', 'tiny-albert', 'tiny-bert']:
-        selected_node = 'import/dense/BiasAdd:0'
         if model in ['bert', 'tiny-bert']:
             from malaya.transformers.bert import (
                 _extract_attention_weights_import,
@@ -115,24 +119,11 @@ def transformer(
                 spm_model_file = path['tokenizer'],
             )
 
-        return selected_class(
-            X = g.get_tensor_by_name('import/Placeholder:0'),
-            segment_ids = None,
-            input_masks = g.get_tensor_by_name('import/Placeholder_1:0'),
-            logits = g.get_tensor_by_name('import/logits:0'),
-            logits_seq = g.get_tensor_by_name('import/logits_seq:0'),
-            vectorizer = g.get_tensor_by_name(selected_node),
-            sess = generate_session(graph = g, **kwargs),
-            tokenizer = tokenizer,
-            label = label,
-            attns = _extract_attention_weights_import(
-                bert_num_layers[model], g
-            ),
-            class_name = class_name,
-        )
+        inputs = ['Placeholder', 'Placeholder_1']
+        vectorizer = {'vectorizer': 'import/dense/BiasAdd:0'}
+        attention = _extract_attention_weights_import(bert_num_layers[model], g)
 
     if model in ['xlnet', 'alxlnet']:
-        selected_node = 'import/transpose_3:0'
         if model in ['xlnet']:
             from malaya.transformers.xlnet import (
                 _extract_attention_weights_import,
@@ -142,34 +133,33 @@ def transformer(
                 _extract_attention_weights_import,
             )
 
+        inputs = ['Placeholder', 'Placeholder_1', 'Placeholder_2']
         tokenizer = sentencepiece_tokenizer_xlnet(path['tokenizer'])
-
-        return selected_class(
-            X = g.get_tensor_by_name('import/Placeholder:0'),
-            segment_ids = g.get_tensor_by_name('import/Placeholder_1:0'),
-            input_masks = g.get_tensor_by_name('import/Placeholder_2:0'),
-            logits = g.get_tensor_by_name('import/logits:0'),
-            logits_seq = g.get_tensor_by_name('import/logits_seq:0'),
-            vectorizer = g.get_tensor_by_name(selected_node),
-            sess = generate_session(graph = g, **kwargs),
-            tokenizer = tokenizer,
-            label = label,
-            attns = _extract_attention_weights_import(g),
-            class_name = class_name,
-        )
+        vectorizer = {'vectorizer': 'import/transpose_3:0'}
+        attention = _extract_attention_weights_import(g)
 
     if model in ['bigbird', 'tiny-bigbird']:
-        selected_node = 'import/dense/BiasAdd:0'
+        inputs = ['Placeholder']
         tokenizer = sentencepiece_tokenizer_bert(
             path['tokenizer'], path['vocab']
         )
-        return selected_class(
-            X = g.get_tensor_by_name('import/Placeholder:0'),
-            logits = g.get_tensor_by_name('import/logits:0'),
-            logits_seq = g.get_tensor_by_name('import/logits_seq:0'),
-            vectorizer = g.get_tensor_by_name(selected_node),
-            sess = generate_session(graph = g, **kwargs),
-            tokenizer = tokenizer,
-            label = label,
-            class_name = class_name,
-        )
+        vectorizer = {'vectorizer': 'import/dense/BiasAdd:0'}
+        attention = None
+
+    outputs = ['logits', 'logits_seq']
+    input_nodes, output_nodes = nodes_session(
+        g,
+        inputs,
+        outputs,
+        extra = vectorizer,
+        attention = {'attention': attention},
+    )
+
+    return selected_class(
+        input_nodes = input_nodes,
+        output_nodes = output_nodes,
+        sess = generate_session(graph = g, **kwargs),
+        tokenizer = tokenizer,
+        label = label,
+        class_name = class_name,
+    )

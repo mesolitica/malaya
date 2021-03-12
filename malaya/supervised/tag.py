@@ -1,6 +1,11 @@
 import json
 import re
-from malaya.function import check_file, load_graph, generate_session
+from malaya.function import (
+    check_file,
+    load_graph,
+    generate_session,
+    nodes_session,
+)
 from malaya.text.bpe import (
     sentencepiece_tokenizer_bert,
     sentencepiece_tokenizer_xlnet,
@@ -49,29 +54,28 @@ def transformer(class_name, model = 'xlnet', quantized = False, **kwargs):
                 spm_model_file = path['tokenizer'],
             )
 
-        return TaggingBERT(
-            X = g.get_tensor_by_name('import/Placeholder:0'),
-            segment_ids = None,
-            input_masks = g.get_tensor_by_name('import/Placeholder_1:0'),
-            logits = g.get_tensor_by_name('import/logits:0'),
-            vectorizer = g.get_tensor_by_name('import/dense/BiasAdd:0'),
-            sess = generate_session(graph = g, **kwargs),
-            tokenizer = tokenizer,
-            settings = nodes,
-        )
+        inputs = ['Placeholder', 'Placeholder_1']
+        vectorizer = {'vectorizer': 'import/dense/BiasAdd:0'}
+        Model = TaggingBERT
 
     if model in ['xlnet', 'alxlnet']:
         tokenizer = sentencepiece_tokenizer_xlnet(path['tokenizer'])
-        return TaggingXLNET(
-            X = g.get_tensor_by_name('import/Placeholder:0'),
-            segment_ids = g.get_tensor_by_name('import/Placeholder_1:0'),
-            input_masks = g.get_tensor_by_name('import/Placeholder_2:0'),
-            logits = g.get_tensor_by_name('import/logits:0'),
-            vectorizer = g.get_tensor_by_name('import/transpose_3:0'),
-            sess = generate_session(graph = g, **kwargs),
-            tokenizer = tokenizer,
-            settings = nodes,
-        )
+        inputs = ['Placeholder', 'Placeholder_1', 'Placeholder_2']
+        vectorizer = {'vectorizer': 'import/transpose_3:0'}
+        Model = TaggingXLNET
+
+    outputs = ['logits']
+    input_nodes, output_nodes = nodes_session(
+        g, inputs, outputs, extra = vectorizer
+    )
+
+    return Model(
+        input_nodes = input_nodes,
+        output_nodes = output_nodes,
+        sess = generate_session(graph = g, **kwargs),
+        tokenizer = tokenizer,
+        settings = nodes,
+    )
 
 
 def transformer_ontonotes5(
@@ -139,6 +143,10 @@ def transformer_ontonotes5(
                 spm_model_file = path['tokenizer'],
             )
 
+        inputs = ['Placeholder', 'Placeholder_1']
+        vectorizer = {'vectorizer': 'import/dense/BiasAdd:0'}
+        Model = TaggingBERT
+
         return TaggingBERT(
             X = g.get_tensor_by_name('import/Placeholder:0'),
             segment_ids = None,
@@ -153,14 +161,19 @@ def transformer_ontonotes5(
 
     if model in ['xlnet', 'alxlnet']:
         tokenizer = sentencepiece_tokenizer_xlnet(path['tokenizer'])
-        return TaggingXLNET(
-            X = g.get_tensor_by_name('import/Placeholder:0'),
-            segment_ids = g.get_tensor_by_name('import/Placeholder_1:0'),
-            input_masks = g.get_tensor_by_name('import/Placeholder_2:0'),
-            logits = g.get_tensor_by_name('import/logits:0'),
-            vectorizer = g.get_tensor_by_name('import/transpose_3:0'),
-            sess = generate_session(graph = g, **kwargs),
-            tokenizer = tokenizer,
-            settings = nodes,
-            tok = tok,
-        )
+        inputs = ['Placeholder', 'Placeholder_1', 'Placeholder_2']
+        vectorizer = {'vectorizer': 'import/transpose_3:0'}
+        Model = TaggingXLNET
+
+    outputs = ['logits']
+    input_nodes, output_nodes = nodes_session(
+        g, inputs, outputs, extra = vectorizer
+    )
+
+    return Model(
+        input_nodes = input_nodes,
+        output_nodes = output_nodes,
+        sess = generate_session(graph = g, **kwargs),
+        tokenizer = tokenizer,
+        settings = nodes,
+    )

@@ -43,6 +43,6 @@ Malaya only supported Python 3.6 and above.
 Tensorflow
 ----------------------------------
 
-Malaya only supported 1.15 <= Tensorflow < 2.0. 
+Malaya only supported Tensorflow 1.15 and above.
 
-We are upgrading Malaya to support Tensorflow 2.X in the future.
+We recommend to use **virtualenv** for development. All examples tested on Tensorflow version 1.15.4 and 2.4.1.

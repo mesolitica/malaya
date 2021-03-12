@@ -297,9 +297,6 @@ malaya.model.bert
 .. autoclass:: malaya.model.bert.ZeroshotBERT()
     :members:
 
-.. autoclass:: malaya.model.bert.ParaphraseBERT()
-    :members:
-
 malaya.model.bigbird
 ----------------------------------
 
