@@ -4,11 +4,7 @@ from malaya.text.function import (
     split_into_sentences,
     upperfirst,
 )
-from malaya.text.rouge import (
-    filter_rouge,
-    postprocessing_summarization,
-    find_lapor_and_remove,
-)
+from malaya.text.rouge import postprocess_summary
 from malaya.model.abstract import Seq2Seq, Abstract
 from herpetologist import check_type
 from typing import List
@@ -50,9 +46,7 @@ class Summarization(T5, Seq2Seq):
     def _summarize(self, string, mode, postprocess, **kwargs):
         summary = upperfirst(self._predict(f'{mode}: {cleaning(string)}'))
         if postprocess and mode != 'tajuk':
-            summary = filter_rouge(string, summary, **kwargs)
-            summary = postprocessing_summarization(summary)
-            summary = find_lapor_and_remove(string, summary)
+            summary = postprocess_summary(string, summary, **kwargs)
         return summary
 
     @check_type

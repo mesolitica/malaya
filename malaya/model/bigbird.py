@@ -3,11 +3,7 @@ import numpy as np
 import re
 from malaya.function.activation import softmax, sigmoid
 from malaya.text.function import translation_textcleaning
-from malaya.text.rouge import (
-    filter_rouge,
-    postprocessing_summarization,
-    find_lapor_and_remove,
-)
+from malaya.text.rouge import postprocess_summary
 from malaya.text.bpe import bert_tokenization
 from malaya.model.abstract import Classification, Seq2Seq, Abstract
 from herpetologist import check_type
@@ -262,17 +258,13 @@ class Summarization(Seq2Seq):
     def _summarize(
         self,
         strings,
-        mode,
         top_p = 0.7,
         temperature = 1.0,
         postprocess = True,
         **kwargs,
     ):
-        mode = mode.lower()
-        if mode not in ['ringkasan', 'tajuk']:
-            raise ValueError('mode only supports [`ringkasan`, `tajuk`]')
 
-        strings_ = [f'{mode}: {cleaning(string)}' for string in strings]
+        strings_ = [cleaning(string) for string in strings]
         batch_x = [self._tokenizer.encode(string) + [1] for string in strings_]
         batch_x = pad_sequences(
             batch_x, padding = 'post', maxlen = self._maxlen
@@ -289,20 +281,14 @@ class Summarization(Seq2Seq):
         for no, r in enumerate(p):
             summary = self._tokenizer.decode(r)
             if postprocess and mode != 'tajuk':
-                summary = filter_rouge(strings[no], summary, **kwargs)
-                summary = postprocessing_summarization(summary)
-                summary = find_lapor_and_remove(strings[no], summary)
+                summary = postprocess_summary(strings[no], summary, **kwargs)
 
             results.append(summary)
 
         return results
 
     def greedy_decoder(
-        self,
-        strings: List[str],
-        mode: str = 'ringkasan',
-        postprocess: bool = True,
-        **kwargs,
+        self, strings: List[str], postprocess: bool = True, **kwargs
     ):
         """
         Summarize strings using greedy decoder.
@@ -310,11 +296,6 @@ class Summarization(Seq2Seq):
         Parameters
         ----------
         strings: List[str]
-        mode: str
-            mode for summarization. Allowed values:
-
-            * ``'ringkasan'`` - summarization for long sentence, eg, news summarization.
-            * ``'tajuk'`` - title summarization for long sentence, eg, news title.
         postprocess: bool, optional (default=True)
             If True, will filter sentence generated using ROUGE score and removed international news publisher.
 
@@ -334,7 +315,6 @@ class Summarization(Seq2Seq):
     def nucleus_decoder(
         self,
         strings: List[str],
-        mode: str = 'ringkasan',
         top_p: float = 0.7,
         temperature: float = 1.0,
         postprocess: bool = True,
@@ -346,11 +326,6 @@ class Summarization(Seq2Seq):
         Parameters
         ----------
         strings: List[str]
-        mode: str
-            mode for summarization. Allowed values:
-
-            * ``'ringkasan'`` - summarization for long sentence, eg, news summarization.
-            * ``'tajuk'`` - title summarization for long sentence, eg, news title.
         top_p: float, (default=0.7)
             cumulative distribution and cut off as soon as the CDF exceeds `top_p`.
         temperature: float, (default=1.0)

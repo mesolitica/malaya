@@ -8,11 +8,7 @@ from malaya.text.function import (
     pad_sentence_batch,
     upperfirst,
 )
-from malaya.text.rouge import (
-    filter_rouge,
-    postprocessing_summarization,
-    find_lapor_and_remove,
-)
+from malaya.text.rouge import postprocess_summary
 from malaya.text.bpe import (
     constituency_bert,
     constituency_xlnet,
@@ -350,9 +346,7 @@ class Summarization(Seq2Seq):
         for no, r in enumerate(p):
             summary = self._tokenizer.decode(r)
             if postprocess and mode != 'tajuk':
-                summary = filter_rouge(strings[no], summary, **kwargs)
-                summary = postprocessing_summarization(summary)
-                summary = find_lapor_and_remove(strings[no], summary)
+                summary = postprocess_summary(strings[no], summary, **kwargs)
 
             results.append(summary)
 

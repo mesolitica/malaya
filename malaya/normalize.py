@@ -286,11 +286,11 @@ class Normalizer:
                 index += 1
                 continue
 
-            if len(word) > 2:
+            if len(word) > 2 and normalize_text:
                 if word[-2] in consonants and word[-1] == 'e':
                     word = word[:-1] + 'a'
 
-            if word[0] == 'x' and len(word) > 1:
+            if word[0] == 'x' and len(word) > 1 and normalize_text:
                 result_string = 'tak '
                 word = word[1:]
             else:

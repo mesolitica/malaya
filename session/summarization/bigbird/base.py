@@ -99,7 +99,7 @@ flags.DEFINE_string(
     'Initial checkpoint (usually from a pre-trained PEGASUS model).',
 )
 
-bert_config = {
+transformer_config = {
     # transformer basic configs
     'attention_probs_dropout_prob': 0.1,
     'hidden_act': 'relu',
@@ -127,7 +127,7 @@ bert_config = {
     'alpha': 0.0,
     'couple_encoder_decoder': False,
     'num_warmup_steps': 10000,
-    'learning_rate': 0.0001,
+    'learning_rate': 0.01,
     'label_smoothing': 0.1,
     'optimizer': 'Adafactor',
     'use_tpu': True,
@@ -138,6 +138,7 @@ def padded_cross_entropy_loss(logits, labels, smoothing, vocab_size):
     with tf.name_scope('loss'):
 
         if labels is not None:
+            # Calculate smoothing cross entropy
             with tf.name_scope('smoothing_cross_entropy'):
                 confidence = 1.0 - smoothing
                 vocab_float = tf.cast(vocab_size - 1, tf.float32)
@@ -152,6 +153,8 @@ def padded_cross_entropy_loss(logits, labels, smoothing, vocab_size):
                     logits = logits, labels = soft_targets
                 )
 
+                # Calculate the best (lowest) possible value of cross entropy, and
+                # subtract from the cross entropy loss.
                 normalizing_constant = -(
                     confidence * tf.math.log(confidence)
                     + vocab_float
@@ -299,7 +302,7 @@ def model_fn_builder(
 
         is_training = mode == tf.estimator.ModeKeys.TRAIN
 
-        model = modeling.TransformerModel(bert_config)
+        model = modeling.TransformerModel(transformer_config)
         (llh, logits, pred_ids), _ = model(
             inputs, target_ids = targets, training = is_training
         )
@@ -307,8 +310,8 @@ def model_fn_builder(
         total_loss = padded_cross_entropy_loss(
             logits,
             targets,
-            bert_config['label_smoothing'],
-            bert_config['vocab_size'],
+            transformer_config['label_smoothing'],
+            transformer_config['vocab_size'],
         )
 
         tvars = tf.trainable_variables()
@@ -345,25 +348,47 @@ def model_fn_builder(
         output_spec = None
         if mode == tf.estimator.ModeKeys.TRAIN:
 
-            init_lr = learning_rate
-            global_step = tf.train.get_global_step()
-            lr = (
-                init_lr
-                / 0.01
-                * tf.rsqrt(tf.maximum(tf.to_float(global_step), 10000))
+            learning_rate = optimization.get_linear_warmup_rsqrt_decay_lr(
+                init_lr = transformer_config['learning_rate'],
+                hidden_size = transformer_config['hidden_size'],
+                num_warmup_steps = transformer_config['num_warmup_steps'],
+            )
+            optimizer = optimization.get_optimizer(
+                transformer_config, learning_rate
+            )
+            global_step = tf.compat.v1.train.get_global_step()
+
+            if not transformer_config['use_bias']:
+                logging.info('Fixing position embedding, i.e. not trainable.')
+                posemb = 'pegasus/embeddings/position_embeddings'
+                tvars = list(
+                    filter(lambda v: v.name.split(':')[0] != posemb, tvars)
+                )
+
+            gradients = optimizer.compute_gradients(total_loss, tvars)
+            train_op = optimizer.apply_gradients(
+                gradients, global_step = global_step
             )
 
-            optimizer = adafactor.AdafactorOptimizer(
-                learning_rate = lr,
-                decay_rate = adafactor.adafactor_decay_rate_pow(0.8),
-                beta1 = 0.0,
-            )
-            if use_tpu:
-                optimizer = tf.contrib.tpu.CrossShardOptimizer(optimizer)
+            # init_lr = learning_rate
+            # global_step = tf.train.get_global_step()
+            # lr = (
+            #     init_lr
+            #     / 0.01
+            #     * tf.rsqrt(tf.maximum(tf.to_float(global_step), 10000))
+            # )
 
-            train_op = optimizer.minimize(total_loss, global_step = global_step)
+            # optimizer = adafactor.AdafactorOptimizer(
+            #     learning_rate = lr,
+            #     decay_rate = adafactor.adafactor_decay_rate_pow(0.8),
+            #     beta1 = 0.0,
+            # )
+            # if use_tpu:
+            #     optimizer = tf.contrib.tpu.CrossShardOptimizer(optimizer)
 
-            # if not bert_config['use_bias']:
+            # train_op = optimizer.minimize(total_loss, global_step = global_step)
+
+            # if not transformer_config['use_bias']:
             #     logging.info('Fixing position embedding, i.e. not trainable.')
             #     posemb = 'pegasus/embeddings/position_embeddings'
             #     tvars = list(

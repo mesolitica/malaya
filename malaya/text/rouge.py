@@ -1,7 +1,10 @@
 import re
 from malaya.text.bahasa.lapor import lapor as _lapor_words
+from malaya.text.bahasa.news import news as _news_words
 from malaya.text.function import split_into_sentences
 from malaya.text.ngram import ngrams
+
+split_words = ['SPPPPLIIIT>', 'SPPPPLIIIT']
 
 
 def _rouge_clean(s):
@@ -48,6 +51,7 @@ def cal_rouge(evaluated_ngrams, reference_ngrams):
 
 
 def filter_rouge(article, summary, n = 2, threshold = 0.1, **kwargs):
+
     sents = split_into_sentences(summary)
     reference = _get_word_ngrams(n, [_rouge_clean(article).split()])
     results = []
@@ -87,3 +91,23 @@ def find_lapor_and_remove(article, summary):
 
     summary = postprocessing_summarization(summary, lapor)
     return summary
+
+
+def filter_news_sentence(summary):
+    sents = split_into_sentences(summary)
+    selected = []
+    for s in sents:
+        s_lower = s.lower()
+        if all([n not in s_lower for n in _news_words]):
+            selected.append(s)
+    return ' '.join(selected)
+
+
+def postprocess_summary(string, summary, **kwargs):
+    summary = filter_rouge(string, summary, **kwargs)
+    summary = postprocessing_summarization(summary)
+    summary = find_lapor_and_remove(string, summary)
+    summary = filter_news_sentence(summary)
+    for s in split_words:
+        summary = summary.replace(s, ' ')
+    return re.sub(r'[ ]+', ' ', summary).strip()

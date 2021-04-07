@@ -1,6 +1,9 @@
 import os
+
 os.environ['CUDA_VISIBLE_DEVICES'] = ''
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/home/husein/t5/prepare/mesolitica-tpu.json'
+os.environ[
+    'GOOGLE_APPLICATION_CREDENTIALS'
+] = '/home/husein/t5/prepare/mesolitica-tpu.json'
 
 from create_pretraining_data import process_documents
 from glob import glob
@@ -11,7 +14,7 @@ import os
 from google.cloud import storage
 
 tokenizer = tokenization.FullTokenizer(
-    vocab_file = 'pegasus.wordpiece', do_lower_case = False
+    vocab_file = 'BERT.wordpiece', do_lower_case = False
 )
 
 files = glob('/home/husein/pure-text/splitted/*.txt')
@@ -23,12 +26,11 @@ def loop(files):
     client = storage.Client()
     bucket = client.bucket('mesolitica-tpu-general')
     for file in files:
-        output_files = f'tfrecord/pegasus-{os.path.split(file)[1]}.tfrecord'
+        output_files = f'tfrecord/smith-{os.path.split(file)[1]}.tfrecord'
         process_documents(file, output_files, tokenizer)
-        blob = bucket.blob(f'pegasus-data-v2/{output_files}')
+        blob = bucket.blob(f'smith-data/{output_files}')
         blob.upload_from_filename(output_files)
         os.system(f'rm {output_files}')
-        
 
 
 def chunks(l, n):
