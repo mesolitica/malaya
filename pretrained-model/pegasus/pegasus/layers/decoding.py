@@ -47,10 +47,10 @@ def process_logits(logits_BxN, top_k = 0, top_p = 0.0, temperature = 0.0):
     logits: processed logits which is original logits add gumbel noise and
     values outside top_k and top_p set to -inf.
   """
-    if top_k > 0 and top_p > 0:
-        raise ValueError(
-            'Only one of the top_k and nucleus sampling should be specified.'
-        )
+    # if top_k > 0 and top_p > 0:
+    #     raise ValueError(
+    #         'Only one of the top_k and nucleus sampling should be specified.'
+    #     )
 
     if top_k > 0:
         top_values_BxK, _ = tf.math.top_k(logits_BxN, k = top_k, sorted = False)
@@ -60,7 +60,7 @@ def process_logits(logits_BxN, top_k = 0, top_p = 0.0, temperature = 0.0):
         mask_BxN = tf.cast(tf.less(logits_BxN, min_value_Bx1), logits_BxN.dtype)
         logits_BxN -= mask_BxN * logits_BxN.dtype.max
 
-    if top_p > 0:
+    def nucleus_sampling(logits_BxN, top_p):
         sort_indices_BxN = tf.argsort(
             logits_BxN, axis = -1, direction = 'DESCENDING'
         )
@@ -83,11 +83,25 @@ def process_logits(logits_BxN, top_k = 0, top_p = 0.0, temperature = 0.0):
             tf.shape(logits_BxN),
         )
         logits_BxN -= top_p_mask_BxN * logits_BxN.dtype.max
+        return logits_BxN
 
-    if temperature > 0:
+    logits_BxN = tf.cond(
+        top_p > 0,
+        lambda: nucleus_sampling(logits_BxN, top_p),
+        lambda: logits_BxN,
+    )
+
+    def apply_temp(logits_BxN, temperature):
         logits_shape = tf.shape(logits_BxN)
         uniform_noise_BxN = tf.random_uniform(logits_shape)
         logits_BxN += -tf.log(-tf.log(uniform_noise_BxN)) * temperature
+        return logits_BxN
+
+    logits_BxN = tf.cond(
+        temperature > 0,
+        lambda: apply_temp(logits_BxN, temperature),
+        lambda: logits_BxN,
+    )
     return logits_BxN
 
 

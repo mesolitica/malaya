@@ -14,7 +14,7 @@ _transformer_availability = {
         'ROUGE-1': 0.33209,
         'ROUGE-2': 0.13622,
         'ROUGE-L': 0.23348,
-        'Suggested length': 768,
+        'Suggested length': 1024,
     },
     'small-t2t': {
         'Size (MB)': 379,
@@ -22,7 +22,7 @@ _transformer_availability = {
         'ROUGE-1': 0.33,
         'ROUGE-2': 0.13417,
         'ROUGE-L': 0.23059,
-        'Suggested length': 768,
+        'Suggested length': 1024,
     },
     't5': {
         'Size (MB)': 1250,
@@ -49,6 +49,22 @@ _transformer_availability = {
         'Suggested length': 2048,
     },
     'small-bigbird': {
+        'Size (MB)': 303.0,
+        'Quantized Size (MB)': 77.3,
+        'ROUGE-1': 0.3219,
+        'ROUGE-2': 0.1338,
+        'ROUGE-L': 0.2198,
+        'Suggested length': 2048,
+    },
+    'pegasus': {
+        'Size (MB)': 910,
+        'Quantized Size (MB)': 230,
+        'ROUGE-1': 0.3258,
+        'ROUGE-2': 0.13534,
+        'ROUGE-L': 0.2228,
+        'Suggested length': 2048,
+    },
+    'small-pegasus': {
         'Size (MB)': 303.0,
         'Quantized Size (MB)': 77.3,
         'ROUGE-1': 0.3219,

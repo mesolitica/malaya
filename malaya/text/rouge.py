@@ -3,6 +3,8 @@ from malaya.text.bahasa.lapor import lapor as _lapor_words
 from malaya.text.bahasa.news import news as _news_words
 from malaya.text.function import split_into_sentences
 from malaya.text.ngram import ngrams
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.metrics.pairwise import pairwise_distances
 
 split_words = ['SPPPPLIIIT>', 'SPPPPLIIIT']
 
@@ -50,19 +52,6 @@ def cal_rouge(evaluated_ngrams, reference_ngrams):
     return {'f': f1_score, 'p': precision, 'r': recall}
 
 
-def filter_rouge(article, summary, n = 2, threshold = 0.1, **kwargs):
-
-    sents = split_into_sentences(summary)
-    reference = _get_word_ngrams(n, [_rouge_clean(article).split()])
-    results = []
-    for s in sents:
-        evaluated = _get_word_ngrams(n, [_rouge_clean(s).split()])
-        score = cal_rouge(evaluated, reference)['p']
-        if score >= threshold:
-            results.append(s)
-    return ' '.join(results)
-
-
 def postprocessing_summarization(string, lapors = _lapor_words):
     for l in lapors:
         if l in string:
@@ -103,11 +92,40 @@ def filter_news_sentence(summary):
     return ' '.join(selected)
 
 
+def get_unique_sentences(summary, reject_similarity = 0.85, **kwargs):
+
+    sents = split_into_sentences(summary)
+    bow = CountVectorizer(token_pattern = '[A-Za-z]+').fit_transform(sents)
+    coef = 1 - pairwise_distances(X = bow, Y = bow, metric = 'cosine')
+    ids, selected = [], []
+    for no in range(len(sents)):
+        row = np.where(coef[no] >= reject_similarity)[0]
+        if row[0] not in selected:
+            ids.append(sents[row[0]])
+            selected.extend(row)
+
+    return ' '.join(ids)
+
+
+def filter_rouge(article, summary, n = 2, threshold = 0.1, **kwargs):
+
+    sents = split_into_sentences(summary)
+    reference = _get_word_ngrams(n, [_rouge_clean(article).split()])
+    results = []
+    for s in sents:
+        evaluated = _get_word_ngrams(n, [_rouge_clean(s).split()])
+        score = cal_rouge(evaluated, reference)['p']
+        if score >= threshold:
+            results.append(s)
+    return ' '.join(results)
+
+
 def postprocess_summary(string, summary, **kwargs):
     summary = filter_rouge(string, summary, **kwargs)
     summary = postprocessing_summarization(summary)
     summary = find_lapor_and_remove(string, summary)
     summary = filter_news_sentence(summary)
+    summary = get_unique_sentences(summary, **kwargs)
     for s in split_words:
         summary = summary.replace(s, ' ')
     return re.sub(r'[ ]+', ' ', summary).strip()

@@ -99,11 +99,11 @@ flags.DEFINE_string(
     'Initial checkpoint (usually from a pre-trained PEGASUS model).',
 )
 
-transformer_config = {
+bert_config = {
     # transformer basic configs
     'attention_probs_dropout_prob': 0.1,
     'hidden_act': 'relu',
-    'hidden_dropout_prob': 0.0,
+    'hidden_dropout_prob': 0.1,
     'hidden_size': 512,
     'initializer_range': 0.02,
     'intermediate_size': 3072,
@@ -127,7 +127,7 @@ transformer_config = {
     'alpha': 0.0,
     'couple_encoder_decoder': False,
     'num_warmup_steps': 10000,
-    'learning_rate': 0.001,
+    'learning_rate': 0.0001,
     'label_smoothing': 0.1,
     'optimizer': 'Adafactor',
     'use_tpu': True,
@@ -302,7 +302,7 @@ def model_fn_builder(
 
         is_training = mode == tf.estimator.ModeKeys.TRAIN
 
-        model = modeling.TransformerModel(transformer_config)
+        model = modeling.TransformerModel(bert_config)
         (llh, logits, pred_ids), _ = model(
             inputs, target_ids = targets, training = is_training
         )
@@ -310,8 +310,8 @@ def model_fn_builder(
         total_loss = padded_cross_entropy_loss(
             logits,
             targets,
-            transformer_config['label_smoothing'],
-            transformer_config['vocab_size'],
+            bert_config['label_smoothing'],
+            bert_config['vocab_size'],
         )
 
         tvars = tf.trainable_variables()
@@ -348,47 +348,25 @@ def model_fn_builder(
         output_spec = None
         if mode == tf.estimator.ModeKeys.TRAIN:
 
-            learning_rate = optimization.get_linear_warmup_rsqrt_decay_lr(
-                init_lr = transformer_config['learning_rate'],
-                hidden_size = transformer_config['hidden_size'],
-                num_warmup_steps = transformer_config['num_warmup_steps'],
-            )
-            optimizer = optimization.get_optimizer(
-                transformer_config, learning_rate
-            )
-            global_step = tf.compat.v1.train.get_global_step()
-
-            if not transformer_config['use_bias']:
-                logging.info('Fixing position embedding, i.e. not trainable.')
-                posemb = 'pegasus/embeddings/position_embeddings'
-                tvars = list(
-                    filter(lambda v: v.name.split(':')[0] != posemb, tvars)
-                )
-
-            gradients = optimizer.compute_gradients(total_loss, tvars)
-            train_op = optimizer.apply_gradients(
-                gradients, global_step = global_step
+            init_lr = learning_rate
+            global_step = tf.train.get_global_step()
+            lr = (
+                init_lr
+                / 0.01
+                * tf.rsqrt(tf.maximum(tf.to_float(global_step), 10000))
             )
 
-            # init_lr = learning_rate
-            # global_step = tf.train.get_global_step()
-            # lr = (
-            #     init_lr
-            #     / 0.01
-            #     * tf.rsqrt(tf.maximum(tf.to_float(global_step), 10000))
-            # )
+            optimizer = adafactor.AdafactorOptimizer(
+                learning_rate = lr,
+                decay_rate = adafactor.adafactor_decay_rate_pow(0.8),
+                beta1 = 0.0,
+            )
+            if use_tpu:
+                optimizer = tf.contrib.tpu.CrossShardOptimizer(optimizer)
 
-            # optimizer = adafactor.AdafactorOptimizer(
-            #     learning_rate = lr,
-            #     decay_rate = adafactor.adafactor_decay_rate_pow(0.8),
-            #     beta1 = 0.0,
-            # )
-            # if use_tpu:
-            #     optimizer = tf.contrib.tpu.CrossShardOptimizer(optimizer)
+            train_op = optimizer.minimize(total_loss, global_step = global_step)
 
-            # train_op = optimizer.minimize(total_loss, global_step = global_step)
-
-            # if not transformer_config['use_bias']:
+            # if not bert_config['use_bias']:
             #     logging.info('Fixing position embedding, i.e. not trainable.')
             #     posemb = 'pegasus/embeddings/position_embeddings'
             #     tvars = list(

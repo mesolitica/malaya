@@ -288,7 +288,11 @@ class Summarization(Seq2Seq):
         return results
 
     def greedy_decoder(
-        self, strings: List[str], postprocess: bool = True, **kwargs
+        self,
+        strings: List[str],
+        temperature = 0.5,
+        postprocess: bool = True,
+        **kwargs,
     ):
         """
         Summarize strings using greedy decoder.
@@ -296,6 +300,8 @@ class Summarization(Seq2Seq):
         Parameters
         ----------
         strings: List[str]
+        temperature: float, (default=0.5)
+            logits * -log(random.uniform) * temperature.
         postprocess: bool, optional (default=True)
             If True, will filter sentence generated using ROUGE score and removed international news publisher.
 
@@ -307,7 +313,7 @@ class Summarization(Seq2Seq):
             strings = strings,
             mode = mode,
             top_p = 0.0,
-            temperature = 0.0,
+            temperature = temperature,
             postprocess = postprocess,
             **kwargs,
         )
@@ -316,7 +322,7 @@ class Summarization(Seq2Seq):
         self,
         strings: List[str],
         top_p: float = 0.7,
-        temperature: float = 1.0,
+        temperature: float = 0.5,
         postprocess: bool = True,
         **kwargs,
     ):
@@ -328,7 +334,7 @@ class Summarization(Seq2Seq):
         strings: List[str]
         top_p: float, (default=0.7)
             cumulative distribution and cut off as soon as the CDF exceeds `top_p`.
-        temperature: float, (default=1.0)
+        temperature: float, (default=0.7)
             logits * -log(random.uniform) * temperature.
         postprocess: bool, optional (default=True)
             If True, will filter sentence generated using ROUGE score and removed international news publisher.
