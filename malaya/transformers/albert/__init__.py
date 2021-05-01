@@ -6,7 +6,7 @@
 # URL: <https://malaya.readthedocs.io/>
 # For license information, see https://github.com/huseinzol05/Malaya/blob/master/LICENSE
 
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 from . import modeling, tokenization
 from malaya.text.bpe import (
     bert_tokenization,
@@ -63,16 +63,14 @@ class Model:
 
         with _graph.as_default():
             with tf.device(device):
-                self.X = tf.compat.v1.placeholder(tf.int32, [None, None])
-                self.segment_ids = tf.compat.v1.placeholder(
-                    tf.int32, [None, None]
-                )
-                self.top_p = tf.compat.v1.placeholder(tf.float32, None)
-                self.top_k = tf.compat.v1.placeholder(tf.int32, None)
-                self.k = tf.compat.v1.placeholder(tf.int32, None)
-                self.temperature = tf.compat.v1.placeholder(tf.float32, None)
-                self.indices = tf.compat.v1.placeholder(tf.int32, [None, None])
-                self.MASK = tf.compat.v1.placeholder(tf.int32, [None, None])
+                self.X = tf.placeholder(tf.int32, [None, None])
+                self.segment_ids = tf.placeholder(tf.int32, [None, None])
+                self.top_p = tf.placeholder(tf.float32, None)
+                self.top_k = tf.placeholder(tf.int32, None)
+                self.k = tf.placeholder(tf.int32, None)
+                self.temperature = tf.placeholder(tf.float32, None)
+                self.indices = tf.placeholder(tf.int32, [None, None])
+                self.MASK = tf.placeholder(tf.int32, [None, None])
                 self._tokenizer = tokenizer
 
                 self.model = modeling.AlbertModel(
@@ -86,9 +84,9 @@ class Model:
                 input_tensor = self.model.get_sequence_output()
                 output_weights = self.model.get_embedding_table()
 
-                with tf.compat.v1.variable_scope('cls/predictions'):
-                    with tf.compat.v1.variable_scope('transform'):
-                        input_tensor = tf.compat.v1.layers.dense(
+                with tf.variable_scope('cls/predictions'):
+                    with tf.variable_scope('transform'):
+                        input_tensor = tf.layers.dense(
                             input_tensor,
                             units = bert_config.embedding_size,
                             activation = modeling.get_activation(
@@ -100,7 +98,7 @@ class Model:
                         )
                         input_tensor = modeling.layer_norm(input_tensor)
 
-                    output_bias = tf.compat.v1.get_variable(
+                    output_bias = tf.get_variable(
                         'output_bias',
                         shape = [bert_config.vocab_size],
                         initializer = tf.zeros_initializer(),
@@ -123,24 +121,22 @@ class Model:
                     return top_k_logits(logits, self.top_k)
 
                 logits = tf.cond(self.top_p > 0, necleus, select_k)
-                self.samples = tf.compat.v1.multinomial(
+                self.samples = tf.multinomial(
                     logits, num_samples = self.k, output_dtype = tf.int32
                 )
                 self._sess = generate_session(_graph, **kwargs)
-                self._sess.run(tf.compat.v1.global_variables_initializer())
-                var_lists = tf.compat.v1.get_collection(
-                    tf.compat.v1.GraphKeys.TRAINABLE_VARIABLES, scope = 'bert'
+                self._sess.run(tf.global_variables_initializer())
+                var_lists = tf.get_collection(
+                    tf.GraphKeys.TRAINABLE_VARIABLES, scope = 'bert'
                 )
                 var_lists.extend(
-                    tf.compat.v1.get_collection(
-                        tf.compat.v1.GraphKeys.TRAINABLE_VARIABLES,
-                        scope = 'cls',
+                    tf.get_collection(
+                        tf.GraphKeys.TRAINABLE_VARIABLES, scope = 'cls'
                     )
                 )
-                self._saver = tf.compat.v1.train.Saver(var_list = var_lists)
+                self._saver = tf.train.Saver(var_list = var_lists)
                 attns = _extract_attention_weights(
-                    bert_config.num_hidden_layers,
-                    tf.compat.v1.get_default_graph(),
+                    bert_config.num_hidden_layers, tf.get_default_graph()
                 )
                 self.attns = attns
 
@@ -315,5 +311,6 @@ def load(model: str = 'albert', **kwargs):
 
     bert_config = modeling.AlbertConfig.from_json_file(bert_config)
     model = Model(bert_config, tokenizer, **kwargs)
+
     model._saver.restore(model._sess, bert_checkpoint)
-    return model
+    return model, bert_checkpoint

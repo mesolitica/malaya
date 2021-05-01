@@ -7,6 +7,7 @@ from malaya.text.jarowinkler import JaroWinkler
 from malaya.function import check_file
 from malaya.text.calculator import Calculator
 from malaya.path import PATH_WORDVECTOR, S3_PATH_WORDVECTOR
+from malaya.function import get_device, generate_session
 from herpetologist import check_type
 from typing import List, Tuple, Dict
 
@@ -18,117 +19,109 @@ def _load(j, npy):
     return vocab, vector
 
 
-def load_wiki():
+_wordvector_availability = {
+    'wikipedia': {
+        'Size (MB)': 781.7,
+        'Vocab size': 763350,
+        'lowercase': True,
+        'Description': 'pretrained on Malay wikipedia word2vec size 256',
+    },
+    'socialmedia': {
+        'Size (MB)': 1300,
+        'Vocab size': 1294638,
+        'lowercase': True,
+        'Description': 'pretrained on cleaned Malay twitter and Malay instagram size 256',
+    },
+    'news': {
+        'Size (MB)': 200.2,
+        'Vocab size': 195466,
+        'lowercase': True,
+        'Description': 'pretrained on cleaned Malay news size 256',
+    },
+    'combine': {
+        'Size (MB)': 1900,
+        'Vocab size': 1903143,
+        'lowercase': True,
+        'Description': 'pretrained on cleaned Malay news + Malay social media + Malay wikipedia size 256',
+    },
+}
+
+
+def available_wordvector():
     """
-    Return malaya pretrained wikipedia word2vec size 256. 
-    https://github.com/huseinzol05/Malaya/tree/master/pretrained-model/wordvector
-
-    Returns
-    -------
-    vocabulary: indices dictionary for `vector`.
-    vector: np.array, 2D.
+    List available transformer models.
     """
+    from malaya.function import describe_availability
 
-    check_file(PATH_WORDVECTOR['wikipedia'], S3_PATH_WORDVECTOR['wikipedia'])
-    return _load(
-        PATH_WORDVECTOR['wikipedia']['vocab'],
-        PATH_WORDVECTOR['wikipedia']['model'],
-    )
-
-
-def load_news():
-    """
-    Return malaya pretrained local malaysia news word2vec size 256. https://github.com/huseinzol05/Malaya/tree/master/pretrained-model/wordvector
-
-    Returns
-    -------
-    vocabulary: indices dictionary for `vector`.
-    vector: np.array, 2D.
-    """
-
-    check_file(PATH_WORDVECTOR['news'], S3_PATH_WORDVECTOR['news'])
-    return _load(
-        PATH_WORDVECTOR['news']['vocab'], PATH_WORDVECTOR['news']['model']
-    )
-
-
-def load_social_media():
-    """
-    Return malaya pretrained local malaysia social media word2vec size 256. 
-    https://github.com/huseinzol05/Malaya/tree/master/pretrained-model/wordvector
-
-    Returns
-    -------
-    vocabulary: indices dictionary for `vector`.
-    vector: np.array, 2D.
-    """
-
-    check_file(
-        PATH_WORDVECTOR['socialmedia'], S3_PATH_WORDVECTOR['socialmedia']
-    )
-    return _load(
-        PATH_WORDVECTOR['socialmedia']['vocab'],
-        PATH_WORDVECTOR['socialmedia']['model'],
-    )
-
-
-def load_wiki_news_social_media():
-    """
-    Return malaya pretrained local malaysia Wikipedia + Social media + News word2vec size 256. 
-    https://github.com/huseinzol05/Malaya/tree/master/pretrained-model/wordvector
-
-    Returns
-    -------
-    vocabulary: indices dictionary for `vector`.
-    vector: np.array, 2D.
-    """
-
-    check_file(PATH_WORDVECTOR['combine'], S3_PATH_WORDVECTOR['combine'])
-    return _load(
-        PATH_WORDVECTOR['combine']['vocab'], PATH_WORDVECTOR['combine']['model']
-    )
+    return describe_availability(_wordvector_availability)
 
 
 @check_type
-def load(embed_matrix, dictionary: dict):
+def load(model: str = 'wikipedia', **kwargs):
 
     """
     Return malaya.wordvector.WordVector object.
 
     Parameters
     ----------
-    embed_matrix: numpy array
-    dictionary: dictionary
+    model : str, optional (default='wikipedia')
+        Model architecture supported. Allowed values:
+
+        * ``'wikipedia'`` - pretrained on Malay wikipedia word2vec size 256.
+        * ``'socialmedia'`` - pretrained on cleaned Malay twitter and Malay instagram size 256.
+        * ``'news'`` - pretrained on cleaned Malay news size 256.
+        * ``'combine'`` - pretrained on cleaned Malay news + Malay social media + Malay wikipedia size 256.
 
     Returns
     -------
-    WordVector: malaya.wordvector.WordVector object
+    vocabulary: indices dictionary for `vector`.
+    vector: np.array, 2D.
     """
 
-    return WordVector(embed_matrix = embed_matrix, dictionary = dictionary)
+    model = model.lower()
+    if model not in _wordvector_availability:
+        raise ValueError(
+            'model not supported, please check supported models from `malaya.wordvector.available_wordvector()`.'
+        )
+
+    check_file(PATH_WORDVECTOR[model], S3_PATH_WORDVECTOR[model], **kwargs)
+    return _load(
+        PATH_WORDVECTOR[model]['vocab'], PATH_WORDVECTOR[model]['model']
+    )
 
 
 class WordVector:
-    def __init__(self, embed_matrix, dictionary):
+    @check_type
+    def __init__(self, embed_matrix, dictionary: dict, **kwargs):
+
+        """
+        Parameters
+        ----------
+        embed_matrix: numpy array
+        dictionary: dictionary
+        """
+
         self._embed_matrix = embed_matrix
         self._dictionary = dictionary
         self._reverse_dictionary = {v: k for k, v in dictionary.items()}
         self.words = list(dictionary.keys())
         self._jarowinkler = JaroWinkler()
+        device = get_device(**kwargs)
         _graph = tf.Graph()
         with _graph.as_default():
-            self._embedding = tf.placeholder(
-                tf.float32, self._embed_matrix.shape
-            )
-            self._x = tf.placeholder(
-                tf.float32, [None, self._embed_matrix.shape[1]]
-            )
-            normed_embedding = tf.nn.l2_normalize(self._embedding, axis = 1)
-            normed_array = tf.nn.l2_normalize(self._x, axis = 1)
-            self._cosine_similarity = tf.matmul(
-                normed_array, tf.transpose(normed_embedding, [1, 0])
-            )
-            self._sess = tf.InteractiveSession()
+            with tf.device(device):
+                self._embedding = tf.compat.v1.placeholder(
+                    tf.float32, self._embed_matrix.shape
+                )
+                self._x = tf.compat.v1.placeholder(
+                    tf.float32, [None, self._embed_matrix.shape[1]]
+                )
+                normed_embedding = tf.nn.l2_normalize(self._embedding, axis = 1)
+                normed_array = tf.nn.l2_normalize(self._x, axis = 1)
+                self._cosine_similarity = tf.matmul(
+                    normed_array, tf.transpose(normed_embedding, [1, 0])
+                )
+                self._sess = generate_session(_graph, **kwargs)
 
     @check_type
     def get_vector_by_name(

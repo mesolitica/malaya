@@ -1,8 +1,8 @@
 import tensorflow as tf
 import numpy as np
-import re
 from malaya.text.function import (
     language_detection_textcleaning,
+    summarization_textcleaning,
     split_into_sentences,
     transformer_textcleaning,
     pad_sentence_batch,
@@ -24,10 +24,6 @@ from malaya.function.activation import softmax
 from malaya.model.abstract import Seq2Seq, Classification, T2T, Abstract
 from herpetologist import check_type
 from typing import List
-
-
-def cleaning(string):
-    return re.sub(r'[ ]+', ' ', string).strip()
 
 
 def _convert_sparse_matrix_to_sparse_tensor(X, got_limit = False, limit = 5):
@@ -330,7 +326,10 @@ class Summarization(Seq2Seq):
         if decoder not in ['greedy', 'beam', 'nucleus']:
             raise ValueError('mode only supports [`greedy`, `beam`, `nucleus`]')
 
-        strings_ = [f'{mode}: {cleaning(string)}' for string in strings]
+        strings_ = [
+            f'{mode}: {summarization_textcleaning(string)}'
+            for string in strings
+        ]
 
         batch_x = [self._tokenizer.encode(string) + [1] for string in strings_]
         batch_x = padding_sequence(batch_x)
@@ -475,7 +474,10 @@ class Paraphrase(Seq2Seq):
         if decoder not in ['greedy', 'beam', 'nucleus']:
             raise ValueError('mode only supports [`greedy`, `beam`, `nucleus`]')
 
-        strings = [f'parafrasa: {cleaning(string)}' for string in strings]
+        strings = [
+            f'parafrasa: {summarization_textcleaning(string)}'
+            for string in strings
+        ]
 
         batch_x = [self._tokenizer.encode(string) + [1] for string in strings]
         batch_x = padding_sequence(batch_x)

@@ -1,6 +1,7 @@
 import tensorflow as tf
 from malaya.text.function import (
     transformer_textcleaning,
+    summarization_textcleaning,
     split_into_sentences,
     upperfirst,
 )
@@ -8,11 +9,6 @@ from malaya.text.rouge import postprocess_summary
 from malaya.model.abstract import Seq2Seq, Abstract
 from herpetologist import check_type
 from typing import List
-import re
-
-
-def cleaning(string):
-    return re.sub(r'[ ]+', ' ', string).strip()
 
 
 def remove_repeat_fullstop(string):
@@ -44,7 +40,9 @@ class Summarization(T5, Seq2Seq):
         )
 
     def _summarize(self, string, mode, postprocess, **kwargs):
-        summary = upperfirst(self._predict(f'{mode}: {cleaning(string)}'))
+        summary = upperfirst(
+            self._predict(f'{mode}: {summarization_textcleaning(string)}')
+        )
         if postprocess and mode != 'tajuk':
             summary = postprocess_summary(string, summary, **kwargs)
         return summary
@@ -116,7 +114,7 @@ class Generator(T5, Seq2Seq):
         ]
         points = ' '.join(points)
         points = f'karangan: {points}'
-        return upperfirst(self._predict(cleaning(points)))
+        return upperfirst(self._predict(summarization_textcleaning(points)))
 
 
 class Paraphrase(T5, Seq2Seq):
@@ -130,7 +128,7 @@ class Paraphrase(T5, Seq2Seq):
 
     def _paraphrase(self, string):
 
-        string = f'parafrasa: {cleaning(string)}'
+        string = f'parafrasa: {summarization_textcleaning(string)}'
         return upperfirst(self._predict(string))
 
     @check_type

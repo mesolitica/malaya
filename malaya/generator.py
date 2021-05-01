@@ -1,4 +1,6 @@
 import random
+import tensorflow as tf
+import logging
 from malaya.text.function import simple_textcleaning
 from malaya.text.bpe import sentencepiece_tokenizer_bert as load_sentencepiece
 from malaya.text.tatabahasa import alphabet, consonants, vowels
@@ -414,6 +416,12 @@ def gpt2(
     if top_k < 5:
         raise ValueError('top_k must bigger than 5')
     from malaya.transformers.gpt2 import load
+
+    if tf.executing_eagerly():
+        logging.warning(
+            'Load pretrained GPT2 model will disable eager execution.'
+        )
+        tf.compat.v1.disable_eager_execution()
 
     return load(
         model = model,

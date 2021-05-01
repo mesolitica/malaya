@@ -1,8 +1,10 @@
 import tensorflow as tf
 import numpy as np
-import re
 from malaya.function.activation import softmax, sigmoid
-from malaya.text.function import translation_textcleaning
+from malaya.text.function import (
+    translation_textcleaning,
+    summarization_textcleaning,
+)
 from malaya.text.rouge import postprocess_summary
 from malaya.text.bpe import bert_tokenization
 from malaya.model.abstract import Classification, Seq2Seq, Abstract
@@ -10,10 +12,6 @@ from herpetologist import check_type
 from typing import List
 
 pad_sequences = tf.keras.preprocessing.sequence.pad_sequences
-
-
-def cleaning(string):
-    return re.sub(r'[ ]+', ' ', string).strip()
 
 
 class Base(Abstract):
@@ -264,7 +262,7 @@ class Summarization(Seq2Seq):
         **kwargs,
     ):
 
-        strings_ = [cleaning(string) for string in strings]
+        strings_ = [summarization_textcleaning(string) for string in strings]
         batch_x = [self._tokenizer.encode(string) + [1] for string in strings_]
         batch_x = pad_sequences(
             batch_x, padding = 'post', maxlen = self._maxlen
@@ -280,17 +278,18 @@ class Summarization(Seq2Seq):
         results = []
         for no, r in enumerate(p):
             summary = self._tokenizer.decode(r)
-            if postprocess and mode != 'tajuk':
+            if postprocess:
                 summary = postprocess_summary(strings[no], summary, **kwargs)
 
             results.append(summary)
 
         return results
 
+    @check_type
     def greedy_decoder(
         self,
         strings: List[str],
-        temperature = 0.5,
+        temperature = 0.3,
         postprocess: bool = True,
         **kwargs,
     ):
@@ -300,7 +299,7 @@ class Summarization(Seq2Seq):
         Parameters
         ----------
         strings: List[str]
-        temperature: float, (default=0.5)
+        temperature: float, (default=0.2)
             logits * -log(random.uniform) * temperature.
         postprocess: bool, optional (default=True)
             If True, will filter sentence generated using ROUGE score and removed international news publisher.
@@ -318,11 +317,12 @@ class Summarization(Seq2Seq):
             **kwargs,
         )
 
+    @check_type
     def nucleus_decoder(
         self,
         strings: List[str],
         top_p: float = 0.7,
-        temperature: float = 0.5,
+        temperature: float = 0.3,
         postprocess: bool = True,
         **kwargs,
     ):
@@ -334,7 +334,7 @@ class Summarization(Seq2Seq):
         strings: List[str]
         top_p: float, (default=0.7)
             cumulative distribution and cut off as soon as the CDF exceeds `top_p`.
-        temperature: float, (default=0.7)
+        temperature: float, (default=0.2)
             logits * -log(random.uniform) * temperature.
         postprocess: bool, optional (default=True)
             If True, will filter sentence generated using ROUGE score and removed international news publisher.

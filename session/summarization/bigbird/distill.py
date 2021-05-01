@@ -1,10 +1,11 @@
 import tensorflow as tf
-from tensor2tensor.utils import adafactor
-from pegasus import transformer
-from tensorflow.contrib import layers as contrib_layers
+from bigbird import modeling, optimization
 import re
 import collections
 import six
+import logging
+from tensor2tensor.utils import adafactor
+import optimization
 
 flags = tf.flags
 
@@ -24,7 +25,7 @@ flags.DEFINE_string(
 
 flags.DEFINE_integer(
     'max_seq_length_encoder',
-    1024,
+    2048,
     'The maximum total input sequence length after WordPiece tokenization. '
     'Sequences longer than this will be truncated, and sequences shorter '
     'than this will be padded. Must match data generation.',
@@ -41,10 +42,10 @@ flags.DEFINE_integer(
 flags.DEFINE_integer('train_batch_size', 32, 'Total batch size for training.')
 
 flags.DEFINE_float(
-    'learning_rate', 0.001, 'The initial learning rate for Adafactor.'
+    'learning_rate', 0.0001, 'The initial learning rate for Adafactor.'
 )
 
-flags.DEFINE_integer('num_train_steps', 1000000, 'Number of training steps.')
+flags.DEFINE_integer('num_train_steps', 100000, 'Number of training steps.')
 
 flags.DEFINE_integer('num_warmup_steps', 10000, 'Number of warmup steps.')
 
@@ -98,14 +99,110 @@ flags.DEFINE_string(
     'Initial checkpoint (usually from a pre-trained PEGASUS model).',
 )
 
-vocab_size = 32000
-hidden_size = 768
-filter_size = 3072
-num_encoder_layers = 12
-num_decoder_layers = 12
-num_heads = 12
-label_smoothing = 0.0
-dropout = 0.1
+bert_config = {
+    # transformer basic configs
+    'attention_probs_dropout_prob': 0.1,
+    'hidden_act': 'relu',
+    'hidden_dropout_prob': 0.1,
+    'hidden_size': 768,
+    'initializer_range': 0.02,
+    'intermediate_size': 3072,
+    'max_position_embeddings': 4096,
+    'max_encoder_length': 2048,
+    'max_decoder_length': 1024,
+    'num_attention_heads': 12,
+    'num_hidden_layers': 12,
+    'type_vocab_size': 2,
+    'scope': 'pegasus',
+    'use_bias': False,
+    'rescale_embedding': True,
+    'vocab_model_file': None,
+    # sparse mask configs
+    'attention_type': 'block_sparse',
+    'norm_type': 'prenorm',
+    'block_size': 64,
+    'num_rand_blocks': 3,
+    'vocab_size': 32000,
+    'beam_size': 1,
+    'alpha': 0.0,
+    'couple_encoder_decoder': False,
+    'num_warmup_steps': 10000,
+    'learning_rate': 0.0001,
+    'label_smoothing': 0.1,
+    'optimizer': 'Adafactor',
+    'use_tpu': True,
+}
+
+student_bert_config = {
+    # transformer basic configs
+    'attention_probs_dropout_prob': 0.1,
+    'hidden_act': 'relu',
+    'hidden_dropout_prob': 0.1,
+    'hidden_size': 312,
+    'initializer_range': 0.02,
+    'intermediate_size': 1080,
+    'max_position_embeddings': 4096,
+    'max_encoder_length': 2048,
+    'max_decoder_length': 1024,
+    'num_attention_heads': 12,
+    'num_hidden_layers': 4,
+    'type_vocab_size': 2,
+    'scope': 'pegasus',
+    'use_bias': False,
+    'rescale_embedding': True,
+    'vocab_model_file': None,
+    # sparse mask configs
+    'attention_type': 'block_sparse',
+    'norm_type': 'prenorm',
+    'block_size': 64,
+    'num_rand_blocks': 3,
+    'vocab_size': 32000,
+    'beam_size': 1,
+    'alpha': 0.0,
+    'couple_encoder_decoder': False,
+    'num_warmup_steps': 10000,
+    'learning_rate': 0.0001,
+    'label_smoothing': 0.1,
+    'optimizer': 'Adafactor',
+    'use_tpu': True,
+}
+
+
+def padded_cross_entropy_loss(
+    logits, labels, smoothing = 0.0, vocab_size = 32128
+):
+    with tf.name_scope('loss'):
+
+        if labels is not None:
+            with tf.name_scope('smoothing_cross_entropy'):
+                confidence = 1.0 - smoothing
+                vocab_float = tf.cast(vocab_size - 1, tf.float32)
+                low_confidence = (1.0 - confidence) / vocab_float
+                soft_targets = tf.one_hot(
+                    labels,
+                    depth = vocab_size,
+                    on_value = confidence,
+                    off_value = low_confidence,
+                )
+                xentropy = tf.nn.softmax_cross_entropy_with_logits(
+                    logits = logits, labels = soft_targets
+                )
+
+                normalizing_constant = -(
+                    confidence * tf.math.log(confidence)
+                    + vocab_float
+                    * low_confidence
+                    * tf.math.log(low_confidence + 1e-20)
+                )
+                xentropy -= normalizing_constant
+
+            weights = tf.cast(tf.not_equal(labels, 0), tf.float32)
+            return tf.reduce_sum(xentropy * weights), weights
+
+        else:
+            loss = tf.constant(0.0)
+
+        return loss
 
 
 def get_assignment_map_from_checkpoint(tvars, init_checkpoint):
@@ -122,15 +219,22 @@ def get_assignment_map_from_checkpoint(tvars, init_checkpoint):
         name_to_variable[name] = var
 
     init_vars = tf.train.list_variables(init_checkpoint)
-
     assignment_map = collections.OrderedDict()
     for x in init_vars:
         (name, var) = (x[0], x[1])
-        if name not in name_to_variable:
+
+        l = 'pegasus/' + name
+        l = l.replace('embeddings/weights', 'embeddings/word_embeddings')
+        l = l.replace('self/output', 'output')
+        l = l.replace('ffn/dense_1', 'output/dense')
+        l = l.replace('ffn', 'intermediate')
+        l = l.replace('memory_attention/output', 'attention/encdec_output')
+        l = l.replace('memory_attention', 'attention/encdec')
+
+        if l not in name_to_variable:
             continue
-        assignment_map[name] = name
-        initialized_variable_names[name] = 1
-        initialized_variable_names[name + ':0'] = 1
+        assignment_map[name] = name_to_variable[l]
+        initialized_variable_names[l + ':0'] = 1
 
     return (assignment_map, initialized_variable_names)
 
@@ -231,24 +335,44 @@ def model_fn_builder(
 
         is_training = mode == tf.estimator.ModeKeys.TRAIN
 
-        model = transformer.TransformerEncoderDecoderModel(
-            vocab_size,
-            hidden_size,
-            filter_size,
-            num_heads,
-            num_encoder_layers,
-            num_decoder_layers,
-            label_smoothing,
-            dropout,
+        model = modeling.TransformerModel(bert_config)
+        (llh, logits, pred_ids), _ = model(
+            inputs, target_ids = targets, training = is_training
         )
 
-        loss, outputs = model(
-            {'inputs': inputs, 'targets': targets}, training = is_training
+        with tf.compat.v1.variable_scope('student') as vs:
+            student_model = modeling.TransformerModel(student_bert_config)
+            (llh, student_logits, pred_ids), _ = model(
+                inputs, target_ids = targets, training = is_training
+            )
+
+        student_task_xent, weights = padded_cross_entropy_loss(
+            student_logits,
+            targets,
+            student_bert_config['label_smoothing'],
+            student_bert_config['vocab_size'],
         )
 
-        total_loss = loss
+        task_balance = 0.5
+        distill_temperature = 1.0
 
-        tvars = tf.trainable_variables()
+        teacher_targets = tf.nn.softmax(logits / distill_temperature)
+
+        student_distill_xent = tf.nn.softmax_cross_entropy_with_logits_v2(
+            labels = tf.stop_gradient(teacher_targets),
+            logits = student_logits / distill_temperature,
+        )
+        student_distill_xent = tf.reduce_sum(student_distill_xent * weights)
+        student_distill_xent *= distill_temperature ** 2
+
+        phase_loss = task_balance * student_task_xent
+        phase_loss += (1 - task_balance) * student_distill_xent
+
+        total_loss = phase_loss / tf.reduce_sum(weights)
+
+        tvars = [
+            v for v in tf.trainable_variables() if 'student/' not in v.name
+        ]
 
         initialized_variable_names = {}
         scaffold_fn = None
@@ -270,6 +394,7 @@ def model_fn_builder(
                 tf.train.init_from_checkpoint(init_checkpoint, assignment_map)
 
         tf.logging.info('**** Trainable Variables ****')
+        print(initialized_variable_names)
         for var in tvars:
             init_string = ''
             if var.name in initialized_variable_names:
@@ -297,7 +422,24 @@ def model_fn_builder(
             if use_tpu:
                 optimizer = tf.contrib.tpu.CrossShardOptimizer(optimizer)
 
-            train_op = optimizer.minimize(loss, global_step = global_step)
+            train_op = optimizer.minimize(total_loss, global_step = global_step)
+
+            # if not bert_config['use_bias']:
+            #     logging.info('Fixing position embedding, i.e. not trainable.')
+            #     posemb = 'pegasus/embeddings/position_embeddings'
+            #     tvars = list(
+            #         filter(lambda v: v.name.split(':')[0] != posemb, tvars)
+            #     )
+
+            # gradients = optimizer.compute_gradients(total_loss, tvars)
+
+            # train_op = optimization.create_optimizer(
+            #     total_loss,
+            #     learning_rate,
+            #     num_train_steps,
+            #     num_warmup_steps,
+            #     use_tpu,
+            # )
 
             output_spec = tf.contrib.tpu.TPUEstimatorSpec(
                 mode = mode,
@@ -308,7 +450,10 @@ def model_fn_builder(
         elif mode == tf.estimator.ModeKeys.EVAL:
 
             output_spec = tf.contrib.tpu.TPUEstimatorSpec(
-                mode = mode, loss = total_loss, scaffold_fn = scaffold_fn
+                mode = mode,
+                loss = total_loss,
+                eval_metrics = None,
+                scaffold_fn = scaffold_fn,
             )
         else:
             raise ValueError(

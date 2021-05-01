@@ -6,15 +6,16 @@
 # URL: <https://malaya.readthedocs.io/>
 # For license information, see https://github.com/huseinzol05/Malaya/blob/master/LICENSE
 
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+from malaya.function import get_device, generate_session
 from malaya.transformers.alxlnet import xlnet as xlnet_lib
 from malaya.text.bpe import (
     xlnet_tokenization,
     padding_sequence,
     merge_sentencepiece_tokens,
 )
-import collections
 from collections import defaultdict
+import collections
 import re
 import os
 import numpy as np
@@ -59,9 +60,11 @@ def _extract_attention_weights_import(tf_graph):
 
 
 class Model:
-    def __init__(self, xlnet_config, tokenizer, checkpoint, pool_mode = 'last'):
+    def __init__(
+        self, xlnet_config, tokenizer, checkpoint, pool_mode = 'last', **kwargs
+    ):
 
-        kwargs = dict(
+        kwargs_config = dict(
             is_training = True,
             use_tpu = False,
             use_bfloat16 = False,
@@ -73,42 +76,42 @@ class Model:
             clamp_len = -1,
         )
 
-        xlnet_parameters = xlnet_lib.RunConfig(**kwargs)
+        xlnet_parameters = xlnet_lib.RunConfig(**kwargs_config)
 
         self._tokenizer = tokenizer
+        device = get_device(**kwargs)
         _graph = tf.Graph()
         with _graph.as_default():
-            self.X = tf.compat.v1.placeholder(tf.int32, [None, None])
-            self.segment_ids = tf.compat.v1.placeholder(tf.int32, [None, None])
-            self.input_masks = tf.compat.v1.placeholder(
-                tf.float32, [None, None]
-            )
+            with tf.device(device):
+                self.X = tf.placeholder(tf.int32, [None, None])
+                self.segment_ids = tf.placeholder(tf.int32, [None, None])
+                self.input_masks = tf.placeholder(tf.float32, [None, None])
 
-            xlnet_model = xlnet_lib.XLNetModel(
-                xlnet_config = xlnet_config,
-                run_config = xlnet_parameters,
-                input_ids = tf.transpose(self.X, [1, 0]),
-                seg_ids = tf.transpose(self.segment_ids, [1, 0]),
-                input_mask = tf.transpose(self.input_masks, [1, 0]),
-            )
+                xlnet_model = xlnet_lib.XLNetModel(
+                    xlnet_config = xlnet_config,
+                    run_config = xlnet_parameters,
+                    input_ids = tf.transpose(self.X, [1, 0]),
+                    seg_ids = tf.transpose(self.segment_ids, [1, 0]),
+                    input_mask = tf.transpose(self.input_masks, [1, 0]),
+                )
 
-            self.logits = xlnet_model.get_pooled_out(pool_mode, True)
-            self._sess = tf.InteractiveSession()
-            self._sess.run(tf.global_variables_initializer())
-            tvars = tf.trainable_variables()
-            assignment_map, _ = get_assignment_map_from_checkpoint(
-                tvars, checkpoint
-            )
-            self._saver = tf.train.Saver(var_list = assignment_map)
-            attentions = [
-                n.name
-                for n in tf.get_default_graph().as_graph_def().node
-                if 'rel_attn/Softmax' in n.name
-            ]
-            g = tf.get_default_graph()
-            self.attention_nodes = [
-                g.get_tensor_by_name('%s:0' % (a)) for a in attentions
-            ]
+                self.logits = xlnet_model.get_pooled_out(pool_mode, True)
+                self._sess = generate_session(_graph, **kwargs)
+                self._sess.run(tf.global_variables_initializer())
+                tvars = tf.trainable_variables()
+                assignment_map, _ = get_assignment_map_from_checkpoint(
+                    tvars, checkpoint
+                )
+                self._saver = tf.train.Saver(var_list = assignment_map)
+                attentions = [
+                    n.name
+                    for n in tf.get_default_graph().as_graph_def().node
+                    if 'rel_attn/Softmax' in n.name
+                ]
+                g = tf.get_default_graph()
+                self.attention_nodes = [
+                    g.get_tensor_by_name('%s:0' % (a)) for a in attentions
+                ]
 
     @check_type
     def vectorize(self, strings: List[str]):
@@ -262,6 +265,7 @@ def load(model: str = 'alxlnet', pool_mode: str = 'last', **kwargs):
 
     from malaya.path import PATH_ALXLNET, S3_PATH_ALXLNET
     from malaya.function import check_file
+    import sentencepiece as spm
 
     if pool_mode not in ['last', 'first', 'mean', 'attn']:
         raise Exception(
@@ -276,8 +280,6 @@ def load(model: str = 'alxlnet', pool_mode: str = 'last', **kwargs):
         with tarfile.open(PATH_ALXLNET[model]['model']['model']) as tar:
             tar.extractall(path = PATH_ALXLNET[model]['path'])
 
-    import sentencepiece as spm
-
     sp_model = spm.SentencePieceProcessor()
     sp_model.Load(PATH_ALXLNET[model]['directory'] + 'sp10m.cased.v9.model')
     xlnet_config = xlnet_lib.XLNetConfig(
@@ -285,7 +287,11 @@ def load(model: str = 'alxlnet', pool_mode: str = 'last', **kwargs):
     )
     xlnet_checkpoint = PATH_ALXLNET[model]['directory'] + 'model.ckpt'
     model = Model(
-        xlnet_config, sp_model, xlnet_checkpoint, pool_mode = pool_mode
+        xlnet_config,
+        sp_model,
+        xlnet_checkpoint,
+        pool_mode = pool_mode,
+        **kwargs
     )
     model._saver.restore(model._sess, xlnet_checkpoint)
     return model

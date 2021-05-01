@@ -363,6 +363,10 @@ def classification_textcleaning(string, no_stopwords = False, lowering = True):
         )
 
 
+def summarization_textcleaning(string):
+    return re.sub(r'[ ]+', ' ', string).strip()
+
+
 def separate_dataset(trainset):
     datastring = []
     datatarget = []

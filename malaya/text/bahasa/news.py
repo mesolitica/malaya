@@ -1,1 +1,1 @@
-news = ['klik untuk membaca']
+news = ['klik untuk membaca', 'klik untuk maklumat']

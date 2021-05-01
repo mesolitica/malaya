@@ -41,7 +41,7 @@ flags.DEFINE_integer(
 flags.DEFINE_integer('train_batch_size', 32, 'Total batch size for training.')
 
 flags.DEFINE_float(
-    'learning_rate', 0.001, 'The initial learning rate for Adafactor.'
+    'learning_rate', 0.0001, 'The initial learning rate for Adafactor.'
 )
 
 flags.DEFINE_integer('num_train_steps', 1000000, 'Number of training steps.')
@@ -307,52 +307,8 @@ def model_fn_builder(
             )
         elif mode == tf.estimator.ModeKeys.EVAL:
 
-            def metric_fn(
-                masked_lm_example_loss,
-                masked_lm_log_probs,
-                masked_lm_ids,
-                masked_lm_weights,
-            ):
-                """Computes the loss and accuracy of the model."""
-                masked_lm_log_probs = tf.reshape(
-                    masked_lm_log_probs, [-1, masked_lm_log_probs.shape[-1]]
-                )
-                masked_lm_predictions = tf.argmax(
-                    masked_lm_log_probs, axis = -1, output_type = tf.int32
-                )
-                masked_lm_example_loss = tf.reshape(
-                    masked_lm_example_loss, [-1]
-                )
-                masked_lm_ids = tf.reshape(masked_lm_ids, [-1])
-                masked_lm_weights = tf.reshape(masked_lm_weights, [-1])
-                masked_lm_accuracy = tf.metrics.accuracy(
-                    labels = masked_lm_ids,
-                    predictions = masked_lm_predictions,
-                    weights = masked_lm_weights,
-                )
-                masked_lm_mean_loss = tf.metrics.mean(
-                    values = masked_lm_example_loss, weights = masked_lm_weights
-                )
-
-                return {
-                    'masked_lm_accuracy': masked_lm_accuracy,
-                    'masked_lm_loss': masked_lm_mean_loss,
-                }
-
-            eval_metrics = (
-                metric_fn,
-                [
-                    masked_lm_example_loss,
-                    masked_lm_log_probs,
-                    masked_lm_ids,
-                    masked_lm_weights,
-                ],
-            )
             output_spec = tf.contrib.tpu.TPUEstimatorSpec(
-                mode = mode,
-                loss = total_loss,
-                eval_metrics = eval_metrics,
-                scaffold_fn = scaffold_fn,
+                mode = mode, loss = total_loss, scaffold_fn = scaffold_fn
             )
         else:
             raise ValueError(

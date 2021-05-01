@@ -1,6 +1,7 @@
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 import os
 import json
+from malaya.function import get_device, generate_session
 from malaya.transformers.gpt2 import model as gpt2_model, encoder
 from herpetologist import check_type
 
@@ -13,7 +14,7 @@ def top_k_logits(logits, k):
     def _top_k():
         values, _ = tf.nn.top_k(logits, k = k)
         min_values = values[:, -1, tf.newaxis]
-        return tf.compat.v1.where(
+        return tf.where(
             logits < min_values,
             tf.ones_like(logits, dtype = logits.dtype) * -1e10,
             logits,
@@ -27,17 +28,17 @@ def top_k_logits(logits, k):
 
 
 def top_p_logits(logits, p):
-    with tf.compat.v1.variable_scope('top_p_logits'):
+    with tf.variable_scope('top_p_logits'):
         logits_sort = tf.sort(logits, direction = 'DESCENDING')
         probs_sort = tf.nn.softmax(logits_sort)
         probs_sums = tf.cumsum(probs_sort, axis = 1, exclusive = True)
-        logits_masked = tf.compat.v1.where(
+        logits_masked = tf.where(
             probs_sums < p, logits_sort, tf.ones_like(logits_sort) * 1000
         )
         min_logits = tf.reduce_min(
             input_tensor = logits_masked, axis = 1, keepdims = True
         )
-        return tf.compat.v1.where(
+        return tf.where(
             logits < min_logits,
             tf.ones_like(logits, dtype = logits.dtype) * -1e10,
             logits,
@@ -66,10 +67,7 @@ def sample_sequence(
 
     def step(hparams, tokens, past = None):
         lm_output = gpt2_model.model(
-            hparams = hparams,
-            X = tokens,
-            past = past,
-            reuse = tf.compat.v1.AUTO_REUSE,
+            hparams = hparams, X = tokens, past = past, reuse = tf.AUTO_REUSE
         )
 
         logits = lm_output['logits'][:, :, : hparams.n_vocab]
@@ -79,7 +77,7 @@ def sample_sequence(
         )
         return {'logits': logits, 'presents': presents}
 
-    with tf.compat.v1.name_scope('sample_sequence'):
+    with tf.name_scope('sample_sequence'):
         context_output = step(hparams, context[:, :-1])
 
         def body(past, prev, output):
@@ -124,22 +122,26 @@ def sample_sequence(
 
 
 class Model:
-    def __init__(self, hparams, encoder, generate_length, temperature, top_k):
+    def __init__(
+        self, hparams, encoder, generate_length, temperature, top_k, **kwargs
+    ):
         self._encoder = encoder
+        device = get_device(**kwargs)
         self._graph = tf.Graph()
         with self._graph.as_default():
-            self._X = tf.compat.v1.placeholder(tf.int32, [1, None])
-            self._model = sample_sequence(
-                hparams = hparams,
-                length = generate_length,
-                context = self._X,
-                batch_size = 1,
-                temperature = temperature,
-                top_k = top_k,
-            )
-            self._sess = tf.InteractiveSession()
-            self._sess.run(tf.global_variables_initializer())
-            self._saver = tf.train.Saver(tf.trainable_variables())
+            with tf.device(device):
+                self._X = tf.placeholder(tf.int32, [1, None])
+                self._model = sample_sequence(
+                    hparams = hparams,
+                    length = generate_length,
+                    context = self._X,
+                    batch_size = 1,
+                    temperature = temperature,
+                    top_k = top_k,
+                )
+                self._sess = generate_session(self._graph, **kwargs)
+                self._sess.run(tf.global_variables_initializer())
+                self._saver = tf.train.Saver(tf.trainable_variables())
 
     @check_type
     def generate(self, string: str):
@@ -222,6 +224,8 @@ def load(
     ]
     enc_malay = encoder.Encoder(encoder = en, bpe_merges = bpe_merges)
 
-    model = Model(hparams, enc_malay, generate_length, temperature, top_k)
+    model = Model(
+        hparams, enc_malay, generate_length, temperature, top_k, **kwargs
+    )
     model._saver.restore(model._sess, gpt2_checkpoint)
     return model

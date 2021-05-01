@@ -145,12 +145,12 @@ python3 pretraining-small-multitasks.py \
   - Vocab size 32k.
   - 1M steps, V3-8 TPU.
 
-1. **Sentence gap BASE**, last update 16th February 2021, [pegasus-base-sentencegap-2021-02-16.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/pegasus-base-multitasks-2021-02-16.tar.gz)
+3. **Sentence gap BASE**, last update 25th April 2021, [pegasus-base-sentencegap-2021-04-25.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/pegasus-base-sentencegap-2021-04-25.tar.gz)
 
   - Vocab size 32k.
   - 1.5M steps, V3-8 TPU.
 
-2. **Sentence gap SMALL**, last update 16th February 2021, [pegasus-small-sentencegap-2021-02-16.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/pegasus-base-multitasks-2021-02-16.tar.gz)
+4. **Sentence gap SMALL**, last update 25th April 2021, [pegasus-small-sentencegap-2021-04-25.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/pegasus-small-sentencegap-2021-04-25.tar.gz)
 
   - Vocab size 32k.
   - 1.5M steps, V3-8 TPU.
