@@ -26,70 +26,70 @@ import utils
 import wiki_doc_pair_pb2
 import tokenization
 
-# flags = tf.flags
+flags = tf.flags
 
-# FLAGS = flags.FLAGS
+FLAGS = flags.FLAGS
 
-# flags.DEFINE_string('input_file', None, 'Input data path.')
+flags.DEFINE_string('input_file', None, 'Input data path.')
 
-# flags.DEFINE_string(
-#     'output_file',
-#     None,
-#     'Output TF examples (or comma-separated list of files) in TFRecord '
-#     'files.',
-# )
+flags.DEFINE_string(
+    'output_file',
+    None,
+    'Output TF examples (or comma-separated list of files) in TFRecord '
+    'files.',
+)
 
-# flags.DEFINE_string(
-#     'vocab_file',
-#     None,
-#     'The vocabulary file that the SMITH model was trained on.',
-# )
+flags.DEFINE_string(
+    'vocab_file',
+    None,
+    'The vocabulary file that the SMITH model was trained on.',
+)
 
-# flags.DEFINE_bool(
-#     'do_lower_case',
-#     True,
-#     'Whether to lower case the input text. Should be True for uncased '
-#     'models and False for cased models.',
-# )
+flags.DEFINE_bool(
+    'do_lower_case',
+    True,
+    'Whether to lower case the input text. Should be True for uncased '
+    'models and False for cased models.',
+)
 
-# flags.DEFINE_bool(
-#     'add_masks_lm',
-#     True,
-#     'If true, add masks for word prediction LM pre-training.',
-# )
+flags.DEFINE_bool(
+    'add_masks_lm',
+    True,
+    'If true, add masks for word prediction LM pre-training.',
+)
 
-# flags.DEFINE_integer(
-#     'max_sent_length_by_word',
-#     32,
-#     'The maximum length of a sentence by tokens.'
-#     'A sentence will be cut off if longer than this length, and will be padded '
-#     'if shorter than it. The sentence can also be a sentence block.',
-# )
+flags.DEFINE_integer(
+    'max_sent_length_by_word',
+    32,
+    'The maximum length of a sentence by tokens.'
+    'A sentence will be cut off if longer than this length, and will be padded '
+    'if shorter than it. The sentence can also be a sentence block.',
+)
 
-# flags.DEFINE_integer(
-#     'max_doc_length_by_sentence',
-#     64,
-#     'The maximum length of a document by sentences. A '
-#     'document will be cut off if longer than this length, and'
-#     'will be padded if shorter than it.',
-# )
+flags.DEFINE_integer(
+    'max_doc_length_by_sentence',
+    64,
+    'The maximum length of a document by sentences. A '
+    'document will be cut off if longer than this length, and'
+    'will be padded if shorter than it.',
+)
 
-# flags.DEFINE_bool(
-#     'greedy_sentence_filling',
-#     True,
-#     'If true, apply the greedy sentence filling trick to reduce the '
-#     'number of padded tokens.',
-# )
+flags.DEFINE_bool(
+    'greedy_sentence_filling',
+    True,
+    'If true, apply the greedy sentence filling trick to reduce the '
+    'number of padded tokens.',
+)
 
-# flags.DEFINE_integer(
-#     'max_predictions_per_seq',
-#     5,
-#     'Maximum number of masked LM predictions per sequence.',
-# )
+flags.DEFINE_integer(
+    'max_predictions_per_seq',
+    5,
+    'Maximum number of masked LM predictions per sequence.',
+)
 
-# flags.DEFINE_integer('random_seed', 12345, 'Random seed for data generation.')
+flags.DEFINE_integer('random_seed', 12345, 'Random seed for data generation.')
 
-# flags.DEFINE_float('masked_lm_prob', 0.15, 'Masked LM probability.')
+flags.DEFINE_float('masked_lm_prob', 0.15, 'Masked LM probability.')
 
 
 class TrainingInstance(object):

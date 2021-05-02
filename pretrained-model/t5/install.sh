@@ -1,3 +1,4 @@
+# make sure use ubuntu 18.04
 sudo apt update
 sudo apt install python3-pip -y
 sudo pip3 install pip -U
@@ -10,3 +11,4 @@ sudo pip3 install google-api-python-client oauth2client
 sudo pip3 install mesh-tensorflow==0.1.13
 sudo pip3 install tfds-nightly==3.1.0.dev202005080105 tensorflow-estimator==1.15.1
 jupyter notebook --NotebookApp.token=''
+# make sure tpu tensorflow version 1.15.3

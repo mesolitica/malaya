@@ -11,9 +11,9 @@ import tensorflow as tf
 from tqdm import tqdm
 
 max_seq_length_encoder = 512
-max_seq_length_decoder = 128
-masked_lm_prob = 0.15
-max_predictions_per_seq = 30
+max_seq_length_decoder = 256
+masked_lm_prob = 0
+max_predictions_per_seq = 0
 do_whole_word_mask = True
 EOS_ID = 1
 
@@ -226,9 +226,11 @@ def get_feature(x, y, tokenizer, vocab_words, rng, dedup_factor = 5, **kwargs):
     if '[MASK2]' not in tokens:
         return []
 
-    tokens = ['[CLS]'] + tokens + ['[SEP]']
+    tokens = tokens
 
-    tokens_y = tokenizer.tokenize(y)
+    tokens_y = []
+    for y_ in y:
+        tokens_y.extend(tokenizer.tokenize(y_))
     if len(tokens_y) > (max_seq_length_decoder - 1):
         tokens_y = tokens_y[: max_seq_length_decoder - 1]
 
@@ -313,9 +315,11 @@ def process_documents(
     file,
     output_file,
     tokenizer,
-    min_slide = 5,
+    min_slide = 7,
     max_slide = 13,
-    dedup_mask = 2,
+    min_sentence = 1,
+    max_sentence = 3,
+    dedup_mask = 1,
     use_rouge = True,
 ):
     with open(file) as fopen:
@@ -331,11 +335,15 @@ def process_documents(
                 try:
                     strings = slided[i]
                     if use_rouge:
-                        rouge_ = get_rouge(strings)
+                        rouge_ = get_rouge(strings,random.randint(min_sentence, max_sentence))
                     else:
                         rouge_ = get_random(strings, rng)
-                    y = strings[rouge_[0]]
-                    strings[rouge_[0]] = '[MASK2]'
+
+                    y = []
+                    for index in rouge_:
+                        y.append(strings[index])
+                        strings[index] = '[MASK2]'
+
                     x = combine(strings)
                     result = get_feature(
                         x,
@@ -346,7 +354,8 @@ def process_documents(
                         dedup_factor = dedup_mask,
                     )
                     results.extend(result)
-                except:
+                except Exception as e:
+                    # print(e)
                     pass
 
     write_instance_to_example_file(results, output_file)

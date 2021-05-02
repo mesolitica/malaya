@@ -3,7 +3,8 @@ from __future__ import division
 from __future__ import print_function
 
 import numpy as np
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+from malaya.transformers import layers
 
 
 def gelu(x):
@@ -120,7 +121,7 @@ def positionwise_ffn(
         output = tf.layers.dropout(
             output, dropout, training = is_training, name = 'drop_2'
         )
-        output = tf.contrib.layers.layer_norm(
+        output = layers.layer_norm(
             output + inp, begin_norm_axis = -1, scope = 'LayerNorm'
         )
     return output
@@ -162,11 +163,11 @@ def post_attention(
 
     attn_out = tf.layers.dropout(attn_out, dropout, training = is_training)
     if residual:
-        output = tf.contrib.layers.layer_norm(
+        output = layers.layer_norm(
             attn_out + h, begin_norm_axis = -1, scope = 'LayerNorm'
         )
     else:
-        output = tf.contrib.layers.layer_norm(
+        output = layers.layer_norm(
             attn_out, begin_norm_axis = -1, scope = 'LayerNorm'
         )
 

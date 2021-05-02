@@ -54,6 +54,7 @@ Features
 -  **Zero-shot classification**, provide Zero-shot classification interface using Transformer-Bahasa to recognize texts without any labeled training data.
 -  **Hybrid 8-bit Quantization**, provide hybrid 8-bit quantization for all models to reduce inference time up to 2x and model size up to 4x.
 -  **Longer Sequences Transformer**, provide BigBird + Pegasus for longer Abstractive Summarization, Neural Machine Translation and Relevancy Analysis sequences.
+-  **Distilled Transformer**, provide distilled transformer models for Abstractive Summarization.
 
 Pretrained Models
 ------------------
@@ -68,7 +69,6 @@ Malaya also released Bahasa pretrained models, simply check at `Malaya/pretraine
 - **GPT2**, Language Models are Unsupervised Multitask Learners, https://github.com/openai/gpt-2
 - **LM-Transformer**, Exactly like T5, but use Tensor2Tensor instead Mesh Tensorflow with little tweak, no paper produced.
 - **PEGASUS**, Pre-training with Extracted Gap-sentences for Abstractive Summarization, https://arxiv.org/abs/1912.08777
-- **SMITH**, Siamese Multi-depth Transformer-based Hierarchical Encoder, https://research.google/pubs/pub49617/
 - **T5**, Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer, https://arxiv.org/abs/1910.10683
 - **TinyBERT**, Distilling BERT for Natural Language Understanding, https://arxiv.org/abs/1909.10351
 - **Word2Vec**, Efficient Estimation of Word Representations in Vector Space, https://arxiv.org/abs/1301.3781

@@ -1,3 +1,5 @@
+import tensorflow as tf
+import logging
 from herpetologist import check_type
 
 _transformer_availability = {
@@ -40,15 +42,6 @@ def available_transformer():
     from malaya.function import describe_availability
 
     return describe_availability(_transformer_availability)
-
-
-def available_transformer_standard_language():
-    """
-    List available transformer models.
-    """
-    from malaya.function import describe_availability
-
-    return describe_availability(_standard_transformer_availability)
 
 
 @check_type
@@ -96,6 +89,13 @@ def load(model: str = 'electra', pool_mode: str = 'last', **kwargs):
         raise ValueError(
             'model not supported, please check supported models from `malaya.transformer.available_transformer()`.'
         )
+
+    if tf.executing_eagerly():
+        logging.warning(
+            'Load pretrained transformer model will disable eager execution.'
+        )
+        tf.compat.v1.disable_eager_execution()
+
     if model in ['bert', 'tiny-bert']:
         from malaya.transformers.bert import load
 

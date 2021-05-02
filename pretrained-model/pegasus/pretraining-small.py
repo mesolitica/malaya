@@ -33,7 +33,7 @@ flags.DEFINE_integer(
 
 flags.DEFINE_integer(
     'max_seq_length_decoder',
-    128,
+    256,
     'The maximum total input sequence length after WordPiece tokenization. '
     'Sequences longer than this will be truncated, and sequences shorter '
     'than this will be padded. Must match data generation.',
@@ -41,7 +41,7 @@ flags.DEFINE_integer(
 
 flags.DEFINE_integer(
     'max_predictions_per_seq',
-    30,
+    0,
     'Maximum number of masked LM predictions per sequence. '
     'Must match data generation.',
 )
@@ -373,19 +373,19 @@ def model_fn_builder(
             {'inputs': input_ids, 'targets': target_ids}, training = is_training
         )
 
-        (
-            masked_lm_loss,
-            masked_lm_example_loss,
-            masked_lm_log_probs,
-        ) = get_masked_lm_output(
-            model._context['memory'],
-            model._embedding_layer.weights_VxD,
-            masked_lm_positions,
-            masked_lm_ids,
-            masked_lm_weights,
-        )
+        # (
+        #     masked_lm_loss,
+        #     masked_lm_example_loss,
+        #     masked_lm_log_probs,
+        # ) = get_masked_lm_output(
+        #     model._context['memory'],
+        #     model._embedding_layer.weights_VxD,
+        #     masked_lm_positions,
+        #     masked_lm_ids,
+        #     masked_lm_weights,
+        # )
 
-        total_loss = masked_lm_loss + loss
+        total_loss = loss
 
         tvars = tf.trainable_variables()
 
@@ -419,6 +419,23 @@ def model_fn_builder(
 
         output_spec = None
         if mode == tf.estimator.ModeKeys.TRAIN:
+
+            init_lr = learning_rate
+            global_step = tf.train.get_global_step()
+            lr = (
+                init_lr
+                / 0.01
+                * tf.rsqrt(tf.maximum(tf.to_float(global_step), 10000))
+            )
+
+            optimizer = adafactor.AdafactorOptimizer(
+                learning_rate = lr,
+                decay_rate = adafactor.adafactor_decay_rate_pow(0.8),
+                beta1 = 0.0,
+            )
+            if use_tpu:
+                optimizer = tf.contrib.tpu.CrossShardOptimizer(optimizer)
+            train_op = optimizer.minimize(loss, global_step = global_step)
 
             # global_step = tf.train.get_global_step()
             # lr = learning_rate_schedule_noam(

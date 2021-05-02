@@ -50,7 +50,7 @@ def rake(
     top_k: int = 5,
     atleast: int = 1,
     stopwords = get_stopwords,
-    **kwargs
+    **kwargs,
 ):
     """
     Extract keywords using Rake algorithm.
@@ -136,7 +136,7 @@ def textrank(
     top_k: int = 5,
     atleast: int = 1,
     stopwords = get_stopwords,
-    **kwargs
+    **kwargs,
 ):
     """
     Extract keywords using Textrank algorithm.
@@ -214,7 +214,7 @@ def attention(
     top_k: int = 5,
     atleast: int = 1,
     stopwords = get_stopwords,
-    **kwargs
+    **kwargs,
 ):
     """
     Extract keywords using Attention mechanism.
@@ -286,45 +286,145 @@ def attention(
     return ranked_sentences[:top_k]
 
 
+@check_type
 def similarity_transformer(
-    string,
+    string: str,
     model,
     vectorizer = None,
     top_k: int = 5,
     atleast: int = 1,
+    use_maxsum: bool = False,
+    use_mmr: bool = False,
+    diversity: float = 0.5,
+    nr_candidates: int = 20,
     stopwords = get_stopwords,
-    **kwargs
+    **kwargs,
 ):
+    """
+    Extract keywords using Sentence embedding VS keyword embedding similarity.
+    https://github.com/MaartenGr/KeyBERT/blob/master/keybert/model.py
+
+    Parameters
+    ----------
+    string: str
+    model: Object
+        Transformer model or any model has `attention` method.
+    vectorizer: Object, optional (default=None)
+        Prefer `sklearn.feature_extraction.text.CountVectorizer` or, 
+        `malaya.text.vectorizer.SkipGramCountVectorizer`.
+        If None, will generate ngram automatically based on `stopwords`.
+    top_k: int, optional (default=5)
+        return top-k results.
+    atleast: int, optional (default=1)
+        at least count appeared in the string to accept as candidate.
+    use_maxsum: bool, optional (default=False) 
+        Whether to use Max Sum Similarity.
+    use_mmr: bool, optional (default=False) 
+        Whether to use MMR.
+    diversity: float, optional (default=0.5)
+        The diversity of results between 0 and 1 if use_mmr is True.
+    nr_candidates: int, optional (default=20) 
+        The number of candidates to consider if use_maxsum is set to True.
+    stopwords: List[str], (default=malaya.texts.function.get_stopwords)
+        A callable that returned a List[str], or a List[str], or a Tuple[str]
+
+    Returns
+    -------
+    result: Tuple[float, str]
+    """
     stopwords = validator.validate_stopwords(stopwords)
-    if not hasattr(model, '_tree_plot'):
-        raise ValueError('model must have `_tree_plot` method')
+
+    if not hasattr(model, 'vectorize'):
+        raise ValueError('model must have `vectorize` method')
     if top_k < 1:
         raise ValueError('top_k must bigger than 0')
     if atleast < 1:
         raise ValueError('atleast must bigger than 0')
-    if ngram_method not in methods:
-        raise ValueError("ngram_method must be in ['bow', 'skip-gram']")
+    if not vectorizer:
+        auto_ngram = True
+    else:
+        auto_ngram = False
+        if not hasattr(vectorizer, 'fit'):
+            raise ValueError('vectorizer must have `fit` method')
+    if auto_ngram and not len(stopwords):
+        raise ValueError('insert stopwords if auto_ngram')
+
+    if nr_candidates < top_k:
+        raise Exception('nr_candidates must bigger than top_k')
+
+    string = transformer_textcleaning(string)
 
     if auto_ngram:
         vocab = _auto_ngram(string, stopwords)
     else:
-        vocab = _base(
-            string,
-            ngram_method = ngram_method,
-            ngram = ngram,
-            stopwords = stopwords,
-            **kwargs
-        )
+        vocab = _base(string, vectorizer = vectorizer, **kwargs)
 
-    similar = model._tree_plot(list(vocab.keys()))
-    similar[similar >= 0.99999] = 0
-    scores = pagerank(similar)
-    ranked_sentences = sorted(
-        [
-            (scores[i], s)
-            for i, s in enumerate(vocab.keys())
-            if vocab[s] >= atleast
-        ],
-        reverse = True,
-    )
+    words = list(vocab.keys())
+    vectors_keywords = model.vectorize(words)
+    vectors_string = model.vectorize([string])
+
+    if use_mmr:
+        # https://github.com/MaartenGr/KeyBERT/blob/master/keybert/mmr.py
+
+        word_doc_similarity = cosine_similarity(
+            vectors_keywords, vectors_string
+        )
+        word_similarity = cosine_similarity(vectors_keywords)
+        keywords_idx = [np.argmax(word_doc_similarity)]
+        candidates_idx = [i for i in range(len(words)) if i != keywords_idx[0]]
+        for _ in range(top_n - 1):
+            candidate_similarities = word_doc_similarity[candidates_idx, :]
+            target_similarities = np.max(
+                word_similarity[candidates_idx][:, keywords_idx], axis = 1
+            )
+
+            mmr = (
+                1 - diversity
+            ) * candidate_similarities - diversity * target_similarities.reshape(
+                -1, 1
+            )
+            mmr_idx = candidates_idx[np.argmax(mmr)]
+
+            keywords_idx.append(mmr_idx)
+            candidates_idx.remove(mmr_idx)
+        ranked_sentences = [
+            (word_doc_similarity.reshape(1, -1)[0][idx], words[idx])
+            for idx in keywords_idx
+        ]
+
+    elif use_maxsum:
+        # https://github.com/MaartenGr/KeyBERT/blob/master/keybert/maxsum.py
+
+        distances = cosine_similarity(vectors_string, vectors_keywords)
+        distances_words = cosine_similarity(vectors_keywords, vectors_keywords)
+        words_idx = list(distances.argsort()[0][-nr_candidates:])
+        words_vals = [words[index] for index in words_idx]
+        candidates = distances_words[np.ix_(words_idx, words_idx)]
+        min_sim = 100_000
+        candidate = None
+        for combination in itertools.combinations(range(len(words_idx)), top_n):
+            sim = sum(
+                [
+                    candidates[i][j]
+                    for i in combination
+                    for j in combination
+                    if i != j
+                ]
+            )
+            if sim < min_sim:
+                candidate = combination
+                min_sim = sim
+
+        ranked_sentences = [
+            (distances[0][idx], words_vals[idx]) for idx in candidate
+        ]
+
+    else:
+        distances = cosine_similarity(vectors_string, vectors_keywords)
+        ranked_sentences = [
+            (distances[0][index], words[index])
+            for index in distances.argsort()[0]
+        ][::-1]
+
+    ranked_sentences = [i for i in ranked_sentences if vocab[i[1]] >= atleast]
     return ranked_sentences[:top_k]

@@ -122,7 +122,7 @@ bert_config = {
     'norm_type': 'prenorm',
     'block_size': 64,
     'num_rand_blocks': 3,
-    'vocab_size': 32128,
+    'vocab_size': 32000,
     'beam_size': 1,
     'alpha': 0.0,
     'couple_encoder_decoder': False,

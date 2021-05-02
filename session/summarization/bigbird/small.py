@@ -122,7 +122,7 @@ bert_config = {
     'norm_type': 'prenorm',
     'block_size': 64,
     'num_rand_blocks': 3,
-    'vocab_size': 32128,
+    'vocab_size': 32000,
     'beam_size': 1,
     'alpha': 0.0,
     'couple_encoder_decoder': False,
@@ -375,13 +375,13 @@ def model_fn_builder(
 
             # gradients = optimizer.compute_gradients(total_loss, tvars)
 
-            train_op = optimization.create_optimizer(
-                total_loss,
-                learning_rate,
-                num_train_steps,
-                num_warmup_steps,
-                use_tpu,
-            )
+            # train_op = optimization.create_optimizer(
+            #     total_loss,
+            #     learning_rate,
+            #     num_train_steps,
+            #     num_warmup_steps,
+            #     use_tpu,
+            # )
 
             output_spec = tf.contrib.tpu.TPUEstimatorSpec(
                 mode = mode,

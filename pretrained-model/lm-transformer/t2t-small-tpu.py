@@ -1,6 +1,3 @@
-import faulthandler
-
-faulthandler.enable()
 from tensor2tensor.data_generators import problem
 from tensor2tensor.data_generators import text_problems
 from tensor2tensor.data_generators import translate
@@ -61,16 +58,16 @@ class Seq2Seq(text_problems.Text2TextProblem):
 
 
 DATA_DIR = 'gs://mesolitica-tpu-general/t2t/data'
-TRAIN_DIR = 'gs://mesolitica-tpu-general/t2t-small-v2'
+TRAIN_DIR = 'gs://mesolitica-tpu-general/t2t-small-v3'
 
 PROBLEM = 'seq2_seq'
 t2t_problem = problems.problem(PROBLEM)
 
-train_steps = 500000
+train_steps = 1000000
 eval_steps = 10
 batch_size = 32
-save_checkpoints_steps = 25000
-ALPHA = 0.003
+save_checkpoints_steps = 10000
+ALPHA = 0.01
 schedule = 'continuous_train_and_eval'
 MODEL = 'transformer'
 HPARAMS = 'transformer_base'
@@ -92,26 +89,24 @@ hparams.num_heads = 8
 hparams.num_hidden_layers = 6
 hparams.vocab_divisor = 128
 hparams.dropout = 0.1
-hparams.max_length = 1024
+hparams.attention_dropout = 0.1
+hparams.relu_dropout = 0.1
 
 # LM
 hparams.label_smoothing = 0.0
+hparams.shared_embedding_and_softmax_weights = True
 hparams.eval_drop_long_sequences = True
 hparams.max_length = 1024
-hparams.multiproblem_mixing_schedule = 'pretrain'
 hparams.use_fixed_batch_size = True
-hparams.shared_embedding = True
-hparams.shared_embedding_and_softmax_weights = False
-
-# tpu
 hparams.symbol_modality_num_shards = 1
-hparams.attention_dropout_broadcast_dims = '0,1'
-hparams.relu_dropout_broadcast_dims = '1'
-hparams.layer_prepostprocess_dropout_broadcast_dims = '1'
+hparams.attention_dropout_broadcast_dims = '0,1'  # batch, heads
+hparams.relu_dropout_broadcast_dims = '1'  # length
+hparams.layer_prepostprocess_dropout_broadcast_dims = '1'  # length
 
 hparams.optimizer = 'Adafactor'
 hparams.learning_rate_warmup_steps = 10000
-hparams.learning_rate_schedule = 'rsqrt_decay'
+hparams.learning_rate_decay_steps = 0.1
+hparams.learning_rate_schedule = 'rsqrt_decay*linear_decay'
 
 print(hparams)
 
@@ -120,7 +115,7 @@ RUN_CONFIG = create_run_config(
     model_name = MODEL,
     save_checkpoints_steps = save_checkpoints_steps,
     use_tpu = True,
-    cloud_tpu_name = 'node-2',
+    cloud_tpu_name = 'node-5',
     iterations_per_loop = 100,
     schedule = 'train',
 )

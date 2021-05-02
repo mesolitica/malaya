@@ -31,16 +31,15 @@ split -l 300000 -d --additional-suffix=.txt ../dumping-parliament.txt splitted-p
 
 ```bash
 python3 create-pretraining-data.py # mask sentence using ROUGE score
-python3 create-pretraining-data-random.py # mask sentence randomly
 ```
 
 Make sure you set proper constants in [create_pretraining_data.py](create_pretraining.py),
 
 ```python
 max_seq_length_encoder = 512
-max_seq_length_decoder = 128
-masked_lm_prob = 0.15
-max_predictions_per_seq = 30
+max_seq_length_decoder = 256
+masked_lm_prob = 0.0
+max_predictions_per_seq = 0
 do_whole_word_mask = True
 ```
 
@@ -66,15 +65,16 @@ We do not want to mask numbers or words started with `RM`.
 
 ```bash
 python3 pretraining-base.py \
---input_file=gs://mesolitica-tpu-general/pegasus-data-v2/*.tfrecord \
---output_dir=gs://mesolitica-tpu-general/pegasus-base-v2 \
+--input_file=gs://mesolitica-tpu-general/pegasus-data-v2/tfrecord/*.tfrecord \
+--output_dir=gs://mesolitica-tpu-general/pegasus-base-v3 \
 --do_train=True \
 --train_batch_size=128 \
---num_train_steps=700000 \
+--num_train_steps=1500000 \
 --iterations_per_loop=100 \
---tpu_name=node-2 \
+--tpu_name=node-1 \
 --tpu_zone=europe-west4-a \
 --save_checkpoints_steps=25000 \
+--learning_rate=0.01 \
 --use_tpu=True
 ```
 
@@ -82,15 +82,16 @@ python3 pretraining-base.py \
 
 ```bash
 python3 pretraining-small.py \
---input_file=gs://mesolitica-tpu-general/pegasus-data-v2/*.tfrecord \
---output_dir=gs://mesolitica-tpu-general/pegasus-small-v2 \
+--input_file=gs://mesolitica-tpu-general/pegasus-data-v2/tfrecord/*.tfrecord \
+--output_dir=gs://mesolitica-tpu-general/pegasus-small-v3 \
 --do_train=True \
 --train_batch_size=256 \
---num_train_steps=700000 \
+--num_train_steps=1500000 \
 --iterations_per_loop=100 \
---tpu_name=node-1 \
+--tpu_name=node-2 \
 --tpu_zone=europe-west4-a \
 --save_checkpoints_steps=25000 \
+--learning_rate=0.001 \
 --use_tpu=True
 ```
 
@@ -144,12 +145,12 @@ python3 pretraining-small-multitasks.py \
   - Vocab size 32k.
   - 1M steps, V3-8 TPU.
 
-1. **Sentence gap BASE**, last update 16th February 2021, [pegasus-base-sentencegap-2021-02-16.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/pegasus-base-multitasks-2021-02-16.tar.gz)
+3. **Sentence gap BASE**, last update 25th April 2021, [pegasus-base-sentencegap-2021-04-25.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/pegasus-base-sentencegap-2021-04-25.tar.gz)
 
   - Vocab size 32k.
   - 1.5M steps, V3-8 TPU.
 
-2. **Sentence gap SMALL**, last update 16th February 2021, [pegasus-small-sentencegap-2021-02-16.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/pegasus-base-multitasks-2021-02-16.tar.gz)
+4. **Sentence gap SMALL**, last update 25th April 2021, [pegasus-small-sentencegap-2021-04-25.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/pegasus-small-sentencegap-2021-04-25.tar.gz)
 
   - Vocab size 32k.
   - 1.5M steps, V3-8 TPU.
