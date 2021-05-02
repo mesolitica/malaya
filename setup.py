@@ -5,8 +5,8 @@ __packagename__ = 'malaya'
 
 
 def readme():
-    with open('README-pypi.rst', 'rb') as f:
-        return f.read().decode('UTF-8')
+    with open('README-pypi.rst') as f:
+        return f.read()
 
 
 with open('requirements.txt') as fopen:

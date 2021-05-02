@@ -18,7 +18,7 @@ GPU version
 
     $ pip install malaya-gpu
 
-Only **Python 3.6 and above** and **Tensorflow 1.15 and above* are supported.
+Only **Python 3.6.0 and above** and **Tensorflow 1.15.0 and above** are supported.
 
 We recommend to use **virtualenv** for development. All examples tested on Tensorflow version 1.15.4 and 2.4.1.
 
@@ -95,17 +95,11 @@ If you use our software for research, please cite:
 Acknowledgement
 ----------------
 
-Thanks to `Im Big <https://www.facebook.com/imbigofficial/>`_, `LigBlou <https://www.facebook.com/ligblou>`_, `Mesolitica <https://mesolitica.com/>`_ and `KeyReply <https://www.keyreply.com/>`_ for sponsoring AWS, GCP and private cloud to train Malaya models.
+Thanks to `KeyReply <https://www.keyreply.com/>`_ for sponsoring private cloud to train Malaya models, without it, this library will collapse entirely. 
+
+Also, thanks to `Tensorflow Research Cloud <https://www.tensorflow.org/tfrc>`_ for free TPUs access.
 
 Contributing
 ----------------
 
 Thank you for contributing this library, really helps a lot. Feel free to contact me to suggest me anything or want to contribute other kind of forms, we accept everything, not just code!
-
-License
---------
-
-.. |License| image:: https://app.fossa.io/api/projects/git%2Bgithub.com%2Fhuseinzol05%2FMalaya.svg?type=large
-   :target: https://app.fossa.io/projects/git%2Bgithub.com%2Fhuseinzol05%2FMalaya?ref=badge_large
-
-|License|
