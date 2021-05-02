@@ -54,6 +54,7 @@ Features
 -  **Zero-shot classification**, provide Zero-shot classification interface using Transformer-Bahasa to recognize texts without any labeled training data.
 -  **Hybrid 8-bit Quantization**, provide hybrid 8-bit quantization for all models to reduce inference time up to 2x and model size up to 4x.
 -  **Longer Sequences Transformer**, provide BigBird + Pegasus for longer Abstractive Summarization, Neural Machine Translation and Relevancy Analysis sequences.
+-  **Distilled Transformer**, provide distilled transformer models for Abstractive Summarization.
 
 Pretrained Models
 ------------------

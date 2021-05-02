@@ -1,4 +1,5 @@
 import re
+import numpy as np
 from malaya.text.bahasa.lapor import lapor as _lapor_words
 from malaya.text.bahasa.news import news as _news_words
 from malaya.text.function import split_into_sentences

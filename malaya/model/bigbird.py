@@ -299,7 +299,7 @@ class Summarization(Seq2Seq):
         Parameters
         ----------
         strings: List[str]
-        temperature: float, (default=0.2)
+        temperature: float, (default=0.3)
             logits * -log(random.uniform) * temperature.
         postprocess: bool, optional (default=True)
             If True, will filter sentence generated using ROUGE score and removed international news publisher.
@@ -310,7 +310,6 @@ class Summarization(Seq2Seq):
         """
         return self._summarize(
             strings = strings,
-            mode = mode,
             top_p = 0.0,
             temperature = temperature,
             postprocess = postprocess,
@@ -334,7 +333,7 @@ class Summarization(Seq2Seq):
         strings: List[str]
         top_p: float, (default=0.7)
             cumulative distribution and cut off as soon as the CDF exceeds `top_p`.
-        temperature: float, (default=0.2)
+        temperature: float, (default=0.3)
             logits * -log(random.uniform) * temperature.
         postprocess: bool, optional (default=True)
             If True, will filter sentence generated using ROUGE score and removed international news publisher.
@@ -345,7 +344,6 @@ class Summarization(Seq2Seq):
         """
         return self._summarize(
             strings = strings,
-            mode = mode,
             top_p = top_p,
             temperature = temperature,
             postprocess = postprocess,

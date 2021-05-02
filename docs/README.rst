@@ -2,7 +2,7 @@
 
     <p align="center">
         <a href="#readme">
-            <img alt="logo" width="50%" src="https://malaya-dataset.s3-ap-southeast-1.amazonaws.com/malaya-icon.png">
+            <img alt="logo" width="40%" src="https://f000.backblazeb2.com/file/huseinhouse-public/malaya.png">
         </a>
     </p>
     <p align="center">
