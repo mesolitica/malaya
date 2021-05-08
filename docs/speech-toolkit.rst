@@ -58,7 +58,7 @@ Features
 -  **Speaker overlap**, detect overlap speakers using Finetuned Speaker Vector.
 -  **Speaker Vector**, calculate similarity between speakers using Pretrained Speaker Vector.
 -  **Speech Enhancement**, enhance voice activities using Waveform UNET.
--  **Speech-to-Text**, End-to-End Speech to Text for Malay and Mixed (Malay and Singlish) using RNN-Transducer.
+-  **Speech-to-Text**, End-to-End Speech to Text for Malay and Mixed (Malay and Singlish) using RNN-Transducer and Wav2Vec2 CTC.
 -  **Super Resolution**, Super Resolution 4x for Waveform.
 -  **Text-to-Speech**, Text to Speech for Malay and Singlish using Tacotron2 and FastSpeech2.
 -  **Vocoder**, convert Mel to Waveform using MelGAN, Multiband MelGAN and Universal MelGAN Vocoder.
