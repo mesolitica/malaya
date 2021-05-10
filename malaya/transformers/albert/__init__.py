@@ -313,4 +313,4 @@ def load(model: str = 'albert', **kwargs):
     model = Model(bert_config, tokenizer, **kwargs)
 
     model._saver.restore(model._sess, bert_checkpoint)
-    return model, bert_checkpoint
+    return model

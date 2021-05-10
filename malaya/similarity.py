@@ -365,9 +365,9 @@ class Doc2VecSimilarity:
         plt.show()
 
 
-def doc2vec(wordvector):
+def doc2vec_wordvector(wordvector):
     """
-    Doc2vec interface for text similarity.
+    Doc2vec interface for text similarity using Word Vector.
 
     Parameters
     ----------
@@ -385,14 +385,15 @@ def doc2vec(wordvector):
     return Doc2VecSimilarity(wordvector)
 
 
-def encoder(vectorizer):
+def doc2vec_vectorizer(vectorizer):
     """
-    Encoder interface for text similarity.
+    Doc2vec interface for text similarity using Encoder model.
 
     Parameters
     ----------
     vectorizer : object
-        encoder interface object, BERT, skip-thought, XLNET.
+        encoder interface object, BERT, XLNET.
+        should have `vectorize` method.
 
     Returns
     -------
@@ -500,14 +501,15 @@ def _transformer(
             )
 
         if model in ['albert', 'tiny-albert']:
+            from malaya.transformers.albert import tokenization
+
             tokenizer = tokenization.FullTokenizer(
                 vocab_file = path['vocab'],
                 do_lower_case = False,
                 spm_model_file = path['tokenizer'],
             )
-
         selected_class = bert_class
-        inputs = ['Placeholder', 'Placeholder_1']
+
         if siamese:
             selected_node = 'import/bert/pooler/dense/BiasAdd:0'
 
@@ -515,13 +517,13 @@ def _transformer(
 
         tokenizer = sentencepiece_tokenizer_xlnet(path['tokenizer'])
         selected_class = xlnet_class
-        inputs = ['Placeholder', 'Placeholder_1', 'Placeholder_2']
         if siamese:
             selected_node = 'import/model_1/sequnece_summary/summary/BiasAdd:0'
 
     if not siamese:
         selected_node = _vectorizer_mapping[model]
 
+    inputs = ['Placeholder', 'Placeholder_1', 'Placeholder_2']
     outputs = ['logits']
     input_nodes, output_nodes = nodes_session(
         g, inputs, outputs, extra = {'vectorizer': selected_node}

@@ -1157,3 +1157,97 @@ class ZeroshotXLNET(Base):
             raise ValueError('labels must be unique.')
 
         return self._base(strings, labels)
+
+
+class KeyphraseXLNET(Base):
+    def __init__(
+        self,
+        input_nodes,
+        output_nodes,
+        sess,
+        tokenizer,
+        label = ['not similar', 'similar'],
+    ):
+        Base.__init__(
+            self,
+            input_nodes = input_nodes,
+            output_nodes = output_nodes,
+            sess = sess,
+            tokenizer = tokenizer,
+            label = label,
+        )
+        self._batch_size = 20
+
+    def _base(self, strings_left, strings_right):
+        input_ids_left, input_masks_left, segment_ids_left, _ = xlnet_tokenization(
+            self._tokenizer, strings_left
+        )
+        input_ids_right, input_masks_right, segment_ids_right, _ = xlnet_tokenization(
+            self._tokenizer, strings_left
+        )
+
+        r = self._execute(
+            inputs = [
+                input_ids_left,
+                segment_ids_left,
+                input_masks_left,
+                input_ids_right,
+                input_masks_right,
+                segment_ids_right,
+            ],
+            input_labels = [
+                'Placeholder',
+                'Placeholder_1',
+                'Placeholder_2',
+                'Placeholder_3',
+                'Placeholder_4',
+                'Placeholder_5',
+            ],
+            output_labels = ['logits'],
+        )
+        return softmax(r['logits'], axis = -1)
+
+    @check_type
+    def vectorize(self, strings: List[str]):
+        """
+        Vectorize list of strings.
+
+        Parameters
+        ----------
+        strings : List[str]
+
+        Returns
+        -------
+        result: np.array
+        """
+        input_ids, input_masks, segment_ids, _ = xlnet_tokenization(
+            self._tokenizer, strings
+        )
+        r = self._execute(
+            inputs = [input_ids, segment_ids, input_masks],
+            input_labels = ['Placeholder', 'Placeholder_1', 'Placeholder_2'],
+            output_labels = ['xlnet/summary'],
+        )
+        return r['xlnet/summary']
+
+    @check_type
+    def predict_proba(self, strings_left: List[str], strings_right: List[str]):
+        """
+        calculate similarity for two different batch of texts.
+
+        Parameters
+        ----------
+        string_left : List[str]
+        string_right : List[str]
+
+        Returns
+        -------
+        result : List[float]
+        """
+
+        if len(strings_left) != len(strings_right):
+            raise ValueError(
+                'length `strings_left` must be same as length `strings_right`'
+            )
+
+        return self._base(strings_left, strings_right)[:, 1]

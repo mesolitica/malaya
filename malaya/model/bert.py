@@ -813,7 +813,7 @@ class SiameseBERT(Base):
             )
 
         plt.figure(figsize = figsize)
-        g = sns.clustermap(
+        g = sns.heatmap(
             results,
             cmap = 'Blues',
             xticklabels = strings,
@@ -1144,3 +1144,92 @@ class ZeroshotBERT(Base):
             raise ValueError('labels must be unique.')
 
         return self._base(strings, labels)
+
+
+class KeyphraseBERT(Base):
+    def __init__(
+        self,
+        input_nodes,
+        output_nodes,
+        sess,
+        tokenizer,
+        label = ['not similar', 'similar'],
+    ):
+        Base.__init__(
+            self,
+            input_nodes = input_nodes,
+            output_nodes = output_nodes,
+            sess = sess,
+            tokenizer = tokenizer,
+            label = label,
+        )
+        self._batch_size = 20
+
+    def _base(self, strings_left, strings_right):
+        input_ids_left, input_masks_left, _, _ = bert_tokenization(
+            self._tokenizer, strings_left
+        )
+        input_ids_right, input_masks_right, _, _ = bert_tokenization(
+            self._tokenizer, strings_right
+        )
+        r = self._execute(
+            inputs = [
+                input_ids_left,
+                input_masks_left,
+                input_ids_right,
+                input_masks_right,
+            ],
+            input_labels = [
+                'Placeholder',
+                'Placeholder_1',
+                'Placeholder_2',
+                'Placeholder_3',
+            ],
+            output_labels = ['logits'],
+        )
+        return softmax(r['logits'], axis = -1)
+
+    @check_type
+    def vectorize(self, strings: List[str]):
+        """
+        Vectorize list of strings.
+
+        Parameters
+        ----------
+        strings : List[str]
+
+        Returns
+        -------
+        result: np.array
+        """
+        input_ids, input_masks, _, _ = bert_tokenization(
+            self._tokenizer, strings
+        )
+        r = self._execute(
+            inputs = [input_ids, input_masks],
+            input_labels = ['Placeholder', 'Placeholder_1'],
+            output_labels = ['bert/summary'],
+        )
+        return r['bert/summary']
+
+    @check_type
+    def predict_proba(self, strings_left: List[str], strings_right: List[str]):
+        """
+        calculate similarity for two different batch of texts.
+
+        Parameters
+        ----------
+        strings_left : List[str]
+        strings_right : List[str]
+
+        Returns
+        -------
+        list: list of float
+        """
+
+        if len(strings_left) != len(strings_right):
+            raise ValueError(
+                'length `strings_left` must be same as length `strings_right`'
+            )
+
+        return self._base(strings_left, strings_right)[:, 1]

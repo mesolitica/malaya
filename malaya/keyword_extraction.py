@@ -9,6 +9,19 @@ from malaya.text.function import (
     transformer_textcleaning,
     get_stopwords,
 )
+from malaya.function import (
+    check_file,
+    load_graph,
+    generate_session,
+    nodes_session,
+)
+from malaya.text.bpe import (
+    sentencepiece_tokenizer_bert,
+    sentencepiece_tokenizer_xlnet,
+)
+from malaya.model.bert import KeyphraseBERT
+from malaya.model.xlnet import KeyphraseXLNET
+from malaya.path import MODEL_VOCAB, MODEL_BPE
 from malaya.function import validator
 from malaya.graph.pagerank import pagerank
 from typing import Callable, Tuple, List
@@ -287,28 +300,23 @@ def attention(
 
 
 @check_type
-def similarity_transformer(
+def similarity(
     string: str,
     model,
     vectorizer = None,
     top_k: int = 5,
     atleast: int = 1,
-    use_maxsum: bool = False,
-    use_mmr: bool = False,
-    diversity: float = 0.5,
-    nr_candidates: int = 20,
     stopwords = get_stopwords,
     **kwargs,
 ):
     """
     Extract keywords using Sentence embedding VS keyword embedding similarity.
-    https://github.com/MaartenGr/KeyBERT/blob/master/keybert/model.py
 
     Parameters
     ----------
     string: str
     model: Object
-        Transformer model or any model has `attention` method.
+        Transformer model or any model has `vectorize` method.
     vectorizer: Object, optional (default=None)
         Prefer `sklearn.feature_extraction.text.CountVectorizer` or, 
         `malaya.text.vectorizer.SkipGramCountVectorizer`.
@@ -317,14 +325,6 @@ def similarity_transformer(
         return top-k results.
     atleast: int, optional (default=1)
         at least count appeared in the string to accept as candidate.
-    use_maxsum: bool, optional (default=False) 
-        Whether to use Max Sum Similarity.
-    use_mmr: bool, optional (default=False) 
-        Whether to use MMR.
-    diversity: float, optional (default=0.5)
-        The diversity of results between 0 and 1 if use_mmr is True.
-    nr_candidates: int, optional (default=20) 
-        The number of candidates to consider if use_maxsum is set to True.
     stopwords: List[str], (default=malaya.texts.function.get_stopwords)
         A callable that returned a List[str], or a List[str], or a Tuple[str]
 
@@ -363,68 +363,139 @@ def similarity_transformer(
     vectors_keywords = model.vectorize(words)
     vectors_string = model.vectorize([string])
 
-    if use_mmr:
-        # https://github.com/MaartenGr/KeyBERT/blob/master/keybert/mmr.py
-
-        word_doc_similarity = cosine_similarity(
-            vectors_keywords, vectors_string
-        )
-        word_similarity = cosine_similarity(vectors_keywords)
-        keywords_idx = [np.argmax(word_doc_similarity)]
-        candidates_idx = [i for i in range(len(words)) if i != keywords_idx[0]]
-        for _ in range(top_n - 1):
-            candidate_similarities = word_doc_similarity[candidates_idx, :]
-            target_similarities = np.max(
-                word_similarity[candidates_idx][:, keywords_idx], axis = 1
-            )
-
-            mmr = (
-                1 - diversity
-            ) * candidate_similarities - diversity * target_similarities.reshape(
-                -1, 1
-            )
-            mmr_idx = candidates_idx[np.argmax(mmr)]
-
-            keywords_idx.append(mmr_idx)
-            candidates_idx.remove(mmr_idx)
-        ranked_sentences = [
-            (word_doc_similarity.reshape(1, -1)[0][idx], words[idx])
-            for idx in keywords_idx
-        ]
-
-    elif use_maxsum:
-        # https://github.com/MaartenGr/KeyBERT/blob/master/keybert/maxsum.py
-
-        distances = cosine_similarity(vectors_string, vectors_keywords)
-        distances_words = cosine_similarity(vectors_keywords, vectors_keywords)
-        words_idx = list(distances.argsort()[0][-nr_candidates:])
-        words_vals = [words[index] for index in words_idx]
-        candidates = distances_words[np.ix_(words_idx, words_idx)]
-        min_sim = 100_000
-        candidate = None
-        for combination in itertools.combinations(range(len(words_idx)), top_n):
-            sim = sum(
-                [
-                    candidates[i][j]
-                    for i in combination
-                    for j in combination
-                    if i != j
-                ]
-            )
-            if sim < min_sim:
-                candidate = combination
-                min_sim = sim
-
-        ranked_sentences = [
-            (distances[0][idx], words_vals[idx]) for idx in candidate
-        ]
-
-    else:
-        distances = cosine_similarity(vectors_string, vectors_keywords)
-        ranked_sentences = [
-            (distances[0][index], words[index])
-            for index in distances.argsort()[0]
-        ][::-1]
+    distances = cosine_similarity(vectors_string, vectors_keywords)
+    ranked_sentences = [
+        (distances[0][index], words[index]) for index in distances.argsort()[0]
+    ][::-1]
 
     ranked_sentences = [i for i in ranked_sentences if vocab[i[1]] >= atleast]
     return ranked_sentences[:top_k]
+
+
+_transformer_availability = {
+    'bert': {
+        'Size (MB)': 443,
+        'Quantized Size (MB)': 112,
+        'macro precision': 0.99403,
+        'macro recall': 0.99568,
+        'macro f1-score': 0.99485,
+    },
+    'tiny-bert': {
+        'Size (MB)': 59.5,
+        'Quantized Size (MB)': 15.1,
+        'macro precision': 0.99494,
+        'macro recall': 0.99707,
+        'macro f1-score': 0.99600,
+    },
+    'alxlnet': {
+        'Size (MB)': 53,
+        'Quantized Size (MB)': 14,
+        'macro precision': 0.98170,
+        'macro recall': 0.99182,
+        'macro f1-score': 0.98663,
+    },
+    'xlnet': {
+        'Size (MB)': 472,
+        'Quantized Size (MB)': 120,
+        'macro precision': 0.99667,
+        'macro recall': 0.99819,
+        'macro f1-score': 0.99742,
+    },
+}
+
+
+def available_transformer():
+    """
+    List available transformer keyword similarity model.
+    """
+    from malaya.function import describe_availability
+
+    return describe_availability(
+        _transformer_availability, text = 'tested on 20% test set.'
+    )
+
+
+@check_type
+def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
+    """
+    Load Transformer keyword similarity model.
+
+    Parameters
+    ----------
+    model : str, optional (default='bert')
+        Model architecture supported. Allowed values:
+
+        * ``'bert'`` - Google BERT BASE parameters.
+        * ``'tiny-bert'`` - Google BERT TINY parameters.
+        * ``'xlnet'`` - Google XLNET BASE parameters.
+        * ``'alxlnet'`` - Malaya ALXLNET BASE parameters.
+        
+    quantized : bool, optional (default=False)
+        if True, will load 8-bit quantized model. 
+        Quantized model not necessary faster, totally depends on the machine.
+
+    Returns
+    -------
+    result: model
+        List of model classes:
+        
+        * if `bert` in model, will return `malaya.model.bert.KeyphraseBERT`.
+        * if `xlnet` in model, will return `malaya.model.xlnet.KeyphraseXLNET`.
+    """
+
+    model = model.lower()
+    if model not in _transformer_availability:
+        raise ValueError(
+            'model not supported, please check supported models from `malaya.keyword_extraction.available_transformer()`.'
+        )
+
+    path = check_file(
+        file = model,
+        module = 'keyword-extraction',
+        keys = {
+            'model': 'model.pb',
+            'vocab': MODEL_VOCAB[model],
+            'tokenizer': MODEL_BPE[model],
+        },
+        quantized = quantized,
+        **kwargs,
+    )
+    g = load_graph(path['model'], **kwargs)
+    outputs = ['logits']
+
+    if model in ['bert', 'tiny-bert']:
+        tokenizer = sentencepiece_tokenizer_bert(
+            path['tokenizer'], path['vocab']
+        )
+        inputs = [
+            'Placeholder',
+            'Placeholder_1',
+            'Placeholder_2',
+            'Placeholder_3',
+        ]
+        outputs.append('bert/summary')
+        selected_class = KeyphraseBERT
+
+    if model in ['xlnet', 'alxlnet']:
+        tokenizer = sentencepiece_tokenizer_xlnet(path['tokenizer'])
+
+        inputs = [
+            'Placeholder',
+            'Placeholder_1',
+            'Placeholder_2',
+            'Placeholder_3',
+            'Placeholder_4',
+            'Placeholder_5',
+        ]
+        outputs.append('xlnet/summary')
+        selected_class = KeyphraseXLNET
+
+    input_nodes, output_nodes = nodes_session(g, inputs, outputs)
+
+    return selected_class(
+        input_nodes = input_nodes,
+        output_nodes = output_nodes,
+        sess = generate_session(graph = g, **kwargs),
+        tokenizer = tokenizer,
+        label = ['not similar', 'similar'],
+    )

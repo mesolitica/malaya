@@ -172,8 +172,7 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
             from malaya.transformers.albert import (
                 _extract_attention_weights_import,
             )
-            from malaya.transformers.albert import bert_num_layers
-            from albert import tokenization
+            from malaya.transformers.albert import bert_num_layers, tokenization
 
             tokenizer = tokenization.FullTokenizer(
                 vocab_file = path[model]['vocab'],

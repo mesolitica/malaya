@@ -24,3 +24,5 @@ test
 .pytest_cache
 misc/crawl/isu*
 a.py
+topics.json
+testset-keyphrase.json

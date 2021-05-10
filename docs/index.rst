@@ -75,6 +75,15 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
+   :caption: Similarity Module
+
+   load-doc2vec-similarity
+   load-semantic-similarity
+   load-unsupervised-keyword-extraction
+   load-keyphrase-similarity
+
+.. toctree::
+   :maxdepth: 2
    :caption: Tagging Module
 
    load-entities

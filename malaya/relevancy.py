@@ -100,6 +100,7 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
         * ``'alxlnet'`` - Malaya ALXLNET BASE parameters.
         * ``'bigbird'`` - Google BigBird BASE parameters.
         * ``'tiny-bigbird'`` - Malaya BigBird BASE parameters.
+        
     quantized : bool, optional (default=False)
         if True, will load 8-bit quantized model. 
         Quantized model not necessary faster, totally depends on the machine.
