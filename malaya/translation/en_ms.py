@@ -1,5 +1,7 @@
 from malaya.model.tf import Translation
+from malaya.model.bigbird import Translation as BigBird_Translation
 from malaya.supervised import transformer as load_transformer
+from malaya.supervised import bigbird as load_bigbird
 from herpetologist import check_type
 
 _transformer_availability = {
@@ -79,6 +81,26 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
     if model not in _transformer_availability:
         raise Exception(
             'model not supported, please check supported models from `malaya.translation.en_ms.available_transformer()`.'
+        )
+
+    if 'bigbird' in model:
+        return load_bigbird.load(
+            module = 'translation-en-ms',
+            model = model,
+            model_class = BigBird_Translation,
+            maxlen = _transformer_availability[model]['Suggested length'],
+            quantized = quantized,
+            **kwargs
+        )
+
+    else:
+        return load_transformer.load(
+            module = 'translation-en-ms',
+            model = model,
+            encoder = 'subword',
+            model_class = Translation,
+            quantized = quantized,
+            **kwargs
         )
 
     return load_transformer.load(
