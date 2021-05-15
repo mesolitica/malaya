@@ -8,7 +8,6 @@
 
 import tensorflow as tf
 import inspect
-import numpy as np
 import requests
 import os
 import logging
@@ -96,19 +95,17 @@ def nodes_session(graph, inputs, outputs, extra = None, attention = None):
 
 def generate_session(graph, **kwargs):
     config = tf.compat.v1.ConfigProto()
-    if gpu_available():
-        if 'gpu' in kwargs:
-            config.allow_soft_placement = True
+    check_gpu = kwargs.get('check_gpu', True)
+    if gpu_available() or not check_gpu:
+        config.allow_soft_placement = True
+        try:
+            gpu_limit = float(kwargs.get('gpu_limit', 0.999))
+        except:
+            raise ValueError('gpu_limit must be a float')
+        if not 0 < gpu_limit < 1:
+            raise ValueError('gpu_limit must 0 < gpu_limit < 1')
 
-        if 'gpu_limit' in kwargs:
-            try:
-                gpu_limit = float(kwargs.get('gpu_limit', 0.999))
-            except:
-                raise ValueError('gpu_limit must be a float')
-            if not 0 < gpu_limit < 1:
-                raise ValueError('gpu_limit must 0 < gpu_limit < 1')
-
-            config.gpu_options.per_process_gpu_memory_fraction = gpu_limit
+        config.gpu_options.per_process_gpu_memory_fraction = gpu_limit
         config.gpu_options.allow_growth = True
 
     sess = tf.compat.v1.Session(config = config, graph = graph)
@@ -118,15 +115,19 @@ def generate_session(graph, **kwargs):
 def get_device(**kwargs):
     device = 'CPU'
     no = 0
-    if gpu_available():
-        if 'gpu' in kwargs:
-            gpu = kwargs.get('gpu', 0)
+    check_gpu = kwargs.get('check_gpu', True)
+    if gpu_available() or not check_gpu:
+        gpu = kwargs.get('gpu', 0)
+        if gpu is not None:
             if not isinstance(gpu, int):
                 raise ValueError('gpu must an int')
-            if not 0 <= gpu < len(__gpu__):
+            if (not 0 <= gpu < len(__gpu__)) and check_gpu:
                 raise ValueError(f'gpu must 0 <= gpu < {len(__gpu__)}')
             no = gpu
             device = 'GPU'
+        else:
+            device = 'CPU'
+
     return f'/device:{device}:{no}'
 
 
@@ -409,15 +410,6 @@ class DisplayablePath(object):
             parent = parent.parent
 
         return ''.join(reversed(parts))
-
-
-def add_neutral(x, alpha = 1e-2):
-    x = x.copy()
-    divide = 1 / x.shape[1]
-    x_minus = np.maximum(x - divide, alpha * x)
-    x_divide = x_minus / divide
-    sum_axis = x_divide.sum(axis = 1, keepdims = True)
-    return np.concatenate([x_divide, 1 - sum_axis], axis = 1)
 
 
 def describe_availability(dict, transpose = True, text = ''):

@@ -7,7 +7,7 @@ from malaya.text.function import (
     tag_chunk,
 )
 from malaya.model.abstract import Classification, Seq2Seq, Tagging
-from malaya.function import add_neutral as neutral
+from malaya.function.activation import add_neutral as neutral
 from herpetologist import check_type
 from typing import List
 

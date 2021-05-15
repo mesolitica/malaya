@@ -1,5 +1,15 @@
 import numpy as np
 
+
+def add_neutral(x, alpha = 1e-2):
+    x = x.copy()
+    divide = 1 / x.shape[1]
+    x_minus = np.maximum(x - divide, alpha * x)
+    x_divide = x_minus / divide
+    sum_axis = x_divide.sum(axis = 1, keepdims = True)
+    return np.concatenate([x_divide, 1 - sum_axis], axis = 1)
+
+
 # https://github.com/scipy/scipy/blob/69a7752/scipy/special/_logsumexp.py#L130-L214
 def logsumexp(a, axis = None, b = None, keepdims = False, return_sign = False):
     if b is not None:

@@ -8,7 +8,8 @@ from malaya.text.bpe import (
     merge_sentencepiece_tokens,
     merge_sentencepiece_tokens_tagging,
 )
-from malaya.function import add_neutral as neutral
+from malaya.function.activation import add_neutral as neutral
+from malaya.function.activation import softmax, sigmoid
 from malaya.function.parse_dependency import DependencyGraph
 from malaya.function.html import (
     _render_binary,
@@ -16,7 +17,6 @@ from malaya.function.html import (
     _render_emotion,
     _render_relevancy,
 )
-from malaya.function.activation import softmax, sigmoid
 from malaya.model.abstract import Classification, Seq2Seq, Tagging, Abstract
 import numpy as np
 from collections import defaultdict
