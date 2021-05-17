@@ -25,11 +25,18 @@ def check_tf_version():
 
 
 if check_tf_version() > 1:
-    import warnings
+    try:
+        from tensorflow_addons.utils.resource_loader import LazySO
 
-    warnings.warn(
-        'Cannot import beam_search_ops not available for Tensorflow 2, `deep_model` for stemmer will not available to use.'
-    )
+        _beam_search_so = LazySO('custom_ops/seq2seq/_beam_search_ops.so')
+        gather_tree = _beam_search_so.ops.addons_gather_tree
+    except:
+        import warnings
+
+        warnings.warn(
+            'Cannot import beam_search_ops from Tensorflow Addons, `deep_model` for stemmer will not available to use, make sure Tensorflow Addons version >= 0.12.0'
+        )
+
 
 else:
     try:
@@ -38,7 +45,7 @@ else:
         import warnings
 
         warnings.warn(
-            'Cannot import beam_search_ops from tensorflow, `deep_model` for stemmer will not available to use, make sure Tensorflow 1 version >= 1.15'
+            'Cannot import beam_search_ops from Tensorflow, `deep_model` for stemmer will not available to use, make sure Tensorflow 1 version >= 1.15'
         )
 
 
@@ -168,6 +175,9 @@ def load_graph(frozen_graph_filename, **kwargs):
             if len(node.input) == 2:
                 node.input[0] = node.input[1]
                 del node.input[1]
+        elif node.op == 'GatherTree':
+            if check_tf_version() > 1:
+                node.op = 'Addons>GatherTree'
 
     device = get_device(**kwargs)
 
