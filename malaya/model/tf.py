@@ -6,6 +6,8 @@ from malaya.text.function import (
     split_into_sentences,
     transformer_textcleaning,
     pad_sentence_batch,
+    question_cleaning,
+    remove_newlines,
     upperfirst,
 )
 from malaya.text.rouge import postprocess_summary
@@ -17,6 +19,15 @@ from malaya.text.bpe import (
     merge_sentencepiece_tokens,
     encode_pieces,
     merge_sentencepiece_tokens_tagging,
+    bert_tokenization,
+    xlnet_tokenization,
+)
+from malaya.text.squad import (
+    read_squad_examples,
+    RawResultV2,
+    accumulate_predictions_bert,
+    write_predictions_bert,
+    write_predictions_xlnet,
 )
 from malaya.text import chart_decoder
 from malaya.text.trees import tree_from_str
@@ -723,3 +734,202 @@ class Tatabahasa(Seq2Seq):
         result: List[str]
         """
         return self._predict(strings)
+
+
+class SQUAD(Abstract):
+    def __init__(
+        self,
+        input_nodes,
+        output_nodes,
+        sess,
+        tokenizer,
+        class_name,
+        mode,
+        length,
+    ):
+        self._input_nodes = input_nodes
+        self._output_nodes = output_nodes
+        self._sess = sess
+        self._tokenizer = tokenizer
+        self._class_name = class_name
+        self._mode = mode
+        self._length = length
+
+    @check_type
+    def predict(
+        self,
+        paragraph_text: str,
+        question_texts: List[str],
+        doc_stride: int = 128,
+        max_query_length: int = 64,
+        max_answer_length: int = 64,
+        n_best_size: int = 20,
+    ):
+        """
+        Predict Span from questions given a paragraph.
+
+        Parameters
+        ----------
+        paragraph_text: str
+        question_texts: List[str]
+            List of questions, results really depends on case sensitive questions.
+        doc_stride: int, optional (default=128)
+            striding size to split a paragraph into multiple texts.
+        max_query_length: int, optional (default=64)
+            Maximum length if question tokens.
+        max_answer_length: int, optional (default=30)
+            Maximum length if answer tokens.
+
+        Returns
+        -------
+        result: List[{'text': 'text', 'start': 0, 'end': 1}]
+        """
+
+        examples, features = read_squad_examples(
+            paragraph_text = remove_newlines(paragraph_text),
+            question_texts = [question_cleaning(q) for q in question_texts],
+            tokenizer = self._tokenizer,
+            max_seq_length = self._length,
+            doc_stride = doc_stride,
+            max_query_length = max_query_length,
+            mode = self._mode,
+        )
+        inputs = [
+            'Placeholder',
+            'Placeholder_1',
+            'Placeholder_2',
+            'Placeholder_3',
+        ]
+        outputs = [
+            'start_top_log_probs',
+            'start_top_index',
+            'end_top_log_probs',
+            'end_top_index',
+            'cls_logits',
+        ]
+        batch_ids = [b.input_ids for b in features]
+        batch_masks = [b.input_mask for b in features]
+        batch_segment = [b.segment_ids for b in features]
+        p_mask = [b.p_mask for b in features]
+        b = [batch_ids, batch_segment, batch_masks, p_mask]
+        if self._mode == 'xlnet':
+            cls_index = [b.cls_index for b in features]
+            inputs.append('Placeholder_4')
+            b.append(cls_index)
+        r = self._execute(
+            inputs = b, input_labels = inputs, output_labels = outputs
+        )
+
+        results = []
+        for no in range(len(question_texts)):
+            b = features[no]
+            start_top_log_probs_ = [
+                float(x) for x in r['start_top_log_probs'][no].flat
+            ]
+            start_top_index_ = [int(x) for x in r['start_top_index'][no].flat]
+            end_top_log_probs_ = [
+                float(x) for x in r['end_top_log_probs'][no].flat
+            ]
+            end_top_index_ = [int(x) for x in r['end_top_index'][no].flat]
+            cls_logits_ = float(r['cls_logits'][no].flat[0])
+            results.append(
+                RawResultV2(
+                    unique_id = b.unique_id,
+                    start_top_log_probs = start_top_log_probs_,
+                    start_top_index = start_top_index_,
+                    end_top_log_probs = end_top_log_probs_,
+                    end_top_index = end_top_index_,
+                    cls_logits = cls_logits_,
+                )
+            )
+
+        if self._mode == 'bert':
+            result_dict, cls_dict = accumulate_predictions_bert(
+                examples,
+                features,
+                results,
+                n_best_size = n_best_size,
+                max_answer_length = max_answer_length,
+            )
+            outputs = write_predictions_bert(
+                result_dict,
+                cls_dict,
+                examples,
+                features,
+                results,
+                n_best_size = n_best_size,
+                max_answer_length = max_answer_length,
+            )
+        else:
+            outputs = write_predictions_xlnet(
+                examples,
+                features,
+                results,
+                n_best_size = n_best_size,
+                max_answer_length = max_answer_length,
+            )
+        results = []
+        for o in outputs:
+            results.append(
+                {
+                    'text': o.text,
+                    'start': o.start_orig_pos,
+                    'end': o.end_orig_pos,
+                }
+            )
+        return results
+
+    @check_type
+    def vectorize(self, strings: List[str], method: str = 'first'):
+        """
+        vectorize list of strings.
+
+        Parameters
+        ----------
+        strings: List[str]
+        method : str, optional (default='first')
+            Vectorization layer supported. Allowed values:
+
+            * ``'last'`` - vector from last sequence.
+            * ``'first'`` - vector from first sequence.
+            * ``'mean'`` - average vectors from all sequences.
+            * ``'word'`` - average vectors based on tokens.
+
+        Returns
+        -------
+        result: np.array
+        """
+        method = method.lower()
+        if method not in ['first', 'last', 'mean', 'word']:
+            raise ValueError(
+                "method not supported, only support 'first', 'last', 'mean' and 'word'"
+            )
+
+        tokenization = {'bert': bert_tokenization, 'xlnet': xlnet_tokenization}
+        input_ids, input_masks, segment_ids, s_tokens = tokenization[
+            self._mode
+        ](self._tokenizer, strings)
+        r = self._execute(
+            inputs = [input_ids, segment_ids, input_masks],
+            input_labels = ['Placeholder', 'Placeholder_1', 'Placeholder_2'],
+            output_labels = ['logits_vectorize'],
+        )
+        v = r['logits_vectorize']
+
+        if method == 'first':
+            v = v[:, 0]
+        elif method == 'last':
+            v = v[:, -1]
+        elif method == 'mean':
+            v = np.mean(v, axis = 1)
+        else:
+            v = [
+                merge_sentencepiece_tokens(
+                    list(zip(s_tokens[i], v[i][: len(s_tokens[i])])),
+                    weighted = False,
+                    vectorize = True,
+                    model = self._mode,
+                )
+                for i in range(len(v))
+            ]
+        return v

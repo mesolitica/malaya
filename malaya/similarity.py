@@ -14,6 +14,7 @@ from malaya.function import (
 from malaya.text.bpe import (
     sentencepiece_tokenizer_bert,
     sentencepiece_tokenizer_xlnet,
+    AlbertTokenizer,
 )
 from malaya.preprocessing import Tokenizer
 from malaya.model.bert import SiameseBERT
@@ -501,12 +502,8 @@ def _transformer(
             )
 
         if model in ['albert', 'tiny-albert']:
-            from malaya.transformers.albert import tokenization
-
-            tokenizer = tokenization.FullTokenizer(
-                vocab_file = path['vocab'],
-                do_lower_case = False,
-                spm_model_file = path['tokenizer'],
+            tokenizer = AlbertTokenizer(
+                vocab_file = path['vocab'], spm_model_file = path['tokenizer']
             )
         selected_class = bert_class
 

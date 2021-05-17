@@ -10,6 +10,8 @@ import six
 
 SEG_ID_A = 0
 SEG_ID_B = 1
+SEG_ID_P = 0
+SEG_ID_Q = 1
 SEG_ID_CLS = 2
 SEG_ID_SEP = 3
 SEG_ID_PAD = 4
@@ -71,6 +73,34 @@ PTB_TOKEN_ESCAPE = {
     '[': '-LSB-',
     ']': '-RSB-',
 }
+
+
+class AlbertTokenizer(object):
+    def __init__(self, vocab_file, spm_model_file, do_lower_case = False):
+        self.vocab = None
+        self.sp_model = None
+        self.sp_model = spm.SentencePieceProcessor()
+        self.sp_model.Load(spm_model_file)
+        self.vocab = {
+            self.sp_model.IdToPiece(i): i
+            for i in range(self.sp_model.GetPieceSize())
+        }
+        self.inv_vocab = {v: k for k, v in self.vocab.items()}
+
+    def tokenize(self, text):
+        split_tokens = encode_pieces(
+            self.sp_model, text, return_unicode = False
+        )
+
+        return split_tokens
+
+    def convert_tokens_to_ids(self, tokens):
+        return [
+            self.sp_model.PieceToId(printable_text(token)) for token in tokens
+        ]
+
+    def convert_ids_to_tokens(self, ids):
+        return [self.sp_model.IdToPiece(id_) for id_ in ids]
 
 
 class SentencePieceTokenizer:

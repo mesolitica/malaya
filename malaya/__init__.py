@@ -211,6 +211,7 @@ from . import num2word
 from . import paraphrase
 from . import pos
 from . import preprocessing
+from . import qa
 from . import relevancy
 from . import segmentation
 from . import sentiment

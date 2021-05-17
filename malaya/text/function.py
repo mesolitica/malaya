@@ -110,6 +110,10 @@ def make_cleaning(s, c_dict):
     return s
 
 
+def upperfirst(string):
+    return string[0].upper() + string[1:]
+
+
 def translation_textcleaning(string):
     return re.sub(r'[ ]+', ' ', unidecode(string)).strip()
 
@@ -207,6 +211,18 @@ def normalizer_textcleaning(string):
     ]
     string = ' '.join(string)
     return ''.join(''.join(s)[:2] for _, s in itertools.groupby(string))
+
+
+def remove_newlines(string):
+    string = string.replace('\n', ' ')
+    string = re.sub(r'[ ]+', ' ', string).strip()
+    return string
+
+
+def question_cleaning(string):
+    string = remove_newlines(string)
+    string = upperfirst(string)
+    return string
 
 
 def simple_textcleaning(string, lowering = True):
@@ -592,7 +608,3 @@ def tag_chunk(seq):
         }
         res['tags'].append(tag)
     return res
-
-
-def upperfirst(string):
-    return string[0].upper() + string[1:]

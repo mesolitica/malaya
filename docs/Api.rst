@@ -114,6 +114,12 @@ malaya.preprocessing
 .. autoclass:: malaya.preprocessing.Preprocessing()
     :members:
 
+malaya.qa
+------------------
+
+.. automodule:: malaya.qa
+    :members:
+
 malaya.relevancy
 ------------------
 
@@ -372,6 +378,9 @@ malaya.model.tf
     :members:
     
 .. autoclass:: malaya.model.tf.Tatabahasa()
+    :members:
+
+.. autoclass:: malaya.model.tf.SQUAD()
     :members:
 
 malaya.model.xlnet

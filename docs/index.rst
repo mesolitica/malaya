@@ -114,6 +114,12 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
+   :caption: Question Answer Module
+
+   load-qa-squad
+
+.. toctree::
+   :maxdepth: 2
    :caption: Zero-shot Module
 
    load-zeroshot-classification

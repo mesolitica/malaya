@@ -57,6 +57,7 @@ Features
 -  **Num2Word**, convert from numbers to cardinal or ordinal representation.
 -  **Paraphrase**, provide Abstractive Paraphrase using T5-Bahasa and Transformer-Bahasa.
 -  **Part-of-Speech Recognition**, grammatical tagging is the process of marking up a word in a text using finetuned Transformer-Bahasa.
+-  **Question Answer**, reading comprehension using finetuned Transformer-Bahasa.
 -  **Relevancy Analysis**, detect and recognize relevancy of texts using finetuned Transformer-Bahasa.
 -  **Sentiment Analysis**, detect and recognize polarity of texts using finetuned Transformer-Bahasa.
 -  **Text Similarity**, provide interface for lexical similarity deep semantic similarity using finetuned Transformer-Bahasa.

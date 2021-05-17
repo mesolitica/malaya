@@ -13,6 +13,7 @@ from malaya.function import (
 from malaya.text.bpe import (
     sentencepiece_tokenizer_bert,
     sentencepiece_tokenizer_xlnet,
+    AlbertTokenizer,
     load_yttm,
 )
 from malaya.model.ml import BinaryBayes, MulticlassBayes, MultilabelBayes
@@ -111,12 +112,9 @@ def transformer(
                 _extract_attention_weights_import,
             )
             from malaya.transformers.albert import bert_num_layers
-            from malaya.transformers.albert import tokenization
 
-            tokenizer = tokenization.FullTokenizer(
-                vocab_file = path['vocab'],
-                do_lower_case = False,
-                spm_model_file = path['tokenizer'],
+            tokenizer = AlbertTokenizer(
+                vocab_file = path['vocab'], spm_model_file = path['tokenizer']
             )
 
         inputs = ['Placeholder', 'Placeholder_1']
