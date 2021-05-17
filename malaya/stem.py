@@ -216,11 +216,6 @@ def deep_model(quantized: bool = False, **kwargs):
     result: malaya.stem.DeepStemmer class
     """
 
-    if check_tf_version() > 1:
-        raise Exception(
-            f'Tensorflow 2.0 and above not able to use `deep_model` for stemmer, use Tensorflow 1.15 instead.'
-        )
-
     path = check_file(
         file = 'lstm-bahdanau',
         module = 'stem',
