@@ -69,7 +69,6 @@ Contents:
    load-nsfw
    load-relevancy
    load-sentiment
-   load-similarity
    load-subjectivity
    load-toxic
 
