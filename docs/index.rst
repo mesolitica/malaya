@@ -134,7 +134,6 @@ Contents:
    :caption: Misc Module
    
    load-clustering
-   load-keyword-extraction
    load-stack
 
 .. toctree::
