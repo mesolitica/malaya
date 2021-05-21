@@ -15,7 +15,6 @@ from malaya.text.tatabahasa import (
 from malaya.text.rules import normalized_chars
 from malaya.text.english.words import words as _english_words
 from malaya.text.bahasa.words import words as _malay_words
-from malaya import home
 import json
 
 STOPWORDS = set(stopwords + stopword_tatabahasa + stopwords_calon)

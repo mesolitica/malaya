@@ -1,14 +1,15 @@
-from malaya import gpu_available
+from malaya.function import get_device
 from scipy import sparse
 from networkx import nx
 import numpy as np
 import logging
 
 
-def pagerank(array, fast_pagerank = True, retry = 5):
+def pagerank(array, fast_pagerank = True, retry = 5, **kwargs):
+    device = get_device(**kwargs)
     cpu = False
     fail = True
-    if gpu_available():
+    if 'GPU' in device:
         try:
             import cugraph
 

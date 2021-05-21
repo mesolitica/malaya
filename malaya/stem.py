@@ -9,7 +9,6 @@ from malaya.function import (
     load_graph,
     generate_session,
     nodes_session,
-    check_tf_version,
 )
 from malaya.text.function import pad_sentence_batch, case_of
 from malaya.text.bpe import load_yttm

@@ -16,17 +16,23 @@ Contents:
    :maxdepth: 2
    :caption: Getting Started
 
-   Installation
-   gpu-environment
    speech-toolkit
    Dataset
-   models-accuracy
+   Installation
    load-cache
-   load-deployment
-   Api
    running-on-windows
+   Api
    Contributing
    
+.. toctree::
+   :maxdepth: 2
+   :caption: Optimization
+
+   gpu-environment
+   devices
+   precision-mode
+   quantization
+   load-deployment
 
 .. toctree::
    :maxdepth: 2

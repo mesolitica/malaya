@@ -205,7 +205,7 @@ def textrank(
         vectors = model.vectorize(list(vocab.keys()))
     similar = cosine_similarity(vectors, vectors)
     similar[similar >= 0.99999] = 0
-    scores = pagerank(similar)
+    scores = pagerank(similar, **kwargs)
     total = sum(scores)
     ranked_sentences = sorted(
         [

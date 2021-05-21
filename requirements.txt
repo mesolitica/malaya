@@ -9,3 +9,4 @@ networkx
 sentencepiece
 tqdm
 herpetologist
+malaya-boilerplate

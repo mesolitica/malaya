@@ -1,4 +1,6 @@
-from malaya import home
+from malaya_boilerplate.utils import _get_home
+
+home, _ = _get_home()
 
 MALAY_TEXT = home + '/dictionary/malay-text.txt'
 MALAY_TEXT_200K = home + '/dictionary/200k-malay-text.txt'

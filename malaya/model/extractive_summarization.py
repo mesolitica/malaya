@@ -130,7 +130,7 @@ class SKLearn:
             similar = similar * similar_isi_penting
         else:
             similar[similar >= 0.99] = 0
-        scores = pagerank(similar + 1e-6, retry)
+        scores = pagerank(similar + 1e-6, retry, **kwargs)
         ranked_sentences = sorted(
             ((scores[i], s, i) for i, s in enumerate(original_strings)),
             reverse = True,
@@ -391,7 +391,7 @@ class Doc2Vec:
             similar = similar * similar_isi_penting
         else:
             similar[similar >= 0.99] = 0
-        scores = pagerank(similar + 1e-6, retry)
+        scores = pagerank(similar + 1e-6, retry, **kwargs)
         ranked_sentences = sorted(
             ((scores[i], s, i) for i, s in enumerate(original_strings)),
             reverse = True,
@@ -605,7 +605,7 @@ class Encoder:
             similar = similar * similar_isi_penting
         else:
             similar[similar >= 0.99] = 0
-        scores = pagerank(similar + 1e-6, retry)
+        scores = pagerank(similar + 1e-6, retry, **kwargs)
         ranked_sentences = sorted(
             ((scores[i], s, i) for i, s in enumerate(original_strings)),
             reverse = True,
