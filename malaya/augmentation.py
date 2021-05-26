@@ -244,7 +244,7 @@ def transformer(
     if not top_k > 0:
         raise ValueError('top_k must be bigger than 0')
     if not 0 < temperature <= 1.0:
-        raise Exception('temperature must, 0 < temperature <= 1.0')
+        raise ValueError('temperature must, 0 < temperature <= 1.0')
     if not top_n > 0:
         raise ValueError('top_n must be bigger than 0')
     if top_n > top_k:

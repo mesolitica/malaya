@@ -350,7 +350,7 @@ def similarity(
         raise ValueError('insert stopwords if auto_ngram')
 
     if nr_candidates < top_k:
-        raise Exception('nr_candidates must bigger than top_k')
+        raise ValueError('nr_candidates must bigger than top_k')
 
     string = transformer_textcleaning(string)
 

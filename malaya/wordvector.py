@@ -585,11 +585,11 @@ class WordVector:
         word_list: list of nearest words.
         """
         if a not in self._dictionary:
-            raise Exception('a not in dictinary')
+            raise ValueError('a not in dictinary')
         if b not in self._dictionary:
-            raise Exception('b not in dictinary')
+            raise ValueError('b not in dictinary')
         if c not in self._dictionary:
-            raise Exception('c not in dictinary')
+            raise ValueError('c not in dictinary')
         va = self.get_vector_by_name(a)
         vb = self.get_vector_by_name(b)
         vc = self.get_vector_by_name(c)

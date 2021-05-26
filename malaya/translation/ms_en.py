@@ -79,7 +79,7 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
     """
     model = model.lower()
     if model not in _transformer_availability:
-        raise Exception(
+        raise ValueError(
             'model not supported, please check supported models from `malaya.translation.ms_en.available_transformer()`.'
         )
 

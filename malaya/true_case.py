@@ -1,4 +1,6 @@
+from malaya.function import check_file
 from malaya.model.tf import TrueCase
+from malaya.path import PATH_TRUE_CASE, S3_PATH_TRUE_CASE
 from malaya.supervised import transformer as load_transformer
 from herpetologist import check_type
 
@@ -14,6 +16,51 @@ _transformer_availability = {
         'Sequence Accuracy': 0.696,
     },
 }
+
+
+class Sacremoses:
+    def __init__(self, mtr):
+        self._mtr = mtr
+
+    def true_case(self, strings):
+        """
+        True case strings.
+        Example, "jom makan di us makanan di sana sedap" -> "jom makan di US makanan di sana sedap"
+
+        Parameters
+        ----------
+        strings : List[str]
+
+        Returns
+        -------
+        result: List[str]
+        """
+        results = []
+        for string in strings:
+            results.append(' '.join(self._mtr.truecase(string)))
+        return results
+
+
+def sacremoses(**kwargs):
+    """
+    Load True Case class using sacremoses library.
+
+    Returns
+    -------
+    result : malaya.true_case.Sacremoses class
+    """
+    try:
+        from sacremoses import MosesTruecaser
+    except:
+        raise ModuleNotFoundError(
+            'sacremoses not installed. Please install it by `pip install sacremoses` and try again.'
+        )
+    check_file(
+        PATH_TRUE_CASE['sacremoses'], S3_PATH_TRUE_CASE['sacremoses'], **kwargs
+    )
+    mtr = MosesTruecaser(PATH_TRUE_CASE['sacremoses']['model'])
+
+    return Sacremoses(mtr = mtr)
 
 
 def available_transformer():
@@ -49,7 +96,7 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
 
     model = model.lower()
     if model not in _transformer_availability:
-        raise Exception(
+        raise ValueError(
             'model not supported, please check supported models from `malaya.true_case.available_transformer()`.'
         )
 
