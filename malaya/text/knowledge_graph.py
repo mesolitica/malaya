@@ -43,12 +43,23 @@ def parse_triples(string):
         if string[0].islower():
             tokens[0].extend(last_object)
             index += 1
-        for s in string.split():
+        string = string.split()
+        no_ = 0
+        while no_ < len(string):
+            s = string[no_]
             s = re.sub(r'-+', '-', s)
             if len(tokens[index]) == 0:
                 tokens[index].append(s)
             else:
-                if tokens[index][0][0].isupper() and s[0].isupper():
+                if s == '(':
+                    tokens[index].append(s)
+                    no_ += 1
+                    while no_ < len(string):
+                        tokens[index].append(string[no_])
+                        if string[no_] == ')':
+                            break
+                        no_ += 1
+                elif tokens[index][0][0].isupper() and s[0].isupper():
                     tokens[index].append(s)
                 elif tokens[index][0][0].islower() and s[0].islower():
                     tokens[index].append(s)
@@ -56,15 +67,15 @@ def parse_triples(string):
                     tokens[index].append(s)
                 elif _is_number_regex(tokens[index][0]) and s[0].isupper():
                     tokens[index].append(s)
-                elif tokens[index][-1] in ['('] and _is_number_regex(s):
-                    tokens[index].append(s)
-                elif s in ['of', '-', '(', ')']:
+                elif s in ['of', '-', 'for', 'and', "'s", "s'"]:
                     tokens[index].append(s)
                 elif s.lower() in months:
                     tokens[index].append(s)
                 else:
                     index += 1
                     tokens[index].append(s)
+            no_ += 1
+
         if no == 0:
             last_object = tokens[0]
 
@@ -73,5 +84,10 @@ def parse_triples(string):
                 tokens[2].extend(tokens[i])
                 tokens.pop(i, None)
 
+        if len(tokens) == 2:
+            tokens[2] = [tokens[1][-1]]
+            tokens[1] = tokens[1][:-1]
+
         results.append(tokens)
-    return results
+
+    return results, last_object
