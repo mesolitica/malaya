@@ -31,6 +31,7 @@ from malaya.text.squad import (
 )
 from malaya.text import chart_decoder
 from malaya.text.trees import tree_from_str
+from malaya.text.knowledge_graph import parse_triples
 from malaya.function.activation import softmax
 from malaya.model.abstract import Seq2Seq, Classification, T2T, Abstract
 from herpetologist import check_type
@@ -933,3 +934,79 @@ class SQUAD(Abstract):
                 for i in range(len(v))
             ]
         return v
+
+
+class KnowledgeGraph(T2T, Seq2Seq):
+    def __init__(self, input_nodes, output_nodes, sess, encoder):
+        T2T.__init__(
+            self,
+            input_nodes = input_nodes,
+            output_nodes = output_nodes,
+            sess = sess,
+            encoder = encoder,
+        )
+
+    def _parse(self, results, get_networkx = True):
+        if get_networkx:
+            try:
+                import pandas as pd
+                import networkx as nx
+            except:
+                logging.warning(
+                    'pandas and networkx not installed. Please install it by `pip install pandas networkx` and try again. Will skip to generate networkx.MultiDiGraph'
+                )
+                get_networkx = False
+
+        outputs = []
+        for result in results:
+            r, last_object = parse_triples(result)
+            o = {'result': r, 'main_object': last_object}
+            if get_networkx:
+                df = pd.DataFrame(r)
+                G = nx.from_pandas_edgelist(
+                    df,
+                    source = 'subject',
+                    target = 'object',
+                    edge_attr = 'relation',
+                    create_using = nx.MultiDiGraph(),
+                )
+                o['G'] = G
+            outputs.append(o)
+
+        return outputs
+
+    @check_type
+    def greedy_decoder(self, strings: List[str], get_networkx: bool = True):
+        """
+        Generate triples knowledge graph using greedy decoder.
+        Example, "Joseph Enanga juga bermain untuk Union Douala." -> "Joseph Enanga member of sports team Union Douala"
+
+        Parameters
+        ----------
+        strings : List[str]
+        get_networkx: bool, optional (default=True)
+            If True, will generate networkx.MultiDiGraph.
+
+        Returns
+        -------
+        result: List[str]
+        """
+        return _parse(
+            self._greedy_decoder(strings), get_networkx = get_networkx
+        )
+
+    @check_type
+    def beam_decoder(self, strings: List[str]):
+        """
+        Generate triples knowledge graph using beam decoder.
+        Example, "Joseph Enanga juga bermain untuk Union Douala." -> "Joseph Enanga member of sports team Union Douala"
+
+        Parameters
+        ----------
+        strings : List[str]
+
+        Returns
+        -------
+        result: List[str]
+        """
+        return _parse(elf._beam_decoder(strings), get_networkx = get_networkx)

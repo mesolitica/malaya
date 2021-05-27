@@ -1,4 +1,6 @@
 from herpetologist import check_type
+from malaya.supervised import transformer as load_transformer
+from malaya.model.tf import KnowledgeGraph
 
 _transformer_availability = {
     'small': {
@@ -36,7 +38,7 @@ def available_transformer():
 @check_type
 def transformer(model: str = 'base', quantized: bool = False, **kwargs):
     """
-    Load transformer to generate knowledge graph from graphs.
+    Load transformer to generate knowledge graphs from texts.
 
     Parameters
     ----------
@@ -46,8 +48,6 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
         * ``'small'`` - Transformer SMALL parameters.
         * ``'base'`` - Transformer BASE parameters.
         * ``'large'`` - Transformer LARGE parameters.
-        * ``'bigbird'`` - BigBird BASE parameters.
-        * ``'small-bigbird'`` - BigBird SMALL parameters.
         
     quantized : bool, optional (default=False)
         if True, will load 8-bit quantized model. 
@@ -62,3 +62,12 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
         raise ValueError(
             'model not supported, please check supported models from `malaya.knowledge_graph.available_transformer()`.'
         )
+
+    return load_transformer.load(
+        module = 'knowledge-graph-generator',
+        model = model,
+        encoder = 'subword',
+        model_class = KnowledgeGraph,
+        quantized = quantized,
+        **kwargs
+    )

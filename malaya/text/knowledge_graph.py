@@ -88,6 +88,10 @@ def parse_triples(string):
             tokens[2] = [tokens[1][-1]]
             tokens[1] = tokens[1][:-1]
 
-        results.append(tokens)
+        tokens['subject'] = ' '.join(tokens.pop(0))
+        tokens['relation'] = ' '.join(tokens.pop(1))
+        tokens['object'] = ' '.join(tokens.pop(2))
+
+        results.append(dict(tokens))
 
     return results, last_object
