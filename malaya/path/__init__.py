@@ -259,6 +259,17 @@ S3_PATH_TOXIC = {
     }
 }
 
+PATH_TRUE_CASE = {
+    'sacremoses': {
+        'model': home + '/true-case/sacremoses/model.truecasemodel',
+        'version': 'v43',
+    }
+}
+
+S3_PATH_TRUE_CASE = {
+    'sacremoses': {'model': 'v43/true-case/sacremoses/model.truecasemodel'}
+}
+
 PATH_ELECTRA = {
     'electra': {
         'path': home + '/electra-model/base',
