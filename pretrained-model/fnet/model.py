@@ -1,4 +1,5 @@
 import tensorflow as tf
+import numpy as np
 
 
 def get_shape_list(tensor, expected_rank = None, name = None):
