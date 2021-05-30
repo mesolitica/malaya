@@ -960,8 +960,8 @@ class KnowledgeGraph(T2T, Seq2Seq):
         outputs = []
         for result in results:
             r, last_object = parse_triples(result)
-            o = {'result': r, 'main_object': last_object}
-            if get_networkx:
+            o = {'result': r, 'main_object': last_object, 'triple': result}
+            if get_networkx and len(r):
                 df = pd.DataFrame(r)
                 G = nx.from_pandas_edgelist(
                     df,
