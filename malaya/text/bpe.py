@@ -76,7 +76,7 @@ PTB_TOKEN_ESCAPE = {
 
 
 class AlbertTokenizer(object):
-    def __init__(self, vocab_file, spm_model_file, do_lower_case = False):
+    def __init__(self, vocab_file, spm_model_file, do_lower_case=False):
         self.vocab = None
         self.sp_model = None
         self.sp_model = spm.SentencePieceProcessor()
@@ -89,7 +89,7 @@ class AlbertTokenizer(object):
 
     def tokenize(self, text):
         split_tokens = encode_pieces(
-            self.sp_model, text, return_unicode = False
+            self.sp_model, text, return_unicode=False
         )
 
         return split_tokens
@@ -110,7 +110,7 @@ class SentencePieceTokenizer:
 
     def tokenize(self, string):
         return encode_pieces(
-            self.sp_model, string, return_unicode = False, sample = False
+            self.sp_model, string, return_unicode=False, sample=False
         )
 
     def convert_tokens_to_ids(self, tokens):
@@ -131,7 +131,7 @@ class SentencePieceEncoder:
     def encode(self, s):
         return self.sp.EncodeAsIds(s)
 
-    def decode(self, ids, strip_extraneous = False):
+    def decode(self, ids, strip_extraneous=False):
         return self.sp.DecodeIds(list(ids))
 
 
@@ -142,16 +142,239 @@ class YTTMEncoder:
         self.mode = mode
 
     def encode(self, s):
-        s = self.bpe.encode(s, output_type = self.mode)
+        s = self.bpe.encode(s, output_type=self.mode)
         s = [i + [1] for i in s]
         return s
 
-    def decode(self, ids, strip_extraneous = False):
+    def decode(self, ids, strip_extraneous=False):
         ids = [[k for k in i if k > 1] for i in ids]
         return self.bpe.decode(list(ids))
 
 
-def padding_sequence(seq, maxlen = None, padding = 'post', pad_int = 0):
+class WordPieceTokenizer(object):
+    def __init__(self, vocab_file, do_lower_case=False):
+        self.vocab = load_vocab(vocab_file)
+        self.inv_vocab = {v: k for k, v in self.vocab.items()}
+        self.basic_tokenizer = BasicTokenizer(do_lower_case=do_lower_case)
+        self.wordpiece_tokenizer = WordpieceTokenizer(vocab=self.vocab)
+
+    def tokenize(self, text):
+        split_tokens = []
+        for token in self.basic_tokenizer.tokenize(text):
+            for sub_token in self.wordpiece_tokenizer.tokenize(token):
+                split_tokens.append(sub_token)
+
+        return split_tokens
+
+    def convert_tokens_to_ids(self, tokens):
+        return self.convert_by_vocab(self.vocab, tokens)
+
+    def convert_ids_to_tokens(self, ids):
+        return self.convert_by_vocab(self.inv_vocab, ids)
+
+    def convert_by_vocab(self, vocab, items):
+        output = []
+        for item in items:
+            output.append(vocab[item])
+        return output
+
+
+class BasicTokenizer(object):
+    def __init__(self, do_lower_case=True):
+        self.do_lower_case = do_lower_case
+
+    def tokenize(self, text):
+        text = convert_to_unicode(text)
+        text = self._clean_text(text)
+        text = self._tokenize_chinese_chars(text)
+
+        orig_tokens = whitespace_tokenize(text)
+        split_tokens = []
+        for token in orig_tokens:
+            if self.do_lower_case:
+                token = token.lower()
+                token = self._run_strip_accents(token)
+            split_tokens.extend(self._run_split_on_punc(token))
+
+        output_tokens = whitespace_tokenize(' '.join(split_tokens))
+        return output_tokens
+
+    def _run_strip_accents(self, text):
+        text = unicodedata.normalize('NFD', text)
+        output = []
+        for char in text:
+            cat = unicodedata.category(char)
+            if cat == 'Mn':
+                continue
+            output.append(char)
+        return ''.join(output)
+
+    def _run_split_on_punc(self, text):
+        chars = list(text)
+        i = 0
+        start_new_word = True
+        output = []
+        while i < len(chars):
+            char = chars[i]
+            if _is_punctuation(char):
+                output.append([char])
+                start_new_word = True
+            else:
+                if start_new_word:
+                    output.append([])
+                start_new_word = False
+                output[-1].append(char)
+            i += 1
+
+        return [''.join(x) for x in output]
+
+    def _tokenize_chinese_chars(self, text):
+        output = []
+        for char in text:
+            cp = ord(char)
+            if self._is_chinese_char(cp):
+                output.append(' ')
+                output.append(char)
+                output.append(' ')
+            else:
+                output.append(char)
+        return ''.join(output)
+
+    def _is_chinese_char(self, cp):
+        if (
+            (cp >= 0x4E00 and cp <= 0x9FFF)
+            or (cp >= 0x3400 and cp <= 0x4DBF)  #
+            or (cp >= 0x20000 and cp <= 0x2A6DF)  #
+            or (cp >= 0x2A700 and cp <= 0x2B73F)  #
+            or (cp >= 0x2B740 and cp <= 0x2B81F)  #
+            or (cp >= 0x2B820 and cp <= 0x2CEAF)  #
+            or (cp >= 0xF900 and cp <= 0xFAFF)
+            or (cp >= 0x2F800 and cp <= 0x2FA1F)  #
+        ):
+            return True
+
+        return False
+
+    def _clean_text(self, text):
+        output = []
+        for char in text:
+            cp = ord(char)
+            if cp == 0 or cp == 0xFFFD or _is_control(char):
+                continue
+            if _is_whitespace(char):
+                output.append(' ')
+            else:
+                output.append(char)
+        return ''.join(output)
+
+
+class WordpieceTokenizer(object):
+    def __init__(
+        self, vocab, unk_token='[UNK]', max_input_chars_per_word=200
+    ):
+        self.vocab = vocab
+        self.unk_token = unk_token
+        self.max_input_chars_per_word = max_input_chars_per_word
+
+    def tokenize(self, text):
+
+        text = convert_to_unicode(text)
+
+        output_tokens = []
+        for token in whitespace_tokenize(text):
+            chars = list(token)
+            if len(chars) > self.max_input_chars_per_word:
+                output_tokens.append(self.unk_token)
+                continue
+
+            is_bad = False
+            start = 0
+            sub_tokens = []
+            while start < len(chars):
+                end = len(chars)
+                cur_substr = None
+                while start < end:
+                    substr = ''.join(chars[start:end])
+                    if start > 0:
+                        substr = '##' + substr
+                    if substr in self.vocab:
+                        cur_substr = substr
+                        break
+                    end -= 1
+                if cur_substr is None:
+                    is_bad = True
+                    break
+                sub_tokens.append(cur_substr)
+                start = end
+
+            if is_bad:
+                output_tokens.append(self.unk_token)
+            else:
+                output_tokens.extend(sub_tokens)
+        return output_tokens
+
+
+def _is_whitespace(char):
+    if char == ' ' or char == '\t' or char == '\n' or char == '\r':
+        return True
+    cat = unicodedata.category(char)
+    if cat == 'Zs':
+        return True
+    return False
+
+
+def _is_control(char):
+    if char == '\t' or char == '\n' or char == '\r':
+        return False
+    cat = unicodedata.category(char)
+    if cat in ('Cc', 'Cf'):
+        return True
+    return False
+
+
+def _is_punctuation(char):
+    cp = ord(char)
+    if (
+        (cp >= 33 and cp <= 47)
+        or (cp >= 58 and cp <= 64)
+        or (cp >= 91 and cp <= 96)
+        or (cp >= 123 and cp <= 126)
+    ):
+        return True
+    cat = unicodedata.category(char)
+    if cat.startswith('P'):
+        return True
+    return False
+
+
+def whitespace_tokenize(text):
+    text = text.strip()
+    if not text:
+        return []
+    tokens = text.split()
+    return tokens
+
+
+def convert_to_unicode(text):
+    if six.PY3:
+        if isinstance(text, str):
+            return text
+        elif isinstance(text, bytes):
+            return text.decode('utf-8', 'ignore')
+        else:
+            raise ValueError('Unsupported string type: %s' % (type(text)))
+    elif six.PY2:
+        if isinstance(text, str):
+            return text.decode('utf-8', 'ignore')
+        elif isinstance(text, unicode):
+            return text
+        else:
+            raise ValueError('Unsupported string type: %s' % (type(text)))
+    else:
+        raise ValueError('Not running on Python2 or Python 3?')
+
+
+def padding_sequence(seq, maxlen=None, padding='post', pad_int=0):
     if not maxlen:
         maxlen = max([len(i) for i in seq])
     padded_seqs = []
@@ -163,7 +386,7 @@ def padding_sequence(seq, maxlen = None, padding = 'post', pad_int = 0):
     return padded_seqs
 
 
-def bert_tokenization(tokenizer, texts, cleaning = transformer_textcleaning):
+def bert_tokenization(tokenizer, texts, cleaning=transformer_textcleaning):
     input_ids, input_masks, segment_ids, s_tokens = [], [], [], []
     for text in texts:
         if cleaning:
@@ -274,7 +497,7 @@ def print_(*args):
 
 
 def preprocess_text(
-    inputs, lower = False, remove_space = True, keep_accents = False
+    inputs, lower=False, remove_space=True, keep_accents=False
 ):
     if remove_space:
         outputs = ' '.join(inputs.strip().split())
@@ -294,7 +517,7 @@ def preprocess_text(
     return outputs
 
 
-def encode_pieces(sp_model, text, return_unicode = True, sample = False):
+def encode_pieces(sp_model, text, return_unicode=True, sample=False):
     if six.PY2 and isinstance(text, unicode):
         text = text.encode('utf-8')
 
@@ -332,16 +555,16 @@ def encode_pieces(sp_model, text, return_unicode = True, sample = False):
     return new_pieces
 
 
-def encode_ids(sp_model, text, sample = False):
+def encode_ids(sp_model, text, sample=False):
     pieces = encode_pieces(
-        sp_model, text, return_unicode = False, sample = sample
+        sp_model, text, return_unicode=False, sample=sample
     )
     ids = [sp_model.PieceToId(piece) for piece in pieces]
     return ids
 
 
 def tokenize_fn(text, sp_model):
-    text = preprocess_text(text, lower = False)
+    text = preprocess_text(text, lower=False)
     return encode_ids(sp_model, text)
 
 
@@ -375,8 +598,8 @@ def xlnet_tokenization_siamese(tokenizer, left, right):
 
     maxlen = max([len(i) for i in input_ids])
     input_ids = padding_sequence(input_ids, maxlen)
-    input_mask = padding_sequence(input_mask, maxlen, pad_int = 1)
-    all_seg_ids = padding_sequence(all_seg_ids, maxlen, pad_int = 4)
+    input_mask = padding_sequence(input_mask, maxlen, pad_int=1)
+    all_seg_ids = padding_sequence(all_seg_ids, maxlen, pad_int=4)
     return input_ids, input_mask, all_seg_ids, s_tokens
 
 
@@ -406,8 +629,8 @@ def xlnet_tokenization(tokenizer, texts):
 
     maxlen = max([len(i) for i in input_ids])
     input_ids = padding_sequence(input_ids, maxlen)
-    input_masks = padding_sequence(input_masks, maxlen, pad_int = 1)
-    segment_ids = padding_sequence(segment_ids, maxlen, pad_int = SEG_ID_PAD)
+    input_masks = padding_sequence(input_masks, maxlen, pad_int=1)
+    segment_ids = padding_sequence(segment_ids, maxlen, pad_int=SEG_ID_PAD)
 
     return input_ids, input_masks, segment_ids, s_tokens
 
@@ -431,13 +654,13 @@ def xlnet_tokenization_token(tokenizer, tok, texts):
 
     maxlen = max([len(i) for i in input_ids])
     input_ids = padding_sequence(input_ids, maxlen)
-    input_masks = padding_sequence(input_masks, maxlen, pad_int = 1)
-    segment_ids = padding_sequence(segment_ids, maxlen, pad_int = SEG_ID_PAD)
+    input_masks = padding_sequence(input_masks, maxlen, pad_int=1)
+    segment_ids = padding_sequence(segment_ids, maxlen, pad_int=SEG_ID_PAD)
 
     return input_ids, input_masks, segment_ids, s_tokens
 
 
-def merge_wordpiece_tokens(paired_tokens, weighted = True):
+def merge_wordpiece_tokens(paired_tokens, weighted=True):
     new_paired_tokens = []
     n_tokens = len(paired_tokens)
 
@@ -495,7 +718,7 @@ def parse_bert_token_tagging(left, tok, tokenizer):
 
 
 def merge_sentencepiece_tokens(
-    paired_tokens, weighted = True, vectorize = False, model = 'bert'
+    paired_tokens, weighted=True, vectorize=False, model='bert'
 ):
     new_paired_tokens = []
     n_tokens = len(paired_tokens)
@@ -521,7 +744,7 @@ def merge_sentencepiece_tokens(
                 i = i + 1
                 current_token, current_weight = paired_tokens[i]
             if vectorize:
-                merged_weight = np.mean(merged_weight, axis = 0)
+                merged_weight = np.mean(merged_weight, axis=0)
             else:
                 merged_weight = np.mean(merged_weight)
             new_paired_tokens.append((merged_token, merged_weight))
@@ -540,7 +763,7 @@ def merge_sentencepiece_tokens(
     return list(zip(words, weights))
 
 
-def merge_sentencepiece_tokens_tagging(x, y, model = 'bert'):
+def merge_sentencepiece_tokens_tagging(x, y, model='bert'):
     new_paired_tokens = []
     n_tokens = len(x)
     rejected = list(SPECIAL_TOKENS[model].values())
@@ -598,10 +821,10 @@ def sentencepiece_tokenizer_bert(path_tokenizer, path_vocab):
     return tokenizer
 
 
-def load_yttm(path, id_mode = False):
+def load_yttm(path, id_mode=False):
     try:
         import youtokentome as yttm
-    except:
+    except BaseException:
         raise ModuleNotFoundError(
             'youtokentome not installed. Please install it by `pip install youtokentome` and try again.'
         )
@@ -610,8 +833,8 @@ def load_yttm(path, id_mode = False):
             type = yttm.OutputType.ID
         else:
             type = yttm.OutputType.SUBWORD
-        return yttm.BPE(model = path), type
-    except:
+        return yttm.BPE(model=path), type
+    except BaseException:
         path = path.split('Malaya/')[1]
         path = '/'.join(path.split('/')[:-1])
         raise Exception(
@@ -675,7 +898,7 @@ def constituency_xlnet(tokenizer, sentences):
 
         for word in cleaned_words:
             word_tokens = encode_pieces(
-                tokenizer, word, return_unicode = False, sample = False
+                tokenizer, word, return_unicode=False, sample=False
             )
             if not word_tokens:
                 word_tokens = ['<unk>']

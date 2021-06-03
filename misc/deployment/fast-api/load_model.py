@@ -1,3 +1,3 @@
 import malaya
 
-model = malaya.sentiment.transformer(model = 'albert', validate = True)
+model = malaya.sentiment.transformer(model='albert', validate=True)

@@ -92,7 +92,7 @@ class VectorizerSimilarity:
         result: List[float]
         """
         return self._predict(
-            left_strings, right_strings, similarity = similarity
+            left_strings, right_strings, similarity=similarity
         ).diagonal()
 
     @check_type
@@ -128,7 +128,7 @@ class VectorizerSimilarity:
             list of results
         """
 
-        results = self._predict(strings, strings, similarity = similarity)
+        results = self._predict(strings, strings, similarity=similarity)
         if not visualize:
             return results
 
@@ -137,18 +137,18 @@ class VectorizerSimilarity:
             import seaborn as sns
 
             sns.set()
-        except:
+        except BaseException:
             raise ModuleNotFoundError(
                 'matplotlib and seaborn not installed. Please install it and try again.'
             )
 
-        plt.figure(figsize = figsize)
+        plt.figure(figsize=figsize)
         g = sns.heatmap(
             results,
-            cmap = 'Blues',
-            xticklabels = strings,
-            yticklabels = strings,
-            annot = annotate,
+            cmap='Blues',
+            xticklabels=strings,
+            yticklabels=strings,
+            annot=annotate,
         )
         plt.show()
 
@@ -219,7 +219,7 @@ class Doc2VecSimilarity:
                             self.wordvector.words[idx]
                         )
                 in_vector.append(v)
-            left_vectors.append(aggregation(in_vector, axis = 0))
+            left_vectors.append(aggregation(in_vector, axis=0))
 
             if not identical:
                 in_vector = []
@@ -246,7 +246,7 @@ class Doc2VecSimilarity:
                             )
                     in_vector.append(v)
 
-                right_vectors.append(aggregation(in_vector, axis = 0))
+                right_vectors.append(aggregation(in_vector, axis=0))
 
         if identical:
             similar = similarity_function(left_vectors, left_vectors)
@@ -292,9 +292,9 @@ class Doc2VecSimilarity:
         return self._predict(
             left_strings,
             right_strings,
-            aggregation = aggregation,
-            similarity = similarity,
-            soft = soft,
+            aggregation=aggregation,
+            similarity=similarity,
+            soft=soft,
         ).diagonal()
 
     @check_type
@@ -338,9 +338,9 @@ class Doc2VecSimilarity:
         results = self._predict(
             strings,
             strings,
-            aggregation = aggregation,
-            similarity = similarity,
-            soft = soft,
+            aggregation=aggregation,
+            similarity=similarity,
+            soft=soft,
         )
         if not visualize:
             return results
@@ -350,18 +350,18 @@ class Doc2VecSimilarity:
             import seaborn as sns
 
             sns.set()
-        except:
+        except BaseException:
             raise ModuleNotFoundError(
                 'matplotlib and seaborn not installed. Please install it and try again.'
             )
 
-        plt.figure(figsize = figsize)
+        plt.figure(figsize=figsize)
         g = sns.heatmap(
             results,
-            cmap = 'Blues',
-            xticklabels = strings,
-            yticklabels = strings,
-            annot = annotate,
+            cmap='Blues',
+            xticklabels=strings,
+            yticklabels=strings,
+            annot=annotate,
         )
         plt.show()
 
@@ -469,12 +469,12 @@ def available_transformer():
     from malaya.function import describe_availability
 
     return describe_availability(
-        _transformer_availability, text = 'tested on 20% test set.'
+        _transformer_availability, text='tested on 20% test set.'
     )
 
 
 def _transformer(
-    model, bert_class, xlnet_class, quantized = False, siamese = False, **kwargs
+    model, bert_class, xlnet_class, quantized=False, siamese=False, **kwargs
 ):
     model = model.lower()
     if model not in _transformer_availability:
@@ -483,14 +483,14 @@ def _transformer(
         )
 
     path = check_file(
-        file = model,
-        module = 'similarity',
-        keys = {
+        file=model,
+        module='similarity',
+        keys={
             'model': 'model.pb',
             'vocab': MODEL_VOCAB[model],
             'tokenizer': MODEL_BPE[model],
         },
-        quantized = quantized,
+        quantized=quantized,
         **kwargs,
     )
     g = load_graph(path['model'], **kwargs)
@@ -503,7 +503,7 @@ def _transformer(
 
         if model in ['albert', 'tiny-albert']:
             tokenizer = AlbertTokenizer(
-                vocab_file = path['vocab'], spm_model_file = path['tokenizer']
+                vocab_file=path['vocab'], spm_model_file=path['tokenizer']
             )
         selected_class = bert_class
 
@@ -523,15 +523,15 @@ def _transformer(
     inputs = ['Placeholder', 'Placeholder_1', 'Placeholder_2']
     outputs = ['logits']
     input_nodes, output_nodes = nodes_session(
-        g, inputs, outputs, extra = {'vectorizer': selected_node}
+        g, inputs, outputs, extra={'vectorizer': selected_node}
     )
 
     return selected_class(
-        input_nodes = input_nodes,
-        output_nodes = output_nodes,
-        sess = generate_session(graph = g, **kwargs),
-        tokenizer = tokenizer,
-        label = ['not similar', 'similar'],
+        input_nodes=input_nodes,
+        output_nodes=output_nodes,
+        sess=generate_session(graph=g, **kwargs),
+        tokenizer=tokenizer,
+        label=['not similar', 'similar'],
     )
 
 
@@ -551,25 +551,25 @@ def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
         * ``'tiny-albert'`` - Google ALBERT TINY parameters.
         * ``'xlnet'`` - Google XLNET BASE parameters.
         * ``'alxlnet'`` - Malaya ALXLNET BASE parameters.
-    
+
     quantized : bool, optional (default=False)
-        if True, will load 8-bit quantized model. 
+        if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
 
     Returns
     -------
     result: model
         List of model classes:
-        
+
         * if `bert` in model, will return `malaya.model.bert.SiameseBERT`.
         * if `xlnet` in model, will return `malaya.model.xlnet.SiameseXLNET`.
     """
 
     return _transformer(
-        model = model,
-        bert_class = SiameseBERT,
-        xlnet_class = SiameseXLNET,
-        quantized = quantized,
-        siamese = True,
+        model=model,
+        bert_class=SiameseBERT,
+        xlnet_class=SiameseXLNET,
+        quantized=quantized,
+        siamese=True,
         **kwargs,
     )

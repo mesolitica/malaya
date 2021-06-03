@@ -25,14 +25,14 @@ NUMBER_OF_CALLS_TO_GOOGLE_NEWS_ENDPOINT = 0
 GOOGLE_NEWS_URL = 'https://www.google.com.my/search?q={}&source=lnt&tbs=cdr%3A1%2Ccd_min%3A{}%2Ccd_max%3A{}&tbm=nws&start={}'
 
 logging.basicConfig(
-    level = logging.DEBUG, format = '%(asctime)s - %(levelname)s - %(message)s'
+    level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s'
 )
 
 
 def get_date(load):
     try:
         date = re.findall(
-            '[-+]?[.]?[\d]+(?:,\d\d\d)*[\.]?\d*(?:[eE][-+]?\d+)?', load
+            '[-+]?[.]?[\\d]+(?:,\\d\\d\\d)*[\\.]?\\d*(?:[eE][-+]?\\d+)?', load
         )
         return '%s-%s-%s' % (date[2], date[0], date[1])
     except Exce:
@@ -47,7 +47,7 @@ def run_parallel_in_threads(target, args_list):
         result.put(target(*args))
 
     threads = [
-        threading.Thread(target = task_wrapper, args = args)
+        threading.Thread(target=task_wrapper, args=args)
         for args in args_list
     ]
     for t in threads:
@@ -72,14 +72,15 @@ def extract_links(content):
     soup = BeautifulSoup(content, 'html.parser')
     # return soup
     today = datetime.now().strftime('%m/%d/%Y')
-    links_list = [v.attrs['href'] for v in soup.find_all('a', {'style': 'text-decoration:none;display:block'})]
+    links_list = [v.attrs['href']
+                  for v in soup.find_all('a', {'style': 'text-decoration:none;display:block'})]
     dates_list = [v.text for v in soup.find_all('span', {'class': 'WG9SHc'})]
     sources_list = [v.text for v in soup.find_all('div', {'class': 'XTjFC WF4CUc'})]
     output = []
     for (link, date, source) in zip(links_list, dates_list, sources_list):
         try:
             date = str(dateparser.parse(date))
-        except:
+        except BaseException:
             pass
         output.append((link, source, date))
     return output
@@ -94,7 +95,7 @@ def get_article(link, news, date):
     if len(article.title) < 5 or len(article.text) < 5:
         lang = 'INDONESIA'
         print('found BM/ID article')
-        article = Article(link, language = 'id')
+        article = Article(link, language='id')
         article.download()
         article.parse()
         article.nlp()
@@ -114,11 +115,11 @@ def get_article(link, news, date):
 
 def google_news_run(
     keyword,
-    limit = 10,
-    year_start = 2010,
-    year_end = 2011,
-    debug = True,
-    sleep_time_every_ten_articles = 0,
+    limit=10,
+    year_start=2010,
+    year_end=2011,
+    debug=True,
+    sleep_time_every_ten_articles=0,
 ):
     num_articles_index = 0
     ua = UserAgent()
@@ -137,7 +138,7 @@ def google_news_run(
         }
         success = False
         try:
-            response = requests.get(url, headers = headers, timeout = 60)
+            response = requests.get(url, headers=headers, timeout=60)
             if (
                 str(response.content).find(
                     'In the meantime, solving the above CAPTCHA will let you continue to use our services'
@@ -159,7 +160,7 @@ def google_news_run(
             for link in links:
                 try:
                     results.append(get_article(*link))
-                except:
+                except BaseException:
                     pass
             success = True
         except requests.exceptions.Timeout:

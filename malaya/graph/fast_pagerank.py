@@ -6,7 +6,7 @@ import scipy.spatial
 import scipy.sparse.linalg
 
 
-def pagerank(A, p = 0.85, personalize = None, reverse = False):
+def pagerank(A, p=0.85, personalize=None, reverse=False):
     """ Calculates PageRank given a csr graph
     Inputs:
     -------
@@ -26,11 +26,11 @@ def pagerank(A, p = 0.85, personalize = None, reverse = False):
         A = A.T
 
     n, _ = A.shape
-    r = sp.asarray(A.sum(axis = 1)).reshape(-1)
+    r = sp.asarray(A.sum(axis=1)).reshape(-1)
 
     k = r.nonzero()[0]
 
-    D_1 = sprs.csr_matrix((1 / r[k], (k, k)), shape = (n, n))
+    D_1 = sprs.csr_matrix((1 / r[k], (k, k)), shape=(n, n))
 
     if personalize is None:
         personalize = sp.ones(n)

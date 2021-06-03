@@ -14,14 +14,14 @@ from malaya.text.function import pad_sentence_batch, case_of
 from malaya.text.bpe import load_yttm
 from malaya.text.regex import _expressions, _money, _date
 from malaya.model.abstract import Abstract
-from malaya.path import STEMMER_VOCAB
 from malaya.preprocessing import Tokenizer
+from malaya.path import STEMMER_VOCAB
 from herpetologist import check_type
 
 
 def _classification_textcleaning_stemmer(string, stemmer):
     string = re.sub(
-        'http\S+|www.\S+',
+        'http\\S+|www.\\S+',
         '',
         ' '.join(
             [i for i in string.split() if i.find('#') < 0 and i.find('@') < 0]
@@ -54,16 +54,16 @@ class Naive:
     def stem_word(self, word):
         hujung_result = [v for k, v in hujung.items() if word.endswith(k)]
         if len(hujung_result):
-            hujung_result = max(hujung_result, key = len)
+            hujung_result = max(hujung_result, key=len)
             if len(hujung_result):
                 word = word[: -len(hujung_result)]
         permulaan_result = [
             v for k, v in permulaan.items() if word.startswith(k)
         ]
         if len(permulaan_result):
-            permulaan_result = max(permulaan_result, key = len)
+            permulaan_result = max(permulaan_result, key=len)
             if len(permulaan_result):
-                word = word[len(permulaan_result) :]
+                word = word[len(permulaan_result):]
         return word
 
     @check_type
@@ -136,7 +136,7 @@ class DeepStemmer(Abstract):
 
         if len(batch):
 
-            batch = self._bpe.encode(batch, output_type = self._subword_mode)
+            batch = self._bpe.encode(batch, output_type=self._subword_mode)
 
             batch = [i + [1] for i in batch]
             batch = pad_sentence_batch(batch, 0)[0]
@@ -147,9 +147,9 @@ class DeepStemmer(Abstract):
                 output = 'greedy'
 
             r = self._execute(
-                inputs = [batch],
-                input_labels = ['Placeholder'],
-                output_labels = [output],
+                inputs=[batch],
+                input_labels=['Placeholder'],
+                output_labels=[output],
             )
             output = r[output].tolist()
 
@@ -177,7 +177,7 @@ def naive():
     """
     tokenizer = Tokenizer().tokenize
 
-    return Naive(tokenizer = tokenizer)
+    return Naive(tokenizer=tokenizer)
 
 
 @check_type
@@ -191,7 +191,7 @@ def sastrawi():
     """
     try:
         from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
-    except:
+    except BaseException:
         raise ModuleNotFoundError(
             'PySastrawi not installed. Please install it by `pip install PySastrawi` and try again.'
         )
@@ -207,7 +207,7 @@ def deep_model(quantized: bool = False, **kwargs):
     Parameters
     ----------
     quantized : bool, optional (default=False)
-        if True, will load 8-bit quantized model. 
+        if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
 
     Returns
@@ -216,22 +216,22 @@ def deep_model(quantized: bool = False, **kwargs):
     """
 
     path = check_file(
-        file = 'lstm-bahdanau',
-        module = 'stem',
-        keys = {'model': 'model.pb', 'vocab': STEMMER_VOCAB},
-        quantized = quantized,
+        file='lstm-bahdanau',
+        module='stem',
+        keys={'model': 'model.pb', 'vocab': STEMMER_VOCAB},
+        quantized=quantized,
         **kwargs,
     )
     g = load_graph(path['model'], **kwargs)
 
-    bpe, subword_mode = load_yttm(path['vocab'], id_mode = True)
+    bpe, subword_mode = load_yttm(path['vocab'], id_mode=True)
     inputs = ['Placeholder']
     outputs = []
     input_nodes, output_nodes = nodes_session(
         g,
         inputs,
         outputs,
-        extra = {
+        extra={
             'greedy': 'import/decode_1/greedy:0',
             'beam': 'import/decode_2/beam:0',
         },
@@ -240,10 +240,10 @@ def deep_model(quantized: bool = False, **kwargs):
     tokenizer = Tokenizer().tokenize
 
     return DeepStemmer(
-        input_nodes = input_nodes,
-        output_nodes = output_nodes,
-        sess = generate_session(graph = g, **kwargs),
-        bpe = bpe,
-        subword_mode = subword_mode,
-        tokenizer = tokenizer,
+        input_nodes=input_nodes,
+        output_nodes=output_nodes,
+        sess=generate_session(graph=g, **kwargs),
+        bpe=bpe,
+        subword_mode=subword_mode,
+        tokenizer=tokenizer,
     )

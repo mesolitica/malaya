@@ -1,4 +1,10 @@
 import os
+
+os.environ['CUDA_VISIBLE_DEVICES'] = '2'
+os.environ[
+    'GOOGLE_APPLICATION_CREDENTIALS'
+] = '/home/husein/t5/prepare/mesolitica-tpu.json'
+
 import model as modeling
 import optimization
 import tensorflow as tf
@@ -133,7 +139,10 @@ def model_fn_builder(
             dim = 1024, vocab_size = 32000, depth = 16, mlp_dim = 4096
         )
         sequence_output = model(
-            input_ids, token_type_ids = segment_ids, training = True
+            input_ids,
+            input_mask = input_mask,
+            token_type_ids = segment_ids,
+            training = True,
         )
 
         (
@@ -158,6 +167,14 @@ def model_fn_builder(
         )
 
         total_loss = masked_lm_loss + next_sentence_loss
+
+        tf.identity(total_loss, 'total_loss')
+        tf.identity(masked_lm_loss, 'masked_lm_loss')
+        tf.identity(next_sentence_loss, 'next_sentence_loss')
+
+        tf.summary.scalar('total_loss', total_loss)
+        tf.summary.scalar('masked_lm_loss', masked_lm_loss)
+        tf.summary.scalar('next_sentence_loss', next_sentence_loss)
 
         tvars = tf.trainable_variables()
 
@@ -499,6 +516,13 @@ def main(_):
             FLAGS.tpu_name, zone = FLAGS.tpu_zone, project = FLAGS.gcp_project
         )
 
+    train_hooks = [
+        tf.train.LoggingTensorHook(
+            ['total_loss', 'masked_lm_loss', 'next_sentence_loss'],
+            every_n_iter = 1,
+        )
+    ]
+
     is_per_host = tf.contrib.tpu.InputPipelineConfig.PER_HOST_V2
     run_config = tf.contrib.tpu.RunConfig(
         cluster = tpu_cluster_resolver,
@@ -541,7 +565,9 @@ def main(_):
             is_training = True,
         )
         estimator.train(
-            input_fn = train_input_fn, max_steps = FLAGS.num_train_steps
+            input_fn = train_input_fn,
+            max_steps = FLAGS.num_train_steps,
+            hooks = train_hooks,
         )
 
     if FLAGS.do_eval:

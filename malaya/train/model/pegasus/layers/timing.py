@@ -28,7 +28,7 @@ _MIN_TIMESCALE = 1.0
 _MAX_TIMESCALE = 1.0e4
 
 
-def add_time_signal(inputs_BxIxD, start_index = None):
+def add_time_signal(inputs_BxIxD, start_index=None):
     """Adds a transformer-style timing signal to inputs.
 
   Using periodic signals as in https://arxiv.org/abs/1706.03762.
@@ -63,6 +63,6 @@ def add_time_signal(inputs_BxIxD, start_index = None):
     time_BxIxN = tf.expand_dims(pos_BxI, 2) * tf.reshape(
         inv_scale_N, [1, 1, -1]
     )
-    signal_BxIxD = tf.concat([tf.sin(time_BxIxN), tf.cos(time_BxIxN)], axis = 2)
+    signal_BxIxD = tf.concat([tf.sin(time_BxIxN), tf.cos(time_BxIxN)], axis=2)
     signal_BxIxD = tf.reshape(signal_BxIxD, [B, I, D])
     return inputs_BxIxD + signal_BxIxD

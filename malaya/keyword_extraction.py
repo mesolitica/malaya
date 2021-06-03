@@ -58,11 +58,11 @@ def _base(string, vectorizer, **kwargs):
 @check_type
 def rake(
     string: str,
-    model = None,
-    vectorizer = None,
+    model=None,
+    vectorizer=None,
     top_k: int = 5,
     atleast: int = 1,
-    stopwords = get_stopwords,
+    stopwords=get_stopwords,
     **kwargs,
 ):
     """
@@ -79,8 +79,6 @@ def rake(
         If None, will generate ngram automatically based on `stopwords`.
     top_k: int, optional (default=5)
         return top-k results.
-    ngram: tuple, optional (default=(1,1))
-        n-grams size.
     atleast: int, optional (default=1)
         at least count appeared in the string to accept as candidate.
     stopwords: List[str], (default=malaya.texts.function.get_stopwords)
@@ -122,15 +120,15 @@ def rake(
     if auto_ngram:
         vocab = _auto_ngram(string, stopwords)
     else:
-        vocab = _base(string, vectorizer = vectorizer, **kwargs)
+        vocab = _base(string, vectorizer=vectorizer, **kwargs)
     phrase_list = list(vocab.keys())
-    scores = rake_function.calculate_word_scores(phrase_list, attentions = d)
+    scores = rake_function.calculate_word_scores(phrase_list, attentions=d)
     keywordcandidates = rake_function.generate_candidate_keyword_scores(
         phrase_list, scores
     )
 
     sortedKeywords = sorted(
-        keywordcandidates.items(), key = operator.itemgetter(1), reverse = True
+        keywordcandidates.items(), key=operator.itemgetter(1), reverse=True
     )
 
     total = sum([i[1] for i in sortedKeywords])
@@ -144,11 +142,11 @@ def rake(
 @check_type
 def textrank(
     string: str,
-    model = None,
-    vectorizer = None,
+    model=None,
+    vectorizer=None,
     top_k: int = 5,
     atleast: int = 1,
-    stopwords = get_stopwords,
+    stopwords=get_stopwords,
     **kwargs,
 ):
     """
@@ -160,7 +158,7 @@ def textrank(
     model: Object, optional (default='None')
         model has `fit_transform` or `vectorize` method.
     vectorizer: Object, optional (default=None)
-        Prefer `sklearn.feature_extraction.text.CountVectorizer` or, 
+        Prefer `sklearn.feature_extraction.text.CountVectorizer` or,
         `malaya.text.vectorizer.SkipGramCountVectorizer`.
         If None, will generate ngram automatically based on `stopwords`.
     top_k: int, optional (default=5)
@@ -197,7 +195,7 @@ def textrank(
     if auto_ngram:
         vocab = _auto_ngram(string, stopwords)
     else:
-        vocab = _base(string, vectorizer = vectorizer, **kwargs)
+        vocab = _base(string, vectorizer=vectorizer, **kwargs)
 
     if hasattr(model, 'fit_transform'):
         vectors = model.fit_transform(list(vocab.keys()))
@@ -213,7 +211,7 @@ def textrank(
             for i, s in enumerate(vocab.keys())
             if vocab[s] >= atleast
         ],
-        reverse = True,
+        reverse=True,
     )
 
     return ranked_sentences[:top_k]
@@ -223,10 +221,10 @@ def textrank(
 def attention(
     string: str,
     model,
-    vectorizer = None,
+    vectorizer=None,
     top_k: int = 5,
     atleast: int = 1,
-    stopwords = get_stopwords,
+    stopwords=get_stopwords,
     **kwargs,
 ):
     """
@@ -238,7 +236,7 @@ def attention(
     model: Object
         Transformer model or any model has `attention` method.
     vectorizer: Object, optional (default=None)
-        Prefer `sklearn.feature_extraction.text.CountVectorizer` or, 
+        Prefer `sklearn.feature_extraction.text.CountVectorizer` or,
         `malaya.text.vectorizer.SkipGramCountVectorizer`.
         If None, will generate ngram automatically based on `stopwords`.
     top_k: int, optional (default=5)
@@ -275,7 +273,7 @@ def attention(
     if auto_ngram:
         vocab = _auto_ngram(string, stopwords)
     else:
-        vocab = _base(string, vectorizer = vectorizer, **kwargs)
+        vocab = _base(string, vectorizer=vectorizer, **kwargs)
 
     attention = model.attention([string])[0]
     d = defaultdict(float)
@@ -294,7 +292,7 @@ def attention(
             for i, s in enumerate(vocab.keys())
             if vocab[s] >= atleast
         ],
-        reverse = True,
+        reverse=True,
     )
     return ranked_sentences[:top_k]
 
@@ -303,10 +301,10 @@ def attention(
 def similarity(
     string: str,
     model,
-    vectorizer = None,
+    vectorizer=None,
     top_k: int = 5,
     atleast: int = 1,
-    stopwords = get_stopwords,
+    stopwords=get_stopwords,
     **kwargs,
 ):
     """
@@ -318,7 +316,7 @@ def similarity(
     model: Object
         Transformer model or any model has `vectorize` method.
     vectorizer: Object, optional (default=None)
-        Prefer `sklearn.feature_extraction.text.CountVectorizer` or, 
+        Prefer `sklearn.feature_extraction.text.CountVectorizer` or,
         `malaya.text.vectorizer.SkipGramCountVectorizer`.
         If None, will generate ngram automatically based on `stopwords`.
     top_k: int, optional (default=5)
@@ -357,7 +355,7 @@ def similarity(
     if auto_ngram:
         vocab = _auto_ngram(string, stopwords)
     else:
-        vocab = _base(string, vectorizer = vectorizer, **kwargs)
+        vocab = _base(string, vectorizer=vectorizer, **kwargs)
 
     words = list(vocab.keys())
     vectors_keywords = model.vectorize(words)
@@ -411,7 +409,7 @@ def available_transformer():
     from malaya.function import describe_availability
 
     return describe_availability(
-        _transformer_availability, text = 'tested on 20% test set.'
+        _transformer_availability, text='tested on 20% test set.'
     )
 
 
@@ -429,16 +427,16 @@ def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
         * ``'tiny-bert'`` - Google BERT TINY parameters.
         * ``'xlnet'`` - Google XLNET BASE parameters.
         * ``'alxlnet'`` - Malaya ALXLNET BASE parameters.
-        
+
     quantized : bool, optional (default=False)
-        if True, will load 8-bit quantized model. 
+        if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
 
     Returns
     -------
     result: model
         List of model classes:
-        
+
         * if `bert` in model, will return `malaya.model.bert.KeyphraseBERT`.
         * if `xlnet` in model, will return `malaya.model.xlnet.KeyphraseXLNET`.
     """
@@ -450,14 +448,14 @@ def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
         )
 
     path = check_file(
-        file = model,
-        module = 'keyword-extraction',
-        keys = {
+        file=model,
+        module='keyword-extraction',
+        keys={
             'model': 'model.pb',
             'vocab': MODEL_VOCAB[model],
             'tokenizer': MODEL_BPE[model],
         },
-        quantized = quantized,
+        quantized=quantized,
         **kwargs,
     )
     g = load_graph(path['model'], **kwargs)
@@ -493,9 +491,9 @@ def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
     input_nodes, output_nodes = nodes_session(g, inputs, outputs)
 
     return selected_class(
-        input_nodes = input_nodes,
-        output_nodes = output_nodes,
-        sess = generate_session(graph = g, **kwargs),
-        tokenizer = tokenizer,
-        label = ['not similar', 'similar'],
+        input_nodes=input_nodes,
+        output_nodes=output_nodes,
+        sess=generate_session(graph=g, **kwargs),
+        tokenizer=tokenizer,
+        label=['not similar', 'similar'],
     )

@@ -91,7 +91,7 @@ def describe():
 
     from malaya.function import describe_availability
 
-    return describe_availability(d, transpose = False)
+    return describe_availability(d, transpose=False)
 
 
 def available_transformer():
@@ -101,7 +101,7 @@ def available_transformer():
     from malaya.function import describe_availability
 
     return describe_availability(
-        _transformer_availability, text = 'tested on 20% test set.'
+        _transformer_availability, text='tested on 20% test set.'
     )
 
 
@@ -112,7 +112,7 @@ def _naive_POS_word(word):
     try:
         if len(re.findall(r'^(.*?)(%s)$' % ('|'.join(hujung[:1])), i)[0]) > 1:
             return ('KJ', word)
-    except:
+    except BaseException:
         pass
     try:
         if (
@@ -166,14 +166,14 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
         * ``'alxlnet'`` - Malaya ALXLNET BASE parameters.
 
     quantized : bool, optional (default=False)
-        if True, will load 8-bit quantized model. 
+        if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
 
     Returns
     -------
     result: model
         List of model classes:
-        
+
         * if `bert` in model, will return `malaya.model.bert.TaggingBERT`.
         * if `xlnet` in model, will return `malaya.model.xlnet.TaggingXLNET`.
     """
@@ -184,5 +184,5 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
             'model not supported, please check supported models from `malaya.pos.available_transformer()`.'
         )
     return tag.transformer(
-        class_name = 'pos', model = model, quantized = quantized, **kwargs
+        class_name='pos', model=model, quantized=quantized, **kwargs
     )

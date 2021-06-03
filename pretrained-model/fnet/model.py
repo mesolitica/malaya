@@ -192,42 +192,36 @@ def gelu(x):
     return x * cdf
 
 
-class FeedForward(tf.keras.layers.Layer):
-    def __init__(self, dim, hidden_dim, dropout = 0.0, **kwargs):
-        super(FeedForward, self).__init__(name = 'FeedForward', **kwargs)
-        self.net = tf.keras.Sequential()
-        self.net.add(tf.keras.layers.Dense(hidden_dim, activation = gelu))
-        self.net.add(tf.keras.layers.Dropout(dropout))
-        self.net.add(tf.keras.layers.Dense(dim))
-        self.net.add(tf.keras.layers.Dropout(dropout))
+class Forward(tf.keras.layers.Layer):
+    def __init__(self, dim, mlp_dim, dropout, **kwargs):
+        super(Forward, self).__init__(**kwargs)
+        self.rate = dropout
+        self.dense1 = tf.keras.layers.Dense(mlp_dim, activation = gelu)
+        self.dense2 = tf.keras.layers.Dense(dim)
+        self.dropout = tf.keras.layers.Dropout(self.rate)
 
-    def call(self, x, training = True):
-        return self.net(x, training = training)
-
-
-class PreNorm(tf.keras.layers.Layer):
-    def __init__(self, fn, **kwargs):
-        super(PreNorm, self).__init__(name = 'PreNorm', **kwargs)
-        self.norm = tf.keras.layers.LayerNormalization()
-        self.fn = fn
-
-    def call(self, x, training = True):
-        return self.fn(self.norm(x), training = training)
+    def call(self, inputs, training = True):
+        X = self.dense1(inputs)
+        X = self.dropout(X, training = training)
+        X = self.dense2(X)
+        X = self.dropout(X, training = training)
+        return X
 
 
 class FNetBlock(tf.keras.layers.Layer):
-    def __init__(self, **kwargs):
+    def __init__(self, dim, mlp_dim, dropout = 0.1, **kwargs):
         super(FNetBlock, self).__init__(name = 'FNetBlock', **kwargs)
+        self.norm_fourier = tf.keras.layers.LayerNormalization()
+        self.norm_ffn = tf.keras.layers.LayerNormalization()
+        self.ffn = Forward(dim, mlp_dim, dropout = dropout)
 
-    def call(self, x):
-        g = tf.map_fn(
-            tf.signal.fft, tf.cast(tf.transpose(x, (2, 0, 1)), tf.complex64)
-        )
-        g = tf.transpose(g, (2, 1, 0))
-        g = tf.map_fn(tf.signal.fft, g)
-        g = tf.transpose(g, (1, 0, 2))
-        g = tf.math.real(g)
-        return g
+    def call(self, inputs, training = True):
+        X_complex = tf.cast(inputs, tf.complex64)
+        X_fft = tf.math.real(tf.signal.fft2d(X_complex))
+        X_norm1 = self.norm_fourier(X_fft + inputs, training = training)
+        X_dense = self.ffn(X_norm1, training = training)
+        X_norm2 = self.norm_ffn(X_dense + X_norm1, training = training)
+        return X_norm2
 
 
 class Model(tf.keras.Model):
@@ -237,7 +231,7 @@ class Model(tf.keras.Model):
         vocab_size,
         depth,
         mlp_dim,
-        dropout = 0.0,
+        dropout = 0.1,
         dropout_embedding = 0.1,
         max_position_embeddings = 1024,
         **kwargs,
@@ -246,18 +240,28 @@ class Model(tf.keras.Model):
         self.dim = dim
         self.hidden_size = dim
         self.vocab_size = vocab_size
+        self.dropout_embedding = dropout_embedding
         self.max_position_embeddings = max_position_embeddings
-        self.attn, self.ff = [], []
+        self.attn = []
         for _ in range(depth):
-            self.attn.append(PreNorm(FNetBlock()))
-            self.ff.append(
-                PreNorm(FeedForward(dim, mlp_dim, dropout = dropout))
+            self.attn.append(
+                FNetBlock(dim = dim, mlp_dim = mlp_dim, dropout = dropout)
             )
         self.layernorm_dropout = tf.keras.Sequential()
         self.layernorm_dropout.add(tf.keras.layers.LayerNormalization())
         self.layernorm_dropout.add(tf.keras.layers.Dropout(dropout_embedding))
 
-    def call(self, x, token_type_ids = None, training = True):
+    def call(
+        self, x, input_mask = None, token_type_ids = None, training = True
+    ):
+
+        if input_mask is None:
+            input_mask = tf.ones(
+                shape = [tf.shape(x)[0], tf.shape(x)[1]], dtype = tf.int32
+            )
+
+        input_mask = tf.expand_dims(tf.cast(input_mask, tf.float32), -1)
+
         if token_type_ids is None:
             token_type_ids = tf.zeros(
                 shape = [tf.shape(x)[0], tf.shape(x)[1]], dtype = tf.int32
@@ -281,10 +285,10 @@ class Model(tf.keras.Model):
             initializer_range = 0.02,
             max_position_embeddings = self.max_position_embeddings,
         )
-        x = self.embedding_output
+        x = self.layernorm_dropout(self.embedding_output, training = training)
         for no, attn in enumerate(self.attn):
-            x = attn(x, training = training) + x
-            x = self.ff[no](x, training = training) + x
+            x = attn(x, training = training)
+            x = x * input_mask
 
         with tf.variable_scope('pooler'):
             first_token_tensor = tf.squeeze(x[:, 0:1, :], axis = 1)

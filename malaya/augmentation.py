@@ -49,8 +49,8 @@ def _make_upper(p, o):
 def synonym(
     string: str,
     threshold: float = 0.5,
-    top_n = 5,
-    cleaning = augmentation_textcleaning,
+    top_n=5,
+    cleaning=augmentation_textcleaning,
     **kwargs
 ):
     """
@@ -120,7 +120,7 @@ def wordvector(
     threshold: float = 0.5,
     top_n: int = 5,
     soft: bool = False,
-    cleaning = augmentation_textcleaning,
+    cleaning=augmentation_textcleaning,
 ):
     """
     augmenting a string using wordvector.
@@ -179,10 +179,10 @@ def wordvector(
     )
     if 'soft' in batch_parameters:
         results = wordvector.batch_n_closest(
-            words, num_closest = top_n, soft = soft
+            words, num_closest=top_n, soft=soft
         )
     else:
-        results = wordvector.batch_n_closest(words, num_closest = top_n)
+        results = wordvector.batch_n_closest(words, num_closest=top_n)
 
     augmented = []
     for i in range(top_n):
@@ -204,9 +204,8 @@ def transformer(
     top_k: int = 100,
     temperature: float = 1.0,
     top_n: int = 5,
-    cleaning = None,
+    cleaning=None,
 ):
-
     """
     augmenting a string using transformer + nucleus sampling / top-k sampling.
 
@@ -218,7 +217,7 @@ def transformer(
     threshold: float, optional (default=0.5)
         random selection for a word.
     top_p: float, optional (default=0.8)
-        cumulative sum of probabilities to sample a word. 
+        cumulative sum of probabilities to sample a word.
         If top_n bigger than 0, the model will use nucleus sampling, else top-k sampling.
     top_k: int, optional (default=100)
         k for top-k sampling.
@@ -282,13 +281,13 @@ def transformer(
         input_masks.append([1] * len(mask))
         input_segments.append([0] * len(mask))
 
-    masked_padded = pad_sequences(maskeds, padding = 'post')
-    input_masks = pad_sequences(input_masks, padding = 'post')
-    input_segments = pad_sequences(input_segments, padding = 'post')
+    masked_padded = pad_sequences(maskeds, padding='post')
+    input_masks = pad_sequences(input_masks, padding='post')
+    input_segments = pad_sequences(input_segments, padding='post')
     batch_indices = np.array([np.arange(len(indices)), indices]).T
     samples = model._sess.run(
         model.samples,
-        feed_dict = {
+        feed_dict={
             model.X: masked_padded,
             model.MASK: input_masks,
             model.top_p: top_p,

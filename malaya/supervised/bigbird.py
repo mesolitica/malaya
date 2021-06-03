@@ -8,12 +8,12 @@ from malaya.text.bpe import SentencePieceEncoder
 from malaya.path import TRANSLATION_BPE_MODEL, T2T_BPE_MODEL
 
 
-def load(module, model, model_class, maxlen, quantized = False, **kwargs):
+def load(module, model, model_class, maxlen, quantized=False, **kwargs):
     path = check_file(
-        file = model,
-        module = module,
-        keys = {'model': 'model.pb', 'vocab': TRANSLATION_BPE_MODEL},
-        quantized = quantized,
+        file=model,
+        module=module,
+        keys={'model': 'model.pb', 'vocab': TRANSLATION_BPE_MODEL},
+        quantized=quantized,
         **kwargs,
     )
 
@@ -25,20 +25,20 @@ def load(module, model, model_class, maxlen, quantized = False, **kwargs):
     encoder = SentencePieceEncoder(path['vocab'])
 
     return model_class(
-        input_nodes = input_nodes,
-        output_nodes = output_nodes,
-        sess = generate_session(graph = g, **kwargs),
-        encoder = encoder,
-        maxlen = maxlen,
+        input_nodes=input_nodes,
+        output_nodes=output_nodes,
+        sess=generate_session(graph=g, **kwargs),
+        encoder=encoder,
+        maxlen=maxlen,
     )
 
 
-def load_lm(module, model, model_class, maxlen, quantized = False, **kwargs):
+def load_lm(module, model, model_class, maxlen, quantized=False, **kwargs):
     path = check_file(
-        file = model,
-        module = module,
-        keys = {'model': 'model.pb', 'vocab': T2T_BPE_MODEL},
-        quantized = quantized,
+        file=model,
+        module=module,
+        keys={'model': 'model.pb', 'vocab': T2T_BPE_MODEL},
+        quantized=quantized,
         **kwargs,
     )
 
@@ -50,9 +50,9 @@ def load_lm(module, model, model_class, maxlen, quantized = False, **kwargs):
     tokenizer = SentencePieceEncoder(path['vocab'])
 
     return model_class(
-        input_nodes = input_nodes,
-        output_nodes = output_nodes,
-        sess = generate_session(graph = g, **kwargs),
-        tokenizer = tokenizer,
-        maxlen = maxlen,
+        input_nodes=input_nodes,
+        output_nodes=output_nodes,
+        sess=generate_session(graph=g, **kwargs),
+        tokenizer=tokenizer,
+        maxlen=maxlen,
     )

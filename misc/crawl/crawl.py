@@ -12,15 +12,15 @@ for topic in topics:
     if file in os.listdir(os.getcwd()):
         print('passed: ', file)
         continue
-    
+
     print('crawling', topic)
     results = google_news_run(
         topic,
-        limit = 100000,
-        year_start = 2000,
-        year_end = 2021,
-        debug = False,
-        sleep_time_every_ten_articles = 10
+        limit=100000,
+        year_start=2000,
+        year_end=2021,
+        debug=False,
+        sleep_time_every_ten_articles=10
     )
 
     with open(file, 'w') as fopen:

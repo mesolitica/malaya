@@ -134,8 +134,8 @@ def describe():
 
     return describe_availability(
         d,
-        transpose = False,
-        text = 'you can read more from https://universaldependencies.org/treebanks/id_pud/index.html',
+        transpose=False,
+        text='you can read more from https://universaldependencies.org/treebanks/id_pud/index.html',
     )
 
 
@@ -149,7 +149,7 @@ def dependency_graph(tagging, indexing):
             '%d\t%s\t_\t_\t_\t_\t%d\t%s\t_\t_'
             % (i + 1, tagging[i][0], int(indexing[i][1]), tagging[i][1])
         )
-    return DependencyGraph('\n'.join(result), top_relation_label = 'root')
+    return DependencyGraph('\n'.join(result), top_relation_label='root')
 
 
 def available_transformer():
@@ -159,7 +159,7 @@ def available_transformer():
     from malaya.function import describe_availability
 
     return describe_availability(
-        _transformer_availability, text = 'tested on 20% test set.'
+        _transformer_availability, text='tested on 20% test set.'
     )
 
 
@@ -179,16 +179,16 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
         * ``'tiny-albert'`` - Google ALBERT TINY parameters.
         * ``'xlnet'`` - Google XLNET BASE parameters.
         * ``'alxlnet'`` - Malaya ALXLNET BASE parameters.
-    
+
     quantized : bool, optional (default=False)
-        if True, will load 8-bit quantized model. 
+        if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
 
     Returns
     -------
     result: model
         List of model classes:
-        
+
         * if `bert` in model, will return `malaya.model.bert.DependencyBERT`.
         * if `xlnet` in model, will return `malaya.model.xlnet.DependencyXLNET`.
     """
@@ -200,14 +200,14 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
         )
 
     path = check_file(
-        file = model,
-        module = 'dependency',
-        keys = {
+        file=model,
+        module='dependency',
+        keys={
             'model': 'model.pb',
             'vocab': MODEL_VOCAB[model],
             'tokenizer': MODEL_BPE[model],
         },
-        quantized = quantized,
+        quantized=quantized,
         **kwargs,
     )
     g = load_graph(path['model'], **kwargs)
@@ -232,13 +232,13 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
 
     outputs = ['logits', 'heads_seq']
     input_nodes, output_nodes = nodes_session(
-        g, inputs, outputs, extra = vectorizer
+        g, inputs, outputs, extra=vectorizer
     )
 
     return Model(
-        input_nodes = input_nodes,
-        output_nodes = output_nodes,
-        sess = generate_session(graph = g, **kwargs),
-        tokenizer = tokenizer,
-        settings = label,
+        input_nodes=input_nodes,
+        output_nodes=output_nodes,
+        sess=generate_session(graph=g, **kwargs),
+        tokenizer=tokenizer,
+        settings=label,
     )

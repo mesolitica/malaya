@@ -15,16 +15,16 @@ from malaya.path import MODEL_VOCAB, MODEL_BPE
 LENGTHS = {'bert': 384, 'xlnet': 512}
 
 
-def transformer_squad(class_name, model = 'bert', quantized = False, **kwargs):
+def transformer_squad(class_name, model='bert', quantized=False, **kwargs):
     path = check_file(
-        file = model,
-        module = class_name,
-        keys = {
+        file=model,
+        module=class_name,
+        keys={
             'model': 'model.pb',
             'vocab': MODEL_VOCAB[model],
             'tokenizer': MODEL_BPE[model],
         },
-        quantized = quantized,
+        quantized=quantized,
         **kwargs,
     )
 
@@ -37,7 +37,7 @@ def transformer_squad(class_name, model = 'bert', quantized = False, **kwargs):
         )
     if model in ['albert', 'tiny-albert']:
         tokenizer = AlbertTokenizer(
-            vocab_file = path['vocab'], spm_model_file = path['tokenizer']
+            vocab_file=path['vocab'], spm_model_file=path['tokenizer']
         )
     if model in ['xlnet', 'alxlnet']:
         tokenizer = sentencepiece_tokenizer_xlnet(path['tokenizer'])
@@ -55,11 +55,11 @@ def transformer_squad(class_name, model = 'bert', quantized = False, **kwargs):
 
     mode = 'bert' if 'bert' in model else 'xlnet'
     return SQUAD(
-        input_nodes = input_nodes,
-        output_nodes = output_nodes,
-        sess = generate_session(graph = g, **kwargs),
-        tokenizer = tokenizer,
-        class_name = class_name,
-        mode = mode,
-        length = LENGTHS[mode],
+        input_nodes=input_nodes,
+        output_nodes=output_nodes,
+        sess=generate_session(graph=g, **kwargs),
+        tokenizer=tokenizer,
+        class_name=class_name,
+        mode=mode,
+        length=LENGTHS[mode],
     )

@@ -74,11 +74,11 @@ class Model:
                 self._tokenizer = tokenizer
 
                 self.model = modeling.AlbertModel(
-                    config = bert_config,
-                    is_training = False,
-                    input_ids = self.X,
-                    input_mask = self.MASK,
-                    use_one_hot_embeddings = False,
+                    config=bert_config,
+                    is_training=False,
+                    input_ids=self.X,
+                    input_mask=self.MASK,
+                    use_one_hot_embeddings=False,
                 )
                 self.logits = self.model.get_pooled_output()
                 input_tensor = self.model.get_sequence_output()
@@ -88,11 +88,11 @@ class Model:
                     with tf.variable_scope('transform'):
                         input_tensor = tf.layers.dense(
                             input_tensor,
-                            units = bert_config.embedding_size,
-                            activation = modeling.get_activation(
+                            units=bert_config.embedding_size,
+                            activation=modeling.get_activation(
                                 bert_config.hidden_act
                             ),
-                            kernel_initializer = modeling.create_initializer(
+                            kernel_initializer=modeling.create_initializer(
                                 bert_config.initializer_range
                             ),
                         )
@@ -100,15 +100,15 @@ class Model:
 
                     output_bias = tf.get_variable(
                         'output_bias',
-                        shape = [bert_config.vocab_size],
-                        initializer = tf.zeros_initializer(),
+                        shape=[bert_config.vocab_size],
+                        initializer=tf.zeros_initializer(),
                     )
                     logits = tf.matmul(
-                        input_tensor, output_weights, transpose_b = True
+                        input_tensor, output_weights, transpose_b=True
                     )
                     self._logits = tf.nn.bias_add(logits, output_bias)
                     self._log_softmax = tf.nn.log_softmax(
-                        self._logits, axis = -1
+                        self._logits, axis=-1
                     )
 
                 logits = tf.gather_nd(self._logits, self.indices)
@@ -122,26 +122,25 @@ class Model:
 
                 logits = tf.cond(self.top_p > 0, necleus, select_k)
                 self.samples = tf.multinomial(
-                    logits, num_samples = self.k, output_dtype = tf.int32
+                    logits, num_samples=self.k, output_dtype=tf.int32
                 )
                 self._sess = generate_session(_graph, **kwargs)
                 self._sess.run(tf.global_variables_initializer())
                 var_lists = tf.get_collection(
-                    tf.GraphKeys.TRAINABLE_VARIABLES, scope = 'bert'
+                    tf.GraphKeys.TRAINABLE_VARIABLES, scope='bert'
                 )
                 var_lists.extend(
                     tf.get_collection(
-                        tf.GraphKeys.TRAINABLE_VARIABLES, scope = 'cls'
+                        tf.GraphKeys.TRAINABLE_VARIABLES, scope='cls'
                     )
                 )
-                self._saver = tf.train.Saver(var_list = var_lists)
+                self._saver = tf.train.Saver(var_list=var_lists)
                 attns = _extract_attention_weights(
                     bert_config.num_hidden_layers, tf.get_default_graph()
                 )
                 self.attns = attns
 
     def _log_vectorize(self, s_tokens, s_masks):
-
         """
         Log vectorize ids, suitable for spelling correction or any minimizing log probability.
 
@@ -157,12 +156,11 @@ class Model:
 
         return self._sess.run(
             self._log_softmax,
-            feed_dict = {self.X: s_tokens, self.MASK: s_masks},
+            feed_dict={self.X: s_tokens, self.MASK: s_masks},
         )
 
     @check_type
     def vectorize(self, strings: List[str]):
-
         """
         Vectorize string inputs.
 
@@ -177,7 +175,7 @@ class Model:
 
         batch_x, batch_masks, _, _ = bert_tokenization(self._tokenizer, strings)
         return self._sess.run(
-            self.logits, feed_dict = {self.X: batch_x, self.MASK: batch_masks}
+            self.logits, feed_dict={self.X: batch_x, self.MASK: batch_masks}
         )
 
     def _attention(self, strings):
@@ -185,9 +183,9 @@ class Model:
             self._tokenizer, strings
         )
         maxlen = max([len(s) for s in s_tokens])
-        s_tokens = padding_sequence(s_tokens, maxlen, pad_int = '[SEP]')
+        s_tokens = padding_sequence(s_tokens, maxlen, pad_int='[SEP]')
         attentions = self._sess.run(
-            self.attns, feed_dict = {self.X: batch_x, self.MASK: batch_masks}
+            self.attns, feed_dict={self.X: batch_x, self.MASK: batch_masks}
         )
         return attentions, s_tokens, batch_masks
 
@@ -228,10 +226,10 @@ class Model:
             combined_attentions = []
             for a in attentions:
                 combined_attentions.append(list(a.values())[0])
-            cls_attn = np.mean(combined_attentions, axis = 0).mean(axis = 2)
+            cls_attn = np.mean(combined_attentions, axis=0).mean(axis=2)
 
-        cls_attn = np.mean(cls_attn, axis = 1)
-        total_weights = np.sum(cls_attn, axis = -1, keepdims = True)
+        cls_attn = np.mean(cls_attn, axis=1)
+        total_weights = np.sum(cls_attn, axis=-1, keepdims=True)
         attn = cls_attn / total_weights
         output = []
         for i in range(attn.shape[0]):
@@ -242,7 +240,6 @@ class Model:
 
     @check_type
     def visualize_attention(self, string: str):
-
         """
         Visualize attention.
 
@@ -298,7 +295,7 @@ def load(model: str = 'albert', **kwargs):
         import tarfile
 
         with tarfile.open(PATH_ALBERT[model]['model']['model']) as tar:
-            tar.extractall(path = PATH_ALBERT[model]['path'])
+            tar.extractall(path=PATH_ALBERT[model]['path'])
 
     bert_checkpoint = PATH_ALBERT[model]['directory'] + 'model.ckpt'
     vocab_model = PATH_ALBERT[model]['directory'] + 'sp10m.cased.v10.model'
@@ -306,7 +303,7 @@ def load(model: str = 'albert', **kwargs):
     bert_config = PATH_ALBERT[model]['directory'] + 'config.json'
 
     tokenizer = tokenization.FullTokenizer(
-        vocab_file = vocab, do_lower_case = False, spm_model_file = vocab_model
+        vocab_file=vocab, do_lower_case=False, spm_model_file=vocab_model
     )
 
     bert_config = modeling.AlbertConfig.from_json_file(bert_config)

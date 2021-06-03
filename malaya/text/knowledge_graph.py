@@ -5,7 +5,7 @@ from collections import defaultdict
 
 
 def _is_number_regex(s):
-    if re.match('^\d+?\.\d+?$', s) is None:
+    if re.match('^\\d+?\\.\\d+?$', s) is None:
         return s.isdigit()
     return True
 

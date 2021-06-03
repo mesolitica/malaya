@@ -154,7 +154,7 @@ def describe():
 
     from malaya.function import describe_availability
 
-    return describe_availability(d, transpose = False)
+    return describe_availability(d, transpose=False)
 
 
 def describe_ontonotes5():
@@ -213,7 +213,7 @@ def describe_ontonotes5():
 
     from malaya.function import describe_availability
 
-    return describe_availability(d, transpose = False)
+    return describe_availability(d, transpose=False)
 
 
 def available_transformer():
@@ -223,7 +223,7 @@ def available_transformer():
     from malaya.function import describe_availability
 
     return describe_availability(
-        _transformer_availability, text = 'tested on 20% test set.'
+        _transformer_availability, text='tested on 20% test set.'
     )
 
 
@@ -234,7 +234,7 @@ def available_transformer_ontonotes5():
     from malaya.function import describe_availability
 
     return describe_availability(
-        _transformer_ontonotes5_availability, text = 'tested on 20% test set.'
+        _transformer_ontonotes5_availability, text='tested on 20% test set.'
     )
 
 
@@ -254,16 +254,16 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
         * ``'tiny-albert'`` - Google ALBERT TINY parameters.
         * ``'xlnet'`` - Google XLNET BASE parameters.
         * ``'alxlnet'`` - Malaya ALXLNET BASE parameters.
-        
+
     quantized : bool, optional (default=False)
-        if True, will load 8-bit quantized model. 
+        if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
 
     Returns
     -------
     result: model
         List of model classes:
-        
+
         * if `bert` in model, will return `malaya.model.bert.TaggingBERT`.
         * if `xlnet` in model, will return `malaya.model.xlnet.TaggingXLNET`.
     """
@@ -274,7 +274,7 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
             'model not supported, please check supported models from `malaya.entity.available_transformer()`.'
         )
     return tag.transformer(
-        class_name = 'entity', model = model, quantized = quantized, **kwargs
+        class_name='entity', model=model, quantized=quantized, **kwargs
     )
 
 
@@ -296,16 +296,16 @@ def transformer_ontonotes5(
         * ``'tiny-albert'`` - Google ALBERT TINY parameters.
         * ``'xlnet'`` - Google XLNET BASE parameters.
         * ``'alxlnet'`` - Malaya ALXLNET BASE parameters.
-        
+
     quantized : bool, optional (default=False)
-        if True, will load 8-bit quantized model. 
+        if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
 
     Returns
     -------
     result: model
         List of model classes:
-        
+
         * if `bert` in model, will return `malaya.model.bert.TaggingBERT`.
         * if `xlnet` in model, will return `malaya.model.xlnet.TaggingXLNET`.
     """
@@ -316,21 +316,21 @@ def transformer_ontonotes5(
             'model not supported, please check supported models from `malaya.entity.available_transformer_ontonotes5()`.'
         )
     return tag.transformer(
-        class_name = 'entity-ontonotes5',
-        model = model,
-        quantized = quantized,
+        class_name='entity-ontonotes5',
+        model=model,
+        quantized=quantized,
         **kwargs
     )
 
 
-def general_entity(model = None):
+def general_entity(model=None):
     """
     Load Regex based general entities tagging along with another supervised entity tagging model.
 
     Parameters
     ----------
     model : object
-        model must have `predict` method. 
+        model must have `predict` method.
         Make sure the `predict` method returned [(string, label), (string, label)].
 
     Returns
@@ -339,4 +339,4 @@ def general_entity(model = None):
     """
     if not hasattr(model, 'predict') and model is not None:
         raise ValueError('model must have `predict` method')
-    return EntityRegex(model = model)
+    return EntityRegex(model=model)

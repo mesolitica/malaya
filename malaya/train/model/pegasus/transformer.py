@@ -58,7 +58,8 @@ class TransformerEncoderDecoderModel(base.BaseModel):
         self._embedding_layer = embedding.Embedding(
             vocab_size, hidden_size, 'weights', self._dtype
         )
-        block_fn = lambda: transformer_block.TransformerBlock(
+
+        def block_fn(): return transformer_block.TransformerBlock(
             hidden_size, filter_size, num_heads, dropout
         )
         self._encoder_layers = [block_fn() for _ in range(num_encoder_layers)]
@@ -66,8 +67,8 @@ class TransformerEncoderDecoderModel(base.BaseModel):
         self._dropout_fn = (
             lambda x, training: tf.compat.v2.nn.dropout(
                 x,
-                rate = dropout,
-                noise_shape = [tf.shape(x)[0], 1, tf.shape(x)[2]],
+                rate=dropout,
+                noise_shape=[tf.shape(x)[0], 1, tf.shape(x)[2]],
             )
             if training
             else x
@@ -84,7 +85,7 @@ class TransformerEncoderDecoderModel(base.BaseModel):
         states_BxIxD = self._dropout_fn(
             timing.add_time_signal(states_BxIxD), training
         )
-        with tf.variable_scope('encoder', reuse = tf.AUTO_REUSE):
+        with tf.variable_scope('encoder', reuse=tf.AUTO_REUSE):
             states_BxIxD = transformer_block.stack(
                 self._encoder_layers,
                 training,
@@ -94,7 +95,7 @@ class TransformerEncoderDecoderModel(base.BaseModel):
                 None,
             )
             states_BxIxD = contrib_layers.layer_norm(
-                states_BxIxD, begin_norm_axis = 2
+                states_BxIxD, begin_norm_axis=2
             )
         return {'memory': states_BxIxD, 'memory_bias': inputs_bias_Bx1xI}
 
@@ -123,7 +124,7 @@ class TransformerEncoderDecoderModel(base.BaseModel):
         states_BxTxD = tf.pad(states_BxTxD, [[0, 0], [1, 0], [0, 0]])[:, :-1, :]
         states_BxTxD = timing.add_time_signal(states_BxTxD)
         states_BxTxD = self._dropout_fn(states_BxTxD, training)
-        with tf.variable_scope(self._decoder_scope_name, reuse = tf.AUTO_REUSE):
+        with tf.variable_scope(self._decoder_scope_name, reuse=tf.AUTO_REUSE):
             states_BxTxD = transformer_block.stack(
                 self._decoder_layers,
                 training,
@@ -133,15 +134,15 @@ class TransformerEncoderDecoderModel(base.BaseModel):
                 context['memory_bias'],
             )
             states_BxTxD = contrib_layers.layer_norm(
-                states_BxTxD, begin_norm_axis = 2
+                states_BxTxD, begin_norm_axis=2
             )
         logits_BxTxV = self._embedding_layer(states_BxTxD, False)
         targets_mask_BxT = tf.cast(tf.greater(targets_BxT, 0), self._dtype)
         loss = tf.losses.softmax_cross_entropy(
             tf.one_hot(targets_BxT, self._vocab_size),
             logits_BxTxV,
-            label_smoothing = self._label_smoothing,
-            weights = targets_mask_BxT,
+            label_smoothing=self._label_smoothing,
+            weights=targets_mask_BxT,
         )
         return loss, {'logits': logits_BxTxV}
 
@@ -170,9 +171,9 @@ class TransformerEncoderDecoderModel(base.BaseModel):
             bias_1x1xT = tf.slice(bias_1xTxT, [0, i, 0], [1, 1, T])
             dec_Bx1xD = self._embedding_layer(dec_Bx1, True)
             dec_Bx1xD *= tf.cast(tf.greater(i, 0), self._dtype)
-            dec_Bx1xD = timing.add_time_signal(dec_Bx1xD, start_index = i)
+            dec_Bx1xD = timing.add_time_signal(dec_Bx1xD, start_index=i)
             with tf.variable_scope(
-                self._decoder_scope_name, reuse = tf.AUTO_REUSE
+                self._decoder_scope_name, reuse=tf.AUTO_REUSE
             ):
                 dec_Bx1xD = transformer_block.stack(
                     self._decoder_layers,
@@ -185,10 +186,10 @@ class TransformerEncoderDecoderModel(base.BaseModel):
                     i,
                 )
                 dec_Bx1xD = contrib_layers.layer_norm(
-                    dec_Bx1xD, begin_norm_axis = 2
+                    dec_Bx1xD, begin_norm_axis=2
                 )
             logits_Bx1xV = self._embedding_layer(dec_Bx1xD, False)
-            logits_BxV = tf.squeeze(logits_Bx1xV, axis = 1)
+            logits_BxV = tf.squeeze(logits_Bx1xV, axis=1)
             return logits_BxV
 
         decodes_BxT = decoding.left2right_decode(

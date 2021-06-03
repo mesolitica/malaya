@@ -5,12 +5,12 @@ from malaya.text.function import pad_sentence_batch, translation_textcleaning
 class Abstract:
     def _execute(self, inputs, input_labels, output_labels):
         return execute_graph(
-            inputs = inputs,
-            input_labels = input_labels,
-            output_labels = output_labels,
-            sess = self._sess,
-            input_nodes = self._input_nodes,
-            output_nodes = self._output_nodes,
+            inputs=inputs,
+            input_labels=input_labels,
+            output_labels=output_labels,
+            sess=self._sess,
+            input_nodes=self._input_nodes,
+            output_nodes=self._output_nodes,
         )
 
 
@@ -32,7 +32,7 @@ class T2T:
         output_nodes,
         sess,
         encoder,
-        translation_model = False,
+        translation_model=False,
     ):
 
         self._input_nodes = input_nodes
@@ -41,7 +41,7 @@ class T2T:
         self._encoder = encoder
         self._translation_model = translation_model
 
-    def _predict(self, strings, beam_search = True):
+    def _predict(self, strings, beam_search=True):
         if self._translation_model:
             encoded = [
                 self._encoder.encode(translation_textcleaning(string)) + [1]
@@ -57,9 +57,9 @@ class T2T:
             output = 'greedy'
 
         r = self._execute(
-            inputs = [batch_x],
-            input_labels = ['Placeholder'],
-            output_labels = [output],
+            inputs=[batch_x],
+            input_labels=['Placeholder'],
+            output_labels=[output],
         )
         p = r[output].tolist()
         if self._translation_model:
@@ -73,10 +73,10 @@ class T2T:
         return result
 
     def _greedy_decoder(self, strings):
-        return self._predict(strings, beam_search = False)
+        return self._predict(strings, beam_search=False)
 
     def _beam_decoder(self, strings):
-        return self._predict(strings, beam_search = True)
+        return self._predict(strings, beam_search=True)
 
 
 class Classification(Abstract):

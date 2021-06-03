@@ -67,14 +67,14 @@ class Model:
                 self._tokenizer = tokenizer
 
                 self.model = modeling.BertModel(
-                    bert_config = bert_config,
-                    is_training = False,
-                    input_ids = self.X,
-                    input_mask = self.MASK,
-                    token_type_ids = self.segment_ids,
-                    use_one_hot_embeddings = False,
-                    scope = 'generator',
-                    embedding_size = bert_config.embedding_size,
+                    bert_config=bert_config,
+                    is_training=False,
+                    input_ids=self.X,
+                    input_mask=self.MASK,
+                    token_type_ids=self.segment_ids,
+                    use_one_hot_embeddings=False,
+                    scope='generator',
+                    embedding_size=bert_config.embedding_size,
                 )
                 self.logits = self.model.get_pooled_output()
                 output_layer = self.model.get_sequence_output()
@@ -82,26 +82,26 @@ class Model:
                 with tf.variable_scope('generator_predictions'):
                     hidden = tf.layers.dense(
                         output_layer,
-                        units = modeling.get_shape_list(
+                        units=modeling.get_shape_list(
                             self.model.get_embedding_table()
                         )[-1],
-                        activation = modeling.get_activation(
+                        activation=modeling.get_activation(
                             bert_config.hidden_act
                         ),
-                        kernel_initializer = modeling.create_initializer(
+                        kernel_initializer=modeling.create_initializer(
                             bert_config.initializer_range
                         ),
                     )
                     hidden = modeling.layer_norm(hidden)
                     output_bias = tf.get_variable(
                         'output_bias',
-                        shape = [bert_config.vocab_size],
-                        initializer = tf.zeros_initializer(),
+                        shape=[bert_config.vocab_size],
+                        initializer=tf.zeros_initializer(),
                     )
                     logits = tf.matmul(
                         hidden,
                         self.model.get_embedding_table(),
-                        transpose_b = True,
+                        transpose_b=True,
                     )
                     self._logits = tf.nn.bias_add(logits, output_bias)
                     self._log_softmax = tf.nn.log_softmax(self._logits)
@@ -117,27 +117,26 @@ class Model:
 
                 logits = tf.cond(self.top_p > 0, necleus, select_k)
                 self.samples = tf.multinomial(
-                    logits, num_samples = self.k, output_dtype = tf.int32
+                    logits, num_samples=self.k, output_dtype=tf.int32
                 )
 
                 self._sess = generate_session(_graph, **kwargs)
                 self._sess.run(tf.global_variables_initializer())
 
                 var_lists = tf.get_collection(
-                    tf.GraphKeys.TRAINABLE_VARIABLES, scope = 'generator'
+                    tf.GraphKeys.TRAINABLE_VARIABLES, scope='generator'
                 )
                 var_electra = tf.get_collection(
-                    tf.GraphKeys.TRAINABLE_VARIABLES, scope = 'electra'
+                    tf.GraphKeys.TRAINABLE_VARIABLES, scope='electra'
                 )
 
-                self._saver = tf.train.Saver(var_list = var_lists + var_electra)
+                self._saver = tf.train.Saver(var_list=var_lists + var_electra)
                 attns = _extract_attention_weights(
                     bert_config.num_hidden_layers, tf.get_default_graph()
                 )
                 self.attns = attns
 
     def _log_vectorize(self, s_tokens, s_masks):
-
         """
         Log vectorize ids, suitable for spelling correction or any minimizing log probability.
 
@@ -155,7 +154,7 @@ class Model:
 
         return self._sess.run(
             self._log_softmax,
-            feed_dict = {
+            feed_dict={
                 self.X: s_tokens,
                 self.MASK: s_masks,
                 self.segment_ids: segments,
@@ -164,7 +163,6 @@ class Model:
 
     @check_type
     def vectorize(self, strings: List[str]):
-
         """
         Vectorize string inputs.
 
@@ -182,7 +180,7 @@ class Model:
         )
         return self._sess.run(
             self.logits,
-            feed_dict = {
+            feed_dict={
                 self.X: batch_x,
                 self.MASK: batch_masks,
                 self.segment_ids: batch_segments,
@@ -194,10 +192,10 @@ class Model:
             self._tokenizer, strings
         )
         maxlen = max([len(s) for s in s_tokens])
-        s_tokens = padding_sequence(s_tokens, maxlen, pad_int = '[SEP]')
+        s_tokens = padding_sequence(s_tokens, maxlen, pad_int='[SEP]')
         attentions = self._sess.run(
             self.attns,
-            feed_dict = {
+            feed_dict={
                 self.X: batch_x,
                 self.MASK: batch_masks,
                 self.segment_ids: batch_segments,
@@ -242,10 +240,10 @@ class Model:
             combined_attentions = []
             for a in attentions:
                 combined_attentions.append(list(a.values())[0])
-            cls_attn = np.mean(combined_attentions, axis = 0).mean(axis = 2)
+            cls_attn = np.mean(combined_attentions, axis=0).mean(axis=2)
 
-        cls_attn = np.mean(cls_attn, axis = 1)
-        total_weights = np.sum(cls_attn, axis = -1, keepdims = True)
+        cls_attn = np.mean(cls_attn, axis=1)
+        total_weights = np.sum(cls_attn, axis=-1, keepdims=True)
         attn = cls_attn / total_weights
         output = []
         for i in range(attn.shape[0]):
@@ -256,7 +254,6 @@ class Model:
 
     @check_type
     def visualize_attention(self, string: str):
-
         """
         Visualize attention.
 
@@ -312,14 +309,14 @@ def load(model: str = 'electra', **kwargs):
         import tarfile
 
         with tarfile.open(PATH_ELECTRA[model]['model']['model']) as tar:
-            tar.extractall(path = PATH_ELECTRA[model]['path'])
+            tar.extractall(path=PATH_ELECTRA[model]['path'])
 
     vocab = PATH_ELECTRA[model]['directory'] + 'bahasa.wordpiece'
     bert_checkpoint = PATH_ELECTRA[model]['directory'] + 'model.ckpt'
     bert_config = PATH_ELECTRA[model]['directory'] + 'config.json'
 
     tokenizer = tokenization.FullTokenizer(
-        vocab_file = vocab, do_lower_case = False, **kwargs
+        vocab_file=vocab, do_lower_case=False, **kwargs
     )
 
     bert_config = modeling.BertConfig.from_json_file(bert_config)

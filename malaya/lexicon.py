@@ -11,13 +11,13 @@ from typing import List, Dict, Tuple, Callable
 
 
 class SelectedEmbedding:
-    def __init__(self, wordvector, words, normalization = False):
+    def __init__(self, wordvector, words, normalization=False):
         vs = {w: wordvector.get_vector_by_name(w) for w in words}
         self.iw = words
         self.wi = {w: i for i, w in enumerate(self.iw)}
         self.m = np.vstack(vs[w] for w in self.iw)
         if normalization:
-            preprocessing.normalize(self.m, copy = False)
+            preprocessing.normalize(self.m, copy=False)
 
 
 def teleport_set(words, seeds):
@@ -30,7 +30,7 @@ def weighted_teleport_set(words, seed_weights):
     )
 
 
-def run_iterative(M, r, update_seeds, max_iter = 50, epsilon = 1e-6):
+def run_iterative(M, r, update_seeds, max_iter=50, epsilon=1e-6):
     for i in range(max_iter):
         last_r = np.array(r)
         r = np.dot(M, r)
@@ -40,7 +40,7 @@ def run_iterative(M, r, update_seeds, max_iter = 50, epsilon = 1e-6):
     return r
 
 
-def logged_loop(iterable, silent = False):
+def logged_loop(iterable, silent=False):
     if not silent:
         from tqdm import tqdm
 
@@ -52,9 +52,9 @@ def logged_loop(iterable, silent = False):
 
 
 def similarity_matrix(
-    embeddings, arccos = True, similarity_power = 100, nn = 25
+    embeddings, arccos=True, similarity_power=100, nn=25
 ):
-    def make_knn(vec, nn = nn):
+    def make_knn(vec, nn=nn):
         vec[vec < vec[np.argsort(vec)[-nn]]] = 0
         return vec
 
@@ -69,14 +69,14 @@ def similarity_matrix(
 
 
 def transition_matrix(
-    embeddings, arccos = True, similarity_power = 100, nn = 25
+    embeddings, arccos=True, similarity_power=100, nn=25
 ):
 
     L = similarity_matrix(
         embeddings,
-        arccos = arccos,
-        similarity_power = similarity_power,
-        nn = nn,
+        arccos=arccos,
+        similarity_power=similarity_power,
+        nn=nn,
     )
     Dinv = np.diag(
         [
@@ -90,10 +90,10 @@ def transition_matrix(
 def _populate(
     lexicon,
     wordvector,
-    pool_size = 10,
-    soft = False,
-    silent = False,
-    normalization = True,
+    pool_size=10,
+    soft=False,
+    silent=False,
+    normalization=True,
 ):
 
     pool_words, seeds = [], {}
@@ -121,11 +121,11 @@ def _populate(
     )
     if 'soft' in batch_parameters:
         results = wordvector.batch_n_closest(
-            pool_words, num_closest = pool_size, soft = soft
+            pool_words, num_closest=pool_size, soft=soft
         )
     else:
         results = wordvector.batch_n_closest(
-            pool_words, num_closest = pool_size
+            pool_words, num_closest=pool_size
         )
 
     results = list(itertools.chain(*results))
@@ -134,7 +134,7 @@ def _populate(
         print('populating vectors from populated nearest words')
 
     embeddings = SelectedEmbedding(
-        wordvector, results, normalization = normalization
+        wordvector, results, normalization=normalization
     )
 
     return results, seeds, embeddings
@@ -152,7 +152,6 @@ def random_walk(
     soft: bool = False,
     silent: bool = False,
 ):
-
     """
     Induce lexicon by using random walk technique, use in paper, https://arxiv.org/pdf/1606.02820.pdf
 
@@ -194,20 +193,20 @@ def random_walk(
         raise ValueError('beta must be bigger than 0 and less than 1')
 
     results, seeds, embeddings = _populate(
-        lexicon = lexicon,
-        wordvector = wordvector,
-        pool_size = pool_size,
-        soft = soft,
-        silent = silent,
-        normalization = normalization,
+        lexicon=lexicon,
+        wordvector=wordvector,
+        pool_size=pool_size,
+        soft=soft,
+        silent=silent,
+        normalization=normalization,
     )
 
     words = embeddings.iw
     M = transition_matrix(
         embeddings,
-        arccos = arccos,
-        similarity_power = similarity_power,
-        nn = top_n,
+        arccos=arccos,
+        similarity_power=similarity_power,
+        nn=top_n,
     )
     keys = list(seeds.keys())
     stacks = []
@@ -233,8 +232,8 @@ def random_walk(
             )
         )
 
-    combined = np.concatenate(stacks, axis = 1)
-    argmax = np.argmax(combined, axis = 1)
+    combined = np.concatenate(stacks, axis=1)
+    argmax = np.argmax(combined, axis=1)
     return {w: keys[argmax[i]] for i, w in enumerate(results)}, combined, keys
 
 
@@ -249,7 +248,6 @@ def propagate_probabilistic(
     soft: bool = False,
     silent: bool = False,
 ):
-
     """
     Learns polarity scores via standard label propagation from lexicon sets.
 
@@ -287,20 +285,20 @@ def propagate_probabilistic(
         raise ValueError('wordvector must have `_dictionary` attribute')
 
     results, seeds, embeddings = _populate(
-        lexicon = lexicon,
-        wordvector = wordvector,
-        pool_size = pool_size,
-        soft = soft,
-        silent = silent,
-        normalization = normalization,
+        lexicon=lexicon,
+        wordvector=wordvector,
+        pool_size=pool_size,
+        soft=soft,
+        silent=silent,
+        normalization=normalization,
     )
 
     words = embeddings.iw
     M = transition_matrix(
         embeddings,
-        arccos = arccos,
-        similarity_power = similarity_power,
-        nn = top_n,
+        arccos=arccos,
+        similarity_power=similarity_power,
+        nn=top_n,
     )
     keys = list(seeds.keys())
     stacks = []
@@ -316,12 +314,12 @@ def propagate_probabilistic(
             c = np.zeros((len(stacks)))
             c[no] = 1.0
             r[s] = c
-        r /= np.sum(r, axis = 1)[:, np.newaxis]
+        r /= np.sum(r, axis=1)[:, np.newaxis]
 
     r = run_iterative(
         M, np.random.random((M.shape[0], len(keys))), update_seeds
     )
-    argmax = np.argmax(r, axis = 1)
+    argmax = np.argmax(r, axis=1)
     return {w: keys[argmax[i]] for i, w in enumerate(results)}, r, keys
 
 
@@ -335,7 +333,6 @@ def propagate_graph(
     soft: bool = False,
     silent: bool = False,
 ):
-
     """
     Graph propagation method dapted from Velikovich, Leonid, et al. "The viability of web-derived polarity lexicons." http://www.aclweb.org/anthology/N10-1119
 
@@ -371,20 +368,20 @@ def propagate_graph(
         raise ValueError('wordvector must have `_dictionary` attribute')
 
     results, seeds, embeddings = _populate(
-        lexicon = lexicon,
-        wordvector = wordvector,
-        pool_size = pool_size,
-        soft = soft,
-        silent = silent,
-        normalization = normalization,
+        lexicon=lexicon,
+        wordvector=wordvector,
+        pool_size=pool_size,
+        soft=soft,
+        silent=silent,
+        normalization=normalization,
     )
 
     words = embeddings.iw
     M = transition_matrix(
         embeddings,
-        arccos = True,
-        similarity_power = similarity_power,
-        nn = top_n,
+        arccos=True,
+        similarity_power=similarity_power,
+        nn=top_n,
     )
     M = (M + M.T) / 2
     keys = list(seeds.keys())
@@ -396,7 +393,7 @@ def propagate_graph(
     if not silent:
         print('propagate graph from populated nearest words')
 
-    def run_graph_propagate(seeds, alpha_mat, trans_mat, T = 3):
+    def run_graph_propagate(seeds, alpha_mat, trans_mat, T=3):
         def get_rel_edges(ind_set):
             rel_edges = set([])
             for node in ind_set:
@@ -425,7 +422,7 @@ def propagate_graph(
         stacks.append(p)
 
     index = embeddings.wi
-    for w in logged_loop(index, silent = silent):
+    for w in logged_loop(index, silent=silent):
         for no, k in enumerate(keys):
             if w not in seeds[k]:
                 seeds[k][w] = sum(
@@ -434,8 +431,8 @@ def propagate_graph(
 
     stacks = []
     for k in keys:
-        stacks.append(np.expand_dims([seeds[k][w] for w in results], axis = 1))
+        stacks.append(np.expand_dims([seeds[k][w] for w in results], axis=1))
 
-    combined = np.concatenate(stacks, axis = 1)
-    argmax = np.argmax(combined, axis = 1)
+    combined = np.concatenate(stacks, axis=1)
+    argmax = np.argmax(combined, axis=1)
     return {w: keys[argmax[i]] for i, w in enumerate(results)}, combined, keys

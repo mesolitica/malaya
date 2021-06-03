@@ -28,18 +28,18 @@ class PrenormEncoderLayer(tf.compat.v1.layers.Layer):
     def __init__(
         self,
         attention_type,
-        hidden_size = 768,
-        intermediate_size = 3072,
-        intermediate_act_fn = utils.gelu,
-        attention_probs_dropout_prob = 0.0,
-        hidden_dropout_prob = 0.1,
-        initializer_range = 0.02,
-        num_attention_heads = 12,
-        num_rand_blocks = 3,
-        block_size = 64,
-        use_bias = True,
-        seed = None,
-        name = None,
+        hidden_size=768,
+        intermediate_size=3072,
+        intermediate_act_fn=utils.gelu,
+        attention_probs_dropout_prob=0.0,
+        hidden_dropout_prob=0.1,
+        initializer_range=0.02,
+        num_attention_heads=12,
+        num_rand_blocks=3,
+        block_size=64,
+        use_bias=True,
+        seed=None,
+        name=None,
     ):
         """Constructor of an encoder layer of a transformer in Pegasus style.
 
@@ -61,7 +61,7 @@ class PrenormEncoderLayer(tf.compat.v1.layers.Layer):
       seed: (Optional) int. Reandom seed for generating random mask.
       name: The name scope of this layer.
     """
-        super(PrenormEncoderLayer, self).__init__(name = name)
+        super(PrenormEncoderLayer, self).__init__(name=name)
         self.hidden_dropout_prob = hidden_dropout_prob
 
         # Attention layer
@@ -77,7 +77,7 @@ class PrenormEncoderLayer(tf.compat.v1.layers.Layer):
             attention_probs_dropout_prob,
             use_bias,
             seed,
-            name = 'self',
+            name='self',
         )
 
         # Dense layers
@@ -122,12 +122,12 @@ class PrenormEncoderLayer(tf.compat.v1.layers.Layer):
     def call(
         self,
         layer_input,
-        attention_mask = None,
-        band_mask = None,
-        from_mask = None,
-        to_mask = None,
-        input_blocked_mask = None,
-        training = None,
+        attention_mask=None,
+        band_mask=None,
+        from_mask=None,
+        to_mask=None,
+        input_blocked_mask=None,
+        training=None,
     ):
         """Implements a encoder layer of a transformer in Pegasus style.
 
@@ -176,7 +176,7 @@ class PrenormEncoderLayer(tf.compat.v1.layers.Layer):
                     input_blocked_mask,
                     input_blocked_mask,
                     training,
-                    scope = sc,
+                    scope=sc,
                 )
 
             # Run a linear projection of `hidden_size` then add a residual
@@ -214,18 +214,18 @@ class PostnormEncoderLayer(tf.compat.v1.layers.Layer):
     def __init__(
         self,
         attention_type,
-        hidden_size = 768,
-        intermediate_size = 3072,
-        intermediate_act_fn = utils.gelu,
-        attention_probs_dropout_prob = 0.0,
-        hidden_dropout_prob = 0.1,
-        initializer_range = 0.02,
-        num_attention_heads = 12,
-        num_rand_blocks = 3,
-        block_size = 64,
-        use_bias = True,
-        seed = None,
-        name = None,
+        hidden_size=768,
+        intermediate_size=3072,
+        intermediate_act_fn=utils.gelu,
+        attention_probs_dropout_prob=0.0,
+        hidden_dropout_prob=0.1,
+        initializer_range=0.02,
+        num_attention_heads=12,
+        num_rand_blocks=3,
+        block_size=64,
+        use_bias=True,
+        seed=None,
+        name=None,
     ):
         """Constructor of an encoder layer of a transformer in BERT style.
 
@@ -247,7 +247,7 @@ class PostnormEncoderLayer(tf.compat.v1.layers.Layer):
       seed: (Optional) int. Reandom seed for generating random mask.
       name: The name scope of this layer.
     """
-        super(PostnormEncoderLayer, self).__init__(name = name)
+        super(PostnormEncoderLayer, self).__init__(name=name)
         self.hidden_dropout_prob = hidden_dropout_prob
 
         # Attention layer
@@ -263,7 +263,7 @@ class PostnormEncoderLayer(tf.compat.v1.layers.Layer):
             attention_probs_dropout_prob,
             use_bias,
             seed,
-            name = 'self',
+            name='self',
         )
 
         # Dense layers
@@ -308,12 +308,12 @@ class PostnormEncoderLayer(tf.compat.v1.layers.Layer):
     def call(
         self,
         layer_input,
-        attention_mask = None,
-        band_mask = None,
-        from_mask = None,
-        to_mask = None,
-        input_blocked_mask = None,
-        training = None,
+        attention_mask=None,
+        band_mask=None,
+        from_mask=None,
+        to_mask=None,
+        input_blocked_mask=None,
+        training=None,
     ):
         """Implements a encoder layer of a transformer in BERT style.
 
@@ -361,7 +361,7 @@ class PostnormEncoderLayer(tf.compat.v1.layers.Layer):
                     input_blocked_mask,
                     input_blocked_mask,
                     training,
-                    scope = sc,
+                    scope=sc,
                 )
 
             # Run a linear projection of `hidden_size` then add a residual
@@ -396,7 +396,7 @@ class EncoderStack(tf.compat.v1.layers.Layer):
 
     def __init__(self, params):
         name = 'encoder'
-        super(EncoderStack, self).__init__(name = name)
+        super(EncoderStack, self).__init__(name=name)
         self.params = params
 
         if params['norm_type'] == 'prenorm':
@@ -422,8 +422,8 @@ class EncoderStack(tf.compat.v1.layers.Layer):
                 self.params['num_rand_blocks'],
                 self.params['block_size'],
                 self.params['use_bias'],
-                seed = layer_idx,
-                name = 'layer_%d' % layer_idx,
+                seed=layer_idx,
+                name='layer_%d' % layer_idx,
             )
             for layer_idx in range(self.params['num_hidden_layers'])
         ]
@@ -440,7 +440,7 @@ class EncoderStack(tf.compat.v1.layers.Layer):
         self._trainable_weights = list({v.name: v for v in tvar_list}.values())
         return self._trainable_weights
 
-    def call(self, encoder_inputs, encoder_inputs_mask, training = None):
+    def call(self, encoder_inputs, encoder_inputs_mask, training=None):
         """Return the output of the decoder layer stacks.
 
     Args:
@@ -453,7 +453,7 @@ class EncoderStack(tf.compat.v1.layers.Layer):
       Finaly layer encoder output. float tensor with shape
         [batch_size, input_length, hidden_size]
     """
-        encoder_shape = utils.get_shape_list(encoder_inputs, expected_rank = 3)
+        encoder_shape = utils.get_shape_list(encoder_inputs, expected_rank=3)
         batch_size = encoder_shape[0]
         encoder_length = encoder_shape[1]
 

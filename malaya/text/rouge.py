@@ -20,7 +20,7 @@ def _get_ngrams(n, text):
     text_length = len(text)
     max_index_ngram_start = text_length - n
     for i in range(max_index_ngram_start + 1):
-        ngram_set.add(tuple(text[i : i + n]))
+        ngram_set.add(tuple(text[i: i + n]))
     return ngram_set
 
 
@@ -53,10 +53,10 @@ def cal_rouge(evaluated_ngrams, reference_ngrams):
     return {'f': f1_score, 'p': precision, 'r': recall}
 
 
-def postprocessing_summarization(string, lapors = _lapor_words):
+def postprocessing_summarization(string, lapors=_lapor_words):
     for l in lapors:
         if l in string:
-            string = re.sub(f'\s*[,.]?\s*{l}', ' ', string)
+            string = re.sub(f'\\s*[,.]?\\s*{l}', ' ', string)
 
     string = re.sub(r'[ ]+', ' ', string).strip()
     return string
@@ -65,7 +65,7 @@ def postprocessing_summarization(string, lapors = _lapor_words):
 def find_lapor_and_remove(article, summary):
     lapor = []
     lowered = article.lower()
-    finds = re.findall('\w*lapor \w*', summary)
+    finds = re.findall('\\w*lapor \\w*', summary)
     for f in finds:
         start = summary.find(f)
         end = summary.find('.', start)
@@ -93,11 +93,11 @@ def filter_news_sentence(summary):
     return ' '.join(selected)
 
 
-def get_unique_sentences(summary, reject_similarity = 0.85, **kwargs):
+def get_unique_sentences(summary, reject_similarity=0.85, **kwargs):
 
     sents = split_into_sentences(summary)
-    bow = CountVectorizer(token_pattern = '[A-Za-z]+').fit_transform(sents)
-    coef = 1 - pairwise_distances(X = bow, Y = bow, metric = 'cosine')
+    bow = CountVectorizer(token_pattern='[A-Za-z]+').fit_transform(sents)
+    coef = 1 - pairwise_distances(X=bow, Y=bow, metric='cosine')
     ids, selected = [], []
     for no in range(len(sents)):
         row = np.where(coef[no] >= reject_similarity)[0]
@@ -108,7 +108,7 @@ def get_unique_sentences(summary, reject_similarity = 0.85, **kwargs):
     return ' '.join(ids)
 
 
-def filter_rouge(article, summary, n = 2, threshold = 0.1, **kwargs):
+def filter_rouge(article, summary, n=2, threshold=0.1, **kwargs):
 
     sents = split_into_sentences(summary)
     reference = _get_word_ngrams(n, [_rouge_clean(article).split()])

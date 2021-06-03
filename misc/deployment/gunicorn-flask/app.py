@@ -3,13 +3,13 @@ import malaya
 
 app = Flask(__name__)
 
-model = malaya.sentiment.transformer(model = 'albert', validate = False)
+model = malaya.sentiment.transformer(model='albert', validate=False)
 
 
-@app.route('/', methods = ['GET'])
+@app.route('/', methods=['GET'])
 def index():
     strings = [request.args.get('string')] * 50
-    r = model.predict_batch(strings, get_proba = True)
+    r = model.predict_batch(strings, get_proba=True)
     return jsonify('done')
 
 

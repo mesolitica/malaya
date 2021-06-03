@@ -1,18 +1,11 @@
 import tensorflow as tf
 import numpy as np
 from malaya.function.activation import add_neutral as neutral
-from malaya.function.activation import softmax, sigmoid
-from malaya.text.function import (
-    translation_textcleaning,
-    summarization_textcleaning,
-)
-from malaya.text.rouge import postprocess_summary
+from malaya.function.activation import softmax
 from malaya.text.bpe import bert_tokenization
-from malaya.model.abstract import Classification, Seq2Seq, Abstract
+from malaya.model.abstract import Classification, Abstract
 from herpetologist import check_type
 from typing import List
-
-pad_sequences = tf.keras.preprocessing.sequence.pad_sequences
 
 
 class Base(Abstract):
@@ -29,10 +22,9 @@ class Base(Abstract):
         self._sess = sess
         self._tokenizer = tokenizer
         self._label = label
-        self._maxlen = 1024
 
 
-class BigBird(Base):
+class FNet(Base):
     def __init__(
         self,
         input_nodes,
@@ -54,13 +46,12 @@ class BigBird(Base):
         self._class_name = class_name
 
     def _classify(self, strings):
-        input_ids, _, _, _ = bert_tokenization(self._tokenizer, strings)
-        input_ids = tf.keras.preprocessing.sequence.pad_sequences(
-            input_ids, padding='post', maxlen=self._maxlen
+        input_ids, input_masks, _, _ = bert_tokenization(
+            self._tokenizer, strings
         )
         r = self._execute(
-            inputs=[input_ids],
-            input_labels=['Placeholder'],
+            inputs=[input_ids, input_masks],
+            input_labels=['Placeholder', 'Placeholder_1'],
             output_labels=['logits'],
         )
         return softmax(r['logits'], axis=-1)
@@ -82,13 +73,12 @@ class BigBird(Base):
             raise ValueError(
                 "method not supported, only support 'first', 'last', 'mean' and 'word'"
             )
-        input_ids, _, _, s_tokens = bert_tokenization(self._tokenizer, strings)
-        input_ids = tf.keras.preprocessing.sequence.pad_sequences(
-            input_ids, padding='post', maxlen=self._maxlen
+        input_ids, input_masks, _, s_tokens = bert_tokenization(
+            self._tokenizer, strings
         )
         r = self._execute(
-            inputs=[input_ids],
-            input_labels=['Placeholder'],
+            inputs=[input_ids, input_masks],
+            input_labels=['Placeholder', 'Placeholder_1'],
             output_labels=['vectorizer'],
         )
         v = r['vectorizer']
@@ -124,7 +114,7 @@ class BigBird(Base):
         return outputs
 
 
-class MulticlassBigBird(BigBird, Classification):
+class MulticlassFNet(FNet, Classification):
     def __init__(
         self,
         input_nodes,
@@ -134,7 +124,7 @@ class MulticlassBigBird(BigBird, Classification):
         class_name,
         label=['negative', 'positive'],
     ):
-        BigBird.__init__(
+        FNet.__init__(
             self,
             input_nodes=input_nodes,
             output_nodes=output_nodes,
@@ -200,153 +190,81 @@ class MulticlassBigBird(BigBird, Classification):
         return self._predict_proba(strings=strings)
 
 
-class Translation(Seq2Seq):
-    def __init__(self, input_nodes, output_nodes, sess, encoder, maxlen):
-
-        self._input_nodes = input_nodes
-        self._output_nodes = output_nodes
-        self._sess = sess
-        self._encoder = encoder
-        self._maxlen = maxlen
-
-    def _translate(self, strings):
-        encoded = [
-            self._encoder.encode(translation_textcleaning(string)) + [1]
-            for string in strings
-        ]
-        batch_x = pad_sequences(
-            encoded, padding='post', maxlen=self._maxlen
+class BinaryFNet(FNet, Classification):
+    def __init__(
+        self,
+        input_nodes,
+        output_nodes,
+        sess,
+        tokenizer,
+        class_name,
+        label=['negative', 'positive'],
+    ):
+        FNet.__init__(
+            self,
+            input_nodes=input_nodes,
+            output_nodes=output_nodes,
+            sess=sess,
+            tokenizer=tokenizer,
+            class_name=class_name,
+            label=label,
         )
-        r = self._execute(
-            inputs=[batch_x],
-            input_labels=['Placeholder'],
-            output_labels=['logits'],
-        )
-        p = r['logits']
-        result = []
-        for r in p:
-            result.append(
-                self._encoder.decode([i for i in r.tolist() if i > 0])
-            )
-        return result
 
-    def greedy_decoder(self, strings: List[str]):
+    @check_type
+    def vectorize(self, strings: List[str], method: str = 'first'):
         """
-        translate list of strings.
+        vectorize list of strings.
+
+        Parameters
+        ----------
+        strings: List[str]
+        method : str, optional (default='first')
+            Vectorization layer supported. Allowed values:
+
+            * ``'last'`` - vector from last sequence.
+            * ``'first'`` - vector from first sequence.
+            * ``'mean'`` - average vectors from all sequences.
+            * ``'word'`` - average vectors based on tokens.
+
+        Returns
+        -------
+        result: np.array
+        """
+
+        return self._vectorize(strings=strings, method=method)
+
+    @check_type
+    def predict(self, strings: List[str], add_neutral: bool = True):
+        """
+        classify list of strings.
+
+        Parameters
+        ----------
+        strings: List[str]
+        add_neutral: bool, optional (default=True)
+            if True, it will add neutral probability.
+
+        Returns
+        -------
+        result: List[str]
+        """
+
+        return self._predict(strings=strings, add_neutral=add_neutral)
+
+    @check_type
+    def predict_proba(self, strings: List[str], add_neutral: bool = True):
+        """
+        classify list of strings and return probability.
 
         Parameters
         ----------
         strings : List[str]
+        add_neutral: bool, optional (default=True)
+            if True, it will add neutral probability.
 
         Returns
         -------
-        result: List[str]
+        result: List[dict[str, float]]
         """
-        return self._translate(strings)
 
-
-class Summarization(Seq2Seq):
-    def __init__(self, input_nodes, output_nodes, sess, tokenizer, maxlen):
-
-        self._input_nodes = input_nodes
-        self._output_nodes = output_nodes
-        self._sess = sess
-        self._tokenizer = tokenizer
-        self._maxlen = maxlen
-
-    def _summarize(
-        self,
-        strings,
-        top_p=0.7,
-        temperature=1.0,
-        postprocess=True,
-        **kwargs,
-    ):
-
-        strings_ = [summarization_textcleaning(string) for string in strings]
-        batch_x = [self._tokenizer.encode(string) + [1] for string in strings_]
-        batch_x = pad_sequences(
-            batch_x, padding='post', maxlen=self._maxlen
-        )
-
-        r = self._execute(
-            inputs=[batch_x, top_p, temperature],
-            input_labels=['Placeholder', 'top_p', 'temperature'],
-            output_labels=['logits'],
-        )
-        p = r['logits'].tolist()
-
-        results = []
-        for no, r in enumerate(p):
-            summary = self._tokenizer.decode(r)
-            if postprocess:
-                summary = postprocess_summary(strings[no], summary, **kwargs)
-
-            results.append(summary)
-
-        return results
-
-    @check_type
-    def greedy_decoder(
-        self,
-        strings: List[str],
-        temperature=0.3,
-        postprocess: bool = True,
-        **kwargs,
-    ):
-        """
-        Summarize strings using greedy decoder.
-
-        Parameters
-        ----------
-        strings: List[str]
-        temperature: float, (default=0.3)
-            logits * -log(random.uniform) * temperature.
-        postprocess: bool, optional (default=True)
-            If True, will filter sentence generated using ROUGE score and removed international news publisher.
-
-        Returns
-        -------
-        result: List[str]
-        """
-        return self._summarize(
-            strings=strings,
-            top_p=0.0,
-            temperature=temperature,
-            postprocess=postprocess,
-            **kwargs,
-        )
-
-    @check_type
-    def nucleus_decoder(
-        self,
-        strings: List[str],
-        top_p: float = 0.7,
-        temperature: float = 0.3,
-        postprocess: bool = True,
-        **kwargs,
-    ):
-        """
-        Summarize strings using nucleus decoder.
-
-        Parameters
-        ----------
-        strings: List[str]
-        top_p: float, (default=0.7)
-            cumulative distribution and cut off as soon as the CDF exceeds `top_p`.
-        temperature: float, (default=0.3)
-            logits * -log(random.uniform) * temperature.
-        postprocess: bool, optional (default=True)
-            If True, will filter sentence generated using ROUGE score and removed international news publisher.
-
-        Returns
-        -------
-        result: List[str]
-        """
-        return self._summarize(
-            strings=strings,
-            top_p=top_p,
-            temperature=temperature,
-            postprocess=postprocess,
-            **kwargs,
-        )
+        return self._predict_proba(strings=strings, add_neutral=add_neutral)

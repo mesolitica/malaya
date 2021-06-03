@@ -38,7 +38,7 @@ from herpetologist import check_type
 from typing import List
 
 
-def _convert_sparse_matrix_to_sparse_tensor(X, got_limit = False, limit = 5):
+def _convert_sparse_matrix_to_sparse_tensor(X, got_limit=False, limit=5):
     coo = X.tocoo()
     indices = np.array([coo.row, coo.col]).transpose()
     if got_limit:
@@ -63,13 +63,13 @@ class DeepLang(Classification):
         strings = [language_detection_textcleaning(i) for i in strings]
         subs = [
             ' '.join(s)
-            for s in self._bpe.encode(strings, output_type = self._type)
+            for s in self._bpe.encode(strings, output_type=self._type)
         ]
         transformed = self._vectorizer.transform(subs)
         batch_x = _convert_sparse_matrix_to_sparse_tensor(transformed)
         r = self._execute(
-            inputs = batch_x,
-            input_labels = [
+            inputs=batch_x,
+            input_labels=[
                 'X_Placeholder/shape',
                 'X_Placeholder/values',
                 'X_Placeholder/indices',
@@ -77,9 +77,9 @@ class DeepLang(Classification):
                 'W_Placeholder/values',
                 'W_Placeholder/indices',
             ],
-            output_labels = ['logits'],
+            output_labels=['logits'],
         )
-        probs = softmax(r['logits'], axis = -1)
+        probs = softmax(r['logits'], axis=-1)
         return probs
 
     @check_type
@@ -152,9 +152,9 @@ class Constituency(Abstract):
         i, m, tokens = f(self._tokenizer, sentences)
 
         r = self._execute(
-            inputs = [i, m],
-            input_labels = ['input_ids', 'word_end_mask'],
-            output_labels = ['charts', 'tags'],
+            inputs=[i, m],
+            input_labels=['input_ids', 'word_end_mask'],
+            output_labels=['charts', 'tags'],
         )
         charts_val, tags_val = r['charts'], r['tags']
 
@@ -188,9 +188,9 @@ class Constituency(Abstract):
             )
         i, m, tokens = f(self._tokenizer, sentences)
         r = self._execute(
-            inputs = [i, m],
-            input_labels = ['input_ids', 'word_end_mask'],
-            output_labels = ['vectorizer'],
+            inputs=[i, m],
+            input_labels=['input_ids', 'word_end_mask'],
+            output_labels=['vectorizer'],
         )
         v = r['vectorizer']
         if self._mode == 'bert':
@@ -200,14 +200,13 @@ class Constituency(Abstract):
 
         return merge_sentencepiece_tokens(
             list(zip(tokens[0], v[: len(tokens[0])])),
-            weighted = False,
-            vectorize = True,
-            model = self._mode,
+            weighted=False,
+            vectorize=True,
+            model=self._mode,
         )
 
     @check_type
     def parse_nltk_tree(self, string: str):
-
         """
         Parse a string into NLTK Tree, to make it useful, make sure you already installed tktinker.
 
@@ -223,7 +222,7 @@ class Constituency(Abstract):
         try:
             import nltk
             from nltk import Tree
-        except:
+        except BaseException:
             raise ModuleNotFoundError(
                 'nltk not installed. Please install it and try again.'
             )
@@ -264,7 +263,6 @@ class Constituency(Abstract):
 
     @check_type
     def parse_tree(self, string):
-
         """
         Parse a string into string treebank format.
 
@@ -322,9 +320,9 @@ class Summarization(Seq2Seq):
         self,
         strings,
         mode,
-        decoder = 'greedy',
-        top_p = 0.7,
-        postprocess = True,
+        decoder='greedy',
+        top_p=0.7,
+        postprocess=True,
         **kwargs,
     ):
         mode = mode.lower()
@@ -347,9 +345,9 @@ class Summarization(Seq2Seq):
         batch_x = padding_sequence(batch_x)
 
         r = self._execute(
-            inputs = [batch_x, top_p],
-            input_labels = ['Placeholder', 'Placeholder_2'],
-            output_labels = [decoder],
+            inputs=[batch_x, top_p],
+            input_labels=['Placeholder', 'Placeholder_2'],
+            output_labels=[decoder],
         )
         p = r[decoder].tolist()
 
@@ -389,11 +387,11 @@ class Summarization(Seq2Seq):
         result: List[str]
         """
         return self._summarize(
-            strings = strings,
-            mode = mode,
-            decoder = 'greedy',
-            top_p = 0.7,
-            postprocess = postprocess,
+            strings=strings,
+            mode=mode,
+            decoder='greedy',
+            top_p=0.7,
+            postprocess=postprocess,
             **kwargs,
         )
 
@@ -423,11 +421,11 @@ class Summarization(Seq2Seq):
         result: List[str]
         """
         return self._summarize(
-            strings = strings,
-            mode = mode,
-            decoder = 'beam',
-            top_p = 0.7,
-            postprocess = postprocess,
+            strings=strings,
+            mode=mode,
+            decoder='beam',
+            top_p=0.7,
+            postprocess=postprocess,
             **kwargs,
         )
 
@@ -460,11 +458,11 @@ class Summarization(Seq2Seq):
         result: List[str]
         """
         return self._summarize(
-            strings = strings,
-            mode = mode,
-            decoder = 'nucleus',
-            top_p = top_p,
-            postprocess = postprocess,
+            strings=strings,
+            mode=mode,
+            decoder='nucleus',
+            top_p=top_p,
+            postprocess=postprocess,
             **kwargs,
         )
 
@@ -477,7 +475,7 @@ class Paraphrase(Seq2Seq):
         self._sess = sess
         self._tokenizer = tokenizer
 
-    def _paraphrase(self, strings, decoder = 'greedy', top_p = 0.7):
+    def _paraphrase(self, strings, decoder='greedy', top_p=0.7):
 
         if not 0 < top_p < 1:
             raise ValueError('top_p must be bigger than 0 and less than 1')
@@ -495,9 +493,9 @@ class Paraphrase(Seq2Seq):
         batch_x = padding_sequence(batch_x)
 
         r = self._execute(
-            inputs = [batch_x, top_p],
-            input_labels = ['Placeholder', 'Placeholder_2'],
-            output_labels = [decoder],
+            inputs=[batch_x, top_p],
+            input_labels=['Placeholder', 'Placeholder_2'],
+            output_labels=[decoder],
         )
         p = r[decoder].tolist()
 
@@ -517,7 +515,7 @@ class Paraphrase(Seq2Seq):
         result: List[str]
         """
         return self._paraphrase(
-            strings = strings, decoder = 'greedy', top_p = 0.7, **kwargs
+            strings=strings, decoder='greedy', top_p=0.7, **kwargs
         )
 
     def beam_decoder(self, strings: List[str], **kwargs):
@@ -533,7 +531,7 @@ class Paraphrase(Seq2Seq):
         result: List[str]
         """
         return self._paraphrase(
-            strings = strings, decoder = 'beam', top_p = 0.7, **kwargs
+            strings=strings, decoder='beam', top_p=0.7, **kwargs
         )
 
     def nucleus_decoder(self, strings: List[str], top_p: float = 0.7, **kwargs):
@@ -551,7 +549,7 @@ class Paraphrase(Seq2Seq):
         result: List[str]
         """
         return self._paraphrase(
-            strings = strings, decoder = 'nucleus', top_p = top_p, **kwargs
+            strings=strings, decoder='nucleus', top_p=top_p, **kwargs
         )
 
 
@@ -560,11 +558,11 @@ class Translation(T2T, Seq2Seq):
 
         T2T.__init__(
             self,
-            input_nodes = input_nodes,
-            output_nodes = output_nodes,
-            sess = sess,
-            encoder = encoder,
-            translation_model = True,
+            input_nodes=input_nodes,
+            output_nodes=output_nodes,
+            sess=sess,
+            encoder=encoder,
+            translation_model=True,
         )
 
     def greedy_decoder(self, strings: List[str]):
@@ -600,10 +598,10 @@ class TrueCase(T2T, Seq2Seq):
     def __init__(self, input_nodes, output_nodes, sess, encoder):
         T2T.__init__(
             self,
-            input_nodes = input_nodes,
-            output_nodes = output_nodes,
-            sess = sess,
-            encoder = encoder,
+            input_nodes=input_nodes,
+            output_nodes=output_nodes,
+            sess=sess,
+            encoder=encoder,
         )
 
     @check_type
@@ -643,10 +641,10 @@ class Segmentation(T2T, Seq2Seq):
     def __init__(self, input_nodes, output_nodes, sess, encoder):
         T2T.__init__(
             self,
-            input_nodes = input_nodes,
-            output_nodes = output_nodes,
-            sess = sess,
-            encoder = encoder,
+            input_nodes=input_nodes,
+            output_nodes=output_nodes,
+            sess=sess,
+            encoder=encoder,
         )
 
     @check_type
@@ -694,29 +692,29 @@ class Tatabahasa(Seq2Seq):
             encode_pieces(
                 self._tokenizer.sp,
                 string,
-                return_unicode = False,
-                sample = False,
+                return_unicode=False,
+                sample=False,
             )
             for string in strings
         ]
         batch_x = [self._tokenizer.encode(string) + [1] for string in strings]
         batch_x = padding_sequence(batch_x)
         r = self._execute(
-            inputs = [batch_x],
-            input_labels = ['x_placeholder'],
-            output_labels = ['greedy', 'tag_greedy'],
+            inputs=[batch_x],
+            input_labels=['x_placeholder'],
+            output_labels=['greedy', 'tag_greedy'],
         )
         p, tag = r['greedy'], r['tag_greedy']
         results = []
-        nonzero = (p != 0).sum(axis = -1)
+        nonzero = (p != 0).sum(axis=-1)
         for i in range(len(p)):
             r = self._tokenizer.decode(p[i].tolist())
             t = tag[i, : nonzero[i]]
             s = encode_pieces(
-                self._tokenizer.sp, r, return_unicode = False, sample = False
+                self._tokenizer.sp, r, return_unicode=False, sample=False
             )
             merged = merge_sentencepiece_tokens_tagging(
-                s + ['<cls>'], t, model = 'xlnet'
+                s + ['<cls>'], t, model='xlnet'
             )
             results.append(list(zip(merged[0], merged[1])))
         return results
@@ -787,13 +785,13 @@ class SQUAD(Abstract):
         """
 
         examples, features = read_squad_examples(
-            paragraph_text = remove_newlines(paragraph_text),
-            question_texts = [question_cleaning(q) for q in question_texts],
-            tokenizer = self._tokenizer,
-            max_seq_length = self._length,
-            doc_stride = doc_stride,
-            max_query_length = max_query_length,
-            mode = self._mode,
+            paragraph_text=remove_newlines(paragraph_text),
+            question_texts=[question_cleaning(q) for q in question_texts],
+            tokenizer=self._tokenizer,
+            max_seq_length=self._length,
+            doc_stride=doc_stride,
+            max_query_length=max_query_length,
+            mode=self._mode,
         )
         inputs = [
             'Placeholder',
@@ -818,7 +816,7 @@ class SQUAD(Abstract):
             inputs.append('Placeholder_4')
             b.append(cls_index)
         r = self._execute(
-            inputs = b, input_labels = inputs, output_labels = outputs
+            inputs=b, input_labels=inputs, output_labels=outputs
         )
 
         results = []
@@ -835,12 +833,12 @@ class SQUAD(Abstract):
             cls_logits_ = float(r['cls_logits'][no].flat[0])
             results.append(
                 RawResultV2(
-                    unique_id = b.unique_id,
-                    start_top_log_probs = start_top_log_probs_,
-                    start_top_index = start_top_index_,
-                    end_top_log_probs = end_top_log_probs_,
-                    end_top_index = end_top_index_,
-                    cls_logits = cls_logits_,
+                    unique_id=b.unique_id,
+                    start_top_log_probs=start_top_log_probs_,
+                    start_top_index=start_top_index_,
+                    end_top_log_probs=end_top_log_probs_,
+                    end_top_index=end_top_index_,
+                    cls_logits=cls_logits_,
                 )
             )
 
@@ -849,8 +847,8 @@ class SQUAD(Abstract):
                 examples,
                 features,
                 results,
-                n_best_size = n_best_size,
-                max_answer_length = max_answer_length,
+                n_best_size=n_best_size,
+                max_answer_length=max_answer_length,
             )
             outputs = write_predictions_bert(
                 result_dict,
@@ -858,16 +856,16 @@ class SQUAD(Abstract):
                 examples,
                 features,
                 results,
-                n_best_size = n_best_size,
-                max_answer_length = max_answer_length,
+                n_best_size=n_best_size,
+                max_answer_length=max_answer_length,
             )
         else:
             outputs = write_predictions_xlnet(
                 examples,
                 features,
                 results,
-                n_best_size = n_best_size,
-                max_answer_length = max_answer_length,
+                n_best_size=n_best_size,
+                max_answer_length=max_answer_length,
             )
         results = []
         for o in outputs:
@@ -911,9 +909,9 @@ class SQUAD(Abstract):
             self._mode
         ](self._tokenizer, strings)
         r = self._execute(
-            inputs = [input_ids, segment_ids, input_masks],
-            input_labels = ['Placeholder', 'Placeholder_1', 'Placeholder_2'],
-            output_labels = ['logits_vectorize'],
+            inputs=[input_ids, segment_ids, input_masks],
+            input_labels=['Placeholder', 'Placeholder_1', 'Placeholder_2'],
+            output_labels=['logits_vectorize'],
         )
         v = r['logits_vectorize']
 
@@ -922,14 +920,14 @@ class SQUAD(Abstract):
         elif method == 'last':
             v = v[:, -1]
         elif method == 'mean':
-            v = np.mean(v, axis = 1)
+            v = np.mean(v, axis=1)
         else:
             v = [
                 merge_sentencepiece_tokens(
                     list(zip(s_tokens[i], v[i][: len(s_tokens[i])])),
-                    weighted = False,
-                    vectorize = True,
-                    model = self._mode,
+                    weighted=False,
+                    vectorize=True,
+                    model=self._mode,
                 )
                 for i in range(len(v))
             ]
@@ -940,18 +938,18 @@ class KnowledgeGraph(T2T, Seq2Seq):
     def __init__(self, input_nodes, output_nodes, sess, encoder):
         T2T.__init__(
             self,
-            input_nodes = input_nodes,
-            output_nodes = output_nodes,
-            sess = sess,
-            encoder = encoder,
+            input_nodes=input_nodes,
+            output_nodes=output_nodes,
+            sess=sess,
+            encoder=encoder,
         )
 
-    def _parse(self, results, get_networkx = True):
+    def _parse(self, results, get_networkx=True):
         if get_networkx:
             try:
                 import pandas as pd
                 import networkx as nx
-            except:
+            except BaseException:
                 logging.warning(
                     'pandas and networkx not installed. Please install it by `pip install pandas networkx` and try again. Will skip to generate networkx.MultiDiGraph'
                 )
@@ -965,10 +963,10 @@ class KnowledgeGraph(T2T, Seq2Seq):
                 df = pd.DataFrame(r)
                 G = nx.from_pandas_edgelist(
                     df,
-                    source = 'subject',
-                    target = 'object',
-                    edge_attr = 'relation',
-                    create_using = nx.MultiDiGraph(),
+                    source='subject',
+                    target='object',
+                    edge_attr='relation',
+                    create_using=nx.MultiDiGraph(),
                 )
                 o['G'] = G
             outputs.append(o)
@@ -992,7 +990,7 @@ class KnowledgeGraph(T2T, Seq2Seq):
         result: List[str]
         """
         return _parse(
-            self._greedy_decoder(strings), get_networkx = get_networkx
+            self._greedy_decoder(strings), get_networkx=get_networkx
         )
 
     @check_type
@@ -1009,4 +1007,4 @@ class KnowledgeGraph(T2T, Seq2Seq):
         -------
         result: List[str]
         """
-        return _parse(elf._beam_decoder(strings), get_networkx = get_networkx)
+        return _parse(elf._beam_decoder(strings), get_networkx=get_networkx)

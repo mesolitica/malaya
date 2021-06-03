@@ -85,7 +85,7 @@ def available_transformer():
     from malaya.function import describe_availability
 
     return describe_availability(
-        _transformer_availability, text = 'tested on 20% test set.'
+        _transformer_availability, text='tested on 20% test set.'
     )
 
 
@@ -98,7 +98,7 @@ def multinomial(**kwargs):
     result : malaya.model.ml.MultilabelBayes class
     """
     return softmax.multinomial(
-        PATH_TOXIC, S3_PATH_TOXIC, 'toxicity', label, sigmoid = True, **kwargs
+        PATH_TOXIC, S3_PATH_TOXIC, 'toxicity', label, sigmoid=True, **kwargs
     )
 
 
@@ -120,14 +120,14 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
         * ``'alxlnet'`` - Malaya ALXLNET BASE parameters.
 
     quantized : bool, optional (default=False)
-        if True, will load 8-bit quantized model. 
+        if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
 
     Returns
     -------
     result: model
         List of model classes:
-        
+
         * if `bert` in model, will return `malaya.model.bert.SigmoidBERT`.
         * if `xlnet` in model, will return `malaya.model.xlnet.SigmoidXLNET`.
     """
@@ -139,10 +139,10 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
         )
 
     return softmax.transformer(
-        class_name = 'toxicity',
-        label = label,
-        model = model,
-        sigmoid = True,
-        quantized = quantized,
+        class_name='toxicity',
+        label=label,
+        model=model,
+        sigmoid=True,
+        quantized=quantized,
         **kwargs
     )

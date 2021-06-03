@@ -56,10 +56,10 @@ _gpt2_availability = {
 def ngrams(
     sequence,
     n: int,
-    pad_left = False,
-    pad_right = False,
-    left_pad_symbol = None,
-    right_pad_symbol = None,
+    pad_left=False,
+    pad_right=False,
+    left_pad_symbol=None,
+    right_pad_symbol=None,
 ):
     """
     generate ngrams.
@@ -76,12 +76,12 @@ def ngrams(
     result: List[Tuple[str, str]]
     """
     return generate_ngrams(
-        sequence = sequence,
-        n = n,
-        pad_left = pad_left,
-        pad_right = pad_right,
-        left_pad_symbol = left_pad_symbol,
-        right_pad_symbol = right_pad_symbol,
+        sequence=sequence,
+        n=n,
+        pad_left=pad_left,
+        pad_right=pad_right,
+        left_pad_symbol=left_pad_symbol,
+        right_pad_symbol=right_pad_symbol,
     )
 
 
@@ -177,7 +177,7 @@ def shortform(
     **kwargs,
 ):
     """
-    augmenting a formal word into socialmedia form. Purposely typo, purposely delete some vowels, 
+    augmenting a formal word into socialmedia form. Purposely typo, purposely delete some vowels,
     purposely replaced some subwords into slang subwords.
 
     Parameters
@@ -318,7 +318,7 @@ def babble(
     generate_length : int, optional (default=256)
         length of sentence to generate.
     leed_out_len : int, optional (default=1)
-        length of extra masks for each iteration. 
+        length of extra masks for each iteration.
     temperature: float, optional (default=1.0)
         logits * temperature.
     top_k: int, optional (default=100)
@@ -353,12 +353,12 @@ def babble(
     return sequential_generation(
         string,
         model,
-        batch_size = batch_size,
-        max_len = generate_length,
-        leed_out_len = leed_out_len,
-        temperature = temperature,
-        top_k = top_k,
-        burnin = burnin,
+        batch_size=batch_size,
+        max_len=generate_length,
+        leed_out_len=leed_out_len,
+        temperature=temperature,
+        top_k=top_k,
+        burnin=burnin,
     )
 
 
@@ -379,7 +379,6 @@ def gpt2(
     top_k: int = 40,
     **kwargs,
 ):
-
     """
     Load GPT2 model to generate a string given a prefix string.
 
@@ -424,10 +423,10 @@ def gpt2(
         tf.compat.v1.disable_eager_execution()
 
     return load(
-        model = model,
-        generate_length = generate_length,
-        temperature = temperature,
-        top_k = top_k,
+        model=model,
+        generate_length=generate_length,
+        temperature=temperature,
+        top_k=top_k,
         **kwargs,
     )
 
@@ -443,7 +442,6 @@ def available_transformer():
 
 @check_type
 def transformer(model: str = 't5', quantized: bool = False, **kwargs):
-
     """
     Load Transformer model to generate a string given a isu penting.
 
@@ -456,14 +454,14 @@ def transformer(model: str = 't5', quantized: bool = False, **kwargs):
         * ``'small-t5'`` - T5 SMALL parameters.
 
     quantized : bool, optional (default=False)
-        if True, will load 8-bit quantized model. 
+        if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
 
     Returns
     -------
     result: model
         List of model classes:
-        
+
         * if `t5` in model, will return `malaya.model.t5.Generator`.
     """
 
@@ -474,9 +472,9 @@ def transformer(model: str = 't5', quantized: bool = False, **kwargs):
         )
 
     return t5_load.load(
-        module = 'generator',
-        model = model,
-        model_class = Generator,
-        quantized = quantized,
+        module='generator',
+        model=model,
+        model_class=Generator,
+        quantized=quantized,
         **kwargs,
     )

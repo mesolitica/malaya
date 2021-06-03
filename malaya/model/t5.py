@@ -23,9 +23,9 @@ class T5(Abstract):
 
     def _predict(self, string):
         r = self._execute(
-            inputs = [[string]],
-            input_labels = ['inputs'],
-            output_labels = ['decode'],
+            inputs=[[string]],
+            input_labels=['inputs'],
+            output_labels=['decode'],
         )
         return r['decode'][0].decode('utf-8')
 
@@ -34,9 +34,9 @@ class Summarization(T5, Seq2Seq):
     def __init__(self, input_nodes, output_nodes, sess):
         T5.__init__(
             self,
-            input_nodes = input_nodes,
-            output_nodes = output_nodes,
-            sess = sess,
+            input_nodes=input_nodes,
+            output_nodes=output_nodes,
+            sess=sess,
         )
 
     def _summarize(self, string, mode, postprocess, **kwargs):
@@ -88,15 +88,15 @@ class Generator(T5, Seq2Seq):
     def __init__(self, input_nodes, output_nodes, sess):
         T5.__init__(
             self,
-            input_nodes = input_nodes,
-            output_nodes = output_nodes,
-            sess = sess,
+            input_nodes=input_nodes,
+            output_nodes=output_nodes,
+            sess=sess,
         )
 
     @check_type
     def greedy_decoder(self, strings: List[str]):
         """
-        generate a long text given a isi penting. 
+        generate a long text given a isi penting.
         Decoder is greedy decoder with beam width size 1, alpha 0.5 .
 
         Parameters
@@ -121,9 +121,9 @@ class Paraphrase(T5, Seq2Seq):
     def __init__(self, input_nodes, output_nodes, sess):
         T5.__init__(
             self,
-            input_nodes = input_nodes,
-            output_nodes = output_nodes,
-            sess = sess,
+            input_nodes=input_nodes,
+            output_nodes=output_nodes,
+            sess=sess,
         )
 
     def _paraphrase(self, string):

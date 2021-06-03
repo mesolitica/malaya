@@ -49,12 +49,12 @@ def _build_dicts(words):
     return occurences
 
 
-def _get_indices(string, c = 'a'):
+def _get_indices(string, c='a'):
     return [i for i in range(len(string)) if string[i] == c]
 
 
 def _permutate(string, indices):
-    p = [''.join(_set) for _set in product(list(vowels), repeat = len(indices))]
+    p = [''.join(_set) for _set in product(list(vowels), repeat=len(indices))]
     p = [p_ for p_ in p if not all([a in p_ for a in quad_vowels])]
     mutate = []
     for p_ in p:
@@ -66,7 +66,7 @@ def _permutate(string, indices):
 
 
 def _permutate_sp(string, indices, sp_tokenizer):
-    p = [''.join(_set) for _set in product(list(vowels), repeat = len(indices))]
+    p = [''.join(_set) for _set in product(list(vowels), repeat=len(indices))]
     p = [p_ for p_ in p if not all([a in p_ for a in quad_vowels])]
     mutate = []
     for p_ in p:
@@ -156,7 +156,7 @@ def _augment_vowel_prob_sp(word, sp_tokenizer):
 
 
 def _augment_vowel(
-    string, selected = ['a', 'u', 'i', 'e'], included_end = True
+    string, selected=['a', 'u', 'i', 'e'], included_end=True
 ):
     pseudo = []
     if included_end:
@@ -177,7 +177,7 @@ def _return_known(word, dicts):
 
 
 class Spell:
-    def __init__(self, sp_tokenizer, corpus, add_norvig_method = True):
+    def __init__(self, sp_tokenizer, corpus, add_norvig_method=True):
         self._sp_tokenizer = sp_tokenizer
         if self._sp_tokenizer:
             self._augment = _augment_vowel_prob_sp
@@ -200,7 +200,7 @@ class Spell:
             ]
             inserts = [L + c + R for L, R in splits for c in alphabet]
         pseudo = _augment_vowel(word)
-        pseudo.extend(self._augment(word, sp_tokenizer = self._sp_tokenizer))
+        pseudo.extend(self._augment(word, sp_tokenizer=self._sp_tokenizer))
         fuzziness = []
         if len(word):
 
@@ -209,7 +209,7 @@ class Spell:
                 inner = word[:-1] + 'a'
                 fuzziness.append(inner)
                 pseudo.extend(
-                    self._augment(inner, sp_tokenizer = self._sp_tokenizer)
+                    self._augment(inner, sp_tokenizer=self._sp_tokenizer)
                 )
 
             # pikir -> fikir
@@ -217,7 +217,7 @@ class Spell:
                 inner = 'f' + word[1:]
                 fuzziness.append(inner)
                 pseudo.extend(
-                    self._augment(inner, sp_tokenizer = self._sp_tokenizer)
+                    self._augment(inner, sp_tokenizer=self._sp_tokenizer)
                 )
 
         if len(word) > 2:
@@ -226,7 +226,7 @@ class Spell:
                 inner = word[:-1]
                 fuzziness.append(word[:-1])
                 pseudo.extend(
-                    self._augment(word[:-1], sp_tokenizer = self._sp_tokenizer)
+                    self._augment(word[:-1], sp_tokenizer=self._sp_tokenizer)
                 )
 
             # hnto -> hantar, bako -> bkar, sabo -> sabar
@@ -234,7 +234,7 @@ class Spell:
                 inner = word[:-1] + 'ar'
                 fuzziness.append(inner)
                 pseudo.extend(
-                    self._augment(inner, sp_tokenizer = self._sp_tokenizer)
+                    self._augment(inner, sp_tokenizer=self._sp_tokenizer)
                 )
 
             # antu -> hantu, antar -> hantar
@@ -243,7 +243,7 @@ class Spell:
                 fuzziness.append(inner)
                 pseudo.extend(_augment_vowel(inner))
                 pseudo.extend(
-                    self._augment(inner, sp_tokenizer = self._sp_tokenizer)
+                    self._augment(inner, sp_tokenizer=self._sp_tokenizer)
                 )
 
             # ptg -> ptng, dtg -> dtng
@@ -255,7 +255,7 @@ class Spell:
                 inner = word[:-1] + 'ng'
                 fuzziness.append(inner)
                 pseudo.extend(
-                    self._augment(inner, sp_tokenizer = self._sp_tokenizer)
+                    self._augment(inner, sp_tokenizer=self._sp_tokenizer)
                 )
 
             # igt -> ingt
@@ -263,7 +263,7 @@ class Spell:
                 inner = word[0] + 'n' + word[1:]
                 fuzziness.append(inner)
                 pseudo.extend(
-                    self._augment(inner, sp_tokenizer = self._sp_tokenizer)
+                    self._augment(inner, sp_tokenizer=self._sp_tokenizer)
                 )
 
         if self._add_norvig_method:
@@ -306,11 +306,11 @@ class Spell:
 
 class Transformer(Spell):
     def __init__(self, model, corpus, sp_tokenizer):
-        Spell.__init__(self, sp_tokenizer, corpus, add_norvig_method = False)
+        Spell.__init__(self, sp_tokenizer, corpus, add_norvig_method=False)
         self._model = model
         self._padding = tf.keras.preprocessing.sequence.pad_sequences
 
-    def _correct(self, word, string, index, batch_size = 20):
+    def _correct(self, word, string, index, batch_size=20):
         possible_states = self.edit_candidates(word)
         replaced_masks = []
         for state in possible_states:
@@ -328,7 +328,7 @@ class Transformer(Spell):
             indices.extend([i] * len(input_ids[i]))
             ids.extend(input_ids[i])
 
-        masked_padded = self._padding(ids, padding = 'post')
+        masked_padded = self._padding(ids, padding='post')
         input_masks = masked_padded.astype('bool').astype('int')
         preds = []
         for i in range(0, len(masked_padded), batch_size):
@@ -337,7 +337,7 @@ class Transformer(Spell):
             batch_mask = input_masks[i:index]
             preds.append(self._model._log_vectorize(batch, batch_mask))
 
-        preds = np.concatenate(preds, axis = 0)
+        preds = np.concatenate(preds, axis=0)
         indices = np.array(indices)
         scores = []
         for i in range(len(tokens)):
@@ -349,7 +349,7 @@ class Transformer(Spell):
 
         prob_scores = np.array(scores) / np.sum(scores)
         probs = list(zip(possible_states, prob_scores))
-        probs.sort(key = lambda x: x[1])
+        probs.sort(key=lambda x: x[1])
         return probs[0][0]
 
     @check_type
@@ -377,7 +377,7 @@ class Transformer(Spell):
         if word in rules_normalizer:
             word = rules_normalizer[word]
         else:
-            word = self._correct(word, string, index, batch_size = batch_size)
+            word = self._correct(word, string, index, batch_size=batch_size)
         return word
 
     @check_type
@@ -396,7 +396,7 @@ class Transformer(Spell):
             if not word[0].isupper():
                 word = case_of(word)(
                     self.correct(
-                        word.lower(), string, no, batch_size = batch_size
+                        word.lower(), string, no, batch_size=batch_size
                     )
                 )
             strings.append(word)
@@ -410,7 +410,7 @@ class Transformer(Spell):
         """
 
         return case_of(word)(
-            self.correct(word.lower(), string, batch_size = batch_size)
+            self.correct(word.lower(), string, batch_size=batch_size)
         )
 
 
@@ -423,7 +423,7 @@ class Probability(Spell):
     Added custom vowels augmentation
     """
 
-    def __init__(self, corpus, sp_tokenizer = None):
+    def __init__(self, corpus, sp_tokenizer=None):
         Spell.__init__(self, sp_tokenizer, corpus)
 
     def tokens(text):
@@ -438,7 +438,7 @@ class Probability(Spell):
     def most_probable(self, words):
         _known = self.known(words)
         if _known:
-            return max(_known, key = self.P)
+            return max(_known, key=self.P)
         else:
             return []
 
@@ -468,16 +468,16 @@ class Probability(Spell):
         cp_word = word[:]
         hujung_result = [v for k, v in hujung.items() if word.endswith(k)]
         if len(hujung_result):
-            hujung_result = max(hujung_result, key = len)
+            hujung_result = max(hujung_result, key=len)
             if len(hujung_result):
                 word = word[: -len(hujung_result)]
         permulaan_result = [
             v for k, v in permulaan.items() if word.startswith(k)
         ]
         if len(permulaan_result):
-            permulaan_result = max(permulaan_result, key = len)
+            permulaan_result = max(permulaan_result, key=len)
             if len(permulaan_result):
-                word = word[len(permulaan_result) :]
+                word = word[len(permulaan_result):]
 
         combined = True
         if len(word):
@@ -488,8 +488,8 @@ class Probability(Spell):
             else:
                 candidates1 = self.edit_candidates(word)
                 candidates2 = self.edit_candidates(cp_word)
-                word1 = max(candidates1, key = self.P)
-                word2 = max(candidates2, key = self.P)
+                word1 = max(candidates1, key=self.P)
+                word2 = max(candidates2, key=self.P)
 
                 if self.WORDS[word1] > self.WORDS[word2]:
                     word = word1
@@ -555,7 +555,7 @@ class Probability(Spell):
 
         return case_of(word)(self.correct(word.lower()))
 
-    def elong_normalized_candidates(self, word, acc = None):
+    def elong_normalized_candidates(self, word, acc=None):
         if acc is None:
             acc = []
         candidates = [w for w in set(word) if word.count(w) > 1]
@@ -584,7 +584,7 @@ class Symspell:
     Added custom vowels augmentation
     """
 
-    def __init__(self, model, verbosity, corpus, k = 10):
+    def __init__(self, model, verbosity, corpus, k=10):
         self._model = model
         self._verbosity = verbosity
         self._corpus = corpus
@@ -714,16 +714,16 @@ class Symspell:
         cp_word = word[:]
         hujung_result = [v for k, v in hujung.items() if word.endswith(k)]
         if len(hujung_result):
-            hujung_result = max(hujung_result, key = len)
+            hujung_result = max(hujung_result, key=len)
             if len(hujung_result):
                 word = word[: -len(hujung_result)]
         permulaan_result = [
             v for k, v in permulaan.items() if word.startswith(k)
         ]
         if len(permulaan_result):
-            permulaan_result = max(permulaan_result, key = len)
+            permulaan_result = max(permulaan_result, key=len)
             if len(permulaan_result):
-                word = word[len(permulaan_result) :]
+                word = word[len(permulaan_result):]
 
         combined = True
         if len(word):
@@ -732,8 +732,8 @@ class Symspell:
             else:
                 candidates1 = self.edit_candidates(word)
                 candidates2 = self.edit_candidates(cp_word)
-                word1 = max(candidates1, key = candidates1.get)
-                word2 = max(candidates2, key = candidates2.get)
+                word1 = max(candidates1, key=candidates1.get)
+                word2 = max(candidates2, key=candidates2.get)
 
                 if candidates1[word1] > candidates2[word2]:
                     word = word1
@@ -834,7 +834,7 @@ def symspell(
 
     try:
         from symspellpy.symspellpy import SymSpell, Verbosity
-    except:
+    except BaseException:
         raise ModuleNotFoundError(
             'symspellpy not installed. Please install it and try again.'
         )
@@ -843,7 +843,7 @@ def symspell(
     sym_spell.load_dictionary(dictionary_path, term_index, count_index)
     with open(PATH_NGRAM[1]['model']) as fopen:
         corpus = json.load(fopen)
-    return Symspell(sym_spell, Verbosity.ALL, corpus, k = top_k)
+    return Symspell(sym_spell, Verbosity.ALL, corpus, k=top_k)
 
 
 @check_type

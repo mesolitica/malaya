@@ -45,23 +45,24 @@ _color_toxic = {
 
 def _sentiment_mark(text, negative, positive, neutral, attention, label):
     return (
-        "<mark style='background-color:%s' class='tooltipped' data-position='bottom' data-tooltip=\"Positive <i class='em em-smiley_cat'></i> %.3f<br>Neutral <i class='em em-cat'></i> %.3f<br>Negative <i class='em em-pouting_cat'></i> %.3f<br>Attention <i class='em em-warning'></i> %.3f\">%s</mark>"
-        % (
-            _color_sentiment[label],
-            positive,
-            neutral,
-            negative,
-            attention,
-            text,
-        )
-    )
+        "<mark style='background-color:%s' class='tooltipped' data-position='bottom' data-tooltip=\"Positive <i class='em em-smiley_cat'></i> %.3f<br>Neutral <i class='em em-cat'></i> %.3f<br>Negative <i class='em em-pouting_cat'></i> %.3f<br>Attention <i class='em em-warning'></i> %.3f\">%s</mark>" %
+        (_color_sentiment[label],
+         positive,
+         neutral,
+         negative,
+         attention,
+         text,
+         ))
 
 
 def _relevancy_mark(text, negative, positive, attention, label):
     return (
-        "<mark style='background-color:%s' class='tooltipped' data-position='bottom' data-tooltip=\"Relevant <i class='em em-information_source'></i> %.3f<br>Not relevant <i class='em em-lying_face'></i> %.3f<br>Attention <i class='em em-warning'></i> %.3f\">%s</mark>"
-        % (_color_relevancy[label], positive, negative, attention, text)
-    )
+        "<mark style='background-color:%s' class='tooltipped' data-position='bottom' data-tooltip=\"Relevant <i class='em em-information_source'></i> %.3f<br>Not relevant <i class='em em-lying_face'></i> %.3f<br>Attention <i class='em em-warning'></i> %.3f\">%s</mark>" %
+        (_color_relevancy[label],
+         positive,
+         negative,
+         attention,
+         text))
 
 
 def _toxic_mark(
@@ -78,43 +79,39 @@ def _toxic_mark(
     label,
 ):
     return (
-        "<mark style='background-color:%s' class='tooltipped' data-position='bottom' data-tooltip=\"Severe Toxic <i class='em em-face_vomiting'></i><i class='em em-face_vomiting'></i> %.3f<br>Obscene <i class='em em-confounded'></i> %.3f<br>Threat <i class='em em-fearful'></i> %.3f<br>Insult <i class='em em-boar'></i> %.3f<br>Identity attack <i class='em em-cry'></i> %.3f<br>Indian <i class='em em-skin-tone-6'></i> %.3f<br>Malay <i class='em em-skin-tone-4'></i> %.3f<br>Chinese <i class='em em-skin-tone-2'></i> %.3f<br>Attention <i class='em em-warning'></i> %.3f<br>\">%s</mark>"
-        % (
-            _color_toxic[label],
-            severe_toxic,
-            obscene,
-            threat,
-            insult,
-            identity_hate,
-            indian,
-            malay,
-            chinese,
-            attention,
-            text,
-        )
-    )
+        "<mark style='background-color:%s' class='tooltipped' data-position='bottom' data-tooltip=\"Severe Toxic <i class='em em-face_vomiting'></i><i class='em em-face_vomiting'></i> %.3f<br>Obscene <i class='em em-confounded'></i> %.3f<br>Threat <i class='em em-fearful'></i> %.3f<br>Insult <i class='em em-boar'></i> %.3f<br>Identity attack <i class='em em-cry'></i> %.3f<br>Indian <i class='em em-skin-tone-6'></i> %.3f<br>Malay <i class='em em-skin-tone-4'></i> %.3f<br>Chinese <i class='em em-skin-tone-2'></i> %.3f<br>Attention <i class='em em-warning'></i> %.3f<br>\">%s</mark>" %
+        (_color_toxic[label],
+         severe_toxic,
+         obscene,
+         threat,
+         insult,
+         identity_hate,
+         indian,
+         malay,
+         chinese,
+         attention,
+         text,
+         ))
 
 
 def _emotion_mark(
     text, anger, fear, happy, love, sadness, surprise, attention, label
 ):
     return (
-        "<mark style='background-color:%s' class='tooltipped' data-position='bottom' data-tooltip=\"Anger <i class='em em-angry'></i> %.3f<br>Fear <i class='em em-fearful'></i> %.3f<br>Happy <i class='em em-smile'></i> %.3f<br>Love <i class='em em-heart_eyes'></i> %.3f<br>Sadness <i class='em em-white_frowning_face'></i> %.3f<br>Surprise <i class='em em-dizzy_face'></i> %.3f<br>Attention <i class='em em-warning'></i> %.3f<br>\">%s</mark>"
-        % (
-            _color_emotion[label],
-            anger,
-            fear,
-            happy,
-            love,
-            sadness,
-            surprise,
-            attention,
-            text,
-        )
-    )
+        "<mark style='background-color:%s' class='tooltipped' data-position='bottom' data-tooltip=\"Anger <i class='em em-angry'></i> %.3f<br>Fear <i class='em em-fearful'></i> %.3f<br>Happy <i class='em em-smile'></i> %.3f<br>Love <i class='em em-heart_eyes'></i> %.3f<br>Sadness <i class='em em-white_frowning_face'></i> %.3f<br>Surprise <i class='em em-dizzy_face'></i> %.3f<br>Attention <i class='em em-warning'></i> %.3f<br>\">%s</mark>" %
+        (_color_emotion[label],
+         anger,
+         fear,
+         happy,
+         love,
+         sadness,
+         surprise,
+         attention,
+         text,
+         ))
 
 
-def _render_binary(data, notebook_mode = False):
+def _render_binary(data, notebook_mode=False):
     index_negative = data['barplot']['x'].index('negative')
     index_positive = data['barplot']['x'].index('positive')
     index_neutral = data['barplot']['x'].index('neutral')
@@ -143,23 +140,23 @@ def _render_binary(data, notebook_mode = False):
         template = string.Template(_file.read())
 
     template = template.substitute(
-        label = escape(data['class_name']),
-        p = sentiment_mark,
-        barplot_positive = escape(
+        label=escape(data['class_name']),
+        p=sentiment_mark,
+        barplot_positive=escape(
             json.dumps(int(data['barplot']['y'][index_positive]))
         ),
-        barplot_neutral = escape(
+        barplot_neutral=escape(
             json.dumps(int(data['barplot']['y'][index_neutral]))
         ),
-        barplot_negative = escape(
+        barplot_negative=escape(
             json.dumps(int(data['barplot']['y'][index_negative]))
         ),
-        histogram_x = escape(json.dumps(data['histogram']['x'].tolist())),
-        histogram_y = escape(json.dumps(data['histogram']['y'].tolist())),
-        attention_x = escape(json.dumps(data['attention']['x'].tolist())),
-        attention_y = escape(json.dumps(data['attention']['y'].tolist())),
-        css_location = css_location,
-        js_location = js_location,
+        histogram_x=escape(json.dumps(data['histogram']['x'].tolist())),
+        histogram_y=escape(json.dumps(data['histogram']['y'].tolist())),
+        attention_x=escape(json.dumps(data['attention']['x'].tolist())),
+        attention_y=escape(json.dumps(data['attention']['y'].tolist())),
+        css_location=css_location,
+        js_location=js_location,
     )
     if notebook_mode:
         from IPython.display import display, HTML
@@ -169,7 +166,7 @@ def _render_binary(data, notebook_mode = False):
         serve(template)
 
 
-def _render_relevancy(data, notebook_mode = False):
+def _render_relevancy(data, notebook_mode=False):
     index_negative = data['barplot']['x'].index('not relevant')
     index_positive = data['barplot']['x'].index('relevant')
     relevancy_mark = []
@@ -196,20 +193,20 @@ def _render_relevancy(data, notebook_mode = False):
         template = string.Template(_file.read())
 
     template = template.substitute(
-        label = escape(data['class_name']),
-        p = relevancy_mark,
-        barplot_positive = escape(
+        label=escape(data['class_name']),
+        p=relevancy_mark,
+        barplot_positive=escape(
             json.dumps(int(data['barplot']['y'][index_positive]))
         ),
-        barplot_negative = escape(
+        barplot_negative=escape(
             json.dumps(int(data['barplot']['y'][index_negative]))
         ),
-        histogram_x = escape(json.dumps(data['histogram']['x'].tolist())),
-        histogram_y = escape(json.dumps(data['histogram']['y'].tolist())),
-        attention_x = escape(json.dumps(data['attention']['x'].tolist())),
-        attention_y = escape(json.dumps(data['attention']['y'].tolist())),
-        css_location = css_location,
-        js_location = js_location,
+        histogram_x=escape(json.dumps(data['histogram']['x'].tolist())),
+        histogram_y=escape(json.dumps(data['histogram']['y'].tolist())),
+        attention_x=escape(json.dumps(data['attention']['x'].tolist())),
+        attention_y=escape(json.dumps(data['attention']['y'].tolist())),
+        css_location=css_location,
+        js_location=js_location,
     )
     if notebook_mode:
         from IPython.display import display, HTML
@@ -219,7 +216,7 @@ def _render_relevancy(data, notebook_mode = False):
         serve(template)
 
 
-def _render_toxic(data, notebook_mode = False):
+def _render_toxic(data, notebook_mode=False):
     index_severe_toxic = data['barplot']['x'].index('severe toxic')
     index_obscene = data['barplot']['x'].index('obscene')
     index_threat = data['barplot']['x'].index('threat')
@@ -263,38 +260,38 @@ def _render_toxic(data, notebook_mode = False):
         template = string.Template(_file.read())
 
     template = template.substitute(
-        label = escape(data['class_name']),
-        p = toxic_mark,
-        barplot_severe_toxic = escape(
+        label=escape(data['class_name']),
+        p=toxic_mark,
+        barplot_severe_toxic=escape(
             json.dumps(int(data['barplot']['y'][index_severe_toxic]))
         ),
-        barplot_obscene = escape(
+        barplot_obscene=escape(
             json.dumps(int(data['barplot']['y'][index_obscene]))
         ),
-        barplot_threat = escape(
+        barplot_threat=escape(
             json.dumps(int(data['barplot']['y'][index_threat]))
         ),
-        barplot_insult = escape(
+        barplot_insult=escape(
             json.dumps(int(data['barplot']['y'][index_insult]))
         ),
-        barplot_identity_hate = escape(
+        barplot_identity_hate=escape(
             json.dumps(int(data['barplot']['y'][index_identity_hate]))
         ),
-        barplot_indian = escape(
+        barplot_indian=escape(
             json.dumps(int(data['barplot']['y'][index_indian]))
         ),
-        barplot_malay = escape(
+        barplot_malay=escape(
             json.dumps(int(data['barplot']['y'][index_malay]))
         ),
-        barplot_chinese = escape(
+        barplot_chinese=escape(
             json.dumps(int(data['barplot']['y'][index_chinese]))
         ),
-        histogram_x = escape(json.dumps(data['histogram']['x'].tolist())),
-        histogram_y = escape(json.dumps(data['histogram']['y'].tolist())),
-        attention_x = escape(json.dumps(data['attention']['x'].tolist())),
-        attention_y = escape(json.dumps(data['attention']['y'].tolist())),
-        css_location = css_location,
-        js_location = js_location,
+        histogram_x=escape(json.dumps(data['histogram']['x'].tolist())),
+        histogram_y=escape(json.dumps(data['histogram']['y'].tolist())),
+        attention_x=escape(json.dumps(data['attention']['x'].tolist())),
+        attention_y=escape(json.dumps(data['attention']['y'].tolist())),
+        css_location=css_location,
+        js_location=js_location,
     )
     if notebook_mode:
         from IPython.display import display, HTML
@@ -304,7 +301,7 @@ def _render_toxic(data, notebook_mode = False):
         serve(template)
 
 
-def _render_emotion(data, notebook_mode = False):
+def _render_emotion(data, notebook_mode=False):
     index_anger = data['barplot']['x'].index('anger')
     index_fear = data['barplot']['x'].index('fear')
     index_happy = data['barplot']['x'].index('happy')
@@ -344,32 +341,32 @@ def _render_emotion(data, notebook_mode = False):
         template = string.Template(_file.read())
 
     template = template.substitute(
-        label = escape(data['class_name']),
-        p = emotion_mark,
-        barplot_anger = escape(
+        label=escape(data['class_name']),
+        p=emotion_mark,
+        barplot_anger=escape(
             json.dumps(int(data['barplot']['y'][index_anger]))
         ),
-        barplot_fear = escape(
+        barplot_fear=escape(
             json.dumps(int(data['barplot']['y'][index_fear]))
         ),
-        barplot_happy = escape(
+        barplot_happy=escape(
             json.dumps(int(data['barplot']['y'][index_happy]))
         ),
-        barplot_love = escape(
+        barplot_love=escape(
             json.dumps(int(data['barplot']['y'][index_love]))
         ),
-        barplot_sadness = escape(
+        barplot_sadness=escape(
             json.dumps(int(data['barplot']['y'][index_sadness]))
         ),
-        barplot_surprise = escape(
+        barplot_surprise=escape(
             json.dumps(int(data['barplot']['y'][index_surprise]))
         ),
-        histogram_x = escape(json.dumps(data['histogram']['x'].tolist())),
-        histogram_y = escape(json.dumps(data['histogram']['y'].tolist())),
-        attention_x = escape(json.dumps(data['attention']['x'].tolist())),
-        attention_y = escape(json.dumps(data['attention']['y'].tolist())),
-        css_location = css_location,
-        js_location = js_location,
+        histogram_x=escape(json.dumps(data['histogram']['x'].tolist())),
+        histogram_y=escape(json.dumps(data['histogram']['y'].tolist())),
+        attention_x=escape(json.dumps(data['attention']['x'].tolist())),
+        attention_y=escape(json.dumps(data['attention']['y'].tolist())),
+        css_location=css_location,
+        js_location=js_location,
     )
     if notebook_mode:
         from IPython.display import display, HTML

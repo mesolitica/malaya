@@ -46,23 +46,23 @@ _fd2 = '(?:{})'.format(
 )
 _date = '(?:' + '(?:' + _fd1 + '|' + _fd2 + ')' + '|' + _short_date + ')'
 _time = r'(?:(?:\d+)?\.?\d+\s*(?:AM|PM|am|pm|a\.m\.|p\.m\.))|(?:(?:[0-2]?[0-9]|[2][0-3]):(?:[0-5][0-9])(?::(?:[0-5][0-9]))?(?: ?(?:AM|PM|am|pm|a\.m\.|p\.m\.))?)'
-_today_time = '\d+\s*(?:pagi|pgi|morning|tengahari|tngahari|petang|ptg|malam)\\b|(?:pkul|pukul|kul)\s*(?:\s|\d+)\\b'
-_past_date_string = '(?:\s|\d+)\s*(?:minggu|bulan|tahun|hari|thun|hri|mnggu|jam|minit|saat)\s*(?:lalu|lepas|lps)\\b'
+_today_time = '\\d+\\s*(?:pagi|pgi|morning|tengahari|tngahari|petang|ptg|malam)\\b|(?:pkul|pukul|kul)\\s*(?:\\s|\\d+)\\b'
+_past_date_string = '(?:\\s|\\d+)\\s*(?:minggu|bulan|tahun|hari|thun|hri|mnggu|jam|minit|saat)\\s*(?:lalu|lepas|lps)\\b'
 _now_date_string = '(?:sekarang|skrg|jam|tahun|thun|saat|minit) (?:ini|ni)\\b'
 _yesterday_tomorrow_date_string = (
     '(?:yesterday|semalam|kelmarin|smalam|esok|esk)\\b'
 )
-_future_date_string = '(?:dlm|dalam)\s*\d+(?:minggu|bulan|tahun|hari|thun|hri|mnggu|jam|minit|saat)\\b'
-_depan_date_string = '(?:\s|\d+)\s*(?:minggu|bulan|tahun|hari|thun|hri|mnggu|jam|minit|saat)\s*(?:depan|dpan|dpn)\\b'
+_future_date_string = '(?:dlm|dalam)\\s*\\d+(?:minggu|bulan|tahun|hari|thun|hri|mnggu|jam|minit|saat)\\b'
+_depan_date_string = '(?:\\s|\\d+)\\s*(?:minggu|bulan|tahun|hari|thun|hri|mnggu|jam|minit|saat)\\s*(?:depan|dpan|dpn)\\b'
 
 _number = r"\b\d+(?:[\.,']\d+)?\b"
 _percentage = _number + '%'
 _money = r"(?:(?:[$€£¢]|RM|rm)\s*\d+(?:[\.,']\d+)?(?:[MmKkBb](?:n|(?:il(?:lion)?))?)?)|(?:\d+(?:[\.,']\d+)?(?:[MmKkBb](?:n|(?:il(?:lion)?))?)?\s*(?:[$€£¢]|sen|ringgit|cent|penny))"
-_temperature = "-?\d+(?:[\.,']\d+)?\s*(?:K|Kelvin|kelvin|Kvin|F|f|Farenheit|farenheit|C|c|Celcius|celcius|clcius|celsius)\\b"
-_distance = "-?\d+(?:[\.,']\d+)?\s*(?:kaki|mtrs|metres|meters|feet|km|m|cm|feet|feets|miles|batu|inch|inches|feets)\\b"
-_volume = "-?\d+(?:[\.,']\d+)?\s*(?:ml|ML|l|L|mililiter|Mililiter|millilitre|liter|litre|litres|liters|gallon|gallons|galon)\\b"
-_duration = '\d+\s*(?:jam|minit|hari|minggu|tahun|hours|hour)\\b|(?:sejam|sehari|setahun|sesaat|seminit)\\b'
-_weight = "\d+(?:[\.,']\d+)?\s*(?:kg|kilo|kilogram|g|gram|KG)\\b"
+_temperature = "-?\\d+(?:[\\.,']\\d+)?\\s*(?:K|Kelvin|kelvin|Kvin|F|f|Farenheit|farenheit|C|c|Celcius|celcius|clcius|celsius)\\b"
+_distance = "-?\\d+(?:[\\.,']\\d+)?\\s*(?:kaki|mtrs|metres|meters|feet|km|m|cm|feet|feets|miles|batu|inch|inches|feets)\\b"
+_volume = "-?\\d+(?:[\\.,']\\d+)?\\s*(?:ml|ML|l|L|mililiter|Mililiter|millilitre|liter|litre|litres|liters|gallon|gallons|galon)\\b"
+_duration = '\\d+\\s*(?:jam|minit|hari|minggu|tahun|hours|hour)\\b|(?:sejam|sehari|setahun|sesaat|seminit)\\b'
+_weight = "\\d+(?:[\\.,']\\d+)?\\s*(?:kg|kilo|kilogram|g|gram|KG)\\b"
 
 _left_datetime = '(%s) (%s)' % (_time, _date)
 _right_datetime = '(%s) (%s)' % (_date, _time)

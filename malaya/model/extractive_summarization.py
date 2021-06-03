@@ -14,7 +14,7 @@ from scipy.sparse import vstack
 from typing import List, Tuple
 
 
-def create_ngram(string, ngram = 10):
+def create_ngram(string, ngram=10):
     splitted = string.split()
     ngram_list = []
     for i in range(0, len(splitted)):
@@ -38,10 +38,10 @@ def corpus_checker(corpus):
         if not isinstance(corpus[0], str):
             raise ValueError('corpus must be list of strings')
     if isinstance(corpus, str):
-        corpus = split_into_sentences(corpus, minimum_length = 20)
+        corpus = split_into_sentences(corpus, minimum_length=20)
     else:
         corpus = '. '.join(corpus)
-        corpus = split_into_sentences(corpus, minimum_length = 20)
+        corpus = split_into_sentences(corpus, minimum_length=20)
     return corpus
 
 
@@ -51,14 +51,14 @@ class SKLearn:
         self.vectorizer = vectorizer
 
     def _vectorize_word(
-        self, corpus, isi_penting, window_size, important_words = 10, **kwargs
+        self, corpus, isi_penting, window_size, important_words=10, **kwargs
     ):
         corpus = corpus_checker(corpus)
         splitted_fullstop = [summary_textcleaning(i) for i in corpus]
         original_strings = [i[0] for i in splitted_fullstop]
         cleaned_strings = [i[1] for i in splitted_fullstop]
         ngram_list, splitted = create_ngram(
-            ' '.join(cleaned_strings), ngram = window_size
+            ' '.join(cleaned_strings), ngram=window_size
         )
         splitted = ' '.join(original_strings).split()
         if isi_penting:
@@ -73,7 +73,7 @@ class SKLearn:
             if hasattr(self.vectorizer, 'idf_'):
                 indices = np.argsort(self.vectorizer.idf_)[::-1]
             else:
-                indices = np.argsort(np.asarray(freq.sum(axis = 0))[0])[::-1]
+                indices = np.argsort(np.asarray(freq.sum(axis=0))[0])[::-1]
             features = self.vectorizer.get_feature_names()
             top_words = [features[i] for i in indices[:important_words]]
         else:
@@ -85,12 +85,12 @@ class SKLearn:
         similar_isi_penting = cosine_similarity(vectors, vectors_isi_penting)
         scores = similar_isi_penting[:, 0]
         ranked_sentences = sorted(
-            ((scores[i], s, i) for i, s in enumerate(splitted)), reverse = True
+            ((scores[i], s, i) for i, s in enumerate(splitted)), reverse=True
         )
         return (splitted, ranked_sentences, top_words, cluster_words(top_words))
 
     def _vectorize_sentence(
-        self, corpus, isi_penting, important_words = 10, retry = 5, **kwargs
+        self, corpus, isi_penting, important_words=10, retry=5, **kwargs
     ):
         corpus = corpus_checker(corpus)
         splitted_fullstop = [summary_textcleaning(i) for i in corpus]
@@ -109,7 +109,7 @@ class SKLearn:
             if hasattr(self.vectorizer, 'idf_'):
                 indices = np.argsort(self.vectorizer.idf_)[::-1]
             else:
-                indices = np.argsort(np.asarray(freq.sum(axis = 0))[0])[::-1]
+                indices = np.argsort(np.asarray(freq.sum(axis=0))[0])[::-1]
             features = self.vectorizer.get_feature_names()
             top_words = [features[i] for i in indices[:important_words]]
         else:
@@ -133,7 +133,7 @@ class SKLearn:
         scores = pagerank(similar + 1e-6, retry, **kwargs)
         ranked_sentences = sorted(
             ((scores[i], s, i) for i, s in enumerate(original_strings)),
-            reverse = True,
+            reverse=True,
         )
         return (
             original_strings,
@@ -170,9 +170,9 @@ class SKLearn:
         """
         splitted, ranked_sentences, top_words, cluster_top_words = self._vectorize_word(
             corpus,
-            isi_penting = isi_penting,
-            window_size = window_size,
-            important_words = important_words,
+            isi_penting=isi_penting,
+            window_size=window_size,
+            important_words=important_words,
             **kwargs
         )
         for score, s, rank in ranked_sentences:
@@ -212,8 +212,8 @@ class SKLearn:
         """
         original_strings, ranked_sentences, top_words, cluster_top_words = self._vectorize_sentence(
             corpus,
-            isi_penting = isi_penting,
-            important_words = important_words,
+            isi_penting=isi_penting,
+            important_words=important_words,
             **kwargs
         )
         for score, s, rank in ranked_sentences:
@@ -239,8 +239,8 @@ class Doc2Vec:
         corpus,
         isi_penting,
         window_size,
-        aggregation = np.mean,
-        soft = False,
+        aggregation=np.mean,
+        soft=False,
         **kwargs
     ):
         corpus = corpus_checker(corpus)
@@ -248,7 +248,7 @@ class Doc2Vec:
         original_strings = [i[0] for i in splitted_fullstop]
         cleaned_strings = [i[1] for i in splitted_fullstop]
         ngram_list, splitted = create_ngram(
-            ' '.join(cleaned_strings), ngram = window_size
+            ' '.join(cleaned_strings), ngram=window_size
         )
         splitted = ' '.join(original_strings).split()
         if isi_penting:
@@ -278,7 +278,7 @@ class Doc2Vec:
                             self.wordvector.words[idx]
                         )
                 inside.append(v)
-            vectors.append(aggregation(inside, axis = 0))
+            vectors.append(aggregation(inside, axis=0))
         vectors = np.array(vectors)
 
         cleaned_isi_penting = isi_penting
@@ -306,12 +306,12 @@ class Doc2Vec:
                             self.wordvector.words[idx]
                         )
                     )
-        vectors_isi_penting = aggregation(vectors_isi_penting, axis = 0)
+        vectors_isi_penting = aggregation(vectors_isi_penting, axis=0)
         vectors_isi_penting = np.expand_dims(vectors_isi_penting, 0)
         similar_isi_penting = cosine_similarity(vectors, vectors_isi_penting)
         scores = similar_isi_penting[:, 0]
         ranked_sentences = sorted(
-            ((scores[i], s, i) for i, s in enumerate(splitted)), reverse = True
+            ((scores[i], s, i) for i, s in enumerate(splitted)), reverse=True
         )
         return (splitted, ranked_sentences)
 
@@ -319,9 +319,9 @@ class Doc2Vec:
         self,
         corpus,
         isi_penting,
-        aggregation = np.mean,
-        soft = False,
-        retry = 5,
+        aggregation=np.mean,
+        soft=False,
+        retry=5,
         **kwargs
     ):
 
@@ -354,7 +354,7 @@ class Doc2Vec:
                         )
 
                 inside.append(v)
-            vectors.append(aggregation(inside, axis = 0))
+            vectors.append(aggregation(inside, axis=0))
         vectors = np.array(vectors)
 
         if isi_penting:
@@ -380,7 +380,7 @@ class Doc2Vec:
                             self.wordvector.words[idx]
                         )
                 vectors_isi_penting.append(v)
-            vectors_isi_penting = aggregation(vectors_isi_penting, axis = 0)
+            vectors_isi_penting = aggregation(vectors_isi_penting, axis=0)
             vectors_isi_penting = np.expand_dims(vectors_isi_penting, 0)
 
         similar = cosine_similarity(vectors, vectors)
@@ -394,7 +394,7 @@ class Doc2Vec:
         scores = pagerank(similar + 1e-6, retry, **kwargs)
         ranked_sentences = sorted(
             ((scores[i], s, i) for i, s in enumerate(original_strings)),
-            reverse = True,
+            reverse=True,
         )
         return (original_strings, ranked_sentences)
 
@@ -403,7 +403,7 @@ class Doc2Vec:
         corpus,
         isi_penting: str = None,
         window_size: int = 10,
-        aggregation = np.mean,
+        aggregation=np.mean,
         soft: bool = False,
         **kwargs
     ):
@@ -430,10 +430,10 @@ class Doc2Vec:
         """
         splitted, ranked_sentences = self._vectorize_word(
             corpus,
-            isi_penting = isi_penting,
-            window_size = window_size,
-            aggregation = np.mean,
-            soft = soft,
+            isi_penting=isi_penting,
+            window_size=window_size,
+            aggregation=np.mean,
+            soft=soft,
         )
         for score, s, rank in ranked_sentences:
             s = (splitted[rank], score)
@@ -445,7 +445,7 @@ class Doc2Vec:
         corpus,
         isi_penting: str = None,
         top_k: int = 3,
-        aggregation = np.mean,
+        aggregation=np.mean,
         soft: bool = False,
         **kwargs
     ):
@@ -472,9 +472,9 @@ class Doc2Vec:
         """
         original_strings, ranked_sentences = self._vectorize_sentence(
             corpus,
-            isi_penting = isi_penting,
-            aggregation = aggregation,
-            soft = soft,
+            isi_penting=isi_penting,
+            aggregation=aggregation,
+            soft=soft,
             **kwargs
         )
         for score, s, rank in ranked_sentences:
@@ -490,22 +490,22 @@ class Encoder:
     def __init__(self, vectorizer):
         self.vectorizer = vectorizer
 
-    def _batching(self, l, batch_size = 10):
+    def _batching(self, l, batch_size=10):
         vs = []
         for i in range(0, len(l), batch_size):
             index = min(i + batch_size, len(l))
             batch_x = l[i:index]
             vectors = self.vectorizer.vectorize(batch_x)
             vs.append(vectors)
-        return np.concatenate(vs, axis = 0)
+        return np.concatenate(vs, axis=0)
 
     def _vectorize_word(
         self,
         corpus,
         isi_penting,
-        window_size = 10,
-        important_words = 10,
-        batch_size = 10,
+        window_size=10,
+        important_words=10,
+        batch_size=10,
         **kwargs
     ):
         corpus = corpus_checker(corpus)
@@ -513,7 +513,7 @@ class Encoder:
         original_strings = [i[0] for i in splitted_fullstop]
         cleaned_strings = [i[1] for i in splitted_fullstop]
         ngram_list, splitted = create_ngram(
-            ' '.join(cleaned_strings), ngram = window_size
+            ' '.join(cleaned_strings), ngram=window_size
         )
         splitted = ' '.join(original_strings).split()
         if isi_penting:
@@ -521,9 +521,9 @@ class Encoder:
         else:
             isi_penting = original_strings
 
-        vectors = self._batching(ngram_list, batch_size = batch_size)
+        vectors = self._batching(ngram_list, batch_size=batch_size)
         vectors_isi_penting = self._batching(
-            isi_penting, batch_size = batch_size
+            isi_penting, batch_size=batch_size
         )
 
         if 'DeepSkipThought' in str(self.vectorizer):
@@ -541,18 +541,18 @@ class Encoder:
                         r[c] = f[1]
                     else:
                         r[c] += f[1]
-                top_words = sorted(r, key = r.get, reverse = True)[
+                top_words = sorted(r, key=r.get, reverse=True)[
                     :important_words
                 ]
             else:
                 top_words = []
 
-        vectors_isi_penting = np.mean(vectors_isi_penting, axis = 0)
-        vectors_isi_penting = np.expand_dims(vectors_isi_penting, axis = 0)
+        vectors_isi_penting = np.mean(vectors_isi_penting, axis=0)
+        vectors_isi_penting = np.expand_dims(vectors_isi_penting, axis=0)
         similar_isi_penting = cosine_similarity(vectors, vectors_isi_penting)
         scores = similar_isi_penting[:, 0]
         ranked_sentences = sorted(
-            ((scores[i], s, i) for i, s in enumerate(splitted)), reverse = True
+            ((scores[i], s, i) for i, s in enumerate(splitted)), reverse=True
         )
         return (splitted, ranked_sentences, top_words, cluster_words(top_words))
 
@@ -560,9 +560,9 @@ class Encoder:
         self,
         corpus,
         isi_penting,
-        important_words = 10,
-        batch_size = 10,
-        retry = 5,
+        important_words=10,
+        batch_size=10,
+        retry=5,
         **kwargs
     ):
         corpus = corpus_checker(corpus)
@@ -570,10 +570,10 @@ class Encoder:
         original_strings = [i[0] for i in splitted_fullstop]
         cleaned_strings = [i[1] for i in splitted_fullstop]
 
-        vectors = self._batching(cleaned_strings, batch_size = batch_size)
+        vectors = self._batching(cleaned_strings, batch_size=batch_size)
         if isi_penting:
             vectors_isi_penting = self._batching(
-                [isi_penting], batch_size = batch_size
+                [isi_penting], batch_size=batch_size
             )
 
         if 'DeepSkipThought' in str(self.vectorizer):
@@ -591,7 +591,7 @@ class Encoder:
                         r[c] = f[1]
                     else:
                         r[c] += f[1]
-                top_words = sorted(r, key = r.get, reverse = True)[
+                top_words = sorted(r, key=r.get, reverse=True)[
                     :important_words
                 ]
             else:
@@ -608,7 +608,7 @@ class Encoder:
         scores = pagerank(similar + 1e-6, retry, **kwargs)
         ranked_sentences = sorted(
             ((scores[i], s, i) for i, s in enumerate(original_strings)),
-            reverse = True,
+            reverse=True,
         )
         return (
             original_strings,
@@ -648,10 +648,10 @@ class Encoder:
         """
         splitted, ranked_sentences, top_words, cluster_top_words = self._vectorize_word(
             corpus,
-            isi_penting = isi_penting,
-            window_size = window_size,
-            important_words = important_words,
-            batch_size = batch_size,
+            isi_penting=isi_penting,
+            window_size=window_size,
+            important_words=important_words,
+            batch_size=batch_size,
             **kwargs
         )
         for score, s, rank in ranked_sentences:
@@ -694,9 +694,9 @@ class Encoder:
         """
         original_strings, ranked_sentences, top_words, cluster_top_words = self._vectorize_sentence(
             corpus,
-            isi_penting = isi_penting,
-            important_words = important_words,
-            batch_size = batch_size,
+            isi_penting=isi_penting,
+            important_words=important_words,
+            batch_size=batch_size,
             **kwargs
         )
         for score, s, rank in ranked_sentences:

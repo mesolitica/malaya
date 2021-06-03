@@ -32,7 +32,7 @@ rules_compound_normalizer_regex = (
 
 def _replace_compoud(string):
     results = re.findall(
-        rules_compound_normalizer_regex, string, flags = re.IGNORECASE
+        rules_compound_normalizer_regex, string, flags=re.IGNORECASE
     )
     for r in results:
         string = string.replace(r, rules_compound_normalizer[r.lower()])
@@ -57,7 +57,7 @@ def _normalize_title(word):
 
 
 def _normalize_money(
-    word, currency = {'dollar': '$', 'ringgit': 'RM', 'pound': '£', 'euro': '€'}
+    word, currency={'dollar': '$', 'ringgit': 'RM', 'pound': '£', 'euro': '€'}
 ):
     splitted = word.split()
     if splitted[-1] in ['dollar', 'ringgit', 'pound', 'euro']:
@@ -68,7 +68,7 @@ def _normalize_money(
 
 
 def _is_number_regex(s):
-    if re.match('^\d+?\.\d+?$', s) is None:
+    if re.match('^\\d+?\\.\\d+?$', s) is None:
         return s.isdigit()
     return True
 
@@ -85,17 +85,17 @@ def cardinal(x):
     try:
         if re.match('.*[A-Za-z]+.*', x):
             return x
-        x = re.sub(',', '', x, count = 10)
+        x = re.sub(',', '', x, count=10)
 
-        if re.match('.+\..*', x):
+        if re.match('.+\\..*', x):
             x = to_cardinal(float(x))
-        elif re.match('\..*', x):
+        elif re.match('\\..*', x):
             x = to_cardinal(float(x))
         else:
             x = to_cardinal(int(x))
-        x = re.sub('-', ' ', x, count = 10)
+        x = re.sub('-', ' ', x, count=10)
         return x
-    except:
+    except BaseException:
         return cp_x
 
 
@@ -117,7 +117,7 @@ def digit(x):
             result_string = result_string + cardinal(i) + ' '
         result_string = result_string.strip()
         return result_string
-    except:
+    except BaseException:
         return cp_x
 
 
@@ -146,7 +146,7 @@ def letters(x):
         for i in range(len(x)):
             result_string = result_string + x[i] + ' '
         return result_string.strip()
-    except:
+    except BaseException:
         return cp_x
 
 
@@ -175,9 +175,9 @@ def rom_to_int(string):
         while continueyes:
             if len(string) >= len(pair[0]):
 
-                if string[0 : len(pair[0])] == pair[0]:
+                if string[0: len(pair[0])] == pair[0]:
                     returnint += pair[1]
-                    string = string[len(pair[0]) :]
+                    string = string[len(pair[0]):]
 
                 else:
                     continueyes = False
@@ -192,7 +192,7 @@ def ordinal(x):
     try:
         result_string = ''
         x = x.replace(',', '')
-        x = x.replace('[\.]$', '')
+        x = x.replace('[\\.]$', '')
         if re.match('^[0-9]+$', x):
             x = to_ordinal(int(x))
             return x
@@ -226,7 +226,7 @@ def telephone(x):
             else:
                 result_string = result_string + 'sil '
         return result_string.strip()
-    except:
+    except BaseException:
         return x
 
 
@@ -256,7 +256,7 @@ def electronic(x):
             return result_string.strip()
         else:
             return x
-    except:
+    except BaseException:
         return x
 
 
@@ -267,12 +267,12 @@ def fraction(x):
         y[0] = cardinal(y[0])
         y[1] = cardinal(y[1])
         return '%s per %s' % (y[0], y[1])
-    except:
+    except BaseException:
         return x
 
 
 def combine_with_cent(
-    x, currency = 'RM', currency_end = 'ringgit', cent = 'sen'
+    x, currency='RM', currency_end='ringgit', cent='sen'
 ):
     text = split_currency(str(x))
     c = '%s%s' % (currency, str(x))
@@ -289,7 +289,7 @@ def combine_with_cent(
 def money(x):
     try:
         if (
-            re.match('^\$', x)
+            re.match('^\\$', x)
             or x.lower().endswith('dollar')
             or x.lower().endswith('cent')
         ):
@@ -300,8 +300,8 @@ def money(x):
                 cent = False
             x = x.replace('$', '').replace('dollar', '').replace('cent', '')
             x = re.sub(r'[ ]+', ' ', x).strip()
-            x, n = re.split("(\d+(?:[\.,']\d+)?)", x)[1:]
-            x = re.sub(',', '', x, count = 10)
+            x, n = re.split("(\\d+(?:[\\.,']\\d+)?)", x)[1:]
+            x = re.sub(',', '', x, count=10)
             labels = []
             for c in n:
                 if re.match('.*(M|m)$', c):
@@ -319,7 +319,7 @@ def money(x):
                 x = x * l
 
             x, c = combine_with_cent(
-                x, currency = '$', currency_end = 'dollar', cent = 'cent'
+                x, currency='$', currency_end='dollar', cent='cent'
             )
 
             return re.sub(r'[ ]+', ' ', x.lower()).strip(), c
@@ -342,8 +342,8 @@ def money(x):
                 .replace('cent', '')
             )
             x = re.sub(r'[ ]+', ' ', x).strip()
-            x, n = re.split("(\d+(?:[\.,']\d+)?)", x)[1:]
-            x = re.sub(',', '', x, count = 10)
+            x, n = re.split("(\\d+(?:[\\.,']\\d+)?)", x)[1:]
+            x = re.sub(',', '', x, count=10)
             labels = []
             for c in n:
                 if re.match('.*(M|m)$', c):
@@ -361,13 +361,13 @@ def money(x):
                 x = x * l
 
             x, c = combine_with_cent(
-                x, currency = '$', currency_end = 'dollar', cent = 'cent'
+                x, currency='$', currency_end='dollar', cent='cent'
             )
 
             return re.sub(r'[ ]+', ' ', x.lower()).strip(), c
 
         elif (
-            re.match('^\£', x)
+            re.match('^\\£', x)
             or x.lower().endswith('pound')
             or x.lower().endswith('penny')
         ):
@@ -378,8 +378,8 @@ def money(x):
                 cent = False
             x = x.replace('£', '').replace('pound', '').replace('penny', '')
             x = re.sub(r'[ ]+', ' ', x).strip()
-            x, n = re.split("(\d+(?:[\.,']\d+)?)", x)[1:]
-            x = re.sub(',', '', x, count = 10)
+            x, n = re.split("(\\d+(?:[\\.,']\\d+)?)", x)[1:]
+            x = re.sub(',', '', x, count=10)
             labels = []
             for c in n:
                 if re.match('.*(M|m)$', c):
@@ -397,12 +397,12 @@ def money(x):
                 x = x * l
 
             x, c = combine_with_cent(
-                x, currency = '£', currency_end = 'pound', cent = 'cent'
+                x, currency='£', currency_end='pound', cent='cent'
             )
             return re.sub(r'[ ]+', ' ', x.lower()).strip(), c
 
         elif (
-            re.match('^\€', x)
+            re.match('^\\€', x)
             or x.lower().endswith('euro')
             or x.lower().endswith('cent')
         ):
@@ -413,8 +413,8 @@ def money(x):
                 cent = False
             x = x.replace('€', '').replace('euro', '').replace('cent', '')
             x = re.sub(r'[ ]+', ' ', x).strip()
-            x, n = re.split("(\d+(?:[\.,']\d+)?)", x)[1:]
-            x = re.sub(',', '', x, count = 10)
+            x, n = re.split("(\\d+(?:[\\.,']\\d+)?)", x)[1:]
+            x = re.sub(',', '', x, count=10)
             labels = []
             for c in n:
                 if re.match('.*(M|m)$', c):
@@ -431,7 +431,7 @@ def money(x):
                 x = x * l
 
             x, c = combine_with_cent(
-                x, currency = '€', currency_end = 'euro', cent = 'cent'
+                x, currency='€', currency_end='euro', cent='cent'
             )
             return re.sub(r'[ ]+', ' ', x.lower()).strip(), c
 
@@ -449,8 +449,8 @@ def money(x):
 
             x = x.replace('rm', '').replace('ringgit', '').replace('sen', '')
             x = re.sub(r'[ ]+', ' ', x).strip()
-            x, n = re.split("(\d+(?:[\.,']\d+)?)", x)[1:]
-            x = re.sub(',', '', x, count = 10)
+            x, n = re.split("(\\d+(?:[\\.,']\\d+)?)", x)[1:]
+            x = re.sub(',', '', x, count=10)
             labels = []
             for c in n:
                 if re.match('.*(M|m)$', c):

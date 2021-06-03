@@ -26,19 +26,19 @@ import functools
 
 def variable(
     name,
-    shape = None,
-    dtype = None,
-    initializer = None,
-    regularizer = None,
-    trainable = True,
-    collections = None,
-    caching_device = None,
-    device = None,
-    partitioner = None,
-    custom_getter = None,
-    use_resource = None,
-    synchronization = variables.VariableSynchronization.AUTO,
-    aggregation = variables.VariableAggregation.NONE,
+    shape=None,
+    dtype=None,
+    initializer=None,
+    regularizer=None,
+    trainable=True,
+    collections=None,
+    caching_device=None,
+    device=None,
+    partitioner=None,
+    custom_getter=None,
+    use_resource=None,
+    synchronization=variables.VariableSynchronization.AUTO,
+    aggregation=variables.VariableAggregation.NONE,
 ):
     """Gets an existing variable with these parameters or creates a new one.
   Args:
@@ -84,40 +84,40 @@ def variable(
     getter = variable_scope.get_variable
     if custom_getter is not None:
         getter = functools.partial(
-            custom_getter, reuse = variable_scope.get_variable_scope().reuse
+            custom_getter, reuse=variable_scope.get_variable_scope().reuse
         )
     with ops.device(device or ''):
         return getter(
             name,
-            shape = shape,
-            dtype = dtype,
-            initializer = initializer,
-            regularizer = regularizer,
-            trainable = trainable,
-            collections = collections,
-            caching_device = caching_device,
-            partitioner = partitioner,
-            use_resource = use_resource,
-            synchronization = synchronization,
-            aggregation = aggregation,
+            shape=shape,
+            dtype=dtype,
+            initializer=initializer,
+            regularizer=regularizer,
+            trainable=trainable,
+            collections=collections,
+            caching_device=caching_device,
+            partitioner=partitioner,
+            use_resource=use_resource,
+            synchronization=synchronization,
+            aggregation=aggregation,
         )
 
 
 def model_variable(
     name,
-    shape = None,
-    dtype = dtypes.float32,
-    initializer = None,
-    regularizer = None,
-    trainable = True,
-    collections = None,
-    caching_device = None,
-    device = None,
-    partitioner = None,
-    custom_getter = None,
-    use_resource = None,
-    synchronization = variables.VariableSynchronization.AUTO,
-    aggregation = variables.VariableAggregation.NONE,
+    shape=None,
+    dtype=dtypes.float32,
+    initializer=None,
+    regularizer=None,
+    trainable=True,
+    collections=None,
+    caching_device=None,
+    device=None,
+    partitioner=None,
+    custom_getter=None,
+    use_resource=None,
+    synchronization=variables.VariableSynchronization.AUTO,
+    aggregation=variables.VariableAggregation.NONE,
 ):
     """Gets an existing model variable with these parameters or creates a new one.
   Args:
@@ -160,18 +160,18 @@ def model_variable(
     ]
     var = variable(
         name,
-        shape = shape,
-        dtype = dtype,
-        initializer = initializer,
-        regularizer = regularizer,
-        trainable = trainable,
-        collections = collections,
-        caching_device = caching_device,
-        device = device,
-        partitioner = partitioner,
-        custom_getter = custom_getter,
-        use_resource = use_resource,
-        synchronization = synchronization,
-        aggregation = aggregation,
+        shape=shape,
+        dtype=dtype,
+        initializer=initializer,
+        regularizer=regularizer,
+        trainable=trainable,
+        collections=collections,
+        caching_device=caching_device,
+        device=device,
+        partitioner=partitioner,
+        custom_getter=custom_getter,
+        use_resource=use_resource,
+        synchronization=synchronization,
+        aggregation=aggregation,
     )
     return var

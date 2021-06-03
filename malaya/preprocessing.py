@@ -86,9 +86,9 @@ def _get_expression_dict():
 
 
 class Tokenizer:
-    def __init__(self, lowercase = False, **kwargs):
+    def __init__(self, lowercase=False, **kwargs):
         """
-        Load Tokenizer object. 
+        Load Tokenizer object.
         Check supported regex pattern at https://github.com/huseinzol05/Malaya/blob/master/malaya/text/regex.py#L85
 
         Parameters
@@ -254,7 +254,7 @@ class Tokenizer:
         # keep repeated puncts as one term
         # pipeline.append(r"")
 
-        pipeline.append('(?:\S)')  # CATCH ALL remaining terms
+        pipeline.append('(?:\\S)')  # CATCH ALL remaining terms
 
         self.tok = re.compile(r'({})'.format('|'.join(pipeline)))
 
@@ -286,7 +286,7 @@ class Tokenizer:
 class Preprocessing:
     def __init__(
         self,
-        normalize = [
+        normalize=[
             'url',
             'email',
             'percent',
@@ -297,7 +297,7 @@ class Preprocessing:
             'date',
             'number',
         ],
-        annotate = [
+        annotate=[
             'allcaps',
             'elongated',
             'repeated',
@@ -305,19 +305,19 @@ class Preprocessing:
             'censored',
             'hashtag',
         ],
-        lowercase = True,
-        fix_unidecode = True,
-        expand_english_contractions = True,
-        translator = None,
-        speller = None,
-        segmenter = None,
-        stemmer = None,
+        lowercase=True,
+        fix_unidecode=True,
+        expand_english_contractions=True,
+        translator=None,
+        speller=None,
+        segmenter=None,
+        stemmer=None,
     ):
         self._fix_unidecode = fix_unidecode
         self._normalize = normalize
         self._annotate = annotate
         self._regexes = _get_expression_dict()
-        self._tokenizer = Tokenizer(lowercase = lowercase).tokenize
+        self._tokenizer = Tokenizer(lowercase=lowercase).tokenize
         self._expand_contractions = expand_english_contractions
         self._all_caps_tag = 'wrap'
         self._translator = translator
@@ -329,7 +329,7 @@ class Preprocessing:
             self._expand_hashtags = False
         self._stemmer = stemmer
 
-    def _add_special_tag(self, m, tag, mode = 'single'):
+    def _add_special_tag(self, m, tag, mode='single'):
 
         if isinstance(m, str):
             text = m
@@ -345,7 +345,7 @@ class Preprocessing:
             processed = ' '.join([' {} <{}> '.format(t, tag) for t in tokens])
             return ' ' + processed + ' '
 
-    @lru_cache(maxsize = 65536)
+    @lru_cache(maxsize=65536)
     def _handle_hashtag_match(self, m):
         expanded = m.group()[1:]
         if self._expand_hashtags:
@@ -354,24 +354,24 @@ class Preprocessing:
             expanded = ' '.join(expanded.split('_'))
 
         if 'hashtag' in self._annotate:
-            expanded = self._add_special_tag(expanded, 'hashtag', mode = 'wrap')
+            expanded = self._add_special_tag(expanded, 'hashtag', mode='wrap')
 
         return expanded
 
-    @lru_cache(maxsize = 65536)
+    @lru_cache(maxsize=65536)
     def _handle_repeated_puncts(self, m):
         text = m.group()
-        text = ''.join(sorted(set(text), reverse = True))
+        text = ''.join(sorted(set(text), reverse=True))
 
         if 'repeated' in self._annotate:
             text = self._add_special_tag(text, 'repeated')
 
         return text
 
-    @lru_cache(maxsize = 65536)
-    def _handle_generic_match(self, m, tag, mode = 'every'):
+    @lru_cache(maxsize=65536)
+    def _handle_generic_match(self, m, tag, mode='every'):
         text = m.group()
-        text = self._add_special_tag(text, tag, mode = mode)
+        text = self._add_special_tag(text, tag, mode=mode)
 
         return text
 
@@ -389,7 +389,7 @@ class Preprocessing:
             text = self._add_special_tag(text, 'elongated')
         return text
 
-    @lru_cache(maxsize = 65536)
+    @lru_cache(maxsize=65536)
     def _handle_emphasis_match(self, m):
         text = m.group().replace('*', '')
         if 'emphasis' in self._annotate:
@@ -434,7 +434,7 @@ class Preprocessing:
         if 'allcaps' in self._annotate:
             text = self._regexes['allcaps'].sub(
                 lambda w: self._handle_generic_match(
-                    w, 'allcaps', mode = self._all_caps_tag
+                    w, 'allcaps', mode=self._all_caps_tag
                 ),
                 text,
             )
@@ -503,9 +503,9 @@ def preprocessing(
     fix_unidecode: bool = True,
     expand_english_contractions: bool = True,
     translate_english_to_bm: bool = True,
-    speller = None,
-    segmenter = None,
-    stemmer = None,
+    speller=None,
+    segmenter=None,
+    stemmer=None,
     **kwargs,
 ):
     """
@@ -516,7 +516,7 @@ def preprocessing(
     normalize: list
         normalizing tokens, can check all supported normalizing at `malaya.preprocessing.get_normalize()`.
     annotate: list
-        annonate tokens <open></open>, 
+        annonate tokens <open></open>,
         only accept ['hashtag', 'allcaps', 'elongated', 'repeated', 'emphasis', 'censored'].
     lowercase: bool
     fix_unidecode: bool
@@ -565,13 +565,13 @@ def preprocessing(
         translator = None
 
     return Preprocessing(
-        normalize = normalize,
-        annotate = annotate,
-        lowercase = lowercase,
-        fix_unidecode = fix_unidecode,
-        expand_english_contractions = expand_english_contractions,
-        translator = translator,
-        speller = speller,
-        segmenter = segmenter,
-        stemmer = stemmer,
+        normalize=normalize,
+        annotate=annotate,
+        lowercase=lowercase,
+        fix_unidecode=fix_unidecode,
+        expand_english_contractions=expand_english_contractions,
+        translator=translator,
+        speller=speller,
+        segmenter=segmenter,
+        stemmer=stemmer,
     )

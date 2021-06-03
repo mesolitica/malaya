@@ -61,19 +61,19 @@ def _extract_attention_weights_import(tf_graph):
 
 class Model:
     def __init__(
-        self, xlnet_config, tokenizer, checkpoint, pool_mode = 'last', **kwargs
+        self, xlnet_config, tokenizer, checkpoint, pool_mode='last', **kwargs
     ):
 
         kwargs_config = dict(
-            is_training = True,
-            use_tpu = False,
-            use_bfloat16 = False,
-            dropout = 0.0,
-            dropatt = 0.0,
-            init = 'normal',
-            init_range = 0.1,
-            init_std = 0.05,
-            clamp_len = -1,
+            is_training=True,
+            use_tpu=False,
+            use_bfloat16=False,
+            dropout=0.0,
+            dropatt=0.0,
+            init='normal',
+            init_range=0.1,
+            init_std=0.05,
+            clamp_len=-1,
         )
 
         xlnet_parameters = xlnet_lib.RunConfig(**kwargs_config)
@@ -88,11 +88,11 @@ class Model:
                 self.input_masks = tf.placeholder(tf.float32, [None, None])
 
                 xlnet_model = xlnet_lib.XLNetModel(
-                    xlnet_config = xlnet_config,
-                    run_config = xlnet_parameters,
-                    input_ids = tf.transpose(self.X, [1, 0]),
-                    seg_ids = tf.transpose(self.segment_ids, [1, 0]),
-                    input_mask = tf.transpose(self.input_masks, [1, 0]),
+                    xlnet_config=xlnet_config,
+                    run_config=xlnet_parameters,
+                    input_ids=tf.transpose(self.X, [1, 0]),
+                    seg_ids=tf.transpose(self.segment_ids, [1, 0]),
+                    input_mask=tf.transpose(self.input_masks, [1, 0]),
                 )
 
                 self.logits = xlnet_model.get_pooled_out(pool_mode, True)
@@ -102,7 +102,7 @@ class Model:
                 assignment_map, _ = get_assignment_map_from_checkpoint(
                     tvars, checkpoint
                 )
-                self._saver = tf.train.Saver(var_list = assignment_map)
+                self._saver = tf.train.Saver(var_list=assignment_map)
                 attentions = [
                     n.name
                     for n in tf.get_default_graph().as_graph_def().node
@@ -115,7 +115,6 @@ class Model:
 
     @check_type
     def vectorize(self, strings: List[str]):
-
         """
         Vectorize string inputs.
 
@@ -133,7 +132,7 @@ class Model:
         )
         return self._sess.run(
             self.logits,
-            feed_dict = {
+            feed_dict={
                 self.X: input_ids,
                 self.segment_ids: segment_ids,
                 self.input_masks: input_masks,
@@ -145,10 +144,10 @@ class Model:
             self._tokenizer, strings
         )
         maxlen = max([len(s) for s in s_tokens])
-        s_tokens = padding_sequence(s_tokens, maxlen, pad_int = '<cls>')
+        s_tokens = padding_sequence(s_tokens, maxlen, pad_int='<cls>')
         attentions = self._sess.run(
             self.attention_nodes,
-            feed_dict = {
+            feed_dict={
                 self.X: input_ids,
                 self.segment_ids: segment_ids,
                 self.input_masks: input_masks,
@@ -191,24 +190,23 @@ class Model:
 
         if method == 'mean':
             cls_attn = np.transpose(
-                np.mean(attentions, axis = 0).mean(axis = 1), (1, 0, 2)
+                np.mean(attentions, axis=0).mean(axis=1), (1, 0, 2)
             )
 
-        cls_attn = np.mean(cls_attn, axis = 1)
-        total_weights = np.sum(cls_attn, axis = -1, keepdims = True)
+        cls_attn = np.mean(cls_attn, axis=1)
+        total_weights = np.sum(cls_attn, axis=-1, keepdims=True)
         attn = cls_attn / total_weights
         output = []
         for i in range(attn.shape[0]):
             output.append(
                 merge_sentencepiece_tokens(
-                    list(zip(s_tokens[i], attn[i])), model = 'xlnet'
+                    list(zip(s_tokens[i], attn[i])), model='xlnet'
                 )
             )
         return output
 
     @check_type
     def visualize_attention(self, string: str):
-
         """
         Visualize attention.
 
@@ -277,21 +275,21 @@ def load(model: str = 'xlnet', pool_mode: str = 'last', **kwargs):
         import tarfile
 
         with tarfile.open(PATH_XLNET[model]['model']['model']) as tar:
-            tar.extractall(path = PATH_XLNET[model]['path'])
+            tar.extractall(path=PATH_XLNET[model]['path'])
 
     import sentencepiece as spm
 
     sp_model = spm.SentencePieceProcessor()
     sp_model.Load(PATH_XLNET[model]['directory'] + 'sp10m.cased.v9.model')
     xlnet_config = xlnet_lib.XLNetConfig(
-        json_path = PATH_XLNET[model]['directory'] + 'config.json'
+        json_path=PATH_XLNET[model]['directory'] + 'config.json'
     )
     xlnet_checkpoint = PATH_XLNET[model]['directory'] + 'model.ckpt'
     model = Model(
         xlnet_config,
         sp_model,
         xlnet_checkpoint,
-        pool_mode = pool_mode,
+        pool_mode=pool_mode,
         **kwargs
     )
     model._saver.restore(model._sess, xlnet_checkpoint)

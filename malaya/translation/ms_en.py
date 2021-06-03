@@ -45,7 +45,7 @@ def available_transformer():
     from malaya.function import describe_availability
 
     return describe_availability(
-        _transformer_availability, text = 'tested on 100k MS-EN sentences.'
+        _transformer_availability, text='tested on 100k MS-EN sentences.'
     )
 
 
@@ -64,16 +64,16 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
         * ``'large'`` - Transformer LARGE parameters.
         * ``'bigbird'`` - BigBird BASE parameters.
         * ``'small-bigbird'`` - BigBird SMALL parameters.
-    
+
     quantized : bool, optional (default=False)
-        if True, will load 8-bit quantized model. 
+        if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
 
     Returns
     -------
     result: model
         List of model classes:
-        
+
         * if `bigbird` in model, return `malaya.model.bigbird.Translation`.
         * else, return `malaya.model.tf.Translation`.
     """
@@ -85,20 +85,20 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
 
     if 'bigbird' in model:
         return load_bigbird.load(
-            module = 'translation-ms-en',
-            model = model,
-            model_class = BigBird_Translation,
-            maxlen = _transformer_availability[model]['Suggested length'],
-            quantized = quantized,
+            module='translation-ms-en',
+            model=model,
+            model_class=BigBird_Translation,
+            maxlen=_transformer_availability[model]['Suggested length'],
+            quantized=quantized,
             **kwargs
         )
 
     else:
         return load_transformer.load(
-            module = 'translation-ms-en',
-            model = model,
-            encoder = 'subword',
-            model_class = Translation,
-            quantized = quantized,
+            module='translation-ms-en',
+            model=model,
+            encoder='subword',
+            model_class=Translation,
+            quantized=quantized,
             **kwargs
         )

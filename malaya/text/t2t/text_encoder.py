@@ -65,7 +65,7 @@ def native_to_unicode(s):
     try:
         return to_unicode(s)
     except UnicodeDecodeError:
-        res = to_unicode(s, ignore_errors = True)
+        res = to_unicode(s, ignore_errors=True)
         tf.logging.info('Ignoring Unicode error, outputting: %s' % res)
         return res
 
@@ -81,15 +81,15 @@ def is_unicode(s):
     return isinstance(s, six.text_type)
 
 
-def to_unicode(s, ignore_errors = False):
+def to_unicode(s, ignore_errors=False):
     if is_unicode(s):
         return s
     error_mode = 'ignore' if ignore_errors else 'strict'
-    return s.decode('utf-8', errors = error_mode)
+    return s.decode('utf-8', errors=error_mode)
 
 
 def to_unicode_ignore_errors(s):
-    return to_unicode(s, ignore_errors = True)
+    return to_unicode(s, ignore_errors=True)
 
 
 def to_unicode_utf8(s):
@@ -107,7 +107,7 @@ def strip_ids(ids, ids_to_strip):
 class TextEncoder(object):
     """Base class for converting from ints to/from human readable strings."""
 
-    def __init__(self, num_reserved_ids = NUM_RESERVED_TOKENS):
+    def __init__(self, num_reserved_ids=NUM_RESERVED_TOKENS):
         self._num_reserved_ids = num_reserved_ids
 
     @property
@@ -130,7 +130,7 @@ class TextEncoder(object):
     """
         return [int(w) + self._num_reserved_ids for w in s.split()]
 
-    def decode(self, ids, strip_extraneous = False):
+    def decode(self, ids, strip_extraneous=False):
         """Transform a sequence of int ids into a human-readable string.
 
     EOS is not expected in ids.
@@ -185,7 +185,7 @@ class ByteTextEncoder(TextEncoder):
         # Python3: explicitly convert to UTF-8
         return [c + numres for c in s.encode('utf-8')]
 
-    def decode(self, ids, strip_extraneous = False):
+    def decode(self, ids, strip_extraneous=False):
         if strip_extraneous:
             ids = strip_ids(ids, list(range(self._num_reserved_ids or 0)))
         numres = self._num_reserved_ids
@@ -221,8 +221,8 @@ class ByteTextEncoder(TextEncoder):
 class ClassLabelEncoder(TextEncoder):
     """Encoder for class labels."""
 
-    def __init__(self, class_labels = None, class_labels_fname = None):
-        super(ClassLabelEncoder, self).__init__(num_reserved_ids = 0)
+    def __init__(self, class_labels=None, class_labels_fname=None):
+        super(ClassLabelEncoder, self).__init__(num_reserved_ids=0)
 
         if class_labels_fname:
             with tf.gfile.Open(class_labels_fname) as f:
@@ -235,7 +235,7 @@ class ClassLabelEncoder(TextEncoder):
         label_str = s
         return self._class_labels.index(label_str)
 
-    def decode(self, ids, strip_extraneous = False):
+    def decode(self, ids, strip_extraneous=False):
         del strip_extraneous
         label_id = ids
         if isinstance(label_id, list):
@@ -257,13 +257,13 @@ class OneHotClassLabelEncoder(ClassLabelEncoder):
     """One-hot encoder for class labels."""
 
     def encode(
-        self, label_str, on_value = 1, off_value = 0
+        self, label_str, on_value=1, off_value=0
     ):  # pylint: disable=arguments-differ
-        e = np.full(self.vocab_size, off_value, dtype = np.int32)
+        e = np.full(self.vocab_size, off_value, dtype=np.int32)
         e[self._class_labels.index(label_str)] = on_value
         return e.tolist()
 
-    def decode(self, ids, strip_extraneous = False):
+    def decode(self, ids, strip_extraneous=False):
         del strip_extraneous
         label_id = ids
         if isinstance(label_id, np.ndarray):
@@ -283,10 +283,10 @@ class TokenTextEncoder(TextEncoder):
     def __init__(
         self,
         vocab_filename,
-        reverse = False,
-        vocab_list = None,
-        replace_oov = None,
-        num_reserved_ids = NUM_RESERVED_TOKENS,
+        reverse=False,
+        vocab_list=None,
+        replace_oov=None,
+        num_reserved_ids=NUM_RESERVED_TOKENS,
     ):
         """Initialize from a file or list, one token per line.
 
@@ -307,7 +307,7 @@ class TokenTextEncoder(TextEncoder):
       num_reserved_ids: Number of IDs to save for reserved tokens like <EOS>.
     """
         super(TokenTextEncoder, self).__init__(
-            num_reserved_ids = num_reserved_ids
+            num_reserved_ids=num_reserved_ids
         )
         self._reverse = reverse
         self._replace_oov = replace_oov
@@ -329,7 +329,7 @@ class TokenTextEncoder(TextEncoder):
         ret = [self._token_to_id[tok] for tok in tokens]
         return ret[::-1] if self._reverse else ret
 
-    def decode(self, ids, strip_extraneous = False):
+    def decode(self, ids, strip_extraneous=False):
         return ' '.join(self.decode_list(ids))
 
     def decode_list(self, ids):
@@ -356,7 +356,7 @@ class TokenTextEncoder(TextEncoder):
             for token in tokens:
                 yield token
 
-        self._init_vocab(token_gen(), add_reserved_tokens = False)
+        self._init_vocab(token_gen(), add_reserved_tokens=False)
 
     def _init_vocab_from_list(self, vocab_list):
         """Initialize tokens from a list of tokens.
@@ -375,7 +375,7 @@ class TokenTextEncoder(TextEncoder):
 
         self._init_vocab(token_gen())
 
-    def _init_vocab(self, token_generator, add_reserved_tokens = True):
+    def _init_vocab(self, token_generator, add_reserved_tokens=True):
         """Initialize vocabulary with tokens from token_generator."""
 
         self._id_to_token = {}
@@ -386,7 +386,7 @@ class TokenTextEncoder(TextEncoder):
             non_reserved_start_index = len(RESERVED_TOKENS)
 
         self._id_to_token.update(
-            enumerate(token_generator, start = non_reserved_start_index)
+            enumerate(token_generator, start=non_reserved_start_index)
         )
 
         # _token_to_id is the reverse of _id_to_token
@@ -493,7 +493,7 @@ class SubwordTextEncoder(TextEncoder):
 
   """
 
-    def __init__(self, filename = None):
+    def __init__(self, filename=None):
         """Initialize and read from a file, if provided.
 
     Args:
@@ -535,7 +535,7 @@ class SubwordTextEncoder(TextEncoder):
     """
         return self._tokens_to_subtoken_ids([native_to_unicode(token_text)])
 
-    def decode(self, ids, strip_extraneous = False):
+    def decode(self, ids, strip_extraneous=False):
         """Converts a sequence of subtoken ids to a native string.
 
     Args:
@@ -670,8 +670,8 @@ class SubwordTextEncoder(TextEncoder):
         cls,
         generator,
         target_size,
-        max_subtoken_length = None,
-        reserved_tokens = None,
+        max_subtoken_length=None,
+        reserved_tokens=None,
     ):
         """Builds a SubwordTextEncoder from the generated text.
 
@@ -698,8 +698,8 @@ class SubwordTextEncoder(TextEncoder):
             token_counts,
             1,
             1e3,
-            max_subtoken_length = max_subtoken_length,
-            reserved_tokens = reserved_tokens,
+            max_subtoken_length=max_subtoken_length,
+            reserved_tokens=reserved_tokens,
         )
         return encoder
 
@@ -710,9 +710,9 @@ class SubwordTextEncoder(TextEncoder):
         token_counts,
         min_val,
         max_val,
-        max_subtoken_length = None,
-        reserved_tokens = None,
-        num_iterations = 4,
+        max_subtoken_length=None,
+        reserved_tokens=None,
+        num_iterations=4,
     ):
         """Builds a SubwordTextEncoder that has `vocab_size` near `target_size`.
 
@@ -759,8 +759,8 @@ class SubwordTextEncoder(TextEncoder):
                 token_counts,
                 present_count,
                 num_iterations,
-                max_subtoken_length = max_subtoken_length,
-                reserved_tokens = reserved_tokens,
+                max_subtoken_length=max_subtoken_length,
+                reserved_tokens=reserved_tokens,
             )
 
             # Being within 1% of the target size is ok.
@@ -791,9 +791,9 @@ class SubwordTextEncoder(TextEncoder):
         self,
         token_counts,
         min_count,
-        num_iterations = 4,
-        reserved_tokens = None,
-        max_subtoken_length = None,
+        num_iterations=4,
+        reserved_tokens=None,
+        max_subtoken_length=None,
     ):
         """Train a SubwordTextEncoder based on a dictionary of word counts.
 
@@ -837,7 +837,7 @@ class SubwordTextEncoder(TextEncoder):
         # Bootstrap the initial list of subtokens with the characters from the
         # alphabet plus the escaping characters.
         self._init_subtokens_from_list(
-            list(self._alphabet), reserved_tokens = reserved_tokens
+            list(self._alphabet), reserved_tokens=reserved_tokens
         )
 
         # We build iteratively.  On each iteration, we segment all the words,
@@ -907,7 +907,7 @@ class SubwordTextEncoder(TextEncoder):
             new_subtoken_strings.extend(
                 (subtoken_counts.get(a, 0), a) for a in self._alphabet
             )
-            new_subtoken_strings.sort(reverse = True)
+            new_subtoken_strings.sort(reverse=True)
 
             # Reinitialize to the candidate vocabulary.
             new_subtoken_strings = [
@@ -941,7 +941,7 @@ class SubwordTextEncoder(TextEncoder):
         )
 
     def _init_subtokens_from_list(
-        self, subtoken_strings, reserved_tokens = None
+        self, subtoken_strings, reserved_tokens=None
     ):
         """Initialize token information from a list of subtoken strings.
 
@@ -1008,7 +1008,7 @@ class SubwordTextEncoder(TextEncoder):
         with tf.gfile.Open(filename) as f:
             self._load_from_file_object(f)
 
-    def store_to_file(self, filename, add_single_quotes = True):
+    def store_to_file(self, filename, add_single_quotes=True):
         with tf.gfile.Open(filename, 'w') as f:
             for subtoken_string in self._all_subtoken_strings:
                 if add_single_quotes:
@@ -1021,7 +1021,7 @@ class ImageEncoder(object):
     """Encoder class for saving and loading images."""
 
     def __init__(
-        self, num_reserved_ids = 0, height = None, width = None, channels = 3
+        self, num_reserved_ids=0, height=None, width=None, channels=3
     ):
         assert num_reserved_ids == 0
         self._height = height
@@ -1050,7 +1050,7 @@ class ImageEncoder(object):
             raise NotImplementedError('Image reading not implemented.')
         return im.imread(s)
 
-    def decode(self, ids, strip_extraneous = False):
+    def decode(self, ids, strip_extraneous=False):
         """Transform a sequence of int ids into an image file.
 
     Args:
@@ -1086,7 +1086,7 @@ class ImageEncoder(object):
                 )
             )
         with tf.Graph().as_default():
-            raw = tf.constant(ids, dtype = tf.uint8)
+            raw = tf.constant(ids, dtype=tf.uint8)
             if size is None:
                 img = tf.reshape(
                     raw, [self._height, self._width, self._channels]
@@ -1129,7 +1129,7 @@ class RealEncoder(object):
     """
         return [float(w) for w in s.split()]
 
-    def decode(self, ids, strip_extraneous = False):
+    def decode(self, ids, strip_extraneous=False):
         """Transform sequence of float values into string (float values).
 
     Args:

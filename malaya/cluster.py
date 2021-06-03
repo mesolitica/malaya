@@ -82,7 +82,7 @@ def cluster_words(list_words: List[str], lowercase: bool = False):
             dict_words[word] = [word]
     results = []
     for key, words in dict_words.items():
-        results.append(max(list(set([key] + words)), key = len))
+        results.append(max(list(set([key] + words)), key=len))
     return list(set(results))
 
 
@@ -203,10 +203,10 @@ def cluster_scatter(
     num_clusters: int = 5,
     titles: List[str] = None,
     colors: List[str] = None,
-    stopwords = get_stopwords,
-    cleaning = simple_textcleaning,
-    clustering = KMeans,
-    decomposition = MDS,
+    stopwords=get_stopwords,
+    cleaning=simple_textcleaning,
+    clustering=KMeans,
+    decomposition=MDS,
     ngram: Tuple[int, int] = (1, 3),
     figsize: Tuple[int, int] = (17, 9),
     batch_size: int = 20,
@@ -260,7 +260,7 @@ def cluster_scatter(
         import seaborn as sns
 
         sns.set()
-    except:
+    except BaseException:
         raise ModuleNotFoundError(
             'matplotlib and seaborn not installed. Please install it and try again.'
         )
@@ -293,18 +293,18 @@ def cluster_scatter(
                     t.append([(w, 1.0) for w in s.split()])
                 attentions.extend(t)
         transformed_text_clean = np.concatenate(
-            transformed_text_clean, axis = 0
+            transformed_text_clean, axis=0
         )
-    km = clustering(n_clusters = num_clusters)
+    km = clustering(n_clusters=num_clusters)
     dist = 1 - cosine_similarity(transformed_text_clean)
     km.fit(transformed_text_clean)
     clusters = km.labels_.tolist()
     if isinstance(decomposition, MDS):
         decomposed = decomposition(
-            n_components = 2, dissimilarity = 'precomputed'
+            n_components=2, dissimilarity='precomputed'
         )
     else:
-        decomposed = decomposition(n_components = 2)
+        decomposed = decomposition(n_components=2)
     pos = decomposed.fit_transform(dist)
     if not titles:
         titles = []
@@ -318,24 +318,24 @@ def cluster_scatter(
                     ' '.join([features[i] for i in indices[: ngram[1]]])
                 )
             else:
-                attentions[i].sort(key = lambda x: x[1])
+                attentions[i].sort(key=lambda x: x[1])
                 titles.append(
-                    ' '.join([i[0] for i in attentions[i][-ngram[1] :]])
+                    ' '.join([i[0] for i in attentions[i][-ngram[1]:]])
                 )
 
     if not colors:
-        colors = sns.color_palette(n_colors = num_clusters)
+        colors = sns.color_palette(n_colors=num_clusters)
     X, Y = pos[:, 0], pos[:, 1]
-    plt.figure(figsize = figsize)
+    plt.figure(figsize=figsize)
     for i in np.unique(clusters):
         plt.scatter(
             X[clusters == i],
             Y[clusters == i],
-            color = colors[i],
-            label = 'cluster %d' % (i),
+            color=colors[i],
+            label='cluster %d' % (i),
         )
     for i in range(len(X)):
-        plt.text(X[i], Y[i], titles[i], size = 8)
+        plt.text(X[i], Y[i], titles[i], size=8)
     plt.legend()
     plt.show()
     return {
@@ -352,8 +352,8 @@ def cluster_dendogram(
     corpus: List[str],
     vectorizer,
     titles: List[str] = None,
-    stopwords = get_stopwords,
-    cleaning = simple_textcleaning,
+    stopwords=get_stopwords,
+    cleaning=simple_textcleaning,
     random_samples: float = 0.3,
     ngram: Tuple[int, int] = (1, 3),
     figsize: Tuple[int, int] = (17, 9),
@@ -407,12 +407,12 @@ def cluster_dendogram(
         from scipy.cluster.hierarchy import ward, dendrogram
 
         sns.set()
-    except:
+    except BaseException:
         raise ModuleNotFoundError(
             'matplotlib and seaborn not installed. Please install it and try again.'
         )
 
-    corpus = random.sample(corpus, k = int(random_samples * len(corpus)))
+    corpus = random.sample(corpus, k=int(random_samples * len(corpus)))
 
     if cleaning is not None:
         for i in range(len(corpus)):
@@ -442,7 +442,7 @@ def cluster_dendogram(
                     t.append([(w, 1.0) for w in s.split()])
                 attentions.extend(t)
         transformed_text_clean = np.concatenate(
-            transformed_text_clean, axis = 0
+            transformed_text_clean, axis=0
         )
 
     dist = 1 - cosine_similarity(transformed_text_clean)
@@ -459,18 +459,18 @@ def cluster_dendogram(
                     ' '.join([features[i] for i in indices[: ngram[1]]])
                 )
             else:
-                attentions[i].sort(key = lambda x: x[1])
+                attentions[i].sort(key=lambda x: x[1])
                 titles.append(
-                    ' '.join([i[0] for i in attentions[i][-ngram[1] :]])
+                    ' '.join([i[0] for i in attentions[i][-ngram[1]:]])
                 )
-    plt.figure(figsize = figsize)
-    ax = dendrogram(linkage_matrix, orientation = 'right', labels = titles)
+    plt.figure(figsize=figsize)
+    ax = dendrogram(linkage_matrix, orientation='right', labels=titles)
     plt.tick_params(
-        axis = 'x',
-        which = 'both',
-        bottom = 'off',
-        top = 'off',
-        labelbottom = 'off',
+        axis='x',
+        which='both',
+        bottom='off',
+        top='off',
+        labelbottom='off',
     )
     plt.tight_layout()
     plt.show()
@@ -485,10 +485,10 @@ def cluster_graph(
     num_clusters: int = 5,
     titles: List[str] = None,
     colors: List[str] = None,
-    stopwords = get_stopwords,
+    stopwords=get_stopwords,
     ngram: Tuple[int, int] = (1, 3),
-    cleaning = simple_textcleaning,
-    clustering = KMeans,
+    cleaning=simple_textcleaning,
+    clustering=KMeans,
     figsize: Tuple[int, int] = (17, 9),
     with_labels: bool = True,
     batch_size: int = 20,
@@ -547,7 +547,7 @@ def cluster_graph(
         import pandas as pd
 
         sns.set()
-    except:
+    except BaseException:
         raise ModuleNotFoundError(
             'matplotlib, seaborn, networkx not installed. Please install it and try again.'
         )
@@ -580,12 +580,12 @@ def cluster_graph(
                     t.append([(w, 1.0) for w in s.split()])
                 attentions.extend(t)
         transformed_text_clean = np.concatenate(
-            transformed_text_clean, axis = 0
+            transformed_text_clean, axis=0
         )
 
     DxT = transformed_text_clean
     DxD = np.abs(pd.DataFrame(DxT.T).corr()).values
-    km = clustering(n_clusters = num_clusters)
+    km = clustering(n_clusters=num_clusters)
     km.fit(DxT)
     clusters = km.labels_.tolist()
 
@@ -601,16 +601,16 @@ def cluster_graph(
                     ' '.join([features[i] for i in indices[: ngram[1]]])
                 )
             else:
-                attentions[i].sort(key = lambda x: x[1])
+                attentions[i].sort(key=lambda x: x[1])
                 titles.append(
-                    ' '.join([i[0] for i in attentions[i][-ngram[1] :]])
+                    ' '.join([i[0] for i in attentions[i][-ngram[1]:]])
                 )
 
     if not colors:
-        colors = sns.color_palette(n_colors = num_clusters)
+        colors = sns.color_palette(n_colors=num_clusters)
     G = nx.Graph()
     for i in range(DxT.shape[0]):
-        G.add_node(i, text = titles[i], label = clusters[i])
+        G.add_node(i, text=titles[i], label=clusters[i])
 
     len_dense = len(DxD)
     for i in range(len_dense):
@@ -619,19 +619,19 @@ def cluster_graph(
                 continue
             if DxD[i, j] >= threshold:
                 weight = DxD[i, j]
-                G.add_edge(i, j, weight = weight)
+                G.add_edge(i, j, weight=weight)
     node_colors, node_labels = [], {}
     for node in G:
         node_colors.append(colors[G.node[node]['label']])
         node_labels[node] = G.node[node]['text']
     pos = nxlayout.fruchterman_reingold_layout(
-        G, k = 1.5 / np.sqrt(len(G.nodes()))
+        G, k=1.5 / np.sqrt(len(G.nodes()))
     )
-    plt.figure(figsize = figsize)
+    plt.figure(figsize=figsize)
     if with_labels:
-        nx.draw(G, node_color = node_colors, pos = pos, labels = node_labels)
+        nx.draw(G, node_color=node_colors, pos=pos, labels=node_labels)
     else:
-        nx.draw(G, node_color = node_colors, pos = pos)
+        nx.draw(G, node_color=node_colors, pos=pos)
 
     return {
         'G': G,
@@ -657,9 +657,9 @@ def cluster_entity_linking(
         'person',
         'event',
     ],
-    cleaning = simple_textcleaning,
+    cleaning=simple_textcleaning,
     colors: List[str] = None,
-    stopwords = get_stopwords,
+    stopwords=get_stopwords,
     max_df: float = 1.0,
     min_df: int = 1,
     ngram: Tuple[int, int] = (2, 3),
@@ -738,7 +738,7 @@ def cluster_entity_linking(
         from fuzzywuzzy import fuzz
 
         sns.set()
-    except:
+    except BaseException:
         raise ModuleNotFoundError(
             'matplotlib, seaborn, networkx, fuzzywuzzy not installed. Please install it and try again.'
         )
@@ -752,7 +752,7 @@ def cluster_entity_linking(
     corpus = [string for string in corpus if len(string) > 5]
 
     if not colors:
-        colors = sns.color_palette(n_colors = len(accepted_entities) + 1)
+        colors = sns.color_palette(n_colors=len(accepted_entities) + 1)
     else:
         if len(colors) != (len(accepted_entities) + 1):
             raise ValueError(
@@ -762,13 +762,13 @@ def cluster_entity_linking(
     topic_model = topic_modeling_model(
         corpus,
         topic_decomposition,
-        ngram = ngram,
-        max_df = max_df,
-        min_df = min_df,
+        ngram=ngram,
+        max_df=max_df,
+        min_df=min_df,
     )
     topics = []
     for no, topic in enumerate(topic_model.comp.components_):
-        for i in topic.argsort()[: -topic_length - 1 : -1]:
+        for i in topic.argsort()[: -topic_length - 1: -1]:
             topics.append(topic_model.features[i])
 
     entities_cluster = {entity: [] for entity in accepted_entities}
@@ -826,7 +826,7 @@ def cluster_entity_linking(
             else:
                 attentions.extend(text_clean[i:index])
         transformed_text_clean = np.concatenate(
-            transformed_text_clean, axis = 0
+            transformed_text_clean, axis=0
         )
 
     DxT = transformed_text_clean
@@ -834,7 +834,7 @@ def cluster_entity_linking(
 
     G = nx.Graph()
     for i in range(DxT.shape[0]):
-        G.add_node(i, text = topics[i], label = topics[i])
+        G.add_node(i, text=topics[i], label=topics[i])
 
     len_dense = len(DxD)
     for i in range(len_dense):
@@ -843,22 +843,22 @@ def cluster_entity_linking(
                 continue
             if DxD[i, j] >= threshold:
                 weight = DxD[i, j]
-                G.add_edge(i, j, weight = weight)
+                G.add_edge(i, j, weight=weight)
 
     node_colors, node_labels = [], {}
     for node in G:
         node_colors.append(color_dict[G.node[node]['label']])
         node_labels[node] = G.node[node]['text']
     pos = nxlayout.fruchterman_reingold_layout(
-        G, k = 1.5 / np.sqrt(len(G.nodes()))
+        G, k=1.5 / np.sqrt(len(G.nodes()))
     )
-    f = plt.figure(figsize = figsize)
+    f = plt.figure(figsize=figsize)
     ax = f.add_subplot(1, 1, 1)
     for no, entity in enumerate(accepted_entities):
-        ax.plot([0], [0], color = colors[no], label = entity)
-    ax.plot([0], [0], color = colors[-1], label = 'topics')
+        ax.plot([0], [0], color=colors[no], label=entity)
+    ax.plot([0], [0], color=colors[-1], label='topics')
     nx.draw(
-        G, node_color = node_colors, pos = pos, labels = node_labels, ax = ax
+        G, node_color=node_colors, pos=pos, labels=node_labels, ax=ax
     )
     plt.legend()
     plt.tight_layout()

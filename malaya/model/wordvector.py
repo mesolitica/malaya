@@ -11,7 +11,7 @@ def counter_words(sentences):
     word_list = []
     num_lines, num_words = (0, 0)
     for i in sentences:
-        words = re.findall('[\\w\']+|[;:\-\(\)&.,!?"]', i)
+        words = re.findall('[\\w\']+|[;:\\-\\(\\)&.,!?"]', i)
         word_counter.update(words)
         word_list.extend(words)
         num_lines += 1
@@ -19,7 +19,7 @@ def counter_words(sentences):
     return word_counter, word_list, num_lines, num_words
 
 
-def build_dict(word_counter, vocab_size = 50000):
+def build_dict(word_counter, vocab_size=50000):
     count = [['PAD', 0], ['UNK', 1], ['START', 2], ['END', 3]]
     count.extend(word_counter.most_common(vocab_size))
     dictionary = dict()
@@ -32,7 +32,7 @@ def doc2num(word_list, dictionary):
     word_array = []
     for word in word_list:
         word_array.append(dictionary.get(word, 1))
-    return np.array(word_array, dtype = np.int32)
+    return np.array(word_array, dtype=np.int32)
 
 
 def build_word_array(sentences, vocab_size):
@@ -44,9 +44,9 @@ def build_word_array(sentences, vocab_size):
 
 def build_training_set(word_array):
     num_words = len(word_array)
-    x = np.zeros((num_words - 4, 4), dtype = np.int32)
-    y = np.zeros((num_words - 4, 1), dtype = np.int32)
-    shift = np.array([-2, -1, 1, 2], dtype = np.int32)
+    x = np.zeros((num_words - 4, 4), dtype=np.int32)
+    y = np.zeros((num_words - 4, 1), dtype=np.int32)
+    shift = np.array([-2, -1, 1, 2], dtype=np.int32)
     for idx in range(2, num_words - 2):
         y[idx - 2, 0] = word_array[idx]
         x[idx - 2, :] = word_array[idx + shift]
@@ -59,13 +59,13 @@ class Model:
         _graph = tf.Graph()
         with _graph.as_default():
             if g_params['optimizer'] != 'adam':
-                config = tf.ConfigProto(device_count = {'GPU': 0})
-                self.sess = tf.InteractiveSession(config = config)
+                config = tf.ConfigProto(device_count={'GPU': 0})
+                self.sess = tf.InteractiveSession(config=config)
             else:
                 self.sess = tf.InteractiveSession()
-            self.X = tf.placeholder(tf.int64, shape = [None, 4])
-            self.Y = tf.placeholder(tf.int64, shape = [None, 1])
-            w_m2, w_m1, w_p1, w_p2 = tf.unstack(self.X, axis = 1)
+            self.X = tf.placeholder(tf.int64, shape=[None, 4])
+            self.Y = tf.placeholder(tf.int64, shape=[None, 1])
+            w_m2, w_m1, w_p1, w_p2 = tf.unstack(self.X, axis=1)
             self.embed_weights = tf.Variable(
                 tf.random_uniform(
                     [g_params['vocab_size'], g_params['embed_size']],
@@ -81,7 +81,7 @@ class Model:
             hid_weights = tf.Variable(
                 tf.random_normal(
                     [g_params['embed_size'] * 4, g_params['hid_size']],
-                    stddev = g_params['hid_noise']
+                    stddev=g_params['hid_noise']
                     / (g_params['embed_size'] * 4) ** 0.5,
                 )
             )
@@ -90,7 +90,7 @@ class Model:
             self.nce_weights = tf.Variable(
                 tf.random_normal(
                     [g_params['vocab_size'], g_params['hid_size']],
-                    stddev = 1.0 / g_params['hid_size'] ** 0.5,
+                    stddev=1.0 / g_params['hid_size'] ** 0.5,
                 )
             )
             nce_bias = tf.Variable(tf.zeros([g_params['vocab_size']]))
@@ -98,18 +98,18 @@ class Model:
                 tf.nn.nce_loss(
                     self.nce_weights,
                     nce_bias,
-                    inputs = hid_out,
-                    labels = self.Y,
-                    num_sampled = g_params['neg_samples'],
-                    num_classes = g_params['vocab_size'],
-                    num_true = 1,
-                    remove_accidental_hits = True,
+                    inputs=hid_out,
+                    labels=self.Y,
+                    num_sampled=g_params['neg_samples'],
+                    num_classes=g_params['vocab_size'],
+                    num_true=1,
+                    remove_accidental_hits=True,
                 )
             )
             self.logits = tf.argmax(
-                tf.matmul(hid_out, self.nce_weights, transpose_b = True)
+                tf.matmul(hid_out, self.nce_weights, transpose_b=True)
                 + nce_bias,
-                axis = 1,
+                axis=1,
             )
             if g_params['optimizer'] == 'rmsprop':
                 self.optimizer = tf.train.RMSPropOptimizer(
@@ -137,26 +137,26 @@ class Model:
         for i in range(epoch):
             X, Y = shuffle(X, Y)
             pbar = tqdm(
-                range(0, len(X), batch_size), desc = 'train minibatch loop'
+                range(0, len(X), batch_size), desc='train minibatch loop'
             )
             for batch in pbar:
                 feed_dict = {
-                    self.X: X[batch : min(batch + batch_size, len(X))],
-                    self.Y: Y[batch : min(batch + batch_size, len(X))],
+                    self.X: X[batch: min(batch + batch_size, len(X))],
+                    self.Y: Y[batch: min(batch + batch_size, len(X))],
                 }
                 _, loss = self.sess.run(
-                    [self.optimizer, self.cost], feed_dict = feed_dict
+                    [self.optimizer, self.cost], feed_dict=feed_dict
                 )
-                pbar.set_postfix(cost = loss)
+                pbar.set_postfix(cost=loss)
 
             pbar = tqdm(
-                range(0, len(X_val), batch_size), desc = 'test minibatch loop'
+                range(0, len(X_val), batch_size), desc='test minibatch loop'
             )
             for batch in pbar:
                 feed_dict = {
-                    self.X: X_val[batch : min(batch + batch_size, len(X_val))],
-                    self.Y: Y_val[batch : min(batch + batch_size, len(X_val))],
+                    self.X: X_val[batch: min(batch + batch_size, len(X_val))],
+                    self.Y: Y_val[batch: min(batch + batch_size, len(X_val))],
                 }
-                loss = self.sess.run(self.cost, feed_dict = feed_dict)
-                pbar.set_postfix(cost = loss)
+                loss = self.sess.run(self.cost, feed_dict=feed_dict)
+                pbar.set_postfix(cost=loss)
         return self.embed_weights.eval(), self.nce_weights.eval()

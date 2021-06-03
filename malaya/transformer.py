@@ -46,7 +46,6 @@ def available_transformer():
 
 @check_type
 def load(model: str = 'electra', pool_mode: str = 'last', **kwargs):
-
     """
     Load transformer model.
 
@@ -76,7 +75,7 @@ def load(model: str = 'electra', pool_mode: str = 'last', **kwargs):
     -------
     result: model
         List of model classes:
-        
+
         * if `bert` in model, will return `malaya.transformers.bert.Model`.
         * if `xlnet` in model, will return `malaya.transformers.xlnet.Model`.
         * if `albert` in model, will return `malaya.transformers.albert.Model`.
@@ -99,22 +98,22 @@ def load(model: str = 'electra', pool_mode: str = 'last', **kwargs):
     if model in ['bert', 'tiny-bert']:
         from malaya.transformers.bert import load
 
-        return load(model = model, **kwargs)
+        return load(model=model, **kwargs)
     if model in ['albert', 'tiny-albert']:
         from malaya.transformers.albert import load
 
-        return load(model = model, **kwargs)
+        return load(model=model, **kwargs)
     if model in ['xlnet']:
         from malaya.transformers.xlnet import load
 
-        return load(model = model, pool_mode = pool_mode, **kwargs)
+        return load(model=model, pool_mode=pool_mode, **kwargs)
 
     if model in ['alxlnet']:
         from malaya.transformers.alxlnet import load
 
-        return load(model = model, pool_mode = pool_mode, **kwargs)
+        return load(model=model, pool_mode=pool_mode, **kwargs)
 
     if model in ['electra', 'small-electra']:
         from malaya.transformers.electra import load
 
-        return load(model = model, **kwargs)
+        return load(model=model, **kwargs)

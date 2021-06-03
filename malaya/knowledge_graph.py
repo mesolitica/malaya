@@ -31,7 +31,7 @@ def available_transformer():
     from malaya.function import describe_availability
 
     return describe_availability(
-        _transformer_availability, text = 'tested on 200k test set.'
+        _transformer_availability, text='tested on 200k test set.'
     )
 
 
@@ -48,9 +48,9 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
         * ``'small'`` - Transformer SMALL parameters.
         * ``'base'`` - Transformer BASE parameters.
         * ``'large'`` - Transformer LARGE parameters.
-        
+
     quantized : bool, optional (default=False)
-        if True, will load 8-bit quantized model. 
+        if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
 
     Returns
@@ -64,10 +64,10 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
         )
 
     return load_transformer.load(
-        module = 'knowledge-graph-generator',
-        model = model,
-        encoder = 'subword',
-        model_class = KnowledgeGraph,
-        quantized = quantized,
+        module='knowledge-graph-generator',
+        model=model,
+        encoder='subword',
+        model_class=KnowledgeGraph,
+        quantized=quantized,
         **kwargs
     )

@@ -10,7 +10,7 @@ import random
 
 
 class SkipGramCountVectorizer(CountVectorizer):
-    def __init__(self, skip = 1, **kwds):
+    def __init__(self, skip=1, **kwds):
         super(SkipGramCountVectorizer, self).__init__(**kwds)
         self.skip = skip
 
@@ -37,7 +37,7 @@ class SkipGramCountVectorizer(CountVectorizer):
             skip_grams.extend(sent_analyze(sent))
         return skip_grams
 
-    def _word_skip_grams(self, tokens, stop_words = None):
+    def _word_skip_grams(self, tokens, stop_words=None):
         if stop_words is not None:
             tokens = [w for w in tokens if w not in stop_words]
         min_n, max_n = self.ngram_range
@@ -58,14 +58,14 @@ class SkipGramCountVectorizer(CountVectorizer):
                 for i in range(n_original_tokens - n + 1):
                     head = [original_tokens[i]]
                     for skip_tail in combinations(
-                        original_tokens[i + 1 : i + n + skip], n - 1
+                        original_tokens[i + 1: i + n + skip], n - 1
                     ):
                         tokens_append(space_join(head + list(skip_tail)))
         return tokens
 
 
 class SkipGramTfidfVectorizer(TfidfVectorizer):
-    def __init__(self, skip = 1, **kwds):
+    def __init__(self, skip=1, **kwds):
         super(SkipGramTfidfVectorizer, self).__init__(**kwds)
         self.skip = skip
 
@@ -92,7 +92,7 @@ class SkipGramTfidfVectorizer(TfidfVectorizer):
             skip_grams.extend(sent_analyze(sent))
         return skip_grams
 
-    def _word_skip_grams(self, tokens, stop_words = None):
+    def _word_skip_grams(self, tokens, stop_words=None):
         if stop_words is not None:
             tokens = [w for w in tokens if w not in stop_words]
         min_n, max_n = self.ngram_range
@@ -113,7 +113,7 @@ class SkipGramTfidfVectorizer(TfidfVectorizer):
                 for i in range(n_original_tokens - n + 1):
                     head = [original_tokens[i]]
                     for skip_tail in combinations(
-                        original_tokens[i + 1 : i + n + skip], n - 1
+                        original_tokens[i + 1: i + n + skip], n - 1
                     ):
                         tokens_append(space_join(head + list(skip_tail)))
         return tokens
@@ -122,12 +122,12 @@ class SkipGramTfidfVectorizer(TfidfVectorizer):
 def skipgrams(
     sequence,
     vocabulary_size,
-    window_size = 4,
-    negative_samples = 1.0,
-    shuffle = True,
-    categorical = False,
-    sampling_table = None,
-    seed = None,
+    window_size=4,
+    negative_samples=1.0,
+    shuffle=True,
+    categorical=False,
+    sampling_table=None,
+    seed=None,
 ):
     couples = []
     labels = []

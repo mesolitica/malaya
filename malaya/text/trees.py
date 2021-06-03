@@ -25,7 +25,7 @@ class InternalTreebankNode(TreebankNode):
         for child in self.children:
             yield from child.leaves()
 
-    def convert(self, index = 0, nocache = False):
+    def convert(self, index=0, nocache=False):
         tree = self
         sublabels = [self.label]
 
@@ -37,10 +37,10 @@ class InternalTreebankNode(TreebankNode):
 
         children = []
         for child in tree.children:
-            children.append(child.convert(index = index))
+            children.append(child.convert(index=index))
             index = children[-1].right
 
-        return InternalParseNode(tuple(sublabels), children, nocache = nocache)
+        return InternalParseNode(tuple(sublabels), children, nocache=nocache)
 
 
 class LeafTreebankNode(TreebankNode):
@@ -57,7 +57,7 @@ class LeafTreebankNode(TreebankNode):
     def leaves(self):
         yield self
 
-    def convert(self, index = 0):
+    def convert(self, index=0):
         return LeafParseNode(index, self.tag, self.word)
 
 
@@ -66,7 +66,7 @@ class ParseNode(object):
 
 
 class InternalParseNode(ParseNode):
-    def __init__(self, label, children, nocache = False):
+    def __init__(self, label, children, nocache=False):
         assert isinstance(label, tuple)
         assert all(isinstance(sublabel, str) for sublabel in label)
         assert label
@@ -141,7 +141,7 @@ class LeafParseNode(ParseNode):
         return LeafTreebankNode(self.tag, self.word)
 
 
-def tree_from_str(treebank, strip_top = True, strip_spmrl_features = True):
+def tree_from_str(treebank, strip_top=True, strip_spmrl_features=True):
     # Features bounded by `##` may contain spaces, so if we strip the features
     # we need to do so prior to tokenization
     if strip_spmrl_features:

@@ -58,7 +58,6 @@ def available_wordvector():
 
 @check_type
 def load(model: str = 'wikipedia', **kwargs):
-
     """
     Return malaya.wordvector.WordVector object.
 
@@ -93,7 +92,6 @@ def load(model: str = 'wikipedia', **kwargs):
 class WordVector:
     @check_type
     def __init__(self, embed_matrix, dictionary: dict, **kwargs):
-
         """
         Parameters
         ----------
@@ -116,8 +114,8 @@ class WordVector:
                 self._x = tf.compat.v1.placeholder(
                     tf.float32, [None, self._embed_matrix.shape[1]]
                 )
-                normed_embedding = tf.nn.l2_normalize(self._embedding, axis = 1)
-                normed_array = tf.nn.l2_normalize(self._x, axis = 1)
+                normed_embedding = tf.nn.l2_normalize(self._embedding, axis=1)
+                normed_array = tf.nn.l2_normalize(self._x, axis=1)
                 self._cosine_similarity = tf.matmul(
                     normed_array, tf.transpose(normed_embedding, [1, 0])
                 )
@@ -138,7 +136,7 @@ class WordVector:
             if False, it will throw an exception if a word not in the dictionary.
         topn_soft: int, (default=5)
             if word not found in dictionary, will returned `topn_soft` size of similar size using jarowinkler.
-        
+
         Returns
         -------
         vector: np.array, 1D
@@ -187,7 +185,7 @@ class WordVector:
             import seaborn as sns
 
             sns.set()
-        except:
+        except BaseException:
             raise ModuleNotFoundError(
                 'matplotlib and seaborn not installed. Please install it and try again.'
             )
@@ -214,13 +212,13 @@ class WordVector:
             )
             labelled.append(label)
 
-        plt.figure(figsize = figsize)
+        plt.figure(figsize=figsize)
         g = sns.clustermap(
             embed,
-            cmap = 'Blues',
-            xticklabels = labelled,
-            yticklabels = labelled,
-            annot = annotate,
+            cmap='Blues',
+            xticklabels=labelled,
+            yticklabels=labelled,
+            annot=annotate,
         )
         plt.show()
         return embed, labelled
@@ -257,7 +255,7 @@ class WordVector:
             import seaborn as sns
 
             sns.set()
-        except:
+        except BaseException:
             raise ModuleNotFoundError(
                 'matplotlib and seaborn not installed. Please install it and try again.'
             )
@@ -271,11 +269,11 @@ class WordVector:
         for i in idx:
             cp_idx.extend(np.arange(i - plus_minus, i).tolist())
             cp_idx.extend(np.arange(i, i + plus_minus).tolist())
-        tsne = TSNE(n_components = 2, random_state = 0).fit_transform(
+        tsne = TSNE(n_components=2, random_state=0).fit_transform(
             self._embed_matrix[cp_idx]
         )
 
-        plt.figure(figsize = figsize)
+        plt.figure(figsize=figsize)
         plt.scatter(tsne[:, 0], tsne[:, 1])
         for label, x, y in zip(
             labels, tsne[: len(labels), 0], tsne[: len(labels), 1]
@@ -287,17 +285,17 @@ class WordVector:
             )
             plt.annotate(
                 label,
-                xy = (x, y),
-                xytext = (0, 0),
-                textcoords = 'offset points',
+                xy=(x, y),
+                xytext=(0, 0),
+                textcoords='offset points',
             )
         if centre:
             plt.annotate(
                 centre,
-                xy = (tsne[len(labels), 0], tsne[len(labels), 1]),
-                xytext = (0, 0),
-                textcoords = 'offset points',
-                color = 'red',
+                xy=(tsne[len(labels), 0], tsne[len(labels), 1]),
+                xytext=(0, 0),
+                textcoords='offset points',
+                color='red',
             )
         plt.xlim(
             tsne[: len(idx), 0].min() + handoff,
@@ -354,11 +352,11 @@ class WordVector:
             )
         return _Calculator(tokens).exp()
 
-    def _batch_process(self, batch, num_closest = 5, return_similarity = True):
-        top_k = tf.nn.top_k(self._cosine_similarity, k = num_closest)
+    def _batch_process(self, batch, num_closest=5, return_similarity=True):
+        top_k = tf.nn.top_k(self._cosine_similarity, k=num_closest)
         results = self._sess.run(
             top_k,
-            feed_dict = {self._x: batch, self._embedding: self._embed_matrix},
+            feed_dict={self._x: batch, self._embedding: self._embed_matrix},
         )
         indices = results.indices
         values = results.values
@@ -403,8 +401,8 @@ class WordVector:
         batches = np.array([self._calculate(eq) for eq in equations])
         return self._batch_process(
             batches,
-            num_closest = num_closest,
-            return_similarity = return_similarity,
+            num_closest=num_closest,
+            return_similarity=return_similarity,
         )
 
     @check_type
@@ -435,7 +433,7 @@ class WordVector:
         """
         calculated = self._calculate(equation)
         if return_similarity:
-            nn = NearestNeighbors(num_closest + 1, metric = metric).fit(
+            nn = NearestNeighbors(num_closest + 1, metric=metric).fit(
                 self._embed_matrix
             )
             distances, idx = nn.kneighbors(calculated.reshape((1, -1)))
@@ -502,8 +500,8 @@ class WordVector:
         batches = np.array([self.get_vector_by_name(w) for w in words])
         return self._batch_process(
             batches,
-            num_closest = num_closest,
-            return_similarity = return_similarity,
+            num_closest=num_closest,
+            return_similarity=return_similarity,
         )
 
     @check_type
@@ -533,7 +531,7 @@ class WordVector:
         word_list: list of nearest words
         """
         if return_similarity:
-            nn = NearestNeighbors(num_closest + 1, metric = metric).fit(
+            nn = NearestNeighbors(num_closest + 1, metric=metric).fit(
                 self._embed_matrix
             )
             distances, idx = nn.kneighbors(
@@ -559,7 +557,7 @@ class WordVector:
 
     def closest_row_indices(self, wv, num, metric):
         dist_array = np.ravel(
-            cdist(self._embed_matrix, wv.reshape((1, -1)), metric = metric)
+            cdist(self._embed_matrix, wv.reshape((1, -1)), metric=metric)
         )
         sorted_indices = np.argsort(dist_array)
         return sorted_indices[:num]
@@ -615,7 +613,7 @@ class WordVector:
         embed_2d: TSNE decomposition
         word_list: words in between `start` and `end`.
         """
-        tsne = TSNE(n_components = 2)
+        tsne = TSNE(n_components=2)
         embed_2d = tsne.fit_transform(self._embed_matrix[start:end, :])
         word_list = []
         for i in range(start, end):
@@ -634,7 +632,6 @@ class WordVector:
         node_color: str = '#72bbd0',
         node_factor: int = 50,
     ):
-
         """
         plot a social network based on word given
 
@@ -666,7 +663,7 @@ class WordVector:
             import pandas as pd
             import networkx as nx
             import matplotlib.pyplot as plt
-        except:
+        except BaseException:
             raise ModuleNotFoundError(
                 'matplotlib, networkx and pandas not installed. Please install it and try again.'
             )
@@ -674,10 +671,10 @@ class WordVector:
         def get_follower(
             centre,
             top,
-            max_depth = depth,
-            current_depth = 0,
-            accepted_list = [],
-            data = [],
+            max_depth=depth,
+            current_depth=0,
+            accepted_list=[],
+            data=[],
         ):
             if current_depth == max_depth:
                 return data, accepted_list
@@ -687,7 +684,7 @@ class WordVector:
                 accepted_list.append(centre)
 
             closest = n_closest(
-                centre, num_closest = num_closest, return_similarity = False
+                centre, num_closest=num_closest, return_similarity=False
             )
 
             d = {
@@ -706,10 +703,10 @@ class WordVector:
                     data, accepted_list = get_follower(
                         fid,
                         fid,
-                        max_depth = max_depth,
-                        current_depth = cd + 1,
-                        accepted_list = accepted_list,
-                        data = data,
+                        max_depth=max_depth,
+                        current_depth=cd + 1,
+                        accepted_list=accepted_list,
+                        data=data,
                     )
 
             return data, accepted_list
@@ -736,7 +733,7 @@ class WordVector:
 
         for i in range(df.shape[0]):
             size = df.power.iloc[i] * node_factor
-            G.add_node(df.centre.iloc[i], name = df.centre.iloc[i], size = size)
+            G.add_node(df.centre.iloc[i], name=df.centre.iloc[i], size=size)
 
         for i in range(df.shape[0]):
             for k in df.true_followers.iloc[i]:
@@ -746,15 +743,15 @@ class WordVector:
         names = [G.node[node]['name'] for node in G]
 
         labeldict = dict(zip(G.nodes(), names))
-        plt.figure(figsize = figsize)
+        plt.figure(figsize=figsize)
         plt.axis('equal')
         nx.draw(
             G,
-            node_color = node_color,
-            labels = labeldict,
-            with_labels = 1,
-            node_size = sizes,
-            pos = nx.spring_layout(G, k = min_distance, iterations = iteration),
+            node_color=node_color,
+            labels=labeldict,
+            with_labels=1,
+            node_size=sizes,
+            pos=nx.spring_layout(G, k=min_distance, iterations=iteration),
         )
         plt.show()
         return G

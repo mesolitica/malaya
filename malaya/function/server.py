@@ -9,7 +9,7 @@ import mimetypes
 from http import server
 
 
-def generate_handler(html, files = None):
+def generate_handler(html, files=None):
     if files is None:
         files = {}
 
@@ -36,7 +36,7 @@ def generate_handler(html, files = None):
     return MyHandler
 
 
-def find_open_port(ip, port, n = 50):
+def find_open_port(ip, port, n=50):
     """
     Find an open port near the specified port
     """
@@ -55,13 +55,13 @@ def find_open_port(ip, port, n = 50):
 
 def serve(
     html,
-    ip = '127.0.0.1',
-    port = 8888,
-    n_retries = 50,
-    files = None,
-    ipython_warning = False,
-    open_browser = True,
-    http_server = None,
+    ip='127.0.0.1',
+    port=8888,
+    n_retries=50,
+    files=None,
+    ipython_warning=False,
+    open_browser=True,
+    http_server=None,
 ):
     """
     Start a server serving the given HTML, and (optionally) open a browser.
@@ -102,8 +102,8 @@ def serve(
     sys.stdout.flush()
 
     if open_browser:
-        b = lambda: webbrowser.open('http://{0}:{1}'.format(ip, port))
-        threading.Thread(target = b).start()
+        def b(): return webbrowser.open('http://{0}:{1}'.format(ip, port))
+        threading.Thread(target=b).start()
 
     try:
         srvr.serve_forever()

@@ -24,7 +24,7 @@ import tensorflow as tf
 ############################### SHAPE UTILS ####################################
 
 
-def get_shape_list(tensor, expected_rank = None, name = None):
+def get_shape_list(tensor, expected_rank=None, name=None):
     """Returns a list of the shape of tensor, preferring static dimensions.
 
   Args:
@@ -92,7 +92,7 @@ def reshape_from_matrix(output_tensor, orig_shape_list):
     return tf.reshape(output_tensor, orig_dims + [width])
 
 
-def assert_rank(tensor, expected_rank, name = None):
+def assert_rank(tensor, expected_rank, name=None):
     """Raises an exception if the tensor rank is not of the expected rank.
 
   Args:
@@ -131,9 +131,9 @@ def assert_rank(tensor, expected_rank, name = None):
 ############################### DENSE LAYERS ###################################
 
 
-def create_initializer(initializer_range = 0.02):
+def create_initializer(initializer_range=0.02):
     """Creates a `truncated_normal_initializer` with the given range."""
-    return tf.compat.v1.truncated_normal_initializer(stddev = initializer_range)
+    return tf.compat.v1.truncated_normal_initializer(stddev=initializer_range)
 
 
 class Dense3dLayer(tf.compat.v1.layers.Layer):
@@ -145,9 +145,9 @@ class Dense3dLayer(tf.compat.v1.layers.Layer):
         size_per_head,
         initializer,
         activation,
-        name = None,
-        head_first = False,
-        use_bias = True,
+        name=None,
+        head_first=False,
+        use_bias=True,
     ):
         """Constructor for dense layer with 3D kernel.
 
@@ -160,7 +160,7 @@ class Dense3dLayer(tf.compat.v1.layers.Layer):
       head_first: Whether to output head dimension before or after sequence dim.
       use_bias: Whether the layer uses a bias vector.
     """
-        super(Dense3dLayer, self).__init__(name = name)
+        super(Dense3dLayer, self).__init__(name=name)
         self.num_attention_heads = num_attention_heads
         self.size_per_head = size_per_head
         self.initializer = initializer
@@ -183,12 +183,12 @@ class Dense3dLayer(tf.compat.v1.layers.Layer):
         last_dim = get_shape_list(input_tensor)[-1]
         if self.w is None:
             self.w = tf.compat.v1.get_variable(
-                name = 'kernel',
-                shape = [
+                name='kernel',
+                shape=[
                     last_dim,
                     self.num_attention_heads * self.size_per_head,
                 ],
-                initializer = self.initializer,
+                initializer=self.initializer,
             )
             self.initializer = None
             self._trainable_weights.append(self.w)
@@ -203,9 +203,9 @@ class Dense3dLayer(tf.compat.v1.layers.Layer):
         if self.use_bias:
             if self.b is None:
                 self.b = tf.compat.v1.get_variable(
-                    name = 'bias',
-                    shape = [self.num_attention_heads * self.size_per_head],
-                    initializer = tf.zeros_initializer,
+                    name='bias',
+                    shape=[self.num_attention_heads * self.size_per_head],
+                    initializer=tf.zeros_initializer,
                 )
                 self._trainable_weights.append(self.b)
             if self.head_first:
@@ -233,8 +233,8 @@ class Dense3dProjLayer(tf.compat.v1.layers.Layer):
         size_per_head,
         initializer,
         activation,
-        name = None,
-        use_bias = True,
+        name=None,
+        use_bias=True,
     ):
         """Constructor for dense layer with 3D kernel for projection.
 
@@ -246,7 +246,7 @@ class Dense3dProjLayer(tf.compat.v1.layers.Layer):
       name: The name scope of this layer.
       use_bias: Whether the layer uses a bias vector.
     """
-        super(Dense3dProjLayer, self).__init__(name = name)
+        super(Dense3dProjLayer, self).__init__(name=name)
         self.num_attention_heads = num_attention_heads
         self.size_per_head = size_per_head
         self.initializer = initializer
@@ -269,9 +269,9 @@ class Dense3dProjLayer(tf.compat.v1.layers.Layer):
         hidden_size = self.num_attention_heads * self.size_per_head
         if self.w is None:
             self.w = tf.compat.v1.get_variable(
-                name = 'kernel',
-                shape = [hidden_size, hidden_size],
-                initializer = self.initializer,
+                name='kernel',
+                shape=[hidden_size, hidden_size],
+                initializer=self.initializer,
             )
             self.initializer = None
             self._trainable_weights.append(self.w)
@@ -283,9 +283,9 @@ class Dense3dProjLayer(tf.compat.v1.layers.Layer):
         if self.use_bias:
             if self.b is None:
                 self.b = tf.compat.v1.get_variable(
-                    name = 'bias',
-                    shape = [hidden_size],
-                    initializer = tf.zeros_initializer,
+                    name='bias',
+                    shape=[hidden_size],
+                    initializer=tf.zeros_initializer,
                 )
                 self._trainable_weights.append(self.b)
             ret += self.b
@@ -300,7 +300,7 @@ class Dense2dLayer(tf.compat.v1.layers.Layer):
     """A dense layer with 2D kernel."""
 
     def __init__(
-        self, output_size, initializer, activation, name = None, use_bias = True
+        self, output_size, initializer, activation, name=None, use_bias=True
     ):
         """Constructor for dense layer with 2D kernel.
 
@@ -311,7 +311,7 @@ class Dense2dLayer(tf.compat.v1.layers.Layer):
       name: The name scope of this layer.
       use_bias: Whether the layer uses a bias vector.
     """
-        super(Dense2dLayer, self).__init__(name = name)
+        super(Dense2dLayer, self).__init__(name=name)
         self.output_size = output_size
         self.initializer = initializer
         self.activation = activation
@@ -332,9 +332,9 @@ class Dense2dLayer(tf.compat.v1.layers.Layer):
         if self.w is None:
             last_dim = get_shape_list(input_tensor)[-1]
             self.w = tf.compat.v1.get_variable(
-                name = 'kernel',
-                shape = [last_dim, self.output_size],
-                initializer = self.initializer,
+                name='kernel',
+                shape=[last_dim, self.output_size],
+                initializer=self.initializer,
             )
             self.initializer = None
             self._trainable_weights.append(self.w)
@@ -343,9 +343,9 @@ class Dense2dLayer(tf.compat.v1.layers.Layer):
         if self.use_bias:
             if self.b is None:
                 self.b = tf.compat.v1.get_variable(
-                    name = 'bias',
-                    shape = [self.output_size],
-                    initializer = tf.zeros_initializer,
+                    name='bias',
+                    shape=[self.output_size],
+                    initializer=tf.zeros_initializer,
                 )
                 self._trainable_weights.append(self.b)
             ret += self.b
@@ -413,7 +413,7 @@ def get_activation(activation_string):
 ########################## NORM & DROPOUT LAYERS ###############################
 
 
-def dropout(input_tensor, dropout_prob, training = True):
+def dropout(input_tensor, dropout_prob, training=True):
     """Perform dropout.
 
   Args:
@@ -429,15 +429,15 @@ def dropout(input_tensor, dropout_prob, training = True):
     if not training or dropout_prob is None or dropout_prob == 0.0:
         return input_tensor
 
-    output = tf.nn.dropout(input_tensor, rate = dropout_prob)
+    output = tf.nn.dropout(input_tensor, rate=dropout_prob)
     return output
 
 
 class NormLayer(tf.compat.v1.layers.Layer):
     """Replacement for contrib_layers.layer_norm."""
 
-    def __init__(self, name = 'LayerNorm'):
-        super(NormLayer, self).__init__(name = name)
+    def __init__(self, name='LayerNorm'):
+        super(NormLayer, self).__init__(name=name)
         self.beta = None
         self.gamma = None
 
@@ -453,23 +453,23 @@ class NormLayer(tf.compat.v1.layers.Layer):
         if self.beta is None:
             self.beta = tf.compat.v1.get_variable(
                 'beta',
-                shape = params_shape,
-                dtype = dtype,
-                initializer = tf.zeros_initializer(),
-                trainable = True,
+                shape=params_shape,
+                dtype=dtype,
+                initializer=tf.zeros_initializer(),
+                trainable=True,
             )
             self._trainable_weights.append(self.beta)
         if self.gamma is None:
             self.gamma = tf.compat.v1.get_variable(
                 'gamma',
-                shape = params_shape,
-                dtype = dtype,
-                initializer = tf.ones_initializer(),
-                trainable = True,
+                shape=params_shape,
+                dtype=dtype,
+                initializer=tf.ones_initializer(),
+                trainable=True,
             )
             self._trainable_weights.append(self.gamma)
         # Compute norm along last axis
-        mean, variance = tf.nn.moments(inputs, [norm_axis], keepdims = True)
+        mean, variance = tf.nn.moments(inputs, [norm_axis], keepdims=True)
         # Compute layer normalization using the batch_normalization function.
         # Note that epsilon must be increased for float16 due to the limited
         # representable range.
@@ -478,9 +478,9 @@ class NormLayer(tf.compat.v1.layers.Layer):
             inputs,
             mean,
             variance,
-            offset = self.beta,
-            scale = self.gamma,
-            variance_epsilon = variance_epsilon,
+            offset=self.beta,
+            scale=self.gamma,
+            variance_epsilon=variance_epsilon,
         )
         tf.reshape(outputs, inputs_shape)
         # outputs.set_shape(inputs_shape)
@@ -498,15 +498,15 @@ class EmbeddingLayer(tf.compat.v1.layers.Layer):
         vocab_size,
         emb_dim,
         initializer,
-        scale_emb = False,
-        use_token_type = False,
-        num_token_types = 16,
-        use_position_embeddings = True,
-        max_position_embeddings = 4096,
-        dropout_prob = 0.0,
-        name = 'embeddings',
+        scale_emb=False,
+        use_token_type=False,
+        num_token_types=16,
+        use_position_embeddings=True,
+        max_position_embeddings=4096,
+        dropout_prob=0.0,
+        name='embeddings',
     ):
-        super(EmbeddingLayer, self).__init__(name = name)
+        super(EmbeddingLayer, self).__init__(name=name)
         self.vocab_size = vocab_size
         self.emb_dim = emb_dim
         self.scale_emb = scale_emb
@@ -518,8 +518,8 @@ class EmbeddingLayer(tf.compat.v1.layers.Layer):
             self.word_embeddings = tf.compat.v1.get_variable(
                 'word_embeddings',
                 [vocab_size, emb_dim],
-                dtype = tf.float32,
-                initializer = initializer,
+                dtype=tf.float32,
+                initializer=initializer,
             )
             self._trainable_weights.append(self.word_embeddings)
 
@@ -527,8 +527,8 @@ class EmbeddingLayer(tf.compat.v1.layers.Layer):
                 self.token_type_table = tf.compat.v1.get_variable(
                     'token_type_embeddings',
                     [num_token_types, emb_dim],
-                    dtype = tf.float32,
-                    initializer = initializer,
+                    dtype=tf.float32,
+                    initializer=initializer,
                 )
                 self._trainable_weights.append(self.token_type_table)
             else:
@@ -538,8 +538,8 @@ class EmbeddingLayer(tf.compat.v1.layers.Layer):
                 self.position_embeddings = tf.compat.v1.get_variable(
                     'position_embeddings',
                     [max_position_embeddings, emb_dim],
-                    dtype = tf.float32,
-                    initializer = initializer,
+                    dtype=tf.float32,
+                    initializer=initializer,
                 )
                 self._trainable_weights.append(self.position_embeddings)
             else:
@@ -549,16 +549,16 @@ class EmbeddingLayer(tf.compat.v1.layers.Layer):
         self,
         input_ids,
         seq_length,
-        start_pos = 0,
-        token_type_ids = None,
-        training = None,
+        start_pos=0,
+        token_type_ids=None,
+        training=None,
     ):
         if input_ids is None:
             return None
 
         # subtoken embedding
         output = tf.nn.embedding_lookup(
-            params = self.word_embeddings, ids = input_ids
+            params=self.word_embeddings, ids=input_ids
         )
 
         if self.scale_emb:
@@ -568,7 +568,7 @@ class EmbeddingLayer(tf.compat.v1.layers.Layer):
             # This vocab will be small so we always do one-hot here, since it is
             # always faster for a small vocabulary.
             one_hot_ids = tf.one_hot(
-                token_type_ids, depth = self.num_token_types
+                token_type_ids, depth=self.num_token_types
             )
             token_type_embeddings = tf.tensordot(
                 one_hot_ids, self.token_type_table, 1
@@ -588,10 +588,10 @@ class EmbeddingLayer(tf.compat.v1.layers.Layer):
                 [start_pos, 0],
                 [seq_length, self.emb_dim],
             )
-            output += tf.expand_dims(position_embeddings, axis = 0)
+            output += tf.expand_dims(position_embeddings, axis=0)
 
         if training and self.dropout_prob > 0:
-            output = tf.nn.dropout(output, rate = self.dropout_prob)
+            output = tf.nn.dropout(output, rate=self.dropout_prob)
         return output
 
     def linear(self, x):
@@ -610,14 +610,14 @@ class EmbeddingLayer(tf.compat.v1.layers.Layer):
 ########################## TPU/CHECKPOINT UTILS ################################
 
 
-def get_estimator(config, model_fn, keep_checkpoint_max = 10):
+def get_estimator(config, model_fn, keep_checkpoint_max=10):
     """Create TPUEstimator object for given config and model_fn."""
     tpu_cluster_resolver = None
     if config['use_tpu'] and config['tpu_name']:
         tpu_cluster_resolver = tf.distribute.cluster_resolver.TPUClusterResolver(
             config['tpu_name'],
-            zone = config['tpu_zone'],
-            project = config['gcp_project'],
+            zone=config['tpu_zone'],
+            project=config['gcp_project'],
         )
 
     # Batch size book-keeping
@@ -639,24 +639,24 @@ def get_estimator(config, model_fn, keep_checkpoint_max = 10):
         sliced_eval_mode = (
             tf.compat.v1.estimator.tpu.InputPipelineConfig.PER_HOST_V1
         )
-        distribute_strategy = tf.distribute.MirroredStrategy(devices = None)
+        distribute_strategy = tf.distribute.MirroredStrategy(devices=None)
         effective_train_batch_size *= distribute_strategy.num_replicas_in_sync
         # effective_eval_batch_size *= distribute_strategy.num_replicas_in_sync
 
     is_per_host = tf.compat.v1.estimator.tpu.InputPipelineConfig.PER_HOST_V2
     run_config = tf.compat.v1.estimator.tpu.RunConfig(
-        cluster = tpu_cluster_resolver,
-        master = config['master'],
-        model_dir = config['output_dir'],
-        save_checkpoints_steps = config['save_checkpoints_steps'],
-        keep_checkpoint_max = keep_checkpoint_max,
-        train_distribute = distribute_strategy,
-        tpu_config = tf.compat.v1.estimator.tpu.TPUConfig(
-            tpu_job_name = config['tpu_job_name'],
-            iterations_per_loop = config['iterations_per_loop'],
-            num_shards = config['num_tpu_cores'],
-            per_host_input_for_training = is_per_host,
-            eval_training_input_configuration = sliced_eval_mode,
+        cluster=tpu_cluster_resolver,
+        master=config['master'],
+        model_dir=config['output_dir'],
+        save_checkpoints_steps=config['save_checkpoints_steps'],
+        keep_checkpoint_max=keep_checkpoint_max,
+        train_distribute=distribute_strategy,
+        tpu_config=tf.compat.v1.estimator.tpu.TPUConfig(
+            tpu_job_name=config['tpu_job_name'],
+            iterations_per_loop=config['iterations_per_loop'],
+            num_shards=config['num_tpu_cores'],
+            per_host_input_for_training=is_per_host,
+            eval_training_input_configuration=sliced_eval_mode,
         ),
     )
 
@@ -671,8 +671,8 @@ def get_estimator(config, model_fn, keep_checkpoint_max = 10):
         }
         vars_to_warm_start = '({})'.format('|'.join(ckpt_var_list.keys()))
         warm_start_settings = tf.estimator.WarmStartSettings(
-            ckpt_to_initialize_from = config['init_checkpoint'],
-            vars_to_warm_start = vars_to_warm_start,
+            ckpt_to_initialize_from=config['init_checkpoint'],
+            vars_to_warm_start=vars_to_warm_start,
         )
     else:
         ckpt_var_list = {}
@@ -681,12 +681,12 @@ def get_estimator(config, model_fn, keep_checkpoint_max = 10):
 
     # If no TPU, this will fall back to normal Estimator on CPU or GPU.
     estimator = tf.compat.v1.estimator.tpu.TPUEstimator(
-        use_tpu = config['use_tpu'],
-        model_fn = model_fn,
-        config = run_config,
-        train_batch_size = config_train_batch_size,
-        eval_batch_size = config_eval_batch_size,
-        warm_start_from = warm_start_settings,
+        use_tpu=config['use_tpu'],
+        model_fn=model_fn,
+        config=run_config,
+        train_batch_size=config_train_batch_size,
+        eval_batch_size=config_eval_batch_size,
+        warm_start_from=warm_start_settings,
     )
 
     # assign batch sizes
@@ -741,7 +741,7 @@ def add_scalars_to_summary(summary_dir, scalar_tensors_dict):
     }
 
     def host_call_fn(**kwargs):
-        writer = tf.summary.create_file_writer(summary_dir, max_queue = 1000)
+        writer = tf.summary.create_file_writer(summary_dir, max_queue=1000)
         always_record = tf.summary.record_if(True)
         with writer.as_default(), always_record:
             for name, scalar in kwargs.items():

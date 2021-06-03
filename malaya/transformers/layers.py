@@ -26,16 +26,16 @@ from . import utils, variables
 
 def layer_norm(
     inputs,
-    center = True,
-    scale = True,
-    activation_fn = None,
-    reuse = None,
-    variables_collections = None,
-    outputs_collections = None,
-    trainable = True,
-    begin_norm_axis = 1,
-    begin_params_axis = -1,
-    scope = None,
+    center=True,
+    scale=True,
+    activation_fn=None,
+    reuse=None,
+    variables_collections=None,
+    outputs_collections=None,
+    trainable=True,
+    begin_norm_axis=1,
+    begin_params_axis=-1,
+    scope=None,
 ):
     """Adds a Layer Normalization layer.
   Based on the paper:
@@ -87,7 +87,7 @@ def layer_norm(
       graph build time.
   """
     with variable_scope.variable_scope(
-        scope, 'LayerNorm', [inputs], reuse = reuse
+        scope, 'LayerNorm', [inputs], reuse=reuse
     ) as sc:
         inputs = ops.convert_to_tensor(inputs)
         inputs_shape = inputs.shape
@@ -117,11 +117,11 @@ def layer_norm(
             )
             beta = variables.model_variable(
                 'beta',
-                shape = params_shape,
-                dtype = dtype,
-                initializer = init_ops.zeros_initializer(),
-                collections = beta_collections,
-                trainable = trainable,
+                shape=params_shape,
+                dtype=dtype,
+                initializer=init_ops.zeros_initializer(),
+                collections=beta_collections,
+                trainable=trainable,
             )
         if scale:
             gamma_collections = utils.get_variable_collections(
@@ -129,24 +129,24 @@ def layer_norm(
             )
             gamma = variables.model_variable(
                 'gamma',
-                shape = params_shape,
-                dtype = dtype,
-                initializer = init_ops.ones_initializer(),
-                collections = gamma_collections,
-                trainable = trainable,
+                shape=params_shape,
+                dtype=dtype,
+                initializer=init_ops.ones_initializer(),
+                collections=gamma_collections,
+                trainable=trainable,
             )
         # Calculate the moments on the last axis (layer activations).
         norm_axes = list(range(begin_norm_axis, inputs_rank))
-        mean, variance = nn.moments(inputs, norm_axes, keep_dims = True)
+        mean, variance = nn.moments(inputs, norm_axes, keep_dims=True)
         # Compute layer normalization using the batch_normalization function.
         variance_epsilon = 1e-12
         outputs = nn.batch_normalization(
             inputs,
             mean,
             variance,
-            offset = beta,
-            scale = gamma,
-            variance_epsilon = variance_epsilon,
+            offset=beta,
+            scale=gamma,
+            variance_epsilon=variance_epsilon,
         )
         outputs.set_shape(inputs_shape)
         if activation_fn is not None:

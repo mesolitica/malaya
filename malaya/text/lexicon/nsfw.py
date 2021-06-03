@@ -12,7 +12,6 @@ class Lexicon:
 
     @check_type
     def predict(self, strings: List[str]):
-
         """
         classify list of strings.
 

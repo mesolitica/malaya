@@ -70,10 +70,10 @@ class InputFeatures(object):
         p_mask,
         segment_ids,
         paragraph_len,
-        cls_index = None,
-        start_position = None,
-        end_position = None,
-        is_impossible = None,
+        cls_index=None,
+        start_position=None,
+        end_position=None,
+        is_impossible=None,
     ):
         self.unique_id = unique_id
         self.example_index = example_index
@@ -98,10 +98,10 @@ class SquadExample(object):
         self,
         question_text,
         paragraph_text,
-        orig_answer_text = None,
-        start_position = None,
-        end_position = None,
-        is_impossible = False,
+        orig_answer_text=None,
+        start_position=None,
+        end_position=None,
+        is_impossible=False,
     ):
         self.question_text = question_text
         self.paragraph_text = paragraph_text
@@ -114,7 +114,7 @@ class SquadExample(object):
         return self.__dict__
 
 
-def _convert_index(index, pos, m = None, is_start = True):
+def _convert_index(index, pos, m=None, is_start=True):
     """Converts index."""
     if index[pos] is not None:
         return index[pos]
@@ -176,16 +176,16 @@ def _check_is_max_context(doc_spans, cur_span_index, position):
 def convert_examples_to_features_xlnet(
     examples,
     tokenizer,
-    max_seq_length = 384,
-    doc_stride = 128,
-    max_query_length = 64,
-    is_training = False,
+    max_seq_length=384,
+    doc_stride=128,
+    max_query_length=64,
+    is_training=False,
 ):
 
     cnt_pos, cnt_neg = 0, 0
     unique_id = 1000000000
     max_N, max_M = 1024, 1024
-    f = np.zeros((max_N, max_M), dtype = np.float32)
+    f = np.zeros((max_N, max_M), dtype=np.float32)
     features = []
 
     for n in range(len(examples)):
@@ -193,7 +193,7 @@ def convert_examples_to_features_xlnet(
         example = examples[n]
 
         query_tokens = encode_ids(
-            tokenizer, preprocess_text(example.question_text, lower = False)
+            tokenizer, preprocess_text(example.question_text, lower=False)
         )
 
         if len(query_tokens) > max_query_length:
@@ -201,7 +201,7 @@ def convert_examples_to_features_xlnet(
 
         paragraph_text = example.paragraph_text
         para_tokens = encode_pieces(
-            tokenizer, preprocess_text(example.paragraph_text, lower = False)
+            tokenizer, preprocess_text(example.paragraph_text, lower=False)
         )
 
         chartok_to_tok_index = []
@@ -220,7 +220,7 @@ def convert_examples_to_features_xlnet(
         if N > max_N or M > max_M:
             max_N = max(N, max_N)
             max_M = max(M, max_M)
-            f = np.zeros((max_N, max_M), dtype = np.float32)
+            f = np.zeros((max_N, max_M), dtype=np.float32)
             gc.collect()
 
         g = {}
@@ -245,8 +245,8 @@ def convert_examples_to_features_xlnet(
                     if (
                         preprocess_text(
                             paragraph_text[i],
-                            lower = False,
-                            remove_space = False,
+                            lower=False,
+                            remove_space=False,
                         )
                         == tok_cat_text[j]
                         and f_prev + 1 > f[i, j]
@@ -288,10 +288,10 @@ def convert_examples_to_features_xlnet(
             start_chartok_pos = tok_start_to_chartok_index[i]
             end_chartok_pos = tok_end_to_chartok_index[i]
             start_orig_pos = _convert_index(
-                chartok_to_orig_index, start_chartok_pos, N, is_start = True
+                chartok_to_orig_index, start_chartok_pos, N, is_start=True
             )
             end_orig_pos = _convert_index(
-                chartok_to_orig_index, end_chartok_pos, N, is_start = False
+                chartok_to_orig_index, end_chartok_pos, N, is_start=False
             )
 
             tok_start_to_orig_index.append(start_orig_pos)
@@ -309,12 +309,12 @@ def convert_examples_to_features_xlnet(
             end_position = start_position + len(example.orig_answer_text) - 1
 
             start_chartok_pos = _convert_index(
-                orig_to_chartok_index, start_position, is_start = True
+                orig_to_chartok_index, start_position, is_start=True
             )
             tok_start_position = chartok_to_tok_index[start_chartok_pos]
 
             end_chartok_pos = _convert_index(
-                orig_to_chartok_index, end_position, is_start = False
+                orig_to_chartok_index, end_position, is_start=False
             )
             tok_end_position = chartok_to_tok_index[end_chartok_pos]
             assert tok_start_position <= tok_end_position
@@ -334,7 +334,7 @@ def convert_examples_to_features_xlnet(
             length = len(all_doc_tokens) - start_offset
             if length > max_tokens_for_doc:
                 length = max_tokens_for_doc
-            doc_spans.append(_DocSpan(start = start_offset, length = length))
+            doc_spans.append(_DocSpan(start=start_offset, length=length))
             if start_offset + length == len(all_doc_tokens):
                 break
             start_offset += min(length, doc_stride)
@@ -430,7 +430,7 @@ def convert_examples_to_features_xlnet(
                 if is_training and not span_is_impossible:
                     pieces = [
                         tokenizer.IdToPiece(token)
-                        for token in tokens[start_position : (end_position + 1)]
+                        for token in tokens[start_position: (end_position + 1)]
                     ]
                     answer_text = tokenizer.DecodePieces(pieces)
             if is_training:
@@ -439,22 +439,22 @@ def convert_examples_to_features_xlnet(
                 feat_example_index = example_index
 
             feature = InputFeatures(
-                unique_id = unique_id,
-                example_index = feat_example_index,
-                doc_span_index = doc_span_index,
-                tok_start_to_orig_index = cur_tok_start_to_orig_index,
-                tok_end_to_orig_index = cur_tok_end_to_orig_index,
-                token_is_max_context = token_is_max_context,
-                tokens = [tokenizer.IdToPiece(x) for x in tokens],
-                input_ids = input_ids,
-                input_mask = input_mask,
-                p_mask = p_mask,
-                segment_ids = segment_ids,
-                paragraph_len = paragraph_len,
-                cls_index = cls_index,
-                start_position = start_position,
-                end_position = end_position,
-                is_impossible = span_is_impossible,
+                unique_id=unique_id,
+                example_index=feat_example_index,
+                doc_span_index=doc_span_index,
+                tok_start_to_orig_index=cur_tok_start_to_orig_index,
+                tok_end_to_orig_index=cur_tok_end_to_orig_index,
+                token_is_max_context=token_is_max_context,
+                tokens=[tokenizer.IdToPiece(x) for x in tokens],
+                input_ids=input_ids,
+                input_mask=input_mask,
+                p_mask=p_mask,
+                segment_ids=segment_ids,
+                paragraph_len=paragraph_len,
+                cls_index=cls_index,
+                start_position=start_position,
+                end_position=end_position,
+                is_impossible=span_is_impossible,
             )
 
             features.append(feature)
@@ -470,18 +470,18 @@ def convert_examples_to_features_xlnet(
 def convert_examples_to_features_bert(
     examples,
     tokenizer,
-    max_seq_length = 384,
-    doc_stride = 128,
-    max_query_length = 64,
-    is_training = False,
-    do_lower_case = False,
+    max_seq_length=384,
+    doc_stride=128,
+    max_query_length=64,
+    is_training=False,
+    do_lower_case=False,
 ):
     """Loads a data file into a list of `InputBatch`s."""
 
     cnt_pos, cnt_neg = 0, 0
     unique_id = 1000000000
     max_n, max_m = 1024, 1024
-    f = np.zeros((max_n, max_m), dtype = np.float32)
+    f = np.zeros((max_n, max_m), dtype=np.float32)
     features = []
 
     for n in range(len(examples)):
@@ -490,7 +490,7 @@ def convert_examples_to_features_bert(
 
         query_tokens = encode_ids(
             tokenizer.sp_model,
-            preprocess_text(example.question_text, lower = do_lower_case),
+            preprocess_text(example.question_text, lower=do_lower_case),
         )
 
         if len(query_tokens) > max_query_length:
@@ -499,8 +499,8 @@ def convert_examples_to_features_bert(
         paragraph_text = example.paragraph_text
         para_tokens = encode_pieces(
             tokenizer.sp_model,
-            preprocess_text(example.paragraph_text, lower = do_lower_case),
-            return_unicode = False,
+            preprocess_text(example.paragraph_text, lower=do_lower_case),
+            return_unicode=False,
         )
 
         chartok_to_tok_index = []
@@ -521,11 +521,11 @@ def convert_examples_to_features_bert(
         if n > max_n or m > max_m:
             max_n = max(n, max_n)
             max_m = max(m, max_m)
-            f = np.zeros((max_n, max_m), dtype = np.float32)
+            f = np.zeros((max_n, max_m), dtype=np.float32)
 
         g = {}
 
-        def _lcs_match(max_dist, n = n, m = m):
+        def _lcs_match(max_dist, n=n, m=m):
             f.fill(0)
             g.clear()
             for i in range(n):
@@ -545,8 +545,8 @@ def convert_examples_to_features_bert(
                     if (
                         preprocess_text(
                             paragraph_text[i],
-                            lower = do_lower_case,
-                            remove_space = False,
+                            lower=do_lower_case,
+                            remove_space=False,
                         )
                         == tok_cat_text[j]
                         and f_prev + 1 > f[i, j]
@@ -588,10 +588,10 @@ def convert_examples_to_features_bert(
             start_chartok_pos = tok_start_to_chartok_index[i]
             end_chartok_pos = tok_end_to_chartok_index[i]
             start_orig_pos = _convert_index(
-                chartok_to_orig_index, start_chartok_pos, n, is_start = True
+                chartok_to_orig_index, start_chartok_pos, n, is_start=True
             )
             end_orig_pos = _convert_index(
-                chartok_to_orig_index, end_chartok_pos, n, is_start = False
+                chartok_to_orig_index, end_chartok_pos, n, is_start=False
             )
 
             tok_start_to_orig_index.append(start_orig_pos)
@@ -609,12 +609,12 @@ def convert_examples_to_features_bert(
             end_position = start_position + len(example.orig_answer_text) - 1
 
             start_chartok_pos = _convert_index(
-                orig_to_chartok_index, start_position, is_start = True
+                orig_to_chartok_index, start_position, is_start=True
             )
             tok_start_position = chartok_to_tok_index[start_chartok_pos]
 
             end_chartok_pos = _convert_index(
-                orig_to_chartok_index, end_position, is_start = False
+                orig_to_chartok_index, end_position, is_start=False
             )
             tok_end_position = chartok_to_tok_index[end_chartok_pos]
             assert tok_start_position <= tok_end_position
@@ -633,7 +633,7 @@ def convert_examples_to_features_bert(
             length = len(all_doc_tokens) - start_offset
             if length > max_tokens_for_doc:
                 length = max_tokens_for_doc
-            doc_spans.append(_DocSpan(start = start_offset, length = length))
+            doc_spans.append(_DocSpan(start=start_offset, length=length))
             if start_offset + length == len(all_doc_tokens):
                 break
             start_offset += min(length, doc_stride)
@@ -722,7 +722,7 @@ def convert_examples_to_features_bert(
                 if is_training and not span_is_impossible:
                     pieces = [
                         tokenizer.sp_model.IdToPiece(token)
-                        for token in tokens[start_position : (end_position + 1)]
+                        for token in tokens[start_position: (end_position + 1)]
                     ]
                     answer_text = tokenizer.sp_model.DecodePieces(pieces)
             if is_training:
@@ -731,21 +731,21 @@ def convert_examples_to_features_bert(
                 feat_example_index = example_index
 
             feature = InputFeatures(
-                unique_id = unique_id,
-                example_index = feat_example_index,
-                doc_span_index = doc_span_index,
-                tok_start_to_orig_index = cur_tok_start_to_orig_index,
-                tok_end_to_orig_index = cur_tok_end_to_orig_index,
-                token_is_max_context = token_is_max_context,
-                tokens = [tokenizer.sp_model.IdToPiece(x) for x in tokens],
-                input_ids = input_ids,
-                input_mask = input_mask,
-                segment_ids = segment_ids,
-                paragraph_len = paragraph_len,
-                start_position = start_position,
-                end_position = end_position,
-                is_impossible = span_is_impossible,
-                p_mask = p_mask,
+                unique_id=unique_id,
+                example_index=feat_example_index,
+                doc_span_index=doc_span_index,
+                tok_start_to_orig_index=cur_tok_start_to_orig_index,
+                tok_end_to_orig_index=cur_tok_end_to_orig_index,
+                token_is_max_context=token_is_max_context,
+                tokens=[tokenizer.sp_model.IdToPiece(x) for x in tokens],
+                input_ids=input_ids,
+                input_mask=input_mask,
+                segment_ids=segment_ids,
+                paragraph_len=paragraph_len,
+                start_position=start_position,
+                end_position=end_position,
+                is_impossible=span_is_impossible,
+                p_mask=p_mask,
             )
 
             features.append(feature)
@@ -763,10 +763,10 @@ def read_squad_examples(
     paragraph_text,
     question_texts,
     tokenizer,
-    max_seq_length = 384,
-    doc_stride = 128,
-    max_query_length = 64,
-    mode = 'bert',
+    max_seq_length=384,
+    doc_stride=128,
+    max_query_length=64,
+    mode='bert',
 ):
     modes = {
         'bert': convert_examples_to_features_bert,
@@ -779,22 +779,22 @@ def read_squad_examples(
     examples = []
     for question_text in question_texts:
         example = SquadExample(
-            question_text = question_text,
-            paragraph_text = paragraph_text,
-            orig_answer_text = orig_answer_text,
-            start_position = start_position,
-            is_impossible = is_impossible,
+            question_text=question_text,
+            paragraph_text=paragraph_text,
+            orig_answer_text=orig_answer_text,
+            start_position=start_position,
+            is_impossible=is_impossible,
         )
         examples.append(example)
 
     return (
         examples,
         modes.get(mode, modes['bert'])(
-            examples = examples,
-            tokenizer = tokenizer,
-            max_seq_length = max_seq_length,
-            doc_stride = doc_stride,
-            max_query_length = max_query_length,
+            examples=examples,
+            tokenizer=tokenizer,
+            max_seq_length=max_seq_length,
+            doc_stride=doc_stride,
+            max_query_length=max_query_length,
         ),
     )
 
@@ -803,10 +803,10 @@ def accumulate_predictions_bert(
     all_examples,
     all_features,
     all_results,
-    n_best_size = 20,
-    max_answer_length = 30,
-    start_n_top = 5,
-    end_n_top = 5,
+    n_best_size=20,
+    max_answer_length=30,
+    start_n_top=5,
+    end_n_top=5,
 ):
     result_dict, cls_dict = {}, {}
 
@@ -890,9 +890,9 @@ def write_predictions_bert(
     all_examples,
     all_features,
     all_results,
-    n_best_size = 20,
-    max_answer_length = 30,
-    null_score_diff_threshold = None,
+    n_best_size=20,
+    max_answer_length=30,
+    null_score_diff_threshold=None,
 ):
     outputs = []
     example_index_to_features = collections.defaultdict(list)
@@ -925,18 +925,18 @@ def write_predictions_bert(
                     end_log_prob += logprob[1]
                 prelim_predictions.append(
                     _PrelimPrediction(
-                        feature_index = feature_index,
-                        start_index = start_idx,
-                        end_index = end_idx,
-                        start_log_prob = start_log_prob / len(logprobs),
-                        end_log_prob = end_log_prob / len(logprobs),
+                        feature_index=feature_index,
+                        start_index=start_idx,
+                        end_index=end_idx,
+                        start_log_prob=start_log_prob / len(logprobs),
+                        end_log_prob=end_log_prob / len(logprobs),
                     )
                 )
 
         prelim_predictions = sorted(
             prelim_predictions,
-            key = lambda x: (x.start_log_prob + x.end_log_prob),
-            reverse = True,
+            key=lambda x: (x.start_log_prob + x.end_log_prob),
+            reverse=True,
         )
 
         seen_predictions = {}
@@ -953,7 +953,7 @@ def write_predictions_bert(
 
             paragraph_text = example.paragraph_text
             final_text = paragraph_text[
-                start_orig_pos : end_orig_pos + 1
+                start_orig_pos: end_orig_pos + 1
             ].strip()
 
             if final_text in seen_predictions:
@@ -963,11 +963,11 @@ def write_predictions_bert(
 
             nbest.append(
                 _NbestPrediction(
-                    text = final_text,
-                    start_log_prob = pred.start_log_prob,
-                    end_log_prob = pred.end_log_prob,
-                    start_orig_pos = start_orig_pos,
-                    end_orig_pos = end_orig_pos + 1,
+                    text=final_text,
+                    start_log_prob=pred.start_log_prob,
+                    end_log_prob=pred.end_log_prob,
+                    start_orig_pos=start_orig_pos,
+                    end_orig_pos=end_orig_pos + 1,
                 )
             )
 
@@ -976,11 +976,11 @@ def write_predictions_bert(
         if not nbest:
             nbest.append(
                 _NbestPrediction(
-                    text = '',
-                    start_log_prob = -1e6,
-                    end_log_prob = -1e6,
-                    start_orig_pos = None,
-                    end_orig_pos = None,
+                    text='',
+                    start_log_prob=-1e6,
+                    end_log_prob=-1e6,
+                    start_orig_pos=None,
+                    end_orig_pos=None,
                 )
             )
 
@@ -999,8 +999,8 @@ def write_predictions_xlnet(
     all_examples,
     all_features,
     all_results,
-    n_best_size = 20,
-    max_answer_length = 64,
+    n_best_size=20,
+    max_answer_length=64,
 ):
 
     example_index_to_features = collections.defaultdict(list)
@@ -1059,18 +1059,18 @@ def write_predictions_xlnet(
 
                     prelim_predictions.append(
                         _PrelimPrediction(
-                            feature_index = feature_index,
-                            start_index = start_index,
-                            end_index = end_index,
-                            start_log_prob = start_log_prob,
-                            end_log_prob = end_log_prob,
+                            feature_index=feature_index,
+                            start_index=start_index,
+                            end_index=end_index,
+                            start_log_prob=start_log_prob,
+                            end_log_prob=end_log_prob,
                         )
                     )
 
         prelim_predictions = sorted(
             prelim_predictions,
-            key = lambda x: (x.start_log_prob + x.end_log_prob),
-            reverse = True,
+            key=lambda x: (x.start_log_prob + x.end_log_prob),
+            reverse=True,
         )
 
         seen_predictions = {}
@@ -1087,7 +1087,7 @@ def write_predictions_xlnet(
 
             paragraph_text = example.paragraph_text
             final_text = paragraph_text[
-                start_orig_pos : end_orig_pos + 1
+                start_orig_pos: end_orig_pos + 1
             ].strip()
 
             if final_text in seen_predictions:
@@ -1097,11 +1097,11 @@ def write_predictions_xlnet(
 
             nbest.append(
                 _NbestPrediction(
-                    text = final_text,
-                    start_log_prob = pred.start_log_prob,
-                    end_log_prob = pred.end_log_prob,
-                    start_orig_pos = start_orig_pos,
-                    end_orig_pos = end_orig_pos + 1,
+                    text=final_text,
+                    start_log_prob=pred.start_log_prob,
+                    end_log_prob=pred.end_log_prob,
+                    start_orig_pos=start_orig_pos,
+                    end_orig_pos=end_orig_pos + 1,
                 )
             )
 
@@ -1110,11 +1110,11 @@ def write_predictions_xlnet(
         if not nbest:
             nbest.append(
                 _NbestPrediction(
-                    text = '',
-                    start_log_prob = -1e6,
-                    end_log_prob = -1e6,
-                    start_orig_pos = None,
-                    end_orig_pos = None,
+                    text='',
+                    start_log_prob=-1e6,
+                    end_log_prob=-1e6,
+                    start_orig_pos=None,
+                    end_orig_pos=None,
                 )
             )
 

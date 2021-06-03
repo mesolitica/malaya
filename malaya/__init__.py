@@ -6,8 +6,8 @@
 # URL: <https://malaya.readthedocs.io/>
 # For license information, see https://github.com/huseinzol05/Malaya/blob/master/LICENSE
 
-version = '4.3'
-bump_version = '4.3'
+version = '4.4'
+bump_version = '4.4'
 __version__ = bump_version
 
 import malaya_boilerplate
@@ -29,6 +29,7 @@ from . import emotion
 from . import entity
 from . import generator
 from . import keyword_extraction
+from . import knowledge_graph
 from . import language_detection
 from . import lexicon
 from . import normalize

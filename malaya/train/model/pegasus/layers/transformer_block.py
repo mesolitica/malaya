@@ -46,13 +46,13 @@ class TransformerBlock(object):
             hidden_size, num_heads, dropout
         )
         self._attn_layer = attention.Attention(hidden_size, num_heads, dropout)
-        self._relu_layer = tf.layers.Dense(filter_size, activation = tf.nn.relu)
+        self._relu_layer = tf.layers.Dense(filter_size, activation=tf.nn.relu)
         self._output_layer = tf.layers.Dense(hidden_size)
         self._dropout_fn = (
             lambda x, training: tf.compat.v2.nn.dropout(
                 x,
-                rate = dropout,
-                noise_shape = [tf.shape(x)[0], 1, tf.shape(x)[2]],
+                rate=dropout,
+                noise_shape=[tf.shape(x)[0], 1, tf.shape(x)[2]],
             )
             if training
             else x
@@ -65,31 +65,31 @@ class TransformerBlock(object):
         bias_BxIxI,
         memory_BxMxD,
         bias_BxIxM,
-        cache = None,
-        decode_i = None,
+        cache=None,
+        decode_i=None,
     ):
         s_BxIxD = inputs_BxIxD
         with tf.variable_scope('attention/self'):
-            y_BxIxD = contrib_layers.layer_norm(s_BxIxD, begin_norm_axis = 2)
+            y_BxIxD = contrib_layers.layer_norm(s_BxIxD, begin_norm_axis=2)
             y_BxIxD = self._self_attn_layer(
                 y_BxIxD,
                 bias_BxIxI,
                 training,
-                cache = cache,
-                decode_i = decode_i,
+                cache=cache,
+                decode_i=decode_i,
             )
             s_BxIxD += self._dropout_fn(y_BxIxD, training)
         if memory_BxMxD is not None:
             with tf.variable_scope('memory_attention'):
                 y_BxIxD = contrib_layers.layer_norm(
-                    s_BxIxD, begin_norm_axis = 2
+                    s_BxIxD, begin_norm_axis=2
                 )
                 y_BxIxD = self._attn_layer(
                     y_BxIxD, memory_BxMxD, bias_BxIxM, training
                 )
                 s_BxIxD += self._dropout_fn(y_BxIxD, training)
         with tf.variable_scope('ffn'):
-            y_BxIxD = contrib_layers.layer_norm(s_BxIxD, begin_norm_axis = 2)
+            y_BxIxD = contrib_layers.layer_norm(s_BxIxD, begin_norm_axis=2)
             y_BxIxD = self._dropout_fn(self._relu_layer(y_BxIxD), training)
             s_BxIxD += self._dropout_fn(self._output_layer(y_BxIxD), training)
         return s_BxIxD
@@ -102,8 +102,8 @@ def stack(
     bias_BxIxI,
     memory_BxMxD,
     bias_BxIxM,
-    cache = None,
-    decode_i = None,
+    cache=None,
+    decode_i=None,
 ):
     """Stack AttentionBlock layers."""
     if (memory_BxMxD is None) != (bias_BxIxM is None):
@@ -117,7 +117,7 @@ def stack(
                 bias_BxIxI,
                 memory_BxMxD,
                 bias_BxIxM,
-                cache = cache[str(i)] if cache is not None else None,
-                decode_i = decode_i,
+                cache=cache[str(i)] if cache is not None else None,
+                decode_i=decode_i,
             )
     return s_BxIxD

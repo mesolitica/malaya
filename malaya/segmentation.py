@@ -27,7 +27,7 @@ REGEX_TOKEN = re.compile(r'\b[a-z]{2,}\b')
 NGRAM_SEP = '_'
 
 
-def _read_stats(gram = 1):
+def _read_stats(gram=1):
     try:
         with open(PATH_PREPROCESSING[gram]['model']) as fopen:
             return json.load(fopen)
@@ -42,7 +42,7 @@ class _Pdist(dict):
     def default_unk_func(key, total):
         return 1.0 / total
 
-    def __init__(self, data = None, total = None, unk_func = None, **kwargs):
+    def __init__(self, data=None, total=None, unk_func=None, **kwargs):
         super().__init__(**kwargs)
 
         data = data or {}
@@ -60,7 +60,7 @@ class _Pdist(dict):
 
 
 class Segmenter:
-    def __init__(self, max_split_length = 20):
+    def __init__(self, max_split_length=20):
         self.unigrams = _read_stats(1)
         self.bigrams = _read_stats(2)
         self.N = sum(self.unigrams.values())
@@ -89,12 +89,12 @@ class Segmenter:
 
     def splits(self, text):
         return [
-            (text[: i + 1], text[i + 1 :])
+            (text[: i + 1], text[i + 1:])
             for i in range(min(len(text), self.L))
         ]
 
-    @lru_cache(maxsize = 65536)
-    def find_segment(self, text, prev = '<S>'):
+    @lru_cache(maxsize=65536)
+    def find_segment(self, text, prev='<S>'):
         if not text:
             return 0.0, []
         candidates = [
@@ -106,7 +106,7 @@ class Segmenter:
         ]
         return max(candidates)
 
-    @lru_cache(maxsize = 65536)
+    @lru_cache(maxsize=65536)
     def _segment(self, word):
         if word.islower():
             return ' '.join(self.find_segment(word)[1])
@@ -155,7 +155,7 @@ def viterbi(max_split_length: int = 20, **kwargs):
 
     check_file(PATH_PREPROCESSING[1], S3_PATH_PREPROCESSING[1], **kwargs)
     check_file(PATH_PREPROCESSING[2], S3_PATH_PREPROCESSING[2], **kwargs)
-    return Segmenter(max_split_length = max_split_length)
+    return Segmenter(max_split_length=max_split_length)
 
 
 def available_transformer():
@@ -181,7 +181,7 @@ def transformer(model: str = 'small', quantized: bool = False, **kwargs):
         * ``'base'`` - Transformer BASE parameters.
 
     quantized : bool, optional (default=False)
-        if True, will load 8-bit quantized model. 
+        if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
 
     Returns
@@ -196,10 +196,10 @@ def transformer(model: str = 'small', quantized: bool = False, **kwargs):
         )
 
     return load_transformer.load(
-        module = 'segmentation',
-        model = model,
-        encoder = 'yttm',
-        model_class = Segmentation,
-        quantized = quantized,
+        module='segmentation',
+        model=model,
+        encoder='yttm',
+        model_class=Segmentation,
+        quantized=quantized,
         **kwargs,
     )

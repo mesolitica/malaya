@@ -20,14 +20,14 @@ def execute_graph(
     inputs,
     input_labels,
     output_labels,
-    sess = None,
-    input_nodes = None,
-    output_nodes = None,
+    sess=None,
+    input_nodes=None,
+    output_nodes=None,
 ):
     output_nodes = {label: output_nodes[label] for label in output_labels}
     input_nodes = {
         input_nodes[label]: inputs[no] for no, label in enumerate(input_labels)
     }
-    r = sess.run(output_nodes, feed_dict = input_nodes)
+    r = sess.run(output_nodes, feed_dict=input_nodes)
 
     return r

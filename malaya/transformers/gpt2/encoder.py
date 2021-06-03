@@ -46,7 +46,7 @@ def get_pairs(word):
 
 
 class Encoder:
-    def __init__(self, encoder, bpe_merges, errors = 'replace'):
+    def __init__(self, encoder, bpe_merges, errors='replace'):
         self.encoder = encoder
         self.decoder = {v: k for k, v in self.encoder.items()}
         self.errors = errors  # how to handle errors in decoding
@@ -55,7 +55,8 @@ class Encoder:
         self.bpe_ranks = dict(zip(bpe_merges, range(len(bpe_merges))))
         self.cache = {}
 
-        # Should haved added re.IGNORECASE so BPE merges can happen for capitalized versions of contractions
+        # Should haved added re.IGNORECASE so BPE merges can happen for
+        # capitalized versions of contractions
         self.pat = re.compile(
             r"""'s|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+"""
         )
@@ -71,7 +72,7 @@ class Encoder:
 
         while True:
             bigram = min(
-                pairs, key = lambda pair: self.bpe_ranks.get(pair, float('inf'))
+                pairs, key=lambda pair: self.bpe_ranks.get(pair, float('inf'))
             )
             if bigram not in self.bpe_ranks:
                 break
@@ -83,7 +84,7 @@ class Encoder:
                     j = word.index(first, i)
                     new_word.extend(word[i:j])
                     i = j
-                except:
+                except BaseException:
                     new_word.extend(word[i:])
                     break
 
@@ -120,6 +121,6 @@ class Encoder:
     def decode(self, tokens):
         text = ''.join([self.decoder[token] for token in tokens])
         text = bytearray([self.byte_decoder[c] for c in text]).decode(
-            'utf-8', errors = self.errors
+            'utf-8', errors=self.errors
         )
         return text

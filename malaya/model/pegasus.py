@@ -19,20 +19,20 @@ class Summarization(Seq2Seq):
     def _summarize(
         self,
         strings,
-        top_p = 0.7,
-        temperature = 1.0,
-        postprocess = True,
+        top_p=0.7,
+        temperature=1.0,
+        postprocess=True,
         **kwargs,
     ):
 
         strings_ = [summarization_textcleaning(string) for string in strings]
         batch_x = [self._tokenizer.encode(string) + [1] for string in strings_]
-        batch_x = pad_sequences(batch_x, padding = 'post')
+        batch_x = pad_sequences(batch_x, padding='post')
 
         r = self._execute(
-            inputs = [batch_x, top_p, temperature],
-            input_labels = ['Placeholder', 'top_p', 'temperature'],
-            output_labels = ['logits'],
+            inputs=[batch_x, top_p, temperature],
+            input_labels=['Placeholder', 'top_p', 'temperature'],
+            output_labels=['logits'],
         )
         p = r['logits'].tolist()
 
@@ -50,7 +50,7 @@ class Summarization(Seq2Seq):
     def greedy_decoder(
         self,
         strings: List[str],
-        temperature = 0.3,
+        temperature=0.3,
         postprocess: bool = True,
         **kwargs,
     ):
@@ -70,10 +70,10 @@ class Summarization(Seq2Seq):
         result: List[str]
         """
         return self._summarize(
-            strings = strings,
-            top_p = 0.0,
-            temperature = temperature,
-            postprocess = postprocess,
+            strings=strings,
+            top_p=0.0,
+            temperature=temperature,
+            postprocess=postprocess,
             **kwargs,
         )
 
@@ -104,9 +104,9 @@ class Summarization(Seq2Seq):
         result: List[str]
         """
         return self._summarize(
-            strings = strings,
-            top_p = top_p,
-            temperature = temperature,
-            postprocess = postprocess,
+            strings=strings,
+            top_p=top_p,
+            temperature=temperature,
+            postprocess=postprocess,
             **kwargs,
         )

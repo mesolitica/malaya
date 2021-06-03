@@ -12,11 +12,11 @@ def _get_initializer(FLAGS):
     """Get variable intializer."""
     if FLAGS.init == 'uniform':
         initializer = tf.initializers.random_uniform(
-            minval = -FLAGS.init_range, maxval = FLAGS.init_range, seed = None
+            minval=-FLAGS.init_range, maxval=FLAGS.init_range, seed=None
         )
     elif FLAGS.init == 'normal':
         initializer = tf.initializers.random_normal(
-            stddev = FLAGS.init_std, seed = None
+            stddev=FLAGS.init_std, seed=None
         )
     else:
         raise ValueError('Initializer {} not supported'.format(FLAGS.init))
@@ -39,7 +39,7 @@ class XLNetConfig(object):
     n_token: int, the vocab size.
   """
 
-    def __init__(self, FLAGS = None, json_path = None):
+    def __init__(self, FLAGS=None, json_path=None):
         """Constructing an XLNetConfig.
     One of FLAGS or json_path should be provided."""
 
@@ -82,30 +82,30 @@ class XLNetConfig(object):
         if not tf.gfile.Exists(json_dir):
             tf.gfile.MakeDirs(json_dir)
         with tf.gfile.Open(json_path, 'w') as f:
-            json.dump(json_data, f, indent = 4, sort_keys = True)
+            json.dump(json_data, f, indent=4, sort_keys=True)
 
 
 def create_run_config(is_training, is_finetune, FLAGS):
     kwargs = dict(
-        is_training = is_training,
-        use_tpu = FLAGS.use_tpu,
-        use_bfloat16 = FLAGS.use_bfloat16,
-        dropout = FLAGS.dropout,
-        dropatt = FLAGS.dropatt,
-        init = FLAGS.init,
-        init_range = FLAGS.init_range,
-        init_std = FLAGS.init_std,
-        clamp_len = FLAGS.clamp_len,
+        is_training=is_training,
+        use_tpu=FLAGS.use_tpu,
+        use_bfloat16=FLAGS.use_bfloat16,
+        dropout=FLAGS.dropout,
+        dropatt=FLAGS.dropatt,
+        init=FLAGS.init,
+        init_range=FLAGS.init_range,
+        init_std=FLAGS.init_std,
+        clamp_len=FLAGS.clamp_len,
     )
 
     if not is_finetune:
         kwargs.update(
             dict(
-                mem_len = FLAGS.mem_len,
-                reuse_len = FLAGS.reuse_len,
-                bi_data = FLAGS.bi_data,
-                clamp_len = FLAGS.clamp_len,
-                same_length = FLAGS.same_length,
+                mem_len=FLAGS.mem_len,
+                reuse_len=FLAGS.reuse_len,
+                bi_data=FLAGS.bi_data,
+                clamp_len=FLAGS.clamp_len,
+                same_length=FLAGS.same_length,
             )
         )
 
@@ -126,14 +126,14 @@ class RunConfig(object):
         use_bfloat16,
         dropout,
         dropatt,
-        init = 'normal',
-        init_range = 0.1,
-        init_std = 0.02,
-        mem_len = None,
-        reuse_len = None,
-        bi_data = False,
-        clamp_len = -1,
-        same_length = False,
+        init='normal',
+        init_range=0.1,
+        init_std=0.02,
+        mem_len=None,
+        reuse_len=None,
+        bi_data=False,
+        clamp_len=-1,
+        same_length=False,
     ):
         """
     Args:
@@ -182,10 +182,10 @@ class XLNetModel(object):
         input_ids,
         seg_ids,
         input_mask,
-        mems = None,
-        perm_mask = None,
-        target_mapping = None,
-        inp_q = None,
+        mems=None,
+        perm_mask=None,
+        target_mapping=None,
+        inp_q=None,
         **kwargs
     ):
         """
@@ -217,40 +217,40 @@ class XLNetModel(object):
         initializer = _get_initializer(run_config)
 
         tfm_args = dict(
-            n_token = xlnet_config.n_token,
-            initializer = initializer,
-            attn_type = 'bi',
-            n_layer = xlnet_config.n_layer,
-            d_model = xlnet_config.d_model,
-            n_head = xlnet_config.n_head,
-            d_head = xlnet_config.d_head,
-            d_inner = xlnet_config.d_inner,
-            ff_activation = xlnet_config.ff_activation,
-            untie_r = xlnet_config.untie_r,
-            is_training = run_config.is_training,
-            use_bfloat16 = run_config.use_bfloat16,
-            use_tpu = run_config.use_tpu,
-            dropout = run_config.dropout,
-            dropatt = run_config.dropatt,
-            mem_len = run_config.mem_len,
-            reuse_len = run_config.reuse_len,
-            bi_data = run_config.bi_data,
-            clamp_len = run_config.clamp_len,
-            same_length = run_config.same_length,
+            n_token=xlnet_config.n_token,
+            initializer=initializer,
+            attn_type='bi',
+            n_layer=xlnet_config.n_layer,
+            d_model=xlnet_config.d_model,
+            n_head=xlnet_config.n_head,
+            d_head=xlnet_config.d_head,
+            d_inner=xlnet_config.d_inner,
+            ff_activation=xlnet_config.ff_activation,
+            untie_r=xlnet_config.untie_r,
+            is_training=run_config.is_training,
+            use_bfloat16=run_config.use_bfloat16,
+            use_tpu=run_config.use_tpu,
+            dropout=run_config.dropout,
+            dropatt=run_config.dropatt,
+            mem_len=run_config.mem_len,
+            reuse_len=run_config.reuse_len,
+            bi_data=run_config.bi_data,
+            clamp_len=run_config.clamp_len,
+            same_length=run_config.same_length,
         )
 
         input_args = dict(
-            inp_k = input_ids,
-            seg_id = seg_ids,
-            input_mask = input_mask,
-            mems = mems,
-            perm_mask = perm_mask,
-            target_mapping = target_mapping,
-            inp_q = inp_q,
+            inp_k=input_ids,
+            seg_id=seg_ids,
+            input_mask=input_mask,
+            mems=mems,
+            perm_mask=perm_mask,
+            target_mapping=target_mapping,
+            inp_q=inp_q,
         )
         tfm_args.update(input_args)
 
-        with tf.variable_scope('model', reuse = tf.AUTO_REUSE):
+        with tf.variable_scope('model', reuse=tf.AUTO_REUSE):
             (
                 self.output,
                 self.new_mems,
@@ -262,7 +262,7 @@ class XLNetModel(object):
         self.xlnet_config = xlnet_config
         self.run_config = run_config
 
-    def get_pooled_out(self, summary_type, use_summ_proj = True):
+    def get_pooled_out(self, summary_type, use_summ_proj=True):
         """
     Args:
       summary_type: str, "last", "first", "mean", or "attn". The method
@@ -276,19 +276,19 @@ class XLNetModel(object):
         xlnet_config = self.xlnet_config
         run_config = self.run_config
 
-        with tf.variable_scope('model', reuse = tf.AUTO_REUSE):
+        with tf.variable_scope('model', reuse=tf.AUTO_REUSE):
             summary = modeling.summarize_sequence(
-                summary_type = summary_type,
-                hidden = self.output,
-                d_model = xlnet_config.d_model,
-                n_head = xlnet_config.n_head,
-                d_head = xlnet_config.d_head,
-                dropout = run_config.dropout,
-                dropatt = run_config.dropatt,
-                is_training = run_config.is_training,
-                input_mask = self.input_mask,
-                initializer = self.initializer,
-                use_proj = use_summ_proj,
+                summary_type=summary_type,
+                hidden=self.output,
+                d_model=xlnet_config.d_model,
+                n_head=xlnet_config.n_head,
+                d_head=xlnet_config.d_head,
+                dropout=run_config.dropout,
+                dropatt=run_config.dropatt,
+                is_training=run_config.is_training,
+                input_mask=self.input_mask,
+                initializer=self.initializer,
+                use_proj=use_summ_proj,
             )
 
         return summary

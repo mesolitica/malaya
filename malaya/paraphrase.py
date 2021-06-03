@@ -28,7 +28,7 @@ def available_transformer():
     from malaya.function import describe_availability
 
     return describe_availability(
-        _transformer_availability, text = 'tested on 1k paraphrase texts.'
+        _transformer_availability, text='tested on 1k paraphrase texts.'
     )
 
 
@@ -48,14 +48,14 @@ def transformer(model: str = 't2t', quantized: bool = False, **kwargs):
         * ``'small-t5'`` - T5 SMALL parameters.
 
     quantized : bool, optional (default=False)
-        if True, will load 8-bit quantized model. 
+        if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
 
     Returns
     -------
     result: model
         List of model classes:
-        
+
         * if `t2t` in model, will return `malaya.model.tf.Paraphrase`.
         * if `t5` in model, will return `malaya.model.t5.Paraphrase`.
     """
@@ -68,17 +68,17 @@ def transformer(model: str = 't2t', quantized: bool = False, **kwargs):
 
     if 't2t' in model:
         return transformer_load.load_lm(
-            module = 'paraphrase',
-            model = model,
-            model_class = TF_Paraphrase,
-            quantized = quantized,
+            module='paraphrase',
+            model=model,
+            model_class=TF_Paraphrase,
+            quantized=quantized,
             **kwargs,
         )
     if 't5' in model:
         return t5_load.load(
-            module = 'paraphrase',
-            model = model,
-            model_class = T5_Paraphrase,
-            quantized = quantized,
+            module='paraphrase',
+            model=model,
+            model_class=T5_Paraphrase,
+            quantized=quantized,
             **kwargs,
         )

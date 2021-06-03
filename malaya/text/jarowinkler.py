@@ -45,7 +45,7 @@ class NormalizedStringSimilarity(StringSimilarity):
 
 
 class JaroWinkler(NormalizedStringSimilarity, NormalizedStringDistance):
-    def __init__(self, threshold = 0.7):
+    def __init__(self, threshold=0.7):
         self.threshold = threshold
         self.three = 3
         self.jw_coef = 0.1

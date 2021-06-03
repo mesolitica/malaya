@@ -92,13 +92,12 @@ def available_transformer():
     from malaya.function import describe_availability
 
     return describe_availability(
-        _transformer_availability, text = 'tested on 5k CNN test set.'
+        _transformer_availability, text='tested on 5k CNN test set.'
     )
 
 
 @check_type
 def transformer(model: str = 't2t', quantized: bool = False, **kwargs):
-
     """
     Load Malaya transformer encoder-decoder model to generate a summary given a string.
 
@@ -116,16 +115,16 @@ def transformer(model: str = 't2t', quantized: bool = False, **kwargs):
         * ``'small-bigbird'`` - BigBird + Pegasus SMALL parameters.
         * ``'pegasus'`` - Pegasus BASE parameters.
         * ``'small-pegasus'`` - Pegasus SMALL parameters.
-    
+
     quantized : bool, optional (default=False)
-        if True, will load 8-bit quantized model. 
+        if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
 
     Returns
     -------
     result: model
         List of model classes:
-        
+
         * if `t2t` in model, will return `malaya.model.tf.Summarization`.
         * if `t5` in model, will return `malaya.model.t5.Summarization`.
         * if `bigbird` in model, will return `malaya.model.bigbird.Summarization`.
@@ -140,37 +139,37 @@ def transformer(model: str = 't2t', quantized: bool = False, **kwargs):
 
     if 't2t' in model:
         return transformer_load.load_lm(
-            module = 'abstractive-summarization',
-            model = model,
-            model_class = TF_Summarization,
-            quantized = quantized,
+            module='abstractive-summarization',
+            model=model,
+            model_class=TF_Summarization,
+            quantized=quantized,
             **kwargs,
         )
 
     if 't5' in model:
         return t5_load.load(
-            module = 'abstractive-summarization',
-            model = model,
-            model_class = T5_Summarization,
-            quantized = quantized,
+            module='abstractive-summarization',
+            model=model,
+            model_class=T5_Summarization,
+            quantized=quantized,
             **kwargs,
         )
 
     if 'bigbird' in model:
         return bigbird_load.load_lm(
-            module = 'abstractive-summarization',
-            model = model,
-            model_class = BigBird_Summarization,
-            maxlen = _transformer_availability[model]['Suggested length'],
-            quantized = quantized,
+            module='abstractive-summarization',
+            model=model,
+            model_class=BigBird_Summarization,
+            maxlen=_transformer_availability[model]['Suggested length'],
+            quantized=quantized,
             **kwargs,
         )
 
     if 'pegasus' in model:
         return pegasus_load.load_lm(
-            module = 'abstractive-summarization',
-            model = model,
-            model_class = Pegasus_Summarization,
-            quantized = quantized,
+            module='abstractive-summarization',
+            model=model,
+            model_class=Pegasus_Summarization,
+            quantized=quantized,
             **kwargs,
         )

@@ -39,7 +39,7 @@ class Base(Abstract):
         output_nodes,
         sess,
         tokenizer,
-        label = ['negative', 'positive'],
+        label=['negative', 'positive'],
     ):
         self._input_nodes = input_nodes
         self._output_nodes = output_nodes
@@ -56,16 +56,16 @@ class XLNET(Base):
         sess,
         tokenizer,
         class_name,
-        label = ['negative', 'positive'],
+        label=['negative', 'positive'],
     ):
 
         Base.__init__(
             self,
-            input_nodes = input_nodes,
-            output_nodes = output_nodes,
-            sess = sess,
-            tokenizer = tokenizer,
-            label = label,
+            input_nodes=input_nodes,
+            output_nodes=output_nodes,
+            sess=sess,
+            tokenizer=tokenizer,
+            label=label,
         )
         self._class_name = class_name
 
@@ -74,13 +74,13 @@ class XLNET(Base):
             self._tokenizer, strings
         )
         r = self._execute(
-            inputs = [input_ids, segment_ids, input_masks],
-            input_labels = ['Placeholder', 'Placeholder_1', 'Placeholder_2'],
-            output_labels = ['logits'],
+            inputs=[input_ids, segment_ids, input_masks],
+            input_labels=['Placeholder', 'Placeholder_1', 'Placeholder_2'],
+            output_labels=['logits'],
         )
-        return softmax(r['logits'], axis = -1)
+        return softmax(r['logits'], axis=-1)
 
-    def _vectorize(self, strings, method = 'first'):
+    def _vectorize(self, strings, method='first'):
         method = method.lower()
         if method not in ['first', 'last', 'mean', 'word']:
             raise ValueError(
@@ -90,9 +90,9 @@ class XLNET(Base):
             self._tokenizer, strings
         )
         r = self._execute(
-            inputs = [input_ids, segment_ids, input_masks],
-            input_labels = ['Placeholder', 'Placeholder_1', 'Placeholder_2'],
-            output_labels = ['vectorizer'],
+            inputs=[input_ids, segment_ids, input_masks],
+            input_labels=['Placeholder', 'Placeholder_1', 'Placeholder_2'],
+            output_labels=['vectorizer'],
         )
         v = r['vectorizer']
         if method == 'first':
@@ -100,20 +100,20 @@ class XLNET(Base):
         elif method == 'last':
             v = v[:, -1]
         elif method == 'mean':
-            v = np.mean(v, axis = 1)
+            v = np.mean(v, axis=1)
         else:
             v = [
                 merge_sentencepiece_tokens(
                     list(zip(s_tokens[i], v[i][: len(s_tokens[i])])),
-                    weighted = False,
-                    vectorize = True,
-                    model = 'xlnet',
+                    weighted=False,
+                    vectorize=True,
+                    model='xlnet',
                 )
                 for i in range(len(v))
             ]
         return v
 
-    def _predict(self, strings, add_neutral = False):
+    def _predict(self, strings, add_neutral=False):
         results = self._classify(strings)
 
         if add_neutral:
@@ -122,9 +122,9 @@ class XLNET(Base):
         else:
             label = self._label
 
-        return [label[result] for result in np.argmax(results, axis = 1)]
+        return [label[result] for result in np.argmax(results, axis=1)]
 
-    def _predict_proba(self, strings, add_neutral = False):
+    def _predict_proba(self, strings, add_neutral=False):
         results = self._classify(strings)
 
         if add_neutral:
@@ -139,7 +139,7 @@ class XLNET(Base):
         return outputs
 
     def _predict_words(
-        self, string, method, visualization, add_neutral = False
+        self, string, method, visualization, add_neutral=False
     ):
         method = method.lower()
         if method not in ['last', 'first', 'mean']:
@@ -155,12 +155,12 @@ class XLNET(Base):
             self._tokenizer, [string]
         )
         r = self._execute(
-            inputs = [input_ids, segment_ids, input_masks],
-            input_labels = ['Placeholder', 'Placeholder_1', 'Placeholder_2'],
-            output_labels = ['logits', 'attention', 'logits_seq'],
+            inputs=[input_ids, segment_ids, input_masks],
+            input_labels=['Placeholder', 'Placeholder_1', 'Placeholder_2'],
+            output_labels=['logits', 'attention', 'logits_seq'],
         )
-        result = softmax(r['logits'], axis = -1)
-        words = softmax(r['logits_seq'], axis = -1)
+        result = softmax(r['logits'], axis=-1)
+        words = softmax(r['logits_seq'], axis=-1)
         attentions = r['attention']
 
         if method == 'first':
@@ -170,10 +170,10 @@ class XLNET(Base):
             cls_attn = attentions[-1][:, :, 0, :]
 
         if method == 'mean':
-            cls_attn = np.mean(attentions, axis = 0).mean(axis = 2)
+            cls_attn = np.mean(attentions, axis=0).mean(axis=2)
 
-        cls_attn = np.mean(cls_attn, axis = 1)
-        total_weights = np.sum(cls_attn, axis = -1, keepdims = True)
+        cls_attn = np.mean(cls_attn, axis=1)
+        total_weights = np.sum(cls_attn, axis=-1, keepdims=True)
         attn = cls_attn / total_weights
         words = words[0]
 
@@ -184,26 +184,26 @@ class XLNET(Base):
         result = result[0]
         weights = []
         merged = merge_sentencepiece_tokens(
-            list(zip(s_tokens[0], attn[0])), model = 'xlnet'
+            list(zip(s_tokens[0], attn[0])), model='xlnet'
         )
         for i in range(words.shape[1]):
             m = merge_sentencepiece_tokens(
                 list(zip(s_tokens[0], words[:, i])),
-                weighted = False,
-                model = 'xlnet',
+                weighted=False,
+                model='xlnet',
             )
             _, weight = zip(*m)
             weights.append(weight)
         w, a = zip(*merged)
         words = np.array(weights).T
-        distribution_words = words[:, np.argmax(words.sum(axis = 0))]
+        distribution_words = words[:, np.argmax(words.sum(axis=0))]
         y_histogram, x_histogram = np.histogram(
-            distribution_words, bins = np.arange(0, 1, 0.05)
+            distribution_words, bins=np.arange(0, 1, 0.05)
         )
         y_histogram = y_histogram / y_histogram.sum()
         x_attention = np.arange(len(w))
         left, right = np.unique(
-            np.argmax(words, axis = 1), return_counts = True
+            np.argmax(words, axis=1), return_counts=True
         )
         left = left.tolist()
         y_barplot = []
@@ -235,16 +235,16 @@ class BinaryXLNET(XLNET, Classification):
         sess,
         tokenizer,
         class_name,
-        label = ['negative', 'positive'],
+        label=['negative', 'positive'],
     ):
         XLNET.__init__(
             self,
-            input_nodes = input_nodes,
-            output_nodes = output_nodes,
-            sess = sess,
-            tokenizer = tokenizer,
-            class_name = class_name,
-            label = label,
+            input_nodes=input_nodes,
+            output_nodes=output_nodes,
+            sess=sess,
+            tokenizer=tokenizer,
+            class_name=class_name,
+            label=label,
         )
 
     @check_type
@@ -268,7 +268,7 @@ class BinaryXLNET(XLNET, Classification):
         result: np.array
         """
 
-        return self._vectorize(strings = strings, method = method)
+        return self._vectorize(strings=strings, method=method)
 
     @check_type
     def predict(self, strings: List[str], add_neutral: bool = True):
@@ -286,7 +286,7 @@ class BinaryXLNET(XLNET, Classification):
         result: List[str]
         """
 
-        return self._predict(strings = strings, add_neutral = add_neutral)
+        return self._predict(strings=strings, add_neutral=add_neutral)
 
     @check_type
     def predict_proba(self, strings: List[str], add_neutral: bool = True):
@@ -304,7 +304,7 @@ class BinaryXLNET(XLNET, Classification):
         result: List[dict[str, float]]
         """
 
-        return self._predict_proba(strings = strings, add_neutral = add_neutral)
+        return self._predict_proba(strings=strings, add_neutral=add_neutral)
 
     @check_type
     def predict_words(
@@ -331,10 +331,10 @@ class BinaryXLNET(XLNET, Classification):
         """
 
         return self._predict_words(
-            string = string,
-            method = method,
-            add_neutral = True,
-            visualization = visualization,
+            string=string,
+            method=method,
+            add_neutral=True,
+            visualization=visualization,
         )
 
 
@@ -346,16 +346,16 @@ class MulticlassXLNET(XLNET, Classification):
         sess,
         tokenizer,
         class_name,
-        label = ['negative', 'positive'],
+        label=['negative', 'positive'],
     ):
         XLNET.__init__(
             self,
-            input_nodes = input_nodes,
-            output_nodes = output_nodes,
-            sess = sess,
-            tokenizer = tokenizer,
-            class_name = class_name,
-            label = label,
+            input_nodes=input_nodes,
+            output_nodes=output_nodes,
+            sess=sess,
+            tokenizer=tokenizer,
+            class_name=class_name,
+            label=label,
         )
 
     @check_type
@@ -379,7 +379,7 @@ class MulticlassXLNET(XLNET, Classification):
         result: np.array
         """
 
-        return self._vectorize(strings = strings, method = method)
+        return self._vectorize(strings=strings, method=method)
 
     @check_type
     def predict(self, strings: List[str]):
@@ -395,7 +395,7 @@ class MulticlassXLNET(XLNET, Classification):
         result: List[str]
         """
 
-        return self._predict(strings = strings)
+        return self._predict(strings=strings)
 
     @check_type
     def predict_proba(self, strings: List[str]):
@@ -411,7 +411,7 @@ class MulticlassXLNET(XLNET, Classification):
         result: List[dict[str, float]]
         """
 
-        return self._predict_proba(strings = strings)
+        return self._predict_proba(strings=strings)
 
     @check_type
     def predict_words(
@@ -438,7 +438,7 @@ class MulticlassXLNET(XLNET, Classification):
         """
 
         return self._predict_words(
-            string = string, method = method, visualization = visualization
+            string=string, method=method, visualization=visualization
         )
 
 
@@ -450,15 +450,15 @@ class SigmoidXLNET(Base, Classification):
         sess,
         tokenizer,
         class_name,
-        label = ['negative', 'positive'],
+        label=['negative', 'positive'],
     ):
         Base.__init__(
             self,
-            input_nodes = input_nodes,
-            output_nodes = output_nodes,
-            sess = sess,
-            tokenizer = tokenizer,
-            label = label,
+            input_nodes=input_nodes,
+            output_nodes=output_nodes,
+            sess=sess,
+            tokenizer=tokenizer,
+            label=label,
         )
         self._class_name = class_name
 
@@ -468,9 +468,9 @@ class SigmoidXLNET(Base, Classification):
             self._tokenizer, strings
         )
         r = self._execute(
-            inputs = [input_ids, segment_ids, input_masks],
-            input_labels = ['Placeholder', 'Placeholder_1', 'Placeholder_2'],
-            output_labels = ['logits'],
+            inputs=[input_ids, segment_ids, input_masks],
+            input_labels=['Placeholder', 'Placeholder_1', 'Placeholder_2'],
+            output_labels=['logits'],
         )
         return sigmoid(r['logits'])
 
@@ -504,9 +504,9 @@ class SigmoidXLNET(Base, Classification):
             self._tokenizer, strings
         )
         r = self._execute(
-            inputs = [input_ids, segment_ids, input_masks],
-            input_labels = ['Placeholder', 'Placeholder_1', 'Placeholder_2'],
-            output_labels = ['vectorizer'],
+            inputs=[input_ids, segment_ids, input_masks],
+            input_labels=['Placeholder', 'Placeholder_1', 'Placeholder_2'],
+            output_labels=['vectorizer'],
         )
         v = r['vectorizer']
         if method == 'first':
@@ -514,14 +514,14 @@ class SigmoidXLNET(Base, Classification):
         elif method == 'last':
             v = v[:, -1]
         elif method == 'mean':
-            v = np.mean(v, axis = 1)
+            v = np.mean(v, axis=1)
         else:
             v = [
                 merge_sentencepiece_tokens(
                     list(zip(s_tokens[i], v[i][: len(s_tokens[i])])),
-                    weighted = False,
-                    vectorize = True,
-                    model = 'xlnet',
+                    weighted=False,
+                    vectorize=True,
+                    model='xlnet',
                 )
                 for i in range(len(v))
             ]
@@ -611,9 +611,9 @@ class SigmoidXLNET(Base, Classification):
             self._tokenizer, [string]
         )
         r = self._execute(
-            inputs = [input_ids, segment_ids, input_masks],
-            input_labels = ['Placeholder', 'Placeholder_1', 'Placeholder_2'],
-            output_labels = ['logits', 'attention', 'logits_seq'],
+            inputs=[input_ids, segment_ids, input_masks],
+            input_labels=['Placeholder', 'Placeholder_1', 'Placeholder_2'],
+            output_labels=['logits', 'attention', 'logits_seq'],
         )
         result = sigmoid(r['logits'])
         words = sigmoid(r['logits_seq'])
@@ -625,35 +625,35 @@ class SigmoidXLNET(Base, Classification):
             cls_attn = attentions[-1][:, :, 0, :]
 
         if method == 'mean':
-            cls_attn = np.mean(attentions, axis = 0).mean(axis = 2)
+            cls_attn = np.mean(attentions, axis=0).mean(axis=2)
 
-        cls_attn = np.mean(cls_attn, axis = 1)
-        total_weights = np.sum(cls_attn, axis = -1, keepdims = True)
+        cls_attn = np.mean(cls_attn, axis=1)
+        total_weights = np.sum(cls_attn, axis=-1, keepdims=True)
         attn = cls_attn / total_weights
         result = result[0]
         words = words[0]
         weights = []
         merged = merge_sentencepiece_tokens(
-            list(zip(s_tokens[0], attn[0])), model = 'xlnet'
+            list(zip(s_tokens[0], attn[0])), model='xlnet'
         )
         for i in range(words.shape[1]):
             m = merge_sentencepiece_tokens(
                 list(zip(s_tokens[0], words[:, i])),
-                weighted = False,
-                model = 'xlnet',
+                weighted=False,
+                model='xlnet',
             )
             _, weight = zip(*m)
             weights.append(weight)
         w, a = zip(*merged)
         words = np.array(weights).T
-        distribution_words = words[:, np.argmax(words.sum(axis = 0))]
+        distribution_words = words[:, np.argmax(words.sum(axis=0))]
         y_histogram, x_histogram = np.histogram(
-            distribution_words, bins = np.arange(0, 1, 0.05)
+            distribution_words, bins=np.arange(0, 1, 0.05)
         )
         y_histogram = y_histogram / y_histogram.sum()
         x_attention = np.arange(len(w))
         left, right = np.unique(
-            np.argmax(words, axis = 1), return_counts = True
+            np.argmax(words, axis=1), return_counts=True
         )
         left = left.tolist()
         y_barplot = []
@@ -683,15 +683,15 @@ class SiameseXLNET(Base):
         output_nodes,
         sess,
         tokenizer,
-        label = ['not similar', 'similar'],
+        label=['not similar', 'similar'],
     ):
         Base.__init__(
             self,
-            input_nodes = input_nodes,
-            output_nodes = output_nodes,
-            sess = sess,
-            tokenizer = tokenizer,
-            label = label,
+            input_nodes=input_nodes,
+            output_nodes=output_nodes,
+            sess=sess,
+            tokenizer=tokenizer,
+            label=label,
         )
         self._batch_size = 20
 
@@ -701,11 +701,11 @@ class SiameseXLNET(Base):
         )
 
         r = self._execute(
-            inputs = [input_ids, segment_ids, input_masks],
-            input_labels = ['Placeholder', 'Placeholder_1', 'Placeholder_2'],
-            output_labels = ['logits'],
+            inputs=[input_ids, segment_ids, input_masks],
+            input_labels=['Placeholder', 'Placeholder_1', 'Placeholder_2'],
+            output_labels=['logits'],
         )
-        return softmax(r['logits'], axis = -1)
+        return softmax(r['logits'], axis=-1)
 
     @check_type
     def vectorize(self, strings: List[str]):
@@ -726,9 +726,9 @@ class SiameseXLNET(Base):
         segment_ids = np.array(segment_ids)
         segment_ids[segment_ids == 0] = 1
         r = self._execute(
-            inputs = [input_ids, segment_ids, input_masks],
-            input_labels = ['Placeholder', 'Placeholder_1', 'Placeholder_2'],
-            output_labels = ['vectorizer'],
+            inputs=[input_ids, segment_ids, input_masks],
+            input_labels=['Placeholder', 'Placeholder_1', 'Placeholder_2'],
+            output_labels=['vectorizer'],
         )
         return r['vectorizer']
 
@@ -768,7 +768,7 @@ class SiameseXLNET(Base):
             y = r[i:index]
             results.append(self._base(x, y)[:, 1])
 
-        results = np.concatenate(results, axis = 0)
+        results = np.concatenate(results, axis=0)
         results = np.reshape(results, (len(strings), len(strings)))
         return results
 
@@ -806,33 +806,33 @@ class SiameseXLNET(Base):
             import seaborn as sns
 
             sns.set()
-        except:
+        except BaseException:
             raise ModuleNotFoundError(
                 'matplotlib and seaborn not installed. Please install it and try again.'
             )
 
-        plt.figure(figsize = figsize)
+        plt.figure(figsize=figsize)
         g = sns.heatmap(
             results,
-            cmap = 'Blues',
-            xticklabels = strings,
-            yticklabels = strings,
-            annot = annotate,
+            cmap='Blues',
+            xticklabels=strings,
+            yticklabels=strings,
+            annot=annotate,
         )
         plt.show()
 
 
 class TaggingXLNET(Base, Tagging):
     def __init__(
-        self, input_nodes, output_nodes, sess, tokenizer, settings, tok = None
+        self, input_nodes, output_nodes, sess, tokenizer, settings, tok=None
     ):
         Base.__init__(
             self,
-            input_nodes = input_nodes,
-            output_nodes = output_nodes,
-            sess = sess,
-            tokenizer = tokenizer,
-            label = None,
+            input_nodes=input_nodes,
+            output_nodes=output_nodes,
+            sess=sess,
+            tokenizer=tokenizer,
+            label=None,
         )
 
         self._settings = settings
@@ -870,16 +870,16 @@ class TaggingXLNET(Base, Tagging):
         input_ids, input_masks, segment_ids, s_tokens = self._tokenize(string)
 
         r = self._execute(
-            inputs = [input_ids, segment_ids, input_masks],
-            input_labels = ['Placeholder', 'Placeholder_1', 'Placeholder_2'],
-            output_labels = ['vectorizer'],
+            inputs=[input_ids, segment_ids, input_masks],
+            input_labels=['Placeholder', 'Placeholder_1', 'Placeholder_2'],
+            output_labels=['vectorizer'],
         )
         v = r['vectorizer'][0]
         return merge_sentencepiece_tokens(
             list(zip(s_tokens, v[: len(s_tokens)])),
-            weighted = False,
-            vectorize = True,
-            model = 'xlnet',
+            weighted=False,
+            vectorize=True,
+            model='xlnet',
         )
 
     @check_type
@@ -914,15 +914,15 @@ class TaggingXLNET(Base, Tagging):
         input_ids, input_masks, segment_ids, s_tokens = self._tokenize(string)
 
         r = self._execute(
-            inputs = [input_ids, segment_ids, input_masks],
-            input_labels = ['Placeholder', 'Placeholder_1', 'Placeholder_2'],
-            output_labels = ['logits'],
+            inputs=[input_ids, segment_ids, input_masks],
+            input_labels=['Placeholder', 'Placeholder_1', 'Placeholder_2'],
+            output_labels=['logits'],
         )
         predicted = r['logits'][0]
         t = [self._settings['idx2tag'][d] for d in predicted]
 
         merged = merge_sentencepiece_tokens_tagging(
-            s_tokens, t, model = 'xlnet'
+            s_tokens, t, model='xlnet'
         )
         return list(zip(*merged))
 
@@ -931,11 +931,11 @@ class DependencyXLNET(Base):
     def __init__(self, input_nodes, output_nodes, sess, tokenizer, settings):
         Base.__init__(
             self,
-            input_nodes = input_nodes,
-            output_nodes = output_nodes,
-            sess = sess,
-            tokenizer = tokenizer,
-            label = None,
+            input_nodes=input_nodes,
+            output_nodes=output_nodes,
+            sess=sess,
+            tokenizer=tokenizer,
+            label=None,
         )
 
         self._tag2idx = settings
@@ -959,17 +959,17 @@ class DependencyXLNET(Base):
         )
         s_tokens = s_tokens[0]
         r = self._execute(
-            inputs = [input_ids, segment_ids, input_masks],
-            input_labels = ['Placeholder', 'Placeholder_1', 'Placeholder_2'],
-            output_labels = ['vectorizer'],
+            inputs=[input_ids, segment_ids, input_masks],
+            input_labels=['Placeholder', 'Placeholder_1', 'Placeholder_2'],
+            output_labels=['vectorizer'],
         )
         v = r['vectorizer']
         v = v[0]
         return merge_sentencepiece_tokens(
             list(zip(s_tokens, v[: len(s_tokens)])),
-            weighted = False,
-            vectorize = True,
-            model = 'xlnet',
+            weighted=False,
+            vectorize=True,
+            model='xlnet',
         )
 
     @check_type
@@ -991,9 +991,9 @@ class DependencyXLNET(Base):
         )
         s_tokens = s_tokens[0]
         r = self._execute(
-            inputs = [input_ids, segment_ids, input_masks],
-            input_labels = ['Placeholder', 'Placeholder_1', 'Placeholder_2'],
-            output_labels = ['logits', 'heads_seq'],
+            inputs=[input_ids, segment_ids, input_masks],
+            input_labels=['Placeholder', 'Placeholder_1', 'Placeholder_2'],
+            output_labels=['logits', 'heads_seq'],
         )
         tagging, depend = r['logits'], r['heads_seq']
         tagging = [self._idx2tag[i] for i in tagging[0]]
@@ -1006,11 +1006,11 @@ class DependencyXLNET(Base):
                 depend[i] = 0
 
         tagging = merge_sentencepiece_tokens_tagging(
-            s_tokens, tagging, model = 'xlnet'
+            s_tokens, tagging, model='xlnet'
         )
         tagging = list(zip(*tagging))
         indexing = merge_sentencepiece_tokens_tagging(
-            s_tokens, depend, model = 'xlnet'
+            s_tokens, depend, model='xlnet'
         )
         indexing = list(zip(*indexing))
 
@@ -1024,7 +1024,7 @@ class DependencyXLNET(Base):
                 '%d\t%s\t_\t_\t_\t_\t%d\t%s\t_\t_'
                 % (i + 1, tagging[i][0], index, tagging[i][1])
             )
-        d = DependencyGraph('\n'.join(result), top_relation_label = 'root')
+        d = DependencyGraph('\n'.join(result), top_relation_label='root')
         return d, tagging, indexing_
 
 
@@ -1035,15 +1035,15 @@ class ZeroshotXLNET(Base):
         output_nodes,
         sess,
         tokenizer,
-        label = ['not similar', 'similar'],
+        label=['not similar', 'similar'],
     ):
         Base.__init__(
             self,
-            input_nodes = input_nodes,
-            output_nodes = output_nodes,
-            sess = sess,
-            tokenizer = tokenizer,
-            label = label,
+            input_nodes=input_nodes,
+            output_nodes=output_nodes,
+            sess=sess,
+            tokenizer=tokenizer,
+            label=label,
         )
 
     def _base(self, strings, labels):
@@ -1062,11 +1062,11 @@ class ZeroshotXLNET(Base):
         )
 
         r = self._execute(
-            inputs = [input_ids, segment_ids, input_masks],
-            input_labels = ['Placeholder', 'Placeholder_1', 'Placeholder_2'],
-            output_labels = ['logits'],
+            inputs=[input_ids, segment_ids, input_masks],
+            input_labels=['Placeholder', 'Placeholder_1', 'Placeholder_2'],
+            output_labels=['logits'],
         )
-        output = softmax(r['logits'], axis = -1)
+        output = softmax(r['logits'], axis=-1)
 
         results = []
         for k, v in mapping.items():
@@ -1113,9 +1113,9 @@ class ZeroshotXLNET(Base):
         )
 
         r = self._execute(
-            inputs = [input_ids, segment_ids, input_masks],
-            input_labels = ['Placeholder', 'Placeholder_1', 'Placeholder_2'],
-            output_labels = ['vectorizer'],
+            inputs=[input_ids, segment_ids, input_masks],
+            input_labels=['Placeholder', 'Placeholder_1', 'Placeholder_2'],
+            output_labels=['vectorizer'],
         )
         v = r['vectorizer']
         v = np.transpose(v, [1, 0, 2])
@@ -1125,14 +1125,14 @@ class ZeroshotXLNET(Base):
         elif method == 'last':
             v = v[:, -1]
         elif method == 'mean':
-            v = np.mean(v, axis = 1)
+            v = np.mean(v, axis=1)
         else:
             v = [
                 merge_sentencepiece_tokens(
                     list(zip(s_tokens[i], v[i][: len(s_tokens[i])])),
-                    weighted = False,
-                    vectorize = True,
-                    model = 'xlnet',
+                    weighted=False,
+                    vectorize=True,
+                    model='xlnet',
                 )
                 for i in range(len(v))
             ]
@@ -1166,15 +1166,15 @@ class KeyphraseXLNET(Base):
         output_nodes,
         sess,
         tokenizer,
-        label = ['not similar', 'similar'],
+        label=['not similar', 'similar'],
     ):
         Base.__init__(
             self,
-            input_nodes = input_nodes,
-            output_nodes = output_nodes,
-            sess = sess,
-            tokenizer = tokenizer,
-            label = label,
+            input_nodes=input_nodes,
+            output_nodes=output_nodes,
+            sess=sess,
+            tokenizer=tokenizer,
+            label=label,
         )
         self._batch_size = 20
 
@@ -1187,7 +1187,7 @@ class KeyphraseXLNET(Base):
         )
 
         r = self._execute(
-            inputs = [
+            inputs=[
                 input_ids_left,
                 segment_ids_left,
                 input_masks_left,
@@ -1195,7 +1195,7 @@ class KeyphraseXLNET(Base):
                 input_masks_right,
                 segment_ids_right,
             ],
-            input_labels = [
+            input_labels=[
                 'Placeholder',
                 'Placeholder_1',
                 'Placeholder_2',
@@ -1203,9 +1203,9 @@ class KeyphraseXLNET(Base):
                 'Placeholder_4',
                 'Placeholder_5',
             ],
-            output_labels = ['logits'],
+            output_labels=['logits'],
         )
-        return softmax(r['logits'], axis = -1)
+        return softmax(r['logits'], axis=-1)
 
     @check_type
     def vectorize(self, strings: List[str]):
@@ -1224,9 +1224,9 @@ class KeyphraseXLNET(Base):
             self._tokenizer, strings
         )
         r = self._execute(
-            inputs = [input_ids, segment_ids, input_masks],
-            input_labels = ['Placeholder', 'Placeholder_1', 'Placeholder_2'],
-            output_labels = ['xlnet/summary'],
+            inputs=[input_ids, segment_ids, input_masks],
+            input_labels=['Placeholder', 'Placeholder_1', 'Placeholder_2'],
+            output_labels=['xlnet/summary'],
         )
         return r['xlnet/summary']
 

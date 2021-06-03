@@ -54,7 +54,7 @@ def available_transformer_squad():
     from malaya.function import describe_availability
 
     return describe_availability(
-        _transformer_squad_availability, text = 'tested on SQUAD V2 Dev set.'
+        _transformer_squad_availability, text='tested on SQUAD V2 Dev set.'
     )
 
 
@@ -76,7 +76,7 @@ def transformer_squad(model: str = 'xlnet', quantized: bool = False, **kwargs):
         * ``'alxlnet'`` - Malaya ALXLNET BASE parameters.
 
     quantized : bool, optional (default=False)
-        if True, will load 8-bit quantized model. 
+        if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
 
     Returns
@@ -90,5 +90,5 @@ def transformer_squad(model: str = 'xlnet', quantized: bool = False, **kwargs):
             'model not supported, please check supported models from `malaya.qa.available_transformer_squad()`.'
         )
     return qa.transformer_squad(
-        class_name = 'qa-squad', model = model, quantized = quantized, **kwargs
+        class_name='qa-squad', model=model, quantized=quantized, **kwargs
     )

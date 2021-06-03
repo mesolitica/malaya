@@ -168,7 +168,7 @@ def put_spacing_num(string):
 
 
 class Normalizer:
-    def __init__(self, tokenizer, speller = None):
+    def __init__(self, tokenizer, speller=None):
         self._tokenizer = tokenizer
         self._speller = speller
 
@@ -521,7 +521,7 @@ class Normalizer:
                     selected = rules_normalizer[word]
                 elif self._speller:
                     selected = self._speller.correct(
-                        word, string = ' '.join(tokenized), index = index
+                        word, string=' '.join(tokenized), index=index
                     )
                 else:
                     selected = word
@@ -544,7 +544,7 @@ class Normalizer:
         return {'normalize': result, 'date': dates_, 'money': money_}
 
 
-def normalizer(speller = None, **kwargs):
+def normalizer(speller=None, **kwargs):
     """
     Load a Normalizer using any spelling correction model.
 

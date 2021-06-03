@@ -5,7 +5,7 @@ from typing import List, Callable
 
 
 def _most_common(l):
-    return max(set(l), key = l.count)
+    return max(set(l), key=l.count)
 
 
 @check_type
@@ -29,7 +29,7 @@ def voting_stack(models, text: str):
     results, texts, votes, votes_indices, indices = [], [], [], [], []
     is_dependency = False
     for i in range(len(models)):
-        if not 'predict' in dir(models[i]):
+        if 'predict' not in dir(models[i]):
             raise ValueError('all models must able to predict')
         predicted = models[i].predict(text)
         if isinstance(predicted, tuple):
@@ -41,11 +41,11 @@ def voting_stack(models, text: str):
         predicted = np.array(predicted)
         results.append(predicted[:, 1:2])
         texts.append(predicted[:, 0])
-    concatenated = np.concatenate(results, axis = 1)
+    concatenated = np.concatenate(results, axis=1)
     for row in concatenated:
         votes.append(_most_common(row.tolist()))
     if is_dependency:
-        concatenated = np.concatenate(indices, axis = 1)
+        concatenated = np.concatenate(indices, axis=1)
         for row in concatenated:
             votes_indices.append(_most_common(row.tolist()))
     output = list(map(lambda X: (X[0], X[1]), list(zip(texts[-1], votes))))
@@ -84,7 +84,7 @@ def predict_stack(
     mode = aggregate
 
     for i in range(len(models)):
-        if not 'predict_proba' in dir(models[i]):
+        if 'predict_proba' not in dir(models[i]):
             raise ValueError('all models must able to `predict_proba`')
 
     labels, results = None, []
@@ -103,7 +103,7 @@ def predict_stack(
             else:
                 nested_results.append(r)
         results.append(nested_results)
-    results = mode(np.array(results), axis = 0)
+    results = mode(np.array(results), axis=0)
     outputs = []
     if labels:
         for result in results:

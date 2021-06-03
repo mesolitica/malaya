@@ -6,11 +6,11 @@ def top_k_logits(logits, k):
         return logits
 
     def _top_k():
-        values, _ = tf.nn.top_k(logits, k = k)
+        values, _ = tf.nn.top_k(logits, k=k)
         min_values = values[:, -1, tf.newaxis]
         return tf.where(
             logits < min_values,
-            tf.ones_like(logits, dtype = logits.dtype) * -1e10,
+            tf.ones_like(logits, dtype=logits.dtype) * -1e10,
             logits,
         )
 
@@ -19,18 +19,18 @@ def top_k_logits(logits, k):
 
 def top_p_logits(logits, p):
     with tf.compat.v1.variable_scope('top_p_logits'):
-        logits_sort = tf.sort(logits, direction = 'DESCENDING')
+        logits_sort = tf.sort(logits, direction='DESCENDING')
         probs_sort = tf.nn.softmax(logits_sort)
-        probs_sums = tf.cumsum(probs_sort, axis = 1, exclusive = True)
+        probs_sums = tf.cumsum(probs_sort, axis=1, exclusive=True)
         logits_masked = tf.where(
             probs_sums < p, logits_sort, tf.ones_like(logits_sort) * 1000
         )  # [batchsize, vocab]
         min_logits = tf.reduce_min(
-            logits_masked, axis = 1, keepdims = True
+            logits_masked, axis=1, keepdims=True
         )  # [batchsize, 1]
         return tf.where(
             logits < min_logits,
-            tf.ones_like(logits, dtype = logits.dtype) * -1e10,
+            tf.ones_like(logits, dtype=logits.dtype) * -1e10,
             logits,
         )
 
@@ -41,8 +41,8 @@ def sample(translate_model, features):
     logits = top_p_logits(logits, translate_model.hparams.top_p)
     samples = tf.compat.v1.multinomial(
         logits,
-        num_samples = translate_model.hparams.top_k,
-        output_dtype = tf.int32,
+        num_samples=translate_model.hparams.top_k,
+        output_dtype=tf.int32,
     )
     return samples, logits, losses
 
@@ -105,11 +105,11 @@ def nucleus_sampling(translate_model, features, decode_length):
                 :, common_layers.shape_list(recent_output)[1], :, :
             ]
         if translate_model._target_modality_is_real:
-            cur_sample = tf.expand_dims(cur_sample, axis = 1)
-            samples = tf.concat([recent_output, cur_sample], axis = 1)
+            cur_sample = tf.expand_dims(cur_sample, axis=1)
+            samples = tf.concat([recent_output, cur_sample], axis=1)
         else:
-            cur_sample = tf.to_int64(tf.expand_dims(cur_sample, axis = 1))
-            samples = tf.concat([recent_output, cur_sample], axis = 1)
+            cur_sample = tf.to_int64(tf.expand_dims(cur_sample, axis=1))
+            samples = tf.concat([recent_output, cur_sample], axis=1)
             if not tf.executing_eagerly():
                 samples.set_shape([None, None, None, 1])
 
@@ -134,10 +134,10 @@ def nucleus_sampling(translate_model, features, decode_length):
             ):
                 dim += (-dim) % translate_model._hparams.vocab_divisor
             initial_output = tf.zeros(
-                (batch_size, 0, 1, dim), dtype = tf.float32
+                (batch_size, 0, 1, dim), dtype=tf.float32
             )
         else:
-            initial_output = tf.zeros((batch_size, 0, 1, 1), dtype = tf.int64)
+            initial_output = tf.zeros((batch_size, 0, 1, 1), dtype=tf.int64)
     # Hack: foldl complains when the output shape is less specified than the
     # input shape, so we confuse it about the input shape.
     initial_output = tf.slice(
@@ -213,13 +213,13 @@ def nucleus_sampling(translate_model, features, decode_length):
         while_exit_cond,
         infer_step,
         [result, logits, loss],
-        shape_invariants = [
+        shape_invariants=[
             tf.TensorShape([None, None, None, None]),
             tf.TensorShape(logits_shape_inv),
             tf.TensorShape([]),
         ],
-        back_prop = False,
-        parallel_iterations = 1,
+        back_prop=False,
+        parallel_iterations=1,
     )
     if inputs_old is not None:  # Restore to not confuse Estimator.
         features['inputs'] = inputs_old

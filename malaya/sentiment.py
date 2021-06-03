@@ -57,7 +57,7 @@ def available_transformer():
     from malaya.function import describe_availability
 
     return describe_availability(
-        _transformer_availability, text = 'tested on 20% test set.'
+        _transformer_availability, text='tested on 20% test set.'
     )
 
 
@@ -90,16 +90,16 @@ def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
         * ``'tiny-albert'`` - Google ALBERT TINY parameters.
         * ``'xlnet'`` - Google XLNET BASE parameters.
         * ``'alxlnet'`` - Malaya ALXLNET BASE parameters.
-        
+
     quantized : bool, optional (default=False)
-        if True, will load 8-bit quantized model. 
+        if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
 
     Returns
     -------
     result: model
         List of model classes:
-        
+
         * if `bert` in model, will return `malaya.model.bert.BinaryBERT`.
         * if `xlnet` in model, will return `malaya.model.xlnet.BinaryXLNET`.
     """
@@ -110,9 +110,9 @@ def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
             'model not supported, please check supported models from `malaya.sentiment.available_transformer()`.'
         )
     return softmax.transformer(
-        class_name = 'sentiment',
-        label = label,
-        model = model,
-        quantized = quantized,
+        class_name='sentiment',
+        label=label,
+        model=model,
+        quantized=quantized,
         **kwargs
     )

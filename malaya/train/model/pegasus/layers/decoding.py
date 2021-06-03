@@ -23,7 +23,7 @@ from . import beam_search
 EOS_ID = 1
 
 
-def process_logits(logits_BxN, top_k = 0, top_p = 0.0, temperature = 0.0):
+def process_logits(logits_BxN, top_k=0, top_p=0.0, temperature=0.0):
     """Process logits using gumbel noise and mask top_k or top_p.
 
   The downstream task can perform probability sampling using gumbel-max trick
@@ -53,32 +53,32 @@ def process_logits(logits_BxN, top_k = 0, top_p = 0.0, temperature = 0.0):
         )
 
     if top_k > 0:
-        top_values_BxK, _ = tf.math.top_k(logits_BxN, k = top_k, sorted = False)
+        top_values_BxK, _ = tf.math.top_k(logits_BxN, k=top_k, sorted=False)
         min_value_Bx1 = tf.reduce_min(
-            top_values_BxK, axis = -1, keepdims = True
+            top_values_BxK, axis=-1, keepdims=True
         )
         mask_BxN = tf.cast(tf.less(logits_BxN, min_value_Bx1), logits_BxN.dtype)
         logits_BxN -= mask_BxN * logits_BxN.dtype.max
 
     if top_p > 0:
         sort_indices_BxN = tf.argsort(
-            logits_BxN, axis = -1, direction = 'DESCENDING'
+            logits_BxN, axis=-1, direction='DESCENDING'
         )
         probs_BxN = tf.gather(
-            tf.nn.softmax(logits_BxN), sort_indices_BxN, batch_dims = 1
+            tf.nn.softmax(logits_BxN), sort_indices_BxN, batch_dims=1
         )
-        cumprobs_BxN = tf.cumsum(probs_BxN, axis = -1, exclusive = True)
+        cumprobs_BxN = tf.cumsum(probs_BxN, axis=-1, exclusive=True)
         # The top 1 candidate always will not be masked.
         # This way ensures at least 1 indices will be selected.
         sort_mask_BxN = tf.cast(
             tf.greater(cumprobs_BxN, top_p), logits_BxN.dtype
         )
         batch_indices_BxN = tf.tile(
-            tf.expand_dims(tf.range(tf.shape(logits_BxN)[0]), axis = -1),
+            tf.expand_dims(tf.range(tf.shape(logits_BxN)[0]), axis=-1),
             [1, tf.shape(logits_BxN)[1]],
         )
         top_p_mask_BxN = tf.scatter_nd(
-            tf.stack([batch_indices_BxN, sort_indices_BxN], axis = -1),
+            tf.stack([batch_indices_BxN, sort_indices_BxN], axis=-1),
             sort_mask_BxN,
             tf.shape(logits_BxN),
         )
@@ -98,10 +98,10 @@ def inplace_update_i(tensor_BxL, updates_B, i):
 
     indices_Bx2 = tf.stack(
         [
-            tf.range(batch_size, dtype = tf.int64),
+            tf.range(batch_size, dtype=tf.int64),
             tf.fill([batch_size], tf.cast(i, tf.int64)),
         ],
-        axis = -1,
+        axis=-1,
     )
     return tf.tensor_scatter_nd_update(tensor_BxL, indices_Bx2, updates_B)
 
@@ -112,15 +112,15 @@ def left2right_decode(
     batch_size,
     max_decode_len,
     vocab_size,
-    beam_size = 1,
-    beam_start = 5,
-    beam_alpha = 0.6,
-    beam_min = 0,
-    beam_max = -1,
-    temperature = 0.0,
-    top_k = 0,
-    top_p = 0.0,
-    eos_id = EOS_ID,
+    beam_size=1,
+    beam_start=5,
+    beam_alpha=0.6,
+    beam_min=0,
+    beam_max=-1,
+    temperature=0.0,
+    top_k=0,
+    top_p=0.0,
+    eos_id=EOS_ID,
 ):
     """left to right decode.
 
@@ -167,7 +167,7 @@ def left2right_decode(
             return i + 1, decodes_BxT, cache_BxU_dict
 
         def loop_cond(i, decodes_BxT, unused_cache_BxU_dict):
-            finished_B = tf.reduce_any(tf.equal(decodes_BxT, EOS_ID), axis = 1)
+            finished_B = tf.reduce_any(tf.equal(decodes_BxT, EOS_ID), axis=1)
             return tf.logical_and(
                 i < max_decode_len, tf.logical_not(tf.reduce_all(finished_B))
             )
@@ -180,7 +180,7 @@ def left2right_decode(
         _, decodes, _ = tf.while_loop(
             loop_cond,
             decode_loop,
-            [tf.constant(0, dtype = dtype), init_dec_BxT, context_BxU_dict],
+            [tf.constant(0, dtype=dtype), init_dec_BxT, context_BxU_dict],
         )
         return decodes
 
@@ -198,7 +198,7 @@ def left2right_decode(
         )
         beams, _ = beam_search.beam_search(
             symbols_to_logits_fn_with_sampling,
-            tf.zeros([batch_size, max_decode_len], dtype = tf.int32),
+            tf.zeros([batch_size, max_decode_len], dtype=tf.int32),
             context_BxU_dict,
             vocab_size,
             beam_size,

@@ -2,7 +2,8 @@
 # as described in:
 # Rose, S., D. Engel, N. Cramer, and W. Cowley (2010).
 # Automatic keyword extraction from indi-vidual documents.
-# In M. W. Berry and J. Kogan (Eds.), Text Mining: Applications and Theory.unknown: John Wiley and Sons, Ltd.
+# In M. W. Berry and J. Kogan (Eds.), Text Mining: Applications and
+# Theory.unknown: John Wiley and Sons, Ltd.
 
 import re
 import operator
@@ -43,7 +44,8 @@ def separate_words(text, min_word_return_size):
     words = []
     for single_word in splitter.split(text):
         current_word = single_word.strip()
-        # leave numbers in phrase, but don't count as words, since they tend to invalidate scores of their phrases
+        # leave numbers in phrase, but don't count as words, since they tend to
+        # invalidate scores of their phrases
         if (
             len(current_word) > min_word_return_size
             and current_word != ''
@@ -89,7 +91,7 @@ def generate_candidate_keywords(sentence_list, stopword_pattern):
     return phrase_list
 
 
-def calculate_word_scores(phraseList, attentions = None):
+def calculate_word_scores(phraseList, attentions=None):
     word_frequency = {}
     word_degree = {}
     for phrase in phraseList:

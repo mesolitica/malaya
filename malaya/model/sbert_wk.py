@@ -30,7 +30,7 @@ class generate_embedding:
         for i in range(len(unmask_num)):
             sent_len = unmask_num[i]
             hidden_state_sen = all_layer_embedding[i][-1, :, :]
-            embedding.append(np.mean(hidden_state_sen[:sent_len, :], axis = 0))
+            embedding.append(np.mean(hidden_state_sen[:sent_len, :], axis=0))
 
         embedding = np.array(embedding)
         return embedding
@@ -47,7 +47,7 @@ class generate_embedding:
         for i in range(len(unmask_num)):
             sent_len = unmask_num[i]
             hidden_state_sen = all_layer_embedding[i][4, :, :]
-            embedding.append(np.mean(hidden_state_sen[:sent_len, :], axis = 0))
+            embedding.append(np.mean(hidden_state_sen[:sent_len, :], axis=0))
 
         embedding = np.array(embedding)
         return embedding
@@ -117,8 +117,8 @@ class generate_embedding:
 
         for k in range(token_feature.shape[0]):
 
-            left_window = token_feature[k - window_size : k, :]
-            right_window = token_feature[k + 1 : k + window_size + 1, :]
+            left_window = token_feature[k - window_size: k, :]
+            right_window = token_feature[k + 1: k + window_size + 1, :]
             window_matrix = np.vstack(
                 [left_window, right_window, token_feature[k, :][None, :]]
             )
@@ -128,7 +128,7 @@ class generate_embedding:
             q = Q[:, -1]
             r = R[:, -1]
             alpha_alignment[k] = np.mean(
-                normalize(R[:-1, :-1], axis = 0), axis = 1
+                normalize(R[:-1, :-1], axis=0), axis=1
             ).dot(R[:-1, -1]) / (np.linalg.norm(r[:-1]))
             alpha_alignment[k] = 1 / (
                 alpha_alignment[k] * window_matrix.shape[0] * 2

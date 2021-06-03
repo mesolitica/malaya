@@ -28,10 +28,10 @@ def get_single_block_row_attention(
     to_start_block_id,
     to_end_block_id,
     num_rand_blocks,
-    window_block_left = 1,
-    window_block_right = 1,
-    global_block_left = 1,
-    global_block_right = 1,
+    window_block_left=1,
+    window_block_right=1,
+    global_block_left=1,
+    global_block_right=1,
 ):
     """For a single row block get random row attention.
 
@@ -51,7 +51,7 @@ def get_single_block_row_attention(
 
     # list of to_blocks from which to choose random attention
     to_block_list = np.arange(
-        to_start_block_id, to_end_block_id, dtype = np.int32
+        to_start_block_id, to_end_block_id, dtype=np.int32
     )
     # permute the blocks
     perm_block = np.random.permutation(to_block_list)
@@ -83,7 +83,7 @@ def get_single_block_row_attention(
             selected_random_blokcs.append(perm_block[i])
         if len(selected_random_blokcs) == num_rand_blocks:
             break
-    return np.array(selected_random_blokcs, dtype = np.int32)
+    return np.array(selected_random_blokcs, dtype=np.int32)
 
 
 def bigbird_block_rand_mask_with_head(
@@ -94,12 +94,12 @@ def bigbird_block_rand_mask_with_head(
     num_heads,
     plan_from_length,
     plan_num_rand_blocks,
-    window_block_left = 1,
-    window_block_right = 1,
-    global_block_top = 1,
-    global_block_bottom = 1,
-    global_block_left = 1,
-    global_block_right = 1,
+    window_block_left=1,
+    window_block_right=1,
+    global_block_top=1,
+    global_block_bottom=1,
+    global_block_left=1,
+    global_block_right=1,
 ):
     """Create adjacency list of random attention.
 
@@ -140,7 +140,7 @@ def bigbird_block_rand_mask_with_head(
     rand_attn = [
         np.zeros(
             (num_blocks, np.sum(plan_num_rand_blocks[: max_plan_idx + 1])),
-            dtype = np.int32,
+            dtype=np.int32,
         )
         for i in range(num_heads)
     ]
@@ -165,14 +165,14 @@ def bigbird_block_rand_mask_with_head(
                         rand_attn[h][
                             blk_rw_idx, rnd_r_cnt:curr_r_cnt
                         ] = get_single_block_row_attention(
-                            block_id = blk_rw_idx,
-                            to_start_block_id = plan_block_length[plan_idx - 1],
-                            to_end_block_id = plan_block_length[plan_idx],
-                            num_rand_blocks = plan_num_rand_blocks[plan_idx],
-                            window_block_left = window_block_left,
-                            window_block_right = window_block_right,
-                            global_block_left = global_block_left,
-                            global_block_right = global_block_right,
+                            block_id=blk_rw_idx,
+                            to_start_block_id=plan_block_length[plan_idx - 1],
+                            to_end_block_id=plan_block_length[plan_idx],
+                            num_rand_blocks=plan_num_rand_blocks[plan_idx],
+                            window_block_left=window_block_left,
+                            window_block_right=window_block_right,
+                            global_block_left=global_block_left,
+                            global_block_right=global_block_right,
                         )
 
             for pl_id in range(plan_idx):
@@ -192,14 +192,14 @@ def bigbird_block_rand_mask_with_head(
                         rand_attn[h][
                             blk_rw_idx, rnd_r_cnt:curr_r_cnt
                         ] = get_single_block_row_attention(
-                            block_id = blk_rw_idx,
-                            to_start_block_id = to_start_block_id,
-                            to_end_block_id = plan_block_length[pl_id],
-                            num_rand_blocks = plan_num_rand_blocks[pl_id],
-                            window_block_left = window_block_left,
-                            window_block_right = window_block_right,
-                            global_block_left = global_block_left,
-                            global_block_right = global_block_right,
+                            block_id=blk_rw_idx,
+                            to_start_block_id=to_start_block_id,
+                            to_end_block_id=plan_block_length[pl_id],
+                            num_rand_blocks=plan_num_rand_blocks[pl_id],
+                            window_block_left=window_block_left,
+                            window_block_right=window_block_right,
+                            global_block_left=global_block_left,
+                            global_block_right=global_block_right,
                         )
 
         if plan_num_rand_blocks[plan_idx] == 0:
@@ -221,19 +221,19 @@ def bigbird_block_rand_mask_with_head(
                 rand_attn[h][
                     blk_rw_idx, rnd_r_cnt:curr_r_cnt
                 ] = get_single_block_row_attention(
-                    block_id = blk_rw_idx,
-                    to_start_block_id = to_start_block_id,
-                    to_end_block_id = plan_block_length[plan_idx],
-                    num_rand_blocks = plan_num_rand_blocks[plan_idx],
-                    window_block_left = window_block_left,
-                    window_block_right = window_block_right,
-                    global_block_left = global_block_left,
-                    global_block_right = global_block_right,
+                    block_id=blk_rw_idx,
+                    to_start_block_id=to_start_block_id,
+                    to_end_block_id=plan_block_length[plan_idx],
+                    num_rand_blocks=plan_num_rand_blocks[plan_idx],
+                    window_block_left=window_block_left,
+                    window_block_right=window_block_right,
+                    global_block_left=global_block_left,
+                    global_block_right=global_block_right,
                 )
 
     for nh in range(num_heads):
         rand_attn[nh] = rand_attn[nh][
-            global_block_top : num_blocks - global_block_bottom, :
+            global_block_top: num_blocks - global_block_bottom, :
         ]
     return rand_attn
 
@@ -278,7 +278,7 @@ def bigbird_block_rand_mask(
     from_block_size,
     to_block_size,
     num_rand_blocks,
-    last_idx = -1,
+    last_idx=-1,
 ):
     """Create adjacency list of random attention.
 
@@ -300,10 +300,10 @@ def bigbird_block_rand_mask(
 
     rand_attn = np.zeros(
         (from_seq_length // from_block_size - 2, num_rand_blocks),
-        dtype = np.int32,
+        dtype=np.int32,
     )
     middle_seq = np.arange(
-        1, to_seq_length // to_block_size - 1, dtype = np.int32
+        1, to_seq_length // to_block_size - 1, dtype=np.int32
     )
     last = to_seq_length // to_block_size - 1
     if last_idx > (2 * to_block_size):
@@ -336,7 +336,7 @@ def bigbird_block_rand_mask(
             else:
                 rand_attn[i - 1, :] = np.random.permutation(
                     np.concatenate(
-                        (middle_seq[:start], middle_seq[end + 1 : last])
+                        (middle_seq[:start], middle_seq[end + 1: last])
                     )
                 )[:r]
     return rand_attn
@@ -348,8 +348,8 @@ def full_bigbird_mask(
     from_block_size,
     to_block_size,
     num_rand_blocks,
-    rand_attn = None,
-    focus = 1024,
+    rand_attn=None,
+    focus=1024,
 ):
     """Calculate BigBird attention pattern as a full dense matrix.
 
@@ -375,16 +375,16 @@ def full_bigbird_mask(
             focus,
         )
 
-    attn_mask = np.zeros((MAX_SEQ_LEN, MAX_SEQ_LEN), dtype = np.int32)
+    attn_mask = np.zeros((MAX_SEQ_LEN, MAX_SEQ_LEN), dtype=np.int32)
     for i in range(1, (MAX_SEQ_LEN // from_block_size) - 1):
         attn_mask[
-            (i) * from_block_size : (i + 1) * from_block_size,
-            (i - 1) * to_block_size : (i + 2) * to_block_size,
+            (i) * from_block_size: (i + 1) * from_block_size,
+            (i - 1) * to_block_size: (i + 2) * to_block_size,
         ] = 1
         for j in rand_attn[i - 1, :]:
             attn_mask[
-                i * from_block_size : (i + 1) * from_block_size,
-                j * to_block_size : (j + 1) * to_block_size,
+                i * from_block_size: (i + 1) * from_block_size,
+                j * to_block_size: (j + 1) * to_block_size,
             ] = 1
 
     attn_mask[:from_block_size, :] = 1
@@ -392,7 +392,7 @@ def full_bigbird_mask(
     attn_mask[:, -to_block_size:] = 1
     attn_mask[-from_block_size:, :] = 1
     clipped_attn_mask = attn_mask[:from_seq_length, :to_seq_length]
-    return np.array(clipped_attn_mask, dtype = bool)
+    return np.array(clipped_attn_mask, dtype=bool)
 
 
 def create_rand_mask_from_inputs(
@@ -427,7 +427,7 @@ def create_rand_mask_from_inputs(
   """
     num_windows = from_seq_length // from_block_size - 2
     rand_mask = tf.reshape(
-        tf.gather(to_blocked_mask, rand_attn, batch_dims = 1),
+        tf.gather(to_blocked_mask, rand_attn, batch_dims=1),
         [
             batch_size,
             num_attention_heads,
@@ -562,7 +562,7 @@ def bigbird_simulated_attention(
     to_seq_length,
     from_block_size,
     to_block_size,
-    seed = None,
+    seed=None,
 ):
     """BigBird attention calculation using masks in quadratic time.
 
@@ -599,13 +599,13 @@ def bigbird_simulated_attention(
     )
 
     rand_attn = bigbird_block_rand_mask_with_head(
-        from_seq_length = from_seq_length,
-        to_seq_length = to_seq_length,
-        from_block_size = from_block_size,
-        to_block_size = to_block_size,
-        num_heads = num_attention_heads,
-        plan_from_length = plan_from_length,
-        plan_num_rand_blocks = plan_num_rand_blocks,
+        from_seq_length=from_seq_length,
+        to_seq_length=to_seq_length,
+        from_block_size=from_block_size,
+        to_block_size=to_block_size,
+        num_heads=num_attention_heads,
+        plan_from_length=plan_from_length,
+        plan_num_rand_blocks=plan_num_rand_blocks,
     )
     temp_mask = [
         full_bigbird_mask(  # pylint: disable=g-complex-comprehension
@@ -614,15 +614,15 @@ def bigbird_simulated_attention(
             from_block_size,
             to_block_size,
             num_rand_blocks,
-            rand_attn = rand_attn[i],
-            focus = 1024,
+            rand_attn=rand_attn[i],
+            focus=1024,
         )
         for i in range(num_attention_heads)
     ]
-    temp_mask = np.stack(temp_mask, axis = 0)
-    temp_mask = np.array(temp_mask, dtype = bool)
+    temp_mask = np.stack(temp_mask, axis=0)
+    temp_mask = np.array(temp_mask, dtype=bool)
 
-    rand_block_mask = tf.constant(temp_mask, dtype = tf.bool)  # [N, F, T]
+    rand_block_mask = tf.constant(temp_mask, dtype=tf.bool)  # [N, F, T]
     rand_block_mask = tf.cast(rand_block_mask, tf.int32)
     rand_block_mask = tf.expand_dims(rand_block_mask, 0)  # [1, N, F, T]
     if attention_mask is not None:
@@ -635,7 +635,7 @@ def bigbird_simulated_attention(
         value_layer,
         attention_mask,
         size_per_head,
-        attention_probs_dropout_prob = 0.0,
+        attention_probs_dropout_prob=0.0,
     )
 
 
@@ -656,9 +656,9 @@ def bigbird_block_sparse_attention(
     to_seq_length,
     from_block_size,
     to_block_size,
-    seed = None,
-    plan_from_length = None,
-    plan_num_rand_blocks = None,
+    seed=None,
+    plan_from_length=None,
+    plan_num_rand_blocks=None,
 ):
     """BigBird attention sparse calculation using blocks in linear time.
 
@@ -729,7 +729,7 @@ def bigbird_block_sparse_attention(
                 from_block_size,
                 to_block_size,
                 num_rand_blocks,
-                last_idx = 1024,
+                last_idx=1024,
             )[: (from_seq_length // from_block_size - 2)]
             for _ in range(num_attention_heads)
         ]
@@ -740,16 +740,16 @@ def bigbird_block_sparse_attention(
             )
 
         rand_attn = bigbird_block_rand_mask_with_head(
-            from_seq_length = from_seq_length,
-            to_seq_length = to_seq_length,
-            from_block_size = from_block_size,
-            to_block_size = to_block_size,
-            num_heads = num_attention_heads,
-            plan_from_length = plan_from_length,
-            plan_num_rand_blocks = plan_num_rand_blocks,
+            from_seq_length=from_seq_length,
+            to_seq_length=to_seq_length,
+            from_block_size=from_block_size,
+            to_block_size=to_block_size,
+            num_heads=num_attention_heads,
+            plan_from_length=plan_from_length,
+            plan_num_rand_blocks=plan_num_rand_blocks,
         )
-    rand_attn = np.stack(rand_attn, axis = 0)
-    rand_attn = tf.constant(rand_attn, dtype = tf.int32)
+    rand_attn = np.stack(rand_attn, axis=0)
+    rand_attn = tf.constant(rand_attn, dtype=tf.int32)
     rand_attn = tf.expand_dims(rand_attn, 0)
     rand_attn = tf.repeat(rand_attn, batch_size, 0)
 
@@ -779,7 +779,7 @@ def bigbird_block_sparse_attention(
     blocked_value_matrix = tf.reshape(value_layer, (b, h, n // wn, wn, -1))
     gathered_key = tf.reshape(
         tf.gather(
-            blocked_key_matrix, rand_attn, batch_dims = 2, name = 'gather_key'
+            blocked_key_matrix, rand_attn, batch_dims=2, name='gather_key'
         ),
         (b, h, m // wm - 2, r * wn, -1),
     )  # [b, h, n//wn-2, r, wn, -1]
@@ -787,8 +787,8 @@ def bigbird_block_sparse_attention(
         tf.gather(
             blocked_value_matrix,
             rand_attn,
-            batch_dims = 2,
-            name = 'gather_value',
+            batch_dims=2,
+            name='gather_value',
         ),
         (b, h, m // wm - 2, r * wn, -1),
     )  # [b, h, n//wn-2, r, wn, -1]
@@ -831,12 +831,12 @@ def bigbird_block_sparse_attention(
         [
             to_mask[:, :, :, : 3 * wn],
             to_mask[:, :, :, -wn:],
-            tf.ones([b, 1, 1, r * wn], dtype = tf.float32),
+            tf.ones([b, 1, 1, r * wn], dtype=tf.float32),
         ],
         3,
     )
     second_rand_pad = tf.concat(
-        [tf.ones([b, h, wm, 4 * wn], dtype = tf.float32), rand_mask[:, :, 0]], 3
+        [tf.ones([b, h, wm, 4 * wn], dtype=tf.float32), rand_mask[:, :, 0]], 3
     )
     second_product = tf.multiply(second_product, 1.0 / np.sqrt(d))
     second_product += (
@@ -903,13 +903,13 @@ def bigbird_block_sparse_attention(
     attn_weights = tf.nn.softmax(band_product)  # [b, h, m//wm-4, wm, (5+r)*wn]
     context_layer = tf.einsum(
         'BHLQK,BHLKD->BHLQD',
-        attn_weights[:, :, :, :, wn : 4 * wn],
+        attn_weights[:, :, :, :, wn: 4 * wn],
         exp_blocked_value_matrix,
     )  # [b, h, m//wm-4, wm, 3*wn] x [b, h, m//wm-4, 3*wn, -1]
     #     ==> [b, h, m//wm-4, wm, -1]
     context_layer += tf.einsum(
         'BHLQK,BHLKD->BHLQD',
-        attn_weights[:, :, :, :, 4 * wn : -wn],
+        attn_weights[:, :, :, :, 4 * wn: -wn],
         gathered_value[:, :, 1:-1],
     )  # [b, h, m//wm-4, wm, r*wn] x [b, h, m//wm-4, r*wn, -1]
     #     ==> [b, h, m//wm-4, wm, -1]
@@ -950,13 +950,13 @@ def bigbird_block_sparse_attention(
     second_last_seq_pad = tf.concat(
         [
             to_mask[:, :, :, :wn],
-            to_mask[:, :, :, -3 * wn :],
-            tf.ones([b, 1, 1, r * wn], dtype = tf.float32),
+            to_mask[:, :, :, -3 * wn:],
+            tf.ones([b, 1, 1, r * wn], dtype=tf.float32),
         ],
         3,
     )
     second_last_rand_pad = tf.concat(
-        [tf.ones([b, h, wm, 4 * wn], dtype = tf.float32), rand_mask[:, :, -1]],
+        [tf.ones([b, h, wm, 4 * wn], dtype=tf.float32), rand_mask[:, :, -1]],
         3,
     )
     second_last_product = tf.multiply(second_last_product, 1.0 / np.sqrt(d))
@@ -1009,19 +1009,19 @@ class MultiHeadedAttentionLayer(tf.compat.v1.layers.Layer):
     def __init__(
         self,
         attention_type,
-        num_attention_heads = 1,
-        num_rand_blocks = 3,
-        size_per_head = 512,
-        initializer_range = 0.02,
-        from_block_size = 64,
-        to_block_size = 64,
-        attention_probs_dropout_prob = 0.0,
-        use_bias = True,
-        seed = None,
-        query_act = None,
-        key_act = None,
-        value_act = None,
-        name = None,
+        num_attention_heads=1,
+        num_rand_blocks=3,
+        size_per_head=512,
+        initializer_range=0.02,
+        from_block_size=64,
+        to_block_size=64,
+        attention_probs_dropout_prob=0.0,
+        use_bias=True,
+        seed=None,
+        query_act=None,
+        key_act=None,
+        value_act=None,
+        name=None,
         **kwargs
     ):
         """Constructor for a multi-headed attention layer.
@@ -1045,15 +1045,15 @@ class MultiHeadedAttentionLayer(tf.compat.v1.layers.Layer):
       name: The name scope of this layer.
       **kwargs: others
     """
-        super(MultiHeadedAttentionLayer, self).__init__(name = name, **kwargs)
+        super(MultiHeadedAttentionLayer, self).__init__(name=name, **kwargs)
         self.query_layer = utils.Dense3dLayer(
             num_attention_heads,
             size_per_head,
             utils.create_initializer(initializer_range),
             query_act,
             'query',
-            head_first = True,
-            use_bias = use_bias,
+            head_first=True,
+            use_bias=use_bias,
         )
 
         self.key_layer = utils.Dense3dLayer(
@@ -1062,8 +1062,8 @@ class MultiHeadedAttentionLayer(tf.compat.v1.layers.Layer):
             utils.create_initializer(initializer_range),
             key_act,
             'key',
-            head_first = True,
-            use_bias = use_bias,
+            head_first=True,
+            use_bias=use_bias,
         )
 
         self.value_layer = utils.Dense3dLayer(
@@ -1072,8 +1072,8 @@ class MultiHeadedAttentionLayer(tf.compat.v1.layers.Layer):
             utils.create_initializer(initializer_range),
             value_act,
             'value',
-            head_first = True,
-            use_bias = use_bias,
+            head_first=True,
+            use_bias=use_bias,
         )
 
         def attn_impl(
@@ -1162,15 +1162,15 @@ class MultiHeadedAttentionLayer(tf.compat.v1.layers.Layer):
         self,
         from_tensor,
         to_tensor,
-        attention_mask = None,
-        band_mask = None,
-        from_mask = None,
-        to_mask = None,
-        from_blocked_mask = None,
-        to_blocked_mask = None,
-        cache = None,
-        decode_i = None,
-        training = None,
+        attention_mask=None,
+        band_mask=None,
+        from_mask=None,
+        to_mask=None,
+        from_blocked_mask=None,
+        to_blocked_mask=None,
+        cache=None,
+        decode_i=None,
+        training=None,
     ):
         """Implements a multi-headed attention layer from from_tensor to to_tensor.
 
@@ -1218,8 +1218,8 @@ class MultiHeadedAttentionLayer(tf.compat.v1.layers.Layer):
       ValueError: Any of the arguments or tensor shapes are invalid.
       NotImplementedError: For unknown attention type.
     """
-        from_shape = utils.get_shape_list(from_tensor, expected_rank = 3)
-        to_shape = utils.get_shape_list(to_tensor, expected_rank = 3)
+        from_shape = utils.get_shape_list(from_tensor, expected_rank=3)
+        to_shape = utils.get_shape_list(to_tensor, expected_rank=3)
 
         if len(from_shape) != len(to_shape):
             raise ValueError(
@@ -1252,7 +1252,7 @@ class MultiHeadedAttentionLayer(tf.compat.v1.layers.Layer):
         if cache is not None and decode_i is not None:
             max_len = utils.get_shape_list(cache['k'])[2]
             indices_select = tf.reshape(
-                tf.one_hot(decode_i, max_len, dtype = to_tensor.dtype),
+                tf.one_hot(decode_i, max_len, dtype=to_tensor.dtype),
                 [1, 1, max_len, 1],
             )
             key = cache['k'] + key * indices_select

@@ -55,33 +55,33 @@ class BertModel(tf.compat.v1.layers.Layer):
         self.scope = params['scope']
 
         with tf.compat.v1.variable_scope(
-            self.scope, reuse = tf.compat.v1.AUTO_REUSE
+            self.scope, reuse=tf.compat.v1.AUTO_REUSE
         ) as vs:
             self.embeder = utils.EmbeddingLayer(
-                vocab_size = self.params['vocab_size'],
-                emb_dim = self.params['hidden_size'],
-                initializer = utils.create_initializer(
+                vocab_size=self.params['vocab_size'],
+                emb_dim=self.params['hidden_size'],
+                initializer=utils.create_initializer(
                     self.params['initializer_range']
                 ),
-                scale_emb = self.params['rescale_embedding'],
-                use_token_type = True,
-                num_token_types = self.params['type_vocab_size'],
-                use_position_embeddings = True,
-                max_position_embeddings = self.params[
+                scale_emb=self.params['rescale_embedding'],
+                use_token_type=True,
+                num_token_types=self.params['type_vocab_size'],
+                use_position_embeddings=True,
+                max_position_embeddings=self.params[
                     'max_position_embeddings'
                 ],
-                dropout_prob = self.params['hidden_dropout_prob'],
+                dropout_prob=self.params['hidden_dropout_prob'],
             )
             self.encoder = encoder.EncoderStack(self.params)
             self.pooler = tf.compat.v1.layers.Dense(
-                units = self.params['hidden_size'],
-                activation = tf.tanh,
-                kernel_initializer = utils.create_initializer(
+                units=self.params['hidden_size'],
+                activation=tf.tanh,
+                kernel_initializer=utils.create_initializer(
                     self.params['initializer_range']
                 ),
-                name = 'pooler/dense',
+                name='pooler/dense',
             )
-            super(BertModel, self).__init__(name = self.scope, _scope = vs)
+            super(BertModel, self).__init__(name=self.scope, _scope=vs)
 
     @property
     def trainable_weights(self):
@@ -93,7 +93,7 @@ class BertModel(tf.compat.v1.layers.Layer):
         self._trainable_weights = list({v.name: v for v in tvar_list}.values())
         return self._trainable_weights
 
-    def call(self, input_ids, token_type_ids = None, training = None):
+    def call(self, input_ids, token_type_ids=None, training=None):
         """Constructor for BertModel.
 
     Args:
@@ -110,14 +110,14 @@ class BertModel(tf.compat.v1.layers.Layer):
         is invalid.
     """
         if token_type_ids is None:
-            token_type_ids = tf.zeros_like(input_ids, dtype = tf.int32)
+            token_type_ids = tf.zeros_like(input_ids, dtype=tf.int32)
 
         # Perform embedding lookup on the word ids.
         embedding_output = self.embeder(
             input_ids,
             self.params['max_encoder_length'],
-            token_type_ids = token_type_ids,
-            training = training,
+            token_type_ids=token_type_ids,
+            training=training,
         )
 
         # Generate mask.
@@ -173,27 +173,27 @@ class TransformerModel(tf.compat.v1.layers.Layer):
         self.scope = params['scope']
 
         with tf.compat.v1.variable_scope(
-            self.scope, reuse = tf.compat.v1.AUTO_REUSE
+            self.scope, reuse=tf.compat.v1.AUTO_REUSE
         ) as vs:
             self.embeder = utils.EmbeddingLayer(
-                vocab_size = self.params['vocab_size'],
-                emb_dim = self.params['hidden_size'],
-                initializer = utils.create_initializer(
+                vocab_size=self.params['vocab_size'],
+                emb_dim=self.params['hidden_size'],
+                initializer=utils.create_initializer(
                     self.params['initializer_range']
                 ),
-                scale_emb = self.params['rescale_embedding'],
-                use_token_type = False,
-                num_token_types = None,
-                use_position_embeddings = True,
-                max_position_embeddings = self.params[
+                scale_emb=self.params['rescale_embedding'],
+                use_token_type=False,
+                num_token_types=None,
+                use_position_embeddings=True,
+                max_position_embeddings=self.params[
                     'max_position_embeddings'
                 ],
-                dropout_prob = self.params['hidden_dropout_prob'],
+                dropout_prob=self.params['hidden_dropout_prob'],
             )
             self.encoder = encoder.EncoderStack(self.params)
             self.decoder = decoder.DecoderStack(self.params)
             super(TransformerModel, self).__init__(
-                name = self.scope, _scope = vs
+                name=self.scope, _scope=vs
             )
 
     @property
@@ -206,7 +206,7 @@ class TransformerModel(tf.compat.v1.layers.Layer):
         self._trainable_weights = list({v.name: v for v in tvar_list}.values())
         return self._trainable_weights
 
-    def _encode(self, input_ids, training = None):
+    def _encode(self, input_ids, training=None):
         """Generate continuous representation for ids.
 
     Args:
@@ -219,7 +219,7 @@ class TransformerModel(tf.compat.v1.layers.Layer):
     """
         # Perform embedding lookup on the word ids.
         input_embs = self.embeder(
-            input_ids, self.params['max_encoder_length'], training = training
+            input_ids, self.params['max_encoder_length'], training=training
         )
 
         # Generate mask.
@@ -235,18 +235,18 @@ class TransformerModel(tf.compat.v1.layers.Layer):
     def _get_start_token_ids(self, tensor_for_shape):
         start_token_id = 2
         batch_size = utils.get_shape_list(tensor_for_shape)[0]
-        return tf.ones([batch_size], dtype = tf.int32) * start_token_id
+        return tf.ones([batch_size], dtype=tf.int32) * start_token_id
 
     def get_inputs_from_targets(self, targets, start_token_ids):
         """Converts target ids to input ids, i.e. adds <s> and removes last."""
-        length = tf.math.count_nonzero(targets, axis = 1, dtype = tf.int32)
+        length = tf.math.count_nonzero(targets, axis=1, dtype=tf.int32)
         # Add start token ids.
         inputs = tf.concat(
-            [tf.expand_dims(start_token_ids, axis = 1), targets], 1
+            [tf.expand_dims(start_token_ids, axis=1), targets], 1
         )
         # Remove </s> from the input.
         mask = tf.sequence_mask(
-            length, self.params['max_decoder_length'] + 1, dtype = tf.int32
+            length, self.params['max_decoder_length'] + 1, dtype=tf.int32
         )
         inputs = (mask * inputs)[:, :-1]
         return inputs
@@ -282,7 +282,7 @@ class TransformerModel(tf.compat.v1.layers.Layer):
         input_ids = self.get_inputs_from_targets(target_ids, start_token_ids)
 
         input_embs = self.embeder(
-            input_ids, self.params['max_decoder_length'], training = training
+            input_ids, self.params['max_decoder_length'], training=training
         )
 
         outputs = self.decoder(
@@ -290,23 +290,23 @@ class TransformerModel(tf.compat.v1.layers.Layer):
             target_mask,
             encoder_output,
             encoder_mask,
-            training = training,
+            training=training,
         )
 
         logits = self.embeder.linear(outputs)
-        output_ids = tf.cast(tf.argmax(logits, axis = -1), tf.int32)
+        output_ids = tf.cast(tf.argmax(logits, axis=-1), tf.int32)
 
         log_probs = -tf.nn.sparse_softmax_cross_entropy_with_logits(
-            labels = target_ids, logits = logits
+            labels=target_ids, logits=logits
         )
         log_probs = tf.where(
             target_ids > 0, log_probs, tf.zeros_like(log_probs, tf.float32)
         )
 
         return (
-            tf.identity(log_probs, name = 'log_probs'),
-            tf.identity(logits, name = 'logits'),
-            tf.cast(output_ids, tf.int32, name = 'pred_ids'),
+            tf.identity(log_probs, name='log_probs'),
+            tf.identity(logits, name='logits'),
+            tf.cast(output_ids, tf.int32, name='pred_ids'),
         )
 
     def _init_cache(self, batch_size):
@@ -361,7 +361,7 @@ class TransformerModel(tf.compat.v1.layers.Layer):
 
             # Preprocess decoder input by getting embeddings and adding timing signal.
             decoder_input = self.embeder(
-                decoder_input, 1, start_pos = i, training = False
+                decoder_input, 1, start_pos=i, training=False
             )
 
             decoder_output = self.decoder(
@@ -369,13 +369,13 @@ class TransformerModel(tf.compat.v1.layers.Layer):
                 self_attention_mask,
                 cache.get('encoder_output'),
                 cache.get('encoder_mask'),
-                cache = cache,
-                decode_i = i,
-                training = False,
+                cache=cache,
+                decode_i=i,
+                training=False,
             )
 
             logits = self.embeder.linear(decoder_output)
-            logits = tf.squeeze(logits, axis = [1])
+            logits = tf.squeeze(logits, axis=[1])
 
             return logits
 
@@ -429,17 +429,17 @@ class TransformerModel(tf.compat.v1.layers.Layer):
             cache,
             batch_size,
             self.params['max_decoder_length'],
-            vocab_size = self.params['vocab_size'],
-            beam_size = self.params['beam_size'],
-            beam_start = 5,
-            beam_alpha = self.params['alpha'],
-            beam_min = 0,
-            beam_max = -1,
-            eos_id = end_token_id,
+            vocab_size=self.params['vocab_size'],
+            beam_size=self.params['beam_size'],
+            beam_start=5,
+            beam_alpha=self.params['alpha'],
+            beam_min=0,
+            beam_max=-1,
+            eos_id=end_token_id,
         )
 
         # Get the top sequence for each batch element
-        output_ids = tf.cast(decoded_ids, tf.int32, name = 'pred_ids')
+        output_ids = tf.cast(decoded_ids, tf.int32, name='pred_ids')
 
         # Calculate log probs for given sequence if available.
         calc_ids = output_ids if target_ids is None else target_ids
@@ -449,7 +449,7 @@ class TransformerModel(tf.compat.v1.layers.Layer):
             start_token_ids,
             encoder_output,
             encoder_mask,
-            training = False,
+            training=False,
         )
 
         return (output_log_probs, output_logits, output_ids)
@@ -490,7 +490,7 @@ class TransformerModel(tf.compat.v1.layers.Layer):
                 start_token_ids,
                 encoder_output,
                 encoder_mask,
-                training = True,
+                training=True,
             )
         else:
             predictions = self._predict(
@@ -503,7 +503,7 @@ class TransformerModel(tf.compat.v1.layers.Layer):
 
         return predictions
 
-    def call(self, input_ids, target_ids = None, training = None):
+    def call(self, input_ids, target_ids=None, training=None):
         # Run the inputs through the encoder layer to map the symbol
         # representations to continuous representations.
         encoder_output, encoder_mask = self._encode(input_ids, training)

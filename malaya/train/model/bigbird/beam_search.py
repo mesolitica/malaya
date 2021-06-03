@@ -85,7 +85,7 @@ def beam_search(
     vocab_size,
     beam_size,
     length_norm_fn,
-    eos_id = 1,
+    eos_id=1,
 ):
     """Beam search.
 
@@ -128,12 +128,12 @@ def beam_search(
 
         # select top 2 * beam_size and fill alive and finished.
         log_probs_BxMxV = logits_BxMxV - tf.reduce_logsumexp(
-            logits_BxMxV, axis = 2, keepdims = True
+            logits_BxMxV, axis=2, keepdims=True
         )
-        log_probs_BxMxV += tf.expand_dims(alive_log_probs_BxM, axis = 2)
+        log_probs_BxMxV += tf.expand_dims(alive_log_probs_BxM, axis=2)
         log_probs_BxMV = tf.reshape(log_probs_BxMxV, [B, -1])
         new_log_probs_Bx2M, topk_indices_Bx2M = tf.nn.top_k(
-            log_probs_BxMV, k = 2 * M
+            log_probs_BxMV, k=2 * M
         )
         topk_beam_Bx2M = topk_indices_Bx2M // V
         topk_seq_Bx2MxT, new_cache_Bx2MxU = _gather_nested(
@@ -142,12 +142,12 @@ def beam_search(
         topk_ids_Bx2M = topk_indices_Bx2M % V
         new_seq_Bx2MxT = _update_i(topk_seq_Bx2MxT, topk_ids_Bx2M, i)
         new_finished_flags_Bx2M = tf.cast(
-            tf.reduce_any(tf.equal(new_seq_Bx2MxT, eos_id), axis = -1), dtype
+            tf.reduce_any(tf.equal(new_seq_Bx2MxT, eos_id), axis=-1), dtype
         )
 
         # get new alive
         _, topk_alive_indices_BxM = tf.nn.top_k(
-            new_log_probs_Bx2M + new_finished_flags_Bx2M * dtype.min, k = M
+            new_log_probs_Bx2M + new_finished_flags_Bx2M * dtype.min, k=M
         )
         (
             alive_seq_BxMxT,
@@ -162,12 +162,12 @@ def beam_search(
         new_scores_Bx2M = length_norm_fn(new_log_probs_Bx2M, i + 1)
         new_scores_Bx2M += (1 - new_finished_flags_Bx2M) * dtype.min
         finished_seq_Bx3MxT = tf.concat(
-            [finished_seq_BxMxT, new_seq_Bx2MxT], axis = 1
+            [finished_seq_BxMxT, new_seq_Bx2MxT], axis=1
         )
         finished_scores_Bx3M = tf.concat(
-            [finished_scores_BxM, new_scores_Bx2M], axis = 1
+            [finished_scores_BxM, new_scores_Bx2M], axis=1
         )
-        _, topk_finished_indices_BxM = tf.nn.top_k(finished_scores_Bx3M, k = M)
+        _, topk_finished_indices_BxM = tf.nn.top_k(finished_scores_Bx3M, k=M)
         (finished_seq_BxMxT, finished_scores_BxM) = _gather_nested(
             [finished_seq_Bx3MxT, finished_scores_Bx3M],
             topk_finished_indices_BxM,
@@ -183,9 +183,9 @@ def beam_search(
         ]
 
     # initialize.
-    init_i = tf.constant(0, dtype = int_dtype)
+    init_i = tf.constant(0, dtype=int_dtype)
     init_alive_seq_BxMxT = _expand_to_beam_size(init_seq_BxT, M)
-    log_probs_1xM = tf.constant([[0.0] + [dtype.min] * (M - 1)], dtype = dtype)
+    log_probs_1xM = tf.constant([[0.0] + [dtype.min] * (M - 1)], dtype=dtype)
     init_alive_log_probs_BxM = tf.tile(log_probs_1xM, [B, 1])
     init_alive_cache_BxMxU = tf.nest.map_structure(
         lambda t: _expand_to_beam_size(t, M), initial_cache_BxU
@@ -193,7 +193,7 @@ def beam_search(
     init_finished_seq_BxMxT = tf.zeros(
         tf.shape(init_alive_seq_BxMxT), int_dtype
     )
-    init_finished_scores_BxM = tf.zeros([B, M], dtype = dtype) + dtype.min
+    init_finished_scores_BxM = tf.zeros([B, M], dtype=dtype) + dtype.min
 
     # run loop.
     (
@@ -206,7 +206,7 @@ def beam_search(
     ) = tf.while_loop(
         lambda *args: True,  # Always do T iterations
         _loop_body,
-        loop_vars = [
+        loop_vars=[
             init_i,
             init_alive_seq_BxMxT,
             init_alive_log_probs_BxM,
@@ -214,14 +214,14 @@ def beam_search(
             init_finished_seq_BxMxT,
             init_finished_scores_BxM,
         ],
-        parallel_iterations = 1,
-        back_prop = False,
-        maximum_iterations = T,
+        parallel_iterations=1,
+        back_prop=False,
+        maximum_iterations=T,
     )
 
     # process finished.
     final_finished_flag_BxMx1 = tf.reduce_any(
-        tf.equal(final_finished_seq_BxMxT, eos_id), axis = -1, keepdims = True
+        tf.equal(final_finished_seq_BxMxT, eos_id), axis=-1, keepdims=True
     )
     final_seq_BxMxT = tf.where(
         tf.tile(final_finished_flag_BxMx1, [1, 1, T]),
@@ -229,7 +229,7 @@ def beam_search(
         final_alive_seq_BxMxT,
     )
     final_scores_BxM = tf.where(
-        tf.squeeze(final_finished_flag_BxMx1, axis = -1),
+        tf.squeeze(final_finished_flag_BxMx1, axis=-1),
         final_finished_scores_BxM,
         final_alive_scores_BxM,
     )
@@ -240,15 +240,15 @@ def _update_i(tensor_BxNxT, updates_BxN, i):
     B, N, T = tensor_BxNxT.shape
     tensor_BNxT = tf.reshape(tensor_BxNxT, [-1, T])
     updates_BN = tf.reshape(updates_BxN, [-1])
-    batch_BN = tf.range(B * N, dtype = tf.int32)
+    batch_BN = tf.range(B * N, dtype=tf.int32)
     i_BN = tf.fill([B * N], i)
-    ind_BNx2 = tf.stack([batch_BN, i_BN], axis = -1)
+    ind_BNx2 = tf.stack([batch_BN, i_BN], axis=-1)
     tensor_BNxT = tf.tensor_scatter_nd_update(tensor_BNxT, ind_BNx2, updates_BN)
     return tf.reshape(tensor_BNxT, [B, N, T])
 
 
 def _expand_to_beam_size(tensor_BxU, beam_size):
-    tensor_Bx1xU = tf.expand_dims(tensor_BxU, axis = 1)
+    tensor_Bx1xU = tf.expand_dims(tensor_BxU, axis=1)
     tile_dims = [1] * tensor_Bx1xU.shape.ndims
     tile_dims[1] = beam_size
     tensor_BxMxU = tf.tile(tensor_Bx1xU, tile_dims)
@@ -270,7 +270,7 @@ def _unflatten_beam_dim(tensor_BMxU, M):
 def _gather_nested(nested_BxMxU, indices_BxN):
     def _gather_beam(tensor_BxMxU):
         tensor_BxNxU = tf.gather(
-            tensor_BxMxU, indices_BxN, batch_dims = 1, axis = 1
+            tensor_BxMxU, indices_BxN, batch_dims=1, axis=1
         )
         return tensor_BxNxU
 

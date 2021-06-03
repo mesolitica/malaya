@@ -17,17 +17,17 @@ from malaya.text.regex import _expressions
 from malaya.path import MODEL_VOCAB, MODEL_BPE, TAGGING_SETTING
 
 
-def transformer(class_name, model = 'xlnet', quantized = False, **kwargs):
+def transformer(class_name, model='xlnet', quantized=False, **kwargs):
     path = check_file(
-        file = model,
-        module = class_name,
-        keys = {
+        file=model,
+        module=class_name,
+        keys={
             'model': 'model.pb',
             'vocab': MODEL_VOCAB[model],
             'tokenizer': MODEL_BPE[model],
             'setting': TAGGING_SETTING[class_name],
         },
-        quantized = quantized,
+        quantized=quantized,
         **kwargs,
     )
     g = load_graph(path['model'], **kwargs)
@@ -35,7 +35,7 @@ def transformer(class_name, model = 'xlnet', quantized = False, **kwargs):
     try:
         with open(path['setting']) as fopen:
             nodes = json.load(fopen)
-    except:
+    except BaseException:
         raise Exception(
             f"model corrupted due to some reasons, please run `malaya.clear_cache('{class_name}/{model}/{size}')` and try again"
         )
@@ -48,7 +48,7 @@ def transformer(class_name, model = 'xlnet', quantized = False, **kwargs):
 
         if model in ['albert', 'tiny-albert']:
             tokenizer = AlbertTokenizer(
-                vocab_file = path['vocab'], spm_model_file = path['tokenizer']
+                vocab_file=path['vocab'], spm_model_file=path['tokenizer']
             )
 
         inputs = ['Placeholder', 'Placeholder_1']
@@ -63,31 +63,31 @@ def transformer(class_name, model = 'xlnet', quantized = False, **kwargs):
 
     outputs = ['logits']
     input_nodes, output_nodes = nodes_session(
-        g, inputs, outputs, extra = vectorizer
+        g, inputs, outputs, extra=vectorizer
     )
 
     return Model(
-        input_nodes = input_nodes,
-        output_nodes = output_nodes,
-        sess = generate_session(graph = g, **kwargs),
-        tokenizer = tokenizer,
-        settings = nodes,
+        input_nodes=input_nodes,
+        output_nodes=output_nodes,
+        sess=generate_session(graph=g, **kwargs),
+        tokenizer=tokenizer,
+        settings=nodes,
     )
 
 
 def transformer_ontonotes5(
-    class_name, model = 'xlnet', quantized = False, **kwargs
+    class_name, model='xlnet', quantized=False, **kwargs
 ):
     path = check_file(
-        file = model,
-        module = class_name,
-        keys = {
+        file=model,
+        module=class_name,
+        keys={
             'model': 'model.pb',
             'vocab': MODEL_VOCAB[model],
             'tokenizer': MODEL_BPE[model],
             'setting': TAGGING_SETTING[class_name],
         },
-        quantized = quantized,
+        quantized=quantized,
         **kwargs,
     )
     g = load_graph(path['model'], **kwargs)
@@ -110,7 +110,7 @@ def transformer_ontonotes5(
         _expressions['number'],
         _expressions['word'],
     ]
-    pipeline.append('(?:\S)')
+    pipeline.append('(?:\\S)')
     compiled = re.compile(r'({})'.format('|'.join(pipeline)))
 
     def tok(string):
@@ -120,7 +120,7 @@ def transformer_ontonotes5(
     try:
         with open(path['setting']) as fopen:
             nodes = json.load(fopen)
-    except:
+    except BaseException:
         raise Exception(
             f"model corrupted due to some reasons, please run `malaya.clear_cache('{class_name}/{model}/{size}')` and try again"
         )
@@ -133,7 +133,7 @@ def transformer_ontonotes5(
 
         if model in ['albert', 'tiny-albert']:
             tokenizer = AlbertTokenizer(
-                vocab_file = path['vocab'], spm_model_file = path['tokenizer']
+                vocab_file=path['vocab'], spm_model_file=path['tokenizer']
             )
 
         inputs = ['Placeholder', 'Placeholder_1']
@@ -141,15 +141,15 @@ def transformer_ontonotes5(
         Model = TaggingBERT
 
         return TaggingBERT(
-            X = g.get_tensor_by_name('import/Placeholder:0'),
-            segment_ids = None,
-            input_masks = g.get_tensor_by_name('import/Placeholder_1:0'),
-            logits = g.get_tensor_by_name('import/logits:0'),
-            vectorizer = g.get_tensor_by_name('import/dense/BiasAdd:0'),
-            sess = generate_session(graph = g, **kwargs),
-            tokenizer = tokenizer,
-            settings = nodes,
-            tok = tok,
+            X=g.get_tensor_by_name('import/Placeholder:0'),
+            segment_ids=None,
+            input_masks=g.get_tensor_by_name('import/Placeholder_1:0'),
+            logits=g.get_tensor_by_name('import/logits:0'),
+            vectorizer=g.get_tensor_by_name('import/dense/BiasAdd:0'),
+            sess=generate_session(graph=g, **kwargs),
+            tokenizer=tokenizer,
+            settings=nodes,
+            tok=tok,
         )
 
     if model in ['xlnet', 'alxlnet']:
@@ -160,13 +160,13 @@ def transformer_ontonotes5(
 
     outputs = ['logits']
     input_nodes, output_nodes = nodes_session(
-        g, inputs, outputs, extra = vectorizer
+        g, inputs, outputs, extra=vectorizer
     )
 
     return Model(
-        input_nodes = input_nodes,
-        output_nodes = output_nodes,
-        sess = generate_session(graph = g, **kwargs),
-        tokenizer = tokenizer,
-        settings = nodes,
+        input_nodes=input_nodes,
+        output_nodes=output_nodes,
+        sess=generate_session(graph=g, **kwargs),
+        tokenizer=tokenizer,
+        settings=nodes,
     )

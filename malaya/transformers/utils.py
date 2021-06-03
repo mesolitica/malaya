@@ -111,7 +111,7 @@ def get_tensor_aliases(tensor):
     return aliases
 
 
-def convert_collection_to_dict(collection, clear_collection = False):
+def convert_collection_to_dict(collection, clear_collection=False):
     """Returns an OrderedDict of Tensors with their aliases as keys.
   Args:
     collection: A collection.
@@ -130,7 +130,7 @@ def convert_collection_to_dict(collection, clear_collection = False):
     return output
 
 
-def constant_value(value_or_tensor_or_var, dtype = None):
+def constant_value(value_or_tensor_or_var, dtype=None):
     """Returns value if value_or_tensor_or_var has a constant value.
   Args:
     value_or_tensor_or_var: A value, a `Tensor` or a `Variable`.
@@ -180,7 +180,7 @@ def static_cond(pred, fn1, fn2):
         return fn2()
 
 
-def smart_cond(pred, fn1, fn2, name = None):
+def smart_cond(pred, fn1, fn2, name=None):
     """Return either fn1() or fn2() based on the boolean predicate/value `pred`.
   If `pred` is bool or has a constant value it would use `static_cond`,
   otherwise it would use `tf.cond`.
@@ -209,7 +209,7 @@ def get_variable_collections(variables_collections, name):
     return variable_collections
 
 
-def _get_dimension(shape, dim, min_rank = 1):
+def _get_dimension(shape, dim, min_rank=1):
     """Returns the `dim` dimension of `shape`, while checking it has `min_rank`.
   Args:
     shape: A `TensorShape`.
@@ -236,7 +236,7 @@ def _get_dimension(shape, dim, min_rank = 1):
     return value
 
 
-def channel_dimension(shape, data_format, min_rank = 1):
+def channel_dimension(shape, data_format, min_rank=1):
     """Returns the channel dimension of shape, while checking it has min_rank.
   Args:
     shape: A `TensorShape`.
@@ -249,11 +249,11 @@ def channel_dimension(shape, data_format, min_rank = 1):
       first dimension value is not defined.
   """
     return _get_dimension(
-        shape, 1 if data_format == 'channels_first' else -1, min_rank = min_rank
+        shape, 1 if data_format == 'channels_first' else -1, min_rank=min_rank
     )
 
 
-def last_dimension(shape, min_rank = 1):
+def last_dimension(shape, min_rank=1):
     """Returns the last dimension of shape while checking it has min_rank.
   Args:
     shape: A `TensorShape`.
@@ -264,7 +264,7 @@ def last_dimension(shape, min_rank = 1):
     ValueError: if inputs don't have at least min_rank dimensions, or if the
       last dimension value is not defined.
   """
-    return _get_dimension(shape, -1, min_rank = min_rank)
+    return _get_dimension(shape, -1, min_rank=min_rank)
 
 
 def two_element_tuple(int_or_tuple):
@@ -328,7 +328,7 @@ def n_positive_integers(n, value):
             )
         try:
             values = tuple(int(x) for x in value)
-        except:
+        except BaseException:
             raise ValueError(
                 'Expected sequence of %d positive integers, but received %r'
                 % (n, value)

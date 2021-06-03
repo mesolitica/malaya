@@ -39,16 +39,16 @@ class BertConfig(object):
     def __init__(
         self,
         vocab_size,
-        hidden_size = 768,
-        num_hidden_layers = 12,
-        num_attention_heads = 12,
-        intermediate_size = 3072,
-        hidden_act = 'gelu',
-        hidden_dropout_prob = 0.1,
-        attention_probs_dropout_prob = 0.1,
-        max_position_embeddings = 512,
-        type_vocab_size = 2,
-        initializer_range = 0.02,
+        hidden_size=768,
+        num_hidden_layers=12,
+        num_attention_heads=12,
+        intermediate_size=3072,
+        hidden_act='gelu',
+        hidden_dropout_prob=0.1,
+        attention_probs_dropout_prob=0.1,
+        max_position_embeddings=512,
+        type_vocab_size=2,
+        initializer_range=0.02,
     ):
         """Constructs BertConfig.
 
@@ -89,7 +89,7 @@ class BertConfig(object):
     @classmethod
     def from_dict(cls, json_object):
         """Constructs a `BertConfig` from a Python dictionary of parameters."""
-        config = BertConfig(vocab_size = None)
+        config = BertConfig(vocab_size=None)
         for (key, value) in six.iteritems(json_object):
             config.__dict__[key] = value
         return config
@@ -108,7 +108,7 @@ class BertConfig(object):
 
     def to_json_string(self):
         """Serializes this instance to a JSON string."""
-        return json.dumps(self.to_dict(), indent = 2, sort_keys = True) + '\n'
+        return json.dumps(self.to_dict(), indent=2, sort_keys=True) + '\n'
 
 
 class BertModel(object):
@@ -141,17 +141,17 @@ class BertModel(object):
         bert_config,
         is_training,
         input_ids,
-        input_mask = None,
-        token_type_ids = None,
-        use_one_hot_embeddings = True,
-        scope = None,
-        embedding_size = None,
-        input_embeddings = None,
-        input_reprs = None,
-        update_embeddings = True,
-        untied_embeddings = False,
-        ltr = False,
-        rtl = False,
+        input_mask=None,
+        token_type_ids=None,
+        use_one_hot_embeddings=True,
+        scope=None,
+        embedding_size=None,
+        input_embeddings=None,
+        input_reprs=None,
+        update_embeddings=True,
+        untied_embeddings=False,
+        ltr=False,
+        rtl=False,
     ):
         """Constructor for BertModel.
 
@@ -177,13 +177,13 @@ class BertModel(object):
             bert_config.hidden_dropout_prob = 0.0
             bert_config.attention_probs_dropout_prob = 0.0
 
-        input_shape = get_shape_list(token_type_ids, expected_rank = 2)
+        input_shape = get_shape_list(token_type_ids, expected_rank=2)
         batch_size = input_shape[0]
         seq_length = input_shape[1]
 
         if input_mask is None:
             input_mask = tf.ones(
-                shape = [batch_size, seq_length], dtype = tf.int32
+                shape=[batch_size, seq_length], dtype=tf.int32
             )
 
         assert token_type_ids is not None
@@ -192,7 +192,7 @@ class BertModel(object):
             if input_embeddings is None:
                 with tf.variable_scope(
                     (scope if untied_embeddings else 'electra') + '/embeddings',
-                    reuse = tf.AUTO_REUSE,
+                    reuse=tf.AUTO_REUSE,
                 ):
                     # Perform embedding lookup on the word ids
                     if embedding_size is None:
@@ -201,45 +201,45 @@ class BertModel(object):
                         self.token_embeddings,
                         self.embedding_table,
                     ) = embedding_lookup(
-                        input_ids = input_ids,
-                        vocab_size = bert_config.vocab_size,
-                        embedding_size = embedding_size,
-                        initializer_range = bert_config.initializer_range,
-                        word_embedding_name = 'word_embeddings',
-                        use_one_hot_embeddings = use_one_hot_embeddings,
+                        input_ids=input_ids,
+                        vocab_size=bert_config.vocab_size,
+                        embedding_size=embedding_size,
+                        initializer_range=bert_config.initializer_range,
+                        word_embedding_name='word_embeddings',
+                        use_one_hot_embeddings=use_one_hot_embeddings,
                     )
             else:
                 self.token_embeddings = input_embeddings
 
             with tf.variable_scope(
                 (scope if untied_embeddings else 'electra') + '/embeddings',
-                reuse = tf.AUTO_REUSE,
+                reuse=tf.AUTO_REUSE,
             ):
                 # Add positional embeddings and token type embeddings, then layer
                 # normalize and perform dropout.
                 self.embedding_output = embedding_postprocessor(
-                    input_tensor = self.token_embeddings,
-                    use_token_type = True,
-                    token_type_ids = token_type_ids,
-                    token_type_vocab_size = bert_config.type_vocab_size,
-                    token_type_embedding_name = 'token_type_embeddings',
-                    use_position_embeddings = True,
-                    position_embedding_name = 'position_embeddings',
-                    initializer_range = bert_config.initializer_range,
-                    max_position_embeddings = bert_config.max_position_embeddings,
-                    dropout_prob = bert_config.hidden_dropout_prob,
+                    input_tensor=self.token_embeddings,
+                    use_token_type=True,
+                    token_type_ids=token_type_ids,
+                    token_type_vocab_size=bert_config.type_vocab_size,
+                    token_type_embedding_name='token_type_embeddings',
+                    use_position_embeddings=True,
+                    position_embedding_name='position_embeddings',
+                    initializer_range=bert_config.initializer_range,
+                    max_position_embeddings=bert_config.max_position_embeddings,
+                    dropout_prob=bert_config.hidden_dropout_prob,
                 )
         else:
             self.embedding_output = input_reprs
         if not update_embeddings:
             self.embedding_output = tf.stop_gradient(self.embedding_output)
 
-        with tf.variable_scope(scope, default_name = 'electra'):
+        with tf.variable_scope(scope, default_name='electra'):
             if self.embedding_output.shape[-1] != bert_config.hidden_size:
                 self.embedding_output = tf.layers.dense(
                     self.embedding_output,
                     bert_config.hidden_size,
-                    name = 'embeddings_project',
+                    name='embeddings_project',
                 )
 
             with tf.variable_scope('encoder'):
@@ -266,19 +266,19 @@ class BertModel(object):
                 # all_encoder_layers: [n_layers, batch_size, seq_length, hidden_size].
                 # attn_maps: [n_layers, batch_size, n_heads, seq_length, seq_length]
                 (self.all_layer_outputs, self.attn_maps) = transformer_model(
-                    input_tensor = self.embedding_output,
-                    attention_mask = attention_mask,
-                    hidden_size = bert_config.hidden_size,
-                    num_hidden_layers = bert_config.num_hidden_layers,
-                    num_attention_heads = bert_config.num_attention_heads,
-                    intermediate_size = bert_config.intermediate_size,
-                    intermediate_act_fn = get_activation(
+                    input_tensor=self.embedding_output,
+                    attention_mask=attention_mask,
+                    hidden_size=bert_config.hidden_size,
+                    num_hidden_layers=bert_config.num_hidden_layers,
+                    num_attention_heads=bert_config.num_attention_heads,
+                    intermediate_size=bert_config.intermediate_size,
+                    intermediate_act_fn=get_activation(
                         bert_config.hidden_act
                     ),
-                    hidden_dropout_prob = bert_config.hidden_dropout_prob,
-                    attention_probs_dropout_prob = bert_config.attention_probs_dropout_prob,
-                    initializer_range = bert_config.initializer_range,
-                    do_return_all_layers = True,
+                    hidden_dropout_prob=bert_config.hidden_dropout_prob,
+                    attention_probs_dropout_prob=bert_config.attention_probs_dropout_prob,
+                    initializer_range=bert_config.initializer_range,
+                    do_return_all_layers=True,
                 )
                 self.sequence_output = self.all_layer_outputs[-1]
                 self.pooled_output = self.sequence_output[:, 0]
@@ -366,7 +366,7 @@ def get_activation(activation_string):
         raise ValueError('Unsupported activation: %s' % act)
 
 
-def get_assignment_map_from_checkpoint(tvars, init_checkpoint, prefix = ''):
+def get_assignment_map_from_checkpoint(tvars, init_checkpoint, prefix=''):
     """Compute the union of the current variables and checkpoint variables."""
     name_to_variable = collections.OrderedDict()
     for var in tvars:
@@ -407,35 +407,35 @@ def dropout(input_tensor, dropout_prob):
     return output
 
 
-def layer_norm(input_tensor, name = None):
+def layer_norm(input_tensor, name=None):
     """Run layer normalization on the last dimension of the tensor."""
     return layers.layer_norm(
-        inputs = input_tensor,
-        begin_norm_axis = -1,
-        begin_params_axis = -1,
-        scope = name,
+        inputs=input_tensor,
+        begin_norm_axis=-1,
+        begin_params_axis=-1,
+        scope=name,
     )
 
 
-def layer_norm_and_dropout(input_tensor, dropout_prob, name = None):
+def layer_norm_and_dropout(input_tensor, dropout_prob, name=None):
     """Runs layer normalization followed by dropout."""
     output_tensor = layer_norm(input_tensor, name)
     output_tensor = dropout(output_tensor, dropout_prob)
     return output_tensor
 
 
-def create_initializer(initializer_range = 0.02):
+def create_initializer(initializer_range=0.02):
     """Creates a `truncated_normal_initializer` with the given range."""
-    return tf.truncated_normal_initializer(stddev = initializer_range)
+    return tf.truncated_normal_initializer(stddev=initializer_range)
 
 
 def embedding_lookup(
     input_ids,
     vocab_size,
-    embedding_size = 128,
-    initializer_range = 0.02,
-    word_embedding_name = 'word_embeddings',
-    use_one_hot_embeddings = False,
+    embedding_size=128,
+    initializer_range=0.02,
+    word_embedding_name='word_embeddings',
+    use_one_hot_embeddings=False,
 ):
     """Looks up words embeddings for id tensor.
 
@@ -460,12 +460,12 @@ def embedding_lookup(
     # reshape to [batch_size, seq_length, 1].
     original_dims = input_ids.shape.ndims
     if original_dims == 2:
-        input_ids = tf.expand_dims(input_ids, axis = [-1])
+        input_ids = tf.expand_dims(input_ids, axis=[-1])
 
     embedding_table = tf.get_variable(
-        name = word_embedding_name,
-        shape = [vocab_size, embedding_size],
-        initializer = create_initializer(initializer_range),
+        name=word_embedding_name,
+        shape=[vocab_size, embedding_size],
+        initializer=create_initializer(initializer_range),
     )
 
     if original_dims == 3:
@@ -478,7 +478,7 @@ def embedding_lookup(
     else:
         if use_one_hot_embeddings:
             flat_input_ids = tf.reshape(input_ids, [-1])
-            one_hot_input_ids = tf.one_hot(flat_input_ids, depth = vocab_size)
+            one_hot_input_ids = tf.one_hot(flat_input_ids, depth=vocab_size)
             output = tf.matmul(one_hot_input_ids, embedding_table)
         else:
             output = tf.nn.embedding_lookup(embedding_table, input_ids)
@@ -493,15 +493,15 @@ def embedding_lookup(
 
 def embedding_postprocessor(
     input_tensor,
-    use_token_type = False,
-    token_type_ids = None,
-    token_type_vocab_size = 16,
-    token_type_embedding_name = 'token_type_embeddings',
-    use_position_embeddings = True,
-    position_embedding_name = 'position_embeddings',
-    initializer_range = 0.02,
-    max_position_embeddings = 512,
-    dropout_prob = 0.1,
+    use_token_type=False,
+    token_type_ids=None,
+    token_type_vocab_size=16,
+    token_type_embedding_name='token_type_embeddings',
+    use_position_embeddings=True,
+    position_embedding_name='position_embeddings',
+    initializer_range=0.02,
+    max_position_embeddings=512,
+    dropout_prob=0.1,
 ):
     """Performs various post-processing on a word embedding tensor.
 
@@ -530,7 +530,7 @@ def embedding_postprocessor(
   Raises:
     ValueError: One of the tensor shapes or input values is invalid.
   """
-    input_shape = get_shape_list(input_tensor, expected_rank = 3)
+    input_shape = get_shape_list(input_tensor, expected_rank=3)
     batch_size = input_shape[0]
     seq_length = input_shape[1]
     width = input_shape[2]
@@ -544,15 +544,15 @@ def embedding_postprocessor(
                 '`use_token_type` is True.'
             )
         token_type_table = tf.get_variable(
-            name = token_type_embedding_name,
-            shape = [token_type_vocab_size, width],
-            initializer = create_initializer(initializer_range),
+            name=token_type_embedding_name,
+            shape=[token_type_vocab_size, width],
+            initializer=create_initializer(initializer_range),
         )
         # This vocab will be small so we always do one-hot here, since it is always
         # faster for a small vocabulary.
         flat_token_type_ids = tf.reshape(token_type_ids, [-1])
         one_hot_ids = tf.one_hot(
-            flat_token_type_ids, depth = token_type_vocab_size
+            flat_token_type_ids, depth=token_type_vocab_size
         )
         token_type_embeddings = tf.matmul(one_hot_ids, token_type_table)
         token_type_embeddings = tf.reshape(
@@ -564,9 +564,9 @@ def embedding_postprocessor(
         assert_op = tf.assert_less_equal(seq_length, max_position_embeddings)
         with tf.control_dependencies([assert_op]):
             full_position_embeddings = tf.get_variable(
-                name = position_embedding_name,
-                shape = [max_position_embeddings, width],
-                initializer = create_initializer(initializer_range),
+                name=position_embedding_name,
+                shape=[max_position_embeddings, width],
+                initializer=create_initializer(initializer_range),
             )
             # Since the position embedding table is a learned variable, we create it
             # using a (long) sequence length `max_position_embeddings`. The actual
@@ -608,11 +608,11 @@ def create_attention_mask_from_input_mask(from_tensor, to_mask):
   Returns:
     float Tensor of shape [batch_size, from_seq_length, to_seq_length].
   """
-    from_shape = get_shape_list(from_tensor, expected_rank = [2, 3])
+    from_shape = get_shape_list(from_tensor, expected_rank=[2, 3])
     batch_size = from_shape[0]
     from_seq_length = from_shape[1]
 
-    to_shape = get_shape_list(to_mask, expected_rank = 2)
+    to_shape = get_shape_list(to_mask, expected_rank=2)
     to_seq_length = to_shape[1]
 
     to_mask = tf.cast(
@@ -625,7 +625,7 @@ def create_attention_mask_from_input_mask(from_tensor, to_mask):
     #
     # `broadcast_ones` = [batch_size, from_seq_length, 1]
     broadcast_ones = tf.ones(
-        shape = [batch_size, from_seq_length, 1], dtype = tf.float32
+        shape=[batch_size, from_seq_length, 1], dtype=tf.float32
     )
 
     # Here we broadcast along two dimensions to create the mask.
@@ -637,18 +637,18 @@ def create_attention_mask_from_input_mask(from_tensor, to_mask):
 def attention_layer(
     from_tensor,
     to_tensor,
-    attention_mask = None,
-    num_attention_heads = 1,
-    size_per_head = 512,
-    query_act = None,
-    key_act = None,
-    value_act = None,
-    attention_probs_dropout_prob = 0.0,
-    initializer_range = 0.02,
-    do_return_2d_tensor = False,
-    batch_size = None,
-    from_seq_length = None,
-    to_seq_length = None,
+    attention_mask=None,
+    num_attention_heads=1,
+    size_per_head=512,
+    query_act=None,
+    key_act=None,
+    value_act=None,
+    attention_probs_dropout_prob=0.0,
+    initializer_range=0.02,
+    do_return_2d_tensor=False,
+    batch_size=None,
+    from_seq_length=None,
+    to_seq_length=None,
 ):
     """Performs multi-headed attention from `from_tensor` to `to_tensor`.
 
@@ -717,8 +717,8 @@ def attention_layer(
         output_tensor = tf.transpose(output_tensor, [0, 2, 1, 3])
         return output_tensor
 
-    from_shape = get_shape_list(from_tensor, expected_rank = [2, 3])
-    to_shape = get_shape_list(to_tensor, expected_rank = [2, 3])
+    from_shape = get_shape_list(from_tensor, expected_rank=[2, 3])
+    to_shape = get_shape_list(to_tensor, expected_rank=[2, 3])
 
     if len(from_shape) != len(to_shape):
         raise ValueError(
@@ -755,27 +755,27 @@ def attention_layer(
     query_layer = tf.layers.dense(
         from_tensor_2d,
         num_attention_heads * size_per_head,
-        activation = query_act,
-        name = 'query',
-        kernel_initializer = create_initializer(initializer_range),
+        activation=query_act,
+        name='query',
+        kernel_initializer=create_initializer(initializer_range),
     )
 
     # `key_layer` = [B*T, N*H]
     key_layer = tf.layers.dense(
         to_tensor_2d,
         num_attention_heads * size_per_head,
-        activation = key_act,
-        name = 'key',
-        kernel_initializer = create_initializer(initializer_range),
+        activation=key_act,
+        name='key',
+        kernel_initializer=create_initializer(initializer_range),
     )
 
     # `value_layer` = [B*T, N*H]
     value_layer = tf.layers.dense(
         to_tensor_2d,
         num_attention_heads * size_per_head,
-        activation = value_act,
-        name = 'value',
-        kernel_initializer = create_initializer(initializer_range),
+        activation=value_act,
+        name='value',
+        kernel_initializer=create_initializer(initializer_range),
     )
 
     # `query_layer` = [B, N, F, H]
@@ -795,14 +795,14 @@ def attention_layer(
     # Take the dot product between "query" and "key" to get the raw
     # attention scores.
     # `attention_scores` = [B, N, F, T]
-    attention_scores = tf.matmul(query_layer, key_layer, transpose_b = True)
+    attention_scores = tf.matmul(query_layer, key_layer, transpose_b=True)
     attention_scores = tf.multiply(
         attention_scores, 1.0 / math.sqrt(float(size_per_head))
     )
 
     if attention_mask is not None:
         # `attention_mask` = [B, 1, F, T]
-        attention_mask = tf.expand_dims(attention_mask, axis = [1])
+        attention_mask = tf.expand_dims(attention_mask, axis=[1])
 
         # Since attention_mask is 1.0 for positions we want to attend and 0.0 for
         # masked positions, this operation will create a tensor which is 0.0 for
@@ -854,16 +854,16 @@ def attention_layer(
 
 def transformer_model(
     input_tensor,
-    attention_mask = None,
-    hidden_size = 768,
-    num_hidden_layers = 12,
-    num_attention_heads = 12,
-    intermediate_size = 3072,
-    intermediate_act_fn = gelu,
-    hidden_dropout_prob = 0.1,
-    attention_probs_dropout_prob = 0.1,
-    initializer_range = 0.02,
-    do_return_all_layers = False,
+    attention_mask=None,
+    hidden_size=768,
+    num_hidden_layers=12,
+    num_attention_heads=12,
+    intermediate_size=3072,
+    intermediate_act_fn=gelu,
+    hidden_dropout_prob=0.1,
+    attention_probs_dropout_prob=0.1,
+    initializer_range=0.02,
+    do_return_all_layers=False,
 ):
     """Multi-headed, multi-layer Transformer from "Attention is All You Need".
 
@@ -909,7 +909,7 @@ def transformer_model(
         )
 
     attention_head_size = int(hidden_size / num_attention_heads)
-    input_shape = get_shape_list(input_tensor, expected_rank = 3)
+    input_shape = get_shape_list(input_tensor, expected_rank=3)
     batch_size = input_shape[0]
     seq_length = input_shape[1]
     input_width = input_shape[2]
@@ -936,17 +936,17 @@ def transformer_model(
                 attention_heads = []
                 with tf.variable_scope('self'):
                     attention_head, probs = attention_layer(
-                        from_tensor = prev_output,
-                        to_tensor = prev_output,
-                        attention_mask = attention_mask,
-                        num_attention_heads = num_attention_heads,
-                        size_per_head = attention_head_size,
-                        attention_probs_dropout_prob = attention_probs_dropout_prob,
-                        initializer_range = initializer_range,
-                        do_return_2d_tensor = True,
-                        batch_size = batch_size,
-                        from_seq_length = seq_length,
-                        to_seq_length = seq_length,
+                        from_tensor=prev_output,
+                        to_tensor=prev_output,
+                        attention_mask=attention_mask,
+                        num_attention_heads=num_attention_heads,
+                        size_per_head=attention_head_size,
+                        attention_probs_dropout_prob=attention_probs_dropout_prob,
+                        initializer_range=initializer_range,
+                        do_return_2d_tensor=True,
+                        batch_size=batch_size,
+                        from_seq_length=seq_length,
+                        to_seq_length=seq_length,
                     )
                     attention_heads.append(attention_head)
                     attn_maps.append(probs)
@@ -957,7 +957,7 @@ def transformer_model(
                 else:
                     # In the case where we have other sequences, we just concatenate
                     # them to the self-attention head before the projection.
-                    attention_output = tf.concat(attention_heads, axis = -1)
+                    attention_output = tf.concat(attention_heads, axis=-1)
 
                 # Run a linear projection of `hidden_size` then add a residual
                 # with `layer_input`.
@@ -965,7 +965,7 @@ def transformer_model(
                     attention_output = tf.layers.dense(
                         attention_output,
                         hidden_size,
-                        kernel_initializer = create_initializer(
+                        kernel_initializer=create_initializer(
                             initializer_range
                         ),
                     )
@@ -981,8 +981,8 @@ def transformer_model(
                 intermediate_output = tf.layers.dense(
                     attention_output,
                     intermediate_size,
-                    activation = intermediate_act_fn,
-                    kernel_initializer = create_initializer(initializer_range),
+                    activation=intermediate_act_fn,
+                    kernel_initializer=create_initializer(initializer_range),
                 )
 
             # Down-project back to `hidden_size` then add the residual.
@@ -990,7 +990,7 @@ def transformer_model(
                 prev_output = tf.layers.dense(
                     intermediate_output,
                     hidden_size,
-                    kernel_initializer = create_initializer(initializer_range),
+                    kernel_initializer=create_initializer(initializer_range),
                 )
                 prev_output = dropout(prev_output, hidden_dropout_prob)
                 prev_output = layer_norm(prev_output + attention_output)
@@ -1012,7 +1012,7 @@ def transformer_model(
         return reshape_from_matrix(prev_output, input_shape), attn_maps
 
 
-def get_shape_list(tensor, expected_rank = None, name = None):
+def get_shape_list(tensor, expected_rank=None, name=None):
     """Returns a list of the shape of tensor, preferring static dimensions.
 
   Args:
@@ -1086,7 +1086,7 @@ def reshape_from_matrix(output_tensor, orig_shape_list):
     return tf.reshape(output_tensor, orig_dims + [width])
 
 
-def assert_rank(tensor, expected_rank, name = None):
+def assert_rank(tensor, expected_rank, name=None):
     """Raises an exception if the tensor rank is not of the expected rank.
 
   Args:

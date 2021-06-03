@@ -18,51 +18,6 @@ _transformer_availability = {
 }
 
 
-class Sacremoses:
-    def __init__(self, mtr):
-        self._mtr = mtr
-
-    def true_case(self, strings):
-        """
-        True case strings.
-        Example, "jom makan di us makanan di sana sedap" -> "jom makan di US makanan di sana sedap"
-
-        Parameters
-        ----------
-        strings : List[str]
-
-        Returns
-        -------
-        result: List[str]
-        """
-        results = []
-        for string in strings:
-            results.append(' '.join(self._mtr.truecase(string)))
-        return results
-
-
-def sacremoses(**kwargs):
-    """
-    Load True Case class using sacremoses library.
-
-    Returns
-    -------
-    result : malaya.true_case.Sacremoses class
-    """
-    try:
-        from sacremoses import MosesTruecaser
-    except:
-        raise ModuleNotFoundError(
-            'sacremoses not installed. Please install it by `pip install sacremoses` and try again.'
-        )
-    check_file(
-        PATH_TRUE_CASE['sacremoses'], S3_PATH_TRUE_CASE['sacremoses'], **kwargs
-    )
-    mtr = MosesTruecaser(PATH_TRUE_CASE['sacremoses']['model'])
-
-    return Sacremoses(mtr = mtr)
-
-
 def available_transformer():
     """
     List available transformer models.
@@ -86,7 +41,7 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
         * ``'base'`` - Transformer BASE parameters.
 
     quantized : bool, optional (default=False)
-        if True, will load 8-bit quantized model. 
+        if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
 
     Returns
@@ -101,10 +56,10 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
         )
 
     return load_transformer.load(
-        module = 'true-case',
-        model = model,
-        encoder = 'yttm',
-        model_class = TrueCase,
-        quantized = quantized,
+        module='true-case',
+        model=model,
+        encoder='yttm',
+        model_class=TrueCase,
+        quantized=quantized,
         **kwargs,
     )

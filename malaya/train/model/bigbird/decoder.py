@@ -28,15 +28,15 @@ class PrenormDecoderLayer(tf.compat.v1.layers.Layer):
 
     def __init__(
         self,
-        hidden_size = 768,
-        intermediate_size = 3072,
-        intermediate_act_fn = utils.gelu,
-        attention_probs_dropout_prob = 0.0,
-        hidden_dropout_prob = 0.1,
-        initializer_range = 0.02,
-        num_attention_heads = 12,
-        use_bias = True,
-        name = None,
+        hidden_size=768,
+        intermediate_size=3072,
+        intermediate_act_fn=utils.gelu,
+        attention_probs_dropout_prob=0.0,
+        hidden_dropout_prob=0.1,
+        initializer_range=0.02,
+        num_attention_heads=12,
+        use_bias=True,
+        name=None,
     ):
         """Constructor of a decoder layer of a transformer in Pegasus style.
 
@@ -53,28 +53,28 @@ class PrenormDecoderLayer(tf.compat.v1.layers.Layer):
       use_bias: (optional) bool. Whether key/query/value uses a bias vector.
       name: The name scope of this layer.
     """
-        super(PrenormDecoderLayer, self).__init__(name = name)
+        super(PrenormDecoderLayer, self).__init__(name=name)
         self.hidden_dropout_prob = hidden_dropout_prob
 
         # Attention layers
         attention_head_size = hidden_size // num_attention_heads
         self.self_attn_layer = attention.MultiHeadedAttentionLayer(
             'original_full',
-            use_bias = use_bias,
-            name = 'self',
-            num_attention_heads = num_attention_heads,
-            size_per_head = attention_head_size,
-            initializer_range = initializer_range,
-            attention_probs_dropout_prob = attention_probs_dropout_prob,
+            use_bias=use_bias,
+            name='self',
+            num_attention_heads=num_attention_heads,
+            size_per_head=attention_head_size,
+            initializer_range=initializer_range,
+            attention_probs_dropout_prob=attention_probs_dropout_prob,
         )
         self.cross_attn_layer = attention.MultiHeadedAttentionLayer(
             'original_full',
-            use_bias = use_bias,
-            name = 'encdec',
-            num_attention_heads = num_attention_heads,
-            size_per_head = attention_head_size,
-            initializer_range = initializer_range,
-            attention_probs_dropout_prob = attention_probs_dropout_prob,
+            use_bias=use_bias,
+            name='encdec',
+            num_attention_heads=num_attention_heads,
+            size_per_head=attention_head_size,
+            initializer_range=initializer_range,
+            attention_probs_dropout_prob=attention_probs_dropout_prob,
         )
 
         # Dense layers
@@ -134,9 +134,9 @@ class PrenormDecoderLayer(tf.compat.v1.layers.Layer):
         encoder_outputs,
         self_attention_mask,
         attention_mask,
-        cache = None,
-        decode_i = None,
-        training = None,
+        cache=None,
+        decode_i=None,
+        training=None,
     ):
         """Implements a decoder layer of a transformer in Pegasus style.
 
@@ -173,10 +173,10 @@ class PrenormDecoderLayer(tf.compat.v1.layers.Layer):
                     normalized_layer_input,
                     normalized_layer_input,
                     self_attention_mask,
-                    cache = cache,
-                    decode_i = decode_i,
-                    training = training,
-                    scope = sc,
+                    cache=cache,
+                    decode_i=decode_i,
+                    training=training,
+                    scope=sc,
                 )
 
             # Run a linear projection of `hidden_size` then add a residual
@@ -198,8 +198,8 @@ class PrenormDecoderLayer(tf.compat.v1.layers.Layer):
                     normalized_self_attention_output,
                     encoder_outputs,
                     attention_mask,
-                    training = training,
-                    scope = sc,
+                    training=training,
+                    scope=sc,
                 )
 
             # Run a linear projection of `hidden_size` then add a residual
@@ -236,15 +236,15 @@ class PostnormDecoderLayer(tf.compat.v1.layers.Layer):
 
     def __init__(
         self,
-        hidden_size = 768,
-        intermediate_size = 3072,
-        intermediate_act_fn = utils.gelu,
-        attention_probs_dropout_prob = 0.0,
-        hidden_dropout_prob = 0.1,
-        initializer_range = 0.02,
-        num_attention_heads = 12,
-        use_bias = True,
-        name = None,
+        hidden_size=768,
+        intermediate_size=3072,
+        intermediate_act_fn=utils.gelu,
+        attention_probs_dropout_prob=0.0,
+        hidden_dropout_prob=0.1,
+        initializer_range=0.02,
+        num_attention_heads=12,
+        use_bias=True,
+        name=None,
     ):
         """Constructor of a decoder layer of a transformer in BERT style.
 
@@ -261,28 +261,28 @@ class PostnormDecoderLayer(tf.compat.v1.layers.Layer):
       use_bias: (optional) bool. Whether key/query/value uses a bias vector.
       name: The name scope of this layer.
     """
-        super(PostnormDecoderLayer, self).__init__(name = name)
+        super(PostnormDecoderLayer, self).__init__(name=name)
         self.hidden_dropout_prob = hidden_dropout_prob
 
         # Attention layers
         attention_head_size = hidden_size // num_attention_heads
         self.self_attn_layer = attention.MultiHeadedAttentionLayer(
             'original_full',
-            use_bias = use_bias,
-            name = 'self',
-            num_attention_heads = num_attention_heads,
-            size_per_head = attention_head_size,
-            initializer_range = initializer_range,
-            attention_probs_dropout_prob = attention_probs_dropout_prob,
+            use_bias=use_bias,
+            name='self',
+            num_attention_heads=num_attention_heads,
+            size_per_head=attention_head_size,
+            initializer_range=initializer_range,
+            attention_probs_dropout_prob=attention_probs_dropout_prob,
         )
         self.cross_attn_layer = attention.MultiHeadedAttentionLayer(
             'original_full',
-            use_bias = use_bias,
-            name = 'encdec',
-            num_attention_heads = num_attention_heads,
-            size_per_head = attention_head_size,
-            initializer_range = initializer_range,
-            attention_probs_dropout_prob = attention_probs_dropout_prob,
+            use_bias=use_bias,
+            name='encdec',
+            num_attention_heads=num_attention_heads,
+            size_per_head=attention_head_size,
+            initializer_range=initializer_range,
+            attention_probs_dropout_prob=attention_probs_dropout_prob,
         )
 
         # Dense layers
@@ -342,9 +342,9 @@ class PostnormDecoderLayer(tf.compat.v1.layers.Layer):
         encoder_outputs,
         self_attention_mask,
         attention_mask,
-        cache = None,
-        decode_i = None,
-        training = None,
+        cache=None,
+        decode_i=None,
+        training=None,
     ):
         """Implements a decoder layer of a transformer in BERT style.
 
@@ -380,10 +380,10 @@ class PostnormDecoderLayer(tf.compat.v1.layers.Layer):
                     layer_input,
                     layer_input,
                     self_attention_mask,
-                    cache = cache,
-                    decode_i = decode_i,
-                    training = training,
-                    scope = sc,
+                    cache=cache,
+                    decode_i=decode_i,
+                    training=training,
+                    scope=sc,
                 )
 
             # Run a linear projection of `hidden_size` then add a residual
@@ -404,8 +404,8 @@ class PostnormDecoderLayer(tf.compat.v1.layers.Layer):
                     self_attention_output,
                     encoder_outputs,
                     attention_mask,
-                    training = training,
-                    scope = sc,
+                    training=training,
+                    scope=sc,
                 )
 
             # Run a linear projection of `hidden_size` then add a residual
@@ -442,12 +442,12 @@ class DecoderStack(tf.compat.v1.layers.Layer):
         if params['couple_encoder_decoder']:
             name = 'encoder'
             with tf.compat.v1.variable_scope(
-                name, reuse = tf.compat.v1.AUTO_REUSE
+                name, reuse=tf.compat.v1.AUTO_REUSE
             ) as scope:
-                super(DecoderStack, self).__init__(name = name, _scope = scope)
+                super(DecoderStack, self).__init__(name=name, _scope=scope)
         else:
             name = 'decoder'
-            super(DecoderStack, self).__init__(name = name)
+            super(DecoderStack, self).__init__(name=name)
 
         self.params = params
 
@@ -476,7 +476,7 @@ class DecoderStack(tf.compat.v1.layers.Layer):
                 self.params['initializer_range'],
                 self.params['num_attention_heads'],
                 self.params['use_bias'],
-                name = 'layer_%d' % layer_idx,
+                name='layer_%d' % layer_idx,
             )
             for layer_idx in range(num_hidden_layers)
         ]
@@ -499,9 +499,9 @@ class DecoderStack(tf.compat.v1.layers.Layer):
         self_attention_mask,
         encoder_outputs,
         encoder_mask,
-        cache = None,
-        decode_i = None,
-        training = None,
+        cache=None,
+        decode_i=None,
+        training=None,
     ):
         """Return the output of the decoder layer stacks.
 
@@ -567,10 +567,10 @@ def inplace_update_i(inp_tensor, updates, i):
     batch_size = tf.shape(inp_tensor)[0]
     indices = tf.stack(
         [
-            tf.range(batch_size, dtype = tf.int32),
+            tf.range(batch_size, dtype=tf.int32),
             tf.fill([batch_size], tf.cast(i, tf.int32)),
         ],
-        axis = -1,
+        axis=-1,
     )
     return tf.tensor_scatter_nd_update(inp_tensor, indices, updates)
 
@@ -583,12 +583,12 @@ def left2right_decode(
     batch_size,
     max_decode_len,
     vocab_size,
-    beam_size = 1,
-    beam_start = 5,
-    beam_alpha = 0.6,
-    beam_min = 0,
-    beam_max = -1,
-    eos_id = 1,
+    beam_size=1,
+    beam_start=5,
+    beam_alpha=0.6,
+    beam_min=0,
+    beam_max=-1,
+    eos_id=1,
 ):
     """left to right decode.
 
@@ -626,28 +626,28 @@ def left2right_decode(
             logits_BxV = symbols_to_logits_fn(decodes_BxT, cache_BxU_dict, i)
             decodes_BxT = inplace_update_i(
                 decodes_BxT,
-                tf.argmax(logits_BxV, -1, output_type = tf.int32),
+                tf.argmax(logits_BxV, -1, output_type=tf.int32),
                 i,
             )
             return i + 1, decodes_BxT, cache_BxU_dict
 
         def loop_cond(i, decodes_BxT, unused_cache_BxU_dict):
-            finished_B = tf.reduce_any(tf.equal(decodes_BxT, eos_id), axis = 1)
+            finished_B = tf.reduce_any(tf.equal(decodes_BxT, eos_id), axis=1)
             return tf.logical_and(
                 i < max_decode_len, tf.logical_not(tf.reduce_all(finished_B))
             )
 
         init_dec_BxT = tf.concat(
             [
-                tf.cast(start_symbols, dtype = dtype),
-                tf.zeros([batch_size, max_decode_len - 1], dtype = dtype),
+                tf.cast(start_symbols, dtype=dtype),
+                tf.zeros([batch_size, max_decode_len - 1], dtype=dtype),
             ],
-            axis = 1,
+            axis=1,
         )
         _, decodes, _ = tf.while_loop(
             loop_cond,
             decode_loop,
-            [tf.constant(0, dtype = dtype), init_dec_BxT, context_BxU_dict],
+            [tf.constant(0, dtype=dtype), init_dec_BxT, context_BxU_dict],
         )
         return decodes
 
@@ -663,10 +663,10 @@ def left2right_decode(
 
         init_dec_BxT = tf.concat(
             [
-                tf.cast(start_symbols, dtype = tf.int32),
-                tf.zeros([batch_size, max_decode_len - 1], dtype = tf.int32),
+                tf.cast(start_symbols, dtype=tf.int32),
+                tf.zeros([batch_size, max_decode_len - 1], dtype=tf.int32),
             ],
-            axis = 1,
+            axis=1,
         )
 
         beams, _ = beam_search.beam_search(

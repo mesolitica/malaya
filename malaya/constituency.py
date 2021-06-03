@@ -78,7 +78,7 @@ def available_transformer():
     from malaya.function import describe_availability
 
     return describe_availability(
-        _transformer_availability, text = 'tested on 20% test set.'
+        _transformer_availability, text='tested on 20% test set.'
     )
 
 
@@ -97,9 +97,9 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
         * ``'albert'`` - Google ALBERT BASE parameters.
         * ``'tiny-albert'`` - Google ALBERT TINY parameters.
         * ``'xlnet'`` - Google XLNET BASE parameters.
-    
+
     quantized : bool, optional (default=False)
-        if True, will load 8-bit quantized model. 
+        if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
 
     Returns
@@ -114,15 +114,15 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
         )
 
     path = check_file(
-        file = model,
-        module = 'constituency',
-        keys = {
+        file=model,
+        module='constituency',
+        keys={
             'model': 'model.pb',
             'vocab': MODEL_VOCAB[model],
             'tokenizer': MODEL_BPE[model],
             'setting': CONSTITUENCY_SETTING,
         },
-        quantized = quantized,
+        quantized=quantized,
         **kwargs,
     )
     g = load_graph(path['model'], **kwargs)
@@ -144,14 +144,14 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
     inputs = ['input_ids', 'word_end_mask']
     outputs = ['charts', 'tags']
     input_nodes, output_nodes = nodes_session(
-        g, inputs, outputs, extra = {'vectorizer': _vectorizer_mapping[model]}
+        g, inputs, outputs, extra={'vectorizer': _vectorizer_mapping[model]}
     )
 
     return Constituency(
-        input_nodes = input_nodes,
-        output_nodes = output_nodes,
-        sess = generate_session(graph = g, **kwargs),
-        tokenizer = tokenizer,
-        dictionary = dictionary,
-        mode = mode,
+        input_nodes=input_nodes,
+        output_nodes=output_nodes,
+        sess=generate_session(graph=g, **kwargs),
+        tokenizer=tokenizer,
+        dictionary=dictionary,
+        mode=mode,
     )

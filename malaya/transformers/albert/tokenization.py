@@ -30,7 +30,7 @@ import sentencepiece as spm
 SPIECE_UNDERLINE = u'▁'.encode('utf-8')
 
 
-def preprocess_text(inputs, remove_space = True, lower = False):
+def preprocess_text(inputs, remove_space=True, lower=False):
     """preprocess data by removing extra space and normalize data."""
     outputs = inputs
     if remove_space:
@@ -50,7 +50,7 @@ def preprocess_text(inputs, remove_space = True, lower = False):
     return outputs
 
 
-def encode_pieces(sp_model, text, return_unicode = True, sample = False):
+def encode_pieces(sp_model, text, return_unicode=True, sample=False):
     """turn sentences into word pieces."""
 
     if six.PY2 and isinstance(text, six.text_type):
@@ -92,9 +92,9 @@ def encode_pieces(sp_model, text, return_unicode = True, sample = False):
     return new_pieces
 
 
-def encode_ids(sp_model, text, sample = False):
+def encode_ids(sp_model, text, sample=False):
     pieces = encode_pieces(
-        sp_model, text, return_unicode = False, sample = sample
+        sp_model, text, return_unicode=False, sample=sample
     )
     ids = [sp_model.PieceToId(piece) for piece in pieces]
     return ids
@@ -185,7 +185,7 @@ def whitespace_tokenize(text):
 class FullTokenizer(object):
     """Runs end-to-end tokenziation."""
 
-    def __init__(self, vocab_file, do_lower_case = True, spm_model_file = None):
+    def __init__(self, vocab_file, do_lower_case=True, spm_model_file=None):
         self.vocab = None
         self.sp_model = None
         if spm_model_file:
@@ -201,8 +201,8 @@ class FullTokenizer(object):
             }
         else:
             self.vocab = load_vocab(vocab_file)
-            self.basic_tokenizer = BasicTokenizer(do_lower_case = do_lower_case)
-            self.wordpiece_tokenizer = WordpieceTokenizer(vocab = self.vocab)
+            self.basic_tokenizer = BasicTokenizer(do_lower_case=do_lower_case)
+            self.wordpiece_tokenizer = WordpieceTokenizer(vocab=self.vocab)
         self.inv_vocab = {v: k for k, v in self.vocab.items()}
 
     @classmethod
@@ -212,7 +212,7 @@ class FullTokenizer(object):
     def tokenize(self, text):
         if self.sp_model:
             split_tokens = encode_pieces(
-                self.sp_model, text, return_unicode = False
+                self.sp_model, text, return_unicode=False
             )
         else:
             split_tokens = []
@@ -241,7 +241,7 @@ class FullTokenizer(object):
 class BasicTokenizer(object):
     """Runs basic tokenization (punctuation splitting, lower casing, etc.)."""
 
-    def __init__(self, do_lower_case = True):
+    def __init__(self, do_lower_case=True):
         """Constructs a BasicTokenizer.
 
     Args:
@@ -359,7 +359,7 @@ class WordpieceTokenizer(object):
     """Runs WordPiece tokenziation."""
 
     def __init__(
-        self, vocab, unk_token = '[UNK]', max_input_chars_per_word = 200
+        self, vocab, unk_token='[UNK]', max_input_chars_per_word=200
     ):
         self.vocab = vocab
         self.unk_token = unk_token

@@ -23,13 +23,13 @@ def _softmax(x):
 
 
 def _softmax_2d(x):
-    y = x - x.max(axis = 1, keepdims = True)
-    np.exp(y, out = y)
-    y /= y.sum(axis = 1, keepdims = True)
+    y = x - x.max(axis=1, keepdims=True)
+    np.exp(y, out=y)
+    y /= y.sum(axis=1, keepdims=True)
     return y
 
 
-def _prob_words(context, vocab, temperature = 1.0):
+def _prob_words(context, vocab, temperature=1.0):
     dot = np.dot(vocab, context)
     prob = _softmax(dot / temperature)
     return prob
@@ -40,29 +40,29 @@ def _prepare_topics(
     factors,
     word_vectors,
     vocab,
-    temperature = 1.0,
-    doc_lengths = None,
-    term_frequency = None,
-    normalize = False,
+    temperature=1.0,
+    doc_lengths=None,
+    term_frequency=None,
+    normalize=False,
 ):
     topic_to_word = []
     msg = 'Vocabulary size did not match size of word vectors'
     if not len(vocab) == word_vectors.shape[0]:
         raise ValueError(msg)
     if normalize:
-        word_vectors /= np.linalg.norm(word_vectors, axis = 1)[:, None]
+        word_vectors /= np.linalg.norm(word_vectors, axis=1)[:, None]
     for factor_vector in factors:
         factor_to_word = _prob_words(
-            factor_vector, word_vectors, temperature = temperature
+            factor_vector, word_vectors, temperature=temperature
         )
         topic_to_word.append(np.ravel(factor_to_word))
     topic_to_word = np.array(topic_to_word)
     msg = 'Not all rows in topic_to_word sum to 1'
-    if not np.allclose(np.sum(topic_to_word, axis = 1), 1):
+    if not np.allclose(np.sum(topic_to_word, axis=1), 1):
         raise ValueError(msg)
     doc_to_topic = _softmax_2d(weights)
     msg = 'Not all rows in doc_to_topic sum to 1'
-    if not np.allclose(np.sum(doc_to_topic, axis = 1), 1):
+    if not np.allclose(np.sum(doc_to_topic, axis=1), 1):
         raise ValueError(msg)
     data = {
         'topic_term_dists': topic_to_word,
@@ -97,10 +97,10 @@ class AttentionTopic:
         """
         return print_topics_modelling(
             len_topic,
-            feature_names = np.array(self._features),
-            sorting = np.argsort(self._components)[:, ::-1],
-            n_words = top_n,
-            return_df = return_df,
+            feature_names=np.array(self._features),
+            sorting=np.argsort(self._components)[:, ::-1],
+            n_words=top_n,
+            return_df=return_df,
         )
 
     @check_type
@@ -125,7 +125,7 @@ class AttentionTopic:
                     ' '.join(
                         [
                             self._features[i]
-                            for i in topic.argsort()[: -len_topic - 1 : -1]
+                            for i in topic.argsort()[: -len_topic - 1: -1]
                         ]
                     ),
                 )
@@ -174,7 +174,7 @@ class DeepTopic:
         try:
             import pyLDAvis
             import pyLDAvis.sklearn
-        except:
+        except BaseException:
             raise ModuleNotFoundError(
                 'pyldavis not installed. Please install it by `pip install pyldavis` and try again.'
             )
@@ -187,9 +187,9 @@ class DeepTopic:
             self._topic_embed,
             self._word_embed,
             np.array(self._features),
-            doc_lengths = self._doc_len,
-            term_frequency = self._freqs,
-            normalize = True,
+            doc_lengths=self._doc_len,
+            term_frequency=self._freqs,
+            normalize=True,
         )
         prepared_vis_data = pyLDAvis.prepare(**vis_data)
         if notebook_mode:
@@ -215,10 +215,10 @@ class DeepTopic:
         """
         return print_topics_modelling(
             len_topic,
-            feature_names = np.array(self._features),
-            sorting = np.argsort(self._components)[:, ::-1],
-            n_words = top_n,
-            return_df = return_df,
+            feature_names=np.array(self._features),
+            sorting=np.argsort(self._components)[:, ::-1],
+            n_words=top_n,
+            return_df=return_df,
         )
 
     @check_type
@@ -243,7 +243,7 @@ class DeepTopic:
                     ' '.join(
                         [
                             self._features[i]
-                            for i in topic.argsort()[: -len_topic - 1 : -1]
+                            for i in topic.argsort()[: -len_topic - 1: -1]
                         ]
                     ),
                 )
@@ -307,7 +307,7 @@ class Topic:
             pyLDAvis.enable_notebook()
 
         prepared_vis_data = pyLDAvis.sklearn.prepare(
-            self.comp, self._vectors, self.vectorizer, mds = mds
+            self.comp, self._vectors, self.vectorizer, mds=mds
         )
         if notebook_mode:
             return prepared_vis_data
@@ -332,10 +332,10 @@ class Topic:
         """
         return print_topics_modelling(
             len_topic,
-            feature_names = np.array(self.features),
-            sorting = np.argsort(self.comp.components_)[:, ::-1],
-            n_words = top_n,
-            return_df = return_df,
+            feature_names=np.array(self.features),
+            sorting=np.argsort(self.comp.components_)[:, ::-1],
+            n_words=top_n,
+            return_df=return_df,
         )
 
     @check_type
@@ -361,7 +361,7 @@ class Topic:
                     ' '.join(
                         [
                             self.features[i]
-                            for i in topic.argsort()[: -len_topic - 1 : -1]
+                            for i in topic.argsort()[: -len_topic - 1: -1]
                         ]
                     ),
                 )
@@ -404,8 +404,8 @@ def sklearn(
     model,
     vectorizer,
     n_topics: int,
-    cleaning = simple_textcleaning,
-    stopwords = get_stopwords,
+    cleaning=simple_textcleaning,
+    stopwords=get_stopwords,
     **kwargs,
 ):
     """
@@ -466,8 +466,8 @@ def lda2vec(
     corpus: List[str],
     vectorizer,
     n_topics: int = 10,
-    cleaning = simple_textcleaning,
-    stopwords = get_stopwords,
+    cleaning=simple_textcleaning,
+    stopwords=get_stopwords,
     window_size: int = 2,
     embedding_size: int = 128,
     epoch: int = 10,
@@ -531,17 +531,17 @@ def lda2vec(
     reversed_dictionary = {
         no: i for no, i in enumerate(tf_vectorizer.get_feature_names())
     }
-    freqs = transformed_text_clean.toarray().sum(axis = 0).tolist()
+    freqs = transformed_text_clean.toarray().sum(axis=0).tolist()
     doc_ids = np.arange(len(idx_text_clean))
     num_unique_documents = doc_ids.max()
     pivot_words, target_words, doc_ids = [], [], []
     for i, t in enumerate(idx_text_clean):
         pairs, _ = skipgrams(
             t,
-            vocabulary_size = len(dictionary),
-            window_size = window_size,
-            shuffle = True,
-            negative_samples = 0,
+            vocabulary_size=len(dictionary),
+            window_size=window_size,
+            shuffle=True,
+            negative_samples=0,
         )
         for pair in pairs:
             temp_data = pair
@@ -549,7 +549,7 @@ def lda2vec(
             target_words.append(temp_data[1])
             doc_ids.append(i)
     pivot_words, target_words, doc_ids = shuffle(
-        pivot_words, target_words, doc_ids, random_state = 10
+        pivot_words, target_words, doc_ids, random_state=10
     )
     num_unique_documents = len(idx_text_clean)
 
@@ -558,11 +558,11 @@ def lda2vec(
         len(dictionary),
         n_topics,
         freqs,
-        embedding_size = embedding_size,
+        embedding_size=embedding_size,
         **kwargs,
     )
     model.train(
-        pivot_words, target_words, doc_ids, epoch, switch_loss = switch_loss
+        pivot_words, target_words, doc_ids, epoch, switch_loss=switch_loss
     )
     return DeepTopic(
         model,
@@ -579,12 +579,11 @@ def attention(
     corpus: List[str],
     n_topics: int,
     vectorizer,
-    cleaning = simple_textcleaning,
-    stopwords = get_stopwords,
+    cleaning=simple_textcleaning,
+    stopwords=get_stopwords,
     ngram: Tuple[int, int] = (1, 3),
     batch_size: int = 10,
 ):
-
     """
     Use attention from transformer model to do topic modelling based on corpus / list of strings given.
 
@@ -629,7 +628,7 @@ def attention(
         for i in range(len(corpus)):
             corpus[i] = cleaning(corpus[i])
 
-    def generate_ngram(seq, ngram = (1, 3)):
+    def generate_ngram(seq, ngram=(1, 3)):
         g = []
         for i in range(ngram[0], ngram[-1] + 1):
             g.extend(list(ngrams_generator(seq, i)))
@@ -641,8 +640,8 @@ def attention(
         rows.append(vectorizer.vectorize(corpus[i:index]))
         attentions.extend(vectorizer.attention(corpus[i:index]))
 
-    concat = np.concatenate(rows, axis = 0)
-    kmeans = KMeans(n_clusters = n_topics, random_state = 0).fit(concat)
+    concat = np.concatenate(rows, axis=0)
+    kmeans = KMeans(n_clusters=n_topics, random_state=0).fit(concat)
     labels = kmeans.labels_
 
     overall, filtered_a = [], []

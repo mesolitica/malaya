@@ -108,7 +108,7 @@ def decode(tokens):
     return ''.join(ret)
 
 
-def _read_filepattern(filepattern, max_lines = None, split_on_newlines = True):
+def _read_filepattern(filepattern, max_lines=None, split_on_newlines=True):
     """Reads files matching a wildcard pattern, yielding the contents.
 
   Args:
@@ -163,7 +163,7 @@ def vocab_token_counts(text_filepattern, max_lines):
   """
     ret = {}
     for i, line in enumerate(
-        _read_filepattern(text_filepattern, max_lines = max_lines)
+        _read_filepattern(text_filepattern, max_lines=max_lines)
     ):
         if ',' not in line:
             tf.logging.warning("Malformed vocab line #%d '%s'", i, line)

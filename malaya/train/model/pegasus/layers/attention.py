@@ -44,16 +44,16 @@ class Attention(object):
             )
 
         self._q_layer = tf.layers.Dense(
-            hidden_size, use_bias = False, name = 'query'
+            hidden_size, use_bias=False, name='query'
         )
         self._k_layer = tf.layers.Dense(
-            hidden_size, use_bias = False, name = 'key'
+            hidden_size, use_bias=False, name='key'
         )
         self._v_layer = tf.layers.Dense(
-            hidden_size, use_bias = False, name = 'value'
+            hidden_size, use_bias=False, name='value'
         )
         self._output_layer = tf.layers.Dense(
-            hidden_size, use_bias = False, name = 'output/dense'
+            hidden_size, use_bias=False, name='output/dense'
         )
         self._num_heads = num_heads
         self._hidden_size = hidden_size
@@ -65,8 +65,8 @@ class Attention(object):
         memory_BxMxDi,
         bias_BxIxM,
         training,
-        cache = None,
-        decode_i = None,
+        cache=None,
+        decode_i=None,
     ):
 
         B = tf.shape(input_BxIxDi)[0]
@@ -85,22 +85,22 @@ class Attention(object):
         if cache is not None and decode_i is not None:
             M = tf.shape(cache['k'])[2]
             indices_1x1xMx1 = tf.reshape(
-                tf.one_hot(decode_i, M, dtype = dtype), [1, 1, M, 1]
+                tf.one_hot(decode_i, M, dtype=dtype), [1, 1, M, 1]
             )
             k_BxHxMxDh = cache['k'] + k_BxHxMxDh * indices_1x1xMx1
             v_BxHxMxDh = cache['v'] + v_BxHxMxDh * indices_1x1xMx1
             cache['k'] = k_BxHxMxDh
             cache['v'] = v_BxHxMxDh
-        bias_BxHxIxM = tf.expand_dims(bias_BxIxM, axis = 1)
+        bias_BxHxIxM = tf.expand_dims(bias_BxIxM, axis=1)
         logits_BxHxIxM = (
-            tf.matmul(q_BxHxIxDh, k_BxHxMxDh, transpose_b = True) + bias_BxHxIxM
+            tf.matmul(q_BxHxIxDh, k_BxHxMxDh, transpose_b=True) + bias_BxHxIxM
         )
         alignment_BxHxIxM = tf.nn.softmax(logits_BxHxIxM)
         if training:
             alignment_BxHxIxM = tf.compat.v2.nn.dropout(
                 alignment_BxHxIxM,
-                rate = self._attention_dropout,
-                noise_shape = [1, 1, I, M],
+                rate=self._attention_dropout,
+                noise_shape=[1, 1, I, M],
             )
         outputs_BxHxIxDh = tf.matmul(alignment_BxHxIxM, v_BxHxMxDh)
         outputs_BxIxD = tf.reshape(
@@ -113,23 +113,23 @@ class Attention(object):
 class SelfAttention(Attention):
     """Multihead scaled dot product self-attention."""
 
-    def __call__(self, x, bias, training, cache = None, decode_i = None):
+    def __call__(self, x, bias, training, cache=None, decode_i=None):
         return super(SelfAttention, self).__call__(
-            x, x, bias, training, cache = cache, decode_i = decode_i
+            x, x, bias, training, cache=cache, decode_i=decode_i
         )
 
 
-def ids_to_bias(ids_BxI, dtype = tf.float32, padding_id = 0):
+def ids_to_bias(ids_BxI, dtype=tf.float32, padding_id=0):
     """Convert ids to attention bias for attention."""
     pad_BxI = tf.cast(tf.equal(ids_BxI, padding_id), dtype)
-    bias_Bx1xI = tf.expand_dims(pad_BxI * dtype.min, axis = 1)
+    bias_Bx1xI = tf.expand_dims(pad_BxI * dtype.min, axis=1)
     return bias_Bx1xI
 
 
-def upper_triangle_bias(D, dtype = tf.float32):
+def upper_triangle_bias(D, dtype=tf.float32):
     """Create a upper triangle matrix for decoding bias."""
     upper_triangle_DxD = 1 - tf.matrix_band_part(
-        tf.ones([D, D], dtype = dtype), -1, 0
+        tf.ones([D, D], dtype=dtype), -1, 0
     )
-    tensor_1xDxD = tf.expand_dims(upper_triangle_DxD * dtype.min, axis = 0)
+    tensor_1xDxD = tf.expand_dims(upper_triangle_DxD * dtype.min, axis=0)
     return tensor_1xDxD

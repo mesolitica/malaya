@@ -18,42 +18,42 @@ import abc
 
 
 class BaseModel(object):  # pytype: disable=ignored-metaclass
-  """Base Abstract Class of All Models."""
+    """Base Abstract Class of All Models."""
 
-  __metaclass__ = abc.ABCMeta
+    __metaclass__ = abc.ABCMeta
 
-  @abc.abstractmethod
-  def __init__(self, *args):
-    """Construct model class with parameters."""
-    pass
+    @abc.abstractmethod
+    def __init__(self, *args):
+        """Construct model class with parameters."""
+        pass
 
-  @abc.abstractmethod
-  def __call__(self, features, training):
-    """Build the class graph in training/evaluation mode.
+    @abc.abstractmethod
+    def __call__(self, features, training):
+        """Build the class graph in training/evaluation mode.
 
-    Args:
-      features: dictionary of tensors.
-      training: python boolean indicate of whether model is training
+        Args:
+          features: dictionary of tensors.
+          training: python boolean indicate of whether model is training
 
-    Returns:
-      tuple of loss and outputs. loss is a scalar tensor and outputs is a
-      dictionary of tensors.
-    """
-    loss = 0
-    outputs = {}
-    return loss, outputs
+        Returns:
+          tuple of loss and outputs. loss is a scalar tensor and outputs is a
+          dictionary of tensors.
+        """
+        loss = 0
+        outputs = {}
+        return loss, outputs
 
-  def predict(self, features, *args, **kwargs):
-    """Build the class graph in prediction model.
+    def predict(self, features, *args, **kwargs):
+        """Build the class graph in prediction model.
 
-    Args:
-      features: dictionary of tensors.
-      *args: additional args.
-      **kwargs: additional keyword args.
+        Args:
+          features: dictionary of tensors.
+          *args: additional args.
+          **kwargs: additional keyword args.
 
-    Returns:
-      dictionary of tensors.
-    """
-    del args, kwargs
-    _, outputs = self.__call__(features, False)
-    return outputs
+        Returns:
+          dictionary of tensors.
+        """
+        del args, kwargs
+        _, outputs = self.__call__(features, False)
+        return outputs

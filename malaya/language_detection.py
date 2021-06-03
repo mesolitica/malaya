@@ -30,11 +30,10 @@ label = list(lang_labels.values())
 
 @check_type
 def fasttext(quantized: bool = True, **kwargs):
-
     """
     Load Fasttext language detection model.
     Original size is 353MB, Quantized size 31.1MB.
-    
+
     Parameters
     ----------
     quantized: bool, optional (default=True)
@@ -47,7 +46,7 @@ def fasttext(quantized: bool = True, **kwargs):
 
     try:
         import fasttext
-    except:
+    except BaseException:
         raise ModuleNotFoundError(
             'fasttext not installed. Please install it by `pip install fasttext` and try again.'
         )
@@ -64,7 +63,7 @@ def fasttext(quantized: bool = True, **kwargs):
         model_fasttext = fasttext.load_model(
             PATH_LANG_DETECTION[model]['model']
         )
-    except:
+    except BaseException:
         raise ValueError(
             f"model corrupted due to some reasons, please run `malaya.clear_cache('language-detection/{model}')` and try again"
         )
@@ -77,7 +76,7 @@ def deep_model(quantized: bool = False, **kwargs):
     Original size is 51.2MB, Quantized size 12.8MB.
 
     quantized : bool, optional (default=False)
-        if True, will load 8-bit quantized model. 
+        if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
 
     Returns
@@ -86,14 +85,14 @@ def deep_model(quantized: bool = False, **kwargs):
     """
 
     path = check_file(
-        file = 'lang-32',
-        module = 'language-detection',
-        keys = {
+        file='lang-32',
+        module='language-detection',
+        keys={
             'model': 'model.pb',
             'vector': LANGUAGE_DETECTION_BOW,
             'bpe': LANGUAGE_DETECTION_VOCAB,
         },
-        quantized = quantized,
+        quantized=quantized,
         **kwargs,
     )
     g = load_graph(path['model'], **kwargs)
@@ -102,7 +101,7 @@ def deep_model(quantized: bool = False, **kwargs):
     try:
         with open(path['vector'], 'rb') as fopen:
             vector = pickle.load(fopen)
-    except:
+    except BaseException:
         raise ValueError(
             "model corrupted due to some reasons, please run `malaya.clear_cache('language-detection/lang-32')` and try again"
         )
@@ -119,11 +118,11 @@ def deep_model(quantized: bool = False, **kwargs):
     input_nodes, output_nodes = nodes_session(g, inputs, outputs)
 
     return DeepLang(
-        input_nodes = input_nodes,
-        output_nodes = output_nodes,
-        sess = generate_session(graph = g, **kwargs),
-        vectorizer = vector,
-        bpe = bpe,
-        type = subword_mode,
-        label = lang_labels,
+        input_nodes=input_nodes,
+        output_nodes=output_nodes,
+        sess=generate_session(graph=g, **kwargs),
+        vectorizer=vector,
+        bpe=bpe,
+        type=subword_mode,
+        label=lang_labels,
     )

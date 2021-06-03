@@ -33,7 +33,7 @@ def task_translate(translator, string):
     return translator.translate(string)
 
 
-def run_parallel_in_threads(args_list, target = task_translate):
+def run_parallel_in_threads(args_list, target=task_translate):
     globalparas = [None] * len(args_list)
     result = Queue()
 
@@ -41,7 +41,7 @@ def run_parallel_in_threads(args_list, target = task_translate):
         result.put((target(*args), args_list.index(args)))
 
     threads = [
-        threading.Thread(target = task_wrapper, args = args)
+        threading.Thread(target=task_wrapper, args=args)
         for args in args_list
     ]
     for t in threads:
@@ -56,7 +56,7 @@ def run_parallel_in_threads(args_list, target = task_translate):
 
 
 class Translate_Concurrent:
-    def __init__(self, batch_size, from_lang = 'en', to_lang = 'ms'):
+    def __init__(self, batch_size, from_lang='en', to_lang='ms'):
         self._batch_size = batch_size
         self._translators = [
             Translate(from_lang, to_lang) for _ in range(self._batch_size)
@@ -67,8 +67,8 @@ class Translate_Concurrent:
             strings[0], str
         ), 'input must be list of strings'
         translated = []
-        for no in tqdm(range(0, len(strings), self._batch_size), ncols = 70):
-            data = strings[no : no + self._batch_size]
+        for no in tqdm(range(0, len(strings), self._batch_size), ncols=70):
+            data = strings[no: no + self._batch_size]
             combined = [
                 (self._translators[i], data[i]) for i in range(len(data))
             ]

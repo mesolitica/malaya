@@ -44,7 +44,7 @@ from malaya.cluster import cluster_tagging
 
 
 class EntityRegex:
-    def __init__(self, model = None):
+    def __init__(self, model=None):
         self._model = model
 
     def predict(self, string):

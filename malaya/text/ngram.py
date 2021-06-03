@@ -4,10 +4,10 @@ import itertools
 def _pad_sequence(
     sequence,
     n,
-    pad_left = False,
-    pad_right = False,
-    left_pad_symbol = None,
-    right_pad_symbol = None,
+    pad_left=False,
+    pad_right=False,
+    left_pad_symbol=None,
+    right_pad_symbol=None,
 ):
     sequence = iter(sequence)
     if pad_left:
@@ -20,10 +20,10 @@ def _pad_sequence(
 def ngrams(
     sequence,
     n: int,
-    pad_left = False,
-    pad_right = False,
-    left_pad_symbol = None,
-    right_pad_symbol = None,
+    pad_left=False,
+    pad_right=False,
+    left_pad_symbol=None,
+    right_pad_symbol=None,
 ):
     """
     generate ngrams.

@@ -12,34 +12,34 @@ def check_positive(value):
 
 
 ap = argparse.ArgumentParser()
-ap.add_argument('-i', '--issue', required = True, help = 'issue to search')
+ap.add_argument('-i', '--issue', required=True, help='issue to search')
 ap.add_argument(
     '-s',
     '--start',
-    type = check_positive,
-    required = True,
-    help = 'year start to crawl',
+    type=check_positive,
+    required=True,
+    help='year start to crawl',
 )
 ap.add_argument(
     '-e',
     '--end',
-    type = check_positive,
-    required = True,
-    help = 'year end to crawl',
+    type=check_positive,
+    required=True,
+    help='year end to crawl',
 )
 ap.add_argument(
     '-l',
     '--limit',
-    type = check_positive,
-    required = True,
-    help = 'limit of articles to crawl',
+    type=check_positive,
+    required=True,
+    help='limit of articles to crawl',
 )
 ap.add_argument(
     '-p',
     '--sleep',
-    type = check_positive,
-    default = 10,
-    help = 'seconds to sleep for every 10 articles',
+    type=check_positive,
+    default=10,
+    help='seconds to sleep for every 10 articles',
 )
 args = vars(ap.parse_args())
 
@@ -49,11 +49,11 @@ import json
 
 results = google_news_run(
     args['issue'],
-    limit = args['limit'],
-    year_start = args['start'],
-    year_end = args['end'],
-    debug = False,
-    sleep_time_every_ten_articles = args['sleep'],
+    limit=args['limit'],
+    year_start=args['start'],
+    year_end=args['end'],
+    debug=False,
+    sleep_time_every_ten_articles=args['sleep'],
 )
 
 with open(args['issue'] + '.json', 'w') as fopen:

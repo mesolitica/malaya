@@ -7,6 +7,8 @@ MALAY_TEXT_200K = home + '/dictionary/200k-malay-text.txt'
 
 BERT_BPE_VOCAB = 'bpe/sp10m.cased.bert.vocab'
 BERT_BPE_MODEL = 'bpe/sp10m.cased.bert.model'
+BERT_WORDPIECE_VOCAB = 'bpe/BERT.wordpiece.vocab'
+BERT_WORDPIECE_MODEL = 'bpe/BERT.wordpiece'
 ALBERT_BPE_VOCAB = 'bpe/sp10m.cased.v10.vocab'
 ALBERT_BPE_MODEL = 'bpe/sp10m.cased.v10.model'
 XLNET_BPE_VOCAB = 'bpe/sp10m.cased.v9.vocab'
@@ -40,6 +42,8 @@ MODEL_VOCAB = {
     'alxlnet': XLNET_BPE_VOCAB,
     'bigbird': BERT_BPE_VOCAB,
     'tiny-bigbird': BERT_BPE_VOCAB,
+    'fnet': BERT_WORDPIECE_VOCAB,
+    'fnet-large': BERT_WORDPIECE_VOCAB,
 }
 
 MODEL_BPE = {
@@ -51,6 +55,8 @@ MODEL_BPE = {
     'alxlnet': XLNET_BPE_MODEL,
     'bigbird': BERT_BPE_MODEL,
     'tiny-bigbird': BERT_BPE_MODEL,
+    'fnet': BERT_WORDPIECE_MODEL,
+    'fnet-large': BERT_WORDPIECE_MODEL,
 }
 
 LM_VOCAB = {
@@ -80,8 +86,7 @@ S3_PATH_AUGMENTATION = {
     'synonym': {
         'model': 'https://raw.githubusercontent.com/huseinzol05/Malaya-Dataset/master/dictionary/synonym/synonym0.json',
         'model2': 'https://raw.githubusercontent.com/huseinzol05/Malaya-Dataset/master/dictionary/synonym/synonym1.json',
-    }
-}
+    }}
 
 PATH_EMOTION = {
     'multinomial': {

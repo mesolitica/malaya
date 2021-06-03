@@ -77,7 +77,7 @@ def split_by_3(number):
         if len_of_first_block > 0:
             blocks += ((number[0:len_of_first_block],),)
         for i in range(len_of_first_block, length, 3):
-            blocks += ((number[i : i + 3],),)
+            blocks += ((number[i: i + 3],),)
     return blocks
 
 

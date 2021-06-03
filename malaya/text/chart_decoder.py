@@ -6,13 +6,13 @@ def decode(label_scores_chart):
     sentence_len = label_scores_chart.shape[0] - 1
 
     value_chart = np.zeros(
-        (sentence_len + 1, sentence_len + 1), dtype = np.float32
+        (sentence_len + 1, sentence_len + 1), dtype=np.float32
     )
     split_idx_chart = np.zeros(
-        (sentence_len + 1, sentence_len + 1), dtype = np.int32
+        (sentence_len + 1, sentence_len + 1), dtype=np.int32
     )
     best_label_chart = np.zeros(
-        (sentence_len + 1, sentence_len + 1), dtype = np.int32
+        (sentence_len + 1, sentence_len + 1), dtype=np.int32
     )
 
     length = 0
@@ -79,15 +79,15 @@ def decode(label_scores_chart):
 
     # All fully binarized trees have the same number of nodes
     num_tree_nodes = 2 * sentence_len - 1
-    included_i = np.empty(num_tree_nodes, dtype = np.int32)
-    included_j = np.empty(num_tree_nodes, dtype = np.int32)
-    included_label = np.empty(num_tree_nodes, dtype = np.int32)
+    included_i = np.empty(num_tree_nodes, dtype=np.int32)
+    included_j = np.empty(num_tree_nodes, dtype=np.int32)
+    included_label = np.empty(num_tree_nodes, dtype=np.int32)
 
     idx = 0
     stack_idx = 1
     # technically, the maximum stack depth is smaller than this
-    stack_i = np.empty(num_tree_nodes + 5, dtype = np.int32)
-    stack_j = np.empty(num_tree_nodes + 5, dtype = np.int32)
+    stack_i = np.empty(num_tree_nodes + 5, dtype=np.int32)
+    stack_j = np.empty(num_tree_nodes + 5, dtype=np.int32)
     stack_i[1] = 0
     stack_j[1] = sentence_len
 

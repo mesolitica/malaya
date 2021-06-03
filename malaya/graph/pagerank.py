@@ -5,7 +5,7 @@ import numpy as np
 import logging
 
 
-def pagerank(array, fast_pagerank = True, retry = 5, **kwargs):
+def pagerank(array, fast_pagerank=True, retry=5, **kwargs):
     device = get_device(**kwargs)
     cpu = False
     fail = True
@@ -17,8 +17,7 @@ def pagerank(array, fast_pagerank = True, retry = 5, **kwargs):
         except Exception as e:
             msg = (
                 'cugraph not installed. Please install it from https://github.com/rapidsai/cugraph. \n'
-                'Will calculate pagerank using networkx CPU version.'
-            )
+                'Will calculate pagerank using networkx CPU version.')
             logging.warning(msg)
             cpu = True
 
@@ -39,7 +38,7 @@ def pagerank(array, fast_pagerank = True, retry = 5, **kwargs):
             nx_graph = nx.from_numpy_array(array)
             for _ in range(retry):
                 try:
-                    scores = nx.pagerank(nx_graph, max_iter = 10000)
+                    scores = nx.pagerank(nx_graph, max_iter=10000)
                     fail = False
                     break
                 except Exception as e:

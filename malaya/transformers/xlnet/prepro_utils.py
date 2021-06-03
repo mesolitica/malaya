@@ -47,7 +47,7 @@ def print_(*args):
 
 
 def preprocess_text(
-    inputs, lower = False, remove_space = True, keep_accents = False
+    inputs, lower=False, remove_space=True, keep_accents=False
 ):
     if remove_space:
         outputs = ' '.join(inputs.strip().split())
@@ -67,7 +67,7 @@ def preprocess_text(
     return outputs
 
 
-def encode_pieces(sp_model, text, return_unicode = True, sample = False):
+def encode_pieces(sp_model, text, return_unicode=True, sample=False):
     # return_unicode is used only for py2
 
     # note(zhiliny): in some systems, sentencepiece only accepts str for py2
@@ -109,9 +109,9 @@ def encode_pieces(sp_model, text, return_unicode = True, sample = False):
     return new_pieces
 
 
-def encode_ids(sp_model, text, sample = False):
+def encode_ids(sp_model, text, sample=False):
     pieces = encode_pieces(
-        sp_model, text, return_unicode = False, sample = sample
+        sp_model, text, return_unicode=False, sample=sample
     )
     ids = [sp_model.PieceToId(piece) for piece in pieces]
     return ids

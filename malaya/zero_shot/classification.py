@@ -29,25 +29,25 @@ def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
         * ``'tiny-albert'`` - Google ALBERT TINY parameters.
         * ``'xlnet'`` - Google XLNET BASE parameters.
         * ``'alxlnet'`` - Malaya ALXLNET BASE parameters.
-    
+
     quantized : bool, optional (default=False)
-        if True, will load 8-bit quantized model. 
+        if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
 
     Returns
     -------
     result: model
         List of model classes:
-        
+
         * if `bert` in model, will return `malaya.model.bert.ZeroshotBERT`.
         * if `xlnet` in model, will return `malaya.model.xlnet.ZeroshotXLNET`.
     """
 
     return _transformer(
-        model = model,
-        bert_class = ZeroshotBERT,
-        xlnet_class = ZeroshotXLNET,
-        quantized = quantized,
-        siamese = False,
+        model=model,
+        bert_class=ZeroshotBERT,
+        xlnet_class=ZeroshotXLNET,
+        quantized=quantized,
+        siamese=False,
         **kwargs
     )

@@ -7,11 +7,11 @@ import warnings
 class DependencyGraph(object):
     def __init__(
         self,
-        tree_str = None,
-        cell_extractor = None,
-        zero_based = False,
-        cell_separator = None,
-        top_relation_label = 'ROOT',
+        tree_str=None,
+        cell_extractor=None,
+        zero_based=False,
+        cell_separator=None,
+        top_relation_label='ROOT',
     ):
         self.nodes = defaultdict(
             lambda: {
@@ -34,10 +34,10 @@ class DependencyGraph(object):
         if tree_str:
             self._parse(
                 tree_str,
-                cell_extractor = cell_extractor,
-                zero_based = zero_based,
-                cell_separator = cell_separator,
-                top_relation_label = top_relation_label,
+                cell_extractor=cell_extractor,
+                zero_based=zero_based,
+                cell_separator=cell_separator,
+                top_relation_label=top_relation_label,
             )
 
     def remove_by_address(self, address):
@@ -85,7 +85,7 @@ class DependencyGraph(object):
         s += 'edge [dir=forward]\n'
         s += 'node [shape=plaintext]\n'
 
-        for node in sorted(self.nodes.values(), key = lambda v: v['address']):
+        for node in sorted(self.nodes.values(), key=lambda v: v['address']):
             s += '\n%s [label="%s (%s)"]' % (
                 node['address'],
                 node['address'],
@@ -122,10 +122,10 @@ class DependencyGraph(object):
     def _parse(
         self,
         input_,
-        cell_extractor = None,
-        zero_based = False,
-        cell_separator = None,
-        top_relation_label = 'ROOT',
+        cell_extractor=None,
+        zero_based=False,
+        cell_separator=None,
+        top_relation_label='ROOT',
     ):
         def extract_3_cells(cells, index):
             word, tag, head = cells
@@ -167,7 +167,7 @@ class DependencyGraph(object):
         lines = (l for l in lines if l)
 
         cell_number = None
-        for index, line in enumerate(lines, start = 1):
+        for index, line in enumerate(lines, start=1):
             cells = line.split(cell_separator)
             if cell_number is None:
                 cell_number = len(cells)
@@ -225,14 +225,14 @@ class DependencyGraph(object):
                 'that depends on the root element.'
             )
 
-    def _word(self, node, filter = True):
+    def _word(self, node, filter=True):
         w = node['word']
         if filter:
             if w != ',':
                 return w
         return w
 
-    def triples(self, node = None):
+    def triples(self, node=None):
         """
         Extract dependency triples of the form:
         ((head word, head tag), rel, (dep word, dep tag))
@@ -245,7 +245,7 @@ class DependencyGraph(object):
         for i in sorted(chain.from_iterable(node['deps'].values())):
             dep = self.get_by_address(i)
             yield (head, dep['rel'], (dep['word'], dep['ctag']))
-            for triple in self.triples(node = dep):
+            for triple in self.triples(node=dep):
                 yield triple
 
     def _hd(self, i):
@@ -340,7 +340,7 @@ class DependencyGraph(object):
             )
 
         return ''.join(
-            template.format(i = i, **node)
+            template.format(i=i, **node)
             for i, node in sorted(self.nodes.items())
             if node['tag'] != 'TOP'
         )
@@ -348,7 +348,7 @@ class DependencyGraph(object):
     def to_graphvis(self):
         try:
             from graphviz import Source
-        except:
+        except BaseException:
             raise ModuleNotFoundError(
                 'graphiz not installed. Please install it and try again.'
             )
@@ -357,7 +357,7 @@ class DependencyGraph(object):
     def to_networkx(self):
         try:
             import networkx
-        except:
+        except BaseException:
             raise ModuleNotFoundError(
                 'networkx not installed. Please install it and try again.'
             )

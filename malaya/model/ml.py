@@ -20,7 +20,7 @@ class Bayes:
         vectorize,
         bpe,
         subword_mode,
-        cleaning = simple_textcleaning,
+        cleaning=simple_textcleaning,
     ):
         self._multinomial = multinomial
         self._label = label
@@ -33,12 +33,12 @@ class Bayes:
         strings = [self._cleaning(string) for string in strings]
         subs = [
             ' '.join(s)
-            for s in self._bpe.encode(strings, output_type = self._subword_mode)
+            for s in self._bpe.encode(strings, output_type=self._subword_mode)
         ]
         vectors = self._vectorize.transform(subs)
         return self._multinomial.predict_proba(vectors)
 
-    def _predict(self, strings, add_neutral = False):
+    def _predict(self, strings, add_neutral=False):
         results = self._classify(strings)
 
         if add_neutral:
@@ -47,9 +47,9 @@ class Bayes:
         else:
             label = self._label
 
-        return [label[result] for result in np.argmax(results, axis = 1)]
+        return [label[result] for result in np.argmax(results, axis=1)]
 
-    def _predict_proba(self, strings, add_neutral = False):
+    def _predict_proba(self, strings, add_neutral=False):
         results = self._classify(strings)
 
         if add_neutral:
@@ -72,7 +72,7 @@ class BinaryBayes(Bayes, Classification):
         vectorize,
         bpe,
         subword_mode,
-        cleaning = simple_textcleaning,
+        cleaning=simple_textcleaning,
     ):
         Bayes.__init__(
             self, multinomial, label, vectorize, bpe, subword_mode, cleaning
@@ -94,7 +94,7 @@ class BinaryBayes(Bayes, Classification):
         result: List[str]
         """
 
-        return self._predict(strings = strings, add_neutral = add_neutral)
+        return self._predict(strings=strings, add_neutral=add_neutral)
 
     @check_type
     def predict_proba(self, strings: List[str], add_neutral: bool = True):
@@ -112,7 +112,7 @@ class BinaryBayes(Bayes, Classification):
         result: List[dict[str, float]]
         """
 
-        return self._predict_proba(strings = strings, add_neutral = add_neutral)
+        return self._predict_proba(strings=strings, add_neutral=add_neutral)
 
 
 class MulticlassBayes(Bayes, Classification):
@@ -123,7 +123,7 @@ class MulticlassBayes(Bayes, Classification):
         vectorize,
         bpe,
         subword_mode,
-        cleaning = simple_textcleaning,
+        cleaning=simple_textcleaning,
     ):
         Bayes.__init__(
             self, multinomial, label, vectorize, bpe, subword_mode, cleaning
@@ -143,7 +143,7 @@ class MulticlassBayes(Bayes, Classification):
         result: List[str]
         """
 
-        return self._predict(strings = strings)
+        return self._predict(strings=strings)
 
     @check_type
     def predict_proba(self, strings: List[str]):
@@ -159,7 +159,7 @@ class MulticlassBayes(Bayes, Classification):
         result: List[dict[str, float]]
         """
 
-        return self._predict_proba(strings = strings)
+        return self._predict_proba(strings=strings)
 
 
 class MultilabelBayes(Bayes, Classification):
@@ -170,7 +170,7 @@ class MultilabelBayes(Bayes, Classification):
         vectorize,
         bpe,
         subword_mode,
-        cleaning = simple_textcleaning,
+        cleaning=simple_textcleaning,
     ):
         Bayes.__init__(
             self, multinomial, label, vectorize, bpe, subword_mode, cleaning
@@ -190,7 +190,7 @@ class MultilabelBayes(Bayes, Classification):
         result: List[List[str]]
         """
 
-        result = self._classify(strings = strings)
+        result = self._classify(strings=strings)
         arounded = np.around(result)
 
         results = []
@@ -216,7 +216,7 @@ class MultilabelBayes(Bayes, Classification):
         result: List[dict[str, float]]
         """
 
-        result = self._classify(strings = strings)
+        result = self._classify(strings=strings)
 
         results = []
         for i, row in enumerate(result):
