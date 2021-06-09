@@ -140,18 +140,6 @@ def transformer_ontonotes5(
         vectorizer = {'vectorizer': 'import/dense/BiasAdd:0'}
         Model = TaggingBERT
 
-        return TaggingBERT(
-            X=g.get_tensor_by_name('import/Placeholder:0'),
-            segment_ids=None,
-            input_masks=g.get_tensor_by_name('import/Placeholder_1:0'),
-            logits=g.get_tensor_by_name('import/logits:0'),
-            vectorizer=g.get_tensor_by_name('import/dense/BiasAdd:0'),
-            sess=generate_session(graph=g, **kwargs),
-            tokenizer=tokenizer,
-            settings=nodes,
-            tok=tok,
-        )
-
     if model in ['xlnet', 'alxlnet']:
         tokenizer = sentencepiece_tokenizer_xlnet(path['tokenizer'])
         inputs = ['Placeholder', 'Placeholder_1', 'Placeholder_2']
@@ -169,4 +157,5 @@ def transformer_ontonotes5(
         sess=generate_session(graph=g, **kwargs),
         tokenizer=tokenizer,
         settings=nodes,
+        tok=tok,
     )

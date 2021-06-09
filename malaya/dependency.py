@@ -110,7 +110,6 @@ def describe():
         {'Tag': 'aux', 'Description': 'auxiliary'},
         {'Tag': 'case', 'Description': 'case marking'},
         {'Tag': 'ccomp', 'Description': 'clausal complement'},
-        {'Tag': 'advmod', 'Description': 'adverbial modifier'},
         {'Tag': 'compound', 'Description': 'compound'},
         {'Tag': 'compound:plur', 'Description': 'plural compound'},
         {'Tag': 'conj', 'Description': 'conjunct'},

@@ -39,6 +39,7 @@ class DependencyGraph(object):
                 cell_separator=cell_separator,
                 top_relation_label=top_relation_label,
             )
+            self.list = list(self.nodes.values())
 
     def remove_by_address(self, address):
         del self.nodes[address]
@@ -108,12 +109,22 @@ class DependencyGraph(object):
     def left_children(self, node_index):
         children = chain.from_iterable(self.nodes[node_index]['deps'].values())
         index = self.nodes[node_index]['address']
-        return sum(1 for c in children if c < index)
+        return [c for c in children if c < index]
 
     def right_children(self, node_index):
         children = chain.from_iterable(self.nodes[node_index]['deps'].values())
         index = self.nodes[node_index]['address']
-        return sum(1 for c in children if c > index)
+        return [c for c in children if c > index]
+
+    def ancestors(self, node_index):
+        def recursive(node_index, r=[]):
+            head = self.nodes[node_index]['head']
+            if head is not None:
+                r.append(head)
+                return ancestors(head, r)
+            else:
+                return r
+        return recursive(node_index)
 
     def add_node(self, node):
         if not self.contains_address(node['address']):

@@ -386,11 +386,10 @@ def padding_sequence(seq, maxlen=None, padding='post', pad_int=0):
     return padded_seqs
 
 
-def bert_tokenization(tokenizer, texts, cleaning=transformer_textcleaning):
+def bert_tokenization(tokenizer, texts):
     input_ids, input_masks, segment_ids, s_tokens = [], [], [], []
     for text in texts:
-        if cleaning:
-            text = cleaning(text)
+        text = transformer_textcleaning(text)
         tokens_a = tokenizer.tokenize(text)[:MAXLEN]
         tokens = ['[CLS]'] + tokens_a + ['[SEP]']
         segment_id = [0] * len(tokens)
@@ -603,10 +602,10 @@ def xlnet_tokenization_siamese(tokenizer, left, right):
     return input_ids, input_mask, all_seg_ids, s_tokens
 
 
-def xlnet_tokenization(tokenizer, texts):
+def xlnet_tokenization(tokenizer, texts, space_after_punct=False):
     input_ids, input_masks, segment_ids, s_tokens = [], [], [], []
     for text in texts:
-        text = transformer_textcleaning(text)
+        text = transformer_textcleaning(text, space_after_punct=space_after_punct)
         tokens_a = tokenize_fn(text, tokenizer)[:MAXLEN]
         tokens = []
         segment_id = []
@@ -700,8 +699,8 @@ def merge_wordpiece_tokens(paired_tokens, weighted=True):
     return list(zip(words, weights))
 
 
-def parse_bert_tagging(left, tokenizer):
-    left = transformer_textcleaning(left)
+def parse_bert_tagging(left, tokenizer, space_after_punct=False):
+    left = transformer_textcleaning(left, space_after_punct=space_after_punct)
     bert_tokens = ['[CLS]'] + tokenizer.tokenize(left) + ['[SEP]']
     input_mask = [1] * len(bert_tokens)
     return tokenizer.convert_tokens_to_ids(bert_tokens), input_mask, bert_tokens

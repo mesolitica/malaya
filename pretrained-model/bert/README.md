@@ -23,7 +23,7 @@ Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://w
 
 ## How-to
 
-1. Run [build-wordpiece.ipynb](build-wordpiece.ipynb).
+1. Follow README in [tokenizer](tokenizer) for tokenizer and steps to generate it.
 
 2. Split text file to multiple text files,
 

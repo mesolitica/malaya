@@ -24,7 +24,7 @@ Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://w
 
 **training session required TPU**,
 
-1. Download [sp10m.cased.t5.model](../preprocess/sp10m.cased.t5.model) and [sp10m.cased.t5.vocab](../preprocess/sp10m.cased.t5.vocab).
+1. Follow README in [tokenizer](tokenizer) for tokenizer and steps to generate it.
 
 2. Run all generate notebooks in [prepare](prepare).
 

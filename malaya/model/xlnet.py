@@ -849,7 +849,7 @@ class TaggingXLNET(Base, Tagging):
             )
         else:
             input_ids, input_masks, segment_ids, s_tokens = xlnet_tokenization(
-                self._tokenizer, [string]
+                self._tokenizer, [string], space_after_punct=True
             )
         s_tokens = s_tokens[0]
         return input_ids, input_masks, segment_ids, s_tokens
@@ -955,7 +955,7 @@ class DependencyXLNET(Base):
         result: np.array
         """
         input_ids, input_masks, segment_ids, s_tokens = xlnet_tokenization(
-            self._tokenizer, [string]
+            self._tokenizer, [string], space_after_punct=True
         )
         s_tokens = s_tokens[0]
         r = self._execute(
@@ -987,7 +987,7 @@ class DependencyXLNET(Base):
         """
 
         input_ids, input_masks, segment_ids, s_tokens = xlnet_tokenization(
-            self._tokenizer, [string]
+            self._tokenizer, [string], space_after_punct=True
         )
         s_tokens = s_tokens[0]
         r = self._execute(
@@ -1019,6 +1019,10 @@ class DependencyXLNET(Base):
             index = int(indexing[i][1])
             if index > len(tagging):
                 index = len(tagging)
+            elif (i + 1) == index:
+                index = index + 1
+            elif index == -1:
+                index = i
             indexing_.append((indexing[i][0], index))
             result.append(
                 '%d\t%s\t_\t_\t_\t_\t%d\t%s\t_\t_'

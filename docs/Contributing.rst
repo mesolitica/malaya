@@ -95,4 +95,4 @@ Feel free to help Malaya to write unit-tests, fork it!
 .. _Singapore news: https://github.com/huseinzol05/malaya-dataset#singapore-news
 .. _unit tests here: https://github.com/huseinzol05/Malaya/tree/master/tests
 .. _AutoPEP8: https://github.com/hhatto/autopep8
-.. _pyproject.toml: #
+.. _pyproject.toml: https://github.com/huseinzol05/malaya/blob/master/pyproject.toml

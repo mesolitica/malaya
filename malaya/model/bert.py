@@ -849,7 +849,7 @@ class TaggingBERT(Base, Tagging):
             )
         else:
             parsed_sequence, input_mask, bert_sequence = parse_bert_tagging(
-                string, self._tokenizer
+                string, self._tokenizer, space_after_punct=True
             )
         return parsed_sequence, input_mask, bert_sequence
 
@@ -950,7 +950,7 @@ class DependencyBERT(Base):
         result: np.array
         """
         parsed_sequence, input_mask, bert_sequence = parse_bert_tagging(
-            string, self._tokenizer
+            string, self._tokenizer, space_after_punct=True
         )
         r = self._execute(
             inputs=[[parsed_sequence]],
@@ -980,7 +980,7 @@ class DependencyBERT(Base):
         """
 
         parsed_sequence, input_mask, bert_sequence = parse_bert_tagging(
-            string, self._tokenizer
+            string, self._tokenizer, space_after_punct=True
         )
         r = self._execute(
             inputs=[[parsed_sequence]],
@@ -1007,6 +1007,10 @@ class DependencyBERT(Base):
             index = int(indexing[i][1])
             if index > len(tagging):
                 index = len(tagging)
+            elif (i + 1) == index:
+                index = index + 1
+            elif index == -1:
+                index = i
             indexing_.append((indexing[i][0], index))
             result.append(
                 '%d\t%s\t_\t_\t_\t_\t%d\t%s\t_\t_'

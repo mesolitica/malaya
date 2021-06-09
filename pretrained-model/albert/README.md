@@ -22,7 +22,9 @@ Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://w
 
 ## How-to
 
-1. Create pretraining dataset,
+1. Follow README in [tokenizer](tokenizer) for tokenizer and steps to generate it.
+
+2. Create pretraining dataset,
 
 ```bash
 python3 create-pretraining.py

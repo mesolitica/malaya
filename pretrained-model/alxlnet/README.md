@@ -22,7 +22,9 @@ Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://w
 
 ## How-to
 
-1. Convert text files to tfrecord,
+1. Follow README in [tokenizer](tokenizer) for tokenizer and steps to generate it.
+
+2. Convert text files to tfrecord,
 
 ```bash
 mkdir save-location
@@ -42,7 +44,7 @@ python3 data_utils.py \
   --uncased=False
 ```
 
-2. Run pretained,
+3. Run pretained,
 
 **BASE**,
 

@@ -21,6 +21,7 @@ STOPWORDS = set(stopwords + stopword_tatabahasa + stopwords_calon)
 STOPWORD_CALON = set(stopwords_calon)
 VOWELS = 'aeiou'
 PHONES = ['sh', 'ch', 'ph', 'sz', 'cz', 'sch', 'rz', 'dz']
+PUNCTUATION = '!"#$%&\'()*+,./:;<=>?@[\]^_`{|}~'
 ENGLISH_WORDS = _english_words
 MALAY_WORDS = _malay_words
 
@@ -117,7 +118,7 @@ def translation_textcleaning(string):
     return re.sub(r'[ ]+', ' ', unidecode(string)).strip()
 
 
-def transformer_textcleaning(string):
+def transformer_textcleaning(string, space_after_punct=False):
     """
     use by any transformer model before tokenization
     """
@@ -137,7 +138,11 @@ def transformer_textcleaning(string):
     )
     string = re.sub(r'[ ]+', ' ', string).strip().split()
     string = [w for w in string if w[0] != '@']
-    return ' '.join(string)
+    string = ' '.join(string)
+    if space_after_punct:
+        string = re.sub(f'([{PUNCTUATION}])', r' \1 ', string)
+        string = re.sub('\s{2,}', ' ', string)
+    return string
 
 
 def malaya_textcleaning(string):
@@ -569,41 +574,37 @@ def split_into_sentences(text, minimum_length=5):
     return sentences
 
 
-def end_of_chunk(prev_tag, tag):
-    if not len(prev_tag):
-        return False
-    if prev_tag != tag:
-        return True
-
-
-def start_of_chunk(prev_tag, tag):
-    if not len(prev_tag):
-        return True
-    if prev_tag != tag:
-        return False
-
-
 def tag_chunk(seq):
-    words = [i[0] for i in seq]
-    seq = [i[1] for i in seq]
-    prev_tag = ''
-    begin_offset = 0
-    chunks = []
-    for i, chunk in enumerate(seq):
-        if end_of_chunk(prev_tag, chunk):
-            chunks.append((prev_tag, begin_offset, i - 1))
-            prev_tag = ''
-        if start_of_chunk(prev_tag, chunk):
-            begin_offset = i
-        prev_tag = chunk
-    res = {'words': words, 'tags': []}
-    for chunk_type, chunk_start, chunk_end in chunks:
+    results = []
+    last_no, last_label, tokens = 0, None, []
+    for no in range(len(seq)):
+        if last_label is None:
+            tokens.append(seq[no][0])
+            last_label = seq[no][1]
+            last_no = no
+        elif seq[no][1] == last_label:
+            tokens.append(seq[no][0])
+        else:
+            tag = {
+                'text': tokens,
+                'type': last_label,
+                'score': 1.0,
+                'beginOffset': last_no,
+                'endOffset': no,
+            }
+            results.append(tag)
+            last_label = seq[no][1]
+            last_no = no
+            tokens = [seq[no][0]]
+
+    if len(tokens):
         tag = {
-            'text': ' '.join(words[chunk_start: chunk_end + 1]),
-            'type': chunk_type,
+            'text': tokens,
+            'type': last_label,
             'score': 1.0,
-            'beginOffset': chunk_start,
-            'endOffset': chunk_end,
+            'beginOffset': last_no,
+            'endOffset': no + 1,
         }
-        res['tags'].append(tag)
-    return res
+        results.append(tag)
+
+    return results
