@@ -57,6 +57,12 @@ malaya.keyword_extraction
 .. automodule:: malaya.keyword_extraction
     :members:
 
+malaya.knowledge_graph
+--------------------------
+
+.. automodule:: malaya.knowledge_graph
+    :members:
+
 malaya.language_detection
 -------------------------
 
@@ -381,6 +387,9 @@ malaya.model.tf
     :members:
 
 .. autoclass:: malaya.model.tf.SQUAD()
+    :members:
+
+.. autoclass:: malaya.model.tf.KnowledgeGraph()
     :members:
 
 malaya.model.xlnet

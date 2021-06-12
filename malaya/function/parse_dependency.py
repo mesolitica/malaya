@@ -116,15 +116,47 @@ class DependencyGraph(object):
         index = self.nodes[node_index]['address']
         return [c for c in children if c > index]
 
+    def traverse_ancestor(self, node_index, labels,
+                          rejected_words=['itu', 'yang', 'mereka', 'ini', 'juga', 'dan'],
+                          initial_label=[]):
+        result = []
+        n = self.nodes[node_index]
+        same = n['rel'] in labels + initial_label
+        if same and n['word'] not in rejected_words:
+            w = (n['word'], node_index)
+            result.append(w)
+            l = self.traverse_ancestor(n['head'], labels=labels, rejected_words=rejected_words)
+            result.extend(l)
+
+        return result
+
+    def traverse_children(self, node_index, labels,
+                          rejected_words=['itu', 'yang', 'mereka', 'ini', 'juga', 'dan'],
+                          initial_label=[]):
+        result = []
+        n = self.nodes[node_index]
+        same = n['rel'] in labels + initial_label
+        if same and n['word'] not in rejected_words:
+            w = (n['word'], node_index)
+            result.append(w)
+            count = 0
+            for label in labels:
+                for dep in n['deps'].get(label, []):
+                    l = self.traverse_children(dep, labels=labels, rejected_words=rejected_words)
+                    if count == 0:
+                        result.extend(l)
+                    else:
+                        result.append([w] + l)
+                    count += 1
+
+        return result
+
     def ancestors(self, node_index):
-        def recursive(node_index, r=[]):
-            head = self.nodes[node_index]['head']
-            if head is not None:
-                r.append(head)
-                return ancestors(head, r)
-            else:
-                return r
-        return recursive(node_index)
+        r = []
+        head = self.nodes[node_index]['head']
+        if head is not None:
+            r.extend([head] + self.ancestors(head))
+        return r
 
     def add_node(self, node):
         if not self.contains_address(node['address']):

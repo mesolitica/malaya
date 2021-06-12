@@ -25,6 +25,20 @@ PUNCTUATION = '!"#$%&\'()*+,./:;<=>?@[\]^_`{|}~'
 ENGLISH_WORDS = _english_words
 MALAY_WORDS = _malay_words
 
+alphabets = '([A-Za-z])'
+prefixes = (
+    '(Mr|St|Mrs|Ms|Dr|Prof|Capt|Cpt|Lt|Mt|Puan|puan|Tuan|tuan|sir|Sir)[.]'
+)
+suffixes = '(Inc|Ltd|Jr|Sr|Co|Mo)'
+starters = '(Mr|Mrs|Ms|Dr|He\\s|She\\s|It\\s|They\\s|Their\\s|Our\\s|We\\s|But\\s|However\\s|That\\s|This\\s|Wherever|Dia|Mereka|Tetapi|Kita|Itu|Ini|Dan|Kami|Beliau|Seri|Datuk|Dato|Datin|Tuan|Puan)'
+acronyms = '([A-Z][.][A-Z][.](?:[A-Z][.])?)'
+emails = r'(?:^|(?<=[^\w@.)]))(?:[\w+-](?:\.(?!\.))?)*?[\w+-]@(?:\w-?)*?\w+(?:\.(?:[a-z]{2,})){1,3}(?:$|(?=\b))'
+websites = '[.](com|net|org|io|gov|me|edu|my)'
+another_websites = '(www|http|https)[.]'
+digits = '([0-9])'
+before_digits = '([Nn]o|[Nn]ombor|[Nn]umber|[Kk]e|=|al|[Pp]ukul)'
+month = '([Jj]an(?:uari)?|[Ff]eb(?:ruari)?|[Mm]a(?:c)?|[Aa]pr(?:il)?|Mei|[Jj]u(?:n)?|[Jj]ula(?:i)?|[Aa]ug(?:ust)?|[Ss]ept?(?:ember)?|[Oo]kt(?:ober)?|[Nn]ov(?:ember)?|[Dd]is(?:ember)?)'
+
 
 def get_stopwords():
     return list(STOPWORDS)
@@ -486,21 +500,6 @@ def replace_laugh(string, replace_with='haha'):
 
 def replace_mengeluh(string, replace_with='aduh'):
     return replace_any(string, MENGELUH, replace_with)
-
-
-alphabets = '([A-Za-z])'
-prefixes = (
-    '(Mr|St|Mrs|Ms|Dr|Prof|Capt|Cpt|Lt|Mt|Puan|puan|Tuan|tuan|sir|Sir)[.]'
-)
-suffixes = '(Inc|Ltd|Jr|Sr|Co|Mo)'
-starters = '(Mr|Mrs|Ms|Dr|He\\s|She\\s|It\\s|They\\s|Their\\s|Our\\s|We\\s|But\\s|However\\s|That\\s|This\\s|Wherever|Dia|Mereka|Tetapi|Kita|Itu|Ini|Dan|Kami|Beliau|Seri|Datuk|Dato|Datin|Tuan|Puan)'
-acronyms = '([A-Z][.][A-Z][.](?:[A-Z][.])?)'
-emails = r'(?:^|(?<=[^\w@.)]))(?:[\w+-](?:\.(?!\.))?)*?[\w+-]@(?:\w-?)*?\w+(?:\.(?:[a-z]{2,})){1,3}(?:$|(?=\b))'
-websites = '[.](com|net|org|io|gov|me|edu|my)'
-another_websites = '(www|http|https)[.]'
-digits = '([0-9])'
-before_digits = '([Nn]o|[Nn]ombor|[Nn]umber|[Kk]e|=|al|[Pp]ukul)'
-month = '([Jj]an(?:uari)?|[Ff]eb(?:ruari)?|[Mm]a(?:c)?|[Aa]pr(?:il)?|Mei|[Jj]u(?:n)?|[Jj]ula(?:i)?|[Aa]ug(?:ust)?|[Ss]ept?(?:ember)?|[Oo]kt(?:ober)?|[Nn]ov(?:ember)?|[Dd]is(?:ember)?)'
 
 
 def split_into_sentences(text, minimum_length=5):

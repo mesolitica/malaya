@@ -135,6 +135,22 @@ class SentencePieceEncoder:
         return self.sp.DecodeIds(list(ids))
 
 
+class SentencePieceBatchEncoder:
+    def __init__(self, vocab):
+        sp = spm.SentencePieceProcessor()
+        sp.Load(vocab)
+
+        self.sp = sp
+        self.vocab_size = sp.GetPieceSize() + 100
+
+    def encode(self, s):
+        s = [self.sp.EncodeAsIds(i) + [1] for i in s]
+        return s
+
+    def decode(self, ids, strip_extraneous=False):
+        return [self.sp.DecodeIds(list(i)) for i in ids]
+
+
 class YTTMEncoder:
     def __init__(self, bpe, mode):
         self.bpe = bpe

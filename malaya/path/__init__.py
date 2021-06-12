@@ -15,6 +15,8 @@ XLNET_BPE_VOCAB = 'bpe/sp10m.cased.v9.vocab'
 XLNET_BPE_MODEL = 'bpe/sp10m.cased.v9.model'
 T2T_BPE_VOCAB = 'bpe/sp10m.cased.t5.vocab'
 T2T_BPE_MODEL = 'bpe/sp10m.cased.t5.model'
+MS_EN_BPE_VOCAB = 'bpe/sp10m.cased.ms-en.vocab'
+MS_EN_BPE_MODEL = 'bpe/sp10m.cased.ms-en.model'
 TRANSLATION_BPE_VOCAB = 'bpe/sp10m.cased.translation.vocab'
 TRANSLATION_BPE_MODEL = 'bpe/sp10m.cased.translation.model'
 TRANSLATION_EN_MS_VOCAB = 'bpe/en-ms.subwords'
@@ -64,6 +66,7 @@ LM_VOCAB = {
     'translation-ms-en': TRANSLATION_MS_EN_VOCAB,
     'true-case': TRUE_CASE_VOCAB,
     'segmentation': SEGMENTATION_VOCAB,
+    'knowledge-graph-generator': MS_EN_BPE_MODEL,
 }
 
 TAGGING_SETTING = {

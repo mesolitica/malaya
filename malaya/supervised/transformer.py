@@ -4,7 +4,12 @@ from malaya.function import (
     generate_session,
     nodes_session,
 )
-from malaya.text.bpe import SentencePieceEncoder, YTTMEncoder, load_yttm
+from malaya.text.bpe import (
+    SentencePieceEncoder,
+    SentencePieceBatchEncoder,
+    YTTMEncoder,
+    load_yttm,
+)
 from malaya.text.t2t import text_encoder
 from malaya.path import T2T_BPE_MODEL, LM_VOCAB
 
@@ -56,6 +61,9 @@ def load(module, model, encoder, model_class, quantized=False, **kwargs):
     if encoder == 'yttm':
         bpe, subword_mode = load_yttm(path['vocab'], True)
         encoder = YTTMEncoder(bpe, subword_mode)
+
+    if encoder == 'sentencepiece':
+        encoder = SentencePieceBatchEncoder(path['vocab'])
 
     inputs = ['Placeholder']
     outputs = ['greedy', 'beam']

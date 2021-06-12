@@ -987,14 +987,14 @@ class KnowledgeGraph(T2T, Seq2Seq):
 
         Returns
         -------
-        result: List[str]
+        result: List[Dict]
         """
-        return _parse(
+        return self._parse(
             self._greedy_decoder(strings), get_networkx=get_networkx
         )
 
     @check_type
-    def beam_decoder(self, strings: List[str]):
+    def beam_decoder(self, strings: List[str], get_networkx: bool = True):
         """
         Generate triples knowledge graph using beam decoder.
         Example, "Joseph Enanga juga bermain untuk Union Douala." -> "Joseph Enanga member of sports team Union Douala"
@@ -1002,9 +1002,11 @@ class KnowledgeGraph(T2T, Seq2Seq):
         Parameters
         ----------
         strings : List[str]
+        get_networkx: bool, optional (default=True)
+            If True, will generate networkx.MultiDiGraph.
 
         Returns
         -------
-        result: List[str]
+        result: List[Dict]
         """
-        return _parse(elf._beam_decoder(strings), get_networkx=get_networkx)
+        return self._parse(self._beam_decoder(strings), get_networkx=get_networkx)

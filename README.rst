@@ -52,6 +52,7 @@ Features
 -  **Entities Recognition**, seeks to locate and classify named entities mentioned in text using finetuned Transformer-Bahasa.
 -  **Generator**, generate any texts given a context using T5-Bahasa, GPT2-Bahasa or Transformer-Bahasa.
 -  **Keyword Extraction**, provide RAKE, TextRank and Attention Mechanism hybrid with Transformer-Bahasa.
+-  **Knowledge Graph**, generate Knowledge Graph using Transformer-Bahasa or parse from Dependency Parsing models.
 -  **Language Detection**, using Fast-text and Sparse Deep learning Model to classify Malay (formal and social media), Indonesia (formal and social media), Rojak language and Manglish.
 -  **Normalizer**, using local Malaysia NLP researches hybrid with Transformer-Bahasa to normalize any bahasa texts.
 -  **Num2Word**, convert from numbers to cardinal or ordinal representation.

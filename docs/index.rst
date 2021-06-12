@@ -58,6 +58,13 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
+   :caption: Knowledge Graph Module
+
+   load-knowledge-graph-triplet
+   load-knowledge-graph-from-dependency
+
+.. toctree::
+   :maxdepth: 2
    :caption: Generative Module
 
    load-augmentation

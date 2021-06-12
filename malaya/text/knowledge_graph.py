@@ -32,8 +32,13 @@ months = [
     'december',
     'dec',
 ]
+ordinals = ['st', 'nd', 'rd', 'th']
 
-selected_words = ['of', '-', 'for', 'and', "'s", "s'", '+', ':']
+selected_words = ['of', '-', 'for', 'and', "'s", "s'", '+', ':', 'bin', 'binti', 'the']
+
+
+def check_en_ordinal(string):
+    return _is_number_regex(string[0]) and any([string.endswith(o) for o in ordinals])
 
 
 def parse_triples(string):
@@ -73,6 +78,8 @@ def parse_triples(string):
                     elif _is_number_regex(tokens[index][0]) and s[0].isupper():
                         tokens[index].append(s)
                     elif tokens[index][0][0].isupper() and _is_number_regex(s):
+                        tokens[index].append(s)
+                    elif check_en_ordinal(tokens[index][0]) and s[0].isupper():
                         tokens[index].append(s)
                     elif s in selected_words:
                         tokens[index].append(s)

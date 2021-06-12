@@ -95,7 +95,7 @@ hparams.hidden_size = 768
 hparams.num_heads = 12
 hparams.num_hidden_layers = 8
 hparams.learning_rate_constant = 1e-1
-hparams.warm_start_from_second = '/home/husein/pure-text/t2t-ms-en/train-large/model.ckpt-500000'
+hparams.warm_start_from_second = '/home/husein/pure-text/t2t-ms-en/train-large/model.ckpt-450000'
 
 print(hparams)
 
