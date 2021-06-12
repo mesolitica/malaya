@@ -42,16 +42,6 @@ def parse_from_dependency(tagging, indexing,
     get_networkx: bool, optional (default=True)
             If True, will generate networkx.MultiDiGraph.
 
-    model : str, optional (default='base')
-        Model architecture supported. Allowed values:
-
-        * ``'base'`` - Transformer BASE parameters.
-        * ``'large'`` - Transformer LARGE parameters.
-
-    quantized : bool, optional (default=False)
-        if True, will load 8-bit quantized model.
-        Quantized model not necessary faster, totally depends on the machine.
-
     Returns
     -------
     result: Dict[result, G]
