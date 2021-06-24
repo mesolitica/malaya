@@ -6,8 +6,8 @@
 # URL: <https://malaya.readthedocs.io/>
 # For license information, see https://github.com/huseinzol05/Malaya/blob/master/LICENSE
 
-version = '4.4'
-bump_version = '4.4'
+version = '4.5'
+bump_version = '4.5'
 __version__ = bump_version
 
 import malaya_boilerplate
@@ -24,6 +24,7 @@ __home__, _ = get_home()
 from . import augmentation
 from . import cluster
 from . import constituency
+from . import coref
 from . import dependency
 from . import emotion
 from . import entity

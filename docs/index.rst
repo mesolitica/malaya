@@ -47,6 +47,7 @@ Contents:
    
    load-tokenizer
    load-spell-correction
+   load-coreference-resolution
    load-normalizer
    load-stemmer
    load-true-case

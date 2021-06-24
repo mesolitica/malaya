@@ -132,6 +132,18 @@ def translation_textcleaning(string):
     return re.sub(r'[ ]+', ' ', unidecode(string)).strip()
 
 
+def split_nya(string):
+    string = re.sub(f'([{PUNCTUATION}])', r' \1 ', string)
+    string = re.sub('\s{2,}', ' ', string)
+    result = []
+    for word in string.split():
+        if word.endswith('nya'):
+            result.extend([word[:-3], 'nya'])
+        else:
+            result.append(word)
+    return ' '.join(result)
+
+
 def transformer_textcleaning(string, space_after_punct=False):
     """
     use by any transformer model before tokenization

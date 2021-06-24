@@ -66,17 +66,17 @@ _transformer_availability = {
         'Root Accuracy': 0.886,
     },
     'albert': {
-        'Size (MB)': 50,
-        'Quantized Size (MB)': 13.2,
-        'Arc Accuracy': 0.811,
-        'Types Accuracy': 0.793,
-        'Root Accuracy': 0.879,
+        'Size (MB)': 60.8,
+        'Quantized Size (MB)': 15.3,
+        'Arc Accuracy': 0.821895,
+        'Types Accuracy': 0.79752,
+        'Root Accuracy': 1.0,
     },
     'tiny-albert': {
-        'Size (MB)': 24.8,
-        'Quantized Size (MB)': 6.6,
-        'Arc Accuracy': 0.708,
-        'Types Accuracy': 0.673,
+        'Size (MB)': 33.4,
+        'Quantized Size (MB)': 8.51,
+        'Arc Accuracy': 0.7865,
+        'Types Accuracy': 0.7587,
         'Root Accuracy': 0.817,
     },
     'xlnet': {
@@ -200,7 +200,7 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
 
     path = check_file(
         file=model,
-        module='dependency',
+        module='dependency-v2',
         keys={
             'model': 'model.pb',
             'vocab': MODEL_VOCAB[model],

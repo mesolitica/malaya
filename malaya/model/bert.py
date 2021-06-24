@@ -989,7 +989,7 @@ class DependencyBERT(Base):
         )
         tagging, depend = r['logits'], r['heads_seq']
         tagging = [self._idx2tag[i] for i in tagging[0]]
-        depend = depend[0] - 1
+        depend = depend[0] - 2
 
         for i in range(len(depend)):
             if depend[i] == 0 and tagging[i] != 'root':

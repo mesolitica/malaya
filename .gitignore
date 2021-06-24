@@ -26,3 +26,5 @@ misc/crawl/isu*
 a.py
 topics.json
 testset-keyphrase.json
+test.txt
+train.txt

@@ -1,7 +1,8 @@
-from herpetologist import check_type
 from malaya.supervised import transformer as load_transformer
 from malaya.function.parse_dependency import DependencyGraph
 from malaya.model.tf import KnowledgeGraph
+from herpetologist import check_type
+from typing import List, Tuple
 
 _transformer_availability = {
     'base': {
@@ -19,11 +20,13 @@ _transformer_availability = {
 }
 
 
-def parse_from_dependency(tagging, indexing,
-                          subjects=[['flat', 'subj', 'nsubj', 'csubj']],
-                          relations=[['acl', 'xcomp', 'ccomp', 'obj', 'conj', 'advcl'], ['obj']],
-                          objects=[['obj', 'compound', 'flat', 'nmod', 'obl']],
-                          get_networkx=True):
+@check_type
+def parse_from_dependency(tagging: List[Tuple[str, str]],
+                          indexing: List[Tuple[str, str]],
+                          subjects: List[List[str]] = [['flat', 'subj', 'nsubj', 'csubj']],
+                          relations: List[List[str]] = [['acl', 'xcomp', 'ccomp', 'obj', 'conj', 'advcl'], ['obj']],
+                          objects: List[List[str]] = [['obj', 'compound', 'flat', 'nmod', 'obl']],
+                          get_networkx: bool = True):
     """
     Generate knowledge graphs from dependency parsing.
 
@@ -139,6 +142,14 @@ def parse_from_dependency(tagging, indexing,
                     if obj[0][0] == relation[-1][0]:
                         obj = obj[1:]
                     results.append({'subject': subject, 'relation': relation, 'object': obj})
+
+        if d_object.nodes[i]['rel'] == 'appos':
+            subjects_, relations_ = [], []
+            for s in subjects:
+                s_ = d_object.traverse_ancestor(i, s, initial_label=[d_object.nodes[i]['rel']])
+                s_ = combined(s_)
+                s_ = [c[1:] for c in s_]
+                subjects_.extend(s_)
 
     post_results = []
     for r in results:
