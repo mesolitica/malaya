@@ -1,6 +1,6 @@
 from sklearn.metrics.pairwise import cosine_similarity
 from malaya.function.parse_dependency import DependencyGraph
-from malaya.text.function import split_nya as _split_nya
+from malaya.text.function import split_nya as _split_nya, PUNCTUATION
 from malaya.stack import voting_stack
 from malaya.cluster import cluster_words
 from malaya.model.bert import DependencyBERT
@@ -13,11 +13,29 @@ from typing import List, Callable
 # Husein Zolkepli suka makan ayam. Dia pun suka makan daging. Dia -> Husein Zolkepli
 
 
+def _combined(r):
+    results, last = [], []
+    for i in r:
+        if type(i) == tuple:
+            last.append(i)
+        else:
+            for no, k in enumerate(last):
+                if k[1] == i[0][1]:
+                    results.append(last[:no] + i)
+                    break
+    results.append(last)
+    results_ = []
+    for r in results:
+        r = [i[0] for i in r]
+        results_.append(' '.join(r))
+    return results_
+
+
 @check_type
 def parse_from_dependency(models, string: str,
                           references: List[str] = ['dia', 'itu', 'ini', 'saya', 'awak', 'kamu', 'kita', 'kami', 'mereka'],
-                          rejected_references: List[str] = ['saya', 'awak', 'kamu', 'kita', 'kami', 'mereka'],
-                          acceptable_subjects: List[str] = ['flat', 'subj', 'nsubj', 'csubj', 'obl', 'obj'],
+                          rejected_references: List[str] = ['saya', 'awak', 'kamu', 'kita', 'kami', 'mereka', 'nya'],
+                          acceptable_subjects: List[str] = ['flat', 'subj', 'nsubj', 'csubj', 'obj'],
                           acceptable_nested_subjects: List[str] = ['compound', 'flat'],
                           split_nya: bool = True,
                           aggregate: Callable = np.mean,
@@ -47,7 +65,9 @@ def parse_from_dependency(models, string: str,
 
     Returns
     -------
-    result: str
+    result: Dict[text, coref]
+        {'text': ['Husein','Zolkepli','suka','makan','ayam','.','Dia','pun','suka','makan','daging','.'],
+        'coref': {6: {'index': [0, 1], 'text': ['Husein', 'Zolkepli']}}}
     """
     if not isinstance(models, list):
         raise ValueError('models must be a list')
@@ -71,32 +91,14 @@ def parse_from_dependency(models, string: str,
 
     d_object = DependencyGraph('\n'.join(result), top_relation_label='root')
 
-    def combined(r):
-        results, last = [], []
-        for i in r:
-            if type(i) == tuple:
-                last.append(i)
-            else:
-                for no, k in enumerate(last):
-                    if k[1] == i[0][1]:
-                        results.append(last[:no] + i)
-                        break
-        results.append(last)
-        results_ = []
-        for r in results:
-            r = [i[0] for i in r]
-            results_.append(' '.join(r))
-        return results_
-
     rs = []
-    for i in range(1, len(indexing), 1):
+    for i in range(len(indexing)):
         for s in acceptable_subjects:
-
             if d_object.nodes[i]['rel'] == s:
                 r = []
                 for n_s in acceptable_nested_subjects:
                     s_ = d_object.traverse_children(i, [n_s], initial_label=[s])
-                    s_ = combined(s_)
+                    s_ = _combined(s_)
                     r.extend(s_)
                 r = [i for i in r if i.lower() not in references and not i.lower() in rejected_references]
                 rs.extend(r)
@@ -108,17 +110,19 @@ def parse_from_dependency(models, string: str,
         X = [i[0] for i in v]
         y = [i[1] for i in v]
         vs.append(y)
+    V = aggregate(vs, axis=0)
 
-    V = np.mean(vs, axis=0)
-    indices = {}
+    indices, word_indices = {}, []
     for no, row in enumerate(rs):
+        ind = []
         for word in row.split():
-            indices[word] = no
+            indices[word] = indices.get(word, no)
+            ind.append(X.index(word))
+        word_indices.append(ind)
 
     index_word = []
     for key in indices:
-        if key in X:
-            index_word.append(X.index(key))
+        index_word.append(X.index(key))
 
     index_references = []
     for i in range(len(X)):
@@ -127,11 +131,24 @@ def parse_from_dependency(models, string: str,
 
     similarities = cosine_similarity(V)
 
+    results = {}
+
     for r in index_references:
+        r_ = [r, r - 1]
+        i_ = -1
+
+        # subject verb object . subject, we want to reject words before punct
+        while X[r + i_] in PUNCTUATION:
+            i_ -= 1
+            r_.append(r + i_)
+
+        index_word_ = [i for i in index_word if i < r]
         sorted_indices = similarities[r].argsort()[-top_k:][::-1]
-        sorted_indices = sorted_indices[np.isin(sorted_indices, index_word)]
+        sorted_indices = sorted_indices[np.isin(sorted_indices, index_word_) & ~
+                                        np.isin(sorted_indices, r_)]
         if len(sorted_indices):
             s = rs[indices[X[sorted_indices[0]]]]
-            X[r] = s
+            index = word_indices[indices[X[sorted_indices[0]]]]
+            results[r] = {'index': index, 'text': s.split()}
 
-    return ' '.join(X)
+    return {'text': X, 'coref': results}

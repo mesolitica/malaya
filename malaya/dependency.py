@@ -77,7 +77,7 @@ _transformer_availability = {
         'Quantized Size (MB)': 8.51,
         'Arc Accuracy': 0.7865,
         'Types Accuracy': 0.7587,
-        'Root Accuracy': 0.817,
+        'Root Accuracy': 1.0,
     },
     'xlnet': {
         'Size (MB)': 450.2,

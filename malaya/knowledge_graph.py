@@ -20,6 +20,52 @@ _transformer_availability = {
 }
 
 
+def _combined(r):
+    results, last = [], []
+    for i in r:
+        if type(i) == tuple:
+            last.append(i)
+        else:
+            for no, k in enumerate(last):
+                if k[1] == i[0][1]:
+                    results.append(last[:no] + i)
+                    break
+    results.append(last)
+    return results
+
+
+def _get_unique(lists):
+    s = set()
+    result = []
+    for l in lists:
+        str_s = str(l)
+        if str_s not in s:
+            result.append(l)
+            s.add(str_s)
+    return result
+
+
+def _get_longest(lists):
+    r = []
+    for l in lists:
+        if len(l) > len(r):
+            r = l
+    return r
+
+
+def _postprocess(r, labels=['subject', 'relation', 'object']):
+    if all([l not in r for l in labels]):
+        return
+
+    for l in labels:
+        if len(r[l]) == 0:
+            return
+
+        r[l] = ' '.join([i[0] for i in r[l]])
+
+    return r
+
+
 @check_type
 def parse_from_dependency(tagging: List[Tuple[str, str]],
                           indexing: List[Tuple[str, str]],
@@ -60,48 +106,6 @@ def parse_from_dependency(tagging: List[Tuple[str, str]],
             )
             get_networkx = False
 
-    def combined(r):
-        results, last = [], []
-        for i in r:
-            if type(i) == tuple:
-                last.append(i)
-            else:
-                for no, k in enumerate(last):
-                    if k[1] == i[0][1]:
-                        results.append(last[:no] + i)
-                        break
-        results.append(last)
-        return results
-
-    def get_unique(lists):
-        s = set()
-        result = []
-        for l in lists:
-            str_s = str(l)
-            if str_s not in s:
-                result.append(l)
-                s.add(str_s)
-        return result
-
-    def get_longest(lists):
-        r = []
-        for l in lists:
-            if len(l) > len(r):
-                r = l
-        return r
-
-    def postprocess(r, labels=['subject', 'relation', 'object']):
-        if all([l not in r for l in labels]):
-            return
-
-        for l in labels:
-            if len(r[l]) == 0:
-                return
-
-            r[l] = ' '.join([i[0] for i in r[l]])
-
-        return r
-
     result = []
     for i in range(len(tagging)):
         result.append(
@@ -116,26 +120,26 @@ def parse_from_dependency(tagging: List[Tuple[str, str]],
             subjects_, relations_ = [], []
             for s in subjects:
                 s_ = d_object.traverse_children(i, s, initial_label=[d_object.nodes[i]['rel']])
-                s_ = combined(s_)
+                s_ = _combined(s_)
                 s_ = [c[1:] for c in s_]
                 subjects_.extend(s_)
             for s in relations:
                 s_ = d_object.traverse_children(i, s, initial_label=[d_object.nodes[i]['rel']])
-                s_ = combined(s_)
+                s_ = _combined(s_)
                 relations_.extend(s_)
-            subjects_ = get_unique(subjects_)
-            subject = get_longest(subjects_)
-            relations_ = get_unique(relations_)
+            subjects_ = _get_unique(subjects_)
+            subject = _get_longest(subjects_)
+            relations_ = _get_unique(relations_)
 
             for relation in relations_:
                 objects_ = []
                 k = relation[-1][1]
                 for s in objects:
                     s_ = d_object.traverse_children(k, s, initial_label=[d_object.nodes[k]['rel']])
-                    s_ = combined(s_)
+                    s_ = _combined(s_)
                     objects_.extend(s_)
-                objects_ = get_unique(objects_)
-                obj = get_longest(objects_)
+                objects_ = _get_unique(objects_)
+                obj = _get_longest(objects_)
                 if obj[0][0] == relation[-1][0] and len(obj) == 1:
                     results.append({'subject': subject, 'relation': relation[:-1], 'object': relation[-1:]})
                 else:
@@ -147,13 +151,13 @@ def parse_from_dependency(tagging: List[Tuple[str, str]],
             subjects_, relations_ = [], []
             for s in subjects:
                 s_ = d_object.traverse_ancestor(i, s, initial_label=[d_object.nodes[i]['rel']])
-                s_ = combined(s_)
+                s_ = _combined(s_)
                 s_ = [c[1:] for c in s_]
                 subjects_.extend(s_)
 
     post_results = []
     for r in results:
-        r = postprocess(r)
+        r = _postprocess(r)
         if r:
             post_results.append(r)
 
