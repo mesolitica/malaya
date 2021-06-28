@@ -923,7 +923,7 @@ class TaggingBERT(Base, Tagging):
 
 
 class DependencyBERT(Base):
-    def __init__(self, input_nodes, output_nodes, sess, tokenizer, settings):
+    def __init__(self, input_nodes, output_nodes, sess, tokenizer, settings, minus):
         Base.__init__(
             self,
             input_nodes=input_nodes,
@@ -935,6 +935,7 @@ class DependencyBERT(Base):
 
         self._tag2idx = settings
         self._idx2tag = {int(v): k for k, v in self._tag2idx.items()}
+        self._minus = minus
 
     @check_type
     def vectorize(self, string: str):
@@ -989,7 +990,7 @@ class DependencyBERT(Base):
         )
         tagging, depend = r['logits'], r['heads_seq']
         tagging = [self._idx2tag[i] for i in tagging[0]]
-        depend = depend[0] - 2
+        depend = depend[0] - self._minus
 
         for i in range(len(depend)):
             if depend[i] == 0 and tagging[i] != 'root':

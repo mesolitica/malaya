@@ -74,7 +74,7 @@ def parse_from_dependency(tagging: List[Tuple[str, str]],
                           objects: List[List[str]] = [['obj', 'compound', 'flat', 'nmod', 'obl']],
                           get_networkx: bool = True):
     """
-    Generate knowledge graphs from dependency parsing.
+    Generate knowledge graphs from dependency parsing, we suggest use dependency parsing v1.
 
     Parameters
     ----------
@@ -146,14 +146,6 @@ def parse_from_dependency(tagging: List[Tuple[str, str]],
                     if obj[0][0] == relation[-1][0]:
                         obj = obj[1:]
                     results.append({'subject': subject, 'relation': relation, 'object': obj})
-
-        if d_object.nodes[i]['rel'] == 'appos':
-            subjects_, relations_ = [], []
-            for s in subjects:
-                s_ = d_object.traverse_ancestor(i, s, initial_label=[d_object.nodes[i]['rel']])
-                s_ = _combined(s_)
-                s_ = [c[1:] for c in s_]
-                subjects_.extend(s_)
 
     post_results = []
     for r in results:

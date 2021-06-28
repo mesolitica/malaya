@@ -27,6 +27,12 @@ malaya.constituency
 .. automodule:: malaya.constituency
     :members:
 
+malaya.coref
+---------------------
+
+.. automodule:: malaya.coref
+    :members:
+
 malaya.dependency
 ------------------
 

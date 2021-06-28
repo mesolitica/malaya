@@ -58,6 +58,7 @@ Features
 -  **Speaker overlap**, detect overlap speakers using Finetuned Speaker Vector.
 -  **Speaker Vector**, calculate similarity between speakers using Pretrained Speaker Vector.
 -  **Speech Enhancement**, enhance voice activities using Waveform UNET.
+-  **SpeechSplit Conversion**, detailed speaking style conversion by disentangling speech into content, timbre, rhythm and pitch using PyWorld and PySPTK.
 -  **Speech-to-Text**, End-to-End Speech to Text for Malay and Mixed (Malay and Singlish) using RNN-Transducer and Wav2Vec2 CTC.
 -  **Super Resolution**, Super Resolution 4x for Waveform.
 -  **Text-to-Speech**, Text to Speech for Malay and Singlish using Tacotron2 and FastSpeech2.
@@ -93,6 +94,10 @@ Malaya-Speech also released pretrained models, simply check at `malaya-speech/pr
 -  **FastVC**, Faster and Accurate Voice Conversion using Transformer, no paper produced.
 -  **FastSep**, Faster and Accurate Speech Separation using Transformer, no paper produced.
 -  **wav2vec 2.0**, A Framework for Self-Supervised Learning of Speech Representations, https://arxiv.org/abs/2006.11477
+-  **FastSpeechSplit**, Unsupervised Speech Decomposition Via Triple Information Bottleneck using Transformer, no paper produced.
+-  **Sepformer**, Attention is All You Need in Speech Separation, https://arxiv.org/abs/2010.13154
+-  **FastSpeechSplit**, Faster and Accurate Speech Split Conversion using Transformer, no paper produced.
+-  **HuBERT**, Self-Supervised Speech Representation Learning by Masked Prediction of Hidden Units, https://arxiv.org/pdf/2106.07447v1.pdf
 
 References
 -----------

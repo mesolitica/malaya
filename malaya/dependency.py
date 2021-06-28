@@ -50,7 +50,7 @@ label = {
     'csubj:pass': 32,
 }
 
-_transformer_availability = {
+_transformer_availability_v1 = {
     'bert': {
         'Size (MB)': 426,
         'Quantized Size (MB)': 112.0,
@@ -66,18 +66,18 @@ _transformer_availability = {
         'Root Accuracy': 0.886,
     },
     'albert': {
-        'Size (MB)': 60.8,
-        'Quantized Size (MB)': 15.3,
-        'Arc Accuracy': 0.821895,
-        'Types Accuracy': 0.79752,
-        'Root Accuracy': 1.0,
+        'Size (MB)': 50,
+        'Quantized Size (MB)': 13.2,
+        'Arc Accuracy': 0.811,
+        'Types Accuracy': 0.793,
+        'Root Accuracy': 0.879,
     },
     'tiny-albert': {
-        'Size (MB)': 33.4,
-        'Quantized Size (MB)': 8.51,
-        'Arc Accuracy': 0.7865,
-        'Types Accuracy': 0.7587,
-        'Root Accuracy': 1.0,
+        'Size (MB)': 24.8,
+        'Quantized Size (MB)': 6.6,
+        'Arc Accuracy': 0.708,
+        'Types Accuracy': 0.673,
+        'Root Accuracy': 0.817,
     },
     'xlnet': {
         'Size (MB)': 450.2,
@@ -94,6 +94,60 @@ _transformer_availability = {
         'Root Accuracy': 0.942,
     },
 }
+
+_transformer_availability_v2 = {
+    'bert': {
+        'Size (MB)': 455,
+        'Quantized Size (MB)': 114.0,
+        'Arc Accuracy': 0.82045,
+        'Types Accuracy': 0.79970,
+        'Root Accuracy': 0.98936,
+    },
+    'tiny-bert': {
+        'Size (MB)': 69.7,
+        'Quantized Size (MB)': 17.5,
+        'Arc Accuracy': 0.795252,
+        'Types Accuracy': 0.72470,
+        'Root Accuracy': 0.98939,
+    },
+    'albert': {
+        'Size (MB)': 60.8,
+        'Quantized Size (MB)': 15.3,
+        'Arc Accuracy': 0.821895,
+        'Types Accuracy': 0.79752,
+        'Root Accuracy': 1.0,
+    },
+    'tiny-albert': {
+        'Size (MB)': 33.4,
+        'Quantized Size (MB)': 8.51,
+        'Arc Accuracy': 0.7865,
+        'Types Accuracy': 0.7587,
+        'Root Accuracy': 1.0,
+    },
+    'xlnet': {
+        'Size (MB)': 480.2,
+        'Quantized Size (MB)': 121.0,
+        'Arc Accuracy': 0.84811,
+        'Types Accuracy': 0.82741,
+        'Root Accuracy': 0.92101,
+    },
+    'alxlnet': {
+        'Size (MB)': 61.2,
+        'Quantized Size (MB)': 16.4,
+        'Arc Accuracy': 0.84929,
+        'Types Accuracy': 0.8281,
+        'Root Accuracy': 0.92099,
+    },
+}
+
+_transformer_availability = {'v1': _transformer_availability_v1, 'v2': _transformer_availability_v2}
+
+
+def _validate_version(version):
+    version = version.lower()
+    if version not in _transformer_availability:
+        raise ValueError('version not supported, only supported `v1` or `v2`.')
+    return version
 
 
 def describe():
@@ -151,25 +205,40 @@ def dependency_graph(tagging, indexing):
     return DependencyGraph('\n'.join(result), top_relation_label='root')
 
 
-def available_transformer():
+def available_transformer(version: str = 'v2'):
     """
     List available transformer dependency parsing models.
+
+    Parameters
+    ----------
+    version : str, optional (default='v2')
+        Version supported. Allowed values:
+
+        * ``'v1'`` - version 1, maintain for knowledge graph.
+        * ``'v2'`` - Trained on bigger dataset, better version.
+
     """
     from malaya.function import describe_availability
 
     return describe_availability(
-        _transformer_availability, text='tested on 20% test set.'
+        _transformer_availability[_validate_version(version)], text='tested on 20% test set.'
     )
 
 
 @check_type
-def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
+def transformer(version: str = 'v2', model: str = 'xlnet', quantized: bool = False, **kwargs):
     """
     Load Transformer Dependency Parsing model, transfer learning Transformer + biaffine attention.
 
     Parameters
     ----------
-    model : str, optional (default='bert')
+    version : str, optional (default='v2')
+        Version supported. Allowed values:
+
+        * ``'v1'`` - version 1, maintain for knowledge graph.
+        * ``'v2'`` - Trained on bigger dataset, better version.
+
+    model : str, optional (default='xlnet')
         Model architecture supported. Allowed values:
 
         * ``'bert'`` - Google BERT BASE parameters.
@@ -192,15 +261,22 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
         * if `xlnet` in model, will return `malaya.model.xlnet.DependencyXLNET`.
     """
 
+    version = _validate_version(version)
     model = model.lower()
-    if model not in _transformer_availability:
+    if model not in _transformer_availability[version]:
         raise ValueError(
-            'model not supported, please check supported models from `malaya.dependency.available_transformer()`.'
+            "model not supported, please check supported models from `malaya.dependency.available_transformer(version='{version}')`."
         )
+
+    module = 'dependency'
+    minus = 1
+    if version != 'v1':
+        module = f'{module}-{version}'
+        minus = 2
 
     path = check_file(
         file=model,
-        module='dependency-v2',
+        module=module,
         keys={
             'model': 'model.pb',
             'vocab': MODEL_VOCAB[model],
@@ -240,4 +316,5 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
         sess=generate_session(graph=g, **kwargs),
         tokenizer=tokenizer,
         settings=label,
+        minus=minus
     )
