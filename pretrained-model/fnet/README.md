@@ -69,6 +69,11 @@ python3 run_pretraining_large_tpu.py \
   - Vocab size 32k.
   - 475k steps, 1 Tesla V100 32GB VRAM.
 
+1. **LARGE**, last update 28th June 2021, [fnet-large.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/fnet-large.tar.gz)
+
+  - Vocab size 32k.
+  - 475k steps, 1 Tesla V100 32GB VRAM.
+
 ## Citation
 
 1. Please citate the repository if use these checkpoints.
