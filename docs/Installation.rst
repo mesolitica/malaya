@@ -9,6 +9,11 @@ CPU version
 
     $ pip install malaya
 
+GPU version
+::
+
+    $ pip install malaya[gpu]
+
 We recommend to use **virtualenv** for development.
 
 From Source
