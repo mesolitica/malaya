@@ -15,7 +15,7 @@ with open('requirements.txt') as fopen:
 setuptools.setup(
     name=__packagename__,
     packages=setuptools.find_packages(),
-    version='4.5',
+    version='4.5.1',
     python_requires='>=3.6.*',
     description='Natural-Language-Toolkit for bahasa Malaysia, powered by Deep Learning Tensorflow.',
     long_description=readme(),
@@ -26,7 +26,12 @@ setuptools.setup(
     keywords=[
         'nlp',
         'bm'],
-    install_requires=req + ['tensorflow>=1.15'],
+    install_requires=req,
+    extras_require={
+        'gpu': ['tensorflow-gpu>=1.15'],
+        'cpu': ['tensorflow>=1.15'],
+        '': ['tensorflow>=1.15']
+    },
     license='MIT',
     classifiers=[
             'Programming Language :: Python :: 3.6',

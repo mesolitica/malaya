@@ -7,7 +7,7 @@
 # For license information, see https://github.com/huseinzol05/Malaya/blob/master/LICENSE
 
 version = '4.5'
-bump_version = '4.5'
+bump_version = '4.5.1'
 __version__ = bump_version
 
 import malaya_boilerplate

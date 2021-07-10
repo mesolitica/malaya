@@ -9,4 +9,4 @@ networkx
 sentencepiece
 tqdm
 herpetologist
-malaya-boilerplate
+malaya-boilerplate>=0.0.8

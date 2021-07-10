@@ -12,8 +12,6 @@
         <a href="https://malaya.readthedocs.io/"><img alt="Documentation" src="https://readthedocs.org/projects/malaya/badge/?version=latest"></a>
         <a href="https://pepy.tech/project/malaya"><img alt="total stats" src="https://static.pepy.tech/badge/malaya"></a>
         <a href="https://pepy.tech/project/malaya"><img alt="download stats / month" src="https://static.pepy.tech/badge/malaya/month"></a>
-        <a href="https://pepy.tech/project/malaya-gpu"><img alt="total stats" src="https://static.pepy.tech/badge/malaya-gpu"></a>
-        <a href="https://pepy.tech/project/malaya-gpu"><img alt="download stats / month" src="https://static.pepy.tech/badge/malaya-gpu/month"></a>
     </p>
 
 =========
@@ -36,7 +34,7 @@ CPU version
 GPU version
 ::
 
-    $ pip install malaya-gpu
+    $ pip install malaya[gpu]
 
 Only **Python 3.6.0 and above** and **Tensorflow 1.15.0 and above** are supported.
 
