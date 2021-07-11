@@ -14,8 +14,6 @@ Speech Toolkit
         <a href="https://github.com/huseinzol05/Malaya-Speech/blob/master/LICENSE"><img alt="MIT License" src="https://img.shields.io/github/license/huseinzol05/malaya-speech.svg?color=blue"></a>
         <a href="https://pepy.tech/project/malaya-speech"><img alt="total stats" src="https://static.pepy.tech/badge/malaya-speech"></a>
         <a href="https://pepy.tech/project/malaya-speech"><img alt="download stats / month" src="https://static.pepy.tech/badge/malaya-speech/month"></a>
-        <a href="https://pepy.tech/project/malaya-speech-gpu"><img alt="total stats" src="https://static.pepy.tech/badge/malaya-speech-gpu"></a>
-        <a href="https://pepy.tech/project/malaya-speech-gpu"><img alt="download stats / month" src="https://static.pepy.tech/badge/malaya-speech-gpu/month"></a>
     </p>
 
 =========
@@ -38,7 +36,7 @@ CPU version
 GPU version
 ::
 
-    $ pip install malaya-speech-gpu
+    $ pip install malaya-speech[gpu]
 
 Only **Python 3.6.0 and above** and **Tensorflow 1.15.0 and above** are supported.
 
