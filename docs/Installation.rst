@@ -45,4 +45,4 @@ Tensorflow
 
 Malaya only supported Tensorflow 1.15 and above.
 
-All examples tested on Tensorflow version 1.15.4 and 2.4.1.
+All examples tested on Tensorflow version 1.15.4, 2.4.1 and 2.5.
