@@ -13,7 +13,6 @@
         <a href="https://pepy.tech/project/malaya"><img alt="total stats" src="https://static.pepy.tech/badge/malaya"></a>
         <a href="https://pepy.tech/project/malaya"><img alt="download stats / month" src="https://static.pepy.tech/badge/malaya/month"></a>
         <a href="https://discord.gg/aNzbnRqt3A"><img alt="discord" src="https://img.shields.io/badge/discord%20server-malaya-rgb(118,138,212).svg"></a>
-        
     </p>
 
 =========
