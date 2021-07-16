@@ -6,19 +6,15 @@
 # URL: <https://malaya.readthedocs.io/>
 # For license information, see https://github.com/huseinzol05/Malaya/blob/master/LICENSE
 
-version = '4.5'
-bump_version = '4.5.1'
-__version__ = bump_version
-
-import malaya_boilerplate
-
-malaya_boilerplate.__package__ = 'malaya'
-malaya_boilerplate.__url__ = 'https://f000.backblazeb2.com/file/malaya-model/'
-malaya_boilerplate.__package_version__ = version
-
 from malaya_boilerplate.utils import get_home
 
-__home__, _ = get_home()
+version = '4.5'
+bump_version = '4.5.2'
+
+__version__ = bump_version
+package = 'malaya'
+url = 'https://f000.backblazeb2.com/file/malaya-model/'
+__home__, _ = get_home(package=package, package_version=version)
 
 
 from . import augmentation

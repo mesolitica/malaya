@@ -1,6 +1,7 @@
 from malaya_boilerplate.utils import _get_home
+from malaya import package
 
-home, _ = _get_home()
+home, _ = _get_home(package=package)
 
 MALAY_TEXT = home + '/dictionary/malay-text.txt'
 MALAY_TEXT_200K = home + '/dictionary/200k-malay-text.txt'

@@ -6,13 +6,20 @@
 # URL: <https://malaya.readthedocs.io/>
 # For license information, see https://github.com/huseinzol05/Malaya/blob/master/LICENSE
 
-from malaya_boilerplate.backblaze import check_file
 from malaya_boilerplate.frozen_graph import (
     nodes_session,
     generate_session,
     get_device,
-    load_graph,
 )
 from malaya_boilerplate.utils import describe_availability
+from malaya_boilerplate import backblaze
+from malaya_boilerplate import frozen_graph
+from malaya import package, url
 
-from . import validator
+
+def check_file(file, s3_file=None, **kwargs):
+    return backblaze.check_file(file, package, url, s3_file=s3_file, **kwargs)
+
+
+def load_graph(frozen_graph_filename, **kwargs):
+    return frozen_graph.load_graph(package, frozen_graph_filename, **kwargs)
