@@ -9,12 +9,12 @@
 import tensorflow.compat.v1 as tf
 from malaya.function import get_device, generate_session
 from malaya.transformers.electra import modeling, tokenization, training_utils
+from malaya.transformers.sampling import top_k_logits, top_p_logits
 from malaya.text.bpe import (
     bert_tokenization,
     padding_sequence,
     merge_wordpiece_tokens,
 )
-from malaya.transformers.sampling import top_k_logits, top_p_logits
 from collections import defaultdict
 import numpy as np
 import os

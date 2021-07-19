@@ -1,4 +1,4 @@
-from malaya.supervised import softmax
+from malaya.supervised import classification
 from malaya.path import PATH_SENTIMENT, S3_PATH_SENTIMENT
 from herpetologist import check_type
 
@@ -69,7 +69,7 @@ def multinomial(**kwargs):
     -------
     result : malaya.model.ml.Bayes class
     """
-    return softmax.multinomial(
+    return classification.multinomial(
         PATH_SENTIMENT, S3_PATH_SENTIMENT, 'sentiment', label, **kwargs
     )
 
@@ -109,8 +109,8 @@ def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
         raise ValueError(
             'model not supported, please check supported models from `malaya.sentiment.available_transformer()`.'
         )
-    return softmax.transformer(
-        class_name='sentiment',
+    return classification.transformer(
+        module='sentiment',
         label=label,
         model=model,
         quantized=quantized,

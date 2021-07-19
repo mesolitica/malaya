@@ -296,7 +296,7 @@ class TokenTextEncoder(TextEncoder):
     - When saving vocab files, we save reserved tokens to the file.
 
     Args:
-      vocab_filename: If not None, the full filename to read vocab from. If this
+      vocab_filename: If not None, the full vocab_file to read vocab from. If this
          is not None, then vocab_list should be None.
       reverse: Boolean indicating if tokens should be reversed during encoding
          and decoding.
@@ -343,13 +343,13 @@ class TokenTextEncoder(TextEncoder):
     def _safe_id_to_token(self, idx):
         return self._id_to_token.get(idx, 'ID_%d' % idx)
 
-    def _init_vocab_from_file(self, filename):
+    def _init_vocab_from_file(self, vocab_file):
         """Load vocab from a file.
 
     Args:
-      filename: The file to load vocabulary from.
+      vocab_file: The file to load vocabulary from.
     """
-        with tf.gfile.Open(filename) as f:
+        with tf.gfile.Open(vocab_file) as f:
             tokens = [token.strip() for token in f.readlines()]
 
         def token_gen():
@@ -394,16 +394,16 @@ class TokenTextEncoder(TextEncoder):
             (v, k) for k, v in six.iteritems(self._id_to_token)
         )
 
-    def store_to_file(self, filename):
+    def store_to_file(self, vocab_file):
         """Write vocab file to disk.
 
     Vocab files have one token per line. The file ends in a newline. Reserved
     tokens are written to the vocab file as well.
 
     Args:
-      filename: Full path of the file to store the vocab to.
+      vocab_file: Full path of the file to store the vocab to.
     """
-        with tf.gfile.Open(filename, 'w') as f:
+        with tf.gfile.Open(vocab_file, 'w') as f:
             for i in range(len(self._id_to_token)):
                 f.write(self._id_to_token[i] + '\n')
 
@@ -493,17 +493,17 @@ class SubwordTextEncoder(TextEncoder):
 
   """
 
-    def __init__(self, filename=None):
+    def __init__(self, vocab_file=None, **kwargs):
         """Initialize and read from a file, if provided.
 
     Args:
-      filename: filename from which to read vocab. If None, do not load a
+      vocab_file: vocab_file from which to read vocab. If None, do not load a
         vocab
     """
         self._alphabet = set()
-        self.filename = filename
-        if filename is not None:
-            self._load_from_file(filename)
+        self.vocab_file = vocab_file
+        if vocab_file is not None:
+            self._load_from_file(vocab_file)
         super(SubwordTextEncoder, self).__init__()
 
     def encode(self, s):
@@ -1001,15 +1001,15 @@ class SubwordTextEncoder(TextEncoder):
         self._init_subtokens_from_list(subtoken_strings)
         self._init_alphabet_from_tokens(subtoken_strings)
 
-    def _load_from_file(self, filename):
+    def _load_from_file(self, vocab_file):
         """Load from a vocab file."""
-        if not tf.gfile.Exists(filename):
-            raise ValueError('File %s not found' % filename)
-        with tf.gfile.Open(filename) as f:
+        if not tf.gfile.Exists(vocab_file):
+            raise ValueError('File %s not found' % vocab_file)
+        with tf.gfile.Open(vocab_file) as f:
             self._load_from_file_object(f)
 
-    def store_to_file(self, filename, add_single_quotes=True):
-        with tf.gfile.Open(filename, 'w') as f:
+    def store_to_file(self, vocab_file, add_single_quotes=True):
+        with tf.gfile.Open(vocab_file, 'w') as f:
             for subtoken_string in self._all_subtoken_strings:
                 if add_single_quotes:
                     f.write("'" + unicode_to_native(subtoken_string) + "'\n")
@@ -1033,7 +1033,7 @@ class ImageEncoder(object):
         return 0
 
     def encode(self, s):
-        """Transform a string with a filename into a list of RGB integers.
+        """Transform a string with a vocab_file into a list of RGB integers.
 
     Args:
       s: path to the file with an image.

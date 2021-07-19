@@ -11,10 +11,11 @@ import os
 from google.cloud import storage
 
 tokenizer = tokenization.FullTokenizer(
-    vocab_file = 'pegasus.wordpiece', do_lower_case = False
+    vocab_file='pegasus.wordpiece', do_lower_case=False
 )
 
 files = glob('/home/husein/pure-text/splitted/*.txt')
+files.extend(glob('/home/husein/pure-text/the-pile/*.txt'))
 
 os.system('mkdir tfrecord')
 
@@ -28,15 +29,14 @@ def loop(files):
         blob = bucket.blob(f'pegasus-data-v2/{output_files}')
         blob.upload_from_filename(output_files)
         os.system(f'rm {output_files}')
-        
 
 
 def chunks(l, n):
     for i in range(0, len(l), n):
-        yield l[i : i + n]
+        yield l[i: i + n]
 
 
-def multiprocessing(strings, function, cores = 10):
+def multiprocessing(strings, function, cores=10):
     df_split = chunks(strings, len(strings) // cores)
     pool = Pool(cores)
     pooled = pool.map(function, df_split)

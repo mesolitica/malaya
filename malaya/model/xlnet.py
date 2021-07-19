@@ -55,7 +55,7 @@ class XLNET(Base):
         output_nodes,
         sess,
         tokenizer,
-        class_name,
+        module,
         label=['negative', 'positive'],
     ):
 
@@ -67,7 +67,7 @@ class XLNET(Base):
             tokenizer=tokenizer,
             label=label,
         )
-        self._class_name = class_name
+        self._module = module
 
     def _classify(self, strings):
         input_ids, input_masks, segment_ids, _ = xlnet_tokenization(
@@ -219,10 +219,10 @@ class XLNET(Base):
         dict_result['histogram'] = {'x': x_histogram, 'y': y_histogram}
         dict_result['attention'] = {'x': x_attention, 'y': np.array(a)}
         dict_result['barplot'] = {'x': label, 'y': y_barplot}
-        dict_result['class_name'] = self._class_name
+        dict_result['module'] = self._module
 
         if visualization:
-            render_dict[self._class_name](dict_result)
+            render_dict[self._module](dict_result)
         else:
             return dict_result
 
@@ -234,7 +234,7 @@ class BinaryXLNET(XLNET, Classification):
         output_nodes,
         sess,
         tokenizer,
-        class_name,
+        module,
         label=['negative', 'positive'],
     ):
         XLNET.__init__(
@@ -243,7 +243,7 @@ class BinaryXLNET(XLNET, Classification):
             output_nodes=output_nodes,
             sess=sess,
             tokenizer=tokenizer,
-            class_name=class_name,
+            module=module,
             label=label,
         )
 
@@ -345,7 +345,7 @@ class MulticlassXLNET(XLNET, Classification):
         output_nodes,
         sess,
         tokenizer,
-        class_name,
+        module,
         label=['negative', 'positive'],
     ):
         XLNET.__init__(
@@ -354,7 +354,7 @@ class MulticlassXLNET(XLNET, Classification):
             output_nodes=output_nodes,
             sess=sess,
             tokenizer=tokenizer,
-            class_name=class_name,
+            module=module,
             label=label,
         )
 
@@ -449,7 +449,7 @@ class SigmoidXLNET(Base, Classification):
         output_nodes,
         sess,
         tokenizer,
-        class_name,
+        module,
         label=['negative', 'positive'],
     ):
         Base.__init__(
@@ -460,7 +460,7 @@ class SigmoidXLNET(Base, Classification):
             tokenizer=tokenizer,
             label=label,
         )
-        self._class_name = class_name
+        self._module = module
 
     def _classify(self, strings):
 
@@ -669,7 +669,7 @@ class SigmoidXLNET(Base, Classification):
         dict_result['histogram'] = {'x': x_histogram, 'y': y_histogram}
         dict_result['attention'] = {'x': x_attention, 'y': np.array(a)}
         dict_result['barplot'] = {'x': self._label, 'y': y_barplot}
-        dict_result['class_name'] = self._class_name
+        dict_result['module'] = self._module
         if visualization:
             _render_toxic(dict_result)
         else:

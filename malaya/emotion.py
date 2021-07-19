@@ -1,4 +1,4 @@
-from malaya.supervised import softmax
+from malaya.supervised import classification
 from malaya.path import PATH_EMOTION, S3_PATH_EMOTION
 from herpetologist import check_type
 
@@ -67,10 +67,11 @@ def multinomial(**kwargs):
 
     Returns
     -------
-    result : malaya.model.ml.BAYES class
+    result : malaya.model.ml.MulticlassBayes class
     """
-    return softmax.multinomial(
-        PATH_EMOTION, S3_PATH_EMOTION, 'emotion', label, **kwargs
+    return classification.multinomial(
+        path=PATH_EMOTION, s3_path=S3_PATH_EMOTION,
+        module='emotion', label=label, **kwargs
     )
 
 
@@ -109,8 +110,8 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
         raise ValueError(
             'model not supported, please check supported models from `malaya.emotion.available_transformer()`.'
         )
-    return softmax.transformer(
-        class_name='emotion',
+    return classification.transformer(
+        module='emotion',
         label=label,
         model=model,
         quantized=quantized,

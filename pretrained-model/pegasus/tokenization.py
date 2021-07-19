@@ -171,11 +171,11 @@ def whitespace_tokenize(text):
 class FullTokenizer(object):
     """Runs end-to-end tokenziation."""
 
-    def __init__(self, vocab_file, do_lower_case = True):
+    def __init__(self, vocab_file, do_lower_case=True):
         self.vocab = load_vocab(vocab_file)
         self.inv_vocab = {v: k for k, v in self.vocab.items()}
-        self.basic_tokenizer = BasicTokenizer(do_lower_case = do_lower_case)
-        self.wordpiece_tokenizer = WordpieceTokenizer(vocab = self.vocab)
+        self.basic_tokenizer = BasicTokenizer(do_lower_case=do_lower_case)
+        self.wordpiece_tokenizer = WordpieceTokenizer(vocab=self.vocab)
 
     def tokenize(self, text):
         split_tokens = []
@@ -191,11 +191,38 @@ class FullTokenizer(object):
     def convert_ids_to_tokens(self, ids):
         return convert_by_vocab(self.inv_vocab, ids)
 
+    def merge_ids_to_string(self, ids):
+        tokens = self.convert_ids_to_tokens(ids)
+        new_tokens = []
+        n_tokens = len(tokens)
+        i = 0
+        while i < n_tokens:
+            current_token = tokens[i]
+            if current_token.startswith('##'):
+                previous_token = new_tokens.pop()
+                merged_token = previous_token
+                while current_token.startswith('##'):
+                    merged_token = merged_token + current_token.replace('##', '')
+                    i = i + 1
+                    current_token = tokens[i]
+                new_tokens.append(merged_token)
+
+            else:
+                new_tokens.append(current_token)
+                i = i + 1
+
+        words = [
+            i
+            for i in new_tokens
+            if i not in ['[CLS]', '[SEP]', '[PAD]']
+        ]
+        return ' '.join(words)
+
 
 class BasicTokenizer(object):
     """Runs basic tokenization (punctuation splitting, lower casing, etc.)."""
 
-    def __init__(self, do_lower_case = True):
+    def __init__(self, do_lower_case=True):
         """Constructs a BasicTokenizer.
 
     Args:
@@ -316,7 +343,7 @@ class WordpieceTokenizer(object):
     """Runs WordPiece tokenziation."""
 
     def __init__(
-        self, vocab, unk_token = '[UNK]', max_input_chars_per_word = 200
+        self, vocab, unk_token='[UNK]', max_input_chars_per_word=200
     ):
         self.vocab = vocab
         self.unk_token = unk_token

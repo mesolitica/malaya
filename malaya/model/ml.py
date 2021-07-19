@@ -4,9 +4,8 @@ from malaya.text.function import (
     classification_textcleaning,
     entities_textcleaning,
     language_detection_textcleaning,
-    tag_chunk,
 )
-from malaya.model.abstract import Classification, Seq2Seq, Tagging
+from malaya.model.abstract import Classification
 from malaya.function.activation import add_neutral as neutral
 from herpetologist import check_type
 from typing import List
@@ -19,21 +18,19 @@ class Bayes:
         label,
         vectorize,
         bpe,
-        subword_mode,
         cleaning=simple_textcleaning,
     ):
         self._multinomial = multinomial
         self._label = label
         self._vectorize = vectorize
         self._bpe = bpe
-        self._subword_mode = subword_mode
         self._cleaning = cleaning
 
     def _classify(self, strings):
         strings = [self._cleaning(string) for string in strings]
         subs = [
             ' '.join(s)
-            for s in self._bpe.encode(strings, output_type=self._subword_mode)
+            for s in self._bpe.bpe.encode(strings, output_type=self._bpe.mode)
         ]
         vectors = self._vectorize.transform(subs)
         return self._multinomial.predict_proba(vectors)
@@ -71,11 +68,10 @@ class BinaryBayes(Bayes, Classification):
         label,
         vectorize,
         bpe,
-        subword_mode,
         cleaning=simple_textcleaning,
     ):
         Bayes.__init__(
-            self, multinomial, label, vectorize, bpe, subword_mode, cleaning
+            self, multinomial, label, vectorize, bpe, cleaning
         )
 
     @check_type
@@ -122,11 +118,10 @@ class MulticlassBayes(Bayes, Classification):
         label,
         vectorize,
         bpe,
-        subword_mode,
         cleaning=simple_textcleaning,
     ):
         Bayes.__init__(
-            self, multinomial, label, vectorize, bpe, subword_mode, cleaning
+            self, multinomial, label, vectorize, bpe, cleaning
         )
 
     @check_type
@@ -169,11 +164,10 @@ class MultilabelBayes(Bayes, Classification):
         label,
         vectorize,
         bpe,
-        subword_mode,
         cleaning=simple_textcleaning,
     ):
         Bayes.__init__(
-            self, multinomial, label, vectorize, bpe, subword_mode, cleaning
+            self, multinomial, label, vectorize, bpe, cleaning
         )
 
     @check_type

@@ -4,13 +4,10 @@ from malaya.function import (
     generate_session,
     nodes_session,
 )
-from malaya.text.bpe import (
-    sentencepiece_tokenizer_bert,
-    sentencepiece_tokenizer_xlnet,
-)
+from malaya.text.bpe import SentencePieceTokenizer
 from malaya.text.trees import tree_from_str
-from malaya.path import MODEL_VOCAB, MODEL_BPE, CONSTITUENCY_SETTING
 from malaya.model.tf import Constituency
+from malaya.path import MODEL_VOCAB, MODEL_BPE, CONSTITUENCY_SETTING
 import json
 from herpetologist import check_type
 
@@ -130,22 +127,13 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
     with open(path['setting']) as fopen:
         dictionary = json.load(fopen)
 
-    if model in ['bert', 'tiny-bert', 'albert', 'tiny-albert']:
-
-        tokenizer = sentencepiece_tokenizer_bert(
-            path['tokenizer'], path['vocab']
-        )
-        mode = 'bert'
-
-    if model in ['xlnet']:
-        tokenizer = sentencepiece_tokenizer_xlnet(path['tokenizer'])
-        mode = 'xlnet'
-
     inputs = ['input_ids', 'word_end_mask']
     outputs = ['charts', 'tags']
+    tokenizer = SentencePieceTokenizer(vocab_file=path['vocab'], spm_model_file=path['tokenizer'])
     input_nodes, output_nodes = nodes_session(
         g, inputs, outputs, extra={'vectorizer': _vectorizer_mapping[model]}
     )
+    mode = 'bert' if 'bert' in model else 'xlnet'
 
     return Constituency(
         input_nodes=input_nodes,

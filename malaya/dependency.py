@@ -4,14 +4,11 @@ from malaya.function import (
     generate_session,
     nodes_session,
 )
-from malaya.text.bpe import (
-    sentencepiece_tokenizer_bert,
-    sentencepiece_tokenizer_xlnet,
-)
+from malaya.text.bpe import SentencePieceTokenizer
 from malaya.function.parse_dependency import DependencyGraph
-from malaya.path import MODEL_VOCAB, MODEL_BPE
 from malaya.model.xlnet import DependencyXLNET
 from malaya.model.bert import DependencyBERT
+from malaya.path import MODEL_VOCAB, MODEL_BPE
 from herpetologist import check_type
 
 label = {
@@ -288,29 +285,24 @@ def transformer(version: str = 'v2', model: str = 'xlnet', quantized: bool = Fal
     g = load_graph(path['model'], **kwargs)
 
     if model in ['bert', 'tiny-bert', 'albert', 'tiny-albert']:
-
-        tokenizer = sentencepiece_tokenizer_bert(
-            path['tokenizer'], path['vocab']
-        )
         inputs = ['Placeholder']
         vectorizer = {'vectorizer': 'import/dense/BiasAdd:0'}
 
-        Model = DependencyBERT
+        selected_model = DependencyBERT
 
     if model in ['xlnet', 'alxlnet']:
-
-        tokenizer = sentencepiece_tokenizer_xlnet(path['tokenizer'])
         inputs = ['Placeholder', 'Placeholder_1', 'Placeholder_2']
         vectorizer = {'vectorizer': 'import/transpose_3:0'}
 
-        Model = DependencyXLNET
+        selected_model = DependencyXLNET
 
     outputs = ['logits', 'heads_seq']
+    tokenizer = SentencePieceTokenizer(vocab_file=path['vocab'], spm_model_file=path['tokenizer'])
     input_nodes, output_nodes = nodes_session(
         g, inputs, outputs, extra=vectorizer
     )
 
-    return Model(
+    return selected_model(
         input_nodes=input_nodes,
         output_nodes=output_nodes,
         sess=generate_session(graph=g, **kwargs),

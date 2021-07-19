@@ -11,11 +11,7 @@ from malaya.function import (
     generate_session,
     nodes_session,
 )
-from malaya.text.bpe import (
-    sentencepiece_tokenizer_bert,
-    sentencepiece_tokenizer_xlnet,
-    AlbertTokenizer,
-)
+from malaya.text.bpe import SentencePieceTokenizer
 from malaya.preprocessing import Tokenizer
 from malaya.model.bert import SiameseBERT
 from malaya.model.xlnet import SiameseXLNET
@@ -451,7 +447,6 @@ _transformer_availability = {
     },
 }
 
-
 _vectorizer_mapping = {
     'bert': 'import/bert/encoder/layer_11/output/LayerNorm/batchnorm/add_1:0',
     'tiny-bert': 'import/bert/encoder/layer_3/output/LayerNorm/batchnorm/add_1:0',
@@ -474,7 +469,7 @@ def available_transformer():
 
 
 def _transformer(
-    model, bert_class, xlnet_class, quantized=False, siamese=False, **kwargs
+    model, bert_model, xlnet_model, quantized=False, siamese=False, **kwargs
 ):
     model = model.lower()
     if model not in _transformer_availability:
@@ -496,24 +491,12 @@ def _transformer(
     g = load_graph(path['model'], **kwargs)
 
     if model in ['albert', 'bert', 'tiny-albert', 'tiny-bert']:
-        if model in ['bert', 'tiny-bert']:
-            tokenizer = sentencepiece_tokenizer_bert(
-                path['tokenizer'], path['vocab']
-            )
-
-        if model in ['albert', 'tiny-albert']:
-            tokenizer = AlbertTokenizer(
-                vocab_file=path['vocab'], spm_model_file=path['tokenizer']
-            )
-        selected_class = bert_class
-
+        selected_model = bert_model
         if siamese:
             selected_node = 'import/bert/pooler/dense/BiasAdd:0'
 
     if model in ['xlnet', 'alxlnet']:
-
-        tokenizer = sentencepiece_tokenizer_xlnet(path['tokenizer'])
-        selected_class = xlnet_class
+        selected_model = xlnet_model
         if siamese:
             selected_node = 'import/model_1/sequnece_summary/summary/BiasAdd:0'
 
@@ -522,11 +505,12 @@ def _transformer(
 
     inputs = ['Placeholder', 'Placeholder_1', 'Placeholder_2']
     outputs = ['logits']
+    tokenizer = SentencePieceTokenizer(vocab_file=path['vocab'], spm_model_file=path['tokenizer'])
     input_nodes, output_nodes = nodes_session(
         g, inputs, outputs, extra={'vectorizer': selected_node}
     )
 
-    return selected_class(
+    return selected_model(
         input_nodes=input_nodes,
         output_nodes=output_nodes,
         sess=generate_session(graph=g, **kwargs),
@@ -567,8 +551,8 @@ def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
 
     return _transformer(
         model=model,
-        bert_class=SiameseBERT,
-        xlnet_class=SiameseXLNET,
+        bert_model=SiameseBERT,
+        xlnet_model=SiameseXLNET,
         quantized=quantized,
         siamese=True,
         **kwargs,

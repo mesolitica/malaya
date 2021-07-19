@@ -13,7 +13,10 @@ from malaya.text.bpe import (
     xlnet_tokenization,
     padding_sequence,
     merge_sentencepiece_tokens,
+    SentencePieceTokenizer,
 )
+from malaya.path import PATH_XLNET, S3_PATH_XLNET
+from malaya.function import check_file
 from collections import defaultdict
 import collections
 import re
@@ -261,9 +264,6 @@ def load(model: str = 'xlnet', pool_mode: str = 'last', **kwargs):
     model = model.lower()
     pool_mode = pool_mode.lower()
 
-    from malaya.path import PATH_XLNET, S3_PATH_XLNET
-    from malaya.function import check_file
-
     if pool_mode not in ['last', 'first', 'mean', 'attn']:
         raise Exception(
             "pool_mode not supported, only support ['last', 'first', 'mean', 'attn']"
@@ -277,17 +277,16 @@ def load(model: str = 'xlnet', pool_mode: str = 'last', **kwargs):
         with tarfile.open(PATH_XLNET[model]['model']['model']) as tar:
             tar.extractall(path=PATH_XLNET[model]['path'])
 
-    import sentencepiece as spm
-
-    sp_model = spm.SentencePieceProcessor()
-    sp_model.Load(PATH_XLNET[model]['directory'] + 'sp10m.cased.v9.model')
+    vocab_model = PATH_XLNET[model]['directory'] + 'sp10m.cased.v9.model'
+    vocab = PATH_XLNET[model]['directory'] + 'sp10m.cased.v9.vocab'
+    tokenizer = SentencePieceTokenizer(vocab_file=vocab, spm_model_file=vocab_model)
     xlnet_config = xlnet_lib.XLNetConfig(
         json_path=PATH_XLNET[model]['directory'] + 'config.json'
     )
     xlnet_checkpoint = PATH_XLNET[model]['directory'] + 'model.ckpt'
     model = Model(
         xlnet_config,
-        sp_model,
+        tokenizer,
         xlnet_checkpoint,
         pool_mode=pool_mode,
         **kwargs

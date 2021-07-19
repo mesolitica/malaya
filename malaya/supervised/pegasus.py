@@ -5,14 +5,14 @@ from malaya.function import (
     nodes_session,
 )
 from malaya.text.bpe import SentencePieceEncoder
-from malaya.path import TRANSLATION_BPE_MODEL, T2T_BPE_MODEL
+from malaya.path import T2T_BPE_MODEL
 
 
 def load_lm(module, model, model_class, quantized=False, **kwargs):
     path = check_file(
         file=model,
         module=module,
-        keys={'model': 'model.pb', 'vocab': TRANSLATION_BPE_MODEL},
+        keys={'model': 'model.pb', 'vocab': T2T_BPE_MODEL},
         quantized=quantized,
         **kwargs,
     )

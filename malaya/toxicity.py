@@ -1,4 +1,4 @@
-from malaya.supervised import softmax
+from malaya.supervised import classification
 from malaya.path import PATH_TOXIC, S3_PATH_TOXIC
 from herpetologist import check_type
 
@@ -97,7 +97,7 @@ def multinomial(**kwargs):
     -------
     result : malaya.model.ml.MultilabelBayes class
     """
-    return softmax.multinomial(
+    return classification.multinomial(
         PATH_TOXIC, S3_PATH_TOXIC, 'toxicity', label, sigmoid=True, **kwargs
     )
 
@@ -138,8 +138,8 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
             'model not supported, please check supported models from `malaya.toxicity.available_transformer()`.'
         )
 
-    return softmax.transformer(
-        class_name='toxicity',
+    return classification.transformer(
+        module='toxicity',
         label=label,
         model=model,
         sigmoid=True,

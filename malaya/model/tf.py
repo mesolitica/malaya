@@ -17,7 +17,7 @@ from malaya.text.bpe import (
     padding_sequence,
     PTB_TOKEN_ESCAPE,
     merge_sentencepiece_tokens,
-    encode_pieces,
+    encode_sentencepiece,
     merge_sentencepiece_tokens_tagging,
     bert_tokenization,
     xlnet_tokenization,
@@ -49,21 +49,20 @@ def _convert_sparse_matrix_to_sparse_tensor(X, got_limit=False, limit=5):
 
 class DeepLang(Classification):
     def __init__(
-        self, input_nodes, output_nodes, sess, vectorizer, bpe, type, label
+        self, input_nodes, output_nodes, sess, vectorizer, bpe, label
     ):
         self._input_nodes = input_nodes
         self._output_nodes = output_nodes
         self._sess = sess
         self._vectorizer = vectorizer
         self._bpe = bpe
-        self._type = type
         self._label = label
 
     def _classify(self, strings):
         strings = [language_detection_textcleaning(i) for i in strings]
         subs = [
             ' '.join(s)
-            for s in self._bpe.encode(strings, output_type=self._type)
+            for s in self._bpe.bpe.encode(strings, output_type=self._bpe.mode)
         ]
         transformed = self._vectorizer.transform(subs)
         batch_x = _convert_sparse_matrix_to_sparse_tensor(transformed)
@@ -689,7 +688,7 @@ class Tatabahasa(Seq2Seq):
 
     def _predict(self, strings):
         sequences = [
-            encode_pieces(
+            encode_sentencepiece(
                 self._tokenizer.sp,
                 string,
                 return_unicode=False,
@@ -710,7 +709,7 @@ class Tatabahasa(Seq2Seq):
         for i in range(len(p)):
             r = self._tokenizer.decode(p[i].tolist())
             t = tag[i, : nonzero[i]]
-            s = encode_pieces(
+            s = encode_sentencepiece(
                 self._tokenizer.sp, r, return_unicode=False, sample=False
             )
             merged = merge_sentencepiece_tokens_tagging(
@@ -742,7 +741,7 @@ class SQUAD(Abstract):
         output_nodes,
         sess,
         tokenizer,
-        class_name,
+        module,
         mode,
         length,
     ):
@@ -750,7 +749,7 @@ class SQUAD(Abstract):
         self._output_nodes = output_nodes
         self._sess = sess
         self._tokenizer = tokenizer
-        self._class_name = class_name
+        self._module = module
         self._mode = mode
         self._length = length
 

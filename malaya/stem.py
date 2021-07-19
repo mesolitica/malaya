@@ -11,10 +11,10 @@ from malaya.function import (
     nodes_session,
 )
 from malaya.text.function import pad_sentence_batch, case_of
-from malaya.text.bpe import load_yttm
 from malaya.text.regex import _expressions, _money, _date
 from malaya.model.abstract import Abstract
 from malaya.preprocessing import Tokenizer
+from malaya.text.bpe import YTTMEncoder
 from malaya.path import STEMMER_VOCAB
 from herpetologist import check_type
 
@@ -89,14 +89,13 @@ class Naive:
 
 class DeepStemmer(Abstract):
     def __init__(
-        self, input_nodes, output_nodes, sess, bpe, subword_mode, tokenizer
+        self, input_nodes, output_nodes, sess, bpe, tokenizer
     ):
 
         self._input_nodes = input_nodes
         self._output_nodes = output_nodes
         self._sess = sess
         self._bpe = bpe
-        self._subword_mode = subword_mode
         self._tokenizer = tokenizer
 
     @check_type
@@ -136,7 +135,7 @@ class DeepStemmer(Abstract):
 
         if len(batch):
 
-            batch = self._bpe.encode(batch, output_type=self._subword_mode)
+            batch = self._bpe.bpe.encode(batch, output_type=self._bpe.mode)
 
             batch = [i + [1] for i in batch]
             batch = pad_sentence_batch(batch, 0)[0]
@@ -156,7 +155,7 @@ class DeepStemmer(Abstract):
             for no, o in enumerate(output):
                 predicted = list(dict.fromkeys(o))
                 predicted = (
-                    self._bpe.decode(predicted)[0]
+                    self._bpe.bpe.decode(predicted)[0]
                     .replace('<EOS>', '')
                     .replace('<PAD>', '')
                 )
@@ -223,10 +222,9 @@ def deep_model(quantized: bool = False, **kwargs):
         **kwargs,
     )
     g = load_graph(path['model'], **kwargs)
-
-    bpe, subword_mode = load_yttm(path['vocab'], id_mode=True)
     inputs = ['Placeholder']
     outputs = []
+    bpe = YTTMEncoder(vocab_file=path['vocab'], id_mode=True)
     input_nodes, output_nodes = nodes_session(
         g,
         inputs,
@@ -244,6 +242,5 @@ def deep_model(quantized: bool = False, **kwargs):
         output_nodes=output_nodes,
         sess=generate_session(graph=g, **kwargs),
         bpe=bpe,
-        subword_mode=subword_mode,
         tokenizer=tokenizer,
     )

@@ -1,12 +1,13 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
-from malaya.text.function import transformer_textcleaning
 
 import numpy as np
 import sentencepiece as spm
 import unicodedata
 import six
+import logging
+from malaya.text.function import transformer_textcleaning
 
 SEG_ID_A = 0
 SEG_ID_B = 1
@@ -75,24 +76,20 @@ PTB_TOKEN_ESCAPE = {
 }
 
 
-class AlbertTokenizer(object):
-    def __init__(self, vocab_file, spm_model_file, do_lower_case=False):
-        self.vocab = None
-        self.sp_model = None
+class SentencePieceTokenizer:
+    def __init__(self, vocab_file, spm_model_file, **kwargs):
         self.sp_model = spm.SentencePieceProcessor()
         self.sp_model.Load(spm_model_file)
-        self.vocab = {
-            self.sp_model.IdToPiece(i): i
-            for i in range(self.sp_model.GetPieceSize())
-        }
-        self.inv_vocab = {v: k for k, v in self.vocab.items()}
 
-    def tokenize(self, text):
-        split_tokens = encode_pieces(
-            self.sp_model, text, return_unicode=False
+        with open(vocab_file) as fopen:
+            v = fopen.read().split('\n')[:-1]
+        v = [i.split('\t') for i in v]
+        self.vocab = {i[0]: i[1] for i in v}
+
+    def tokenize(self, string):
+        return encode_sentencepiece(
+            self.sp_model, string, return_unicode=False, sample=False
         )
-
-        return split_tokens
 
     def convert_tokens_to_ids(self, tokens):
         return [
@@ -103,27 +100,10 @@ class AlbertTokenizer(object):
         return [self.sp_model.IdToPiece(id_) for id_ in ids]
 
 
-class SentencePieceTokenizer:
-    def __init__(self, v, sp_model):
-        self.vocab = v
-        self.sp_model = sp_model
-
-    def tokenize(self, string):
-        return encode_pieces(
-            self.sp_model, string, return_unicode=False, sample=False
-        )
-
-    def convert_tokens_to_ids(self, tokens):
-        return [self.sp_model.PieceToId(piece) for piece in tokens]
-
-    def convert_ids_to_tokens(self, ids):
-        return [self.sp_model.IdToPiece(i) for i in ids]
-
-
 class SentencePieceEncoder:
-    def __init__(self, vocab):
+    def __init__(self, vocab_file, **kwargs):
         sp = spm.SentencePieceProcessor()
-        sp.Load(vocab)
+        sp.Load(vocab_file)
 
         self.sp = sp
         self.vocab_size = sp.GetPieceSize() + 100
@@ -136,9 +116,9 @@ class SentencePieceEncoder:
 
 
 class SentencePieceBatchEncoder:
-    def __init__(self, vocab):
+    def __init__(self, vocab_file, **kwargs):
         sp = spm.SentencePieceProcessor()
-        sp.Load(vocab)
+        sp.Load(vocab_file)
 
         self.sp = sp
         self.vocab_size = sp.GetPieceSize() + 100
@@ -152,10 +132,21 @@ class SentencePieceBatchEncoder:
 
 
 class YTTMEncoder:
-    def __init__(self, bpe, mode):
-        self.bpe = bpe
+    def __init__(self, vocab_file, id_mode=False, **kwargs):
+        try:
+            import youtokentome as yttm
+        except BaseException:
+            raise ModuleNotFoundError(
+                'youtokentome not installed. Please install it by `pip install youtokentome` and try again.'
+            )
+        if id_mode:
+            type = yttm.OutputType.ID
+        else:
+            type = yttm.OutputType.SUBWORD
+
+        self.bpe = yttm.BPE(model=vocab_file)
         self.vocab_size = len(self.bpe.vocab())
-        self.mode = mode
+        self.mode = type
 
     def encode(self, s):
         s = self.bpe.encode(s, output_type=self.mode)
@@ -168,11 +159,11 @@ class YTTMEncoder:
 
 
 class WordPieceTokenizer(object):
-    def __init__(self, vocab_file, do_lower_case=False):
+    def __init__(self, vocab_file, do_lower_case=False, **kwargs):
         self.vocab = load_vocab(vocab_file)
         self.inv_vocab = {v: k for k, v in self.vocab.items()}
         self.basic_tokenizer = BasicTokenizer(do_lower_case=do_lower_case)
-        self.wordpiece_tokenizer = WordpieceTokenizer(vocab=self.vocab)
+        self.wordpiece_tokenizer = InternalWordPieceTokenizer(vocab=self.vocab)
 
     def tokenize(self, text):
         split_tokens = []
@@ -194,9 +185,36 @@ class WordPieceTokenizer(object):
             output.append(vocab[item])
         return output
 
+    def merge_ids_to_string(self, ids):
+        tokens = self.convert_ids_to_tokens(ids)
+        new_tokens = []
+        n_tokens = len(tokens)
+        i = 0
+        while i < n_tokens:
+            current_token = tokens[i]
+            if current_token.startswith('##'):
+                previous_token = new_tokens.pop()
+                merged_token = previous_token
+                while current_token.startswith('##'):
+                    merged_token = merged_token + current_token.replace('##', '')
+                    i = i + 1
+                    current_token = tokens[i]
+                new_tokens.append(merged_token)
+
+            else:
+                new_tokens.append(current_token)
+                i = i + 1
+
+        words = [
+            i
+            for i in new_tokens
+            if i not in ['[CLS]', '[SEP]', '[PAD]']
+        ]
+        return ' '.join(words)
+
 
 class BasicTokenizer(object):
-    def __init__(self, do_lower_case=True):
+    def __init__(self, do_lower_case=True, **kwargs):
         self.do_lower_case = do_lower_case
 
     def tokenize(self, text):
@@ -284,7 +302,7 @@ class BasicTokenizer(object):
         return ''.join(output)
 
 
-class WordpieceTokenizer(object):
+class InternalWordPieceTokenizer(object):
     def __init__(
         self, vocab, unk_token='[UNK]', max_input_chars_per_word=200
     ):
@@ -407,6 +425,7 @@ def bert_tokenization(tokenizer, texts):
     for text in texts:
         text = transformer_textcleaning(text)
         tokens_a = tokenizer.tokenize(text)[:MAXLEN]
+        logging.debug(tokens_a)
         tokens = ['[CLS]'] + tokens_a + ['[SEP]']
         segment_id = [0] * len(tokens)
         input_id = tokenizer.convert_tokens_to_ids(tokens)
@@ -441,7 +460,9 @@ def bert_tokenization_siamese(tokenizer, left, right):
     a, b = [], []
     for i in range(len(left)):
         tokens_a = tokenizer.tokenize(transformer_textcleaning(left[i]))
+        logging.debug(tokens_a)
         tokens_b = tokenizer.tokenize(transformer_textcleaning(right[i]))
+        logging.debug(tokens_b)
         a.append(tokens_a)
         b.append(tokens_b)
 
@@ -532,7 +553,7 @@ def preprocess_text(
     return outputs
 
 
-def encode_pieces(sp_model, text, return_unicode=True, sample=False):
+def encode_sentencepiece(sp_model, text, return_unicode=True, sample=False):
     if six.PY2 and isinstance(text, unicode):
         text = text.encode('utf-8')
 
@@ -570,29 +591,30 @@ def encode_pieces(sp_model, text, return_unicode=True, sample=False):
     return new_pieces
 
 
-def encode_ids(sp_model, text, sample=False):
-    pieces = encode_pieces(
-        sp_model, text, return_unicode=False, sample=sample
+def encode_sentencepiece_ids(tokenizer, text, sample=False):
+    pieces = encode_sentencepiece(
+        tokenizer.sp_model, text, return_unicode=False, sample=sample
     )
-    ids = [sp_model.PieceToId(piece) for piece in pieces]
+    logging.debug(pieces)
+    ids = [tokenizer.sp_model.PieceToId(piece) for piece in pieces]
     return ids
 
 
-def tokenize_fn(text, sp_model):
+def tokenize_xlnet_fn(text, tokenizer, sample=False):
     text = preprocess_text(text, lower=False)
-    return encode_ids(sp_model, text)
+    return encode_sentencepiece_ids(tokenizer, text)
 
 
 def xlnet_tokenization_siamese(tokenizer, left, right):
     input_ids, input_mask, all_seg_ids, s_tokens = [], [], [], []
     for i in range(len(left)):
-        tokens = tokenize_fn(transformer_textcleaning(left[i]), tokenizer)
-        tokens_right = tokenize_fn(
+        tokens = tokenize_xlnet_fn(transformer_textcleaning(left[i]), tokenizer)
+        tokens_right = tokenize_xlnet_fn(
             transformer_textcleaning(right[i]), tokenizer
         )
         segment_ids = [SEG_ID_A] * len(tokens)
         tokens.append(SEP_ID)
-        s_tokens.append([tokenizer.IdToPiece(i) for i in tokens])
+        s_tokens.append([tokenizer.sp_model.IdToPiece(i) for i in tokens])
         segment_ids.append(SEG_ID_A)
 
         tokens.extend(tokens_right)
@@ -605,8 +627,10 @@ def xlnet_tokenization_siamese(tokenizer, left, right):
 
         cur_input_ids = tokens
         cur_input_mask = [0] * len(cur_input_ids)
+        logging.debug(tokens)
         assert len(tokens) == len(cur_input_mask)
         assert len(tokens) == len(segment_ids)
+
         input_ids.append(tokens)
         input_mask.append(cur_input_mask)
         all_seg_ids.append(segment_ids)
@@ -622,7 +646,7 @@ def xlnet_tokenization(tokenizer, texts, space_after_punct=False):
     input_ids, input_masks, segment_ids, s_tokens = [], [], [], []
     for text in texts:
         text = transformer_textcleaning(text, space_after_punct=space_after_punct)
-        tokens_a = tokenize_fn(text, tokenizer)[:MAXLEN]
+        tokens_a = tokenize_xlnet_fn(text, tokenizer)[:MAXLEN]
         tokens = []
         segment_id = []
         for token in tokens_a:
@@ -636,11 +660,12 @@ def xlnet_tokenization(tokenizer, texts, space_after_punct=False):
 
         input_id = tokens
         input_mask = [0] * len(input_id)
+        logging.debug(tokens)
 
         input_ids.append(input_id)
         input_masks.append(input_mask)
         segment_ids.append(segment_id)
-        s_tokens.append([tokenizer.IdToPiece(i) for i in tokens])
+        s_tokens.append([tokenizer.sp_model.IdToPiece(i) for i in tokens])
 
     maxlen = max([len(i) for i in input_ids])
     input_ids = padding_sequence(input_ids, maxlen)
@@ -655,17 +680,17 @@ def xlnet_tokenization_token(tokenizer, tok, texts):
     for text in texts:
         tokens = []
         for no, orig_token in enumerate(tok(text)):
-            tokens_a = tokenize_fn(orig_token, tokenizer)
+            tokens_a = tokenize_xlnet_fn(orig_token, tokenizer)
             tokens.extend(tokens_a)
         tokens.extend([SEP_ID, CLS_ID])
         segment = [SEG_ID_A] * (len(tokens) - 1) + [SEG_ID_CLS]
         input_id = tokens
         input_mask = [0] * len(input_id)
-
+        logging.debug(tokens)
         input_ids.append(input_id)
         input_masks.append(input_mask)
         segment_ids.append(segment)
-        s_tokens.append([tokenizer.IdToPiece(i) for i in tokens])
+        s_tokens.append([tokenizer.sp_model.IdToPiece(i) for i in tokens])
 
     maxlen = max([len(i) for i in input_ids])
     input_ids = padding_sequence(input_ids, maxlen)
@@ -719,6 +744,7 @@ def parse_bert_tagging(left, tokenizer, space_after_punct=False):
     left = transformer_textcleaning(left, space_after_punct=space_after_punct)
     bert_tokens = ['[CLS]'] + tokenizer.tokenize(left) + ['[SEP]']
     input_mask = [1] * len(bert_tokens)
+    logging.debug(bert_tokens)
     return tokenizer.convert_tokens_to_ids(bert_tokens), input_mask, bert_tokens
 
 
@@ -729,6 +755,7 @@ def parse_bert_token_tagging(left, tok, tokenizer):
         bert_tokens.extend(t)
     bert_tokens.append('[SEP]')
     input_mask = [1] * len(bert_tokens)
+    logging.debug(bert_tokens)
     return tokenizer.convert_tokens_to_ids(bert_tokens), input_mask, bert_tokens
 
 
@@ -817,46 +844,6 @@ def merge_sentencepiece_tokens_tagging(x, y, model='bert'):
     return words, labels
 
 
-def sentencepiece_tokenizer_xlnet(path_tokenizer):
-    sp_model = spm.SentencePieceProcessor()
-    sp_model.Load(path_tokenizer)
-    return sp_model
-
-
-def sentencepiece_tokenizer_bert(path_tokenizer, path_vocab):
-
-    sp_model = spm.SentencePieceProcessor()
-    sp_model.Load(path_tokenizer)
-
-    with open(path_vocab) as fopen:
-        v = fopen.read().split('\n')[:-1]
-    v = [i.split('\t') for i in v]
-    v = {i[0]: i[1] for i in v}
-    tokenizer = SentencePieceTokenizer(v, sp_model)
-    return tokenizer
-
-
-def load_yttm(path, id_mode=False):
-    try:
-        import youtokentome as yttm
-    except BaseException:
-        raise ModuleNotFoundError(
-            'youtokentome not installed. Please install it by `pip install youtokentome` and try again.'
-        )
-    try:
-        if id_mode:
-            type = yttm.OutputType.ID
-        else:
-            type = yttm.OutputType.SUBWORD
-        return yttm.BPE(model=path), type
-    except BaseException:
-        path = path.split('Malaya/')[1]
-        path = '/'.join(path.split('/')[:-1])
-        raise Exception(
-            f"model corrupted due to some reasons, please run `malaya.clear_cache('{path}')` and try again"
-        )
-
-
 def constituency_bert(tokenizer, sentences):
     all_input_ids, all_word_end_mask, all_tokens = [], [], []
 
@@ -888,6 +875,7 @@ def constituency_bert(tokenizer, sentences):
         word_end_mask.append(1)
 
         input_ids = tokenizer.convert_tokens_to_ids(tokens)
+        logging.debug(tokens)
         all_input_ids.append(input_ids)
         all_word_end_mask.append(word_end_mask)
         all_tokens.append(tokens)
@@ -912,8 +900,8 @@ def constituency_xlnet(tokenizer, sentences):
             cleaned_words.append(word)
 
         for word in cleaned_words:
-            word_tokens = encode_pieces(
-                tokenizer, word, return_unicode=False, sample=False
+            word_tokens = encode_sentencepiece(
+                tokenizer.sp_model, word, return_unicode=False, sample=False
             )
             if not word_tokens:
                 word_tokens = ['<unk>']
@@ -925,9 +913,10 @@ def constituency_xlnet(tokenizer, sentences):
         tokens.append('<sep>')
         word_end_mask.append(1)
         tokens.append('<cls>')
+        logging.debug(tokens)
         word_end_mask.append(1)
 
-        input_ids = [tokenizer.PieceToId(i) for i in tokens]
+        input_ids = [tokenizer.sp_model.PieceToId(i) for i in tokens]
         all_input_ids.append(input_ids)
         all_word_end_mask.append(word_end_mask)
         all_tokens.append(tokens)

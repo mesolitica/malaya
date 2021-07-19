@@ -62,7 +62,7 @@ class BERT(Base):
         output_nodes,
         sess,
         tokenizer,
-        class_name,
+        module,
         label=['negative', 'positive'],
     ):
 
@@ -75,7 +75,7 @@ class BERT(Base):
             label=label,
         )
 
-        self._class_name = class_name
+        self._module = module
 
     def _classify(self, strings):
         input_ids, input_masks, _, _ = bert_tokenization(
@@ -225,10 +225,10 @@ class BERT(Base):
         dict_result['histogram'] = {'x': x_histogram, 'y': y_histogram}
         dict_result['attention'] = {'x': x_attention, 'y': np.array(a)}
         dict_result['barplot'] = {'x': label, 'y': y_barplot}
-        dict_result['class_name'] = self._class_name
+        dict_result['module'] = self._module
 
         if visualization:
-            render_dict[self._class_name](dict_result)
+            render_dict[self._module](dict_result)
         else:
             return dict_result
 
@@ -240,7 +240,7 @@ class BinaryBERT(BERT, Classification):
         output_nodes,
         sess,
         tokenizer,
-        class_name,
+        module,
         label=['negative', 'positive'],
     ):
         BERT.__init__(
@@ -249,7 +249,7 @@ class BinaryBERT(BERT, Classification):
             output_nodes=output_nodes,
             sess=sess,
             tokenizer=tokenizer,
-            class_name=class_name,
+            module=module,
             label=label,
         )
 
@@ -351,7 +351,7 @@ class MulticlassBERT(BERT, Classification):
         output_nodes,
         sess,
         tokenizer,
-        class_name,
+        module,
         label=['negative', 'positive'],
     ):
         BERT.__init__(
@@ -360,7 +360,7 @@ class MulticlassBERT(BERT, Classification):
             output_nodes=output_nodes,
             sess=sess,
             tokenizer=tokenizer,
-            class_name=class_name,
+            module=module,
             label=label,
         )
 
@@ -454,7 +454,7 @@ class SigmoidBERT(Base, Classification):
         output_nodes,
         sess,
         tokenizer,
-        class_name,
+        module,
         label=['negative', 'positive'],
     ):
         Base.__init__(
@@ -465,7 +465,7 @@ class SigmoidBERT(Base, Classification):
             tokenizer=tokenizer,
             label=label,
         )
-        self._class_name = class_name
+        self._module = module
 
     def _classify(self, strings):
 
@@ -672,7 +672,7 @@ class SigmoidBERT(Base, Classification):
         dict_result['histogram'] = {'x': x_histogram, 'y': y_histogram}
         dict_result['attention'] = {'x': x_attention, 'y': np.array(a)}
         dict_result['barplot'] = {'x': self._label, 'y': y_barplot}
-        dict_result['class_name'] = self._class_name
+        dict_result['module'] = self._module
         if visualization:
             _render_toxic(dict_result)
         else:
@@ -1054,7 +1054,7 @@ class ZeroshotBERT(Base):
         )
 
         r = self._execute(
-            inputs=[parsed_sequence, segment_ids, input_mask],
+            inputs=[input_ids, segment_ids, input_masks],
             input_labels=['Placeholder', 'Placeholder_1', 'Placeholder_2'],
             output_labels=['logits'],
         )
@@ -1104,7 +1104,7 @@ class ZeroshotBERT(Base):
         )
 
         r = self._execute(
-            inputs=[parsed_sequence, segment_ids, input_mask],
+            inputs=[input_ids, segment_ids, input_masks],
             input_labels=['Placeholder', 'Placeholder_1', 'Placeholder_2'],
             output_labels=['vectorizer'],
         )

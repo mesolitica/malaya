@@ -7,13 +7,13 @@ from malaya.function import (
 )
 from malaya.model.ml import LanguageDetection
 from malaya.model.tf import DeepLang
+from malaya.text.bpe import YTTMEncoder
 from malaya.path import (
     PATH_LANG_DETECTION,
     S3_PATH_LANG_DETECTION,
     LANGUAGE_DETECTION_BOW,
     LANGUAGE_DETECTION_VOCAB,
 )
-from malaya.text.bpe import load_yttm
 from herpetologist import check_type
 
 lang_labels = {
@@ -58,15 +58,9 @@ def fasttext(quantized: bool = True, **kwargs):
     check_file(
         PATH_LANG_DETECTION[model], S3_PATH_LANG_DETECTION[model], **kwargs
     )
-
-    try:
-        model_fasttext = fasttext.load_model(
-            PATH_LANG_DETECTION[model]['model']
-        )
-    except BaseException:
-        raise ValueError(
-            f"model corrupted due to some reasons, please run `malaya.clear_cache('language-detection/{model}')` and try again"
-        )
+    model_fasttext = fasttext.load_model(
+        PATH_LANG_DETECTION[model]['model']
+    )
     return LanguageDetection(model_fasttext, lang_labels)
 
 
@@ -96,15 +90,10 @@ def deep_model(quantized: bool = False, **kwargs):
         **kwargs,
     )
     g = load_graph(path['model'], **kwargs)
-    bpe, subword_mode = load_yttm(path['bpe'])
+    bpe = YTTMEncoder(vocab_file=path['bpe'])
 
-    try:
-        with open(path['vector'], 'rb') as fopen:
-            vector = pickle.load(fopen)
-    except BaseException:
-        raise ValueError(
-            "model corrupted due to some reasons, please run `malaya.clear_cache('language-detection/lang-32')` and try again"
-        )
+    with open(path['vector'], 'rb') as fopen:
+        vector = pickle.load(fopen)
 
     inputs = [
         'X_Placeholder/shape',
@@ -123,6 +112,5 @@ def deep_model(quantized: bool = False, **kwargs):
         sess=generate_session(graph=g, **kwargs),
         vectorizer=vector,
         bpe=bpe,
-        type=subword_mode,
         label=lang_labels,
     )

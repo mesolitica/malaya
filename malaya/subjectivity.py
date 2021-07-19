@@ -1,4 +1,4 @@
-from malaya.supervised import softmax
+from malaya.supervised import classification
 from malaya.path import PATH_SUBJECTIVE, S3_PATH_SUBJECTIVE
 from herpetologist import check_type
 
@@ -74,7 +74,7 @@ def multinomial(**kwargs):
     -------
     result : malaya.model.ml.Bayes class
     """
-    return softmax.multinomial(
+    return classification.multinomial(
         PATH_SUBJECTIVE, S3_PATH_SUBJECTIVE, 'subjective', label, **kwargs
     )
 
@@ -114,8 +114,8 @@ def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
         raise ValueError(
             'model not supported, please check supported models from `malaya.subjectivity.available_transformer()`.'
         )
-    return softmax.transformer(
-        class_name='subjectivity',
+    return classification.transformer(
+        module='subjectivity',
         label=label,
         model=model,
         quantized=quantized,

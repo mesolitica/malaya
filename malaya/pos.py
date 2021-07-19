@@ -184,5 +184,5 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
             'model not supported, please check supported models from `malaya.pos.available_transformer()`.'
         )
     return tag.transformer(
-        class_name='pos', model=model, quantized=quantized, **kwargs
+        module='pos', model=model, quantized=quantized, **kwargs
     )

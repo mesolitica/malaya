@@ -90,5 +90,5 @@ def transformer_squad(model: str = 'xlnet', quantized: bool = False, **kwargs):
             'model not supported, please check supported models from `malaya.qa.available_transformer_squad()`.'
         )
     return qa.transformer_squad(
-        class_name='qa-squad', model=model, quantized=quantized, **kwargs
+        module='qa-squad', model=model, quantized=quantized, **kwargs
     )

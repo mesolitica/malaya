@@ -7,21 +7,23 @@
 # For license information, see https://github.com/huseinzol05/Malaya/blob/master/LICENSE
 
 import tensorflow.compat.v1 as tf
-from . import modeling, tokenization
+from malaya.function import get_device, generate_session
+from malaya.transformers.albert import modeling, tokenization
+from malaya.transformers.sampling import top_k_logits, top_p_logits
 from malaya.text.bpe import (
     bert_tokenization,
     padding_sequence,
     merge_sentencepiece_tokens,
 )
-from malaya.function import get_device, generate_session
-from malaya.transformers.sampling import top_k_logits, top_p_logits
+from malaya.function import check_file
+from malaya.path import PATH_ALBERT, S3_PATH_ALBERT
 from collections import defaultdict
 import numpy as np
 import os
 from herpetologist import check_type
 from typing import List
 
-bert_num_layers = {'albert': 12, 'tiny-albert': 4}
+albert_num_layers = {'albert': 12, 'tiny-albert': 4}
 
 
 def _extract_attention_weights(num_layers, tf_graph):
@@ -284,9 +286,6 @@ def load(model: str = 'albert', **kwargs):
     -------
     result : malaya.transformers.albert.Model class
     """
-
-    from malaya.path import PATH_ALBERT, S3_PATH_ALBERT
-    from malaya.function import check_file
 
     model = model.lower()
     check_file(PATH_ALBERT[model]['model'], S3_PATH_ALBERT[model], **kwargs)

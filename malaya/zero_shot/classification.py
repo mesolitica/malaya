@@ -45,8 +45,8 @@ def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
 
     return _transformer(
         model=model,
-        bert_class=ZeroshotBERT,
-        xlnet_class=ZeroshotXLNET,
+        bert_model=ZeroshotBERT,
+        xlnet_model=ZeroshotXLNET,
         quantized=quantized,
         siamese=False,
         **kwargs

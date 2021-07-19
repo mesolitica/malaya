@@ -274,7 +274,7 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
             'model not supported, please check supported models from `malaya.entity.available_transformer()`.'
         )
     return tag.transformer(
-        class_name='entity', model=model, quantized=quantized, **kwargs
+        module='entity', model=model, quantized=quantized, **kwargs
     )
 
 
@@ -316,7 +316,7 @@ def transformer_ontonotes5(
             'model not supported, please check supported models from `malaya.entity.available_transformer_ontonotes5()`.'
         )
     return tag.transformer(
-        class_name='entity-ontonotes5',
+        module='entity-ontonotes5',
         model=model,
         quantized=quantized,
         **kwargs

@@ -12,6 +12,7 @@ from tqdm import tqdm
 
 max_seq_length_encoder = 512
 max_seq_length_decoder = 256
+
 masked_lm_prob = 0
 max_predictions_per_seq = 0
 do_whole_word_mask = True
@@ -32,10 +33,10 @@ class TrainingInstance(object):
         self.masked_lm_labels = masked_lm_labels
 
 
-def sliding(strings, n = 5):
+def sliding(strings, n=5):
     results = []
     for i in range(len(strings) - n):
-        results.append(strings[i : i + n])
+        results.append(strings[i: i + n])
     return results
 
 
@@ -44,7 +45,7 @@ def _get_ngrams(n, text):
     text_length = len(text)
     max_index_ngram_start = text_length - n
     for i in range(max_index_ngram_start + 1):
-        ngram_set.add(tuple(text[i : i + n]))
+        ngram_set.add(tuple(text[i: i + n]))
     return ngram_set
 
 
@@ -81,7 +82,7 @@ def _rouge_clean(s):
     return re.sub(r'[^a-zA-Z0-9 ]', '', s)
 
 
-def get_rouges(strings, n = 1):
+def get_rouges(strings, n=1):
     rouges = []
     for i in range(len(strings)):
         abstract = strings[i]
@@ -96,7 +97,7 @@ def get_rouges(strings, n = 1):
 
 # Principal Select top-m scored sentences according to importance.
 # As a proxy for importance we compute ROUGE1-F1 (Lin, 2004) between the sentence and the rest of the document
-def get_rouge(strings, top_k = 1, minlen = 4):
+def get_rouge(strings, top_k=1, minlen=4):
     rouges = get_rouges(strings)
     s = np.argsort(rouges)[::-1]
     s = [i for i in s if len(strings[i].split()) >= minlen]
@@ -104,12 +105,12 @@ def get_rouge(strings, top_k = 1, minlen = 4):
 
 
 # Random Uniformly select m sentences at random.
-def get_random(strings, rng, top_k = 1):
-    return rng.choice(len(strings), size = top_k, replace = False)
+def get_random(strings, rng, top_k=1):
+    return rng.choice(len(strings), size=top_k, replace=False)
 
 
 # Lead Select the first m sentences.
-def get_lead(strings, top_k = 1):
+def get_lead(strings, top_k=1):
     return [i for i in range(top_k)]
 
 
@@ -204,10 +205,10 @@ def create_masked_lm_predictions(tokens, vocab_words, rng):
             output_tokens[index] = masked_token
 
             masked_lms.append(
-                MaskedLmInstance(index = index, label = tokens[index])
+                MaskedLmInstance(index=index, label=tokens[index])
             )
     assert len(masked_lms) <= num_to_predict
-    masked_lms = sorted(masked_lms, key = lambda x: x.index)
+    masked_lms = sorted(masked_lms, key=lambda x: x.index)
 
     masked_lm_positions = []
     masked_lm_labels = []
@@ -218,13 +219,10 @@ def create_masked_lm_predictions(tokens, vocab_words, rng):
     return (output_tokens, masked_lm_positions, masked_lm_labels)
 
 
-def get_feature(x, y, tokenizer, vocab_words, rng, dedup_factor = 5, **kwargs):
+def get_feature(x, y, tokenizer, vocab_words, rng, dedup_factor=5, **kwargs):
     tokens = tokenizer.tokenize(x)
     if len(tokens) > (max_seq_length_encoder - 2):
         tokens = tokens[: max_seq_length_encoder - 2]
-
-    if '[MASK2]' not in tokens:
-        return []
 
     tokens = tokens
 
@@ -266,14 +264,14 @@ def group_doc(data):
 
 def create_int_feature(values):
     feature = tf.train.Feature(
-        int64_list = tf.train.Int64List(value = list(values))
+        int64_list=tf.train.Int64List(value=list(values))
     )
     return feature
 
 
 def create_float_feature(values):
     feature = tf.train.Feature(
-        float_list = tf.train.FloatList(value = list(values))
+        float_list=tf.train.FloatList(value=list(values))
     )
     return feature
 
@@ -304,7 +302,7 @@ def write_instance_to_example_file(instances, output_file):
         features['masked_lm_ids'] = create_int_feature(masked_lm_ids)
         features['masked_lm_weights'] = create_float_feature(masked_lm_weights)
         tf_example = tf.train.Example(
-            features = tf.train.Features(feature = features)
+            features=tf.train.Features(feature=features)
         )
         writer.write(tf_example.SerializeToString())
 
@@ -315,12 +313,14 @@ def process_documents(
     file,
     output_file,
     tokenizer,
-    min_slide = 7,
-    max_slide = 13,
-    min_sentence = 1,
-    max_sentence = 3,
-    dedup_mask = 1,
-    use_rouge = True,
+    min_slide=12,
+    max_slide=17,
+    skip_slide=3,
+    min_sentence=1,
+    max_sentence=3,
+    dedup_mask=1,
+    use_rouge=True,
+    minlen_rouge=10,
 ):
     with open(file) as fopen:
         data = fopen.read().split('\n')
@@ -331,18 +331,24 @@ def process_documents(
     for r in tqdm(grouped):
         for s in range(min_slide, max_slide, 1):
             slided = sliding(r, s)
-            for i in range(len(slided)):
+            for i in range(0, len(slided), skip_slide):
                 try:
                     strings = slided[i]
                     if use_rouge:
-                        rouge_ = get_rouge(strings,random.randint(min_sentence, max_sentence))
+                        rouge_ = get_rouge(strings, random.randint(min_sentence, max_sentence), minlen=minlen_rouge)
                     else:
                         rouge_ = get_random(strings, rng)
 
                     y = []
                     for index in rouge_:
                         y.append(strings[index])
-                        strings[index] = '[MASK2]'
+                        if rng.random() < 0.9:
+                            strings[index] = '[MASK2]'
+                        else:
+                            # 5% of the time, replace with random sentence
+                            if rng.random() < 0.5:
+                                s = random.choice(strings)
+                                strings[index] = s
 
                     x = combine(strings)
                     result = get_feature(
@@ -351,11 +357,10 @@ def process_documents(
                         tokenizer,
                         vocab_words,
                         rng,
-                        dedup_factor = dedup_mask,
+                        dedup_factor=dedup_mask,
                     )
                     results.extend(result)
                 except Exception as e:
-                    # print(e)
                     pass
 
     write_instance_to_example_file(results, output_file)

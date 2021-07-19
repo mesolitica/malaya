@@ -1,4 +1,4 @@
-from malaya.supervised import softmax
+from malaya.supervised import classification
 from herpetologist import check_type
 
 label = ['not relevant', 'relevant']
@@ -120,8 +120,8 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
         raise ValueError(
             'model not supported, please check supported models from `malaya.relevancy.available_transformer()`.'
         )
-    return softmax.transformer(
-        class_name='relevancy',
+    return classification.transformer(
+        module='relevancy',
         label=label,
         model=model,
         quantized=quantized,

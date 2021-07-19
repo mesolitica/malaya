@@ -39,7 +39,7 @@ class BigBird(Base):
         output_nodes,
         sess,
         tokenizer,
-        class_name,
+        module,
         label=['negative', 'positive'],
     ):
 
@@ -51,7 +51,7 @@ class BigBird(Base):
             tokenizer=tokenizer,
             label=label,
         )
-        self._class_name = class_name
+        self._module = module
 
     def _classify(self, strings):
         input_ids, _, _, _ = bert_tokenization(self._tokenizer, strings)
@@ -131,7 +131,7 @@ class MulticlassBigBird(BigBird, Classification):
         output_nodes,
         sess,
         tokenizer,
-        class_name,
+        module,
         label=['negative', 'positive'],
     ):
         BigBird.__init__(
@@ -140,7 +140,7 @@ class MulticlassBigBird(BigBird, Classification):
             output_nodes=output_nodes,
             sess=sess,
             tokenizer=tokenizer,
-            class_name=class_name,
+            module=module,
             label=label,
         )
 
@@ -262,7 +262,6 @@ class Summarization(Seq2Seq):
         postprocess=True,
         **kwargs,
     ):
-
         strings_ = [summarization_textcleaning(string) for string in strings]
         batch_x = [self._tokenizer.encode(string) + [1] for string in strings_]
         batch_x = pad_sequences(

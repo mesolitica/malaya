@@ -2,7 +2,7 @@ import random
 import tensorflow as tf
 import logging
 from malaya.text.function import simple_textcleaning
-from malaya.text.bpe import sentencepiece_tokenizer_bert as load_sentencepiece
+from malaya.text.bpe import SentencePieceTokenizer
 from malaya.text.tatabahasa import alphabet, consonants, vowels
 from malaya.text.ngram import ngrams as generate_ngrams
 from malaya.supervised import t5 as t5_load
@@ -209,7 +209,7 @@ def shortform(
 
     vocab = PATH_NGRAM['sentencepiece']['vocab']
     vocab_model = PATH_NGRAM['sentencepiece']['model']
-    tokenizer = load_sentencepiece(vocab, vocab_model)
+    tokenizer = SentencePieceTokenizer(vocab_file=vocab, spm_model_file=vocab_model)
 
     replace_consonants = {
         'n': 'm',

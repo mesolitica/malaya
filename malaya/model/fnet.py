@@ -31,7 +31,7 @@ class FNet(Base):
         output_nodes,
         sess,
         tokenizer,
-        class_name,
+        module,
         label=['negative', 'positive'],
     ):
 
@@ -43,7 +43,7 @@ class FNet(Base):
             tokenizer=tokenizer,
             label=label,
         )
-        self._class_name = class_name
+        self._module = module
 
     def _classify(self, strings):
         input_ids, input_masks, _, _ = bert_tokenization(
@@ -121,7 +121,7 @@ class MulticlassFNet(FNet, Classification):
         output_nodes,
         sess,
         tokenizer,
-        class_name,
+        module,
         label=['negative', 'positive'],
     ):
         FNet.__init__(
@@ -130,7 +130,7 @@ class MulticlassFNet(FNet, Classification):
             output_nodes=output_nodes,
             sess=sess,
             tokenizer=tokenizer,
-            class_name=class_name,
+            module=module,
             label=label,
         )
 
@@ -197,7 +197,7 @@ class BinaryFNet(FNet, Classification):
         output_nodes,
         sess,
         tokenizer,
-        class_name,
+        module,
         label=['negative', 'positive'],
     ):
         FNet.__init__(
@@ -206,7 +206,7 @@ class BinaryFNet(FNet, Classification):
             output_nodes=output_nodes,
             sess=sess,
             tokenizer=tokenizer,
-            class_name=class_name,
+            module=module,
             label=label,
         )
 

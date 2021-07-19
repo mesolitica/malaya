@@ -8,10 +8,15 @@ from malaya.text.bpe import (
     SentencePieceEncoder,
     SentencePieceBatchEncoder,
     YTTMEncoder,
-    load_yttm,
 )
 from malaya.text.t2t import text_encoder
 from malaya.path import T2T_BPE_MODEL, LM_VOCAB
+
+ENCODER_MODEL = {
+    'subword': text_encoder.SubwordTextEncoder,
+    'sentencepiece': SentencePieceBatchEncoder,
+    'yttm': YTTMEncoder,
+}
 
 
 def load_lm(module, model, model_class, quantized=False, **kwargs):
@@ -54,16 +59,7 @@ def load(module, model, encoder, model_class, quantized=False, **kwargs):
         **kwargs,
     )
     g = load_graph(path['model'], **kwargs)
-
-    if encoder == 'subword':
-        encoder = text_encoder.SubwordTextEncoder(path['vocab'])
-
-    if encoder == 'yttm':
-        bpe, subword_mode = load_yttm(path['vocab'], True)
-        encoder = YTTMEncoder(bpe, subword_mode)
-
-    if encoder == 'sentencepiece':
-        encoder = SentencePieceBatchEncoder(path['vocab'])
+    encoder = ENCODER_MODEL[encoder](vocab_file=path['vocab'], id_mode=True)
 
     inputs = ['Placeholder']
     outputs = ['greedy', 'beam']
@@ -87,7 +83,7 @@ def load_tatabahasa(module, model, model_class, quantized=False, **kwargs):
     )
 
     g = load_graph(path['model'], **kwargs)
-    tokenizer = SentencePieceEncoder(path['vocab'])
+    tokenizer = SentencePieceEncoder(vocab_file=path['vocab'])
 
     inputs = ['x_placeholder']
     outputs = ['greedy', 'tag_greedy']

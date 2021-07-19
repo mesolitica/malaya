@@ -140,7 +140,7 @@ def _render_binary(data, notebook_mode=False):
         template = string.Template(_file.read())
 
     template = template.substitute(
-        label=escape(data['class_name']),
+        label=escape(data['module']),
         p=sentiment_mark,
         barplot_positive=escape(
             json.dumps(int(data['barplot']['y'][index_positive]))
@@ -193,7 +193,7 @@ def _render_relevancy(data, notebook_mode=False):
         template = string.Template(_file.read())
 
     template = template.substitute(
-        label=escape(data['class_name']),
+        label=escape(data['module']),
         p=relevancy_mark,
         barplot_positive=escape(
             json.dumps(int(data['barplot']['y'][index_positive]))
@@ -260,7 +260,7 @@ def _render_toxic(data, notebook_mode=False):
         template = string.Template(_file.read())
 
     template = template.substitute(
-        label=escape(data['class_name']),
+        label=escape(data['module']),
         p=toxic_mark,
         barplot_severe_toxic=escape(
             json.dumps(int(data['barplot']['y'][index_severe_toxic]))
@@ -341,7 +341,7 @@ def _render_emotion(data, notebook_mode=False):
         template = string.Template(_file.read())
 
     template = template.substitute(
-        label=escape(data['class_name']),
+        label=escape(data['module']),
         p=emotion_mark,
         barplot_anger=escape(
             json.dumps(int(data['barplot']['y'][index_anger]))

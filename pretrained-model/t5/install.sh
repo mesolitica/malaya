@@ -10,5 +10,5 @@ sudo pip3 install tensorflow-probability==0.7.0 tensorflow-text==1.15.0 t5==0.5.
 sudo pip3 install google-api-python-client oauth2client
 sudo pip3 install mesh-tensorflow==0.1.13
 sudo pip3 install tfds-nightly==3.1.0.dev202005080105 tensorflow-estimator==1.15.1
-jupyter notebook --NotebookApp.token=''
+screen -d -m jupyter notebook --NotebookApp.token=''
 # make sure tpu tensorflow version 1.15.3

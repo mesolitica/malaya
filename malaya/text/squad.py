@@ -5,9 +5,9 @@ import re
 import six
 import gc
 from malaya.text.bpe import (
-    encode_ids,
+    encode_sentencepiece_ids,
     preprocess_text,
-    encode_pieces,
+    encode_sentencepiece,
     SPIECE_UNDERLINE,
     SEG_ID_P,
     SEG_ID_Q,
@@ -192,7 +192,7 @@ def convert_examples_to_features_xlnet(
         example_index = n
         example = examples[n]
 
-        query_tokens = encode_ids(
+        query_tokens = encode_sentencepiece_ids(
             tokenizer, preprocess_text(example.question_text, lower=False)
         )
 
@@ -200,8 +200,8 @@ def convert_examples_to_features_xlnet(
             query_tokens = query_tokens[0:max_query_length]
 
         paragraph_text = example.paragraph_text
-        para_tokens = encode_pieces(
-            tokenizer, preprocess_text(example.paragraph_text, lower=False)
+        para_tokens = encode_sentencepiece(
+            tokenizer.sp_model, preprocess_text(example.paragraph_text, lower=False)
         )
 
         chartok_to_tok_index = []
@@ -488,8 +488,8 @@ def convert_examples_to_features_bert(
         example_index = n
         example = examples[n]
 
-        query_tokens = encode_ids(
-            tokenizer.sp_model,
+        query_tokens = encode_sentencepiece_ids(
+            tokenizer,
             preprocess_text(example.question_text, lower=do_lower_case),
         )
 
@@ -497,7 +497,7 @@ def convert_examples_to_features_bert(
             query_tokens = query_tokens[0:max_query_length]
 
         paragraph_text = example.paragraph_text
-        para_tokens = encode_pieces(
+        para_tokens = encode_sentencepiece(
             tokenizer.sp_model,
             preprocess_text(example.paragraph_text, lower=do_lower_case),
             return_unicode=False,

@@ -9,13 +9,14 @@
 
 import tensorflow.compat.v1 as tf
 from malaya.function import get_device, generate_session
-from . import modeling
+from malaya.transformers.sampling import top_k_logits, top_p_logits
+from malaya.transformers.bert import modeling
 from malaya.text.bpe import (
     bert_tokenization,
     padding_sequence,
     merge_sentencepiece_tokens,
+    SentencePieceTokenizer,
 )
-from malaya.transformers.sampling import top_k_logits, top_p_logits
 from collections import defaultdict
 import numpy as np
 import os
@@ -287,23 +288,12 @@ def load(model: str = 'base', **kwargs):
         with tarfile.open(PATH_BERT[model]['model']['model']) as tar:
             tar.extractall(path=PATH_BERT[model]['path'])
 
-    import sentencepiece as spm
-    from malaya.text.bpe import SentencePieceTokenizer
-
     bert_checkpoint = PATH_BERT[model]['directory'] + 'model.ckpt'
     vocab_model = PATH_BERT[model]['directory'] + 'sp10m.cased.bert.model'
     vocab = PATH_BERT[model]['directory'] + 'sp10m.cased.bert.vocab'
     bert_config = PATH_BERT[model]['directory'] + 'config.json'
 
-    sp_model = spm.SentencePieceProcessor()
-    sp_model.Load(vocab_model)
-
-    with open(vocab) as fopen:
-        v = fopen.read().split('\n')[:-1]
-    v = [i.split('\t') for i in v]
-    v = {i[0]: no for no, i in enumerate(v)}
-    tokenizer = SentencePieceTokenizer(v, sp_model)
-
+    tokenizer = SentencePieceTokenizer(vocab_file=vocab, spm_model_file=vocab_model)
     bert_config = modeling.BertConfig.from_json_file(bert_config)
     model = Model(bert_config, tokenizer, **kwargs)
     model._saver.restore(model._sess, bert_checkpoint)

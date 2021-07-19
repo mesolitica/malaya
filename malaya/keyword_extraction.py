@@ -15,10 +15,7 @@ from malaya.function import (
     generate_session,
     nodes_session,
 )
-from malaya.text.bpe import (
-    sentencepiece_tokenizer_bert,
-    sentencepiece_tokenizer_xlnet,
-)
+from malaya.text.bpe import SentencePieceTokenizer
 from malaya.model.bert import KeyphraseBERT
 from malaya.model.xlnet import KeyphraseXLNET
 from malaya.path import MODEL_VOCAB, MODEL_BPE
@@ -462,9 +459,6 @@ def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
     outputs = ['logits']
 
     if model in ['bert', 'tiny-bert']:
-        tokenizer = sentencepiece_tokenizer_bert(
-            path['tokenizer'], path['vocab']
-        )
         inputs = [
             'Placeholder',
             'Placeholder_1',
@@ -475,7 +469,6 @@ def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
         selected_class = KeyphraseBERT
 
     if model in ['xlnet', 'alxlnet']:
-        tokenizer = sentencepiece_tokenizer_xlnet(path['tokenizer'])
 
         inputs = [
             'Placeholder',
@@ -488,6 +481,7 @@ def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
         outputs.append('xlnet/summary')
         selected_class = KeyphraseXLNET
 
+    tokenizer = SentencePieceTokenizer(vocab_file=path['vocab'], spm_model_file=path['tokenizer'])
     input_nodes, output_nodes = nodes_session(g, inputs, outputs)
 
     return selected_class(

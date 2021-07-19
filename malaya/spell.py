@@ -17,7 +17,7 @@ from malaya.text.tatabahasa import (
     group_compound,
 )
 from malaya.text.rules import rules_normalizer
-from malaya.text.bpe import sentencepiece_tokenizer_bert as load_sentencepiece
+from malaya.text.bpe import SentencePieceTokenizer
 from malaya.path import PATH_NGRAM, S3_PATH_NGRAM
 from malaya.function import check_file
 from herpetologist import check_type
@@ -805,7 +805,7 @@ def probability(sentence_piece: bool = False, **kwargs):
 
         vocab = PATH_NGRAM['sentencepiece']['vocab']
         vocab_model = PATH_NGRAM['sentencepiece']['model']
-        tokenizer = load_sentencepiece(vocab_model, vocab)
+        tokenizer = SentencePieceTokenizer(vocab_file=vocab, spm_model_file=vocab_model)
 
     with open(PATH_NGRAM[1]['model']) as fopen:
         corpus = json.load(fopen)
@@ -876,7 +876,7 @@ def transformer(model, sentence_piece: bool = False, **kwargs):
 
         vocab = PATH_NGRAM['sentencepiece']['vocab']
         vocab_model = PATH_NGRAM['sentencepiece']['model']
-        tokenizer = load_sentencepiece(vocab_model, vocab)
+        tokenizer = SentencePieceTokenizer(vocab_file=vocab, spm_model_file=vocab_model)
 
     with open(PATH_NGRAM[1]['model']) as fopen:
         corpus = json.load(fopen)
