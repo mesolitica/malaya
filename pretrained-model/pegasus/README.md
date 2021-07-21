@@ -71,9 +71,9 @@ python3 pretraining-base.py \
 --train_batch_size=128 \
 --num_train_steps=1500000 \
 --iterations_per_loop=100 \
---tpu_name=node-1 \
+--tpu_name=node-3 \
 --tpu_zone=europe-west4-a \
---save_checkpoints_steps=25000 \
+--save_checkpoints_steps=10000 \
 --learning_rate=0.01 \
 --use_tpu=True
 ```
@@ -88,7 +88,7 @@ python3 pretraining-small.py \
 --train_batch_size=256 \
 --num_train_steps=1500000 \
 --iterations_per_loop=100 \
---tpu_name=node-2 \
+--tpu_name=node-4 \
 --tpu_zone=europe-west4-a \
 --save_checkpoints_steps=25000 \
 --learning_rate=0.001 \
