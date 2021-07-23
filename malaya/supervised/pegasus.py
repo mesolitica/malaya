@@ -22,7 +22,7 @@ def load_lm(module, model, model_class, quantized=False, **kwargs):
     outputs = ['logits']
     input_nodes, output_nodes = nodes_session(g, inputs, outputs)
 
-    tokenizer = SentencePieceEncoder(path['vocab'])
+    tokenizer = SentencePieceEncoder(vocab_file=path['vocab'])
 
     return model_class(
         input_nodes=input_nodes,

@@ -22,7 +22,7 @@ def load(module, model, model_class, maxlen, quantized=False, **kwargs):
     outputs = ['logits']
     input_nodes, output_nodes = nodes_session(g, inputs, outputs)
 
-    encoder = SentencePieceEncoder(path['vocab'])
+    encoder = SentencePieceEncoder(vocab_file=path['vocab'])
 
     return model_class(
         input_nodes=input_nodes,
@@ -47,7 +47,7 @@ def load_lm(module, model, model_class, maxlen, quantized=False, **kwargs):
     inputs = ['Placeholder', 'top_p', 'temperature']
     outputs = ['logits']
     input_nodes, output_nodes = nodes_session(g, inputs, outputs)
-    tokenizer = SentencePieceEncoder(path['vocab'])
+    tokenizer = SentencePieceEncoder(vocab_file=path['vocab'])
 
     return model_class(
         input_nodes=input_nodes,

@@ -10,37 +10,21 @@ from herpetologist import check_type
 import os
 
 _transformer_availability = {
-    't2t': {
-        'Size (MB)': 832,
-        'Quantized Size (MB)': 279,
-        'ROUGE-1': 0.33209,
-        'ROUGE-2': 0.13622,
-        'ROUGE-L': 0.23348,
-        'Suggested length': 1024,
-    },
-    'small-t2t': {
-        'Size (MB)': 379,
-        'Quantized Size (MB)': 120,
-        'ROUGE-1': 0.33,
-        'ROUGE-2': 0.13417,
-        'ROUGE-L': 0.23059,
-        'Suggested length': 1024,
-    },
-    't2t-distill': {
-        'Size (MB)': 164,
-        'Quantized Size (MB)': 48.8,
-        'ROUGE-1': 0.28079,
-        'ROUGE-2': 0.08540,
-        'ROUGE-L': 0.20136,
-        'Suggested length': 1024,
-    },
     't5': {
         'Size (MB)': 1250,
         'Quantized Size (MB)': 481,
         'ROUGE-1': 0.34103,
         'ROUGE-2': 0.14994,
         'ROUGE-L': 0.23655,
-        'Suggested length': 1024,
+        'Suggested length': 512,
+    },
+    'middle-t5': {
+        'Size (MB)': 941,
+        'Quantized Size (MB)': 329,
+        'ROUGE-1': 0.34103,
+        'ROUGE-2': 0.14994,
+        'ROUGE-L': 0.23655,
+        'Suggested length': 512,
     },
     'small-t5': {
         'Size (MB)': 355.6,
@@ -48,7 +32,7 @@ _transformer_availability = {
         'ROUGE-1': 0.33854,
         'ROUGE-2': 0.14588,
         'ROUGE-L': 0.23528,
-        'Suggested length': 1024,
+        'Suggested length': 512,
     },
     'bigbird': {
         'Size (MB)': 910,
@@ -56,7 +40,7 @@ _transformer_availability = {
         'ROUGE-1': 0.30683,
         'ROUGE-2': 0.0994,
         'ROUGE-L': 0.20232,
-        'Suggested length': 2048,
+        'Suggested length': 1024,
     },
     'small-bigbird': {
         'Size (MB)': 303.0,
@@ -64,7 +48,7 @@ _transformer_availability = {
         'ROUGE-1': 0.2754,
         'ROUGE-2': 0.0854,
         'ROUGE-L': 0.18890,
-        'Suggested length': 2048,
+        'Suggested length': 1024,
     },
     'pegasus': {
         'Size (MB)': 894,
@@ -72,7 +56,7 @@ _transformer_availability = {
         'ROUGE-1': 0.30352,
         'ROUGE-2': 0.10379,
         'ROUGE-L': 0.20590,
-        'Suggested length': 1024,
+        'Suggested length': 512,
     },
     'small-pegasus': {
         'Size (MB)': 293,
@@ -80,7 +64,7 @@ _transformer_availability = {
         'ROUGE-1': 0.2945,
         'ROUGE-2': 0.1148,
         'ROUGE-L': 0.2097,
-        'Suggested length': 1024,
+        'Suggested length': 512,
     },
 }
 
@@ -148,7 +132,7 @@ def transformer(model: str = 't2t', quantized: bool = False, **kwargs):
 
     if 't5' in model:
         return t5_load.load(
-            module='abstractive-summarization',
+            module='abstractive-summarization-v2',
             model=model,
             model_class=T5_Summarization,
             quantized=quantized,

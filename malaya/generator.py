@@ -42,8 +42,9 @@ _accepted_entities = [
 
 
 _transformer_availability = {
-    't5': {'Size (MB)': 1250, 'Quantized Size (MB)': 481},
-    'small-t5': {'Size (MB)': 355.6, 'Quantized Size (MB)': 195},
+    't5': {'Size (MB)': 1250, 'Quantized Size (MB)': 481, 'Maximum Length': 1024},
+    'middle-t5': {'Size (MB)': 941, 'Quantized Size (MB)': 329, 'Maximum Length': 1024},
+    'small-t5': {'Size (MB)': 355.6, 'Quantized Size (MB)': 195, 'Maximum Length': 1024},
 }
 
 _gpt2_availability = {

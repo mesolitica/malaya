@@ -6,13 +6,8 @@ from herpetologist import check_type
 
 
 _transformer_availability = {
-    't2t': {'Size (MB)': 832, 'Quantized Size (MB)': 279, 'BLEU': 0.59612},
-    'small-t2t': {
-        'Size (MB)': 379,
-        'Quantized Size (MB)': 120,
-        'BLEU': 0.65849,
-    },
     't5': {'Size (MB)': 1250, 'Quantized Size (MB)': 481, 'BLEU': 0.86698},
+    'middle-t5': {'Size (MB)': 941, 'Quantized Size (MB)': 329, 'BLEU': 0.86698},
     'small-t5': {
         'Size (MB)': 355.6,
         'Quantized Size (MB)': 195,

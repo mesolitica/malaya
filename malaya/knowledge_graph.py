@@ -5,16 +5,22 @@ from herpetologist import check_type
 from typing import List, Tuple
 
 _transformer_availability = {
-    'base': {
-        'Size (MB)': 246,
-        'Quantized Size (MB)': 63.8,
-        'BLEU': 0.8572,
+    't5': {
+        'Size (MB)': 1250,
+        'Quantized Size (MB)': 481,
+        'BLEU': 0.86698,
         'Suggested length': 256,
     },
-    'large': {
-        'Size (MB)': 632,
-        'Quantized Size (MB)': 161,
-        'BLEU': 0.8595,
+    'middle-t5': {
+        'Size (MB)': 941,
+        'Quantized Size (MB)': 329,
+        'BLEU': 0.86698,
+        'Suggested length': 256,
+    },
+    'small-t5': {
+        'Size (MB)': 355.6,
+        'Quantized Size (MB)': 195,
+        'BLEU': 0.81801,
         'Suggested length': 256,
     },
 }

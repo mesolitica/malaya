@@ -16,43 +16,43 @@ def remove_repeat_fullstop(string):
 
 
 class T5(Abstract):
-    def __init__(self, input_nodes, output_nodes, sess):
+    def __init__(self, input_nodes, output_nodes, sess, tokenizer):
         self._input_nodes = input_nodes
         self._output_nodes = output_nodes
         self._sess = sess
+        self._tokenizer = tokenizer
 
-    def _predict(self, string):
+    def _predict(self, strings):
         r = self._execute(
-            inputs=[[string]],
+            inputs=[strings],
             input_labels=['inputs'],
             output_labels=['decode'],
         )
-        return r['decode'][0].decode('utf-8')
+        return self._tokenizer.decode(r['decode'].tolist())
 
 
 class Summarization(T5, Seq2Seq):
-    def __init__(self, input_nodes, output_nodes, sess):
+    def __init__(self, input_nodes, output_nodes, sess, tokenizer):
         T5.__init__(
             self,
             input_nodes=input_nodes,
             output_nodes=output_nodes,
             sess=sess,
+            tokenizer=tokenizer
         )
 
-    def _summarize(self, string, mode, postprocess, **kwargs):
-        summary = upperfirst(
-            self._predict(f'{mode}: {summarization_textcleaning(string)}')
-        )
+    def _summarize(self, strings, mode, postprocess, **kwargs):
+        summaries = self._predict([f'{mode}: {summarization_textcleaning(string)}' for string in strings])
         if postprocess and mode != 'tajuk':
-            summary = postprocess_summary(string, summary, **kwargs)
-        return summary
+            summaries = [postprocess_summary(strings[no], summary, **kwargs) for no, summary in enumerate(summaries)]
+        return summaries
 
     @check_type
     def greedy_decoder(
         self,
         strings: List[str],
         mode: str = 'ringkasan',
-        postprocess: bool = True,
+        postprocess: bool = False,
         **kwargs,
     ):
         """
@@ -66,7 +66,7 @@ class Summarization(T5, Seq2Seq):
 
             * ``'ringkasan'`` - summarization for long sentence, eg, news summarization.
             * ``'tajuk'`` - title summarization for long sentence, eg, news title.
-        postprocess: bool, optional (default=True)
+        postprocess: bool, optional (default=False)
             If True, will filter sentence generated using ROUGE score and removed international news publisher.
 
         Returns
@@ -77,20 +77,17 @@ class Summarization(T5, Seq2Seq):
         if mode not in ['ringkasan', 'tajuk']:
             raise ValueError('mode only supports [`ringkasan`, `tajuk`]')
 
-        results = []
-        for string in strings:
-            results.append(self._summarize(string, mode, postprocess, **kwargs))
-
-        return results
+        return self._summarize(strings, mode, postprocess, **kwargs)
 
 
 class Generator(T5, Seq2Seq):
-    def __init__(self, input_nodes, output_nodes, sess):
+    def __init__(self, input_nodes, output_nodes, sess, tokenizer):
         T5.__init__(
             self,
             input_nodes=input_nodes,
             output_nodes=output_nodes,
             sess=sess,
+            tokenizer=tokenizer
         )
 
     @check_type
@@ -114,22 +111,23 @@ class Generator(T5, Seq2Seq):
         ]
         points = ' '.join(points)
         points = f'karangan: {points}'
-        return upperfirst(self._predict(summarization_textcleaning(points)))
+        return upperfirst(self._predict([summarization_textcleaning(points)])[0])
 
 
 class Paraphrase(T5, Seq2Seq):
-    def __init__(self, input_nodes, output_nodes, sess):
+    def __init__(self, input_nodes, output_nodes, sess, tokenizer):
         T5.__init__(
             self,
             input_nodes=input_nodes,
             output_nodes=output_nodes,
             sess=sess,
+            tokenizer=tokenizer
         )
 
-    def _paraphrase(self, string):
+    def _paraphrase(self, strings):
 
-        string = f'parafrasa: {summarization_textcleaning(string)}'
-        return upperfirst(self._predict(string))
+        paraphrases = self._predict([f'parafrasa: {summarization_textcleaning(string)}' for string in strings])
+        return [upperfirst(paraphrase) for paraphrase in paraphrases]
 
     @check_type
     def greedy_decoder(self, strings: List[str], split_fullstop: bool = True):

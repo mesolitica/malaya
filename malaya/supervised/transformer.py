@@ -29,13 +29,7 @@ def load_lm(module, model, model_class, quantized=False, **kwargs):
     )
 
     g = load_graph(path['model'], **kwargs)
-    X = g.get_tensor_by_name('import/Placeholder:0')
-    top_p = g.get_tensor_by_name('import/Placeholder_2:0')
-    greedy = g.get_tensor_by_name('import/greedy:0')
-    beam = g.get_tensor_by_name('import/beam:0')
-    nucleus = g.get_tensor_by_name('import/nucleus:0')
-
-    tokenizer = SentencePieceEncoder(path['vocab'])
+    tokenizer = SentencePieceEncoder(vocab_file=path['vocab'])
 
     inputs = ['Placeholder', 'Placeholder_2']
     outputs = ['greedy', 'beam', 'nucleus']
