@@ -7,6 +7,8 @@ import sentencepiece as spm
 import unicodedata
 import six
 import logging
+import collections
+import tensorflow as tf
 from malaya.text.function import transformer_textcleaning
 
 SEG_ID_A = 0
@@ -160,10 +162,23 @@ class YTTMEncoder:
 
 class WordPieceTokenizer(object):
     def __init__(self, vocab_file, do_lower_case=False, **kwargs):
-        self.vocab = load_vocab(vocab_file)
+        self.vocab = self.load_vocab(vocab_file)
         self.inv_vocab = {v: k for k, v in self.vocab.items()}
         self.basic_tokenizer = BasicTokenizer(do_lower_case=do_lower_case)
         self.wordpiece_tokenizer = InternalWordPieceTokenizer(vocab=self.vocab)
+
+    def load_vocab(self, vocab_file):
+        vocab = collections.OrderedDict()
+        index = 0
+        with tf.compat.v1.gfile.GFile(vocab_file, 'r') as reader:
+            while True:
+                token = convert_to_unicode(reader.readline())
+                if not token:
+                    break
+                token = token.strip()
+                vocab[token] = index
+                index += 1
+        return vocab
 
     def tokenize(self, text):
         split_tokens = []
@@ -185,7 +200,10 @@ class WordPieceTokenizer(object):
             output.append(vocab[item])
         return output
 
-    def merge_ids_to_string(self, ids):
+    def encode(self, s):
+        return self.convert_tokens_to_ids(self.tokenize(s))
+
+    def decode(self, ids):
         tokens = self.convert_ids_to_tokens(ids)
         new_tokens = []
         n_tokens = len(tokens)

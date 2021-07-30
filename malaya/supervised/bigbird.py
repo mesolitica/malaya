@@ -4,8 +4,8 @@ from malaya.function import (
     generate_session,
     nodes_session,
 )
-from malaya.text.bpe import SentencePieceEncoder
-from malaya.path import TRANSLATION_BPE_MODEL, T2T_BPE_MODEL
+from malaya.text.bpe import SentencePieceEncoder, WordPieceTokenizer
+from malaya.path import TRANSLATION_BPE_MODEL, PEGASUS_BPE_MODEL
 
 
 def load(module, model, model_class, maxlen, quantized=False, **kwargs):
@@ -33,11 +33,11 @@ def load(module, model, model_class, maxlen, quantized=False, **kwargs):
     )
 
 
-def load_lm(module, model, model_class, maxlen, quantized=False, **kwargs):
+def load_pegasus(module, model, model_class, maxlen, quantized=False, **kwargs):
     path = check_file(
         file=model,
         module=module,
-        keys={'model': 'model.pb', 'vocab': T2T_BPE_MODEL},
+        keys={'model': 'model.pb', 'vocab': PEGASUS_BPE_MODEL},
         quantized=quantized,
         **kwargs,
     )
@@ -47,7 +47,7 @@ def load_lm(module, model, model_class, maxlen, quantized=False, **kwargs):
     inputs = ['Placeholder', 'top_p', 'temperature']
     outputs = ['logits']
     input_nodes, output_nodes = nodes_session(g, inputs, outputs)
-    tokenizer = SentencePieceEncoder(vocab_file=path['vocab'])
+    tokenizer = WordPieceTokenizer(vocab_file=path['vocab'])
 
     return model_class(
         input_nodes=input_nodes,

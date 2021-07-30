@@ -26,10 +26,11 @@ import random
 
 import numpy as np
 import six
+from tqdm import tqdm
 from six.moves import range
 from six.moves import zip
 import tensorflow as tf
-
+import re
 import tokenization
 
 flags = tf.flags
@@ -115,6 +116,23 @@ flags.DEFINE_float(
     'Probability of creating sequences which are shorter than the '
     'maximum length.',
 )
+
+
+def is_number_regex(s):
+    if re.match('^\d+?\.\d+?$', s) is None:
+        return s.isdigit()
+    return True
+
+
+def reject(token):
+    t = token.replace('##', '')
+    if is_number_regex(t):
+        return True
+    if t.startswith('RM'):
+        return True
+    if token in '!{<>}:;.,"\'':
+        return True
+    return False
 
 
 class TrainingInstance(object):
@@ -223,7 +241,7 @@ def write_instance_to_example_files(
         )
 
         tf_example = tf.train.Example(
-            features = tf.train.Features(feature = features)
+            features=tf.train.Features(feature=features)
         )
 
         writers[writer_index].write(tf_example.SerializeToString())
@@ -260,14 +278,14 @@ def write_instance_to_example_files(
 
 def create_int_feature(values):
     feature = tf.train.Feature(
-        int64_list = tf.train.Int64List(value = list(values))
+        int64_list=tf.train.Int64List(value=list(values))
     )
     return feature
 
 
 def create_float_feature(values):
     feature = tf.train.Feature(
-        float_list = tf.train.FloatList(value = list(values))
+        float_list=tf.train.FloatList(value=list(values))
     )
     return feature
 
@@ -301,7 +319,7 @@ def create_training_instances(
                     break
                 if FLAGS.spm_model_file:
                     line = tokenization.preprocess_text(
-                        line, lower = FLAGS.do_lower_case
+                        line, lower=FLAGS.do_lower_case
                     )
                 else:
                     line = line.strip()
@@ -320,7 +338,7 @@ def create_training_instances(
     vocab_words = list(tokenizer.vocab.keys())
     instances = []
     for _ in range(dupe_factor):
-        for document_index in range(len(all_documents)):
+        for document_index in tqdm(range(len(all_documents))):
             instances.extend(
                 create_instances_from_document(
                     all_documents,
@@ -466,12 +484,12 @@ def create_instances_from_document(
                     rng,
                 )
                 instance = TrainingInstance(
-                    tokens = tokens,
-                    segment_ids = segment_ids,
-                    is_random_next = is_random_next,
-                    token_boundary = token_boundary,
-                    masked_lm_positions = masked_lm_positions,
-                    masked_lm_labels = masked_lm_labels,
+                    tokens=tokens,
+                    segment_ids=segment_ids,
+                    is_random_next=is_random_next,
+                    token_boundary=token_boundary,
+                    masked_lm_positions=masked_lm_positions,
+                    masked_lm_labels=masked_lm_labels,
                 )
                 instances.append(instance)
             current_chunk = []
@@ -579,9 +597,9 @@ def create_masked_lm_predictions(
 
     # Note(mingdachen):
     # By default, we set the probilities to favor longer ngram sequences.
-    ngrams = np.arange(1, FLAGS.ngram + 1, dtype = np.int64)
+    ngrams = np.arange(1, FLAGS.ngram + 1, dtype=np.int64)
     pvals = 1.0 / np.arange(1, FLAGS.ngram + 1)
-    pvals /= pvals.sum(keepdims = True)
+    pvals /= pvals.sum(keepdims=True)
 
     if FLAGS.favor_shorter_ngram:
         pvals = pvals[::-1]
@@ -590,7 +608,7 @@ def create_masked_lm_predictions(
     for idx in range(len(cand_indexes)):
         ngram_index = []
         for n in ngrams:
-            ngram_index.append(cand_indexes[idx : idx + n])
+            ngram_index.append(cand_indexes[idx: idx + n])
         ngram_indexes.append(ngram_index)
 
     rng.shuffle(ngram_indexes)
@@ -611,8 +629,8 @@ def create_masked_lm_predictions(
 
         n = np.random.choice(
             ngrams[: len(cand_index_set)],
-            p = pvals[: len(cand_index_set)]
-            / pvals[: len(cand_index_set)].sum(keepdims = True),
+            p=pvals[: len(cand_index_set)]
+            / pvals[: len(cand_index_set)].sum(keepdims=True),
         )
         index_set = sum(cand_index_set[n - 1], [])
         n -= 1
@@ -655,7 +673,7 @@ def create_masked_lm_predictions(
             output_tokens[index] = masked_token
 
             masked_lms.append(
-                MaskedLmInstance(index = index, label = tokens[index])
+                MaskedLmInstance(index=index, label=tokens[index])
             )
     assert len(masked_lms) <= num_to_predict
 
@@ -677,8 +695,8 @@ def create_masked_lm_predictions(
 
             n = np.random.choice(
                 ngrams[: len(cand_index_set)],
-                p = pvals[: len(cand_index_set)]
-                / pvals[: len(cand_index_set)].sum(keepdims = True),
+                p=pvals[: len(cand_index_set)]
+                / pvals[: len(cand_index_set)].sum(keepdims=True),
             )
             index_set = sum(cand_index_set[n - 1], [])
             n -= 1
@@ -711,10 +729,10 @@ def create_masked_lm_predictions(
         for src_i, tgt_i in zip(select_indexes, permute_indexes):
             output_tokens[src_i] = orig_token[tgt_i]
             masked_lms.append(
-                MaskedLmInstance(index = src_i, label = orig_token[src_i])
+                MaskedLmInstance(index=src_i, label=orig_token[src_i])
             )
 
-    masked_lms = sorted(masked_lms, key = lambda x: x.index)
+    masked_lms = sorted(masked_lms, key=lambda x: x.index)
 
     for p in masked_lms:
         masked_lm_positions.append(p.index)
@@ -749,9 +767,9 @@ def main(_):
     tf.logging.set_verbosity(tf.logging.INFO)
 
     tokenizer = tokenization.FullTokenizer(
-        vocab_file = FLAGS.vocab_file,
-        do_lower_case = FLAGS.do_lower_case,
-        spm_model_file = FLAGS.spm_model_file,
+        vocab_file=FLAGS.vocab_file,
+        do_lower_case=FLAGS.do_lower_case,
+        spm_model_file=FLAGS.spm_model_file,
     )
 
     input_files = []
@@ -761,6 +779,11 @@ def main(_):
     tf.logging.info('*** Reading from input files ***')
     for input_file in input_files:
         tf.logging.info('  %s', input_file)
+
+    output_files = FLAGS.output_file.split(',')
+    tf.logging.info('*** Writing to output files ***')
+    for output_file in output_files:
+        tf.logging.info('  %s', output_file)
 
     rng = random.Random(FLAGS.random_seed)
     instances = create_training_instances(
@@ -775,11 +798,6 @@ def main(_):
     )
 
     tf.logging.info('number of instances: %i', len(instances))
-
-    output_files = FLAGS.output_file.split(',')
-    tf.logging.info('*** Writing to output files ***')
-    for output_file in output_files:
-        tf.logging.info('  %s', output_file)
 
     write_instance_to_example_files(
         instances,

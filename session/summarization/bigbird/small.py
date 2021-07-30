@@ -25,7 +25,7 @@ flags.DEFINE_string(
 
 flags.DEFINE_integer(
     'max_seq_length_encoder',
-    2048,
+    1536,
     'The maximum total input sequence length after WordPiece tokenization. '
     'Sequences longer than this will be truncated, and sequences shorter '
     'than this will be padded. Must match data generation.',
@@ -33,7 +33,7 @@ flags.DEFINE_integer(
 
 flags.DEFINE_integer(
     'max_seq_length_decoder',
-    1024,
+    768,
     'The maximum total input sequence length after WordPiece tokenization. '
     'Sequences longer than this will be truncated, and sequences shorter '
     'than this will be padded. Must match data generation.',
@@ -108,8 +108,8 @@ bert_config = {
     'initializer_range': 0.02,
     'intermediate_size': 3072,
     'max_position_embeddings': 4096,
-    'max_encoder_length': 2048,
-    'max_decoder_length': 1024,
+    'max_encoder_length': 1536,
+    'max_decoder_length': 768,
     'num_attention_heads': 8,
     'num_hidden_layers': 6,
     'type_vocab_size': 2,
@@ -145,12 +145,12 @@ def padded_cross_entropy_loss(logits, labels, smoothing, vocab_size):
                 low_confidence = (1.0 - confidence) / vocab_float
                 soft_targets = tf.one_hot(
                     labels,
-                    depth = vocab_size,
-                    on_value = confidence,
-                    off_value = low_confidence,
+                    depth=vocab_size,
+                    on_value=confidence,
+                    off_value=low_confidence,
                 )
                 xentropy = tf.nn.softmax_cross_entropy_with_logits(
-                    logits = logits, labels = soft_targets
+                    logits=logits, labels=soft_targets
                 )
 
                 # Calculate the best (lowest) possible value of cross entropy, and
@@ -211,70 +211,49 @@ def input_fn_builder(
     max_seq_length_encoder,
     max_seq_length_decoder,
     is_training,
-    num_cpu_threads = 4,
+    num_cpu_threads=4,
 ):
-
-    data_fields = {
-        'inputs': tf.VarLenFeature(tf.int64),
-        'targets': tf.VarLenFeature(tf.int64),
-    }
-    data_len = {
-        'inputs': max_seq_length_encoder,
-        'targets': max_seq_length_decoder,
-    }
-
-    def parse(serialized_example):
-
-        features = tf.parse_single_example(
-            serialized_example, features = data_fields
-        )
-        for k in features.keys():
-            features[k] = features[k].values
-            features[k] = tf.pad(
-                features[k], [[0, data_len[k] - tf.shape(features[k])[0]]]
-            )
-            features[k].set_shape((data_len[k]))
-
-        return features
-
     def input_fn(params):
         batch_size = params['batch_size']
 
+        name_to_features = {
+            'input_ids': tf.FixedLenFeature([max_seq_length_encoder], tf.int64),
+            'target_ids': tf.FixedLenFeature(
+                [max_seq_length_decoder], tf.int64
+            ),
+        }
         if is_training:
             d = tf.data.Dataset.from_tensor_slices(tf.constant(input_files))
             d = d.repeat()
-            d = d.shuffle(buffer_size = len(input_files))
+            d = d.shuffle(buffer_size=len(input_files))
             cycle_length = min(num_cpu_threads, len(input_files))
             d = d.apply(
                 tf.contrib.data.parallel_interleave(
                     tf.data.TFRecordDataset,
-                    sloppy = is_training,
-                    cycle_length = cycle_length,
+                    sloppy=is_training,
+                    cycle_length=cycle_length,
                 )
             )
-            d = d.shuffle(buffer_size = 100)
+            d = d.shuffle(buffer_size=100)
         else:
             d = tf.data.TFRecordDataset(input_files)
             d = d.repeat()
-        print(d)
-        d = d.map(parse, num_parallel_calls = 32)
-        print('parse', d)
         d = d.apply(
             tf.contrib.data.map_and_batch(
-                lambda record: _decode_record(record, data_fields),
-                batch_size = batch_size,
-                num_parallel_batches = num_cpu_threads,
-                drop_remainder = True,
+                lambda record: _decode_record(record, name_to_features),
+                batch_size=batch_size,
+                num_parallel_batches=num_cpu_threads,
+                drop_remainder=True,
             )
         )
-        print('map_and_batch', d)
         return d
 
     return input_fn
 
 
-def _decode_record(example, name_to_features):
+def _decode_record(record, name_to_features):
     """Decodes a record to a TensorFlow example."""
+    example = tf.parse_single_example(record, name_to_features)
 
     # tf.Example only supports tf.int64, but the TPU only supports tf.int32.
     # So cast all int64 to int32.
@@ -297,14 +276,14 @@ def model_fn_builder(
                 '  name = %s, shape = %s' % (name, features[name].shape)
             )
 
-        inputs = features['inputs']
-        targets = features['targets']
+        inputs = features['input_ids']
+        targets = features['target_ids']
 
         is_training = mode == tf.estimator.ModeKeys.TRAIN
 
         model = modeling.TransformerModel(bert_config)
         (llh, logits, pred_ids), _ = model(
-            inputs, target_ids = targets, training = is_training
+            inputs, target_ids=targets, training=is_training
         )
 
         total_loss = padded_cross_entropy_loss(
@@ -357,14 +336,14 @@ def model_fn_builder(
             )
 
             optimizer = adafactor.AdafactorOptimizer(
-                learning_rate = lr,
-                decay_rate = adafactor.adafactor_decay_rate_pow(0.8),
-                beta1 = 0.0,
+                learning_rate=lr,
+                decay_rate=adafactor.adafactor_decay_rate_pow(0.8),
+                beta1=0.0,
             )
             if use_tpu:
                 optimizer = tf.contrib.tpu.CrossShardOptimizer(optimizer)
 
-            train_op = optimizer.minimize(total_loss, global_step = global_step)
+            train_op = optimizer.minimize(total_loss, global_step=global_step)
 
             # if not bert_config['use_bias']:
             #     logging.info('Fixing position embedding, i.e. not trainable.')
@@ -384,18 +363,18 @@ def model_fn_builder(
             # )
 
             output_spec = tf.contrib.tpu.TPUEstimatorSpec(
-                mode = mode,
-                loss = total_loss,
-                train_op = train_op,
-                scaffold_fn = scaffold_fn,
+                mode=mode,
+                loss=total_loss,
+                train_op=train_op,
+                scaffold_fn=scaffold_fn,
             )
         elif mode == tf.estimator.ModeKeys.EVAL:
 
             output_spec = tf.contrib.tpu.TPUEstimatorSpec(
-                mode = mode,
-                loss = total_loss,
-                eval_metrics = None,
-                scaffold_fn = scaffold_fn,
+                mode=mode,
+                loss=total_loss,
+                eval_metrics=None,
+                scaffold_fn=scaffold_fn,
             )
         else:
             raise ValueError(
@@ -428,49 +407,49 @@ def main(_):
     tpu_cluster_resolver = None
     if FLAGS.use_tpu and FLAGS.tpu_name:
         tpu_cluster_resolver = tf.contrib.cluster_resolver.TPUClusterResolver(
-            FLAGS.tpu_name, zone = FLAGS.tpu_zone, project = FLAGS.gcp_project
+            FLAGS.tpu_name, zone=FLAGS.tpu_zone, project=FLAGS.gcp_project
         )
 
     is_per_host = tf.contrib.tpu.InputPipelineConfig.PER_HOST_V2
     run_config = tf.contrib.tpu.RunConfig(
-        cluster = tpu_cluster_resolver,
-        master = FLAGS.master,
-        model_dir = FLAGS.output_dir,
-        save_checkpoints_steps = FLAGS.save_checkpoints_steps,
-        tpu_config = tf.contrib.tpu.TPUConfig(
-            iterations_per_loop = FLAGS.iterations_per_loop,
-            num_shards = FLAGS.num_tpu_cores,
-            per_host_input_for_training = is_per_host,
+        cluster=tpu_cluster_resolver,
+        master=FLAGS.master,
+        model_dir=FLAGS.output_dir,
+        save_checkpoints_steps=FLAGS.save_checkpoints_steps,
+        tpu_config=tf.contrib.tpu.TPUConfig(
+            iterations_per_loop=FLAGS.iterations_per_loop,
+            num_shards=FLAGS.num_tpu_cores,
+            per_host_input_for_training=is_per_host,
         ),
     )
 
     model_fn = model_fn_builder(
-        init_checkpoint = FLAGS.init_checkpoint,
-        learning_rate = FLAGS.learning_rate,
-        num_train_steps = FLAGS.num_train_steps,
-        num_warmup_steps = FLAGS.num_warmup_steps,
-        use_tpu = FLAGS.use_tpu,
+        init_checkpoint=FLAGS.init_checkpoint,
+        learning_rate=FLAGS.learning_rate,
+        num_train_steps=FLAGS.num_train_steps,
+        num_warmup_steps=FLAGS.num_warmup_steps,
+        use_tpu=FLAGS.use_tpu,
     )
 
     estimator = tf.contrib.tpu.TPUEstimator(
-        use_tpu = FLAGS.use_tpu,
-        model_fn = model_fn,
-        config = run_config,
-        train_batch_size = FLAGS.train_batch_size,
-        eval_batch_size = FLAGS.train_batch_size,
+        use_tpu=FLAGS.use_tpu,
+        model_fn=model_fn,
+        config=run_config,
+        train_batch_size=FLAGS.train_batch_size,
+        eval_batch_size=FLAGS.train_batch_size,
     )
 
     if FLAGS.do_train:
         tf.logging.info('***** Running training *****')
         tf.logging.info('  Batch size = %d', FLAGS.train_batch_size)
         train_input_fn = input_fn_builder(
-            input_files = input_files,
-            max_seq_length_encoder = FLAGS.max_seq_length_encoder,
-            max_seq_length_decoder = FLAGS.max_seq_length_decoder,
-            is_training = True,
+            input_files=input_files,
+            max_seq_length_encoder=FLAGS.max_seq_length_encoder,
+            max_seq_length_decoder=FLAGS.max_seq_length_decoder,
+            is_training=True,
         )
         estimator.train(
-            input_fn = train_input_fn, max_steps = FLAGS.num_train_steps
+            input_fn=train_input_fn, max_steps=FLAGS.num_train_steps
         )
 
 

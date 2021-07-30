@@ -95,62 +95,14 @@ python3 pretraining-small.py \
 --use_tpu=True
 ```
 
-## how-to multitasks
-
-1. Follow step 1-4 from [../lm-transformer](../lm-transformer).
-
-2. Execute pretraining,
-
-**TPU BASE**,
-
-```bash
-python3 pretraining-base-multitasks.py \
---input_file=gs://mesolitica-tpu-general/t2t/data/seq2* \
---output_dir=gs://mesolitica-tpu-general/pegasus-base-multitasks-v2 \
---do_train=True \
---train_batch_size=32 \
---num_train_steps=700000 \
---iterations_per_loop=100 \
---tpu_name=node-3 \
---tpu_zone=europe-west4-a \
---save_checkpoints_steps=25000 \
---use_tpu=True
-```
-
-**TPU SMALL**,
-
-```bash
-python3 pretraining-small-multitasks.py \
---input_file=gs://mesolitica-tpu-general/t2t/data/seq2* \
---output_dir=gs://mesolitica-tpu-general/pegasus-small-multitasks-v2 \
---do_train=True \
---train_batch_size=64 \
---num_train_steps=700000 \
---iterations_per_loop=100 \
---tpu_name=node-4 \
---tpu_zone=europe-west4-a \
---save_checkpoints_steps=25000 \
---use_tpu=True
-```
-
 ## Downloads
 
-1. **Multitasks BASE**, last update 16th February 2021, [pegasus-base-multitasks-2021-02-16.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/pegasus-base-multitasks-2021-02-16.tar.gz)
-
-  - Vocab size 32k.
-  - 1M steps, V3-8 TPU.
-
-2. **Multitasks SMALL**, last update 16th February 2021, [pegasus-small-multitasks-2021-02-16.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/pegasus-base-multitasks-2021-02-16.tar.gz)
-
-  - Vocab size 32k.
-  - 1M steps, V3-8 TPU.
-
-3. **Sentence gap BASE**, last update 25th April 2021, [pegasus-base-sentencegap-2021-04-25.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/pegasus-base-sentencegap-2021-04-25.tar.gz)
+1. **Sentence gap BASE**, last update 26th July 2021, [pegasus-base-sentencegap-2021-07-26.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/pegasus-base-sentencegap-2021-06-27.tar.gz)
 
   - Vocab size 32k.
   - 1.5M steps, V3-8 TPU.
 
-4. **Sentence gap SMALL**, last update 25th April 2021, [pegasus-small-sentencegap-2021-04-25.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/pegasus-small-sentencegap-2021-04-25.tar.gz)
+2. **Sentence gap SMALL**, last update 26th July 2021, [pegasus-small-sentencegap-2021-07-26.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/pegasus-small-sentencegap-2021-04-25.tar.gz)
 
   - Vocab size 32k.
-  - 1.5M steps, V3-8 TPU.
+  - 1.875M steps, V3-8 TPU.

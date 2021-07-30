@@ -6,6 +6,7 @@ from malaya.text.function import (
     upperfirst,
 )
 from malaya.text.rouge import postprocess_summary
+from malaya.text.knowledge_graph import parse_triples
 from malaya.model.abstract import Seq2Seq, Abstract
 from herpetologist import check_type
 from typing import List
@@ -42,7 +43,7 @@ class Summarization(T5, Seq2Seq):
         )
 
     def _summarize(self, strings, mode, postprocess, **kwargs):
-        summaries = self._predict([f'{mode}: {summarization_textcleaning(string)}' for string in strings])
+        summaries = self._predict([f'ringkasan: {summarization_textcleaning(string)}' for string in strings])
         if postprocess and mode != 'tajuk':
             summaries = [postprocess_summary(strings[no], summary, **kwargs) for no, summary in enumerate(summaries)]
         return summaries
@@ -51,7 +52,6 @@ class Summarization(T5, Seq2Seq):
     def greedy_decoder(
         self,
         strings: List[str],
-        mode: str = 'ringkasan',
         postprocess: bool = False,
         **kwargs,
     ):
@@ -61,11 +61,6 @@ class Summarization(T5, Seq2Seq):
         Parameters
         ----------
         strings: List[str]
-        mode: str
-            mode for summarization. Allowed values:
-
-            * ``'ringkasan'`` - summarization for long sentence, eg, news summarization.
-            * ``'tajuk'`` - title summarization for long sentence, eg, news title.
         postprocess: bool, optional (default=False)
             If True, will filter sentence generated using ROUGE score and removed international news publisher.
 
@@ -73,9 +68,6 @@ class Summarization(T5, Seq2Seq):
         -------
         result: List[str]
         """
-        mode = mode.lower()
-        if mode not in ['ringkasan', 'tajuk']:
-            raise ValueError('mode only supports [`ringkasan`, `tajuk`]')
 
         return self._summarize(strings, mode, postprocess, **kwargs)
 
@@ -165,3 +157,68 @@ class Paraphrase(T5, Seq2Seq):
             results.append(r)
 
         return results
+
+
+class KnowledgeGraph(T5, Seq2Seq):
+    def __init__(self, input_nodes, output_nodes, sess, tokenizer):
+        T5.__init__(
+            self,
+            input_nodes=input_nodes,
+            output_nodes=output_nodes,
+            sess=sess,
+            tokenizer=tokenizer
+        )
+
+    def _knowledge_graph(self, strings, get_networkx=True):
+        if get_networkx:
+            try:
+                import pandas as pd
+                import networkx as nx
+            except BaseException:
+                logging.warning(
+                    'pandas and networkx not installed. Please install it by `pip install pandas networkx` and try again. Will skip to generate networkx.MultiDiGraph'
+                )
+                get_networkx = False
+
+        results = self._predict([f'grafik pengetahuan: {summarization_textcleaning(string)}' for string in strings])
+
+        outputs = []
+        for result in results:
+            r, last_object = parse_triples(result)
+            o = {'result': r, 'main_object': last_object, 'triple': result}
+            if get_networkx and len(r):
+                df = pd.DataFrame(r)
+                G = nx.from_pandas_edgelist(
+                    df,
+                    source='subject',
+                    target='object',
+                    edge_attr='relation',
+                    create_using=nx.MultiDiGraph(),
+                )
+                o['G'] = G
+            outputs.append(o)
+
+        return outputs
+
+    @check_type
+    def greedy_decoder(
+        self,
+        strings: List[str],
+        get_networkx: bool = True,
+    ):
+        """
+        Generate triples knowledge graph using greedy decoder.
+        Example, "Joseph Enanga juga bermain untuk Union Douala." -> "Joseph Enanga member of sports team Union Douala"
+
+        Parameters
+        ----------
+        strings: List[str]
+        get_networkx: bool, optional (default=True)
+            If True, will generate networkx.MultiDiGraph.
+
+        Returns
+        -------
+        result: List[Dict]
+        """
+
+        return _knowledge_graph(strings, get_networkx=get_networkx)

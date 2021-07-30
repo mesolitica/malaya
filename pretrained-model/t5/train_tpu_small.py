@@ -8,7 +8,7 @@ import gin
 
 vocab = 'gs://mesolitica-tpu-general/t5-data-v2/sp10m.cased.ms-en.model'
 tpu = tf.distribute.cluster_resolver.TPUClusterResolver(
-    'node-2', zone='europe-west4-a', project='mesolitica-tpu'
+    'node-6', zone='europe-west4-a', project='mesolitica-tpu'
 )
 TPU_ADDRESS = tpu.get_master()
 TPU_TOPOLOGY = '2x2'
@@ -359,6 +359,98 @@ t5.data.TaskRegistry.add(
     metric_fns=[t5.evaluation.metrics.accuracy],
 )
 
+
+def knowledge_graph_dataset(split, shuffle_files=False):
+    del shuffle_files
+    ds = tf.data.TextLineDataset(
+        [
+            'gs://mesolitica-tpu-general/t5-data-v2/knowledge-graph.tsv'
+        ]
+    )
+
+    ds = ds.map(
+        functools.partial(
+            tf.io.decode_csv,
+            record_defaults=['', ''],
+            field_delim='\t',
+            use_quote_delim=False,
+        ),
+        num_parallel_calls=tf.data.experimental.AUTOTUNE,
+    )
+    ds = ds.map(lambda *ex: dict(zip(['question', 'answer'], ex)))
+    return ds
+
+
+def knowledge_graph_preprocessor(ds):
+    def to_inputs_and_targets(ex):
+        return {
+            'inputs': tf.strings.join(['grafik pengetahuan: ', ex['question']]),
+            'targets': ex['answer'],
+        }
+
+    return ds.map(
+        to_inputs_and_targets,
+        num_parallel_calls=tf.data.experimental.AUTOTUNE,
+    )
+
+
+t5.data.TaskRegistry.remove('knowledge_graph_dataset')
+t5.data.TaskRegistry.add(
+    'knowledge_graph_dataset',
+    dataset_fn=knowledge_graph_dataset,
+    splits=['train'],
+    text_preprocessor=[knowledge_graph_preprocessor],
+    sentencepiece_model_path=vocab,
+    postprocess_fn=t5.data.postprocessors.lower_text,
+    metric_fns=[t5.evaluation.metrics.accuracy],
+)
+
+
+def paraphrase_dataset(split, shuffle_files=False):
+    del shuffle_files
+    ds = tf.data.TextLineDataset(
+        [
+            'gs://mesolitica-tpu-general/t5-data-v2/paraphrase.tsv'
+        ]
+    )
+
+    ds = ds.map(
+        functools.partial(
+            tf.io.decode_csv,
+            record_defaults=['', ''],
+            field_delim='\t',
+            use_quote_delim=False,
+        ),
+        num_parallel_calls=tf.data.experimental.AUTOTUNE,
+    )
+    ds = ds.map(lambda *ex: dict(zip(['question', 'answer'], ex)))
+    return ds
+
+
+def paraphrase_preprocessor(ds):
+    def to_inputs_and_targets(ex):
+        return {
+            'inputs': tf.strings.join(['parafrasa: ', ex['question']]),
+            'targets': ex['answer'],
+        }
+
+    return ds.map(
+        to_inputs_and_targets,
+        num_parallel_calls=tf.data.experimental.AUTOTUNE,
+    )
+
+
+t5.data.TaskRegistry.remove('paraphrase_dataset')
+t5.data.TaskRegistry.add(
+    'paraphrase_dataset',
+    dataset_fn=paraphrase_dataset,
+    splits=['train'],
+    text_preprocessor=[paraphrase_preprocessor],
+    sentencepiece_model_path=vocab,
+    postprocess_fn=t5.data.postprocessors.lower_text,
+    metric_fns=[t5.evaluation.metrics.accuracy],
+)
+
 t5.data.MixtureRegistry.remove('trivia_all_bahasa')
 t5.data.MixtureRegistry.add(
     'trivia_all_bahasa',
@@ -371,6 +463,8 @@ t5.data.MixtureRegistry.add(
         'similarity_dataset',
         'en_ms_dataset',
         'ms_en_dataset',
+        'knowledge_graph_dataset',
+        'paraphrase_dataset'
     ],
     default_rate=1.0,
 )

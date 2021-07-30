@@ -1,6 +1,6 @@
-from malaya.supervised import transformer as load_transformer
+from malaya.supervised import t5 as load_t5
 from malaya.function.parse_dependency import DependencyGraph
-from malaya.model.tf import KnowledgeGraph
+from malaya.model.t5 import KnowledgeGraph
 from herpetologist import check_type
 from typing import List, Tuple
 
@@ -11,15 +11,15 @@ _transformer_availability = {
         'BLEU': 0.86698,
         'Suggested length': 256,
     },
-    'middle-t5': {
-        'Size (MB)': 941,
-        'Quantized Size (MB)': 329,
-        'BLEU': 0.86698,
-        'Suggested length': 256,
-    },
     'small-t5': {
         'Size (MB)': 355.6,
         'Quantized Size (MB)': 195,
+        'BLEU': 0.81801,
+        'Suggested length': 256,
+    },
+    'tiny-t5': {
+        'Size (MB)': 208,
+        'Quantized Size (MB)': 103,
         'BLEU': 0.81801,
         'Suggested length': 256,
     },
@@ -187,18 +187,19 @@ def available_transformer():
 
 
 @check_type
-def transformer(model: str = 'base', quantized: bool = False, **kwargs):
+def transformer(model: str = 'small-t5', quantized: bool = False, **kwargs):
     """
     Load transformer to generate knowledge graphs in triplet format from texts,
     MS text -> EN triplet format.
 
     Parameters
     ----------
-    model : str, optional (default='base')
+    model : str, optional (default='small-t5')
         Model architecture supported. Allowed values:
 
-        * ``'base'`` - Transformer BASE parameters.
-        * ``'large'`` - Transformer LARGE parameters.
+        * ``'t5'`` - T5 BASE parameters.
+        * ``'small-t5'`` - T5 SMALL parameters.
+        * ``'tiny-t5'`` - T5 TINY parameters.
 
     quantized : bool, optional (default=False)
         if True, will load 8-bit quantized model.
@@ -206,7 +207,7 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
 
     Returns
     -------
-    result: malaya.model.tf.KnowledgeGraph class
+    result: malaya.model.t5.KnowledgeGraph class
     """
     model = model.lower()
     if model not in _transformer_availability:
@@ -214,10 +215,9 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
             'model not supported, please check supported models from `malaya.knowledge_graph.available_transformer()`.'
         )
 
-    return load_transformer.load(
-        module='knowledge-graph-generator',
+    return load_t5.load(
+        module='knowledge-graph-triplet',
         model=model,
-        encoder='sentencepiece',
         model_class=KnowledgeGraph,
         quantized=quantized,
         **kwargs

@@ -30,11 +30,11 @@ Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://w
 ```bash
 mkdir splitted
 cd splitted
-split -l 300000 -d --additional-suffix=.txt ../dumping-instagram.txt splitted-instagram
-split -l 300000 -d --additional-suffix=.txt ../dumping-twitter.txt splitted-twitter
-split -l 300000 -d --additional-suffix=.txt ../filtered-dumping-wiki.txt splitted-wiki
-split -l 300000 -d --additional-suffix=.txt ../dumping-cleaned-news.txt splitted-news
-split -l 300000 -d --additional-suffix=.txt ../filtered-dumping-academia.txt splitted-academia
+split -l 1000000 -d --additional-suffix=.txt ../filtered-dumping-wiki.txt splitted-wiki
+split -l 1000000 -d --additional-suffix=.txt ../dumping-cleaned-news.txt splitted-news
+split -l 1000000 -d --additional-suffix=.txt ../filtered-dumping-academia.txt splitted-academia
+split -l 1000000 -d --additional-suffix=.txt ../dumping-parliament.txt splitted-parliament
+split -l 1000000 -d --additional-suffix=.txt ../dumping-watpadd.txt splitted-watpadd
 ```
 
 3. Create pretraining dataset,
@@ -71,7 +71,7 @@ python3 multigpu_pretraining.py \
 
 ```bash
 python3 run_pretraining.py \
-  --input_file=gs://mesolitica-tpu-general/bert-data/*.tfrecord \
+  --input_file=gs://mesolitica-tpu-general/bert-data/tfrecord/*.tfrecord \
   --output_dir=gs://mesolitica-tpu-general/bert-base \
   --do_train=True \
   --do_eval=False \
@@ -82,7 +82,7 @@ python3 run_pretraining.py \
   --num_train_steps=500000 \
   --learning_rate=2e-5 \
   --iterations_per_loop=100 \
-  --tpu_name=node-3 \
+  --tpu_name=node-9 \
   --tpu_zone=europe-west4-a \
   --save_checkpoints_steps=25000 \
   --use_tpu=True

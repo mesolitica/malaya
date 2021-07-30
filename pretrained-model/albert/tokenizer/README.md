@@ -22,8 +22,8 @@
 LD_LIBRARY_PATH=/home/husein/lib
 export LD_LIBRARY_PATH
 spm_train \
---input=dumping-iium.txt,dumping-watpadd.txt,dumping-instagram.txt,dumping-news.txt,dumping-parliament.txt,dumping-pdf.txt,dumping-twitter.txt,dumping-wiki.txt \
---model_prefix=sp10m.cased.v10 \
+--input=dumping-iium.txt,dumping-watpadd.txt,dumping-news.txt,dumping-parliament.txt,dumping-pdf.txt,dumping-wiki.txt \
+--model_prefix=sp10m.cased.albert \
 --pad_id=0 --unk_id=1 --eos_id=-1 --bos_id=-1 \
 --vocab_size=32000 \
 --character_coverage=0.99995 \

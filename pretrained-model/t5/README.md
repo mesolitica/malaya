@@ -54,7 +54,7 @@ python3 train_tpu_large.py
 
 ## Download
 
-1. 20th May 2020, [t5-base-05-20-2020.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/t5-base-05-20-2020.tar.gz)
+1. **BASE**, last update 20th May 2020, [t5-base-05-20-2020.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/t5-base-05-20-2020.tar.gz)
 
   - Vocab size 32k.
   - Trained on unsupervised, question-answer, pairing, news-title, stemming, synonym and SNLI tasks.
@@ -62,7 +62,7 @@ python3 train_tpu_large.py
   - BASE size (427MB).
   - Tensorboard included.
 
-2. 1st October, [t5-small-10-01-2020.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/t5-small-10-01-2020.tar.gz)
+2. **SMALL**, last update 1st October 2020, [t5-small-10-01-2020.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/t5-small-10-01-2020.tar.gz)
 
   - Vocab size 32k.
   - Trained on unsupervised, question-answer, pairing, news-title, stemming, synonym and SNLI tasks.
@@ -70,6 +70,26 @@ python3 train_tpu_large.py
   - SMALL size (112MB).
   - Tensorboard, https://tensorboard.dev/experiment/v0ZAAd2cQjOGO6ETmA1IRQ/
 
+3. **BASE**, last update 28th July 2021, [t5-base-2021-07-28.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/t5-base-2021-07-28.tar.gz)
+
+  - Vocab size 32k.
+  - Trained on unsupervised, question-answer, pairing, news-title, news summarization, EN-MS translation, MS-EN translation, knowledge gprah triplets, paraphrase and SNLI tasks.
+  - 1M steps, 1 V3-8 TPU.
+  - BASE size (427MB).
+
+4. **SMALL**, last update 28th July 2021, [t5-small-2021-07-28.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/t5-small-2021-07-28.tar.gz)
+
+  - Vocab size 32k.
+  - Trained on unsupervised, question-answer, pairing, news-title, news summarization, EN-MS translation, MS-EN translation, knowledge gprah triplets, paraphrase and SNLI tasks.
+  - 1.5M steps, 1 V3-8 TPU.
+  - SMALL size (112MB).
+
+5. **TINY**, last update 28th July 2021, [t5-tiny-2021-07-28.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/t5-tiny-2021-07-28.tar.gz)
+
+  - Vocab size 32k.
+  - Trained on unsupervised, question-answer, pairing, news-title, news summarization, EN-MS translation, MS-EN translation, knowledge gprah triplets, paraphrase and SNLI tasks.
+  - 1.5M steps, 1 V3-8 TPU.
+  - TINY size (66.8MB).
 
 ## Citation
 

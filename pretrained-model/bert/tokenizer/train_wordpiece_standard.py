@@ -1,15 +1,10 @@
 from tokenizers import BertWordPieceTokenizer
-tokenizer = BertWordPieceTokenizer(
-    clean_text=False, handle_chinese_chars=True, strip_accents=True, lowercase=False,
-)
-
-
 from glob import glob
 
-files = glob('../bert/dumping-*.txt')
-files = [i for i in files if 'twitter' not in i and 'instagram' not in i and 'combined' not in i] + ['dumping-commmon-crawl.txt']
-files
-
+tokenizer = BertWordPieceTokenizer(
+    clean_text=True, handle_chinese_chars=True, strip_accents=True, lowercase=False,
+)
+files = glob('splitted/*')
 trainer = tokenizer.train(
     files,
     vocab_size=32000,
@@ -21,4 +16,4 @@ trainer = tokenizer.train(
 )
 
 
-tokenizer.save('./', 'bahasa-standard')
+tokenizer.save_model('./', 'bert-standard')

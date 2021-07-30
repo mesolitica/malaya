@@ -24,6 +24,7 @@ TRANSLATION_EN_MS_VOCAB = 'bpe/en-ms.subwords'
 TRANSLATION_MS_EN_VOCAB = 'bpe/ms-en.subwords'
 TRUE_CASE_VOCAB = 'bpe/true-case.yttm'
 SEGMENTATION_VOCAB = 'bpe/segmentation.yttm'
+PEGASUS_BPE_MODEL = 'bpe/pegasus.wordpiece'
 
 ENTITY_SETTING = 'setting/entities.json'
 ENTITY_ONTONOTES5_SETTING = 'setting/entities-ontonotes5.json'

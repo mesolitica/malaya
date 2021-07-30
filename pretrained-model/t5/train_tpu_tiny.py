@@ -8,7 +8,7 @@ import gin
 
 vocab = 'gs://mesolitica-tpu-general/t5-data-v2/sp10m.cased.ms-en.model'
 tpu = tf.distribute.cluster_resolver.TPUClusterResolver(
-    'node-5', zone='europe-west4-a', project='mesolitica-tpu'
+    'node-7', zone='europe-west4-a', project='mesolitica-tpu'
 )
 TPU_ADDRESS = tpu.get_master()
 TPU_TOPOLOGY = '2x2'
@@ -473,12 +473,13 @@ t5.data.MixtureRegistry.add(
 def main(_):
     tf.logging.set_verbosity(tf.logging.DEBUG)
     gin.parse_config_file(
-        'gs://mesolitica-tpu-general/t5-data/pretrained_models_base_operative_config.gin'
+        'gs://mesolitica-tpu-general/t5-data/pretrained_models_tiny_operative_config.gin'
     )
 
-    MODEL_SIZE = 'base'
+    MODEL_SIZE = 'tiny'
     model_parallelism, train_batch_size, keep_checkpoint_max = {
-        'small': (1, 256, 16),
+        'tiny': (1, 512, 16),
+        'tiny': (1, 256, 16),
         'base': (2, 128, 8),
         'large': (8, 64, 4),
         '3B': (8, 16, 1),
@@ -486,12 +487,12 @@ def main(_):
     }[MODEL_SIZE]
 
     model = t5.models.MtfModel(
-        model_dir='gs://mesolitica-tpu-general/t5-base-v2/',
+        model_dir='gs://mesolitica-tpu-general/t5-tiny-v2/',
         tpu=TPU_ADDRESS,
         tpu_topology=TPU_TOPOLOGY,
         model_parallelism=model_parallelism,
         batch_size=train_batch_size,
-        sequence_length={'inputs': 1024, 'targets': 1024},
+        sequence_length={'inputs': 512, 'targets': 512},
         learning_rate_schedule=0.001,
         save_checkpoints_steps=5000,
         keep_checkpoint_max=5,
