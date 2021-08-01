@@ -81,15 +81,22 @@ python3 train_tpu_large.py
 
   - Vocab size 32k.
   - Trained on unsupervised, question-answer, pairing, news-title, news summarization, EN-MS translation, MS-EN translation, knowledge gprah triplets, paraphrase and SNLI tasks.
-  - 1.5M steps, 1 V3-8 TPU.
+  - 1M steps, 1 V3-8 TPU.
   - SMALL size (112MB).
 
 5. **TINY**, last update 28th July 2021, [t5-tiny-2021-07-28.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/t5-tiny-2021-07-28.tar.gz)
 
   - Vocab size 32k.
   - Trained on unsupervised, question-answer, pairing, news-title, news summarization, EN-MS translation, MS-EN translation, knowledge gprah triplets, paraphrase and SNLI tasks.
-  - 1.5M steps, 1 V3-8 TPU.
+  - 1M steps, 1 V3-8 TPU.
   - TINY size (66.8MB).
+
+5. **SUPER TINY**, last update 28th July 2021, [t5-super-tiny-2021-07-28.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/t5-tiny-2021-07-28.tar.gz)
+
+  - Vocab size 32k.
+  - Trained on unsupervised, question-answer, pairing, news-title, news summarization, EN-MS translation, MS-EN translation, knowledge gprah triplets, paraphrase and SNLI tasks.
+  - 1M steps, 1 V3-8 TPU.
+  - SUPER TINY size (25.6MB).
 
 ## Citation
 

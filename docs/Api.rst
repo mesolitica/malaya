@@ -368,6 +368,9 @@ malaya.model.t5
 .. autoclass:: malaya.model.t5.Paraphrase()
     :members:
 
+.. autoclass:: malaya.model.t5.KnowledgeGraph()
+    :members:
+
 malaya.model.tf
 ----------------------------------
 

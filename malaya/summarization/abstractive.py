@@ -13,9 +13,9 @@ _transformer_availability = {
     't5': {
         'Size (MB)': 1250,
         'Quantized Size (MB)': 481,
-        'ROUGE-1': 0.34103,
-        'ROUGE-2': 0.14994,
-        'ROUGE-L': 0.23655,
+        'ROUGE-1': 0.3717403,
+        'ROUGE-2': 0.18471429,
+        'ROUGE-L': 0.2582724,
         'Suggested length': 512,
     },
     'small-t5': {
@@ -29,9 +29,9 @@ _transformer_availability = {
     'tiny-t5': {
         'Size (MB)': 208,
         'Quantized Size (MB)': 103,
-        'ROUGE-1': 0.34103,
-        'ROUGE-2': 0.14994,
-        'ROUGE-L': 0.23655,
+        'ROUGE-1': 0.302676,
+        'ROUGE-2': 0.11932098,
+        'ROUGE-L': 0.20291817,
         'Suggested length': 512,
     },
     'pegasus': {

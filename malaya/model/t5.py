@@ -56,7 +56,7 @@ class Summarization(T5, Seq2Seq):
         **kwargs,
     ):
         """
-        Summarize strings. Decoder is greedy decoder with beam width size 1, alpha 0.5 .
+        Summarize strings.
 
         Parameters
         ----------
@@ -116,47 +116,21 @@ class Paraphrase(T5, Seq2Seq):
             tokenizer=tokenizer
         )
 
-    def _paraphrase(self, strings):
-
-        paraphrases = self._predict([f'parafrasa: {summarization_textcleaning(string)}' for string in strings])
-        return [upperfirst(paraphrase) for paraphrase in paraphrases]
-
     @check_type
-    def greedy_decoder(self, strings: List[str], split_fullstop: bool = True):
+    def greedy_decoder(self, strings: List[str]):
         """
-        paraphrase strings. Decoder is greedy decoder with beam width size 1, alpha 0.5 .
+        paraphrase strings.
 
         Parameters
         ----------
         strings: List[str]
-        split_fullstop: bool, (default=True)
-            if True, will generate paraphrase for each strings splitted by fullstop.
 
         Returns
         -------
         result: List[str]
         """
-        results = []
-
-        for string in strings:
-
-            if split_fullstop:
-
-                splitted_fullstop = split_into_sentences(string)
-
-                output = []
-                for splitted in splitted_fullstop:
-                    if len(splitted.split()) < 4:
-                        output.append(splitted)
-                    else:
-                        output.append(self._paraphrase(splitted))
-                r = ' '.join(output)
-
-            else:
-                r = self._paraphrase(string)
-            results.append(r)
-
-        return results
+        paraphrases = self._predict([f'parafrasa: {summarization_textcleaning(string)}' for string in strings])
+        return [upperfirst(paraphrase) for paraphrase in paraphrases]
 
 
 class KnowledgeGraph(T5, Seq2Seq):
@@ -169,7 +143,26 @@ class KnowledgeGraph(T5, Seq2Seq):
             tokenizer=tokenizer
         )
 
-    def _knowledge_graph(self, strings, get_networkx=True):
+    @check_type
+    def greedy_decoder(
+        self,
+        strings: List[str],
+        get_networkx: bool = True,
+    ):
+        """
+        Generate triples knowledge graph using greedy decoder.
+        Example, "Joseph Enanga juga bermain untuk Union Douala." -> "Joseph Enanga member of sports team Union Douala"
+
+        Parameters
+        ----------
+        strings: List[str]
+        get_networkx: bool, optional (default=True)
+            If True, will generate networkx.MultiDiGraph.
+
+        Returns
+        -------
+        result: List[Dict]
+        """
         if get_networkx:
             try:
                 import pandas as pd
@@ -199,26 +192,3 @@ class KnowledgeGraph(T5, Seq2Seq):
             outputs.append(o)
 
         return outputs
-
-    @check_type
-    def greedy_decoder(
-        self,
-        strings: List[str],
-        get_networkx: bool = True,
-    ):
-        """
-        Generate triples knowledge graph using greedy decoder.
-        Example, "Joseph Enanga juga bermain untuk Union Douala." -> "Joseph Enanga member of sports team Union Douala"
-
-        Parameters
-        ----------
-        strings: List[str]
-        get_networkx: bool, optional (default=True)
-            If True, will generate networkx.MultiDiGraph.
-
-        Returns
-        -------
-        result: List[Dict]
-        """
-
-        return _knowledge_graph(strings, get_networkx=get_networkx)

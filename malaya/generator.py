@@ -315,7 +315,7 @@ def babble(
     ----------
     string: str
     model: object
-        transformer interface object. Right now only supported BERT, ALBERT.
+        transformer interface object. Right now only supported BERT, ALBERT and ELECTRA.
     generate_length : int, optional (default=256)
         length of sentence to generate.
     leed_out_len : int, optional (default=1)
@@ -350,6 +350,12 @@ def babble(
         raise ValueError('burnin must be smaller than generate_length')
 
     from malaya.transformers.babble import sequential_generation
+
+    if tf.executing_eagerly():
+        logging.warning(
+            'malaya.generator.babble will disable eager execution.'
+        )
+        tf.compat.v1.disable_eager_execution()
 
     return sequential_generation(
         string,

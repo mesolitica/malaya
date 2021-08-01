@@ -13,7 +13,6 @@
         <a href="https://pepy.tech/project/malaya"><img alt="total stats" src="https://static.pepy.tech/badge/malaya"></a>
         <a href="https://pepy.tech/project/malaya"><img alt="download stats / month" src="https://static.pepy.tech/badge/malaya/month"></a>
         <a href="https://discord.gg/aNzbnRqt3A"><img alt="discord" src="https://img.shields.io/badge/discord%20server-malaya-rgb(118,138,212).svg"></a>
-        
     </p>
 
 =========
@@ -53,7 +52,7 @@ Features
 -  **Entities Recognition**, seeks to locate and classify named entities mentioned in text using finetuned Transformer-Bahasa.
 -  **Generator**, generate any texts given a context using T5-Bahasa, GPT2-Bahasa or Transformer-Bahasa.
 -  **Keyword Extraction**, provide RAKE, TextRank and Attention Mechanism hybrid with Transformer-Bahasa.
--  **Knowledge Graph**, generate Knowledge Graph using Transformer-Bahasa or parse from Dependency Parsing models.
+-  **Knowledge Graph**, generate Knowledge Graph using T5-Bahasa or parse from Dependency Parsing models.
 -  **Language Detection**, using Fast-text and Sparse Deep learning Model to classify Malay (formal and social media), Indonesia (formal and social media), Rojak language and Manglish.
 -  **Normalizer**, using local Malaysia NLP researches hybrid with Transformer-Bahasa to normalize any bahasa texts.
 -  **Num2Word**, convert from numbers to cardinal or ordinal representation.
@@ -77,7 +76,6 @@ Features
 -  **Zero-shot classification**, provide Zero-shot classification interface using Transformer-Bahasa to recognize texts without any labeled training data.
 -  **Hybrid 8-bit Quantization**, provide hybrid 8-bit quantization for all models to reduce inference time up to 2x and model size up to 4x.
 -  **Longer Sequences Transformer**, provide BigBird + Pegasus for longer Abstractive Summarization, Neural Machine Translation and Relevancy Analysis sequences.
--  **Distilled Transformer**, provide distilled transformer models for Abstractive Summarization.
 
 Pretrained Models
 ------------------

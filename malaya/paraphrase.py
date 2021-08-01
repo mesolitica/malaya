@@ -6,16 +6,16 @@ from herpetologist import check_type
 
 
 _transformer_availability = {
-    't5': {'Size (MB)': 1250, 'Quantized Size (MB)': 481, 'BLEU': 0.86698},
+    't5': {'Size (MB)': 1250, 'Quantized Size (MB)': 481, 'BLEU': 0.60890377},
     'small-t5': {
         'Size (MB)': 355.6,
         'Quantized Size (MB)': 195,
         'BLEU': 0.6174561,
     },
     'tiny-t5': {
-        'Size (MB)': 355.6,
-        'Quantized Size (MB)': 195,
-        'BLEU': 0.81801,
+        'Size (MB)': 208,
+        'Quantized Size (MB)': 103,
+        'BLEU': 0.46032128,
     },
 }
 
@@ -31,7 +31,7 @@ def available_transformer():
     )
 
 
-@check_type
+@ check_type
 def transformer(model: str = 'small-t5', quantized: bool = False, **kwargs):
     """
     Load Malaya transformer encoder-decoder model to generate a paraphrase given a string.

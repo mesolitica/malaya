@@ -87,4 +87,4 @@ def multiprocessing(strings, function, postfix, cores=16):
 
 batch_size = 10
 for i in range(0, len(files), batch_size):
-    multiprocessing(files[i: i + batch_size], loop, i, cores=4)
+    multiprocessing(files[i: i + batch_size], loop, i, cores=8)

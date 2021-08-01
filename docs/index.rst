@@ -69,10 +69,10 @@ Contents:
    :caption: Generative Module
 
    load-augmentation
-   load-generator
+   load-prefix-generator
+   load-isi-penting-generator
    load-lexicon
    load-paraphrase
-   load-topic-modeling
 
 .. toctree::
    :maxdepth: 2
@@ -141,6 +141,7 @@ Contents:
    :maxdepth: 2
    :caption: Misc Module
    
+   load-topic-modeling
    load-clustering
    load-stack
 

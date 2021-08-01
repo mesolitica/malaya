@@ -5,7 +5,9 @@ from malaya.function import (
     nodes_session,
 )
 from malaya.text.bpe import SentencePieceBatchEncoder
-from malaya.path import MS_EN_BPE_MODEL
+from malaya.path import MS_EN_BPE_MODEL, T2T_BPE_MODEL
+
+VOCAB_MODEL = {'generator': T2T_BPE_MODEL}
 
 
 def load(module, model, model_class, quantized=False, **kwargs):
@@ -20,7 +22,7 @@ def load(module, model, model_class, quantized=False, **kwargs):
     path = check_file(
         file=model,
         module=module,
-        keys={'model': 'model.pb', 'vocab': MS_EN_BPE_MODEL},
+        keys={'model': 'model.pb', 'vocab': VOCAB_MODEL.get(module, MS_EN_BPE_MODEL)},
         quantized=quantized,
         **kwargs,
     )

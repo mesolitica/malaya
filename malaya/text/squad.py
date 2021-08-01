@@ -322,7 +322,7 @@ def convert_examples_to_features_xlnet(
         def _piece_to_id(x):
             if six.PY2 and isinstance(x, unicode):
                 x = x.encode('utf-8')
-            return tokenizer.PieceToId(x)
+            return tokenizer.sp_model.PieceToId(x)
 
         all_doc_tokens = list(map(_piece_to_id, para_tokens))
 
@@ -429,10 +429,10 @@ def convert_examples_to_features_xlnet(
 
                 if is_training and not span_is_impossible:
                     pieces = [
-                        tokenizer.IdToPiece(token)
+                        tokenizer.sp_model.IdToPiece(token)
                         for token in tokens[start_position: (end_position + 1)]
                     ]
-                    answer_text = tokenizer.DecodePieces(pieces)
+                    answer_text = tokenizer.sp_model.DecodePieces(pieces)
             if is_training:
                 feat_example_index = None
             else:
@@ -445,7 +445,7 @@ def convert_examples_to_features_xlnet(
                 tok_start_to_orig_index=cur_tok_start_to_orig_index,
                 tok_end_to_orig_index=cur_tok_end_to_orig_index,
                 token_is_max_context=token_is_max_context,
-                tokens=[tokenizer.IdToPiece(x) for x in tokens],
+                tokens=[tokenizer.sp_model.IdToPiece(x) for x in tokens],
                 input_ids=input_ids,
                 input_mask=input_mask,
                 p_mask=p_mask,

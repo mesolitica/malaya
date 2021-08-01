@@ -3,7 +3,7 @@
 # https://colab.research.google.com/drive/1MxKZGtQ9SSBjTK5ArsZ5LKhkztzg52RV
 # https://arxiv.org/abs/1902.04094
 
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 import tensorflow_probability as tfp
 import numpy as np
 import math

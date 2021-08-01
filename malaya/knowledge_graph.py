@@ -8,19 +8,19 @@ _transformer_availability = {
     't5': {
         'Size (MB)': 1250,
         'Quantized Size (MB)': 481,
-        'BLEU': 0.86698,
+        'BLEU': 0.919301,
         'Suggested length': 256,
     },
     'small-t5': {
         'Size (MB)': 355.6,
         'Quantized Size (MB)': 195,
-        'BLEU': 0.81801,
-        'Suggested length': 256,
+        'BLEU': 0.91023386,
+        'Suggested length': 512,
     },
     'tiny-t5': {
         'Size (MB)': 208,
         'Quantized Size (MB)': 103,
-        'BLEU': 0.81801,
+        'BLEU': 0.93337446,
         'Suggested length': 256,
     },
 }
@@ -182,7 +182,7 @@ def available_transformer():
     from malaya.function import describe_availability
 
     return describe_availability(
-        _transformer_availability, text='tested on 200k test set.'
+        _transformer_availability, text='tested on KELM test set.'
     )
 
 
