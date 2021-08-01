@@ -8,8 +8,8 @@
 
 from malaya_boilerplate.utils import get_home
 
-version = '4.5'
-bump_version = '4.5.3'
+version = '4.6'
+bump_version = '4.6'
 
 __version__ = bump_version
 package = 'malaya'
