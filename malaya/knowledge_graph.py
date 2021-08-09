@@ -189,8 +189,8 @@ def available_transformer():
 @check_type
 def transformer(model: str = 'small-t5', quantized: bool = False, **kwargs):
     """
-    Load transformer to generate knowledge graphs in triplet format from texts,
-    MS text -> EN triplet format.
+    Load transformer to generate knowledge graphs in triples format from texts,
+    MS text -> EN triples format.
 
     Parameters
     ----------

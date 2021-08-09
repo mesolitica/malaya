@@ -61,7 +61,7 @@ Contents:
    :maxdepth: 2
    :caption: Knowledge Graph Module
 
-   load-knowledge-graph-triplet
+   load-knowledge-graph-triples
    load-knowledge-graph-from-dependency
 
 .. toctree::
