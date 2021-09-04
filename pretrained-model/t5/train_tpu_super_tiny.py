@@ -478,7 +478,7 @@ def main(_):
 
     MODEL_SIZE = 'tiny'
     model_parallelism, train_batch_size, keep_checkpoint_max = {
-        'tiny': (1, 1024, 16),
+        'tiny': (1, 1536, 16),
         'tiny': (1, 256, 16),
         'base': (2, 128, 8),
         'large': (8, 64, 4),

@@ -6,7 +6,7 @@ import string as string_function
 from collections import defaultdict
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from malaya.function import check_file
-from malaya.text.function import augmentation_textcleaning
+from malaya.text.function import augmentation_textcleaning, simple_textcleaning
 from malaya.path import PATH_AUGMENTATION, S3_PATH_AUGMENTATION
 from herpetologist import check_type
 from typing import List, Dict, Tuple, Callable
@@ -317,3 +317,72 @@ def transformer(
             new = ' '.join(new_splitted)
         outputs.append(new)
     return outputs
+
+
+@check_type
+def socialmedia_form(
+    word: str,
+    **kwargs,
+):
+    """
+    augmenting a formal word into socialmedia form.
+
+    Parameters
+    ----------
+    word: str
+
+    Returns
+    -------
+    result: list
+    """
+
+    word = simple_textcleaning(word)
+    if not len(word):
+        raise ValueError('word is too short to augment shortform.')
+
+    replace_consonants = {
+        'n': 'm',
+        't': 'y',
+        'r': 't',
+        'g': 'h',
+        'j': 'k',
+        'k': 'l',
+        'd': 's',
+        'd': 'f',
+        'g': 'f',
+        'b': 'n',
+    }
+
+    replace_vowels = {'u': 'i', 'i': 'o', 'o': 'u'}
+
+    results = []
+
+    if len(word) > 1:
+
+        if word[-1] == 'a' and word[-2] in consonants:
+            results.append(word[:-1] + 'e')
+
+        if word[0] == 'f' and word[-1] == 'r':
+            results.append('p' + word[1:])
+
+        if word[-2] in consonants and word[-1] in vowels:
+            results.append(word + 'k')
+
+        if word[-2] in vowels and word[-1] == 'h':
+            results.append(word[:-1])
+
+    if len(word) > 2:
+        if word[-3] in consonants and word[-2:] == 'ar':
+            results.append(word[:-2] + 'o')
+
+        if word[0] == 'h' and word[1] in vowels and word[2] in consonants:
+            results.append(word[1:])
+
+        if word[-3] in consonants and word[-2:] == 'ng':
+            results.append(word[:-2] + 'g')
+
+        if word[1:3] == 'ng':
+            results.append(word[:1] + x[2:])
+
+    results = [r for r in results if len(r) <= len(word)]
+    return list(set(results))

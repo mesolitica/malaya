@@ -112,11 +112,11 @@ S3_PATH_EMOTION = {
 
 PATH_LANG_DETECTION = {
     'fasttext-original': {
-        'model': home + '/language-detection/fasttext-original/fasstext.bin',
+        'model': home + '/language-detection/fasttext-original/fasttext.bin',
         'version': 'v34',
     },
     'fasttext-quantized': {
-        'model': home + '/language-detection/fasttext-quantized/fasstext.tfz',
+        'model': home + '/language-detection/fasttext-quantized/fasttext.tfz',
         'version': 'v34',
     },
 }
@@ -148,6 +148,26 @@ PATH_NGRAM = {
         'model': home + '/preprocessing/sentencepiece/sp10m.cased.v4.model',
         'version': 'v31',
     },
+    'jamspell': {
+        'wiki+news': {
+            'model': home + '/preprocessing/jamspell/wiki-news/model.bin',
+            'version': 'v46',
+        },
+        'news': {
+            'model': home + '/preprocessing/jamspell/news/model.bin',
+            'version': 'v46',
+        },
+        'wiki': {
+            'model': home + '/preprocessing/jamspell/wiki/model.bin',
+            'version': 'v46',
+        }
+    },
+    'spylls': {
+        'libreoffice-pejam': {
+            'model': home + '/preprocessing/spylls/libreoffice-pejam/model.oxt',
+            'version': 'v46'
+        }
+    }
 }
 
 S3_PATH_NGRAM = {
@@ -158,6 +178,22 @@ S3_PATH_NGRAM = {
         'vocab': 'bert-bahasa/sp10m.cased.v4.vocab',
         'model': 'bert-bahasa/sp10m.cased.v4.model',
     },
+    'jamspell': {
+        'wiki+news': {
+            'model': 'v46/preprocessing/wiki-news.bin',
+        },
+        'news': {
+            'model': 'v46/preprocessing/news.bin',
+        },
+        'wiki': {
+            'model': 'v46/preprocessing/wiki.bin',
+        }
+    },
+    'spylls': {
+        'libreoffice-pejam': {
+            'model': 'https://extensions.libreoffice.org/assets/downloads/741/pEJAm21z.oxt',
+        }
+    }
 }
 
 PATH_NSFW = {
