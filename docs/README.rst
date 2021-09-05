@@ -96,8 +96,6 @@ Malaya also released Bahasa pretrained models, simply check at `Malaya/pretraine
 - **XLNET**, Generalized Autoregressive Pretraining for Language Understanding, https://arxiv.org/abs/1906.08237
 - **FNet**, FNet: Mixing Tokens with Fourier Transforms, https://arxiv.org/abs/2105.03824
 
-Or can try use huggingface 🤗 Transformers library, https://huggingface.co/models?filter=ms
-
 References
 -----------
 
