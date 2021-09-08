@@ -1113,7 +1113,7 @@ def transformer(model: str = 'small-t5', quantized: bool = False, **kwargs):
 
         * ``'small-t5'`` - T5 SMALL parameters.
         * ``'tiny-t5'`` - T5 TINY parameters.
-        * ``'super-tiny-t5'`` - T5 TINY parameters.
+        * ``'super-tiny-t5'`` - T5 SUPER TINY parameters.
 
     quantized : bool, optional (default=False)
         if True, will load 8-bit quantized model.
