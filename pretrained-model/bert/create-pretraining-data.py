@@ -24,20 +24,21 @@ tokenizer = tokenization.FullTokenizer(
 )
 directory = sys.argv[1]
 os.system(f'mkdir {directory}')
+global_count = 0
 
 
 def loop(files):
     client = storage.Client()
     bucket = client.bucket('mesolitica-tpu-general')
     input_files, index = files
-    output_file = f'{directory}/bert-{index}.tfrecord'
+    output_file = f'{directory}/bert-{index}-{global_count}.tfrecord'
 
     print('*** Reading from input files ***')
     for input_file in input_files:
         print(input_file)
 
     max_seq_length = 128
-    dupe_factor = 5
+    dupe_factor = 3
     max_predictions_per_seq = 20
     masked_lm_prob = 0.15
     short_seq_prob = 0.1
@@ -83,4 +84,9 @@ def multiprocessing(strings, function, cores=16):
     pool.join()
 
 
-multiprocessing(files, loop)
+batch_size = 16
+max_core = 8
+for i in range(0, len(files), batch_size):
+    b = files[i: i + batch_size]
+    multiprocessing(b, loop, min(len(b), max_core))
+    global_count += 1

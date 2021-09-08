@@ -2,7 +2,6 @@ import random
 import tensorflow as tf
 import logging
 from malaya.text.bpe import SentencePieceTokenizer
-from malaya.text.tatabahasa import alphabet, consonants, vowels
 from malaya.text.ngram import ngrams as generate_ngrams
 from malaya.supervised import t5 as t5_load
 from malaya.model.t5 import Generator

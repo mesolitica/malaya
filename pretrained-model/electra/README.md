@@ -34,55 +34,26 @@ cp multigpu_pretraining.py custom_optimization.py
 
 3. Create pretraining dataset,
 
-For **SMALL**,
-
 ```bash
 mkdir text-files
-cp dumping-*.txt ./text-files
+cp /home/husein/pure-text/splitted/*.txt text-files
+cp /home/husein/pure-text/the-pile/*.txt text-files
 python3 build_pretraining_dataset.py \
 --corpus-dir text-files \
---vocab-file bahasa.wordpiece \
+--vocab-file BERT.wordpiece \
 --output-dir dataset \
 --num-processes 10 \
 --no-lower-case
-```
-
-For **BASE** / **LARGE**,
-
-```bash
-mkdir text-files
-cp dumping-*.txt ./text-files
-python3 build_pretraining_dataset.py \
---corpus-dir text-files \
---vocab-file bahasa.wordpiece \
---output-dir dataset \
---num-processes 10 \
---max-seq-length 512 \
---no-lower-case
-```
-
-3. Create pretraining dataset,
-
-```bash
-python3 create-pretraining-data.py
 ```
 
 4. Execute pretraining,
 
-For **SMALL**,
-
-```bash
-python3 run_pretraining.py --data-dir directory \
---model-name electra-small \
---hparams SMALL-config.json
-```
-
 For **BASE**,
 
 ```bash
-python3 run_pretraining.py --data-dir directory \
+python3 run_pretraining.py --data-dir gs://mesolitica-tpu-general/electra-dataset \
 --model-name electra-base \
---hparams gs://bucket/BASE-config-tpu.json
+--hparams gs://mesolitica-tpu-general/BASE-config-tpu.json
 ```
 
 ## Download

@@ -26,11 +26,11 @@ import random
 
 import numpy as np
 import six
-from tqdm import tqdm
 from six.moves import range
 from six.moves import zip
 import tensorflow as tf
-import re
+from tqdm import tqdm
+
 import tokenization
 
 flags = tf.flags
@@ -116,23 +116,6 @@ flags.DEFINE_float(
     'Probability of creating sequences which are shorter than the '
     'maximum length.',
 )
-
-
-def is_number_regex(s):
-    if re.match('^\d+?\.\d+?$', s) is None:
-        return s.isdigit()
-    return True
-
-
-def reject(token):
-    t = token.replace('##', '')
-    if is_number_regex(t):
-        return True
-    if t.startswith('RM'):
-        return True
-    if token in '!{<>}:;.,"\'':
-        return True
-    return False
 
 
 class TrainingInstance(object):
@@ -311,6 +294,7 @@ def create_training_instances(
     # that the "next sentence prediction" task doesn't span between documents.
     for input_file in input_files:
         with tf.gfile.GFile(input_file, 'r') as reader:
+            count = 0
             while True:
                 line = reader.readline()
                 if not FLAGS.spm_model_file:
@@ -330,6 +314,10 @@ def create_training_instances(
                 tokens = tokenizer.tokenize(line)
                 if tokens:
                     all_documents[-1].append(tokens)
+                    count += 1
+
+                    if count % 100000 == 0:
+                        print(f'processed {count} lines')
 
     # Remove empty documents
     all_documents = [x for x in all_documents if x]
@@ -338,7 +326,7 @@ def create_training_instances(
     vocab_words = list(tokenizer.vocab.keys())
     instances = []
     for _ in range(dupe_factor):
-        for document_index in tqdm(range(len(all_documents))):
+        for document_index in range(len(all_documents)):
             instances.extend(
                 create_instances_from_document(
                     all_documents,
@@ -780,11 +768,6 @@ def main(_):
     for input_file in input_files:
         tf.logging.info('  %s', input_file)
 
-    output_files = FLAGS.output_file.split(',')
-    tf.logging.info('*** Writing to output files ***')
-    for output_file in output_files:
-        tf.logging.info('  %s', output_file)
-
     rng = random.Random(FLAGS.random_seed)
     instances = create_training_instances(
         input_files,
@@ -798,6 +781,11 @@ def main(_):
     )
 
     tf.logging.info('number of instances: %i', len(instances))
+
+    output_files = FLAGS.output_file.split(',')
+    tf.logging.info('*** Writing to output files ***')
+    for output_file in output_files:
+        tf.logging.info('  %s', output_file)
 
     write_instance_to_example_files(
         instances,

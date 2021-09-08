@@ -34,7 +34,6 @@ split -l 1000000 -d --additional-suffix=.txt ../filtered-dumping-wiki.txt splitt
 split -l 1000000 -d --additional-suffix=.txt ../dumping-cleaned-news.txt splitted-news
 split -l 1000000 -d --additional-suffix=.txt ../filtered-dumping-academia.txt splitted-academia
 split -l 1000000 -d --additional-suffix=.txt ../dumping-parliament.txt splitted-parliament
-split -l 1000000 -d --additional-suffix=.txt ../dumping-watpadd.txt splitted-watpadd
 ```
 
 3. Create pretraining dataset,
@@ -68,6 +67,28 @@ python3 multigpu_pretraining.py \
 - `num_gpu_cores`: Number of gpus.
 - `train_batch_size`: Make sure `train_batch_size` % `num_gpu_cores` is 0 and the batch will automatically distribute among gpus. If `num_gpu_cores` is 60 and `num_gpu_cores` is 2, so each gpus will get 30 batch size.
 
+**TPU TINY**,
+
+```bash
+python3 run_pretraining.py \
+  --input_file=gs://mesolitica-tpu-general/bert-data/tfrecord/*.tfrecord \
+  --output_dir=gs://mesolitica-tpu-general/bert-tiny \
+  --do_train=True \
+  --do_eval=False \
+  --bert_config_file=gs://mesolitica-tpu-general/bert-config/TINY_config.json \
+  --train_batch_size=1024 \
+  --max_seq_length=128 \
+  --max_predictions_per_seq=20 \
+  --num_train_steps=500000 \
+  --learning_rate=2e-5 \
+  --iterations_per_loop=100 \
+  --tpu_name=node-2 \
+  --tpu_zone=us-central1-f \
+  --save_checkpoints_steps=25000 \
+  --num_warmup_steps=50000 \
+  --use_tpu=True
+```
+
 **TPU BASE**,
 
 ```bash
@@ -83,9 +104,10 @@ python3 run_pretraining.py \
   --num_train_steps=500000 \
   --learning_rate=2e-5 \
   --iterations_per_loop=100 \
-  --tpu_name=node-6 \
+  --tpu_name=node-3 \
   --tpu_zone=us-central1-f \
   --save_checkpoints_steps=25000 \
+  --num_warmup_steps=50000 \
   --use_tpu=True
 ```
 
@@ -98,35 +120,16 @@ python3 run_pretraining.py \
   --do_train=True \
   --do_eval=False \
   --bert_config_file=gs://mesolitica-tpu-general/bert-config/LARGE_config.json \
-  --train_batch_size=256 \
+  --train_batch_size=128 \
   --max_seq_length=128 \
   --max_predictions_per_seq=20 \
   --num_train_steps=500000 \
   --learning_rate=2e-5 \
   --iterations_per_loop=100 \
-  --tpu_name=node-5 \
-  --tpu_zone=europe-west4-a \
+  --tpu_name=node-4 \
+  --tpu_zone=us-central1-f \
   --save_checkpoints_steps=25000 \
-  --use_tpu=True
-```
-
-```bash
-# 512 length
-python3 run_pretraining.py \
-  --input_file=gs://mesolitica-tpu-general/bert-data-512/*.tfrecord \
-  --output_dir=gs://mesolitica-tpu-general/bert-large \
-  --do_train=True \
-  --do_eval=False \
-  --bert_config_file=gs://mesolitica-tpu-general/bert-config/LARGE_config.json \
-  --train_batch_size=128 \
-  --max_seq_length=512 \
-  --max_predictions_per_seq=20 \
-  --num_train_steps=700000 \
-  --learning_rate=2e-5 \
-  --iterations_per_loop=100 \
-  --tpu_name=node-3 \
-  --tpu_zone=europe-west4-a \
-  --save_checkpoints_steps=25000 \
+  --num_warmup_steps=50000 \
   --use_tpu=True
 ```
 
@@ -161,6 +164,7 @@ I0910 11:20:31.562414 140220436277056 validation.py:597]   next_sentence_loss = 
   - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.
   - 2.0M steps, 3 GPUs TESLA V100.
   - BASE size (467MB).
+  - [sp10m.cased.bert.model](tokenizer/sp10m.cased.bert.model)
 
 2. **BASE**, last update 8th October 2020, [bert-base-2020-10-08.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/bert-base-2020-10-08.tar.gz)
 
@@ -169,6 +173,7 @@ I0910 11:20:31.562414 140220436277056 validation.py:597]   next_sentence_loss = 
   - 1.0M steps, 1 TPU V3-8.
   - BASE size (467MB).
   - Tensorboard, https://tensorboard.dev/experiment/7lXHPrzwTEGJX41t5MA3bg/
+  - [sp10m.cased.bert.model](tokenizer/sp10m.cased.bert.model)
 
 3. **LARGE**, last update 8th October 2020, [bert-large-2020-10-08.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/bert-large-2020-10-08.tar.gz)
 
@@ -177,6 +182,28 @@ I0910 11:20:31.562414 140220436277056 validation.py:597]   next_sentence_loss = 
   - 700k steps, 1 TPU V3-8.
   - BASE size (1357MB).
   - Tensorboard, https://tensorboard.dev/experiment/Zuv2VefdRqm43y0DtkNnQw/
+  - [sp10m.cased.bert.model](tokenizer/sp10m.cased.bert.model)
+
+4. **BASE**, last update 6th September 2021, [bert-base-2021-09-06.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/bert-base-2021-09-06.tar.gz)
+
+  - Vocab size 32k.
+  - Trained on raw wikipedia, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession and translated the pile.
+  - 500k steps, 1 TPU V3-8.
+  - [BERT.wordpiece](tokenizer/BERT.wordpiece)
+
+3. **LARGE**, last update 6th September 2021, [bert-large-2021-09-06.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/bert-large-2021-09-06.tar.gz)
+
+  - Vocab size 32k.
+  - Trained on raw wikipedia, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession and translated the pile.
+  - 500k steps, 1 TPU V3-8.
+  - [BERT.wordpiece](tokenizer/BERT.wordpiece)
+
+3. **TINY**, last update 6th September 2021, [bert-tiny-2021-09-06.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/bert-tiny-2021-09-06.tar.gz)
+
+  - Vocab size 32k.
+  - Trained on raw wikipedia, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession and translated the pile.
+  - 500k steps, 1 TPU V3-8.
+  - [BERT.wordpiece](tokenizer/BERT.wordpiece)
 
 ## Citation
 

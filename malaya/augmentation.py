@@ -4,8 +4,9 @@ import inspect
 import numpy as np
 import string as string_function
 from collections import defaultdict
-from tensorflow.keras.preprocessing.sequence import pad_sequences
 from malaya.function import check_file
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+from malaya.text.tatabahasa import alphabet, consonants, vowels
 from malaya.text.function import augmentation_textcleaning, simple_textcleaning
 from malaya.path import PATH_AUGMENTATION, S3_PATH_AUGMENTATION
 from herpetologist import check_type
@@ -319,13 +320,17 @@ def transformer(
     return outputs
 
 
-@check_type
-def socialmedia_form(
-    word: str,
-    **kwargs,
-):
+def _replace(word, replace_dict, threshold=0.5):
+    word = list(word[:])
+    for i in range(len(word)):
+        if word[i] in replace_dict and random.random() >= threshold:
+            word[i] = replace_dict[word[i]]
+    return ''.join(word)
+
+
+def replace_similar_consonants(word: str, threshold: float = 0.8):
     """
-    augmenting a formal word into socialmedia form.
+    Naively replace consonants into similar consonants in a word.
 
     Parameters
     ----------
@@ -333,13 +338,8 @@ def socialmedia_form(
 
     Returns
     -------
-    result: list
+    result: List[str]
     """
-
-    word = simple_textcleaning(word)
-    if not len(word):
-        raise ValueError('word is too short to augment shortform.')
-
     replace_consonants = {
         'n': 'm',
         't': 'y',
@@ -352,8 +352,41 @@ def socialmedia_form(
         'g': 'f',
         'b': 'n',
     }
+    return _replace(word=word, replace_dict=replace_consonants, threshold=threshold)
 
+
+def replace_similar_vowels(word: str, threshold: float = 0.8):
+    """
+    Naively replace vowels into similar vowels in a word.
+    Parameters
+    ----------
+    word: str
+
+    Returns
+    -------
+    result: List[str]
+    """
     replace_vowels = {'u': 'i', 'i': 'o', 'o': 'u'}
+    return _replace(word=word, replace_dict=replace_vowels, threshold=threshold)
+
+
+@check_type
+def socialmedia_form(word: str):
+    """
+    augmenting a word into socialmedia form.
+
+    Parameters
+    ----------
+    word: str
+
+    Returns
+    -------
+    result: List[str]
+    """
+
+    word = simple_textcleaning(word)
+    if not len(word):
+        raise ValueError('word is too short to augment shortform.')
 
     results = []
 
@@ -386,3 +419,40 @@ def socialmedia_form(
 
     results = [r for r in results if len(r) <= len(word)]
     return list(set(results))
+
+
+def vowel_alternate(word: str, threshold: float = 0.5):
+    """
+    augmenting a word into vowel alternate.
+
+    vowel_alternate('singapore')
+    -> sngpore
+
+    vowel_alternate('kampung')
+    -> kmpng
+
+    vowel_alternate('ayam')
+    -> aym
+
+    Parameters
+    ----------
+    word: str
+
+    Returns
+    -------
+    result: str
+    """
+
+    word = simple_textcleaning(word)
+    if not len(word):
+        raise ValueError('word is too short to augment shortform.')
+
+    word = list(word[:])
+    i = 0
+    while i < len(word) - 2:
+        subword = word[i: i + 3]
+        if subword[0] in consonants and subword[1] in vowels and subword[2] in consonants \
+                and random.random() >= threshold:
+            word.pop(i + 1)
+        i += 1
+    return ''.join(word)
