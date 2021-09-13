@@ -192,3 +192,59 @@ class KnowledgeGraph(T5, Seq2Seq):
             outputs.append(o)
 
         return outputs
+
+
+class Spell(T5, Seq2Seq):
+    def __init__(self, input_nodes, output_nodes, sess, tokenizer):
+        T5.__init__(
+            self,
+            input_nodes=input_nodes,
+            output_nodes=output_nodes,
+            sess=sess,
+            tokenizer=tokenizer
+        )
+        from malaya.preprocessing import Tokenizer
+        self._word_tokenizer = Tokenizer(duration=False, date=False).tokenize
+
+    @check_type
+    def greedy_decoder(self, strings: List[str]):
+        """
+        spelling correction for strings.
+
+        Parameters
+        ----------
+        strings: List[str]
+
+        Returns
+        -------
+        result: List[str]
+        """
+
+        return self._predict([f"betulkan ejaan: {' '.join(self._word_tokenizer(string))}" for string in strings])
+
+
+class Segmentation(T5, Seq2Seq):
+    def __init__(self, input_nodes, output_nodes, sess, tokenizer):
+        T5.__init__(
+            self,
+            input_nodes=input_nodes,
+            output_nodes=output_nodes,
+            sess=sess,
+            tokenizer=tokenizer
+        )
+
+    @check_type
+    def greedy_decoder(self, strings: List[str]):
+        """
+        text segmentation.
+
+        Parameters
+        ----------
+        strings: List[str]
+
+        Returns
+        -------
+        result: List[str]
+        """
+
+        return self._predict([f'segmentasi: {string}' for string in strings])

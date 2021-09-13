@@ -91,16 +91,16 @@ python3 train.py \
 --mem_len=384 \
 --perm_size=256 \
 --n_layer=4 \
---d_model=336 \
---d_embed=336 \
---n_head=12 \
+--d_model=384 \
+--d_embed=384 \
+--n_head=6 \
 --d_head=64 \
 --d_inner=1344 \
 --untie_r=True \
 --mask_alpha=6 \
 --mask_beta=1 \
 --num_predict=85 \
---model_dir=gs://mesolitica-tpu-general/xlnet-tiny-v2 \
+--model_dir=gs://mesolitica-tpu-general/xlnet-tiny-v3 \
 --uncased=False \
 --num_core_per_host=8 \
 --train_steps=500000 \
@@ -109,7 +109,7 @@ python3 train.py \
 --adam_epsilon=1e-6 \
 --weight_decay=0.01 \
 --warmup_steps=40000 \
---tpu=node-8 \
+--tpu=node-4 \
 --tpu_zone=us-central1-f \
 --dropout=0.0 --dropatt=0.0 \
 --iterations=100 \
@@ -144,7 +144,7 @@ python3 train.py \
 --adam_epsilon=1e-6 \
 --weight_decay=0.01 \
 --warmup_steps=40000 \
---tpu=node-9 \
+--tpu=node-3 \
 --tpu_zone=us-central1-f \
 --dropout=0.1 --dropatt=0.1 \
 --iterations=100 \
@@ -154,7 +154,7 @@ python3 train.py \
 **TPU LARGE**
 ```
 python3 train.py \
---record_info_dir=gs://mesolitica-tpu-general/xlnet-large-data-32/tfrecords \
+--record_info_dir=gs://mesolitica-tpu-general/xlnet-data/tfrecords \
 --train_batch_size=32 \
 --seq_len=512 \
 --reuse_len=256 \
@@ -170,7 +170,7 @@ python3 train.py \
 --mask_alpha=6 \
 --mask_beta=1 \
 --num_predict=85 \
---model_dir=gs://mesolitica-tpu-general/xlnet-large \
+--model_dir=gs://mesolitica-tpu-general/xlnet-large-v2 \
 --uncased=False \
 --num_core_per_host=8 \
 --train_steps=500000 \
@@ -179,8 +179,8 @@ python3 train.py \
 --adam_epsilon=1e-6 \
 --weight_decay=0.01 \
 --warmup_steps=40000 \
---tpu=node-3 \
---tpu_zone=europe-west4-a \
+--tpu=node-9 \
+--tpu_zone=us-central1-f \
 --dropout=0.1 --dropatt=0.1 \
 --iterations=100 \
 --save_steps=20000

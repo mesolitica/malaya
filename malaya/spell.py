@@ -19,7 +19,30 @@ from malaya.text.rules import rules_normalizer
 from malaya.text.bpe import SentencePieceTokenizer
 from malaya.path import PATH_NGRAM, S3_PATH_NGRAM
 from malaya.function import check_file
+from malaya.supervised import t5 as t5_load
+from malaya.model.t5 import Spell as T5_Spell
 from herpetologist import check_type
+
+_transformer_availability = {
+    'small-t5': {
+        'Size (MB)': 355.6,
+        'Quantized Size (MB)': 195,
+        'WER': 0.0156248,
+        'Suggested length': 256,
+    },
+    'tiny-t5': {
+        'Size (MB)': 208,
+        'Quantized Size (MB)': 103,
+        'WER': 0.023712,
+        'Suggested length': 256,
+    },
+    'super-tiny-t5': {
+        'Size (MB)': 81.8,
+        'Quantized Size (MB)': 27.1,
+        'WER': 0.038001,
+        'Suggested length': 256,
+    },
+}
 
 
 def tokens_to_masked_ids(tokens, mask_ind, tokenizer):
@@ -1101,6 +1124,17 @@ def spylls(model: str = 'libreoffice-pejam', **kwargs):
     return Spylls(dictionary=dictionary)
 
 
+def available_transformer():
+    """
+    List available transformer models.
+    """
+    from malaya.function import describe_availability
+
+    return describe_availability(
+        _transformer_availability, text='tested on 10k test set.'
+    )
+
+
 @check_type
 def transformer(model: str = 'small-t5', quantized: bool = False, **kwargs):
     """
@@ -1123,6 +1157,18 @@ def transformer(model: str = 'small-t5', quantized: bool = False, **kwargs):
     -------
     result: malaya.model.t5.Spell class
     """
+    model = model.lower()
+    if model not in _transformer_availability:
+        raise ValueError(
+            'model not supported, please check supported models from `malaya.spell.available_transformer()`.'
+        )
+    return t5_load.load(
+        module='spelling-correction',
+        model=model,
+        model_class=T5_Spell,
+        quantized=quantized,
+        **kwargs,
+    )
 
 
 @check_type

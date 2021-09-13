@@ -335,6 +335,7 @@ def replace_similar_consonants(word: str, threshold: float = 0.8):
     Parameters
     ----------
     word: str
+    threshold: float, optional (default=0.8)
 
     Returns
     -------
@@ -361,6 +362,7 @@ def replace_similar_vowels(word: str, threshold: float = 0.8):
     Parameters
     ----------
     word: str
+    threshold: float, optional (default=0.8)
 
     Returns
     -------
@@ -417,7 +419,6 @@ def socialmedia_form(word: str):
         if word[1:3] == 'ng':
             results.append(word[:1] + x[2:])
 
-    results = [r for r in results if len(r) <= len(word)]
     return list(set(results))
 
 
@@ -437,6 +438,7 @@ def vowel_alternate(word: str, threshold: float = 0.5):
     Parameters
     ----------
     word: str
+    threshold: float, optional (default=0.5)
 
     Returns
     -------

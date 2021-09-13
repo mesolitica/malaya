@@ -558,9 +558,12 @@ def preprocessing(
             S3_PATH_PREPROCESSING['english-malay'],
             **kwargs,
         )
-
-        with open(PATH_PREPROCESSING['english-malay']['model']) as fopen:
-            translator = json.load(fopen)
+        try:
+            with open(PATH_PREPROCESSING['english-malay']['model']) as fopen:
+                translator = json.load(fopen)
+        except BaseException:
+            raise Exception(
+                "failed to load english-malay vocab, please run `malaya.utils.delete_cache('preprocessing/english-malay')`")
     else:
         translator = None
 
