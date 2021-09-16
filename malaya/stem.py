@@ -36,10 +36,7 @@ def _classification_textcleaning_stemmer(string, stemmer):
 
 
 class Sastrawi:
-    def __init__(self):
-        from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
-
-        factory = StemmerFactory()
+    def __init__(self, factory):
         self.sastrawi_stemmer = factory.create_stemmer()
 
     @check_type
@@ -194,7 +191,7 @@ def sastrawi():
         raise ModuleNotFoundError(
             'PySastrawi not installed. Please install it by `pip install PySastrawi` and try again.'
         )
-    return Sastrawi()
+    return Sastrawi(StemmerFactory())
 
 
 @check_type

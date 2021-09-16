@@ -14,7 +14,7 @@ Thanks to Google for opensourcing most of the source code to develop T5, https:/
 
 ## Objective
 
-1. Provide **SMALL**, **BASE** and **LARGE** T5 for Bahasa.
+1. Provide T5 for Bahasa.
 
 ## Acknowledgement
 
@@ -91,26 +91,19 @@ python3 train_tpu_large.py
   - 1M steps, 1 V3-8 TPU.
   - TINY size (66.8MB).
 
-6. **SUPER TINY**, last update 28th July 2021, [t5-super-tiny-2021-07-28.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/t5-super-tiny-2021-07-28.tar.gz)
+5. **SUPER TINY**, last update 28th July 2021, [t5-super-tiny-2021-07-28.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/t5-super-tiny-2021-07-28.tar.gz)
 
   - Vocab size 32k.
   - Trained on unsupervised, question-answer, pairing, news-title, news summarization, EN-MS translation, MS-EN translation, knowledge gprah triplets, paraphrase and SNLI tasks.
   - 1M steps, 1 V3-8 TPU.
   - SUPER TINY size (25.6MB).
 
-7. **SUPER SUPER TINY**, last update 28th July 2021, [t5-super-super-tiny-2021-07-28.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/t5-super-super-tiny-2021-07-28.tar.gz)
+6. **SUPER SUPER TINY**, last update 28th July 2021, [t5-super-super-tiny-2021-07-28.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/t5-super-super-tiny-2021-07-28.tar.gz)
 
   - Vocab size 32k.
   - Trained on unsupervised, question-answer, pairing, news-title, news summarization, EN-MS translation, MS-EN translation, knowledge gprah triplets, paraphrase and SNLI tasks.
   - 1M steps, 1 V3-8 TPU.
-  - SUPER SUPER TINY size (25.6MB).
-
-8. **LARGE**, last update 28th July 2021, [t5-large-2021-07-28.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/t5-large-2021-07-28.tar.gz)
-
-  - Vocab size 32k.
-  - Trained on unsupervised, question-answer, pairing, news-title, news summarization, EN-MS translation, MS-EN translation, knowledge gprah triplets, paraphrase and SNLI tasks.
-  - 1M steps, 1 V3-8 TPU.
-  - LARGE size (1.2GB).
+  - SUPER SUPER TINY size (18.7MB).
 
 ## Citation
 

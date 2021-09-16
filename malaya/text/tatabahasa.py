@@ -1732,6 +1732,7 @@ group_compound = [
     'km',
     'gd',
     'nd',
+    'mp',
 ]
 
 """

@@ -28,12 +28,18 @@ Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://w
 2. Convert text files to tfrecord,
 
 ```bash
+mkdir text-files
+cp /home/husein/pure-text/splitted/*.txt text-files
+cp /home/husein/pure-text/the-pile/00.jsonl-1*.translated.txt text-files
+```
+
+```bash
 mkdir save-location
 python3 data_utils.py \
   --bsz_per_host=32 \
   --seq_len=512 \
   --reuse_len=256 \
-  --input_glob=../pure-text/splitted/* \
+  --input_glob=text-files/*.txt \
   --save_dir=save-location \
   --num_passes=20 \
   --bi_data=True \
@@ -75,11 +81,46 @@ python3 train_gpu.py \
   --num_gpu_cores=2
 ```
 
+**TPU TINY**
+```
+python3 train.py \
+--record_info_dir=gs://mesolitica-tpu-general/xlnet-data/tfrecords \
+--train_batch_size=32 \
+--seq_len=512 \
+--reuse_len=256 \
+--mem_len=384 \
+--perm_size=256 \
+--n_layer=4 \
+--d_model=384 \
+--d_embed=384 \
+--n_head=6 \
+--d_head=64 \
+--d_inner=1344 \
+--untie_r=True \
+--mask_alpha=6 \
+--mask_beta=1 \
+--num_predict=85 \
+--model_dir=gs://mesolitica-tpu-general/xlnet-tiny-v3 \
+--uncased=False \
+--num_core_per_host=8 \
+--train_steps=500000 \
+--learning_rate=4e-4 \
+--ff_activation=gelu \
+--adam_epsilon=1e-6 \
+--weight_decay=0.01 \
+--warmup_steps=40000 \
+--tpu=node-4 \
+--tpu_zone=us-central1-f \
+--dropout=0.0 --dropatt=0.0 \
+--iterations=100 \
+--save_steps=20000
+```
+
 **TPU BASE**
 ```
 python3 train.py \
 --record_info_dir=gs://mesolitica-tpu-general/xlnet-data/tfrecords \
---train_batch_size=64 \
+--train_batch_size=32 \
 --seq_len=512 \
 --reuse_len=256 \
 --mem_len=384 \
@@ -94,7 +135,7 @@ python3 train.py \
 --mask_alpha=6 \
 --mask_beta=1 \
 --num_predict=85 \
---model_dir=gs://mesolitica-tpu-general/xlnet-base \
+--model_dir=gs://mesolitica-tpu-general/xlnet-base-v2 \
 --uncased=False \
 --num_core_per_host=8 \
 --train_steps=500000 \
@@ -103,8 +144,8 @@ python3 train.py \
 --adam_epsilon=1e-6 \
 --weight_decay=0.01 \
 --warmup_steps=40000 \
---tpu=node-7 \
---tpu_zone=europe-west4-a \
+--tpu=node-3 \
+--tpu_zone=us-central1-f \
 --dropout=0.1 --dropatt=0.1 \
 --iterations=100 \
 --save_steps=20000
@@ -113,7 +154,7 @@ python3 train.py \
 **TPU LARGE**
 ```
 python3 train.py \
---record_info_dir=gs://mesolitica-tpu-general/xlnet-large-data-32/tfrecords \
+--record_info_dir=gs://mesolitica-tpu-general/xlnet-data/tfrecords \
 --train_batch_size=32 \
 --seq_len=512 \
 --reuse_len=256 \
@@ -129,7 +170,7 @@ python3 train.py \
 --mask_alpha=6 \
 --mask_beta=1 \
 --num_predict=85 \
---model_dir=gs://mesolitica-tpu-general/xlnet-large \
+--model_dir=gs://mesolitica-tpu-general/xlnet-large-v2 \
 --uncased=False \
 --num_core_per_host=8 \
 --train_steps=500000 \
@@ -137,9 +178,9 @@ python3 train.py \
 --ff_activation=gelu \
 --adam_epsilon=1e-6 \
 --weight_decay=0.01 \
---warmup_steps=40000 \
---tpu=node-3 \
---tpu_zone=europe-west4-a \
+--warmup_steps=100000 \
+--tpu=node-9 \
+--tpu_zone=us-central1-f \
 --dropout=0.1 --dropatt=0.1 \
 --iterations=100 \
 --save_steps=20000
@@ -214,14 +255,14 @@ python3 multigpu_pretraining.py \
 
 ## Download
 
-1. **BASE**, last update 29 March 2020, [xlnet-base-29-03-2020.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/xlnet-base-29-03-2020.tar.gz)
+1. **BASE**, last update 29th March 2020, [xlnet-base-29-03-2020.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/xlnet-base-29-03-2020.tar.gz)
 
   - Vocab size 32k.
   - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.
   - 300k steps, 3 GPUs TESLA V100.
   - BASE size (467MB).
 
-2. **BASE**, last update 20 October 2020, [xlnet-base-500k-20-10-2020.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/xlnet-base-500k-20-10-2020.gz)
+2. **BASE**, last update 20th October 2020, [xlnet-base-500k-20-10-2020.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/xlnet-base-500k-20-10-2020.gz)
 
   - Vocab size 32k.
   - Trained on raw wikipedia, raw common crawl, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.
@@ -229,13 +270,34 @@ python3 multigpu_pretraining.py \
   - BASE size (467MB).
   - Tensorboard, https://tensorboard.dev/experiment/qGNflXX1R22GJ2Pk8ECDmA/
 
-3. **LARGE**, last update 20 October 2020, [xlnet-large-500k-20-10-2020.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/xlnet-large-500k-20-10-2020.gz)
+3. **LARGE**, last update 20th October 2020, [xlnet-large-500k-20-10-2020.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/xlnet-large-500k-20-10-2020.gz)
 
   - Vocab size 32k.
   - Trained on raw wikipedia, raw common crawl, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.
   - 500k steps, 1 TPU V3-8.
-  - BASE size.
+  - LARGE size.
   - Tensorboard, https://tensorboard.dev/experiment/B2RQd2yATZOjsAayQm8ncA/
+
+4. **TINY**, last update 6th September 2021, [xlnet-tiny-2021-09-06.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/xlnet-tiny-2021-09-06.tar.gz)
+
+  - Vocab size 32k.
+  - Trained on raw wikipedia, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession and translated The Pile.
+  - 500k steps, 1 TPU V2-8.
+  - TINY size.
+
+5. **BASE**, last update 6th September 2021, [xlnet-base-2021-09-06.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/xlnet-tiny-2021-09-06.tar.gz)
+
+  - Vocab size 32k.
+  - Trained on raw wikipedia, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession and translated The Pile.
+  - 500k steps, 1 TPU V2-8.
+  - BASE size.
+
+5. **LARGE**, last update 6th September 2021, [xlnet-large-2021-09-06.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/xlnet-large-2021-09-06.tar.gz)
+
+  - Vocab size 32k.
+  - Trained on raw wikipedia, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession and translated The Pile.
+  - 500k steps, 1 TPU V3-8.
+  - LARGE size).
 
 ## Citation
 

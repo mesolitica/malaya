@@ -371,6 +371,12 @@ malaya.model.t5
 .. autoclass:: malaya.model.t5.KnowledgeGraph()
     :members:
 
+.. autoclass:: malaya.model.t5.Spell()
+    :members:
+
+.. autoclass:: malaya.model.t5.Segmentation()
+    :members:
+
 malaya.model.tf
 ----------------------------------
 

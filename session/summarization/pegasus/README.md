@@ -38,4 +38,4 @@ python3 small.py \
 
 1. SMALL, last update 27th July 2021, [pegasus-summarization-small-2021-07-27.tar.gz](https://f000.backblazeb2.com/file/malaya-model/finetuned/pegasus-summarization-small-2021-07-27.tar.gz)
 
-2. BASE, last update 25th April 2021, [pegasus-summarization-base-2021-07-27.tar.gz](https://f000.backblazeb2.com/file/malaya-model/finetuned/pegasus-summarization-base-2021-07-27.tar.gz)
+2. BASE, last update 27th July 2021, [pegasus-summarization-base-2021-07-27.tar.gz](https://f000.backblazeb2.com/file/malaya-model/finetuned/pegasus-summarization-base-2021-07-27.tar.gz)

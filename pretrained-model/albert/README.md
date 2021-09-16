@@ -40,19 +40,12 @@ For LARGE,
 ```bash
 python3 -m albert.run_pretraining \
 --input_file=gs://mesolitica-tpu-general/albert-data/*/*.tfrecord \
---output_dir=gs://mesolitica-tpu-general/albert-large \
+--output_dir=gs://mesolitica-tpu-general/albert-large-v2 \
 --do_train=True --do_eval=False \
 --albert_config_file=gs://mesolitica-tpu-general/albert-config/LARGE_config.json \
---train_batch_size=1040 \
---max_seq_length=128 \
---max_predictions_per_seq=20 \
---num_train_steps=500000 \
---num_warmup_steps=3125 \
---learning_rate=1e-4 \
---save_checkpoints_steps=25000 \
---use_tpu=True \
---tpu_name=node-7 \
---tpu_zone=us-central1-f \
+--train_batch_size=256 --max_seq_length=512 --max_predictions_per_seq=20 \
+--num_train_steps=500000 --num_warmup_steps=3125 --learning_rate=1e-4 \
+--save_checkpoints_steps=25000 --use_tpu=True --tpu_name=node-5 --tpu_zone=europe-west4-a \
 --iterations_per_loop=100
 ```
 
@@ -61,19 +54,12 @@ For BASE,
 ```bash
 python3 -m albert.run_pretraining \
 --input_file=gs://mesolitica-tpu-general/albert-data/*/*.tfrecord \
---output_dir=gs://mesolitica-tpu-general/albert-base \
+--output_dir=gs://mesolitica-tpu-general/albert-base-v2 \
 --do_train=True --do_eval=False \
 --albert_config_file=gs://mesolitica-tpu-general/albert-config/BASE_config.json \
---train_batch_size=1040 \
---max_seq_length=128 \
---max_predictions_per_seq=20 \
---num_train_steps=500000 \
---num_warmup_steps=3125 \
---learning_rate=1e-4 \
---save_checkpoints_steps=25000 \
---use_tpu=True \
---tpu_name=node-7 \
---tpu_zone=us-central1-f \
+--train_batch_size=1040 --max_seq_length=512 --max_predictions_per_seq=20 \
+--num_train_steps=500000 --num_warmup_steps=3125 --learning_rate=1e-4 \
+--save_checkpoints_steps=25000 --use_tpu=True --tpu_name=node-6 --tpu_zone=europe-west4-a \
 --iterations_per_loop=100
 ```
 
@@ -82,19 +68,12 @@ For TINY,
 ```bash
 python3 -m albert.run_pretraining \
 --input_file=gs://mesolitica-tpu-general/albert-data/*/*.tfrecord \
---output_dir=gs://mesolitica-tpu-general/albert-tiny \
+--output_dir=gs://mesolitica-tpu-general/albert-tiny-v2 \
 --do_train=True --do_eval=False \
 --albert_config_file=gs://mesolitica-tpu-general/albert-config/TINY_config.json \
---train_batch_size=3120 \
---max_seq_length=128 \
---max_predictions_per_seq=20 \
---num_train_steps=500000 \
---num_warmup_steps=3125 \
---learning_rate=1e-4 \
---save_checkpoints_steps=25000 \
---use_tpu=True \
---tpu_name=node-8 \
---tpu_zone=us-central1-f \
+--train_batch_size=3120 --max_seq_length=512 --max_predictions_per_seq=20 \
+--num_train_steps=500000 --num_warmup_steps=3125 --learning_rate=1e-4 \
+--save_checkpoints_steps=25000 --use_tpu=True --tpu_name=node-7 --tpu_zone=europe-west4-a \
 --iterations_per_loop=100
 ```
 

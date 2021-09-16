@@ -59,7 +59,7 @@ from malaya.text.rules import rules_normalizer
 from malaya.cluster import cluster_words
 from malaya.function import validator
 from herpetologist import check_type
-from logging import warn
+import logging
 
 
 def normalized_entity(normalized):
@@ -183,7 +183,6 @@ class Normalizer:
         normalize_email: bool = False,
         normalize_year: bool = True,
         normalize_telephone: bool = True,
-        logging: bool = False,
     ):
         """
         Normalize a string.
@@ -209,8 +208,6 @@ class Normalizer:
             if False, `tahun 1987` -> `tahun seribu sembilan ratus lapan puluh tujuh`.
         normalize_telephone: bool, (default=True)
             if True, `no 012-1234567` -> `no kosong satu dua, satu dua tiga empat lima enam tujuh`
-        logging: bool, (default=False)
-            if True, will log index and token queue using `logging.warn`.
 
         Returns
         -------
@@ -247,9 +244,8 @@ class Normalizer:
             word_upper = word.upper()
             first_c = word[0].isupper()
 
-            if logging:
-                s = f'index: {index}, word: {word}, queue: {result}'
-                warn(s)
+            s = f'index: {index}, word: {word}, queue: {result}'
+            logging.debug(s)
 
             if word in '~@#$%^&*()_+{}|[:"\'];<>,.?/-':
                 result.append(word)
