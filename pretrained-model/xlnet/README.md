@@ -178,7 +178,7 @@ python3 train.py \
 --ff_activation=gelu \
 --adam_epsilon=1e-6 \
 --weight_decay=0.01 \
---warmup_steps=40000 \
+--warmup_steps=100000 \
 --tpu=node-9 \
 --tpu_zone=us-central1-f \
 --dropout=0.1 --dropatt=0.1 \
@@ -255,14 +255,14 @@ python3 multigpu_pretraining.py \
 
 ## Download
 
-1. **BASE**, last update 29 March 2020, [xlnet-base-29-03-2020.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/xlnet-base-29-03-2020.tar.gz)
+1. **BASE**, last update 29th March 2020, [xlnet-base-29-03-2020.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/xlnet-base-29-03-2020.tar.gz)
 
   - Vocab size 32k.
   - Trained on raw wikipedia, raw twitter, raw instagram, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.
   - 300k steps, 3 GPUs TESLA V100.
   - BASE size (467MB).
 
-2. **BASE**, last update 20 October 2020, [xlnet-base-500k-20-10-2020.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/xlnet-base-500k-20-10-2020.gz)
+2. **BASE**, last update 20th October 2020, [xlnet-base-500k-20-10-2020.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/xlnet-base-500k-20-10-2020.gz)
 
   - Vocab size 32k.
   - Trained on raw wikipedia, raw common crawl, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.
@@ -270,13 +270,34 @@ python3 multigpu_pretraining.py \
   - BASE size (467MB).
   - Tensorboard, https://tensorboard.dev/experiment/qGNflXX1R22GJ2Pk8ECDmA/
 
-3. **LARGE**, last update 20 October 2020, [xlnet-large-500k-20-10-2020.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/xlnet-large-500k-20-10-2020.gz)
+3. **LARGE**, last update 20th October 2020, [xlnet-large-500k-20-10-2020.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/xlnet-large-500k-20-10-2020.gz)
 
   - Vocab size 32k.
   - Trained on raw wikipedia, raw common crawl, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession.
   - 500k steps, 1 TPU V3-8.
-  - BASE size.
+  - LARGE size.
   - Tensorboard, https://tensorboard.dev/experiment/B2RQd2yATZOjsAayQm8ncA/
+
+4. **TINY**, last update 6th September 2021, [xlnet-tiny-2021-09-06.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/xlnet-tiny-2021-09-06.tar.gz)
+
+  - Vocab size 32k.
+  - Trained on raw wikipedia, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession and translated The Pile.
+  - 500k steps, 1 TPU V2-8.
+  - TINY size.
+
+5. **BASE**, last update 6th September 2021, [xlnet-base-2021-09-06.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/xlnet-tiny-2021-09-06.tar.gz)
+
+  - Vocab size 32k.
+  - Trained on raw wikipedia, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession and translated The Pile.
+  - 500k steps, 1 TPU V2-8.
+  - BASE size.
+
+5. **LARGE**, last update 6th September 2021, [xlnet-large-2021-09-06.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/xlnet-large-2021-09-06.tar.gz)
+
+  - Vocab size 32k.
+  - Trained on raw wikipedia, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession and translated The Pile.
+  - 500k steps, 1 TPU V3-8.
+  - LARGE size).
 
 ## Citation
 

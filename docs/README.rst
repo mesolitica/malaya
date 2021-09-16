@@ -62,7 +62,7 @@ Features
 -  **Relevancy Analysis**, detect and recognize relevancy of texts using finetuned Transformer-Bahasa.
 -  **Sentiment Analysis**, detect and recognize polarity of texts using finetuned Transformer-Bahasa.
 -  **Text Similarity**, provide interface for lexical similarity deep semantic similarity using finetuned Transformer-Bahasa.
--  **Spell Correction**, using local Malaysia NLP researches hybrid with Transformer-Bahasa to auto-correct any bahasa words.
+-  **Spell Correction**, using local Malaysia NLP researches hybrid with Transformer-Bahasa to auto-correct any bahasa words and NeuSpell using T5-Bahasa.
 -  **Stemmer**, using BPE LSTM Seq2Seq with attention state-of-art to do Bahasa stemming.
 -  **Subjectivity Analysis**, detect and recognize self-opinion polarity of texts using finetuned Transformer-Bahasa.
 -  **Kesalahan Tatabahasa**, Fix kesalahan tatabahasa using TransformerTag-Bahasa.

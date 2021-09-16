@@ -16,25 +16,25 @@ _transformer_availability = {
     'small': {
         'Size (MB)': 42.7,
         'Quantized Size (MB)': 13.1,
-        'Sequence Accuracy': 0.8217,
+        'WER': 0.208520,
         'Suggested length': 256,
     },
     'base': {
         'Size (MB)': 234,
         'Quantized Size (MB)': 63.8,
-        'Sequence Accuracy': 0.8759,
+        'WER': 0.1776236,
         'Suggested length': 256,
     },
     'super-tiny-t5': {
         'Size (MB)': 81.8,
         'Quantized Size (MB)': 27.1,
-        'Sequence Accuracy': 0.8217,
+        'WER': 0.03298,
         'Suggested length': 256,
     },
     'super-super-tiny-t5': {
-        'Size (MB)': 81.8,
-        'Quantized Size (MB)': 27.1,
-        'Sequence Accuracy': 0.8217,
+        'Size (MB)': 39.6,
+        'Quantized Size (MB)': 12,
+        'WER': 0.037882,
         'Suggested length': 256,
     }
 }
