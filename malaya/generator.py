@@ -4,7 +4,8 @@ import logging
 from malaya.text.bpe import SentencePieceTokenizer
 from malaya.text.ngram import ngrams as generate_ngrams
 from malaya.supervised import t5 as t5_load
-from malaya.model.t5 import Generator
+from malaya.supervised import gpt2 as gpt2_load
+from malaya.model.t5 import Generator, CommonGen
 from malaya.path import PATH_NGRAM, S3_PATH_NGRAM
 from malaya.function import check_file
 from herpetologist import check_type
@@ -39,15 +40,19 @@ _accepted_entities = [
 ]
 
 
-_transformer_availability = {
+_isi_penting_availability = {
     't5': {'Size (MB)': 1250, 'Quantized Size (MB)': 481, 'Maximum Length': 1024},
-    'middle-t5': {'Size (MB)': 941, 'Quantized Size (MB)': 329, 'Maximum Length': 1024},
     'small-t5': {'Size (MB)': 355.6, 'Quantized Size (MB)': 195, 'Maximum Length': 1024},
 }
 
+_commongen_availability = {
+    't5': {'Size (MB)': 1250, 'Quantized Size (MB)': 481, 'Maximum Length': 256},
+    'small-t5': {'Size (MB)': 355.6, 'Quantized Size (MB)': 195, 'Maximum Length': 256},
+}
+
 _gpt2_availability = {
-    '117M': {'Size (MB)': 441.6, 'Perplexity': 5.47394},
-    '345M': {'Size (MB)': 1200, 'Perplexity': 2.4596},
+    '117M': {'Size (MB)': 499, 'Quantized Size (MB)': 126, 'Perplexity': 6.232461},
+    '345M': {'Size (MB)': 1420, 'Quantized Size (MB)': 357, 'Perplexity': 6.1040115},
 }
 
 
@@ -246,17 +251,12 @@ def available_gpt2():
     """
     from malaya.function import describe_availability
 
-    return describe_availability(_gpt2_availability)
+    return describe_availability(_gpt2_availability,
+                                 text='calculate perplexity on never seen malay karangan.')
 
 
 @check_type
-def gpt2(
-    model: str = '345M',
-    generate_length: int = 256,
-    temperature: float = 1.0,
-    top_k: int = 40,
-    **kwargs,
-):
+def gpt2(model: str = '345M', quantized: bool = False, **kwargs):
     """
     Load GPT2 model to generate a string given a prefix string.
 
@@ -268,16 +268,13 @@ def gpt2(
         * ``'117M'`` - GPT2 117M parameters.
         * ``'345M'`` - GPT2 345M parameters.
 
-    generate_length : int, optional (default=256)
-        length of sentence to generate.
-    temperature : float, optional (default=1.0)
-        temperature value, value should between 0 and 1.
-    top_k : int, optional (default=40)
-        top-k in nucleus sampling selection.
+    quantized : bool, optional (default=False)
+        if True, will load 8-bit quantized model.
+        Quantized model not necessary faster, totally depends on the machine.
 
     Returns
     -------
-    result: malaya.transformers.gpt2.Model class
+    result: malaya.model.tf.GPT2 class
     """
 
     model = model.upper()
@@ -286,40 +283,33 @@ def gpt2(
             'model not supported, please check supported models from `malaya.generator.available_gpt2()`.'
         )
 
-    if generate_length < 10:
-        raise ValueError('generate_length must bigger than 10')
-    if not 0 < temperature <= 1.0:
-        raise ValueError('temperature must, 0 < temperature <= 1.0')
-    if top_k < 5:
-        raise ValueError('top_k must bigger than 5')
-    from malaya.transformers.gpt2 import load
-
-    if tf.executing_eagerly():
-        logging.warning(
-            'Load pretrained GPT2 model will disable eager execution.'
-        )
-        tf.compat.v1.disable_eager_execution()
-
-    return load(
+    return gpt2_load.load(
         model=model,
-        generate_length=generate_length,
-        temperature=temperature,
-        top_k=top_k,
+        quantized=quantized,
         **kwargs,
     )
 
 
-def available_transformer():
+def available_isi_penting():
     """
-    List available transformer models.
+    List available transformer models for isi penting generator.
     """
     from malaya.function import describe_availability
 
-    return describe_availability(_transformer_availability)
+    return describe_availability(_isi_penting_availability)
+
+
+def available_commongen():
+    """
+    List available transformer models for commongen generator.
+    """
+    from malaya.function import describe_availability
+
+    return describe_availability(_commongen_availability)
 
 
 @check_type
-def transformer(model: str = 't5', quantized: bool = False, **kwargs):
+def isi_penting(model: str = 't5', quantized: bool = False, **kwargs):
     """
     Load Transformer model to generate a string given a isu penting.
 
@@ -337,20 +327,54 @@ def transformer(model: str = 't5', quantized: bool = False, **kwargs):
 
     Returns
     -------
-    result: model
-        List of model classes:
-
-        * if `t5` in model, will return `malaya.model.t5.Generator`.
+    result: malaya.model.t5.Generator class
     """
 
     model = model.lower()
-    if model not in _transformer_availability:
+    if model not in _isi_penting_availability:
         raise ValueError(
-            'model not supported, please check supported models from `malaya.generator.available_transformer()`.'
+            'model not supported, please check supported models from `malaya.generator.available_isi_penting()`.'
         )
 
     return t5_load.load(
         module='generator',
+        model=model,
+        model_class=Generator,
+        quantized=quantized,
+        **kwargs,
+    )
+
+
+@check_type
+def commongen(model: str = 't5', quantized: bool = False, **kwargs):
+    """
+    Load Transformer model to generate a string given keywords, trained on translated CommonGen.
+
+    Parameters
+    ----------
+    model : str, optional (default='base')
+        Model architecture supported. Allowed values:
+
+        * ``'t5'`` - T5 BASE parameters.
+        * ``'small-t5'`` - T5 SMALL parameters.
+
+    quantized : bool, optional (default=False)
+        if True, will load 8-bit quantized model.
+        Quantized model not necessary faster, totally depends on the machine.
+
+    Returns
+    -------
+    result: malaya.model.t5.CommonGen class
+    """
+
+    model = model.lower()
+    if model not in _commongen_availability:
+        raise ValueError(
+            'model not supported, please check supported models from `malaya.generator.available_commongen()`.'
+        )
+
+    return t5_load.load(
+        module='commongen',
         model=model,
         model_class=Generator,
         quantized=quantized,

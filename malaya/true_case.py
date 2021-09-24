@@ -1,20 +1,35 @@
 from malaya.function import check_file
 from malaya.model.tf import TrueCase
-from malaya.path import PATH_TRUE_CASE, S3_PATH_TRUE_CASE
 from malaya.supervised import transformer as load_transformer
+from malaya.supervised import t5 as t5_load
+from malaya.model.t5 import TrueCase as T5_TrueCase
 from herpetologist import check_type
 
 _transformer_availability = {
     'small': {
         'Size (MB)': 42.7,
         'Quantized Size (MB)': 13.1,
-        'Sequence Accuracy': 0.347,
+        'CER': 0.347,
+        'Suggested length': 256,
     },
     'base': {
         'Size (MB)': 234,
         'Quantized Size (MB)': 63.8,
-        'Sequence Accuracy': 0.696,
+        'CER': 0.696,
+        'Suggested length': 256,
     },
+    'super-tiny-t5': {
+        'Size (MB)': 81.8,
+        'Quantized Size (MB)': 27.1,
+        'CER': 0.03298,
+        'Suggested length': 256,
+    },
+    'super-super-tiny-t5': {
+        'Size (MB)': 39.6,
+        'Quantized Size (MB)': 12,
+        'CER': 0.037882,
+        'Suggested length': 256,
+    }
 }
 
 
@@ -39,6 +54,8 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
 
         * ``'small'`` - Transformer SMALL parameters.
         * ``'base'`` - Transformer BASE parameters.
+        * ``'super-tiny-t5'`` - T5 SUPER TINY parameters + segmentation.
+        * ``'super-super-tiny-t5'`` - T5 SUPER SUPER TINY parameters + segmentation.
 
     quantized : bool, optional (default=False)
         if True, will load 8-bit quantized model.
@@ -55,11 +72,20 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
             'model not supported, please check supported models from `malaya.true_case.available_transformer()`.'
         )
 
-    return load_transformer.load(
-        module='true-case',
-        model=model,
-        encoder='yttm',
-        model_class=TrueCase,
-        quantized=quantized,
-        **kwargs,
-    )
+    if 't5' in model:
+        return t5_load.load(
+            module='segmentation',
+            model=model,
+            model_class=T5_TrueCase,
+            quantized=quantized,
+            **kwargs,
+        )
+    else:
+        return load_transformer.load(
+            module='true-case',
+            model=model,
+            encoder='yttm',
+            model_class=TrueCase,
+            quantized=quantized,
+            **kwargs,
+        )

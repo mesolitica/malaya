@@ -16,32 +16,39 @@ Thanks to [openai/gpt2](https://github.com/openai/gpt-2) for opensourcing most o
 
 1. Provide GPT2-117M and GPT2-345M for Bahasa.
 
-## Acknowledgement
-
-Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://www.facebook.com/ligblou), [Mesolitica](https://mesolitica.com/) and [KeyReply](https://www.keyreply.com/) for sponsoring AWS, Google and GPU clouds to train Tiny-BERT for Bahasa.
-
 ## How-to
 
 **training session required TPU**,
 
-1. Download common-crawl data, [parse-common-crawl.ipynb](parse-common-crawl.ipynb).
+1. Prepare dataset, [prepare-tfrecord.py](prepare-tfrecord.py).
 
-2. Copy bahasa BPE tokenizer you need, in the script, I will use [bahasa-merges.txt](../preprocess/bahasa-merges.txt) and [bahasa-vocab.json](../preprocess/bahasa-vocab.json)
-
-3. generate data for training session, [generate-data.ipynb](generate-data.ipynb).
-
-4. Convert dataset into tfrecord, [convert-tfrecord.ipynb](convert-tfrecord.ipynb) and upload to your own GCS.
-
-5. Download pretrained GPT2 from OpenAI repository, [download-pretrained-to-gcs.ipynb](download-pretrained-to-gcs.ipynb)
-
-6. Start training, [train_tpu.py](train_tpu.py),
+2. Start training, [train_tpu.py](train_tpu.py),
 
 ```bash
+# using TPU v3-8
 python3 train_tpu.py \
---input_file=gs://mesolitica-general/gpt2-data/dataset.tfrecord \
---output_dir=gs://mesolitica-general/gpt2-117m \
---tpu_name=node-1 --tpu_zone=us-central1-a --gcp_project=mesolitica-cloud \
---init_checkpoint=gs://mesolitica-general/gpt2-117M-pretrained/model.ckpt \
+--input_file=gs://mesolitica-tpu-general/gpt2-data/*.tfrecord \
+--output_dir=gs://mesolitica-tpu-general/gpt2-117m \
+--config=gs://mesolitica-tpu-general/117m-hparams.json \
+--tpu_name=node-8 --tpu_zone=europe-west4-a --gcp_project=mesolitica-tpu \
+--learning_rate=2e-5 \
+--batch_size=192 \
+--num_train_steps=500000 \
+--iterations_per_loop=100 \
+--do_train=True
+```
+
+```bash
+# using TPU v3-8
+python3 train_tpu.py \
+--input_file=gs://mesolitica-tpu-general/gpt2-data/*.tfrecord \
+--output_dir=gs://mesolitica-tpu-general/gpt2-345m \
+--config=gs://mesolitica-tpu-general/345m-hparams.json \
+--tpu_name=node-1 --tpu_zone=europe-west4-a --gcp_project=mesolitica-tpu \
+--learning_rate=2e-5 \
+--batch_size=64 \
+--num_train_steps=500000 \
+--iterations_per_loop=100 \
 --do_train=True
 ```
 
@@ -54,7 +61,7 @@ python3 train_tpu.py \
   - 20k steps, 192 batch size, 1 V3-8 TPU.
   - perplexity, 5.4739473917272.
 
-Use [small-hparams.json](small-hparams.json) to load parameter config.
+Use [117m-hparams.json](117m-hparams.json) to load parameter config.
 
 2. **345M**, last update 1st May 2020, [345m-bahasa.tar.gz](https://f000.backblazeb2.com/file/malaya-model/bert-bahasa/345m-bahasa.tar.gz)
 
@@ -63,9 +70,23 @@ Use [small-hparams.json](small-hparams.json) to load parameter config.
   - 55k steps, 64 batch size, 1 V3-8 TPU.
   - perplexity, 2.45960311115695
 
-Use [base-hparams.json](base-hparams.json) to load parameter config.
+Use [345m-hparams.json](345m-hparams.json) to load parameter config.
 
-**Do not finetuned this model to build fake news generator**.
+1. **117M**, last update 23rd September 2021, [117m-bahasa.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/117m-bahasa.tar.gz)
+
+  - Vocab size 57k.
+  - Trained on raw wikipedia, raw parliament, raw news, raw wattpad, raw academia, translated the pile and raw common-crawl, ~2B words.
+  - perplexity, 6.232461.
+
+Use [117m-hparams.json](117m-hparams.json) to load parameter config.
+
+2. **345M**, last update 23rd September 2021, [345m-bahasa.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/345m-bahasa.tar.gz)
+
+  - Vocab size 57k.
+  - Trained on raw wikipedia, raw parliament, raw news, raw wattpad, raw academia, translated the pile and raw common-crawl, ~2B words.
+  - perplexity, 2.45960311115695
+
+Use [345m-hparams.json](345m-hparams.json) to load parameter config.
 
 ## Citation
 

@@ -1009,3 +1009,69 @@ class KnowledgeGraph(T2T, Seq2Seq):
         result: List[Dict]
         """
         return self._parse(self._beam_decoder(strings), get_networkx=get_networkx)
+
+
+class GPT2(T2T):
+    def __init__(self, input_nodes, output_nodes, sess, encoder):
+        T2T.__init__(
+            self,
+            input_nodes=input_nodes,
+            output_nodes=output_nodes,
+            sess=sess,
+            encoder=encoder,
+        )
+
+    @check_type
+    def generate(self, string: str,
+                 maxlen: int = 256,
+                 n_samples: int = 1,
+                 temperature: float = 1.0,
+                 top_k: int = 0,
+                 top_p: float = 0.0,
+                 ):
+        """
+        generate a text given an initial string.
+
+        Parameters
+        ----------
+        string : str
+        maxlen : int, optional (default=256)
+            length of sentence to generate.
+        n_samples : int, optional (default=1)
+            size of output.
+        temperature : float, optional (default=1.0)
+            temperature value, value should between 0 and 1.
+        top_k : int, optional (default=0)
+            top-k in nucleus sampling selection.
+        top_p : float, optional (default=0.0)
+            top-p in nucleus sampling selection, value should between 0 and 1.
+        if not 0 < temperature <= 1.0:
+            raise ValueError('temperature must, 0 < temperature <= 1.0')
+        if top_k < 5:
+            raise ValueError('top_k must bigger than 5')
+        if not 0 < top_p <= 1.0:
+            raise ValueError('top_p must, 0 < top_p <= 1.0')
+
+        Returns
+        -------
+        result: List[str]
+        """
+        if maxlen < 10:
+            raise ValueError('maxlen must bigger than 10')
+        if n_samples < 1:
+            raise ValueError('n_samples must <= 1')
+        if not 0 < temperature <= 1.0:
+            raise ValueError('temperature must, 0 < temperature <= 1.0')
+        if top_k < 5:
+            raise ValueError('top_k must bigger than 5')
+        if not 0 < top_p <= 1.0:
+            raise ValueError('top_p must, 0 < top_p <= 1.0')
+
+        encoded = self._encoder.encode(string)
+        r = self._execute(
+            inputs=[[encoded], temperature, top_k, top_p, maxlen, n_samples],
+            input_labels=['X', 'temp', 'top_k', 'top_p', 'maxlen', 'n_samples'],
+            output_labels=['output'],
+        )
+        output = r['output']
+        return [self._encoder.decode(o) for o in output]

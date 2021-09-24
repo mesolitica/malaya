@@ -37,6 +37,9 @@ STEMMER_VOCAB = 'bpe/stemmer.yttm'
 
 CONSTITUENCY_SETTING = 'setting/constituency.json'
 
+GPT2_ENCODER = 'bpe/gpt2-encoder.json'
+GPT2_VOCAB = 'bpe/gpt2-vocab.bpe'
+
 MODEL_VOCAB = {
     'albert': ALBERT_BPE_VOCAB,
     'bert': BERT_BPE_VOCAB,

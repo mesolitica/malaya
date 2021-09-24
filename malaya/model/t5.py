@@ -248,3 +248,57 @@ class Segmentation(T5, Seq2Seq):
         """
 
         return self._predict([f'segmentasi: {string}' for string in strings])
+
+
+class CommonGen(T5, Seq2Seq):
+    def __init__(self, input_nodes, output_nodes, sess, tokenizer):
+        T5.__init__(
+            self,
+            input_nodes=input_nodes,
+            output_nodes=output_nodes,
+            sess=sess,
+            tokenizer=tokenizer
+        )
+
+    @check_type
+    def greedy_decoder(self, strings: List[str]):
+        """
+        text generator given keywords.
+
+        Parameters
+        ----------
+        strings: List[str]
+
+        Returns
+        -------
+        result: List[str]
+        """
+
+        return self._predict([f'kata kunci: {string}' for string in strings])
+
+
+class TrueCase(T5, Seq2Seq):
+    def __init__(self, input_nodes, output_nodes, sess, tokenizer):
+        T5.__init__(
+            self,
+            input_nodes=input_nodes,
+            output_nodes=output_nodes,
+            sess=sess,
+            tokenizer=tokenizer
+        )
+
+    @check_type
+    def greedy_decoder(self, strings: List[str]):
+        """
+        true case text + segmentation.
+
+        Parameters
+        ----------
+        strings: List[str]
+
+        Returns
+        -------
+        result: List[str]
+        """
+
+        return self._predict([f'kes benar: {string}' for string in strings])
