@@ -45,11 +45,6 @@ _isi_penting_availability = {
     'small-t5': {'Size (MB)': 355.6, 'Quantized Size (MB)': 195, 'Maximum Length': 1024},
 }
 
-_commongen_availability = {
-    't5': {'Size (MB)': 1250, 'Quantized Size (MB)': 481, 'Maximum Length': 256},
-    'small-t5': {'Size (MB)': 355.6, 'Quantized Size (MB)': 195, 'Maximum Length': 256},
-}
-
 _gpt2_availability = {
     '117M': {'Size (MB)': 499, 'Quantized Size (MB)': 126, 'Perplexity': 6.232461},
     '345M': {'Size (MB)': 1420, 'Quantized Size (MB)': 357, 'Perplexity': 6.1040115},
@@ -299,15 +294,6 @@ def available_isi_penting():
     return describe_availability(_isi_penting_availability)
 
 
-def available_commongen():
-    """
-    List available transformer models for commongen generator.
-    """
-    from malaya.function import describe_availability
-
-    return describe_availability(_commongen_availability)
-
-
 @check_type
 def isi_penting(model: str = 't5', quantized: bool = False, **kwargs):
     """
@@ -338,43 +324,6 @@ def isi_penting(model: str = 't5', quantized: bool = False, **kwargs):
 
     return t5_load.load(
         module='generator',
-        model=model,
-        model_class=Generator,
-        quantized=quantized,
-        **kwargs,
-    )
-
-
-@check_type
-def commongen(model: str = 't5', quantized: bool = False, **kwargs):
-    """
-    Load Transformer model to generate a string given keywords, trained on translated CommonGen.
-
-    Parameters
-    ----------
-    model : str, optional (default='base')
-        Model architecture supported. Allowed values:
-
-        * ``'t5'`` - T5 BASE parameters.
-        * ``'small-t5'`` - T5 SMALL parameters.
-
-    quantized : bool, optional (default=False)
-        if True, will load 8-bit quantized model.
-        Quantized model not necessary faster, totally depends on the machine.
-
-    Returns
-    -------
-    result: malaya.model.t5.CommonGen class
-    """
-
-    model = model.lower()
-    if model not in _commongen_availability:
-        raise ValueError(
-            'model not supported, please check supported models from `malaya.generator.available_commongen()`.'
-        )
-
-    return t5_load.load(
-        module='commongen',
         model=model,
         model_class=Generator,
         quantized=quantized,

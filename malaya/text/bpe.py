@@ -9,6 +9,7 @@ import six
 import logging
 import collections
 import tensorflow as tf
+import regex as re
 from functools import lru_cache
 from malaya.text.function import transformer_textcleaning
 

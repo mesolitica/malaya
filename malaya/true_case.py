@@ -1,4 +1,3 @@
-from malaya.function import check_file
 from malaya.model.tf import TrueCase
 from malaya.supervised import transformer as load_transformer
 from malaya.supervised import t5 as t5_load
@@ -9,25 +8,25 @@ _transformer_availability = {
     'small': {
         'Size (MB)': 42.7,
         'Quantized Size (MB)': 13.1,
-        'CER': 0.347,
+        'CER': 0.0246012,
         'Suggested length': 256,
     },
     'base': {
         'Size (MB)': 234,
         'Quantized Size (MB)': 63.8,
-        'CER': 0.696,
+        'CER': 0.0146193,
         'Suggested length': 256,
     },
     'super-tiny-t5': {
         'Size (MB)': 81.8,
         'Quantized Size (MB)': 27.1,
-        'CER': 0.03298,
+        'CER': 0.0254679,
         'Suggested length': 256,
     },
     'super-super-tiny-t5': {
         'Size (MB)': 39.6,
         'Quantized Size (MB)': 12,
-        'CER': 0.037882,
+        'CER': 0.02533658,
         'Suggested length': 256,
     }
 }
@@ -54,8 +53,8 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
 
         * ``'small'`` - Transformer SMALL parameters.
         * ``'base'`` - Transformer BASE parameters.
-        * ``'super-tiny-t5'`` - T5 SUPER TINY parameters + segmentation.
-        * ``'super-super-tiny-t5'`` - T5 SUPER SUPER TINY parameters + segmentation.
+        * ``'super-tiny-t5'`` - T5 SUPER TINY parameters.
+        * ``'super-super-tiny-t5'`` - T5 SUPER SUPER TINY parameters.
 
     quantized : bool, optional (default=False)
         if True, will load 8-bit quantized model.
@@ -74,7 +73,7 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
 
     if 't5' in model:
         return t5_load.load(
-            module='segmentation',
+            module='true-case',
             model=model,
             model_class=T5_TrueCase,
             quantized=quantized,

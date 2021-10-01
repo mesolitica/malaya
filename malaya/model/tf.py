@@ -1011,7 +1011,7 @@ class KnowledgeGraph(T2T, Seq2Seq):
         return self._parse(self._beam_decoder(strings), get_networkx=get_networkx)
 
 
-class GPT2(T2T):
+class GPT2(T2T, Abstract):
     def __init__(self, input_nodes, output_nodes, sess, encoder):
         T2T.__init__(
             self,
@@ -1027,8 +1027,7 @@ class GPT2(T2T):
                  n_samples: int = 1,
                  temperature: float = 1.0,
                  top_k: int = 0,
-                 top_p: float = 0.0,
-                 ):
+                 top_p: float = 0.0,):
         """
         generate a text given an initial string.
 
@@ -1045,12 +1044,8 @@ class GPT2(T2T):
             top-k in nucleus sampling selection.
         top_p : float, optional (default=0.0)
             top-p in nucleus sampling selection, value should between 0 and 1.
-        if not 0 < temperature <= 1.0:
-            raise ValueError('temperature must, 0 < temperature <= 1.0')
-        if top_k < 5:
-            raise ValueError('top_k must bigger than 5')
-        if not 0 < top_p <= 1.0:
-            raise ValueError('top_p must, 0 < top_p <= 1.0')
+            if top_p == 0, will use top_k.
+            if top_p == 0 and top_k == 0, use greedy decoder.
 
         Returns
         -------
@@ -1062,9 +1057,9 @@ class GPT2(T2T):
             raise ValueError('n_samples must <= 1')
         if not 0 < temperature <= 1.0:
             raise ValueError('temperature must, 0 < temperature <= 1.0')
-        if top_k < 5:
-            raise ValueError('top_k must bigger than 5')
-        if not 0 < top_p <= 1.0:
+        if top_k < 0:
+            raise ValueError('top_k must bigger than 0')
+        if not 0 <= top_p <= 1.0:
             raise ValueError('top_p must, 0 < top_p <= 1.0')
 
         encoded = self._encoder.encode(string)
