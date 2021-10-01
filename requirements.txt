@@ -10,3 +10,4 @@ sentencepiece
 tqdm
 herpetologist
 malaya-boilerplate>=0.0.10
+regex
