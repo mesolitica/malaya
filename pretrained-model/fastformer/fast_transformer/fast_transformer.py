@@ -90,10 +90,11 @@ class FastTransformer(tf.keras.Model):
             block.fn.to_q_attn_logits = first_block.fn.to_q_attn_logits
             block.fn.to_k_attn_logits = first_block.fn.to_k_attn_logits
 
-        self.to_logits = tf.keras.Sequential(
+        self.to_pooler = tf.keras.Sequential(
             [
-                tf.keras.layers.LayerNormalization(axis=-1),
-                tf.keras.layers.Dense(num_tokens, input_dim=dim),
+                # tf.keras.layers.LayerNormalization(axis=-1),
+                tf.keras.layers.Dense(dim, input_dim=dim,
+                                      activation=tf.tanh),
             ]
         )
 
@@ -108,4 +109,5 @@ class FastTransformer(tf.keras.Model):
         for current_layer in self.fast_tranformer_layers:
             x = current_layer(x) + x
 
-        return self.to_logits(x)
+        first_token_tensor = tf.squeeze(x[:, 0:1, :], axis=1)
+        return x, self.to_pooler(first_token_tensor)

@@ -191,14 +191,14 @@ I0910 11:20:31.562414 140220436277056 validation.py:597]   next_sentence_loss = 
   - 500k steps, 1 TPU V3-8.
   - [BERT.wordpiece](tokenizer/BERT.wordpiece)
 
-3. **LARGE**, last update 6th September 2021, [bert-large-2021-09-06.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/bert-large-2021-09-06.tar.gz)
+5. **LARGE**, last update 6th September 2021, [bert-large-2021-09-06.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/bert-large-2021-09-06.tar.gz)
 
   - Vocab size 32k.
   - Trained on raw wikipedia, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession and translated the pile.
   - 500k steps, 1 TPU V3-8.
   - [BERT.wordpiece](tokenizer/BERT.wordpiece)
 
-3. **TINY**, last update 6th September 2021, [bert-tiny-2021-09-06.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/bert-tiny-2021-09-06.tar.gz)
+6. **TINY**, last update 6th September 2021, [bert-tiny-2021-09-06.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/bert-tiny-2021-09-06.tar.gz)
 
   - Vocab size 32k.
   - Trained on raw wikipedia, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession and translated the pile.
