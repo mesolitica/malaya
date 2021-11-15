@@ -3,6 +3,36 @@ from malaya.path import PATH_EMOTION, S3_PATH_EMOTION
 from herpetologist import check_type
 
 label = ['anger', 'fear', 'happy', 'love', 'sadness', 'surprise']
+label_goemotions = [
+    'admiration',
+    'amusement',
+    'anger',
+    'annoyance',
+    'approval',
+    'caring',
+    'confusion',
+    'curiosity',
+    'desire',
+    'disappointment',
+    'disapproval',
+    'disgust',
+    'embarrassment',
+    'excitement',
+    'fear',
+    'gratitude',
+    'grief',
+    'joy',
+    'love',
+    'nervousness',
+    'optimism',
+    'pride',
+    'realization',
+    'relief',
+    'remorse',
+    'sadness',
+    'surprise',
+    'neutral'
+]
 
 _transformer_availability = {
     'bert': {
@@ -53,6 +83,17 @@ _transformer_availability = {
 def available_transformer():
     """
     List available transformer emotion analysis models.
+    """
+    from malaya.function import describe_availability
+
+    return describe_availability(
+        _transformer_availability, text='tested on 20% test set.'
+    )
+
+
+def available_transformer_goemotions():
+    """
+    List available transformer goemotions analysis models.
     """
     from malaya.function import describe_availability
 
@@ -114,6 +155,50 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
         module='emotion',
         label=label,
         model=model,
+        quantized=quantized,
+        **kwargs
+    )
+
+
+@check_type
+def transformer_goemotions(model: str = 'xlnet', quantized: bool = False, **kwargs):
+    """
+    Load Transformer goemotions model.
+
+    Parameters
+    ----------
+    model : str, optional (default='bert')
+        Model architecture supported. Allowed values:
+
+        * ``'bert'`` - Google BERT BASE parameters.
+        * ``'tiny-bert'`` - Google BERT TINY parameters.
+        * ``'albert'`` - Google ALBERT BASE parameters.
+        * ``'tiny-albert'`` - Google ALBERT TINY parameters.
+        * ``'xlnet'`` - Google XLNET BASE parameters.
+        * ``'alxlnet'`` - Malaya ALXLNET BASE parameters.
+
+    quantized : bool, optional (default=False)
+        if True, will load 8-bit quantized model.
+        Quantized model not necessary faster, totally depends on the machine.
+
+    Returns
+    -------
+    result: model
+        List of model classes:
+
+        * if `bert` in model, will return `malaya.model.bert.MulticlassBERT`.
+        * if `xlnet` in model, will return `malaya.model.xlnet.MulticlassXLNET`.
+    """
+    model = model.lower()
+    if model not in _transformer_goemotions_availability:
+        raise ValueError(
+            'model not supported, please check supported models from `malaya.emotion.available_transformer_goemotions()`.'
+        )
+    return classification.transformer(
+        module='emotion-goemotions',
+        label=label,
+        model=model,
+        sigmoid=True,
         quantized=quantized,
         **kwargs
     )

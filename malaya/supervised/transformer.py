@@ -9,6 +9,7 @@ from malaya.text.bpe import (
     SentencePieceBatchEncoder,
     YTTMEncoder,
 )
+from malaya.preprocessing import Tokenizer
 from malaya.text.t2t import text_encoder
 from malaya.path import T2T_BPE_MODEL, LM_VOCAB
 
@@ -78,6 +79,7 @@ def load_tatabahasa(module, model, model_class, quantized=False, **kwargs):
 
     g = load_graph(path['model'], **kwargs)
     tokenizer = SentencePieceEncoder(vocab_file=path['vocab'])
+    word_tokenizer = Tokenizer(date=False, time=False).tokenize
 
     inputs = ['x_placeholder']
     outputs = ['greedy', 'tag_greedy']
@@ -88,4 +90,5 @@ def load_tatabahasa(module, model, model_class, quantized=False, **kwargs):
         output_nodes=output_nodes,
         sess=generate_session(graph=g, **kwargs),
         tokenizer=tokenizer,
+        word_tokenizer=word_tokenizer,
     )

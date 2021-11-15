@@ -33,7 +33,7 @@ class T5(Abstract):
 
 
 class Summarization(T5, Seq2Seq):
-    def __init__(self, input_nodes, output_nodes, sess, tokenizer):
+    def __init__(self, input_nodes, output_nodes, sess, tokenizer, **kwargs):
         T5.__init__(
             self,
             input_nodes=input_nodes,
@@ -73,7 +73,7 @@ class Summarization(T5, Seq2Seq):
 
 
 class Generator(T5, Seq2Seq):
-    def __init__(self, input_nodes, output_nodes, sess, tokenizer):
+    def __init__(self, input_nodes, output_nodes, sess, tokenizer, **kwargs):
         T5.__init__(
             self,
             input_nodes=input_nodes,
@@ -107,7 +107,7 @@ class Generator(T5, Seq2Seq):
 
 
 class Paraphrase(T5, Seq2Seq):
-    def __init__(self, input_nodes, output_nodes, sess, tokenizer):
+    def __init__(self, input_nodes, output_nodes, sess, tokenizer, **kwargs):
         T5.__init__(
             self,
             input_nodes=input_nodes,
@@ -134,7 +134,7 @@ class Paraphrase(T5, Seq2Seq):
 
 
 class KnowledgeGraph(T5, Seq2Seq):
-    def __init__(self, input_nodes, output_nodes, sess, tokenizer):
+    def __init__(self, input_nodes, output_nodes, sess, tokenizer, **kwargs):
         T5.__init__(
             self,
             input_nodes=input_nodes,
@@ -224,7 +224,7 @@ class Spell(T5, Seq2Seq):
 
 
 class Segmentation(T5, Seq2Seq):
-    def __init__(self, input_nodes, output_nodes, sess, tokenizer):
+    def __init__(self, input_nodes, output_nodes, sess, tokenizer, **kwargs):
         T5.__init__(
             self,
             input_nodes=input_nodes,
@@ -251,7 +251,7 @@ class Segmentation(T5, Seq2Seq):
 
 
 class CommonGen(T5, Seq2Seq):
-    def __init__(self, input_nodes, output_nodes, sess, tokenizer):
+    def __init__(self, input_nodes, output_nodes, sess, tokenizer, **kwargs):
         T5.__init__(
             self,
             input_nodes=input_nodes,
@@ -278,7 +278,7 @@ class CommonGen(T5, Seq2Seq):
 
 
 class TrueCase(T5, Seq2Seq):
-    def __init__(self, input_nodes, output_nodes, sess, tokenizer):
+    def __init__(self, input_nodes, output_nodes, sess, tokenizer, **kwargs):
         T5.__init__(
             self,
             input_nodes=input_nodes,
@@ -302,3 +302,31 @@ class TrueCase(T5, Seq2Seq):
         """
 
         return self._predict([f'kes benar: {string}' for string in strings])
+
+
+class Tatabahasa(T5, Seq2Seq):
+    def __init__(self, input_nodes, output_nodes, sess, tokenizer, word_tokenizer, **kwargs):
+        T5.__init__(
+            self,
+            input_nodes=input_nodes,
+            output_nodes=output_nodes,
+            sess=sess,
+            tokenizer=tokenizer
+        )
+        self._word_tokenizer = word_tokenizer
+
+    @check_type
+    def greedy_decoder(self, strings: List[str]):
+        """
+        fix kesalahan tatabahasa.
+
+        Parameters
+        ----------
+        strings: List[str]
+
+        Returns
+        -------
+        result: List[str]
+        """
+        strings = [' '.join(self._word_tokenizer(s)) for s in strings]
+        r = self._predict([f'kesalahan tatabahasa: {string}' for string in strings])

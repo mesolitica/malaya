@@ -6,6 +6,7 @@ from malaya.function import (
 )
 from malaya.text.bpe import SentencePieceBatchEncoder
 from malaya.path import MS_EN_BPE_MODEL, T2T_BPE_MODEL
+from malaya.preprocessing import Tokenizer
 
 VOCAB_MODEL = {'generator': T2T_BPE_MODEL}
 
@@ -34,8 +35,14 @@ def load(module, model, model_class, quantized=False, **kwargs):
         g, inputs, outputs, extra={'decode': 'import/SelectV2_3:0'}
     )
 
+    if module == 'kesalahan-tatabahasa':
+        word_tokenizer = Tokenizer(date=False, time=False).tokenize
+    else:
+        word_tokenizer = None
+
     return model_class(
         input_nodes=input_nodes, output_nodes=output_nodes,
         sess=generate_session(graph=g, **kwargs),
         tokenizer=tokenizer,
+        word_tokenizer=word_tokenizer,
     )

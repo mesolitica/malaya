@@ -52,6 +52,30 @@ python3 run_pretraining.py \
   --use_tpu=True
 ```
 
+```bash
+python3 run_pretraining.py \
+  --input_file=gs://mesolitica-tpu-general/bert-data-social-media/tfrecord/*.tfrecord \
+  --output_dir=gs://mesolitica-tpu-general/fastformer-tiny-social-media \
+  --do_train=True \
+  --do_eval=False \
+  --depth=4 \
+  --heads=12 \
+  --dim=336 \
+  --num_tokens=32000 \
+  --max_seq_len=2048 \
+  --train_batch_size=2048 \
+  --max_seq_length=128 \
+  --max_predictions_per_seq=20 \
+  --num_train_steps=500000 \
+  --learning_rate=2e-5 \
+  --iterations_per_loop=100 \
+  --tpu_name=node-2 \
+  --tpu_zone=europe-west4-a \
+  --save_checkpoints_steps=25000 \
+  --num_warmup_steps=50000 \
+  --use_tpu=True
+```
+
 **TPU BASE**,
 
 ```bash
@@ -68,11 +92,35 @@ python3 run_pretraining.py \
   --train_batch_size=256 \
   --max_seq_length=128 \
   --max_predictions_per_seq=20 \
-  --num_train_steps=500000 \
+  --num_train_steps=1000000 \
   --learning_rate=2e-5 \
   --iterations_per_loop=100 \
   --tpu_name=node-1 \
   --tpu_zone=us-central1-f \
+  --save_checkpoints_steps=25000 \
+  --num_warmup_steps=50000 \
+  --use_tpu=True
+```
+
+```bash
+python3 run_pretraining.py \
+  --input_file=gs://mesolitica-tpu-general/bert-data-social-media/tfrecord/*.tfrecord \
+  --output_dir=gs://mesolitica-tpu-general/fastformer-base-social-media \
+  --do_train=True \
+  --do_eval=False \
+  --depth=12 \
+  --heads=12 \
+  --dim=768 \
+  --num_tokens=32000 \
+  --max_seq_len=2048 \
+  --train_batch_size=512 \
+  --max_seq_length=128 \
+  --max_predictions_per_seq=20 \
+  --num_train_steps=1000000 \
+  --learning_rate=2e-5 \
+  --iterations_per_loop=100 \
+  --tpu_name=node-1 \
+  --tpu_zone=europe-west4-a \
   --save_checkpoints_steps=25000 \
   --num_warmup_steps=50000 \
   --use_tpu=True
@@ -94,6 +142,19 @@ python3 run_pretraining.py \
   - 500k steps, 1 TPU V2-8.
   - [BERT.wordpiece](../bert/tokenizer/BERT.wordpiece)
 
+3. **BASE**, last update 2nd November 2021, [fastformer-base-social-media-2021-11-02.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/fastformer-base-social-media-2021-11-02.tar.gz)
+
+  - Vocab size 32k.
+  - Trained on raw wikipedia, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession, twitter and instagram.
+  - 500k steps, 1 TPU V2-8.
+  - [BERT.wordpiece](../bert/tokenizer/BERT.wordpiece)
+
+4. **TINY**, last update 2nd November 2021, [fastformer-tiny-social-media-2021-11-02.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/fastformer-tiny-social-media-2021-11-02.tar.gz)
+
+  - Vocab size 32k.
+  - Trained on raw wikipedia, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession, twitter and instagram..
+  - 500k steps, 1 TPU V2-8.
+  - [BERT.wordpiece](../bert/tokenizer/BERT.wordpiece)
 
 ## Acknowledgement
 

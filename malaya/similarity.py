@@ -19,6 +19,12 @@ from malaya.path import MODEL_VOCAB, MODEL_BPE
 from herpetologist import check_type
 from typing import List, Tuple, Callable
 
+similarity_functions = {
+    'cosine': cosine_similarity,
+    'euclidean': euclidean_distances,
+    'manhattan': manhattan_distances,
+}
+
 
 class VectorizerSimilarity:
     def __init__(self, vectorizer):
@@ -38,13 +44,8 @@ class VectorizerSimilarity:
         identical = left_strings == right_strings
 
         similarity = similarity.lower()
-        if similarity == 'cosine':
-            similarity_function = cosine_similarity
-        elif similarity == 'euclidean':
-            similarity_function = euclidean_distances
-        elif similarity == 'manhattan':
-            similarity_function = manhattan_distances
-        else:
+        similarity_function = similarity_functions.get(similarity)
+        if similarity_function is None:
             raise ValueError(
                 "similarity only supports 'cosine', 'euclidean', and 'manhattan'"
             )

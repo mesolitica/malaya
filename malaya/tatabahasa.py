@@ -1,8 +1,10 @@
-from malaya.model.tf import Tatabahasa
+from malaya.supervised import t5 as t5_load
 from malaya.supervised import transformer as load_transformer
+from malaya.model.tf import Tatabahasa
+from malaya.model.t5 import Tatabahasa as T5_Tatabahasa
 from herpetologist import check_type
 
-_transformer_availability = {
+_transformer_tagging_availability = {
     'small': {
         'Size (MB)': 397,
         'Quantized Size (MB)': 100,
@@ -17,8 +19,26 @@ _transformer_availability = {
     },
 }
 
+_transformer_availability = {
+    't5': {
+        'Size (MB)': 1250,
+        'Quantized Size (MB)': 481,
+        'WER': 0,
+    },
+    'small-t5': {
+        'Size (MB)': 355.6,
+        'Quantized Size (MB)': 195,
+        'WER': 0.0187973,
+    },
+    'tiny-t5': {
+        'Size (MB)': 208,
+        'Quantized Size (MB)': 103,
+        'WER': 0.0328037,
+    },
+}
 
-def describe():
+
+def describe_tagging():
     """
     Describe kesalahan tatabahasa supported.
     Full description at https://tatabahasabm.tripod.com/tata/salahtata.htm
@@ -119,6 +139,18 @@ def describe():
     return describe_availability(d, transpose=False)
 
 
+def available_transformer_tagging():
+    """
+    List available transformer tagging models.
+    """
+    from malaya.function import describe_availability
+
+    return describe_availability(
+        _transformer_tagging_availability,
+        text='tested on 10k kesalahan tatabahasa texts.',
+    )
+
+
 def available_transformer():
     """
     List available transformer models.
@@ -127,12 +159,52 @@ def available_transformer():
 
     return describe_availability(
         _transformer_availability,
-        text='tested on 10k kesalahan tatabahasa texts.',
+        text='tested on 7.5k kesalahan tatabahasa texts.',
+    )
+
+
+@ check_type
+def transformer(model: str = 'small-t5', quantized: bool = False, **kwargs):
+    """
+    Load Malaya transformer encoder-decoder model to correct a `kesalahan tatabahasa` text.
+
+    Parameters
+    ----------
+    model : str, optional (default='small-t5')
+        Model architecture supported. Allowed values:
+
+        * ``'t5'`` - T5 BASE parameters.
+        * ``'small-t5'`` - T5 SMALL parameters.
+        * ``'tiny-t5'`` - T5 TINY parameters.
+
+    quantized : bool, optional (default=False)
+        if True, will load 8-bit quantized model.
+        Quantized model not necessary faster, totally depends on the machine.
+
+    Returns
+    -------
+    result: model
+        List of model classes:
+
+        * if `t5` in model, will return `malaya.model.t5.Tatabahasa`.
+    """
+
+    model = model.lower()
+    if model not in _transformer_availability:
+        raise ValueError(
+            'model not supported, please check supported models from `malaya.tatabahasa.available_transformer()`.'
+        )
+    return t5_load.load(
+        module='kesalahan-tatabahasa',
+        model=model,
+        model_class=T5_Tatabahasa,
+        quantized=quantized,
+        **kwargs,
     )
 
 
 @check_type
-def transformer(model: str = 'base', quantized: bool = False, **kwargs):
+def transformer_tagging(model: str = 'base', quantized: bool = False, **kwargs):
     """
     Load Malaya transformer encoder-decoder + tagging model to correct a `kesalahan tatabahasa` text.
 
@@ -156,7 +228,7 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
     model = model.lower()
     if model not in _transformer_availability:
         raise ValueError(
-            'model not supported, please check supported models from `malaya.tatabahasa.available_transformer()`.'
+            'model not supported, please check supported models from `malaya.tatabahasa.available_transformer_tagging()`.'
         )
 
     return load_transformer.load_tatabahasa(

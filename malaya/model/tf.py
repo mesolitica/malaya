@@ -49,7 +49,7 @@ def _convert_sparse_matrix_to_sparse_tensor(X, got_limit=False, limit=5):
 
 class DeepLang(Classification):
     def __init__(
-        self, input_nodes, output_nodes, sess, vectorizer, bpe, label
+        self, input_nodes, output_nodes, sess, vectorizer, bpe, label, **kwargs
     ):
         self._input_nodes = input_nodes
         self._output_nodes = output_nodes
@@ -126,7 +126,8 @@ class DeepLang(Classification):
 
 class Constituency(Abstract):
     def __init__(
-        self, input_nodes, output_nodes, sess, tokenizer, dictionary, mode
+        self, input_nodes, output_nodes, sess, tokenizer, dictionary, mode,
+        **kwargs
     ):
 
         self._input_nodes = input_nodes
@@ -308,7 +309,7 @@ class Constituency(Abstract):
 
 
 class Summarization(Seq2Seq):
-    def __init__(self, input_nodes, output_nodes, sess, tokenizer):
+    def __init__(self, input_nodes, output_nodes, sess, tokenizer, **kwargs):
 
         self._input_nodes = input_nodes
         self._output_nodes = output_nodes
@@ -467,7 +468,7 @@ class Summarization(Seq2Seq):
 
 
 class Paraphrase(Seq2Seq):
-    def __init__(self, input_nodes, output_nodes, sess, tokenizer):
+    def __init__(self, input_nodes, output_nodes, sess, tokenizer, **kwargs):
 
         self._input_nodes = input_nodes
         self._output_nodes = output_nodes
@@ -553,7 +554,7 @@ class Paraphrase(Seq2Seq):
 
 
 class Translation(T2T, Seq2Seq):
-    def __init__(self, input_nodes, output_nodes, sess, encoder):
+    def __init__(self, input_nodes, output_nodes, sess, encoder, **kwargs):
 
         T2T.__init__(
             self,
@@ -594,7 +595,7 @@ class Translation(T2T, Seq2Seq):
 
 
 class TrueCase(T2T, Seq2Seq):
-    def __init__(self, input_nodes, output_nodes, sess, encoder):
+    def __init__(self, input_nodes, output_nodes, sess, encoder, **kwargs):
         T2T.__init__(
             self,
             input_nodes=input_nodes,
@@ -637,7 +638,7 @@ class TrueCase(T2T, Seq2Seq):
 
 
 class Segmentation(T2T, Seq2Seq):
-    def __init__(self, input_nodes, output_nodes, sess, encoder):
+    def __init__(self, input_nodes, output_nodes, sess, encoder, **kwargs):
         T2T.__init__(
             self,
             input_nodes=input_nodes,
@@ -680,13 +681,15 @@ class Segmentation(T2T, Seq2Seq):
 
 
 class Tatabahasa(Seq2Seq):
-    def __init__(self, input_nodes, output_nodes, sess, tokenizer):
+    def __init__(self, input_nodes, output_nodes, sess, tokenizer, word_tokenizer, **kwargs):
         self._input_nodes = input_nodes
         self._output_nodes = output_nodes
         self._sess = sess
         self._tokenizer = tokenizer
+        self._word_tokenizer = word_tokenizer
 
     def _predict(self, strings):
+        strings = [' '.join(self._word_tokenizer(s)) for s in strings]
         sequences = [
             encode_sentencepiece(
                 self._tokenizer.sp,
@@ -744,6 +747,7 @@ class SQUAD(Abstract):
         module,
         mode,
         length,
+        **kwargs
     ):
         self._input_nodes = input_nodes
         self._output_nodes = output_nodes
@@ -934,7 +938,7 @@ class SQUAD(Abstract):
 
 
 class KnowledgeGraph(T2T, Seq2Seq):
-    def __init__(self, input_nodes, output_nodes, sess, encoder):
+    def __init__(self, input_nodes, output_nodes, sess, encoder, **kwargs):
         T2T.__init__(
             self,
             input_nodes=input_nodes,
@@ -1012,7 +1016,7 @@ class KnowledgeGraph(T2T, Seq2Seq):
 
 
 class GPT2(T2T, Abstract):
-    def __init__(self, input_nodes, output_nodes, sess, encoder):
+    def __init__(self, input_nodes, output_nodes, sess, encoder, **kwargs):
         T2T.__init__(
             self,
             input_nodes=input_nodes,

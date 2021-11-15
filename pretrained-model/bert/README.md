@@ -36,6 +36,17 @@ split -l 1000000 -d --additional-suffix=.txt ../filtered-dumping-academia.txt sp
 split -l 1000000 -d --additional-suffix=.txt ../dumping-parliament.txt splitted-parliament
 ```
 
+Or social media,
+
+```bash
+mkdir splitted
+cd splitted
+split -l 1000000 -d --additional-suffix=.txt ../filtered-dumping-wiki.txt splitted-wiki
+split -l 1000000 -d --additional-suffix=.txt ../dumping-cleaned-news.txt splitted-news
+split -l 1000000 -d --additional-suffix=.txt ../dumping-twitter.txt splitted-twitter
+split -l 1000000 -d --additional-suffix=.txt ../dumping-instagram.txt splitted-instagram
+```
+
 3. Create pretraining dataset,
 
 ```bash
