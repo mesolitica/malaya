@@ -5,7 +5,7 @@ import functools
 
 vocab = 'gs://mesolitica-tpu-general/t5-data-v2/sp10m.cased.ms-en.model'
 tpu = tf.distribute.cluster_resolver.TPUClusterResolver(
-    'node-3', zone='us-central1-f', project='mesolitica-tpu'
+    'node-5', zone='us-central1-f', project='mesolitica-tpu'
 )
 TPU_ADDRESS = tpu.get_master()
 TPU_TOPOLOGY = '2x2'
@@ -16,7 +16,7 @@ def kesalahan_tatabahasa_dataset(split, shuffle_files=False):
     del shuffle_files
     ds = tf.data.TextLineDataset(
         [
-            'gs://mesolitica-tpu-general/t5-data-v2/knowledge-graph.tsv'
+            'gs://mesolitica-tpu-general/t5-data-v2/kesalahan-tatabahasa.tsv'
         ]
     )
 
@@ -84,7 +84,7 @@ def main(_):
         iterations_per_loop=100,
     )
 
-    FINETUNE_STEPS = 50000
+    FINETUNE_STEPS = 100000
     MODEL_DIR = 'gs://mesolitica-tpu-general/t5-tiny-v2'
 
     model.finetune(

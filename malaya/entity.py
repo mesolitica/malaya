@@ -241,7 +241,7 @@ def available_transformer_ontonotes5():
 @check_type
 def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
     """
-    Load Transformer Entity Tagging model, transfer learning Transformer + CRF.
+    Load Transformer Entity Tagging model trained on Malaya Entity, transfer learning Transformer + CRF.
 
     Parameters
     ----------
@@ -321,6 +321,24 @@ def transformer_ontonotes5(
         quantized=quantized,
         **kwargs
     )
+
+
+def transformer_generic(model: str = 'fastformer-layer1', quantized: bool = False, **kwargs):
+    """
+    Load Transformer Generic Entity Tagging model trained on Ontonotes 5 Bahasa + Malaya Entity, transfer learning Transformer + CRF.
+
+    Parameters
+    ----------
+    model : str, optional (default='fastformer-layer1')
+        Model architecture supported. Allowed values:
+
+        * ``'fastformer-layer1'`` - Fastformer BASE 1 layer only parameters.
+        * ``'tiny-fastformer-layer1'`` - Fastformer TINY 1 layer only parameters.
+
+    quantized : bool, optional (default=False)
+        if True, will load 8-bit quantized model.
+        Quantized model not necessary faster, totally depends on the machine.
+    """
 
 
 def general_entity(model=None):

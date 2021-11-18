@@ -70,7 +70,7 @@ def main(_):
 
     model_parallelism, train_batch_size, keep_checkpoint_max = 1, 256, 16
 
-    BASE_DIR = 'gs://mesolitica-tpu-general/t5-small-kesalahan-tatabahasa'
+    BASE_DIR = 'gs://mesolitica-tpu-general/t5-super-tiny-kesalahan-tatabahasa'
     model = t5.models.MtfModel(
         model_dir=BASE_DIR,
         tpu=TPU_ADDRESS,
@@ -85,7 +85,7 @@ def main(_):
     )
 
     FINETUNE_STEPS = 100000
-    MODEL_DIR = 'gs://mesolitica-tpu-general/t5-small-v2'
+    MODEL_DIR = 'gs://mesolitica-tpu-general/t5-super-tiny-v2'
 
     model.finetune(
         mixture_or_task_name='kesalahan_tatabahasa_bahasa',

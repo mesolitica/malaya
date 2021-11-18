@@ -13,6 +13,12 @@ from herpetologist import check_type
 from typing import List
 
 _transformer_availability = {
+    'tiny': {
+        'Size (MB)': 42.7,
+        'Quantized Size (MB)': 13.1,
+        'WER': 0.208520,
+        'Suggested length': 256,
+    },
     'small': {
         'Size (MB)': 42.7,
         'Quantized Size (MB)': 13.1,
@@ -32,6 +38,12 @@ _transformer_availability = {
         'Suggested length': 256,
     },
     'super-super-tiny-t5': {
+        'Size (MB)': 39.6,
+        'Quantized Size (MB)': 12,
+        'WER': 0.037882,
+        'Suggested length': 256,
+    }
+    '3x-super-tiny-t5': {
         'Size (MB)': 39.6,
         'Quantized Size (MB)': 12,
         'WER': 0.037882,

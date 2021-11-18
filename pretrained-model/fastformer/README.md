@@ -76,6 +76,30 @@ python3 run_pretraining.py \
   --use_tpu=True
 ```
 
+```bash
+python3 run_pretraining.py \
+  --input_file=gs://mesolitica-tpu-general/bert-data-4k/*/*.tfrecord \
+  --output_dir=gs://mesolitica-tpu-general/fastformer-tiny-4k \
+  --do_train=True \
+  --do_eval=False \
+  --depth=4 \
+  --heads=12 \
+  --dim=336 \
+  --num_tokens=4000 \
+  --max_seq_len=2048 \
+  --train_batch_size=2048 \
+  --max_seq_length=128 \
+  --max_predictions_per_seq=20 \
+  --num_train_steps=500000 \
+  --learning_rate=2e-5 \
+  --iterations_per_loop=100 \
+  --tpu_name=node-2 \
+  --tpu_zone=europe-west4-a \
+  --save_checkpoints_steps=25000 \
+  --num_warmup_steps=50000 \
+  --use_tpu=True
+```
+
 **TPU BASE**,
 
 ```bash
@@ -112,6 +136,30 @@ python3 run_pretraining.py \
   --heads=12 \
   --dim=768 \
   --num_tokens=32000 \
+  --max_seq_len=2048 \
+  --train_batch_size=512 \
+  --max_seq_length=128 \
+  --max_predictions_per_seq=20 \
+  --num_train_steps=1000000 \
+  --learning_rate=2e-5 \
+  --iterations_per_loop=100 \
+  --tpu_name=node-1 \
+  --tpu_zone=europe-west4-a \
+  --save_checkpoints_steps=25000 \
+  --num_warmup_steps=50000 \
+  --use_tpu=True
+```
+
+```bash
+python3 run_pretraining.py \
+  --input_file=gs://mesolitica-tpu-general/bert-data-4k/*/*.tfrecord \
+  --output_dir=gs://mesolitica-tpu-general/fastformer-base-4k \
+  --do_train=True \
+  --do_eval=False \
+  --depth=12 \
+  --heads=12 \
+  --dim=768 \
+  --num_tokens=4000 \
   --max_seq_len=2048 \
   --train_batch_size=512 \
   --max_seq_length=128 \

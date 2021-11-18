@@ -73,37 +73,58 @@ python3 train_tpu_large.py
 3. **BASE**, last update 28th July 2021, [t5-base-2021-07-28.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/t5-base-2021-07-28.tar.gz)
 
   - Vocab size 32k.
-  - Trained on unsupervised, question-answer, pairing, news-title, news summarization, EN-MS translation, MS-EN translation, knowledge gprah triplets, paraphrase and SNLI tasks.
+  - Trained on unsupervised, question-answer, pairing, news-title, news summarization, EN-MS translation, MS-EN translation, knowledge graph triplets, paraphrase and SNLI tasks.
   - 1M steps, 1 V3-8 TPU.
   - BASE size (427MB).
 
 4. **SMALL**, last update 28th July 2021, [t5-small-2021-07-28.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/t5-small-2021-07-28.tar.gz)
 
   - Vocab size 32k.
-  - Trained on unsupervised, question-answer, pairing, news-title, news summarization, EN-MS translation, MS-EN translation, knowledge gprah triplets, paraphrase and SNLI tasks.
+  - Trained on unsupervised, question-answer, pairing, news-title, news summarization, EN-MS translation, MS-EN translation, knowledge graph triplets, paraphrase and SNLI tasks.
   - 1M steps, 1 V3-8 TPU.
   - SMALL size (112MB).
 
 5. **TINY**, last update 28th July 2021, [t5-tiny-2021-07-28.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/t5-tiny-2021-07-28.tar.gz)
 
   - Vocab size 32k.
-  - Trained on unsupervised, question-answer, pairing, news-title, news summarization, EN-MS translation, MS-EN translation, knowledge gprah triplets, paraphrase and SNLI tasks.
+  - Trained on unsupervised, question-answer, pairing, news-title, news summarization, EN-MS translation, MS-EN translation, knowledge graph triplets, paraphrase and SNLI tasks.
   - 1M steps, 1 V3-8 TPU.
   - TINY size (66.8MB).
 
 5. **SUPER TINY**, last update 28th July 2021, [t5-super-tiny-2021-07-28.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/t5-super-tiny-2021-07-28.tar.gz)
 
   - Vocab size 32k.
-  - Trained on unsupervised, question-answer, pairing, news-title, news summarization, EN-MS translation, MS-EN translation, knowledge gprah triplets, paraphrase and SNLI tasks.
+  - Trained on unsupervised, question-answer, pairing, news-title, news summarization, EN-MS translation, MS-EN translation, knowledge graph triplets, paraphrase and SNLI tasks.
   - 1M steps, 1 V3-8 TPU.
   - SUPER TINY size (25.6MB).
 
 6. **SUPER SUPER TINY**, last update 28th July 2021, [t5-super-super-tiny-2021-07-28.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/t5-super-super-tiny-2021-07-28.tar.gz)
 
   - Vocab size 32k.
-  - Trained on unsupervised, question-answer, pairing, news-title, news summarization, EN-MS translation, MS-EN translation, knowledge gprah triplets, paraphrase and SNLI tasks.
+  - Trained on unsupervised, question-answer, pairing, news-title, news summarization, EN-MS translation, MS-EN translation, knowledge graph triplets, paraphrase and SNLI tasks.
   - 1M steps, 1 V3-8 TPU.
   - SUPER SUPER TINY size (18.7MB).
+
+7. **BASE**, last update 15th November 2021, [t5-base-social-media-2021-11-15.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/t5-base-social-media-2021-11-15.tar.gz)
+
+  - Vocab size 32k.
+  - Trained on unsupervised, question-answer, pairing, news-title, EN-MS translation, MS-EN translation and social media tasks.
+  - 1M steps, 1 V3-8 TPU.
+  - BASE size (427MB).
+
+8. **SMALL**, last update 15th November 2021, [t5-small-social-media-2021-11-15.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/t5-small-social-media-2021-11-15.tar.gz)
+
+  - Vocab size 32k.
+  - Trained on unsupervised, question-answer, pairing, news-title, EN-MS translation, MS-EN translation and social media tasks.
+  - 1M steps, 1 V3-8 TPU.
+  - SMALL size (112MB).
+
+9. **TINY**, last update 15th November 2021, [t5-tiny-social-media-2021-11-15.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/t5-tiny-social-media-2021-11-15.tar.gz)
+
+  - Vocab size 32k.
+  - Trained on unsupervised, question-answer, pairing, news-title, EN-MS translation, MS-EN translation and social media tasks.
+  - 1M steps, 1 V3-8 TPU.
+  - TINY size (66.8MB).
 
 ## Citation
 

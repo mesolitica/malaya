@@ -77,6 +77,79 @@ _transformer_availability = {
         'macro recall': 0.99697,
         'macro f1-score': 0.99680,
     },
+    'fastformer': {
+        'Size (MB)': 446,
+        'Quantized Size (MB)': 113,
+        'macro precision': 0.99131,
+        'macro recall': 0.99025,
+        'macro f1-score': 0.99077,
+    },
+    'tiny-fastformer': {
+        'Size (MB)': 77.2,
+        'Quantized Size (MB)': 19.6,
+        'macro precision': 0.98879,
+        'macro recall': 0.98878,
+        'macro f1-score': 0.98877,
+    }
+}
+
+_transformer_goemotions_availability = {
+    'bert': {
+        'Size (MB)': 425.6,
+        'Quantized Size (MB)': 111,
+        'micro precision': 0.55666,
+        'micro recall': 0.28301,
+        'micro f1-score': 0.37525,
+    },
+    'tiny-bert': {
+        'Size (MB)': 57.4,
+        'Quantized Size (MB)': 15.4,
+        'micro precision': 0.55666,
+        'micro recall': 0.28301,
+        'micro f1-score': 0.37525,
+    },
+    'albert': {
+        'Size (MB)': 48.6,
+        'Quantized Size (MB)': 12.8,
+        'micro precision': 0.55666,
+        'micro recall': 0.28301,
+        'micro f1-score': 0.37525,
+    },
+    'tiny-albert': {
+        'Size (MB)': 22.4,
+        'Quantized Size (MB)': 5.98,
+        'micro precision': 0.55666,
+        'micro recall': 0.28301,
+        'micro f1-score': 0.37525,
+    },
+    'xlnet': {
+        'Size (MB)': 446.5,
+        'Quantized Size (MB)': 118,
+        'micro precision': 0.55666,
+        'micro recall': 0.28301,
+        'micro f1-score': 0.37525,
+    },
+    'alxlnet': {
+        'Size (MB)': 46.8,
+        'Quantized Size (MB)': 13.3,
+        'micro precision': 0.55666,
+        'micro recall': 0.28301,
+        'micro f1-score': 0.37525,
+    },
+    'fastformer': {
+        'Size (MB)': 446,
+        'Quantized Size (MB)': 113,
+        'micro precision': 0.55666,
+        'micro recall': 0.28301,
+        'micro f1-score': 0.37525,
+    },
+    'tiny-fastformer': {
+        'Size (MB)': 77.2,
+        'Quantized Size (MB)': 19.6,
+        'micro precision': 0.55666,
+        'micro recall': 0.28301,
+        'micro f1-score': 0.37525,
+    }
 }
 
 
@@ -98,7 +171,7 @@ def available_transformer_goemotions():
     from malaya.function import describe_availability
 
     return describe_availability(
-        _transformer_availability, text='tested on 20% test set.'
+        _transformer_goemotions_availability, text='tested on 20% test set.'
     )
 
 

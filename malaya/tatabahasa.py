@@ -35,6 +35,11 @@ _transformer_availability = {
         'Quantized Size (MB)': 103,
         'WER': 0.0328037,
     },
+    'super-tiny-t5': {
+        'Size (MB)': 81.8,
+        'Quantized Size (MB)': 27.1,
+        'WER': 0.0328037,
+    },
 }
 
 
