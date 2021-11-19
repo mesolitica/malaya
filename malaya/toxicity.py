@@ -78,9 +78,9 @@ _transformer_availability = {
     'fastformer': {
         'Size (MB)': 446.6,
         'Quantized Size (MB)': 118,
-        'micro precision': 0.77904,
-        'micro recall': 0.83829,
-        'micro f1-score': 0.80758,
+        'micro precision': 0.83768,
+        'micro recall': 0.76429,
+        'micro f1-score': 0.79930,
     },
     'tiny-fastformer': {
         'Size (MB)': 77.3,

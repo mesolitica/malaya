@@ -23,7 +23,7 @@ _transformer_availability = {
     't5': {
         'Size (MB)': 1250,
         'Quantized Size (MB)': 481,
-        'WER': 0,
+        'WER': 0.0178902,
     },
     'small-t5': {
         'Size (MB)': 355.6,
@@ -38,7 +38,7 @@ _transformer_availability = {
     'super-tiny-t5': {
         'Size (MB)': 81.8,
         'Quantized Size (MB)': 27.1,
-        'WER': 0.0328037,
+        'WER': 0.0351141,
     },
     '3x-super-tiny-t5': {
         'Size (MB)': 81.8,
@@ -186,6 +186,8 @@ def transformer(model: str = 'small-t5', quantized: bool = False, **kwargs):
         * ``'t5'`` - T5 BASE parameters.
         * ``'small-t5'`` - T5 SMALL parameters.
         * ``'tiny-t5'`` - T5 TINY parameters.
+        * ``'super-tiny-t5'`` - T5 SUPER TINY parameters.
+        * ``'3x-super-tiny-t5'`` - T5 3X SUPER TINY parameters.
 
     quantized : bool, optional (default=False)
         if True, will load 8-bit quantized model.
