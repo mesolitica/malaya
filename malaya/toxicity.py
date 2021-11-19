@@ -75,6 +75,20 @@ _transformer_availability = {
         'micro recall': 0.80221,
         'micro f1-score': 0.81768,
     },
+    'fastformer': {
+        'Size (MB)': 446.6,
+        'Quantized Size (MB)': 118,
+        'micro precision': 0.77904,
+        'micro recall': 0.83829,
+        'micro f1-score': 0.80758,
+    },
+    'tiny-fastformer': {
+        'Size (MB)': 77.3,
+        'Quantized Size (MB)': 19.6,
+        'micro precision': 0.83316,
+        'micro recall': 0.77163,
+        'micro f1-score': 0.80122,
+    },
 }
 
 

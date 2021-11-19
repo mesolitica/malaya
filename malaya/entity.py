@@ -238,6 +238,17 @@ def available_transformer_ontonotes5():
     )
 
 
+def available_transformer_generic():
+    """
+    List available transformer Generic Entity Tagging models trained on Ontonotes 5 Bahasa + Malaya Entity.
+    """
+    from malaya.function import describe_availability
+
+    return describe_availability(
+        _transformer_generic_availability, text='tested on 20% test set.'
+    )
+
+
 @check_type
 def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
     """

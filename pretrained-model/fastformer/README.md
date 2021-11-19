@@ -204,6 +204,20 @@ python3 run_pretraining.py \
   - 500k steps, 1 TPU V2-8.
   - [BERT.wordpiece](../bert/tokenizer/BERT.wordpiece)
 
+3. **BASE**, last update 19th November 2021, [fastformer-base-4k-2021-11-19.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/fastformer-base-4k-2021-11-02.tar.gz)
+
+  - Vocab size 32k.
+  - Trained on raw wikipedia, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession, twitter and instagram.
+  - 500k steps, 1 TPU V2-8.
+  - [BERT-4k.wordpiece](../bert/tokenizer/BERT-4k.wordpiece)
+
+4. **TINY**, last update 19th November 2021, [fastformer-tiny-4k-2021-11-19.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/fastformer-tiny-4k-2021-11-19.tar.gz)
+
+  - Vocab size 32k.
+  - Trained on raw wikipedia, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession, twitter and instagram..
+  - 500k steps, 1 TPU V2-8.
+  - [BERT-4k.wordpiece](../bert/tokenizer/BERT-4k.wordpiece)
+
 ## Acknowledgement
 
 Thanks to [Im Big](https://www.facebook.com/imbigofficial/), [LigBlou](https://www.facebook.com/ligblou), [Mesolitica](https://mesolitica.com/), [KeyReply](https://www.keyreply.com/) and [TensorFlow Research Cloud](https://www.tensorflow.org/tfrc) for sponsoring AWS, Google and GPU clouds to train FastFormer for Bahasa.
