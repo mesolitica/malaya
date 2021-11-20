@@ -470,10 +470,13 @@ class Normalizer:
 
             if re.findall(_expressions['phone'], word_lower):
                 if normalize_telephone:
-                    splitted = word.split('-')
-                    left = put_spacing_num(splitted[0])
-                    right = put_spacing_num(splitted[1])
-                    word = f'{left}, {right}'
+                    splitted = re.split(r'\.|\s|\-',word)
+                    if len(splitted) >= 2: 
+                        splitted[1] = ''.join(splitted[1:])
+                        splitted = splitted[0:2]
+                        left = put_spacing_num(splitted[0])
+                        right = put_spacing_num(splitted[1])
+                        word = f'{left}, {right}'
                 result.append(word)
                 index += 1
                 continue
