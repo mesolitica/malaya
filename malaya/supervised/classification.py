@@ -14,6 +14,7 @@ from malaya.model.ml import BinaryBayes, MulticlassBayes, MultilabelBayes
 from malaya.model.bert import MulticlassBERT, BinaryBERT, SigmoidBERT
 from malaya.model.xlnet import MulticlassXLNET, BinaryXLNET, SigmoidXLNET
 from malaya.model.fnet import MulticlassFNet, BinaryFNet
+from malaya.model.fastformer import MulticlassFastFormer, BinaryFastFormer, SigmoidFastFormer
 from malaya.model.bigbird import MulticlassBigBird
 from malaya.transformers.bert import bert_num_layers
 from malaya.transformers.albert import albert_num_layers
@@ -35,6 +36,8 @@ SIGMOID_MODEL = {
     'tiny-bert': SigmoidBERT,
     'xlnet': SigmoidXLNET,
     'alxlnet': SigmoidXLNET,
+    'fastformer': SigmoidFastFormer,
+    'tiny-fastformer': SigmoidFastFormer,
 }
 MULTICLASS_MODEL = {
     'albert': MulticlassBERT,
@@ -47,6 +50,8 @@ MULTICLASS_MODEL = {
     'tiny-bigbird': MulticlassBigBird,
     'fnet': MulticlassFNet,
     'large-fnet': MulticlassFNet,
+    'fastformer': MulticlassFastFormer,
+    'tiny-fastformer': MulticlassFastFormer,
 }
 BINARY_MODEL = {
     'albert': BinaryBERT,
@@ -57,6 +62,8 @@ BINARY_MODEL = {
     'xlnet': BinaryXLNET,
     'fnet': BinaryFNet,
     'large-fnet': BinaryFNet,
+    'fastformer': BinaryFastFormer,
+    'tiny-fastformer': BinaryFastFormer,
 }
 TOKENIZER_MODEL = {
     'bert': SentencePieceTokenizer,
@@ -69,6 +76,8 @@ TOKENIZER_MODEL = {
     'large-fnet': WordPieceTokenizer,
     'alxlnet': SentencePieceTokenizer,
     'xlnet': SentencePieceTokenizer,
+    'fastformer': WordPieceTokenizer,
+    'tiny-fastformer': WordPieceTokenizer,
 }
 
 
@@ -163,6 +172,13 @@ def transformer(
     if model in ['fnet', 'fnet-large']:
         inputs = ['Placeholder', 'Placeholder_1']
         vectorizer = {'vectorizer': 'import/vectorizer:0'}
+        attention = None
+
+    if model in ['fastformer', 'tiny-fastformer']:
+        inputs = ['Placeholder']
+        vectorizer_nodes = {'fastformer': 'import/fast_transformer/add_24:0',
+                            'tiny-fastformer': 'import/fast_transformer/add_8:0'}
+        vectorizer = {'vectorizer': vectorizer_nodes[model]}
         attention = None
 
     outputs = ['logits', 'logits_seq']

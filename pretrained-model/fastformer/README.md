@@ -204,7 +204,7 @@ python3 run_pretraining.py \
   - 500k steps, 1 TPU V2-8.
   - [BERT.wordpiece](../bert/tokenizer/BERT.wordpiece)
 
-3. **BASE**, last update 19th November 2021, [fastformer-base-4k-2021-11-19.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/fastformer-base-4k-2021-11-02.tar.gz)
+3. **BASE**, last update 19th November 2021, [fastformer-base-4k-2021-11-19.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/fastformer-base-4k-2021-11-19.tar.gz)
 
   - Vocab size 32k.
   - Trained on raw wikipedia, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession, twitter and instagram.

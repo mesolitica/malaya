@@ -18,6 +18,8 @@ T2T_BPE_VOCAB = 'bpe/sp10m.cased.t5.vocab'
 T2T_BPE_MODEL = 'bpe/sp10m.cased.t5.model'
 MS_EN_BPE_VOCAB = 'bpe/sp10m.cased.ms-en.vocab'
 MS_EN_BPE_MODEL = 'bpe/sp10m.cased.ms-en.model'
+MS_EN_4k_BPE_VOCAB = 'bpe/sp10m.cased.ms-en-4k.vocab'
+MS_EN_4k_BPE_MODEL = 'bpe/sp10m.cased.ms-en-4k.model'
 TRANSLATION_BPE_VOCAB = 'bpe/sp10m.cased.translation.vocab'
 TRANSLATION_BPE_MODEL = 'bpe/sp10m.cased.translation.model'
 TRANSLATION_EN_MS_VOCAB = 'bpe/en-ms.subwords'
@@ -51,6 +53,8 @@ MODEL_VOCAB = {
     'tiny-bigbird': BERT_BPE_VOCAB,
     'fnet': BERT_WORDPIECE_VOCAB,
     'fnet-large': BERT_WORDPIECE_VOCAB,
+    'fastformer': BERT_WORDPIECE_VOCAB,
+    'tiny-fastformer': BERT_WORDPIECE_VOCAB,
 }
 
 MODEL_BPE = {
@@ -64,6 +68,8 @@ MODEL_BPE = {
     'tiny-bigbird': BERT_BPE_MODEL,
     'fnet': BERT_WORDPIECE_MODEL,
     'fnet-large': BERT_WORDPIECE_MODEL,
+    'fastformer': BERT_WORDPIECE_MODEL,
+    'tiny-fastformer': BERT_WORDPIECE_MODEL,
 }
 
 LM_VOCAB = {

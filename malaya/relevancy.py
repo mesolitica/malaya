@@ -68,6 +68,22 @@ _transformer_availability = {
         'macro f1-score': 0.86176,
         'max length': 1024,
     },
+    'fastformer': {
+        'Size (MB)': 458,
+        'Quantized Size (MB)': 116,
+        'macro precision': 0.80785,
+        'macro recall': 0.81973,
+        'macro f1-score': 0.80758,
+        'max length': 2048,
+    },
+    'tiny-fastformer': {
+        'Size (MB)': 65,
+        'Quantized Size (MB)': 16.9,
+        'macro precision': 0.85655,
+        'macro recall': 0.86337,
+        'macro f1-score': 0.85925,
+        'max length': 2048,
+    },
 }
 
 

@@ -28,11 +28,17 @@ _transformer_availability = {
         'Quantized Size (MB)': 12,
         'CER': 0.02533658,
         'Suggested length': 256,
-    }
+    },
     '3x-super-tiny-t5': {
         'Size (MB)': 39.6,
         'Quantized Size (MB)': 12,
-        'CER': 0.02533658,
+        'CER': 0.0487372,
+        'Suggested length': 256,
+    },
+    '3x-super-tiny-t5-4k': {
+        'Size (MB)': 5.03,
+        'Quantized Size (MB)': 2.99,
+        'CER': 0.0798906,
         'Suggested length': 256,
     }
 }
@@ -62,6 +68,7 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
         * ``'super-tiny-t5'`` - T5 SUPER TINY parameters.
         * ``'super-super-tiny-t5'`` - T5 SUPER SUPER TINY parameters.
         * ``'3x-super-tiny-t5'`` - T5 3X SUPER TINY parameters.
+        * ``'3x-super-tiny-t5-4k'`` - T5 3X SUPER TINY 4k vocab size parameters.
 
     quantized : bool, optional (default=False)
         if True, will load 8-bit quantized model.

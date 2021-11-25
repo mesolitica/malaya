@@ -13,12 +13,6 @@ from herpetologist import check_type
 from typing import List
 
 _transformer_availability = {
-    'tiny': {
-        'Size (MB)': 42.7,
-        'Quantized Size (MB)': 13.1,
-        'WER': 0.208520,
-        'Suggested length': 256,
-    },
     'small': {
         'Size (MB)': 42.7,
         'Quantized Size (MB)': 13.1,
@@ -42,11 +36,17 @@ _transformer_availability = {
         'Quantized Size (MB)': 12,
         'WER': 0.037882,
         'Suggested length': 256,
-    }
+    },
     '3x-super-tiny-t5': {
-        'Size (MB)': 39.6,
-        'Quantized Size (MB)': 12,
-        'WER': 0.037882,
+        'Size (MB)': 18.3,
+        'Quantized Size (MB)': 4.46,
+        'WER': 0.05989527,
+        'Suggested length': 256,
+    },
+    '3x-super-tiny-t5-4k': {
+        'Size (MB)': 5.03,
+        'Quantized Size (MB)': 2.99,
+        'CER': 0.1345597,
         'Suggested length': 256,
     }
 }
@@ -210,6 +210,7 @@ def transformer(model: str = 'small', quantized: bool = False, **kwargs):
         * ``'super-tiny-t5'`` - T5 SUPER TINY parameters.
         * ``'super-super-tiny-t5'`` - T5 SUPER SUPER TINY parameters.
         * ``'3x-super-tiny-t5'`` - T5 3X SUPER TINY parameters.
+        * ``'3x-super-tiny-t5-4k'`` - T5 3X SUPER TINY 4k vocab size parameters.
 
     quantized : bool, optional (default=False)
         if True, will load 8-bit quantized model.

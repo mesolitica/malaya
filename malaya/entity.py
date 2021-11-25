@@ -81,6 +81,20 @@ _transformer_availability = {
         'macro recall': 0.97575,
         'macro f1-score': 0.98337,
     },
+    'fastformer': {
+        'Size (MB)': 446.6,
+        'Quantized Size (MB)': 113,
+        'macro precision': 0.95031,
+        'macro recall': 0.94018,
+        'macro f1-score': 0.94498,
+    },
+    'tiny-fastformer': {
+        'Size (MB)': 77.3,
+        'Quantized Size (MB)': 19.7,
+        'macro precision': 0.93574,
+        'macro recall': 0.89979,
+        'macro f1-score': 0.91640,
+    },
 }
 _transformer_ontonotes5_availability = {
     'bert': {

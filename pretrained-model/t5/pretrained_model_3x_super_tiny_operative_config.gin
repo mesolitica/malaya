@@ -11,7 +11,7 @@ import mesh_tensorflow.transformer.utils
 # ==============================================================================
 d_ff = 256
 d_kv = 64
-d_model = 128
+d_model = 64
 dropout_rate = 0.0
 inputs_length = 512
 mean_noise_span_length = 3.0

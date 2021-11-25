@@ -843,6 +843,7 @@ def xlnet_tokenization_token(tokenizer, tok, texts):
 def merge_wordpiece_tokens(paired_tokens, weighted=True):
     new_paired_tokens = []
     n_tokens = len(paired_tokens)
+    rejected = ['[CLS]', '[SEP]', '[PAD]']
 
     i = 0
 
@@ -867,17 +868,51 @@ def merge_wordpiece_tokens(paired_tokens, weighted=True):
     words = [
         i[0]
         for i in new_paired_tokens
-        if i[0] not in ['[CLS]', '[SEP]', '[PAD]']
+        if i[0] not in rejected
     ]
     weights = [
         i[1]
         for i in new_paired_tokens
-        if i[0] not in ['[CLS]', '[SEP]', '[PAD]']
+        if i[0] not in rejected
     ]
     if weighted:
         weights = np.array(weights)
         weights = weights / np.sum(weights)
     return list(zip(words, weights))
+
+
+def merge_wordpiece_tokens_tagging(x, y):
+    new_paired_tokens = []
+    n_tokens = len(x)
+    rejected = ['[CLS]', '[SEP]', '[PAD]']
+
+    i = 0
+
+    while i < n_tokens:
+        current_token, current_label = x[i], y[i]
+        if current_token.startswith('##'):
+            previous_token, previous_label = new_paired_tokens.pop()
+            merged_token = previous_token
+            merged_label = [previous_label]
+            while current_token.startswith('##'):
+                merged_token = merged_token + current_token.replace('##', '')
+                merged_label.append(current_label)
+                i = i + 1
+                current_token, current_label = x[i], y[i]
+            merged_label = merged_label[0]
+            new_paired_tokens.append((merged_token, merged_label))
+
+        else:
+            new_paired_tokens.append((current_token, current_label))
+            i = i + 1
+
+    words = [
+        i[0]
+        for i in new_paired_tokens
+        if i[0] not in rejected
+    ]
+    labels = [i[1] for i in new_paired_tokens if i[0] not in rejected]
+    return words, labels
 
 
 def parse_bert_tagging(left, tokenizer, space_after_punct=False):

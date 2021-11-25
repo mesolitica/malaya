@@ -41,9 +41,9 @@ _transformer_availability = {
         'WER': 0.0351141,
     },
     '3x-super-tiny-t5': {
-        'Size (MB)': 81.8,
-        'Quantized Size (MB)': 27.1,
-        'WER': 0.0328037,
+        'Size (MB)': 18.3,
+        'Quantized Size (MB)': 4.46,
+        'WER': 0.03676189,
     },
 }
 

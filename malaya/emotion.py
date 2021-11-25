@@ -80,16 +80,16 @@ _transformer_availability = {
     'fastformer': {
         'Size (MB)': 446,
         'Quantized Size (MB)': 113,
-        'macro precision': 0.99131,
-        'macro recall': 0.99025,
-        'macro f1-score': 0.99077,
+        'macro precision': 0.99197,
+        'macro recall': 0.99194,
+        'macro f1-score': 0.99195,
     },
     'tiny-fastformer': {
         'Size (MB)': 77.2,
         'Quantized Size (MB)': 19.6,
-        'macro precision': 0.98879,
-        'macro recall': 0.98878,
-        'macro f1-score': 0.98877,
+        'macro precision': 0.98926,
+        'macro recall': 0.98783,
+        'macro f1-score': 0.98853,
     }
 }
 
