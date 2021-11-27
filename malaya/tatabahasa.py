@@ -238,7 +238,7 @@ def transformer_tagging(model: str = 'base', quantized: bool = False, **kwargs):
     """
 
     model = model.lower()
-    if model not in _transformer_availability:
+    if model not in _transformer_tagging_availability:
         raise ValueError(
             'model not supported, please check supported models from `malaya.tatabahasa.available_transformer_tagging()`.'
         )

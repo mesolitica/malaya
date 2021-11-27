@@ -54,6 +54,7 @@ Contents:
    load-segmentation
    load-preprocessing
    load-tatabahasa
+   load-tatabahasa-tagging
    load-num2word
    load-word2num
 

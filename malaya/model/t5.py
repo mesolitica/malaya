@@ -330,3 +330,4 @@ class Tatabahasa(T5, Seq2Seq):
         """
         strings = [' '.join(self._word_tokenizer(s)) for s in strings]
         r = self._predict([f'kesalahan tatabahasa: {string}' for string in strings])
+        return r
