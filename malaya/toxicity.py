@@ -132,6 +132,8 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
         * ``'tiny-albert'`` - Google ALBERT TINY parameters.
         * ``'xlnet'`` - Google XLNET BASE parameters.
         * ``'alxlnet'`` - Malaya ALXLNET BASE parameters.
+        * ``'fastformer'`` - FastFormer BASE parameters.
+        * ``'tiny-fastformer'`` - FastFormer TINY parameters.
 
     quantized : bool, optional (default=False)
         if True, will load 8-bit quantized model.
@@ -144,6 +146,7 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
 
         * if `bert` in model, will return `malaya.model.bert.SigmoidBERT`.
         * if `xlnet` in model, will return `malaya.model.xlnet.SigmoidXLNET`.
+        * if `fastformer` in model, will return `malaya.model.fastformer.SigmoidFastFormer`.
     """
 
     model = model.lower()

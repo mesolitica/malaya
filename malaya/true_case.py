@@ -30,8 +30,8 @@ _transformer_availability = {
         'Suggested length': 256,
     },
     '3x-super-tiny-t5': {
-        'Size (MB)': 39.6,
-        'Quantized Size (MB)': 12,
+        'Size (MB)': 18.3,
+        'Quantized Size (MB)': 4.46,
         'CER': 0.0487372,
         'Suggested length': 256,
     },
