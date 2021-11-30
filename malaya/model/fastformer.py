@@ -2,26 +2,22 @@ import tensorflow as tf
 import numpy as np
 from malaya.function.activation import add_neutral as neutral
 from malaya.function.activation import softmax, sigmoid
-from malaya.text.bpe import bert_tokenization, merge_wordpiece_tokens
-from malaya.model.abstract import Classification, Abstract
+from malaya.text.bpe import (
+    bert_tokenization,
+    merge_wordpiece_tokens,
+    merge_wordpiece_tokens_tagging,
+    parse_bert_tagging,
+    parse_bert_token_tagging,
+)
+from malaya.model.abstract import (
+    Classification,
+    Seq2Seq,
+    Tagging,
+    Abstract,
+    Base,
+)
 from herpetologist import check_type
 from typing import List
-
-
-class Base(Abstract):
-    def __init__(
-        self,
-        input_nodes,
-        output_nodes,
-        sess,
-        tokenizer,
-        label=['negative', 'positive'],
-    ):
-        self._input_nodes = input_nodes
-        self._output_nodes = output_nodes
-        self._sess = sess
-        self._tokenizer = tokenizer
-        self._label = label
 
 
 class FastFormer(Base):
@@ -42,12 +38,12 @@ class FastFormer(Base):
             sess=sess,
             tokenizer=tokenizer,
             label=label,
+            module=module,
         )
-        self._module = module
 
     def _classify(self, strings):
         input_ids, input_masks, _, _ = bert_tokenization(
-            self._tokenizer, strings
+            self._tokenizer, strings, socialmedia=self._socialmedia
         )
         r = self._execute(
             inputs=[input_ids, input_masks],
@@ -74,7 +70,7 @@ class FastFormer(Base):
                 "method not supported, only support 'first', 'last', 'mean' and 'word'"
             )
         input_ids, input_masks, _, s_tokens = bert_tokenization(
-            self._tokenizer, strings
+            self._tokenizer, strings,
         )
         r = self._execute(
             inputs=[input_ids, input_masks],
@@ -287,19 +283,19 @@ class SigmoidFastFormer(Base, Classification):
             sess=sess,
             tokenizer=tokenizer,
             label=label,
+            module=module,
         )
-        self._module = module
 
     def _classify(self, strings):
         input_ids, input_masks, _, _ = bert_tokenization(
-            self._tokenizer, strings
+            self._tokenizer, strings,
         )
         r = self._execute(
             inputs=[input_ids, input_masks],
             input_labels=['Placeholder'],
             output_labels=['logits'],
         )
-        return sigmoid(r['logits'], axis=-1)
+        return sigmoid(r['logits'])
 
     @check_type
     def vectorize(self, strings: List[str], method: str = 'first'):
@@ -402,3 +398,102 @@ class SigmoidFastFormer(Base, Classification):
             results.append(dict_result)
 
         return results
+
+
+class TaggingFastFormer(Base, Tagging):
+    def __init__(
+        self, input_nodes, output_nodes, sess, tokenizer, settings, tok=None
+    ):
+        Base.__init__(
+            self,
+            input_nodes=input_nodes,
+            output_nodes=output_nodes,
+            sess=sess,
+            tokenizer=tokenizer,
+            label=None,
+        )
+
+        self._settings = settings
+        self._tok = tok
+        self._settings['idx2tag'] = {
+            int(k): v for k, v in self._settings['idx2tag'].items()
+        }
+
+    def _tokenize(self, string):
+        if self._tok:
+            parsed_sequence, input_mask, bert_sequence = parse_bert_token_tagging(
+                string, self._tok, self._tokenizer
+            )
+        else:
+            parsed_sequence, input_mask, bert_sequence = parse_bert_tagging(
+                string, self._tokenizer, space_after_punct=True
+            )
+        return parsed_sequence, input_mask, bert_sequence
+
+    @check_type
+    def vectorize(self, string: str):
+        """
+        vectorize a string.
+
+        Parameters
+        ----------
+        string: List[str]
+
+        Returns
+        -------
+        result: np.array
+        """
+        parsed_sequence, input_mask, bert_sequence = self._tokenize(string)
+
+        r = self._execute(
+            inputs=[[parsed_sequence]],
+            input_labels=['Placeholder'],
+            output_labels=['vectorizer'],
+        )
+        v = r['vectorizer']
+        v = v[0]
+        return merge_wordpiece_tokens(
+            list(zip(bert_sequence, v[: len(bert_sequence)])),
+            weighted=False,
+            vectorize=True,
+        )
+
+    @check_type
+    def analyze(self, string: str):
+        """
+        Analyze a string.
+
+        Parameters
+        ----------
+        string : str
+
+        Returns
+        -------
+        result: {'words': List[str], 'tags': [{'text': 'text', 'type': 'location', 'score': 1.0, 'beginOffset': 0, 'endOffset': 1}]}
+        """
+        predicted = self.predict(string)
+        return tag_chunk(predicted)
+
+    @check_type
+    def predict(self, string: str):
+        """
+        Tag a string.
+
+        Parameters
+        ----------
+        string : str
+
+        Returns
+        -------
+        result: Tuple[str, str]
+        """
+        parsed_sequence, input_mask, bert_sequence = self._tokenize(string)
+        r = self._execute(
+            inputs=[[parsed_sequence]],
+            input_labels=['Placeholder'],
+            output_labels=['logits'],
+        )
+        predicted = r['logits'][0]
+        t = [self._settings['idx2tag'][d] for d in predicted]
+        merged = merge_wordpiece_tokens_tagging(bert_sequence, t)
+        return list(zip(merged[0], merged[1]))

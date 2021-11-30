@@ -47,6 +47,20 @@ _transformer_availability = {
         'macro recall': 0.90835,
         'macro f1-score': 0.90817,
     },
+    'fastformer': {
+        'Size (MB)': 458,
+        'Quantized Size (MB)': 116,
+        'macro precision': 0.80785,
+        'macro recall': 0.81973,
+        'macro f1-score': 0.80758,
+    },
+    'tiny-fastformer': {
+        'Size (MB)': 77.3,
+        'Quantized Size (MB)': 19.7,
+        'macro precision': 0.87147,
+        'macro recall': 0.87147,
+        'macro f1-score': 0.87105,
+    },
 }
 
 
@@ -95,6 +109,8 @@ def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
         * ``'tiny-albert'`` - Google ALBERT TINY parameters.
         * ``'xlnet'`` - Google XLNET BASE parameters.
         * ``'alxlnet'`` - Malaya ALXLNET BASE parameters.
+        * ``'fastformer'`` - FastFormer BASE parameters.
+        * ``'tiny-fastformer'`` - FastFormer TINY parameters.
 
     quantized : bool, optional (default=False)
         if True, will load 8-bit quantized model.
@@ -107,6 +123,7 @@ def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
 
         * if `bert` in model, will return `malaya.model.bert.BinaryBERT`.
         * if `xlnet` in model, will return `malaya.model.xlnet.BinaryXLNET`.
+        * if `fastformer` in model, will return `malaya.model.fastformer.BinaryFastFormer`.
     """
 
     model = model.lower()

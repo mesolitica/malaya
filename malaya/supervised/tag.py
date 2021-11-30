@@ -4,10 +4,11 @@ from malaya.function import (
     generate_session,
     nodes_session,
 )
-from malaya.text.bpe import SentencePieceTokenizer
+from malaya.text.bpe import SentencePieceTokenizer, WordPieceTokenizer
 from malaya.text.regex import _expressions
 from malaya.model.bert import TaggingBERT
 from malaya.model.xlnet import TaggingXLNET
+from malaya.model.fastformer import TaggingFastFormer
 from malaya.path import MODEL_VOCAB, MODEL_BPE, TAGGING_SETTING
 import json
 import re
@@ -35,14 +36,24 @@ def transformer(module, model='xlnet', quantized=False, tok=None, **kwargs):
         inputs = ['Placeholder', 'Placeholder_1']
         vectorizer = {'vectorizer': 'import/dense/BiasAdd:0'}
         selected_model = TaggingBERT
+        selected_tokenizer = SentencePieceTokenizer
 
     if model in ['xlnet', 'alxlnet']:
         inputs = ['Placeholder', 'Placeholder_1', 'Placeholder_2']
         vectorizer = {'vectorizer': 'import/transpose_3:0'}
         selected_model = TaggingXLNET
+        selected_tokenizer = SentencePieceTokenizer
+
+    if model in ['fastformer', 'tiny-fastformer']:
+        inputs = ['Placeholder']
+        vectorizer_nodes = {'fastformer': 'import/fast_transformer/add_24:0',
+                            'tiny-fastformer': 'import/fast_transformer/add_8:0'}
+        vectorizer = {'vectorizer': vectorizer_nodes[model]}
+        selected_model = TaggingFastFormer
+        selected_tokenizer = WordPieceTokenizer
 
     outputs = ['logits']
-    tokenizer = SentencePieceTokenizer(vocab_file=path['vocab'], spm_model_file=path['tokenizer'])
+    tokenizer = selected_tokenizer(vocab_file=path['vocab'], spm_model_file=path['tokenizer'])
     input_nodes, output_nodes = nodes_session(
         g, inputs, outputs, extra=vectorizer
     )

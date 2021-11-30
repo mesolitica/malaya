@@ -24,7 +24,13 @@ from malaya.function.html import (
     _render_emotion,
     _render_relevancy,
 )
-from malaya.model.abstract import Classification, Seq2Seq, Tagging, Abstract
+from malaya.model.abstract import (
+    Classification,
+    Seq2Seq,
+    Tagging,
+    Abstract,
+    Base,
+)
 import numpy as np
 from collections import defaultdict
 from herpetologist import check_type
@@ -37,22 +43,6 @@ render_dict = {
     'toxicity': _render_toxic,
     'subjectivity': _render_binary,
 }
-
-
-class Base(Abstract):
-    def __init__(
-        self,
-        input_nodes,
-        output_nodes,
-        sess,
-        tokenizer,
-        label=['negative', 'positive'],
-    ):
-        self._input_nodes = input_nodes
-        self._output_nodes = output_nodes
-        self._sess = sess
-        self._tokenizer = tokenizer
-        self._label = label
 
 
 class BERT(Base):
@@ -73,9 +63,8 @@ class BERT(Base):
             sess=sess,
             tokenizer=tokenizer,
             label=label,
+            module=module,
         )
-
-        self._module = module
 
     def _classify(self, strings):
         input_ids, input_masks, _, _ = bert_tokenization(
@@ -464,8 +453,8 @@ class SigmoidBERT(Base, Classification):
             sess=sess,
             tokenizer=tokenizer,
             label=label,
+            module=module,
         )
-        self._module = module
 
     def _classify(self, strings):
 

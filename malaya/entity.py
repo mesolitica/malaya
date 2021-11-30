@@ -139,6 +139,20 @@ _transformer_ontonotes5_availability = {
         'macro recall': 0.92942,
         'macro f1-score': 0.93047,
     },
+    'fastformer': {
+        'Size (MB)': 446.6,
+        'Quantized Size (MB)': 113,
+        'macro precision': 0.77486,
+        'macro recall': 0.67007,
+        'macro f1-score': 0.69065,
+    },
+    'tiny-fastformer': {
+        'Size (MB)': 77.3,
+        'Quantized Size (MB)': 19.7,
+        'macro precision': 0.68351,
+        'macro recall': 0.60469,
+        'macro f1-score': 0.61678,
+    },
 }
 
 
@@ -252,17 +266,6 @@ def available_transformer_ontonotes5():
     )
 
 
-def available_transformer_generic():
-    """
-    List available transformer Generic Entity Tagging models trained on Ontonotes 5 Bahasa + Malaya Entity.
-    """
-    from malaya.function import describe_availability
-
-    return describe_availability(
-        _transformer_generic_availability, text='tested on 20% test set.'
-    )
-
-
 @check_type
 def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
     """
@@ -279,6 +282,8 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
         * ``'tiny-albert'`` - Google ALBERT TINY parameters.
         * ``'xlnet'`` - Google XLNET BASE parameters.
         * ``'alxlnet'`` - Malaya ALXLNET BASE parameters.
+        * ``'fastformer'`` - FastFormer BASE parameters.
+        * ``'tiny-fastformer'`` - FastFormer TINY parameters.
 
     quantized : bool, optional (default=False)
         if True, will load 8-bit quantized model.
@@ -291,6 +296,7 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
 
         * if `bert` in model, will return `malaya.model.bert.TaggingBERT`.
         * if `xlnet` in model, will return `malaya.model.xlnet.TaggingXLNET`.
+        * if `fastformer` in model, will return `malaya.model.fastformer.TaggingFastFormer`.
     """
 
     model = model.lower()
@@ -321,6 +327,8 @@ def transformer_ontonotes5(
         * ``'tiny-albert'`` - Google ALBERT TINY parameters.
         * ``'xlnet'`` - Google XLNET BASE parameters.
         * ``'alxlnet'`` - Malaya ALXLNET BASE parameters.
+        * ``'fastformer'`` - FastFormer BASE parameters.
+        * ``'tiny-fastformer'`` - FastFormer TINY parameters.
 
     quantized : bool, optional (default=False)
         if True, will load 8-bit quantized model.
@@ -333,6 +341,7 @@ def transformer_ontonotes5(
 
         * if `bert` in model, will return `malaya.model.bert.TaggingBERT`.
         * if `xlnet` in model, will return `malaya.model.xlnet.TaggingXLNET`.
+        * if `fastformer` in model, will return `malaya.model.fastformer.TaggingFastFormer`.
     """
 
     model = model.lower()
@@ -346,24 +355,6 @@ def transformer_ontonotes5(
         quantized=quantized,
         **kwargs
     )
-
-
-def transformer_generic(model: str = 'fastformer-layer1', quantized: bool = False, **kwargs):
-    """
-    Load Transformer Generic Entity Tagging model trained on Ontonotes 5 Bahasa + Malaya Entity, transfer learning Transformer + CRF.
-
-    Parameters
-    ----------
-    model : str, optional (default='fastformer-layer1')
-        Model architecture supported. Allowed values:
-
-        * ``'fastformer-layer1'`` - Fastformer BASE 1 layer only parameters.
-        * ``'tiny-fastformer-layer1'`` - Fastformer TINY 1 layer only parameters.
-
-    quantized : bool, optional (default=False)
-        if True, will load 8-bit quantized model.
-        Quantized model not necessary faster, totally depends on the machine.
-    """
 
 
 def general_entity(model=None):

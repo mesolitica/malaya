@@ -14,6 +14,26 @@ class Abstract:
         )
 
 
+class Base(Abstract):
+    def __init__(
+        self,
+        input_nodes,
+        output_nodes,
+        sess,
+        tokenizer,
+        label=['negative', 'positive'],
+        module=None,
+    ):
+        self._input_nodes = input_nodes
+        self._output_nodes = output_nodes
+        self._sess = sess
+        self._tokenizer = tokenizer
+        self._label = label
+        self._module = module
+        self._socialmedia = module in ['sentiment', 'emotion']
+        self._maxlen = 1024
+
+
 class Seq2Seq(Abstract):
     def greedy_decoder(self, strings, **kwargs):
         raise NotImplementedError

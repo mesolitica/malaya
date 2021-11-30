@@ -71,14 +71,14 @@ _transformer_availability = {
     'fastformer': {
         'Size (MB)': 458,
         'Quantized Size (MB)': 116,
-        'macro precision': 0.80785,
-        'macro recall': 0.81973,
-        'macro f1-score': 0.80758,
+        'macro precision': 0.92387,
+        'macro recall': 0.91064,
+        'macro f1-score': 0.91616,
         'max length': 2048,
     },
     'tiny-fastformer': {
-        'Size (MB)': 65,
-        'Quantized Size (MB)': 16.9,
+        'Size (MB)': 77.3,
+        'Quantized Size (MB)': 19.7,
         'macro precision': 0.85655,
         'macro recall': 0.86337,
         'macro f1-score': 0.85925,
@@ -116,6 +116,8 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
         * ``'alxlnet'`` - Malaya ALXLNET BASE parameters.
         * ``'bigbird'`` - Google BigBird BASE parameters.
         * ``'tiny-bigbird'`` - Malaya BigBird BASE parameters.
+        * ``'fastformer'`` - FastFormer BASE parameters.
+        * ``'tiny-fastformer'`` - FastFormer TINY parameters.
 
     quantized : bool, optional (default=False)
         if True, will load 8-bit quantized model.
@@ -129,6 +131,7 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
         * if `bert` in model, will return `malaya.model.bert.MulticlassBERT`.
         * if `xlnet` in model, will return `malaya.model.xlnet.MulticlassXLNET`.
         * if `bigbird` in model, will return `malaya.model.xlnet.MulticlassBigBird`.
+        * if `fastformer` in model, will return `malaya.model.fastformer.MulticlassFastFormer`.
     """
 
     model = model.lower()

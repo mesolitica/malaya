@@ -8,28 +8,11 @@ from malaya.text.function import (
 )
 from malaya.text.rouge import postprocess_summary
 from malaya.text.bpe import bert_tokenization
-from malaya.model.abstract import Classification, Seq2Seq, Abstract
+from malaya.model.abstract import Classification, Seq2Seq, Abstract, Base
 from herpetologist import check_type
 from typing import List
 
 pad_sequences = tf.keras.preprocessing.sequence.pad_sequences
-
-
-class Base(Abstract):
-    def __init__(
-        self,
-        input_nodes,
-        output_nodes,
-        sess,
-        tokenizer,
-        label=['negative', 'positive'],
-    ):
-        self._input_nodes = input_nodes
-        self._output_nodes = output_nodes
-        self._sess = sess
-        self._tokenizer = tokenizer
-        self._label = label
-        self._maxlen = 1024
 
 
 class BigBird(Base):
@@ -50,8 +33,8 @@ class BigBird(Base):
             sess=sess,
             tokenizer=tokenizer,
             label=label,
+            module=module,
         )
-        self._module = module
 
     def _classify(self, strings):
         input_ids, _, _, _ = bert_tokenization(self._tokenizer, strings)

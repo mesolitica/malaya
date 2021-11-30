@@ -93,65 +93,6 @@ _transformer_availability = {
     }
 }
 
-_transformer_goemotions_availability = {
-    'bert': {
-        'Size (MB)': 425.6,
-        'Quantized Size (MB)': 111,
-        'micro precision': 0.55666,
-        'micro recall': 0.28301,
-        'micro f1-score': 0.37525,
-    },
-    'tiny-bert': {
-        'Size (MB)': 57.4,
-        'Quantized Size (MB)': 15.4,
-        'micro precision': 0.55666,
-        'micro recall': 0.28301,
-        'micro f1-score': 0.37525,
-    },
-    'albert': {
-        'Size (MB)': 48.6,
-        'Quantized Size (MB)': 12.8,
-        'micro precision': 0.55666,
-        'micro recall': 0.28301,
-        'micro f1-score': 0.37525,
-    },
-    'tiny-albert': {
-        'Size (MB)': 22.4,
-        'Quantized Size (MB)': 5.98,
-        'micro precision': 0.55666,
-        'micro recall': 0.28301,
-        'micro f1-score': 0.37525,
-    },
-    'xlnet': {
-        'Size (MB)': 446.5,
-        'Quantized Size (MB)': 118,
-        'micro precision': 0.55666,
-        'micro recall': 0.28301,
-        'micro f1-score': 0.37525,
-    },
-    'alxlnet': {
-        'Size (MB)': 46.8,
-        'Quantized Size (MB)': 13.3,
-        'micro precision': 0.55666,
-        'micro recall': 0.28301,
-        'micro f1-score': 0.37525,
-    },
-    'fastformer': {
-        'Size (MB)': 446,
-        'Quantized Size (MB)': 113,
-        'micro precision': 0.55666,
-        'micro recall': 0.28301,
-        'micro f1-score': 0.37525,
-    },
-    'tiny-fastformer': {
-        'Size (MB)': 77.2,
-        'Quantized Size (MB)': 19.6,
-        'micro precision': 0.55666,
-        'micro recall': 0.28301,
-        'micro f1-score': 0.37525,
-    }
-}
-
 
 def available_transformer():
     """
@@ -161,17 +102,6 @@ def available_transformer():
 
     return describe_availability(
         _transformer_availability, text='tested on 20% test set.'
-    )
-
-
-def available_transformer_goemotions():
-    """
-    List available transformer goemotions analysis models.
-    """
-    from malaya.function import describe_availability
-
-    return describe_availability(
-        _transformer_goemotions_availability, text='tested on 20% test set.'
     )
 
 
@@ -205,6 +135,8 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
         * ``'tiny-albert'`` - Google ALBERT TINY parameters.
         * ``'xlnet'`` - Google XLNET BASE parameters.
         * ``'alxlnet'`` - Malaya ALXLNET BASE parameters.
+        * ``'fastformer'`` - FastFormer BASE parameters.
+        * ``'tiny-fastformer'`` - FastFormer TINY parameters.
 
     quantized : bool, optional (default=False)
         if True, will load 8-bit quantized model.
@@ -217,6 +149,7 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
 
         * if `bert` in model, will return `malaya.model.bert.MulticlassBERT`.
         * if `xlnet` in model, will return `malaya.model.xlnet.MulticlassXLNET`.
+        * if `fastformer` in model, will return `malaya.model.fastformer.MulticlassFastFormer`.
     """
 
     model = model.lower()
@@ -228,50 +161,6 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
         module='emotion',
         label=label,
         model=model,
-        quantized=quantized,
-        **kwargs
-    )
-
-
-@check_type
-def transformer_goemotions(model: str = 'xlnet', quantized: bool = False, **kwargs):
-    """
-    Load Transformer goemotions model.
-
-    Parameters
-    ----------
-    model : str, optional (default='bert')
-        Model architecture supported. Allowed values:
-
-        * ``'bert'`` - Google BERT BASE parameters.
-        * ``'tiny-bert'`` - Google BERT TINY parameters.
-        * ``'albert'`` - Google ALBERT BASE parameters.
-        * ``'tiny-albert'`` - Google ALBERT TINY parameters.
-        * ``'xlnet'`` - Google XLNET BASE parameters.
-        * ``'alxlnet'`` - Malaya ALXLNET BASE parameters.
-
-    quantized : bool, optional (default=False)
-        if True, will load 8-bit quantized model.
-        Quantized model not necessary faster, totally depends on the machine.
-
-    Returns
-    -------
-    result: model
-        List of model classes:
-
-        * if `bert` in model, will return `malaya.model.bert.MulticlassBERT`.
-        * if `xlnet` in model, will return `malaya.model.xlnet.MulticlassXLNET`.
-    """
-    model = model.lower()
-    if model not in _transformer_goemotions_availability:
-        raise ValueError(
-            'model not supported, please check supported models from `malaya.emotion.available_transformer_goemotions()`.'
-        )
-    return classification.transformer(
-        module='emotion-goemotions',
-        label=label,
-        model=model,
-        sigmoid=True,
         quantized=quantized,
         **kwargs
     )

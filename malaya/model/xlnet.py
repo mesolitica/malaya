@@ -17,7 +17,13 @@ from malaya.function.html import (
     _render_emotion,
     _render_relevancy,
 )
-from malaya.model.abstract import Classification, Seq2Seq, Tagging, Abstract
+from malaya.model.abstract import (
+    Classification,
+    Seq2Seq,
+    Tagging,
+    Abstract,
+    Base,
+)
 import numpy as np
 from collections import defaultdict
 from herpetologist import check_type
@@ -66,8 +72,8 @@ class XLNET(Base):
             sess=sess,
             tokenizer=tokenizer,
             label=label,
+            module=module,
         )
-        self._module = module
 
     def _classify(self, strings):
         input_ids, input_masks, segment_ids, _ = xlnet_tokenization(
@@ -459,8 +465,8 @@ class SigmoidXLNET(Base, Classification):
             sess=sess,
             tokenizer=tokenizer,
             label=label,
+            module=module,
         )
-        self._module = module
 
     def _classify(self, strings):
 

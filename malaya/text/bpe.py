@@ -11,7 +11,7 @@ import collections
 import tensorflow as tf
 import regex as re
 from functools import lru_cache
-from malaya.text.function import transformer_textcleaning
+from malaya.text.function import transformer_textcleaning, malaya_textcleaning
 
 SEG_ID_A = 0
 SEG_ID_B = 1
@@ -560,10 +560,14 @@ def padding_sequence(seq, maxlen=None, padding='post', pad_int=0):
     return padded_seqs
 
 
-def bert_tokenization(tokenizer, texts):
+def bert_tokenization(tokenizer, texts, socialmedia=False):
+    if socialmedia:
+        f = malaya_textcleaning
+    else:
+        f = transformer_textcleaning
     input_ids, input_masks, segment_ids, s_tokens = [], [], [], []
     for text in texts:
-        text = transformer_textcleaning(text)
+        text = f(text)
         tokens_a = tokenizer.tokenize(text)[:MAXLEN]
         logging.debug(tokens_a)
         tokens = ['[CLS]'] + tokens_a + ['[SEP]']
@@ -840,7 +844,7 @@ def xlnet_tokenization_token(tokenizer, tok, texts):
     return input_ids, input_masks, segment_ids, s_tokens
 
 
-def merge_wordpiece_tokens(paired_tokens, weighted=True):
+def merge_wordpiece_tokens(paired_tokens, weighted=True, vectorize=False):
     new_paired_tokens = []
     n_tokens = len(paired_tokens)
     rejected = ['[CLS]', '[SEP]', '[PAD]']
@@ -858,7 +862,10 @@ def merge_wordpiece_tokens(paired_tokens, weighted=True):
                 merged_weight.append(current_weight)
                 i = i + 1
                 current_token, current_weight = paired_tokens[i]
-            merged_weight = np.mean(merged_weight)
+            if vectorize:
+                merged_weight = np.mean(merged_weight, axis=0)
+            else:
+                merged_weight = np.mean(merged_weight)
             new_paired_tokens.append((merged_token, merged_weight))
 
         else:
