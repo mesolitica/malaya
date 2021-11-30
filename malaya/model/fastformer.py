@@ -1,5 +1,6 @@
 import tensorflow as tf
 import numpy as np
+from malaya.text.function import tag_chunk
 from malaya.function.activation import add_neutral as neutral
 from malaya.function.activation import softmax, sigmoid
 from malaya.text.bpe import (

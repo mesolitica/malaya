@@ -38,22 +38,6 @@ render_dict = {
 }
 
 
-class Base(Abstract):
-    def __init__(
-        self,
-        input_nodes,
-        output_nodes,
-        sess,
-        tokenizer,
-        label=['negative', 'positive'],
-    ):
-        self._input_nodes = input_nodes
-        self._output_nodes = output_nodes
-        self._sess = sess
-        self._tokenizer = tokenizer
-        self._label = label
-
-
 class XLNET(Base):
     def __init__(
         self,

@@ -33,6 +33,18 @@ class Base(Abstract):
         self._socialmedia = module in ['sentiment', 'emotion']
         self._maxlen = 1024
 
+    def predict(self, strings, **kwargs):
+        raise NotImplementedError
+
+    def predict_proba(self, strings, **kwargs):
+        raise NotImplementedError
+
+    def predict_words(self, string, **kwargs):
+        raise NotImplementedError
+
+    def vectorize(self, strings, **kwargs):
+        raise NotImplementedError
+
 
 class Seq2Seq(Abstract):
     def greedy_decoder(self, strings, **kwargs):
