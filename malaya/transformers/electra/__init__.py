@@ -316,7 +316,7 @@ def load(model: str = 'electra', **kwargs):
     bert_config = PATH_ELECTRA[model]['directory'] + 'config.json'
 
     tokenizer = tokenization.FullTokenizer(
-        vocab_file=vocab, do_lower_case=False, **kwargs
+        vocab_file=vocab, do_lower_case=False
     )
 
     bert_config = modeling.BertConfig.from_json_file(bert_config)
