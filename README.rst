@@ -121,7 +121,7 @@ Thanks to `KeyReply <https://www.keyreply.com/>`_ for sponsoring private cloud t
 .. raw:: html
 
     <a href="#readme">
-        <img alt="logo" width="20%" src="https://cdn.techinasia.com/data/images/16234a59ae3f218dc03815a08eaab483.png">
+        <img alt="logo" width="20%" src="https://image4.owler.com/logo/keyreply_owler_20191024_163259_original.png">
     </a>
 
 Also, thanks to `Tensorflow Research Cloud <https://www.tensorflow.org/tfrc>`_ for free TPUs access.
