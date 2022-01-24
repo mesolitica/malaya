@@ -6,7 +6,6 @@
 # Theory.unknown: John Wiley and Sons, Ltd.
 
 import re
-import operator
 
 debug = False
 test = True

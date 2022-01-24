@@ -1,8 +1,6 @@
 import numpy as np
 from malaya.text.function import (
     simple_textcleaning,
-    classification_textcleaning,
-    entities_textcleaning,
     language_detection_textcleaning,
 )
 from malaya.model.abstract import Classification

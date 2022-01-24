@@ -1,14 +1,14 @@
 import tensorflow as tf
 import numpy as np
 from malaya.function.activation import add_neutral as neutral
-from malaya.function.activation import softmax, sigmoid
+from malaya.function.activation import softmax
 from malaya.text.function import (
     translation_textcleaning,
     summarization_textcleaning,
 )
 from malaya.text.rouge import postprocess_summary
 from malaya.text.bpe import bert_tokenization
-from malaya.model.abstract import Classification, Seq2Seq, Abstract, Base
+from malaya.model.abstract import Base, Classification, Seq2Seq
 from herpetologist import check_type
 from typing import List
 

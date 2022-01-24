@@ -1,11 +1,9 @@
 import re
 import operator
-import networkx as nx
 from collections import defaultdict
 from sklearn.metrics.pairwise import cosine_similarity
 from malaya.text import rake as rake_function
 from malaya.text.function import (
-    simple_textcleaning,
     transformer_textcleaning,
     get_stopwords,
 )
@@ -21,7 +19,6 @@ from malaya.model.xlnet import KeyphraseXLNET
 from malaya.path import MODEL_VOCAB, MODEL_BPE
 from malaya.function import validator
 from malaya.graph.pagerank import pagerank
-from typing import Callable, Tuple, List
 from herpetologist import check_type
 
 

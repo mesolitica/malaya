@@ -1,11 +1,7 @@
-import numpy as np
-import json
 import re
 import dateparser
 import itertools
-from unidecode import unidecode
-from malaya.num2word import to_cardinal, to_ordinal
-from malaya.word2num import word2num
+from malaya.num2word import to_cardinal
 from malaya.text.function import (
     ENGLISH_WORDS,
     MALAY_WORDS,
@@ -37,17 +33,14 @@ from malaya.text.tatabahasa import (
     date_replace,
     consonants,
     sounds,
-    hujung_malaysian,
 )
 from malaya.text.normalization import (
     _remove_postfix,
     _normalize_title,
     _is_number_regex,
     _string_to_num,
-    _normalize_money,
     _replace_compoud,
     cardinal,
-    digit,
     digit_unit,
     rom_to_int,
     ordinal,

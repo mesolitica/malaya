@@ -1,6 +1,3 @@
-import numpy as np
-import pickle
-import warnings
 import string
 
 # https://www.kaggle.com/kyakovlev/jigsaw-general-helper-public/code

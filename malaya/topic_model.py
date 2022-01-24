@@ -5,15 +5,13 @@ from malaya.model.lda2vec import LDA2Vec
 from malaya.text.function import (
     simple_textcleaning,
     get_stopwords,
-    classification_textcleaning,
     print_topics_modelling,
-    build_dataset,
 )
 from malaya.function import validator
 from malaya.text.vectorizer import skipgrams
 from malaya.text.ngram import ngrams as ngrams_generator
 from herpetologist import check_type
-from typing import List, Tuple, Callable
+from typing import List, Tuple
 
 
 def _softmax(x):

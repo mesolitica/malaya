@@ -5,7 +5,6 @@ from malaya.function import (
     nodes_session,
 )
 from malaya.text.bpe import SentencePieceTokenizer
-from malaya.text.trees import tree_from_str
 from malaya.model.tf import Constituency
 from malaya.path import MODEL_VOCAB, MODEL_BPE, CONSTITUENCY_SETTING
 import json

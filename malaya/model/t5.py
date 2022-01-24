@@ -1,8 +1,5 @@
-import tensorflow as tf
 from malaya.text.function import (
-    transformer_textcleaning,
     summarization_textcleaning,
-    split_into_sentences,
     upperfirst,
 )
 from malaya.text.rouge import postprocess_summary

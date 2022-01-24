@@ -1,4 +1,3 @@
-import tensorflow as tf
 import numpy as np
 from malaya.text.function import tag_chunk
 from malaya.function.activation import add_neutral as neutral
@@ -12,9 +11,7 @@ from malaya.text.bpe import (
 )
 from malaya.model.abstract import (
     Classification,
-    Seq2Seq,
     Tagging,
-    Abstract,
     Base,
 )
 from herpetologist import check_type

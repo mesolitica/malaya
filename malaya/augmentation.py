@@ -6,11 +6,11 @@ import string as string_function
 from collections import defaultdict
 from malaya.function import check_file
 from tensorflow.keras.preprocessing.sequence import pad_sequences
-from malaya.text.tatabahasa import alphabet, consonants, vowels
+from malaya.text.tatabahasa import consonants, vowels
 from malaya.text.function import augmentation_textcleaning, simple_textcleaning
 from malaya.path import PATH_AUGMENTATION, S3_PATH_AUGMENTATION
 from herpetologist import check_type
-from typing import List, Dict, Tuple, Callable
+from typing import Callable
 
 _synonym_dict = None
 

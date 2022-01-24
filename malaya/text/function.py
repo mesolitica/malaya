@@ -1,10 +1,8 @@
 import re
-import os
-import numpy as np
 import itertools
 import collections
 from unidecode import unidecode
-from itertools import permutations, combinations
+from itertools import combinations
 from malaya.text.tatabahasa import (
     stopword_tatabahasa,
     stopwords,
@@ -15,7 +13,6 @@ from malaya.text.tatabahasa import (
 from malaya.text.rules import normalized_chars
 from malaya.text.english.words import words as _english_words
 from malaya.text.bahasa.words import words as _malay_words
-import json
 
 STOPWORDS = set(stopwords + stopword_tatabahasa + stopwords_calon)
 STOPWORD_CALON = set(stopwords_calon)

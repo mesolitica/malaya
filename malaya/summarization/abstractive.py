@@ -1,13 +1,10 @@
 from malaya.supervised import t5 as t5_load
-from malaya.supervised import transformer as transformer_load
 from malaya.supervised import bigbird as bigbird_load
 from malaya.supervised import pegasus as pegasus_load
-from malaya.model.tf import Summarization as TF_Summarization
 from malaya.model.t5 import Summarization as T5_Summarization
 from malaya.model.bigbird import Summarization as BigBird_Summarization
 from malaya.model.pegasus import Summarization as Pegasus_Summarization
 from herpetologist import check_type
-import os
 
 _transformer_availability = {
     't5': {

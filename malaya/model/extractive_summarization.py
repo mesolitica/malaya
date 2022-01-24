@@ -11,7 +11,6 @@ from malaya.graph.pagerank import pagerank
 from sklearn.metrics.pairwise import cosine_similarity
 from herpetologist import check_type
 from scipy.sparse import vstack
-from typing import List, Tuple
 
 
 def create_ngram(string, ngram=10):

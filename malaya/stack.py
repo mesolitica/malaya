@@ -1,4 +1,4 @@
-from scipy.stats.mstats import gmean, hmean, hdmedian
+from scipy.stats.mstats import gmean
 import numpy as np
 from herpetologist import check_type
 from typing import List, Callable

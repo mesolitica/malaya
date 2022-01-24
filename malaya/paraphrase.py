@@ -1,7 +1,5 @@
 from malaya.supervised import t5 as t5_load
-from malaya.supervised import transformer as transformer_load
 from malaya.model.t5 import Paraphrase as T5_Paraphrase
-from malaya.model.tf import Paraphrase as TF_Paraphrase
 from herpetologist import check_type
 
 

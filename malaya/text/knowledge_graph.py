@@ -108,6 +108,5 @@ def parse_triples(string):
             results.append(dict(tokens))
         except Exception as e:
             logging.warning(e)
-            pass
 
     return results, ' '.join(last_object)

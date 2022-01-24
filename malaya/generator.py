@@ -1,15 +1,11 @@
-import random
 import tensorflow as tf
 import logging
-from malaya.text.bpe import SentencePieceTokenizer
 from malaya.text.ngram import ngrams as generate_ngrams
 from malaya.supervised import t5 as t5_load
 from malaya.supervised import gpt2 as gpt2_load
-from malaya.model.t5 import Generator, CommonGen
-from malaya.path import PATH_NGRAM, S3_PATH_NGRAM
-from malaya.function import check_file
+from malaya.model.t5 import Generator
 from herpetologist import check_type
-from typing import List, Dict, Tuple, Callable
+from typing import List, Tuple
 
 _accepted_pos = [
     'ADJ',

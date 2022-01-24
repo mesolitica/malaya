@@ -1,7 +1,6 @@
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.cluster import KMeans
 from sklearn.manifold import MDS
-from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from malaya.text.function import (
     simple_textcleaning,
     split_into_sentences,
@@ -9,10 +8,9 @@ from malaya.text.function import (
 )
 from malaya.function import validator
 from herpetologist import check_type
-from typing import List, Tuple, Callable
+from typing import List, Tuple
 
 import numpy as np
-import re
 import random
 
 _accepted_pos = [

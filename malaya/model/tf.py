@@ -1,14 +1,9 @@
-import tensorflow as tf
 import numpy as np
 from malaya.text.function import (
     language_detection_textcleaning,
     summarization_textcleaning,
-    split_into_sentences,
-    transformer_textcleaning,
-    pad_sentence_batch,
     question_cleaning,
     remove_newlines,
-    upperfirst,
 )
 from malaya.text.rouge import postprocess_summary
 from malaya.text.bpe import (
@@ -220,7 +215,6 @@ class Constituency(Abstract):
         """
 
         try:
-            import nltk
             from nltk import Tree
         except BaseException:
             raise ModuleNotFoundError(

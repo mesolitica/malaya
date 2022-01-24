@@ -1,6 +1,4 @@
 import re
-import json
-import os
 from unidecode import unidecode
 from malaya.text.tatabahasa import permulaan, hujung
 from malaya.text.rules import rules_normalizer

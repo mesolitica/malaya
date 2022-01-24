@@ -1,5 +1,4 @@
 import collections.abc
-import gzip
 
 
 class TreebankNode(object):

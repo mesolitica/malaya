@@ -1,5 +1,4 @@
 import tensorflow as tf
-import numpy as np
 
 
 def to_tf(input_nodes, inputs):

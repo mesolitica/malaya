@@ -1,7 +1,5 @@
 import collections
 import numpy as np
-import math
-import re
 import six
 import gc
 from malaya.text.bpe import (
@@ -12,7 +10,6 @@ from malaya.text.bpe import (
     SEG_ID_P,
     SEG_ID_Q,
     SEG_ID_CLS,
-    SEG_ID_SEP,
     SEG_ID_PAD,
     SEP_ID,
     CLS_ID,

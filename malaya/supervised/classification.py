@@ -24,10 +24,8 @@ from malaya.transformers.alxlnet import _extract_attention_weights_import as alx
 from malaya.transformers.xlnet import _extract_attention_weights_import as xlnet_attention_weights
 from malaya.path import MODEL_VOCAB, MODEL_BPE
 from functools import partial
-import json
 import os
 import pickle
-import numpy as np
 
 SIGMOID_MODEL = {
     'albert': SigmoidBERT,

@@ -1,5 +1,4 @@
 from malaya.model.extractive_summarization import SKLearn, Doc2Vec, Encoder
-from herpetologist import check_type
 
 
 def encoder(vectorizer):

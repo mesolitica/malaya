@@ -5,11 +5,11 @@ from scipy.spatial.distance import cdist
 from sklearn.neighbors import NearestNeighbors
 from malaya.text.jarowinkler import JaroWinkler
 from malaya.function import check_file
-from malaya.text.calculator import Calculator
 from malaya.path import PATH_WORDVECTOR, S3_PATH_WORDVECTOR
 from malaya.function import get_device, generate_session
+from malaya.text.calculator import Calculator
 from herpetologist import check_type
-from typing import List, Tuple, Dict
+from typing import List, Tuple
 
 
 def _load(j, npy):
@@ -350,7 +350,7 @@ class WordVector:
             tokens.append(
                 ','.join(self._embed_matrix[row, :].astype('str').tolist())
             )
-        return _Calculator(tokens).exp()
+        return Calculator(tokens).exp()
 
     def _batch_process(self, batch, num_closest=5, return_similarity=True):
         top_k = tf.nn.top_k(self._cosine_similarity, k=num_closest)

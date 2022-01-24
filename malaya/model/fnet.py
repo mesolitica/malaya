@@ -1,4 +1,3 @@
-import tensorflow as tf
 import numpy as np
 from malaya.function.activation import add_neutral as neutral
 from malaya.function.activation import softmax

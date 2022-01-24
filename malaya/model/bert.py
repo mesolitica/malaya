@@ -1,15 +1,9 @@
-import tensorflow as tf
 from malaya.text.function import (
-    entities_textcleaning,
     tag_chunk,
-    split_into_sentences,
-    translation_textcleaning,
 )
 from malaya.text.bpe import (
     bert_tokenization_siamese,
     bert_tokenization,
-    padding_sequence,
-    merge_wordpiece_tokens,
     merge_sentencepiece_tokens,
     merge_sentencepiece_tokens_tagging,
     parse_bert_tagging,
@@ -26,9 +20,7 @@ from malaya.function.html import (
 )
 from malaya.model.abstract import (
     Classification,
-    Seq2Seq,
     Tagging,
-    Abstract,
     Base,
 )
 import numpy as np
