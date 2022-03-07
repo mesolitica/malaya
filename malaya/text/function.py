@@ -149,7 +149,7 @@ def transformer_textcleaning(string, space_after_punct=False):
     string = ' '.join(
         [make_cleaning(w, normalized_chars) for w in string.split()]
     )
-    string = re.sub('\\(dot\\)', '.', string)
+    string = re.sub('\(dot\)', '.', string)
     string = (
         re.sub(re.findall(r'\<a(.*?)\>', string)[0], '', string)
         if (len(re.findall(r'\<a (.*?)\>', string)) > 0)

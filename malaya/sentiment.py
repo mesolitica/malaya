@@ -2,7 +2,7 @@ from malaya.supervised import classification
 from malaya.path import PATH_SENTIMENT, S3_PATH_SENTIMENT
 from herpetologist import check_type
 
-label = ['negative', 'positive']
+label = ['negative', 'neutral', 'positive']
 
 _transformer_availability = {
     'bert': {
@@ -84,7 +84,11 @@ def multinomial(**kwargs):
     result : malaya.model.ml.Bayes class
     """
     return classification.multinomial(
-        PATH_SENTIMENT, S3_PATH_SENTIMENT, 'sentiment', label, **kwargs
+        path=PATH_SENTIMENT,
+        s3_path=S3_PATH_SENTIMENT,
+        module='sentiment',
+        label=label,
+        **kwargs
     )
 
 

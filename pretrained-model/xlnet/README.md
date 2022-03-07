@@ -285,7 +285,7 @@ python3 multigpu_pretraining.py \
   - 500k steps, 1 TPU V2-8.
   - TINY size.
 
-5. **BASE**, last update 6th September 2021, [xlnet-base-2021-09-06.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/xlnet-tiny-2021-09-06.tar.gz)
+5. **BASE**, last update 6th September 2021, [xlnet-base-2021-09-06.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/xlnet-base-2021-09-06.tar.gz)
 
   - Vocab size 32k.
   - Trained on raw wikipedia, raw parliament, raw news, raw wattpad, raw academia, raw iium-confession and translated The Pile.

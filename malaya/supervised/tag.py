@@ -38,13 +38,13 @@ def transformer(module, model='xlnet', quantized=False, tok=None, **kwargs):
         selected_model = TaggingBERT
         selected_tokenizer = SentencePieceTokenizer
 
-    if model in ['xlnet', 'alxlnet']:
+    elif model in ['xlnet', 'alxlnet']:
         inputs = ['Placeholder', 'Placeholder_1', 'Placeholder_2']
         vectorizer = {'vectorizer': 'import/transpose_3:0'}
         selected_model = TaggingXLNET
         selected_tokenizer = SentencePieceTokenizer
 
-    if model in ['fastformer', 'tiny-fastformer']:
+    elif model in ['fastformer', 'tiny-fastformer']:
         inputs = ['Placeholder']
         vectorizer_nodes = {'fastformer': 'import/fast_transformer/add_24:0',
                             'tiny-fastformer': 'import/fast_transformer/add_8:0'}

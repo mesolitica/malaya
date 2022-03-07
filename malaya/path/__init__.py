@@ -184,8 +184,8 @@ S3_PATH_NGRAM = {
     2: {'model': 'v23/preprocessing/bm_2grams.json'},
     'symspell': {'model': 'v27/preprocessing/bm_1grams.txt'},
     'sentencepiece': {
-        'vocab': 'bert-bahasa/sp10m.cased.v4.vocab',
-        'model': 'bert-bahasa/sp10m.cased.v4.model',
+        'vocab': 'ngram/sp10m.cased.v4.vocab',
+        'model': 'ngram/sp10m.cased.v4.model',
     },
     'jamspell': {
         'wiki+news': {
@@ -251,15 +251,15 @@ PATH_SENTIMENT = {
         'model': home + '/sentiment/multinomial/multinomial.pkl',
         'vector': home + '/sentiment/multinomial/tfidf.pkl',
         'bpe': home + '/sentiment/multinomial/bpe.model',
-        'version': 'v34',
+        'version': 'v47',
     }
 }
 
 S3_PATH_SENTIMENT = {
     'multinomial': {
-        'model': 'v34/sentiment/multinomial.pkl',
-        'vector': 'v34/sentiment/tfidf.pkl',
-        'bpe': 'v34/sentiment/bpe.model',
+        'model': 'v47/sentiment/multinomial.pkl',
+        'vector': 'v47/sentiment/tfidf.pkl',
+        'bpe': 'v47/sentiment/bpe.model',
     }
 }
 
@@ -474,19 +474,19 @@ PATH_WORDVECTOR = {
 
 S3_PATH_WORDVECTOR = {
     'news': {
-        'vocab': 'bert-bahasa/word2vec-news-ms-256.json',
-        'model': 'bert-bahasa/word2vec-news-ms-256.npy',
+        'vocab': 'wordvector/word2vec-news-ms-256.json',
+        'model': 'wordvector/word2vec-news-ms-256.npy',
     },
     'wikipedia': {
-        'vocab': 'bert-bahasa/word2vec-wiki-ms-256.json',
-        'model': 'bert-bahasa/word2vec-wiki-ms-256.npy',
+        'vocab': 'wordvector/word2vec-wiki-ms-256.json',
+        'model': 'wordvector/word2vec-wiki-ms-256.npy',
     },
     'socialmedia': {
-        'vocab': 'bert-bahasa/word2vec-ms-socialmedia-256.json',
-        'model': 'bert-bahasa/word2vec-ms-socialmedia-256.npy',
+        'vocab': 'wordvector/word2vec-ms-socialmedia-256.json',
+        'model': 'wordvector/word2vec-ms-socialmedia-256.npy',
     },
     'combine': {
-        'vocab': 'bert-bahasa/word2vec-combined-256.json',
-        'model': 'bert-bahasa/word2vec-combined-256.npy',
+        'vocab': 'wordvector/word2vec-combined-256.json',
+        'model': 'wordvector/word2vec-combined-256.npy',
     },
 }

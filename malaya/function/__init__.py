@@ -13,12 +13,20 @@ from malaya_boilerplate.frozen_graph import (
 )
 from malaya_boilerplate.utils import describe_availability
 from malaya_boilerplate import backblaze
+from malaya_boilerplate import huggingface
 from malaya_boilerplate import frozen_graph
 from malaya import package, url
+import os
+import logging
+
+MALAYA_USE_HUGGINGFACE = bool(os.environ.get('MALAYA_USE_HUGGINGFACE', 'true'))
 
 
 def check_file(file, s3_file=None, **kwargs):
-    return backblaze.check_file(file, package, url, s3_file=s3_file, **kwargs)
+    if MALAYA_USE_HUGGINGFACE:
+        return huggingface.check_file(file, package, url, s3_file=s3_file, **kwargs)
+    else:
+        return backblaze.check_file(file, package, url, s3_file=s3_file, **kwargs)
 
 
 def load_graph(frozen_graph_filename, **kwargs):

@@ -1,13 +1,15 @@
 from malaya.text.regex import _expressions
 from malaya.text.function import split_into_sentences
 import re
+import html
 
 
 class Tokenizer:
     def __init__(self, lowercase=False, **kwargs):
         """
         Load Tokenizer object.
-        Check supported regex pattern at https://github.com/huseinzol05/Malaya/blob/master/malaya/text/regex.py#L85
+        Check supported regex pattern at 
+        https://github.com/huseinzol05/Malaya/blob/master/malaya/text/regex.py#L85
 
         Parameters
         ----------
@@ -202,7 +204,8 @@ class Tokenizer:
 
 
 class SentenceTokenizer:
-    def __init__(self, **kwargs):
+    def __init__(self):
+        pass
 
     def tokenize(self, string, minimum_length=5):
         """

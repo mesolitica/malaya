@@ -10,6 +10,7 @@ from malaya.text.bpe import (
     SentencePieceTokenizer,
     YTTMEncoder,
 )
+from malaya.text.function import transformer_textcleaning
 from malaya.model.ml import BinaryBayes, MulticlassBayes, MultilabelBayes
 from malaya.model.bert import MulticlassBERT, BinaryBERT, SigmoidBERT
 from malaya.model.xlnet import MulticlassXLNET, BinaryXLNET, SigmoidXLNET
@@ -80,11 +81,11 @@ TOKENIZER_MODEL = {
 
 
 def multinomial(path, s3_path, module, label, sigmoid=False, **kwargs):
-    check_file(path['multinomial'], s3_path['multinomial'], **kwargs)
+    path = check_file(path['multinomial'], s3_path['multinomial'], **kwargs)
     try:
-        with open(path['multinomial']['model'], 'rb') as fopen:
+        with open(path['model'], 'rb') as fopen:
             multinomial = pickle.load(fopen)
-        with open(path['multinomial']['vector'], 'rb') as fopen:
+        with open(path['vector'], 'rb') as fopen:
             vectorize = pickle.load(fopen)
     except BaseException:
         path = os.path.normpath(f'{module}/multinomial')
@@ -92,7 +93,7 @@ def multinomial(path, s3_path, module, label, sigmoid=False, **kwargs):
             f"model corrupted due to some reasons, please run `malaya.clear_cache('{path}')` and try again"
         )
 
-    bpe = YTTMEncoder(vocab_file=path['multinomial']['bpe'])
+    bpe = YTTMEncoder(vocab_file=path['bpe'])
 
     stemmer = naive()
     cleaning = partial(_classification_textcleaning_stemmer, stemmer=stemmer)
@@ -104,6 +105,7 @@ def multinomial(path, s3_path, module, label, sigmoid=False, **kwargs):
             selected_model = MulticlassBayes
         else:
             selected_model = BinaryBayes
+
     return selected_model(
         multinomial=multinomial,
         label=label,
@@ -146,33 +148,33 @@ def transformer(
         if model in ['bert', 'tiny-bert']:
             attention = bert_attention_weights(bert_num_layers[model], g)
 
-        if model in ['albert', 'tiny-albert']:
+        elif model in ['albert', 'tiny-albert']:
             attention = albert_attention_weights(albert_num_layers[model], g)
 
         inputs = ['Placeholder', 'Placeholder_1']
         vectorizer = {'vectorizer': 'import/dense/BiasAdd:0'}
 
-    if model in ['xlnet', 'alxlnet']:
+    elif model in ['xlnet', 'alxlnet']:
         if model in ['xlnet']:
             weights_import = xlnet_attention_weights
-        if model in ['alxlnet']:
+        elif model in ['alxlnet']:
             weights_import = alxlnet_attention_weights
 
         inputs = ['Placeholder', 'Placeholder_1', 'Placeholder_2']
         vectorizer = {'vectorizer': 'import/transpose_3:0'}
         attention = weights_import(g)
 
-    if model in ['bigbird', 'tiny-bigbird']:
+    elif model in ['bigbird', 'tiny-bigbird']:
         inputs = ['Placeholder']
         vectorizer = {'vectorizer': 'import/dense/BiasAdd:0'}
         attention = None
 
-    if model in ['fnet', 'fnet-large']:
+    elif model in ['fnet', 'fnet-large']:
         inputs = ['Placeholder', 'Placeholder_1']
         vectorizer = {'vectorizer': 'import/vectorizer:0'}
         attention = None
 
-    if model in ['fastformer', 'tiny-fastformer']:
+    elif model in ['fastformer', 'tiny-fastformer']:
         inputs = ['Placeholder']
         vectorizer_nodes = {'fastformer': 'import/fast_transformer/add_24:0',
                             'tiny-fastformer': 'import/fast_transformer/add_8:0'}

@@ -41,7 +41,11 @@ def transformer_squad(module, model='bert', quantized=False, **kwargs):
     tokenizer = SentencePieceTokenizer(vocab_file=path['vocab'], spm_model_file=path['tokenizer'])
     input_nodes, output_nodes = nodes_session(g, inputs, outputs)
 
-    mode = 'bert' if 'bert' in model else 'xlnet'
+    if 'bert' in model:
+        mode = 'bert'
+    else:
+        mode = 'xlnet'
+
     return SQUAD(
         input_nodes=input_nodes,
         output_nodes=output_nodes,

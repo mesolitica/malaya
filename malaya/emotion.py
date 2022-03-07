@@ -114,8 +114,11 @@ def multinomial(**kwargs):
     result : malaya.model.ml.MulticlassBayes class
     """
     return classification.multinomial(
-        path=PATH_EMOTION, s3_path=S3_PATH_EMOTION,
-        module='emotion', label=label, **kwargs
+        path=PATH_EMOTION,
+        s3_path=S3_PATH_EMOTION,
+        module='emotion',
+        label=label,
+        **kwargs
     )
 
 
