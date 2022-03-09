@@ -12,14 +12,13 @@ from herpetologist import check_type
 from typing import List, Tuple
 
 
-def _load(j, npy):
-    with open(j) as fopen:
-        vocab = json.load(fopen)
-    vector = np.load(npy)
-    return vocab, vector
-
-
 _wordvector_availability = {
+    'news': {
+        'Size (MB)': 200.2,
+        'Vocab size': 195466,
+        'lowercase': True,
+        'Description': 'pretrained on cleaned Malay news size 256',
+    },
     'wikipedia': {
         'Size (MB)': 781.7,
         'Vocab size': 763350,
@@ -31,12 +30,6 @@ _wordvector_availability = {
         'Vocab size': 1294638,
         'lowercase': True,
         'Description': 'pretrained on cleaned Malay twitter and Malay instagram size 256',
-    },
-    'news': {
-        'Size (MB)': 200.2,
-        'Vocab size': 195466,
-        'lowercase': True,
-        'Description': 'pretrained on cleaned Malay news size 256',
     },
     'combine': {
         'Size (MB)': 1900,
@@ -66,9 +59,9 @@ def load(model: str = 'wikipedia', **kwargs):
     model : str, optional (default='wikipedia')
         Model architecture supported. Allowed values:
 
+        * ``'news'`` - pretrained on cleaned Malay news size 256.
         * ``'wikipedia'`` - pretrained on Malay wikipedia word2vec size 256.
         * ``'socialmedia'`` - pretrained on cleaned Malay twitter and Malay instagram size 256.
-        * ``'news'`` - pretrained on cleaned Malay news size 256.
         * ``'combine'`` - pretrained on cleaned Malay news + Malay social media + Malay wikipedia size 256.
 
     Returns
@@ -83,10 +76,11 @@ def load(model: str = 'wikipedia', **kwargs):
             'model not supported, please check supported models from `malaya.wordvector.available_wordvector()`.'
         )
 
-    check_file(PATH_WORDVECTOR[model], S3_PATH_WORDVECTOR[model], **kwargs)
-    return _load(
-        PATH_WORDVECTOR[model]['vocab'], PATH_WORDVECTOR[model]['model']
-    )
+    path = check_file(PATH_WORDVECTOR[model], S3_PATH_WORDVECTOR[model], **kwargs)
+    with open(path['vocab']) as fopen:
+        vocab = json.load(fopen)
+    vector = np.load(path['model'])
+    return vocab, vector
 
 
 class WordVector:

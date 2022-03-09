@@ -601,7 +601,7 @@ class Symspell:
 
         return words
 
-    def edit_candidates(self, word):
+    def edit_candidates(self, word, get_score=False):
         """
         Generate candidates given a word.
 
@@ -623,7 +623,10 @@ class Symspell:
         ttt[word] = ttt.get(word, 0) + 10
         if not len(ttt):
             ttt = {word: 10}
-        return list(ttt)
+        if get_score:
+            return ttt
+        else:
+            return list(ttt)
 
     @check_type
     def correct(self, word: str, **kwargs):
@@ -667,8 +670,8 @@ class Symspell:
             if word in rules_normalizer:
                 word = rules_normalizer[word]
             else:
-                candidates1 = self.edit_candidates(word)
-                candidates2 = self.edit_candidates(cp_word)
+                candidates1 = self.edit_candidates(word, get_score=True)
+                candidates2 = self.edit_candidates(cp_word, get_score=True)
                 word1 = max(candidates1, key=candidates1.get)
                 word2 = max(candidates2, key=candidates2.get)
 
@@ -986,22 +989,22 @@ def probability(sentence_piece: bool = False, **kwargs):
     result: malaya.spell.Probability class
     """
 
-    check_file(PATH_NGRAM[1], S3_PATH_NGRAM[1], **kwargs)
-
     tokenizer = None
-
     if sentence_piece:
-        check_file(
+        path = check_file(
             PATH_NGRAM['sentencepiece'],
             S3_PATH_NGRAM['sentencepiece'],
             **kwargs
         )
+        print(path)
 
-        vocab = PATH_NGRAM['sentencepiece']['vocab']
-        vocab_model = PATH_NGRAM['sentencepiece']['model']
+        vocab = path['vocab']
+        vocab_model = path['model']
         tokenizer = SentencePieceTokenizer(vocab_file=vocab, spm_model_file=vocab_model)
 
-    with open(PATH_NGRAM[1]['model']) as fopen:
+    path = check_file(PATH_NGRAM[1], S3_PATH_NGRAM[1], **kwargs)
+
+    with open(path['model']) as fopen:
         corpus = json.load(fopen)
     return Probability(corpus, tokenizer)
 
@@ -1030,13 +1033,12 @@ def symspell(
             'symspellpy not installed. Please install it and try again.'
         )
 
-    check_file(PATH_NGRAM['symspell'], S3_PATH_NGRAM['symspell'], **kwargs)
-    check_file(PATH_NGRAM[1], S3_PATH_NGRAM[1], **kwargs)
-
+    path = check_file(PATH_NGRAM['symspell'], S3_PATH_NGRAM['symspell'], **kwargs)
     sym_spell = SymSpell(max_edit_distance_dictionary, prefix_length)
-    dictionary_path = PATH_NGRAM['symspell']['model']
-    sym_spell.load_dictionary(dictionary_path, term_index, count_index)
-    with open(PATH_NGRAM[1]['model']) as fopen:
+    sym_spell.load_dictionary(path['model'], term_index, count_index)
+
+    path = check_file(PATH_NGRAM[1], S3_PATH_NGRAM[1], **kwargs)
+    with open(path['model']) as fopen:
         corpus = json.load(fopen)
     return Symspell(sym_spell, Verbosity.ALL, corpus, k=top_k)
 
@@ -1074,10 +1076,10 @@ def jamspell(model: str = 'wiki', **kwargs):
             f'model not supported, available models are {str(supported_models)}'
         )
 
-    check_file(PATH_NGRAM['jamspell'][model], S3_PATH_NGRAM['jamspell'][model], **kwargs)
+    path = check_file(PATH_NGRAM['jamspell'][model], S3_PATH_NGRAM['jamspell'][model], **kwargs)
     try:
         corrector = jamspellpy.TSpellCorrector()
-        corrector.LoadLangModel(PATH_NGRAM['jamspell'][model]['model'])
+        corrector.LoadLangModel(path['model'])
     except BaseException:
         raise Exception(
             f"failed to load jamspell model, please run `malaya.utils.delete_cache('preprocessing/jamspell/{model.replace('+', '-')}')`")
@@ -1115,9 +1117,9 @@ def spylls(model: str = 'libreoffice-pejam', **kwargs):
             f'model not supported, available models are {str(supported_models)}'
         )
 
-    check_file(PATH_NGRAM['spylls'][model], S3_PATH_NGRAM['spylls'][model], **kwargs)
+    path = check_file(PATH_NGRAM['spylls'][model], S3_PATH_NGRAM['spylls'][model], **kwargs)
     try:
-        dictionary = Dictionary.from_zip(PATH_NGRAM['spylls'][model]['model'])
+        dictionary = Dictionary.from_zip(path['model'])
     except BaseException:
         raise Exception(
             f"failed to load spylls model, please run `malaya.utils.delete_cache('preprocessing/spylls/{model}')`")
@@ -1189,21 +1191,19 @@ def transformer_encoder(model, sentence_piece: bool = False, **kwargs):
     if not hasattr(model, '_log_vectorize'):
         raise ValueError('model must have `_log_vectorize` method')
 
-    check_file(PATH_NGRAM[1], S3_PATH_NGRAM[1], **kwargs)
-
     tokenizer = None
-
     if sentence_piece:
-        check_file(
+        path = check_file(
             PATH_NGRAM['sentencepiece'],
             S3_PATH_NGRAM['sentencepiece'],
             **kwargs
         )
 
-        vocab = PATH_NGRAM['sentencepiece']['vocab']
-        vocab_model = PATH_NGRAM['sentencepiece']['model']
+        vocab = path['vocab']
+        vocab_model = path['model']
         tokenizer = SentencePieceTokenizer(vocab_file=vocab, spm_model_file=vocab_model)
 
-    with open(PATH_NGRAM[1]['model']) as fopen:
+    path = check_file(PATH_NGRAM[1], S3_PATH_NGRAM[1], **kwargs)
+    with open(path['model']) as fopen:
         corpus = json.load(fopen)
     return Transformer(model, corpus, tokenizer)

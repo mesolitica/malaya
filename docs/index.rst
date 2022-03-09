@@ -20,6 +20,7 @@ Contents:
    Dataset
    Installation
    load-cache
+   models-accuracy
    running-on-windows
    Api
    Contributing

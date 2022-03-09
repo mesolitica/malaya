@@ -32,10 +32,10 @@
 
 <footer class="page-footer">
   <div class="footer-copyright">
-            <div class="container" style="color: #6c757d;">
-            Malaya Copyright
-            </div>
-          </div>
+    <div class="container" style="color: #6c757d;">
+      Malaya Copyright
+    </div>
+  </div>
 </footer>
 
 <script src="https://code.jquery.com/jquery-3.4.1.slim.js"></script>
@@ -44,121 +44,140 @@
 
 <script>
 
-var plot = echarts.init(document.getElementById('count'));
-var colors = ['rgb(143, 255, 113)', 'rgb(255, 238, 109)', 'rgb(255, 139, 118)'];
+  var plot = echarts.init(document.getElementById('count'));
+  var colors = ['rgb(143, 255, 113)', 'rgb(255, 238, 109)', 'rgb(255, 139, 118)'];
 
-option = {
+  option = {
     title: {
       text: 'Classes barplot'
     },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'cross'
+      }
+    },
     data: ['Positive', 'Neutral', 'Negative'],
     xAxis: {
-        type: 'category',
-        data: ['Positive', 'Neutral', 'Negative']
+      type: 'category',
+      data: ['Positive', 'Neutral', 'Negative']
     },
     yAxis: {
-        type: 'value',
-        splitLine: {
-                show: false
-            }
+      type: 'value',
+      splitLine: {
+        show: false
+      }
     },
     series: [{
-        data: [$barplot_positive, '-', '-'],
-        stack: '1',
-        type: 'bar',
-        name: 'Positive',
-        color: colors[0],
-        label: {
-                normal: {
-                    show: true,
-                    position: 'top'
-                }
-            },
+      data: [$barplot_positive, '-', '-'],
+      stack: '1',
+      type: 'bar',
+      name: 'Positive',
+      color: colors[0],
+      label: {
+        normal: {
+          show: true,
+          position: 'top'
+        }
+      },
     },
     {
-        data: ['-', $barplot_neutral, '-'],
-        type: 'bar',
-        stack: '1',
-        name: 'Neutral',
-        color: colors[1],
-        label: {
-                normal: {
-                    show: true,
-                    position: 'top'
-                }
-            },
+      data: ['-', $barplot_neutral, '-'],
+      type: 'bar',
+      stack: '1',
+      name: 'Neutral',
+      color: colors[1],
+      label: {
+        normal: {
+          show: true,
+          position: 'top'
+        }
+      },
     },
     {
-        data: ['-', '-', $barplot_negative],
-        type: 'bar',
-        stack: '1',
-        name: 'Negative',
-        color: colors[2],
-        label: {
-                normal: {
-                    show: true,
-                    position: 'top'
-                }
-            },
+      data: ['-', '-', $barplot_negative],
+      type: 'bar',
+      stack: '1',
+      name: 'Negative',
+      color: colors[2],
+      label: {
+        normal: {
+          show: true,
+          position: 'top'
+        }
+      },
     }
-  ]
-};
-plot.setOption(option = option)
+    ]
+  };
+  plot.setOption(option = option)
 
-option = {
-    title:{
+  option = {
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'cross'
+      }
+    },
+    title: {
       text: 'probability histogram'
     },
     xAxis: {
-        type: 'category',
-        data: $histogram_x
+      type: 'category',
+      data: $histogram_x
     },
     yAxis: {
-        type: 'value',
-        splitLine: {
-                show: false
-            }
+      type: 'value',
+      splitLine: {
+        show: false
+      }
     },
     series: [{
-        data: $histogram_y,
-        type: 'bar'
+      data: $histogram_y,
+      type: 'bar'
     }]
-};
+  };
 
-var plot = echarts.init(document.getElementById('histogram'));
-plot.setOption(option = option)
+  var plot = echarts.init(document.getElementById('histogram'));
+  plot.setOption(option = option)
 
-option = {
-  title:{
-    text: 'Attention'
-  },
+  option = {
+    title: {
+      text: 'Attention'
+    },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'cross'
+      }
+    },
     xAxis: {
-        type: 'category',
-        name: 'Sentence length',
-        nameLocation: 'center',
-        nameGap: 30,
-        data: $attention_x
+      type: 'category',
+      name: 'Sentence length',
+      nameLocation: 'center',
+      nameGap: 30,
+      data: $attention_x
     },
     yAxis: {
-        type: 'value',
-        splitLine: {
-                show: false
-            }
+      type: 'value',
+      splitLine: {
+        show: false
+      }
     },
     series: [{
-        data: $attention_y,
-        type: 'line',
-        showSymbol: false
+      data: $attention_y,
+      type: 'line',
+      showSymbol: false
     }]
-};
+  };
 
-var plot = echarts.init(document.getElementById('entropy'));
-plot.setOption(option = option)
+  var plot = echarts.init(document.getElementById('entropy'));
+  plot.setOption(option = option)
 
-document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function () {
     var elems = document.querySelectorAll('.tooltipped');
     var instances = M.Tooltip.init(elems);
   });
 
 </script>
+
 </html>

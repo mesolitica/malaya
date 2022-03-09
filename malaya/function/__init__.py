@@ -19,7 +19,7 @@ from malaya import package, url
 import os
 import logging
 
-MALAYA_USE_HUGGINGFACE = bool(os.environ.get('MALAYA_USE_HUGGINGFACE', 'true'))
+MALAYA_USE_HUGGINGFACE = os.environ.get('MALAYA_USE_HUGGINGFACE', 'false').lower() == 'true'
 
 
 def check_file(file, s3_file=None, **kwargs):

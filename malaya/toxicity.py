@@ -112,7 +112,12 @@ def multinomial(**kwargs):
     result : malaya.model.ml.MultilabelBayes class
     """
     return classification.multinomial(
-        PATH_TOXIC, S3_PATH_TOXIC, 'toxicity', label, sigmoid=True, **kwargs
+        path=PATH_TOXIC,
+        s3_path=S3_PATH_TOXIC,
+        module='toxicity',
+        label=label,
+        sigmoid=True,
+        **kwargs
     )
 
 

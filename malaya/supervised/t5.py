@@ -42,6 +42,8 @@ def load(module, model, model_class, quantized=False, **kwargs):
 
     if module == 'kesalahan-tatabahasa':
         word_tokenizer = Tokenizer(date=False, time=False).tokenize
+    elif module == 'spelling-correction':
+        word_tokenizer = Tokenizer(duration=False, date=False).tokenize
     else:
         word_tokenizer = None
 

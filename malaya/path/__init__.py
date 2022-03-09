@@ -28,10 +28,6 @@ TRUE_CASE_VOCAB = 'bpe/true-case.yttm'
 SEGMENTATION_VOCAB = 'bpe/segmentation.yttm'
 PEGASUS_BPE_MODEL = 'bpe/pegasus.wordpiece'
 
-ENTITY_SETTING = 'setting/entities.json'
-ENTITY_ONTONOTES5_SETTING = 'setting/entities-ontonotes5.json'
-POS_SETTING = 'setting/pos.json'
-
 LANGUAGE_DETECTION_BOW = 'bpe/bow-language-detection.pkl'
 LANGUAGE_DETECTION_VOCAB = 'bpe/language-detection.yttm'
 
@@ -80,12 +76,6 @@ LM_VOCAB = {
     'knowledge-graph-generator': MS_EN_BPE_MODEL,
 }
 
-TAGGING_SETTING = {
-    'entity': ENTITY_SETTING,
-    'pos': POS_SETTING,
-    'entity-ontonotes5': ENTITY_ONTONOTES5_SETTING,
-}
-
 # sorted based on modules, started from augmentation until toxic
 
 PATH_AUGMENTATION = {
@@ -98,9 +88,10 @@ PATH_AUGMENTATION = {
 
 S3_PATH_AUGMENTATION = {
     'synonym': {
-        'model': 'https://raw.githubusercontent.com/huseinzol05/Malaya-Dataset/master/dictionary/synonym/synonym0.json',
-        'model2': 'https://raw.githubusercontent.com/huseinzol05/Malaya-Dataset/master/dictionary/synonym/synonym1.json',
-    }}
+        'model': 'synonym/synonym0.json',
+        'model2': 'synonym/synonym1.json',
+    }
+}
 
 PATH_EMOTION = {
     'multinomial': {
@@ -184,8 +175,8 @@ S3_PATH_NGRAM = {
     2: {'model': 'v23/preprocessing/bm_2grams.json'},
     'symspell': {'model': 'v27/preprocessing/bm_1grams.txt'},
     'sentencepiece': {
-        'vocab': 'ngram/sp10m.cased.v4.vocab',
-        'model': 'ngram/sp10m.cased.v4.model',
+        'vocab': 'v27/sp10m.cased.v4.vocab',
+        'model': 'v27/sp10m.cased.v4.model',
     },
     'jamspell': {
         'wiki+news': {
@@ -482,11 +473,11 @@ S3_PATH_WORDVECTOR = {
         'model': 'wordvector/word2vec-wiki-ms-256.npy',
     },
     'socialmedia': {
-        'vocab': 'wordvector/word2vec-ms-socialmedia-256.json',
-        'model': 'wordvector/word2vec-ms-socialmedia-256.npy',
+        'vocab': 'wordvector/word2vec-socialmedia-ms-256.json',
+        'model': 'wordvector/word2vec-socialmedia-ms-256.npy',
     },
     'combine': {
-        'vocab': 'wordvector/word2vec-combined-256.json',
-        'model': 'wordvector/word2vec-combined-256.npy',
+        'vocab': 'wordvector/word2vec-combined-ms-256.json',
+        'model': 'wordvector/word2vec-combined-ms-256.npy',
     },
 }

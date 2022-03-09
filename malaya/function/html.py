@@ -410,3 +410,12 @@ def _upload_jupyter():
     shutil.copyfile(css_location, './admin-materialize.min.css')
 
     return 'echarts.min.js', 'admin-materialize.min.css'
+
+
+render_dict = {
+    'sentiment-v2': _render_binary,
+    'relevancy': _render_relevancy,
+    'emotion': _render_emotion,
+    'toxicity': _render_toxic,
+    'subjectivity': _render_binary,
+}

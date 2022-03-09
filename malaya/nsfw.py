@@ -16,8 +16,8 @@ def lexicon(**kwargs):
     result : malaya.text.lexicon.nsfw.Lexicon class
     """
 
-    check_file(PATH_NSFW['lexicon'], S3_PATH_NSFW['lexicon'], **kwargs)
-    with open(PATH_NSFW['lexicon']['model']) as fopen:
+    path = check_file(PATH_NSFW['lexicon'], S3_PATH_NSFW['lexicon'], **kwargs)
+    with open(path['model']) as fopen:
         corpus = json.load(fopen)
     return nsfw.Lexicon(corpus)
 
@@ -30,4 +30,10 @@ def multinomial(**kwargs):
     -------
     result : malaya.model.ml.BAYES class
     """
-    return classification.multinomial(PATH_NSFW, S3_PATH_NSFW, 'nsfw', label, **kwargs)
+    return classification.multinomial(
+        path=PATH_NSFW,
+        s3_path=S3_PATH_NSFW,
+        module='nsfw',
+        label=label,
+        **kwargs
+    )

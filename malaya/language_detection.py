@@ -55,13 +55,11 @@ def fasttext(quantized: bool = True, **kwargs):
     else:
         model = 'fasttext-original'
 
-    check_file(
+    path = check_file(
         PATH_LANG_DETECTION[model], S3_PATH_LANG_DETECTION[model], **kwargs
     )
     try:
-        model_fasttext = fasttext.load_model(
-            PATH_LANG_DETECTION[model]['model']
-        )
+        model_fasttext = fasttext.load_model(path['model'])
     except:
         raise Exception(
             f"failed to load fasttext model, please run `malaya.utils.delete_cache('language-detection/{model}")

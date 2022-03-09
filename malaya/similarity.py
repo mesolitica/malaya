@@ -25,6 +25,8 @@ similarity_functions = {
     'manhattan': manhattan_distances,
 }
 
+label = ['not similar', 'similar']
+
 
 class VectorizerSimilarity:
     def __init__(self, vectorizer):
@@ -516,7 +518,7 @@ def _transformer(
         output_nodes=output_nodes,
         sess=generate_session(graph=g, **kwargs),
         tokenizer=tokenizer,
-        label=['not similar', 'similar'],
+        label=label,
     )
 
 

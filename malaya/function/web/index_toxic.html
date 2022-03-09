@@ -52,6 +52,12 @@
     title: {
       text: 'Classes barplot'
     },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'cross'
+      }
+    },
     data: ['Severe Toxic', 'Obscene', 'Threat', 'Insult', 'Identity attack', 'Indian', 'Malay', 'Chinese'],
     xAxis: {
       type: 'category',
@@ -179,6 +185,12 @@
     title: {
       text: 'probability histogram'
     },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'cross'
+      }
+    },
     xAxis: {
       type: 'category',
       data: $histogram_x,
@@ -201,6 +213,12 @@
   option = {
     title: {
       text: 'Attention'
+    },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'cross'
+      }
     },
     xAxis: {
       type: 'category',

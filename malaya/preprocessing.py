@@ -353,13 +353,13 @@ def preprocessing(
     validator.validate_object(stemmer, 'stem', 'stemmer')
 
     if translate_english_to_bm:
-        check_file(
+        path = check_file(
             PATH_PREPROCESSING['english-malay'],
             S3_PATH_PREPROCESSING['english-malay'],
             **kwargs,
         )
         try:
-            with open(PATH_PREPROCESSING['english-malay']['model']) as fopen:
+            with open(path['model']) as fopen:
                 translator = json.load(fopen)
         except BaseException:
             raise Exception(

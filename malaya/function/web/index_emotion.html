@@ -52,6 +52,12 @@
     title: {
       text: 'Classes barplot'
     },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'cross'
+      }
+    },
     data: ['Anger', 'Fear', 'Happy', 'Love', 'Sadness', 'Surprise'],
     xAxis: {
       type: 'category',
@@ -153,6 +159,12 @@
     title: {
       text: 'probability histogram'
     },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'cross'
+      }
+    },
     xAxis: {
       type: 'category',
       data: $histogram_x,
@@ -175,6 +187,12 @@
   option = {
     title: {
       text: 'Attention'
+    },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'cross'
+      }
     },
     xAxis: {
       type: 'category',

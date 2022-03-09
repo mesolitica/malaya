@@ -4,14 +4,21 @@ from malaya.function import (
     generate_session,
     nodes_session,
 )
+from malaya.supervised import settings
 from malaya.text.bpe import SentencePieceTokenizer, WordPieceTokenizer
 from malaya.text.regex import _expressions
 from malaya.model.bert import TaggingBERT
 from malaya.model.xlnet import TaggingXLNET
 from malaya.model.fastformer import TaggingFastFormer
-from malaya.path import MODEL_VOCAB, MODEL_BPE, TAGGING_SETTING
+from malaya.path import MODEL_VOCAB, MODEL_BPE
 import json
 import re
+
+TAGGING_SETTING = {
+    'entity': settings.entities,
+    'pos': settings.pos,
+    'entity-ontonotes5': settings.entities_ontonotes5,
+}
 
 
 def transformer(module, model='xlnet', quantized=False, tok=None, **kwargs):
@@ -22,15 +29,11 @@ def transformer(module, model='xlnet', quantized=False, tok=None, **kwargs):
             'model': 'model.pb',
             'vocab': MODEL_VOCAB[model],
             'tokenizer': MODEL_BPE[model],
-            'setting': TAGGING_SETTING[module],
         },
         quantized=quantized,
         **kwargs,
     )
     g = load_graph(path['model'], **kwargs)
-
-    with open(path['setting']) as fopen:
-        nodes = json.load(fopen)
 
     if model in ['albert', 'bert', 'tiny-albert', 'tiny-bert']:
         inputs = ['Placeholder', 'Placeholder_1']
@@ -63,7 +66,7 @@ def transformer(module, model='xlnet', quantized=False, tok=None, **kwargs):
         output_nodes=output_nodes,
         sess=generate_session(graph=g, **kwargs),
         tokenizer=tokenizer,
-        settings=nodes,
+        settings=TAGGING_SETTING[module],
         tok=tok
     )
 

@@ -12,12 +12,7 @@ from malaya.text.bpe import (
 from malaya.function.activation import add_neutral as neutral
 from malaya.function.activation import softmax, sigmoid
 from malaya.function.parse_dependency import DependencyGraph
-from malaya.function.html import (
-    _render_binary,
-    _render_toxic,
-    _render_emotion,
-    _render_relevancy,
-)
+from malaya.function.html import render_dict
 from malaya.model.abstract import (
     Classification,
     Tagging,
@@ -27,14 +22,6 @@ import numpy as np
 from collections import defaultdict
 from herpetologist import check_type
 from typing import List, Tuple
-
-render_dict = {
-    'sentiment': _render_binary,
-    'relevancy': _render_relevancy,
-    'emotion': _render_emotion,
-    'toxicity': _render_toxic,
-    'subjectivity': _render_binary,
-}
 
 
 class BERT(Base):
@@ -127,7 +114,12 @@ class BERT(Base):
         return outputs
 
     def _predict_words(
-        self, string, method, visualization, add_neutral=False
+        self,
+        string,
+        method,
+        visualization,
+        add_neutral=False,
+        bins_size=0.05,
     ):
         method = method.lower()
         if method not in ['last', 'first', 'mean']:
@@ -185,7 +177,7 @@ class BERT(Base):
         words = np.array(weights).T
         distribution_words = words[:, np.argmax(words.sum(axis=0))]
         y_histogram, x_histogram = np.histogram(
-            distribution_words, bins=np.arange(0, 1, 0.05)
+            distribution_words, bins=np.arange(0, 1 + bins_size, bins_size)
         )
         y_histogram = y_histogram / y_histogram.sum()
         x_attention = np.arange(len(w))
@@ -295,7 +287,11 @@ class BinaryBERT(BERT, Classification):
 
     @check_type
     def predict_words(
-        self, string: str, method: str = 'last', visualization: bool = True
+        self,
+        string: str,
+        method: str = 'last',
+        bins_size: float = 0.05,
+        visualization: bool = True,
     ):
         """
         classify words.
@@ -309,6 +305,8 @@ class BinaryBERT(BERT, Classification):
             * ``'last'`` - attention from last layer.
             * ``'first'`` - attention from first layer.
             * ``'mean'`` - average attentions from all layers.
+        bins_size: float, optional (default=0.05)
+            default bins size for word distribution histogram.
         visualization: bool, optional (default=True)
             If True, it will open the visualization dashboard.
 
@@ -322,6 +320,7 @@ class BinaryBERT(BERT, Classification):
             method=method,
             add_neutral=True,
             visualization=visualization,
+            bins_size=bins_size,
         )
 
 
@@ -402,7 +401,11 @@ class MulticlassBERT(BERT, Classification):
 
     @check_type
     def predict_words(
-        self, string: str, method: str = 'last', visualization: bool = True
+        self,
+        string: str,
+        method: str = 'last',
+        bins_size: float = 0.05,
+        visualization: bool = True,
     ):
         """
         classify words.
@@ -416,6 +419,8 @@ class MulticlassBERT(BERT, Classification):
             * ``'last'`` - attention from last layer.
             * ``'first'`` - attention from first layer.
             * ``'mean'`` - average attentions from all layers.
+        bins_size: float, optional (default=0.05)
+            default bins size for word distribution histogram.
         visualization: bool, optional (default=True)
             If True, it will open the visualization dashboard.
 
@@ -424,7 +429,10 @@ class MulticlassBERT(BERT, Classification):
         result: dict
         """
         return self._predict_words(
-            string=string, method=method, visualization=visualization
+            string=string,
+            method=method,
+            visualization=visualization,
+            bins_size=bins_size,
         )
 
 
@@ -563,7 +571,11 @@ class SigmoidBERT(Base, Classification):
 
     @check_type
     def predict_words(
-        self, string: str, method: str = 'last', visualization: bool = True
+        self,
+        string: str,
+        method: str = 'last',
+        bins_size: float = 0.05,
+        visualization: bool = True,
     ):
         """
         classify words.
@@ -577,6 +589,8 @@ class SigmoidBERT(Base, Classification):
             * ``'last'`` - attention from last layer.
             * ``'first'`` - attention from first layer.
             * ``'mean'`` - average attentions from all layers.
+        bins_size: float, optional (default=0.05)
+            default bins size for word distribution histogram.
         visualization: bool, optional (default=True)
             If True, it will open the visualization dashboard.
 
@@ -632,7 +646,7 @@ class SigmoidBERT(Base, Classification):
         words = np.array(weights).T
         distribution_words = words[:, np.argmax(words.sum(axis=0))]
         y_histogram, x_histogram = np.histogram(
-            distribution_words, bins=np.arange(0, 1, 0.05)
+            distribution_words, bins=np.arange(0, 1 + bins_size, bins_size)
         )
         y_histogram = y_histogram / y_histogram.sum()
         x_attention = np.arange(len(w))

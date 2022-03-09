@@ -89,7 +89,11 @@ def multinomial(**kwargs):
     result : malaya.model.ml.Bayes class
     """
     return classification.multinomial(
-        PATH_SUBJECTIVE, S3_PATH_SUBJECTIVE, 'subjective', label, **kwargs
+        path=PATH_SUBJECTIVE,
+        s3_path=S3_PATH_SUBJECTIVE,
+        module='subjective',
+        label=label,
+        **kwargs
     )
 
 

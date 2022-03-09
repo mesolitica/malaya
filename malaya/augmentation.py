@@ -77,16 +77,13 @@ def synonym(
     global _synonym_dict
 
     if _synonym_dict is None:
-        check_file(
+        path = check_file(
             PATH_AUGMENTATION['synonym'],
             S3_PATH_AUGMENTATION['synonym'],
             **kwargs
         )
+        files = list(path.values())
         synonyms = defaultdict(list)
-        files = [
-            PATH_AUGMENTATION['synonym']['model'],
-            PATH_AUGMENTATION['synonym']['model2'],
-        ]
         for file in files:
             with open(file) as fopen:
                 data = json.load(fopen)

@@ -8,44 +8,44 @@ _transformer_availability = {
     'bert': {
         'Size (MB)': 425.6,
         'Quantized Size (MB)': 111,
-        'macro precision': 0.99330,
-        'macro recall': 0.99330,
-        'macro f1-score': 0.99329,
+        'macro precision': 0.93182,
+        'macro recall': 0.93442,
+        'macro f1-score': 0.93307,
     },
     'tiny-bert': {
         'Size (MB)': 57.4,
         'Quantized Size (MB)': 15.4,
-        'macro precision': 0.98774,
-        'macro recall': 0.98774,
-        'macro f1-score': 0.98774,
+        'macro precision': 0.93390,
+        'macro recall': 0.93141,
+        'macro f1-score': 0.93262,
     },
     'albert': {
         'Size (MB)': 48.6,
         'Quantized Size (MB)': 12.8,
-        'macro precision': 0.99227,
-        'macro recall': 0.99226,
-        'macro f1-score': 0.99226,
+        'macro precision': 0.91228,
+        'macro recall': 0.91929,
+        'macro f1-score': 0.91540,
     },
     'tiny-albert': {
         'Size (MB)': 22.4,
         'Quantized Size (MB)': 5.98,
-        'macro precision': 0.98554,
-        'macro recall': 0.98550,
-        'macro f1-score': 0.98551,
+        'macro precision': 0.91442,
+        'macro recall': 0.91646,
+        'macro f1-score': 0.91521,
     },
     'xlnet': {
         'Size (MB)': 446.6,
         'Quantized Size (MB)': 118,
-        'macro precision': 0.99353,
-        'macro recall': 0.99353,
-        'macro f1-score': 0.99353,
+        'macro precision': 0.92390,
+        'macro recall': 0.92629,
+        'macro f1-score': 0.92444,
     },
     'alxlnet': {
         'Size (MB)': 46.8,
         'Quantized Size (MB)': 13.3,
-        'macro precision': 0.99188,
-        'macro recall': 0.99188,
-        'macro f1-score': 0.99188,
+        'macro precision': 0.91896,
+        'macro recall': 0.92589,
+        'macro f1-score': 0.92198,
     },
     'fastformer': {
         'Size (MB)': 458,
@@ -57,9 +57,9 @@ _transformer_availability = {
     'tiny-fastformer': {
         'Size (MB)': 77.3,
         'Quantized Size (MB)': 19.7,
-        'macro precision': 0.96882,
-        'macro recall': 0.96832,
-        'macro f1-score': 0.96836,
+        'macro precision': 0.90655,
+        'macro recall': 0.89819,
+        'macro f1-score': 0.90196,
     },
 }
 
@@ -120,9 +120,9 @@ def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
     result: model
         List of model classes:
 
-        * if `bert` in model, will return `malaya.model.bert.BinaryBERT`.
-        * if `xlnet` in model, will return `malaya.model.xlnet.BinaryXLNET`.
-        * if `fastformer` in model, will return `malaya.model.fastformer.BinaryFastFormer`.
+        * if `bert` in model, will return `malaya.model.bert.MulticlassBERT`.
+        * if `xlnet` in model, will return `malaya.model.xlnet.MulticlassXLNET`.
+        * if `fastformer` in model, will return `malaya.model.fastformer.MulticlassFastFormer`.
     """
 
     model = model.lower()
@@ -131,7 +131,7 @@ def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
             'model not supported, please check supported models from `malaya.sentiment.available_transformer()`.'
         )
     return classification.transformer(
-        module='sentiment',
+        module='sentiment-v2',
         label=label,
         model=model,
         quantized=quantized,

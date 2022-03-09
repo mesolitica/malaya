@@ -55,16 +55,6 @@ REGEX_TOKEN = re.compile(r'\b[a-z]{2,}\b')
 NGRAM_SEP = '_'
 
 
-def _read_stats(gram=1):
-    try:
-        with open(PATH_PREPROCESSING[gram]['model']) as fopen:
-            return json.load(fopen)
-    except Exception as e:
-        raise Exception(
-            f"{e}, file corrupted due to some reasons, please run `malaya.clear_cache('preprocessing')` and try again"
-        )
-
-
 class _Pdist(dict):
     @staticmethod
     def default_unk_func(key, total):
@@ -88,9 +78,9 @@ class _Pdist(dict):
 
 
 class Segmenter:
-    def __init__(self, max_split_length=20):
-        self.unigrams = _read_stats(1)
-        self.bigrams = _read_stats(2)
+    def __init__(self, path_unigram, path_bigram, max_split_length=20):
+        self.unigrams = self._read_stats(path_unigram)
+        self.bigrams = self._read_stats(path_bigram)
         self.N = sum(self.unigrams.values())
         self.L = max_split_length
 
@@ -98,6 +88,15 @@ class Segmenter:
         self.P2w = _Pdist(self.bigrams, self.N)
 
         self.case_split = re.compile(_expressions['camel_split'])
+
+    def _read_stats(self, path):
+        try:
+            with open(path['model']) as fopen:
+                return json.load(fopen)
+        except Exception as e:
+            raise Exception(
+                f"{e}, file corrupted due to some reasons, please run `malaya.clear_cache('preprocessing')` and try again"
+            )
 
     def condProbWord(self, word, prev):
         try:
@@ -181,9 +180,9 @@ def viterbi(max_split_length: int = 20, **kwargs):
     result : malaya.segmentation.Segmenter class
     """
 
-    check_file(PATH_PREPROCESSING[1], S3_PATH_PREPROCESSING[1], **kwargs)
-    check_file(PATH_PREPROCESSING[2], S3_PATH_PREPROCESSING[2], **kwargs)
-    return Segmenter(max_split_length=max_split_length)
+    path_unigram = check_file(PATH_PREPROCESSING[1], S3_PATH_PREPROCESSING[1], **kwargs)
+    path_bigram = check_file(PATH_PREPROCESSING[2], S3_PATH_PREPROCESSING[2], **kwargs)
+    return Segmenter(path_unigram, path_bigram, max_split_length=max_split_length)
 
 
 def available_transformer():

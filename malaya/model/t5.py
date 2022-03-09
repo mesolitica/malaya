@@ -192,7 +192,7 @@ class KnowledgeGraph(T5, Seq2Seq):
 
 
 class Spell(T5, Seq2Seq):
-    def __init__(self, input_nodes, output_nodes, sess, tokenizer):
+    def __init__(self, input_nodes, output_nodes, sess, tokenizer, word_tokenizer, **kwargs):
         T5.__init__(
             self,
             input_nodes=input_nodes,
@@ -200,8 +200,7 @@ class Spell(T5, Seq2Seq):
             sess=sess,
             tokenizer=tokenizer
         )
-        from malaya.preprocessing import Tokenizer
-        self._word_tokenizer = Tokenizer(duration=False, date=False).tokenize
+        self._word_tokenizer = word_tokenizer
 
     @check_type
     def greedy_decoder(self, strings: List[str]):
