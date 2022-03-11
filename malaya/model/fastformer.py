@@ -27,6 +27,7 @@ class FastFormer(Base):
         tokenizer,
         module,
         label=['negative', 'positive'],
+        multilabels=False,
     ):
 
         Base.__init__(
@@ -37,6 +38,7 @@ class FastFormer(Base):
             tokenizer=tokenizer,
             label=label,
             module=module,
+            multilabels=multilabels,
         )
 
     def _classify(self, strings):
@@ -48,18 +50,34 @@ class FastFormer(Base):
             input_labels=['Placeholder'],
             output_labels=['logits'],
         )
-        return softmax(r['logits'], axis=-1)
+        if self._multilabels:
+            return sigmoid(r['logits'])
+        else:
+            return softmax(r['logits'], axis=-1)
 
     def _predict(self, strings, add_neutral=False):
-        results = self._classify(strings)
+        if self._multilabels:
+            probs = self._classify(strings)
+            results = []
+            probs = np.around(probs)
+            for prob in probs:
+                list_result = []
+                for no, label in enumerate(self._label):
+                    if prob[no]:
+                        list_result.append(label)
+                results.append(list_result)
 
-        if add_neutral:
-            result = neutral(results)
-            label = self._label + ['neutral']
+            return results
         else:
-            label = self._label
+            results = self._classify(strings)
 
-        return [label[result] for result in np.argmax(results, axis=1)]
+            if add_neutral:
+                result = neutral(results)
+                label = self._label + ['neutral']
+            else:
+                label = self._label
+
+            return [label[result] for result in np.argmax(results, axis=1)]
 
     def _vectorize(self, strings, method='first'):
         method = method.lower()
@@ -264,7 +282,7 @@ class BinaryFastFormer(FastFormer, Classification):
         return self._predict_proba(strings=strings, add_neutral=add_neutral)
 
 
-class SigmoidFastFormer(Base, Classification):
+class SigmoidFastFormer(FastFormer, Classification):
     def __init__(
         self,
         input_nodes,
@@ -282,18 +300,8 @@ class SigmoidFastFormer(Base, Classification):
             tokenizer=tokenizer,
             label=label,
             module=module,
+            multilabels=True,
         )
-
-    def _classify(self, strings):
-        input_ids, input_masks, _, _ = bert_tokenization(
-            self._tokenizer, strings,
-        )
-        r = self._execute(
-            inputs=[input_ids, input_masks],
-            input_labels=['Placeholder'],
-            output_labels=['logits'],
-        )
-        return sigmoid(r['logits'])
 
     @check_type
     def vectorize(self, strings: List[str], method: str = 'first'):
@@ -316,36 +324,7 @@ class SigmoidFastFormer(Base, Classification):
         result: np.array
         """
 
-        method = method.lower()
-        if method not in ['first', 'last', 'mean', 'word']:
-            raise ValueError(
-                "method not supported, only support 'first', 'last', 'mean' and 'word'"
-            )
-        input_ids, input_masks, _, s_tokens = bert_tokenization(
-            self._tokenizer, strings
-        )
-        r = self._execute(
-            inputs=[input_ids, input_masks],
-            input_labels=['Placeholder'],
-            output_labels=['vectorizer'],
-        )
-        v = r['vectorizer']
-        if method == 'first':
-            v = v[:, 0]
-        elif method == 'last':
-            v = v[:, -1]
-        elif method == 'mean':
-            v = np.mean(v, axis=1)
-        else:
-            v = [
-                merge_wordpiece_tokens(
-                    list(zip(s_tokens[i], v[i][: len(s_tokens[i])])),
-                    weighted=False,
-                    vectorize=True,
-                )
-                for i in range(len(v))
-            ]
-        return v
+        return self._vectorize(strings=strings, method=method)
 
     @check_type
     def predict(self, strings: List[str]):
@@ -361,17 +340,7 @@ class SigmoidFastFormer(Base, Classification):
         result: List[str]
         """
 
-        probs = self._classify(strings)
-        results = []
-        probs = np.around(probs)
-        for prob in probs:
-            list_result = []
-            for no, label in enumerate(self._label):
-                if prob[no]:
-                    list_result.append(label)
-            results.append(list_result)
-
-        return results
+        return self._predict(strings=strings)
 
     @check_type
     def predict_proba(self, strings: List[str]):
@@ -387,15 +356,7 @@ class SigmoidFastFormer(Base, Classification):
         result: List[dict[str, float]]
         """
 
-        probs = self._classify(strings)
-        results = []
-        for prob in probs:
-            dict_result = {}
-            for no, label in enumerate(self._label):
-                dict_result[label] = prob[no]
-            results.append(dict_result)
-
-        return results
+        return self._predict_proba(strings=strings)
 
 
 class TaggingFastFormer(Base, Tagging):

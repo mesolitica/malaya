@@ -23,6 +23,7 @@ class Base(Abstract):
         tokenizer,
         label=['negative', 'positive'],
         module=None,
+        multilabels=False,
     ):
         self._input_nodes = input_nodes
         self._output_nodes = output_nodes
@@ -30,7 +31,8 @@ class Base(Abstract):
         self._tokenizer = tokenizer
         self._label = label
         self._module = module
-        self._socialmedia = module in ['sentiment', 'emotion']
+        self._socialmedia = module in ['sentiment', 'sentiment-v2', 'emotion']
+        self._multilabels = multilabels
         self._maxlen = 1024
 
     def predict(self, strings, **kwargs):

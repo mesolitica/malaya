@@ -3,7 +3,10 @@ import os
 import json
 import numpy as np
 import shutil
-from malaya.function.server import serve
+from malaya.function.server import serve, find_open_port
+import logging
+
+logger = logging.getLogger('malaya.html')
 
 try:
     from html import escape
@@ -41,6 +44,55 @@ _color_toxic = {
     'chinese': 'rgb(229, 169, 70)',
     'neutral': 'rgb(255, 255, 255)',
 }
+
+
+def is_notebook():
+    """
+    https://stackoverflow.com/questions/15411967/how-can-i-check-if-code-is-executed-in-the-ipython-notebook
+    """
+    try:
+        shell = get_ipython().__class__.__name__
+        if shell == 'ZMQInteractiveShell':
+            return True   # Jupyter notebook or qtconsole
+        elif shell == 'TerminalInteractiveShell':
+            return False  # Terminal running IPython
+        else:
+            return False  # Other type (?)
+    except NameError:
+        return False
+
+
+def _serve_web(template,
+               notebook_mode=True,
+               ip='127.0.0.1',
+               port=5000,
+               n_retries=100,
+               width='100%',
+               height=500,
+               **kwargs):
+
+    if notebook_mode and not is_notebook():
+        logger.warning('`notebook_mode=True` but the code is not running in Jupyter Notebook, will disable `notebook_mode`')
+        notebook_mode = False
+
+    port = find_open_port(ip, port, n_retries)
+    if notebook_mode:
+        from IPython.display import IFrame, display, HTML
+
+        html = escape(template)
+        iframe = (
+                '<div style="width:{width};height:{height}px">'
+                '<div style="position:relative;width:100%;height:0;padding-bottom:{ratio};">'  # noqa
+                '<iframe srcdoc="{html}" style="position:absolute;width:100%;height:{height}px;left:0;top:0;'  # noqa
+                'border:none !important;" '
+                'allowfullscreen webkitallowfullscreen mozallowfullscreen>'
+                '</iframe>'
+                '</div></div>'
+            ).format(html=html, width=width, height=height, ratio=1)
+        display(HTML(iframe))
+    else:
+        logger.info(f'Serving to http://{ip}:{port}/')
+        serve(template, ip=ip, port=port, **kwargs)
 
 
 def _sentiment_mark(text, negative, positive, neutral, attention, label):
@@ -111,7 +163,7 @@ def _emotion_mark(
          ))
 
 
-def _render_binary(data, notebook_mode=False):
+def _render_binary(data, notebook_mode=True, **kwargs):
     index_negative = data['barplot']['x'].index('negative')
     index_positive = data['barplot']['x'].index('positive')
     index_neutral = data['barplot']['x'].index('neutral')
@@ -129,12 +181,6 @@ def _render_binary(data, notebook_mode=False):
         )
     sentiment_mark = ' '.join(sentiment_mark)
     this_dir = os.path.dirname(__file__)
-
-    if notebook_mode:
-        js_location, css_location = _upload_jupyter()
-    else:
-        js_location = 'static/echarts.min.js'
-        css_location = 'static/admin-materialize.min.css'
 
     with open(os.path.join(this_dir, 'web', 'index.html')) as _file:
         template = string.Template(_file.read())
@@ -155,18 +201,11 @@ def _render_binary(data, notebook_mode=False):
         histogram_y=escape(json.dumps(data['histogram']['y'].tolist())),
         attention_x=escape(json.dumps(data['attention']['x'].tolist())),
         attention_y=escape(json.dumps(data['attention']['y'].tolist())),
-        css_location=css_location,
-        js_location=js_location,
     )
-    if notebook_mode:
-        from IPython.display import display, HTML
-
-        display(HTML(template))
-    else:
-        serve(template)
+    _serve_web(template=template, notebook_mode=notebook_mode, **kwargs)
 
 
-def _render_relevancy(data, notebook_mode=False):
+def _render_relevancy(data, notebook_mode=True, **kwargs):
     index_negative = data['barplot']['x'].index('not relevant')
     index_positive = data['barplot']['x'].index('relevant')
     relevancy_mark = []
@@ -182,12 +221,6 @@ def _render_relevancy(data, notebook_mode=False):
         )
     relevancy_mark = ' '.join(relevancy_mark)
     this_dir = os.path.dirname(__file__)
-
-    if notebook_mode:
-        js_location, css_location = _upload_jupyter()
-    else:
-        js_location = 'static/echarts.min.js'
-        css_location = 'static/admin-materialize.min.css'
 
     with open(os.path.join(this_dir, 'web', 'index_relevancy.html')) as _file:
         template = string.Template(_file.read())
@@ -205,18 +238,11 @@ def _render_relevancy(data, notebook_mode=False):
         histogram_y=escape(json.dumps(data['histogram']['y'].tolist())),
         attention_x=escape(json.dumps(data['attention']['x'].tolist())),
         attention_y=escape(json.dumps(data['attention']['y'].tolist())),
-        css_location=css_location,
-        js_location=js_location,
     )
-    if notebook_mode:
-        from IPython.display import display, HTML
-
-        display(HTML(template))
-    else:
-        serve(template)
+    _serve_web(template=template, notebook_mode=notebook_mode, **kwargs)
 
 
-def _render_toxic(data, notebook_mode=False):
+def _render_toxic(data, notebook_mode=True, **kwargs):
     index_severe_toxic = data['barplot']['x'].index('severe toxic')
     index_obscene = data['barplot']['x'].index('obscene')
     index_threat = data['barplot']['x'].index('threat')
@@ -249,12 +275,6 @@ def _render_toxic(data, notebook_mode=False):
         )
     toxic_mark = ' '.join(toxic_mark)
     this_dir = os.path.dirname(__file__)
-
-    if notebook_mode:
-        js_location, css_location = _upload_jupyter()
-    else:
-        js_location = 'static/echarts.min.js'
-        css_location = 'static/admin-materialize.min.css'
 
     with open(os.path.join(this_dir, 'web', 'index_toxic.html')) as _file:
         template = string.Template(_file.read())
@@ -290,18 +310,11 @@ def _render_toxic(data, notebook_mode=False):
         histogram_y=escape(json.dumps(data['histogram']['y'].tolist())),
         attention_x=escape(json.dumps(data['attention']['x'].tolist())),
         attention_y=escape(json.dumps(data['attention']['y'].tolist())),
-        css_location=css_location,
-        js_location=js_location,
     )
-    if notebook_mode:
-        from IPython.display import display, HTML
-
-        display(HTML(template))
-    else:
-        serve(template)
+    _serve_web(template=template, notebook_mode=notebook_mode, **kwargs)
 
 
-def _render_emotion(data, notebook_mode=False):
+def _render_emotion(data, notebook_mode=True, **kwargs):
     index_anger = data['barplot']['x'].index('anger')
     index_fear = data['barplot']['x'].index('fear')
     index_happy = data['barplot']['x'].index('happy')
@@ -331,12 +344,6 @@ def _render_emotion(data, notebook_mode=False):
     emotion_mark = ' '.join(emotion_mark)
     this_dir = os.path.dirname(__file__)
 
-    if notebook_mode:
-        js_location, css_location = _upload_jupyter()
-    else:
-        js_location = 'static/echarts.min.js'
-        css_location = 'static/admin-materialize.min.css'
-
     with open(os.path.join(this_dir, 'web', 'index_emotion.html')) as _file:
         template = string.Template(_file.read())
 
@@ -365,15 +372,8 @@ def _render_emotion(data, notebook_mode=False):
         histogram_y=escape(json.dumps(data['histogram']['y'].tolist())),
         attention_x=escape(json.dumps(data['attention']['x'].tolist())),
         attention_y=escape(json.dumps(data['attention']['y'].tolist())),
-        css_location=css_location,
-        js_location=js_location,
     )
-    if notebook_mode:
-        from IPython.display import display, HTML
-
-        display(HTML(template))
-    else:
-        serve(template)
+    _serve_web(template=template, notebook_mode=notebook_mode, **kwargs)
 
 
 def _attention(attn_data):
@@ -396,24 +396,9 @@ def _attention(attn_data):
     display(Javascript(vis_js))
 
 
-def _upload_jupyter():
-    location = os.getcwd()
-
-    this_dir = os.path.dirname(__file__)
-
-    js_location = os.path.join(this_dir, 'web', 'static', 'echarts.min.js')
-    css_location = os.path.join(
-        this_dir, 'web', 'static', 'admin-materialize.min.css'
-    )
-
-    shutil.copyfile(js_location, './echarts.min.js')
-    shutil.copyfile(css_location, './admin-materialize.min.css')
-
-    return 'echarts.min.js', 'admin-materialize.min.css'
-
-
 render_dict = {
     'sentiment-v2': _render_binary,
+    'sentiment': _render_binary,
     'relevancy': _render_relevancy,
     'emotion': _render_emotion,
     'toxicity': _render_toxic,

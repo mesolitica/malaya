@@ -33,6 +33,9 @@ def generate_handler(html, files=None):
                     content = fh.read()
                 self.wfile.write(content)
 
+        def log_message(self, format, *args):
+            return
+
     return MyHandler
 
 
@@ -57,11 +60,10 @@ def serve(
     html,
     ip='127.0.0.1',
     port=8888,
-    n_retries=50,
     files=None,
-    ipython_warning=False,
     open_browser=True,
     http_server=None,
+    **kwargs,
 ):
     """
     Start a server serving the given HTML, and (optionally) open a browser.
@@ -74,12 +76,8 @@ def serve(
         ip address at which the HTML will be served.
     port : int (default = 8888)
         the port at which to serve the HTML
-    n_retries : int (default = 50)
-        the number of nearby ports to search if the specified port is in use.
     files : dictionary (optional)
         dictionary of extra content to serve
-    ipython_warning : bool (optional)
-        if True (default), then print a warning if this is used within IPython
     open_browser : bool (optional)
         if True (default), then open a web browser to the given HTML
     http_server : class (optional)
@@ -87,7 +85,6 @@ def serve(
         figure. The default is Python's basic HTTPServer.
     """
 
-    port = find_open_port(ip, port, n_retries)
     Handler = generate_handler(html, files)
 
     if http_server is None:
@@ -95,14 +92,8 @@ def serve(
     else:
         srvr = http_server((ip, port), Handler)
 
-    if ipython_warning:
-        print(IPYTHON_WARNING)
-
-    print('Serving to http://{0}:{1}/    [Ctrl-C to exit]'.format(ip, port))
-    sys.stdout.flush()
-
     if open_browser:
-        def b(): return webbrowser.open('http://{0}:{1}'.format(ip, port))
+        def b(): return webbrowser.open(f'http://{ip}:{port}')
         threading.Thread(target=b).start()
 
     try:

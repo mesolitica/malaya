@@ -33,6 +33,7 @@ class BERT(Base):
         tokenizer,
         module,
         label=['negative', 'positive'],
+        multilabels=False,
     ):
 
         Base.__init__(
@@ -43,6 +44,7 @@ class BERT(Base):
             tokenizer=tokenizer,
             label=label,
             module=module,
+            multilabels=multilabels,
         )
 
     def _classify(self, strings):
@@ -54,18 +56,34 @@ class BERT(Base):
             input_labels=['Placeholder', 'Placeholder_1'],
             output_labels=['logits'],
         )
-        return softmax(r['logits'], axis=-1)
+        if self._multilabels:
+            return sigmoid(r['logits'])
+        else:
+            return softmax(r['logits'], axis=-1)
 
     def _predict(self, strings, add_neutral=False):
-        results = self._classify(strings)
+        if self._multilabels:
+            probs = self._classify(strings)
+            results = []
+            probs = np.around(probs)
+            for prob in probs:
+                list_result = []
+                for no, label in enumerate(self._label):
+                    if prob[no]:
+                        list_result.append(label)
+                results.append(list_result)
 
-        if add_neutral:
-            result = neutral(results)
-            label = self._label + ['neutral']
+            return results
         else:
-            label = self._label
+            results = self._classify(strings)
 
-        return [label[result] for result in np.argmax(results, axis=1)]
+            if add_neutral:
+                result = neutral(results)
+                label = self._label + ['neutral']
+            else:
+                label = self._label
+
+            return [label[result] for result in np.argmax(results, axis=1)]
 
     def _vectorize(self, strings, method='first'):
         method = method.lower()
@@ -120,13 +138,14 @@ class BERT(Base):
         visualization,
         add_neutral=False,
         bins_size=0.05,
+        **kwargs,
     ):
         method = method.lower()
         if method not in ['last', 'first', 'mean']:
             raise ValueError(
                 "method not supported, only support 'last', 'first' and 'mean'"
             )
-        if add_neutral:
+        if add_neutral and not self._multilabels:
             label = self._label + ['neutral']
         else:
             label = self._label
@@ -139,8 +158,13 @@ class BERT(Base):
             input_labels=['Placeholder', 'Placeholder_1'],
             output_labels=['logits', 'attention', 'logits_seq'],
         )
-        result = softmax(r['logits'], axis=-1)
-        words = softmax(r['logits_seq'], axis=-1)
+        if self._multilabels:
+            result = sigmoid(r['logits'])
+            words = sigmoid(r['logits_seq'])
+        else:
+            result = softmax(r['logits'], axis=-1)
+            words = softmax(r['logits_seq'], axis=-1)
+
         attentions = r['attention']
 
         if method == 'first':
@@ -160,7 +184,7 @@ class BERT(Base):
         attn = cls_attn / total_weights
         words = words[0]
 
-        if add_neutral:
+        if add_neutral and not self._multilabels:
             result = neutral(result)
             words = neutral(words)
 
@@ -201,7 +225,7 @@ class BERT(Base):
         dict_result['module'] = self._module
 
         if visualization:
-            render_dict[self._module](dict_result)
+            render_dict[self._module](dict_result, **kwargs)
         else:
             return dict_result
 
@@ -292,6 +316,7 @@ class BinaryBERT(BERT, Classification):
         method: str = 'last',
         bins_size: float = 0.05,
         visualization: bool = True,
+        **kwargs,
     ):
         """
         classify words.
@@ -321,6 +346,7 @@ class BinaryBERT(BERT, Classification):
             add_neutral=True,
             visualization=visualization,
             bins_size=bins_size,
+            **kwargs,
         )
 
 
@@ -406,6 +432,7 @@ class MulticlassBERT(BERT, Classification):
         method: str = 'last',
         bins_size: float = 0.05,
         visualization: bool = True,
+        **kwargs,
     ):
         """
         classify words.
@@ -433,10 +460,11 @@ class MulticlassBERT(BERT, Classification):
             method=method,
             visualization=visualization,
             bins_size=bins_size,
+            **kwargs,
         )
 
 
-class SigmoidBERT(Base, Classification):
+class SigmoidBERT(BERT, Classification):
     def __init__(
         self,
         input_nodes,
@@ -446,27 +474,16 @@ class SigmoidBERT(Base, Classification):
         module,
         label=['negative', 'positive'],
     ):
-        Base.__init__(
+        BERT.__init__(
             self,
             input_nodes=input_nodes,
             output_nodes=output_nodes,
             sess=sess,
             tokenizer=tokenizer,
-            label=label,
             module=module,
+            label=label,
+            multilabels=True,
         )
-
-    def _classify(self, strings):
-
-        input_ids, input_masks, _, _ = bert_tokenization(
-            self._tokenizer, strings
-        )
-        r = self._execute(
-            inputs=[input_ids, input_masks],
-            input_labels=['Placeholder', 'Placeholder_1'],
-            output_labels=['logits'],
-        )
-        return sigmoid(r['logits'])
 
     @check_type
     def vectorize(self, strings: List[str], method: str = 'first'):
@@ -488,36 +505,8 @@ class SigmoidBERT(Base, Classification):
         -------
         result: np.array
         """
-        method = method.lower()
-        if method not in ['first', 'last', 'mean', 'word']:
-            raise ValueError(
-                "method not supported, only support 'first', 'last', 'mean' and 'word'"
-            )
-        input_ids, input_masks, _, s_tokens = bert_tokenization(
-            self._tokenizer, strings
-        )
-        r = self._execute(
-            inputs=[input_ids, input_masks],
-            input_labels=['Placeholder', 'Placeholder_1'],
-            output_labels=['vectorizer'],
-        )
-        v = r['vectorizer']
-        if method == 'first':
-            v = v[:, 0]
-        elif method == 'last':
-            v = v[:, -1]
-        elif method == 'mean':
-            v = np.mean(v, axis=1)
-        else:
-            v = [
-                merge_sentencepiece_tokens(
-                    list(zip(s_tokens[i], v[i][: len(s_tokens[i])])),
-                    weighted=False,
-                    vectorize=True,
-                )
-                for i in range(len(v))
-            ]
-        return v
+
+        return self._vectorize(strings=strings, method=method)
 
     @check_type
     def predict(self, strings: List[str]):
@@ -533,17 +522,7 @@ class SigmoidBERT(Base, Classification):
         result: List[List[str]]
         """
 
-        probs = self._classify(strings)
-        results = []
-        probs = np.around(probs)
-        for prob in probs:
-            list_result = []
-            for no, label in enumerate(self._label):
-                if prob[no]:
-                    list_result.append(label)
-            results.append(list_result)
-
-        return results
+        return self._predict(strings=strings)
 
     @check_type
     def predict_proba(self, strings: List[str]):
@@ -559,15 +538,7 @@ class SigmoidBERT(Base, Classification):
         result: List[dict[str, float]]
         """
 
-        probs = self._classify(strings)
-        results = []
-        for prob in probs:
-            dict_result = {}
-            for no, label in enumerate(self._label):
-                dict_result[label] = prob[no]
-            results.append(dict_result)
-
-        return results
+        return self._predict_proba(strings=strings)
 
     @check_type
     def predict_words(
@@ -576,102 +547,15 @@ class SigmoidBERT(Base, Classification):
         method: str = 'last',
         bins_size: float = 0.05,
         visualization: bool = True,
+        **kwargs,
     ):
-        """
-        classify words.
-
-        Parameters
-        ----------
-        string : str
-        method : str, optional (default='last')
-            Attention layer supported. Allowed values:
-
-            * ``'last'`` - attention from last layer.
-            * ``'first'`` - attention from first layer.
-            * ``'mean'`` - average attentions from all layers.
-        bins_size: float, optional (default=0.05)
-            default bins size for word distribution histogram.
-        visualization: bool, optional (default=True)
-            If True, it will open the visualization dashboard.
-
-        Returns
-        -------
-        dictionary: results
-        """
-
-        method = method.lower()
-        if method not in ['last', 'first', 'mean']:
-            raise ValueError(
-                "method not supported, only support 'last', 'first' and 'mean'"
-            )
-
-        input_ids, input_masks, _, s_tokens = bert_tokenization(
-            self._tokenizer, [string]
+        return self._predict_words(
+            string=string,
+            method=method,
+            visualization=visualization,
+            bins_size=bins_size,
+            **kwargs,
         )
-        r = self._execute(
-            inputs=[input_ids, input_masks],
-            input_labels=['Placeholder', 'Placeholder_1'],
-            output_labels=['logits', 'attention', 'logits_seq'],
-        )
-        result = sigmoid(r['logits'])
-        words = sigmoid(r['logits_seq'])
-        attentions = r['attention']
-
-        if method == 'first':
-            cls_attn = list(attentions[0].values())[0][:, :, 0, :]
-
-        if method == 'last':
-            cls_attn = list(attentions[-1].values())[0][:, :, 0, :]
-
-        if method == 'mean':
-            combined_attentions = []
-            for a in attentions:
-                combined_attentions.append(list(a.values())[0])
-            cls_attn = np.mean(combined_attentions, axis=0).mean(axis=2)
-
-        cls_attn = np.mean(cls_attn, axis=1)
-        total_weights = np.sum(cls_attn, axis=-1, keepdims=True)
-        attn = cls_attn / total_weights
-        result = result[0]
-        words = words[0]
-        weights = []
-        merged = merge_sentencepiece_tokens(list(zip(s_tokens[0], attn[0])))
-        for i in range(words.shape[1]):
-            m = merge_sentencepiece_tokens(
-                list(zip(s_tokens[0], words[:, i])), weighted=False
-            )
-            _, weight = zip(*m)
-            weights.append(weight)
-        w, a = zip(*merged)
-        words = np.array(weights).T
-        distribution_words = words[:, np.argmax(words.sum(axis=0))]
-        y_histogram, x_histogram = np.histogram(
-            distribution_words, bins=np.arange(0, 1 + bins_size, bins_size)
-        )
-        y_histogram = y_histogram / y_histogram.sum()
-        x_attention = np.arange(len(w))
-        left, right = np.unique(
-            np.argmax(words, axis=1), return_counts=True
-        )
-        left = left.tolist()
-        y_barplot = []
-        for i in range(len(self._label)):
-            if i not in left:
-                y_barplot.append(i)
-            else:
-                y_barplot.append(right[left.index(i)])
-
-        dict_result = {self._label[i]: result[i] for i in range(len(result))}
-        dict_result['alphas'] = {w: a[no] for no, w in enumerate(w)}
-        dict_result['word'] = {w: words[no] for no, w in enumerate(w)}
-        dict_result['histogram'] = {'x': x_histogram, 'y': y_histogram}
-        dict_result['attention'] = {'x': x_attention, 'y': np.array(a)}
-        dict_result['barplot'] = {'x': self._label, 'y': y_barplot}
-        dict_result['module'] = self._module
-        if visualization:
-            _render_toxic(dict_result)
-        else:
-            return dict_result
 
 
 class SiameseBERT(Base):
