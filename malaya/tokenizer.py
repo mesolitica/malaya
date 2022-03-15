@@ -5,7 +5,7 @@ import html
 
 
 class Tokenizer:
-    def __init__(self, lowercase=False, **kwargs):
+    def __init__(self, lowercase: bool = False, **kwargs):
         """
         Load Tokenizer object.
         Check supported regex pattern at 
@@ -19,6 +19,8 @@ class Tokenizer:
             True to keep emojis.
         urls: bool, optional (default=True)
             True to keep urls.
+        urls_improved: bool, optional (default=True)
+            True to keep urls, better version.
         tags: bool, optional (default=True)
             True to keep tags: <tag>.
         emails: bool, optional (default=True)
@@ -67,6 +69,7 @@ class Tokenizer:
 
         emojis = kwargs.get('emojis', True)
         urls = kwargs.get('urls', True)
+        urls_improved = kwargs.get('urls_improved', True)
         tags = kwargs.get('tags', True)
         emails = kwargs.get('emails', True)
         users = kwargs.get('users', True)
@@ -91,6 +94,10 @@ class Tokenizer:
 
         if urls:
             pipeline.append(self.regexes['url'])
+
+        if urls_improved:
+            pipeline.append(self.regexes['url_v2'])
+            pipeline.append(self.regexes['url_dperini'])
 
         if tags:
             pipeline.append(self.regexes['tag'])
@@ -196,6 +203,7 @@ class Tokenizer:
         """
         escaped = html.unescape(string)
         tokenized = self.tok.findall(escaped)
+        tokenized = [t[0] if isinstance(t, tuple) else t for t in tokenized]
 
         if self.lowercase:
             tokenized = [t.lower() for t in tokenized]
