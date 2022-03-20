@@ -42,12 +42,15 @@ Only **Python 3.6.0 and above** and **Tensorflow 1.15.0 and above** are supporte
 
 We recommend to use **virtualenv** for development. All examples tested on Tensorflow version 1.15.4 and 2.4.1.
 
+We recommend to use **virtualenv** for development. All examples tested on Tensorflow version 1.15.4, 1.15.5, 2.4.1 and 2.5.
+
 Features
 --------
 
 -  **Age Detection**, detect age in speech using Finetuned Speaker Vector.
 -  **Speaker Diarization**, diarizing speakers using Pretrained Speaker Vector.
 -  **Emotion Detection**, detect emotions in speech using Finetuned Speaker Vector.
+-  **Force Alignment**, generate a time-aligned transcription of an audio file using RNNT and CTC.
 -  **Gender Detection**, detect genders in speech using Finetuned Speaker Vector.
 -  **Language Detection**, detect hyperlocal languages in speech using Finetuned Speaker Vector.
 -  **Multispeaker Separation**, Multispeaker separation using FastSep on 8k Wav.
@@ -57,9 +60,9 @@ Features
 -  **Speaker Vector**, calculate similarity between speakers using Pretrained Speaker Vector.
 -  **Speech Enhancement**, enhance voice activities using Waveform UNET.
 -  **SpeechSplit Conversion**, detailed speaking style conversion by disentangling speech into content, timbre, rhythm and pitch using PyWorld and PySPTK.
--  **Speech-to-Text**, End-to-End Speech to Text for Malay and Mixed (Malay and Singlish) using RNN-Transducer and Wav2Vec2 CTC.
+-  **Speech-to-Text**, End-to-End Speech to Text for Malay, Mixed (Malay, Singlish and Mandarin) and Singlish using RNNT, Wav2Vec2, HuBERT and BEST-RQ CTC.
 -  **Super Resolution**, Super Resolution 4x for Waveform.
--  **Text-to-Speech**, Text to Speech for Malay and Singlish using Tacotron2 and FastSpeech2.
+-  **Text-to-Speech**, Text to Speech for Malay and Singlish using Tacotron2, FastSpeech2 and FastPitch.
 -  **Vocoder**, convert Mel to Waveform using MelGAN, Multiband MelGAN and Universal MelGAN Vocoder.
 -  **Voice Activity Detection**, detect voice activities using Finetuned Speaker Vector.
 -  **Voice Conversion**, Many-to-One, One-to-Many, Many-to-Many, and Zero-shot Voice Conversion.
@@ -96,6 +99,9 @@ Malaya-Speech also released pretrained models, simply check at `malaya-speech/pr
 -  **Sepformer**, Attention is All You Need in Speech Separation, https://arxiv.org/abs/2010.13154
 -  **FastSpeechSplit**, Faster and Accurate Speech Split Conversion using Transformer, no paper produced.
 -  **HuBERT**, Self-Supervised Speech Representation Learning by Masked Prediction of Hidden Units, https://arxiv.org/pdf/2106.07447v1.pdf
+-  **FastPitch**, Parallel Text-to-speech with Pitch Prediction, https://arxiv.org/abs/2006.06873
+-  **GlowTTS**, A Generative Flow for Text-to-Speech via Monotonic Alignment Search, https://arxiv.org/abs/2005.11129
+-  **BEST-RQ**, Self-supervised learning with random-projection quantizer for speech recognition, https://arxiv.org/pdf/2202.01855.pdf
 
 References
 -----------

@@ -28,3 +28,5 @@ topics.json
 testset-keyphrase.json
 test.txt
 train.txt
+countries.geojson
+popit-persons.json

@@ -87,6 +87,7 @@ Contents:
    load-sentiment
    load-subjectivity
    load-toxic
+   load-zeroshot-classification
 
 .. toctree::
    :maxdepth: 2
@@ -135,17 +136,18 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
-   :caption: Zero-shot Module
-
-   load-zeroshot-classification
-
-.. toctree::
-   :maxdepth: 2
    :caption: Misc Module
    
    load-topic-modeling
    load-clustering
    load-stack
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Bias
+
+   sentiment-bias-towards-countries
+   sentiment-bias-towards-politicians
 
 .. toctree::
    :maxdepth: 2
