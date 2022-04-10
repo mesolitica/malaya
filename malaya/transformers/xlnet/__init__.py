@@ -269,21 +269,21 @@ def load(model: str = 'xlnet', pool_mode: str = 'last', **kwargs):
             "pool_mode not supported, only support ['last', 'first', 'mean', 'attn']"
         )
 
-    check_file(PATH_XLNET[model]['model'], S3_PATH_XLNET[model], **kwargs)
+    path = check_file(PATH_XLNET[model]['model'], S3_PATH_XLNET[model], **kwargs)
 
-    if not os.path.exists(PATH_XLNET[model]['directory'] + 'model.ckpt'):
+    if not os.path.exists(os.path.join(path['directory'], 'model.ckpt')):
         import tarfile
 
-        with tarfile.open(PATH_XLNET[model]['model']['model']) as tar:
-            tar.extractall(path=PATH_XLNET[model]['path'])
+        with tarfile.open(path['model']['model']) as tar:
+            tar.extractall(path=path['path'])
 
-    vocab_model = PATH_XLNET[model]['directory'] + 'sp10m.cased.v9.model'
-    vocab = PATH_XLNET[model]['directory'] + 'sp10m.cased.v9.vocab'
+    vocab_model = os.path.join(path['directory'], 'sp10m.cased.v9.model')
+    vocab = os.path.join(path['directory'], 'sp10m.cased.v9.vocab')
     tokenizer = SentencePieceTokenizer(vocab_file=vocab, spm_model_file=vocab_model)
     xlnet_config = xlnet_lib.XLNetConfig(
-        json_path=PATH_XLNET[model]['directory'] + 'config.json'
+        json_path=os.path.join(path['directory'], 'config.json')
     )
-    xlnet_checkpoint = PATH_XLNET[model]['directory'] + 'model.ckpt'
+    xlnet_checkpoint = os.path.join(path['directory'], 'model.ckpt')
     model = Model(
         xlnet_config,
         tokenizer,

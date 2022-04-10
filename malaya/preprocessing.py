@@ -363,7 +363,7 @@ def preprocessing(
                 translator = json.load(fopen)
         except BaseException:
             raise Exception(
-                "failed to load english-malay vocab, please run `malaya.utils.delete_cache('preprocessing/english-malay')`")
+                "failed to load english-malay vocab, please try `malaya.utils.delete_cache('preprocessing/english-malay')` or rerun again.")
     else:
         translator = None
 

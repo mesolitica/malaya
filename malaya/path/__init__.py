@@ -175,8 +175,8 @@ S3_PATH_NGRAM = {
     2: {'model': 'v23/preprocessing/bm_2grams.json'},
     'symspell': {'model': 'v27/preprocessing/bm_1grams.txt'},
     'sentencepiece': {
-        'vocab': 'v27/sp10m.cased.v4.vocab',
-        'model': 'v27/sp10m.cased.v4.model',
+        'vocab': 'v27/preprocessing/sp10m.cased.v4.vocab',
+        'model': 'v27/preprocessing/sp10m.cased.v4.model',
     },
     'jamspell': {
         'wiki+news': {
@@ -191,7 +191,7 @@ S3_PATH_NGRAM = {
     },
     'spylls': {
         'libreoffice-pejam': {
-            'model': 'https://extensions.libreoffice.org/assets/downloads/741/pEJAm21z.oxt',
+            'model': 'v46/preprocessing/pEJAm21z.oxt',
         }
     }
 }

@@ -19,6 +19,7 @@ Contents:
    speech-toolkit
    Dataset
    Installation
+   huggingface-repository
    load-cache
    models-accuracy
    running-on-windows

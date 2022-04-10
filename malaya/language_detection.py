@@ -62,7 +62,7 @@ def fasttext(quantized: bool = True, **kwargs):
         model_fasttext = fasttext.load_model(path['model'])
     except:
         raise Exception(
-            f"failed to load fasttext model, please run `malaya.utils.delete_cache('language-detection/{model}")
+            f"failed to load fasttext model, please try `malaya.utils.delete_cache('language-detection/{model} or rerun again.")
     return LanguageDetection(model_fasttext, lang_labels)
 
 

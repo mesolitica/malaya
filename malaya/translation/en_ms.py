@@ -102,12 +102,3 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
             quantized=quantized,
             **kwargs
         )
-
-    return load_transformer.load(
-        module='translation-en-ms',
-        model=model,
-        encoder='subword',
-        model_class=Translation,
-        quantized=quantized,
-        **kwargs
-    )

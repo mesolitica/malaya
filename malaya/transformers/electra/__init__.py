@@ -303,17 +303,17 @@ def load(model: str = 'electra', **kwargs):
     from malaya.function import check_file
 
     model = model.lower()
-    check_file(PATH_ELECTRA[model]['model'], S3_PATH_ELECTRA[model], **kwargs)
+    path = check_file(PATH_ELECTRA[model]['model'], S3_PATH_ELECTRA[model], **kwargs)
 
-    if not os.path.exists(PATH_ELECTRA[model]['directory'] + 'model.ckpt'):
+    if not os.path.exists(os.path.join(path['directory'], 'model.ckpt')):
         import tarfile
 
-        with tarfile.open(PATH_ELECTRA[model]['model']['model']) as tar:
-            tar.extractall(path=PATH_ELECTRA[model]['path'])
+        with tarfile.open(path['model']['model']) as tar:
+            tar.extractall(path=path['path'])
 
-    vocab = PATH_ELECTRA[model]['directory'] + 'bahasa.wordpiece'
-    bert_checkpoint = PATH_ELECTRA[model]['directory'] + 'model.ckpt'
-    bert_config = PATH_ELECTRA[model]['directory'] + 'config.json'
+    vocab = os.path.join(path['directory'], 'bahasa.wordpiece')
+    bert_checkpoint = os.path.join(path['directory'], 'model.ckpt')
+    bert_config = os.path.join(path['directory'], 'config.json')
 
     tokenizer = tokenization.FullTokenizer(
         vocab_file=vocab, do_lower_case=False

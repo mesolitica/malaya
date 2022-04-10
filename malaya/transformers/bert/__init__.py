@@ -280,18 +280,18 @@ def load(model: str = 'base', **kwargs):
     from malaya.function import check_file
 
     model = model.lower()
-    check_file(PATH_BERT[model]['model'], S3_PATH_BERT[model], **kwargs)
+    path = check_file(PATH_BERT[model]['model'], S3_PATH_BERT[model], **kwargs)
 
-    if not os.path.exists(PATH_BERT[model]['directory'] + 'model.ckpt'):
+    if not os.path.exists(os.path.join(path['directory'], 'model.ckpt')):
         import tarfile
 
-        with tarfile.open(PATH_BERT[model]['model']['model']) as tar:
-            tar.extractall(path=PATH_BERT[model]['path'])
+        with tarfile.open(path['model']['model']) as tar:
+            tar.extractall(path=path['path'])
 
-    bert_checkpoint = PATH_BERT[model]['directory'] + 'model.ckpt'
-    vocab_model = PATH_BERT[model]['directory'] + 'sp10m.cased.bert.model'
-    vocab = PATH_BERT[model]['directory'] + 'sp10m.cased.bert.vocab'
-    bert_config = PATH_BERT[model]['directory'] + 'config.json'
+    bert_checkpoint = os.path.join(path['directory'], 'model.ckpt')
+    vocab_model = os.path.join(path['directory'], 'sp10m.cased.bert.model')
+    vocab = os.path.join(path['directory'], 'sp10m.cased.bert.vocab')
+    bert_config = os.path.join(path['directory'], 'config.json')
 
     tokenizer = SentencePieceTokenizer(vocab_file=vocab, spm_model_file=vocab_model)
     bert_config = modeling.BertConfig.from_json_file(bert_config)

@@ -17,13 +17,12 @@ from malaya_boilerplate import huggingface
 from malaya_boilerplate import frozen_graph
 from malaya import package, url
 import os
-import logging
 
 MALAYA_USE_HUGGINGFACE = os.environ.get('MALAYA_USE_HUGGINGFACE', 'false').lower() == 'true'
 
 
-def check_file(file, s3_file=None, **kwargs):
-    if MALAYA_USE_HUGGINGFACE:
+def check_file(file, s3_file=None, use_huggingface=False, **kwargs):
+    if use_huggingface or MALAYA_USE_HUGGINGFACE:
         return huggingface.check_file(file, package, url, s3_file=s3_file, **kwargs)
     else:
         return backblaze.check_file(file, package, url, s3_file=s3_file, **kwargs)
