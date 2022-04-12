@@ -9,14 +9,23 @@
 1. Install pytest,
 
 ```bash
-pip install pytest pytest-cov
+pip3 install pytest pytest-cov
 ```
 
 2. Run pytest,
 
 ```bash
-COLOR=green
-COVERAGE=$(pytest . --cov --cov-report term --cov-report html | grep TOTAL | awk '{print $4+0}')
-wget "https://img.shields.io/badge/coverage-${COVERAGE}%25-${COLOR}.svg" -O coverage.svg
+pytest tests --cov --cov-report term --cov-report html
 ```
 
+Or run for specific py file,
+
+```bash
+pytest tests/test_emotion.py --cov --cov-report term --cov-report html
+```
+
+Or run for specific function,
+
+```bash
+pytest tests/test_emotion.py::test_multinomial --cov --cov-report term --cov-report html
+```
