@@ -35,8 +35,9 @@ def test_gpt():
 
 
 def test_babble():
+    string = 'ceritanya sebegini, aku bangun pagi'
     electra = malaya.transformer.load(model='electra')
     malaya.generator.babble(string, electra)
     malaya.utils.delete_cache('electra-model')
     os.system('rm -f ~/.cache/huggingface/hub/*')
-    del model
+    del electra

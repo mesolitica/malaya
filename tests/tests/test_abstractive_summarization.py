@@ -45,10 +45,12 @@ Marzuki turut mempersoal kenyataan media yang dibuat beberapa pimpinan parti itu
 
 string = cleaning(string)
 
-models = malaya.summarization.abstractive.available_transformer()
-for m in models.index:
-    print(m)
-    model = malaya.summarization.abstractive.transformer(model=m)
-    print(model.greedy_decoder([string]))
-    os.system('rm -f ~/.cache/huggingface/hub/*')
-    del model
+
+def test_transformer():
+    models = malaya.summarization.abstractive.available_transformer()
+    for m in models.index:
+        print(m)
+        model = malaya.summarization.abstractive.transformer(model=m)
+        print(model.greedy_decoder([string]))
+        os.system('rm -f ~/.cache/huggingface/hub/*')
+        del model

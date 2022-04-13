@@ -19,7 +19,7 @@ labels = ['makan', 'makanan', 'novel', 'buku', 'kerajaan', 'food delivery',
 
 
 def test_transformer():
-    models = mmalaya.zero_shot.classification.available_transformer()
+    models = malaya.zero_shot.classification.available_transformer()
     for m in models.index:
         print(m)
         model = malaya.zero_shot.classification.transformer(model=m, gpu_limit=0.3)

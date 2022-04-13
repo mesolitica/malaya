@@ -15,7 +15,6 @@ text = 'Jabatan Penjara Malaysia diperuntukkan RM20 juta laksana program pembang
 def test_multinomial():
     model = malaya.sentiment.multinomial()
     model.predict_proba([text])
-    model.predict_proba([text])
 
 
 def test_transformer():
@@ -24,7 +23,10 @@ def test_transformer():
         print(m)
         model = malaya.sentiment.transformer(model=m, gpu_limit=0.3)
         print(model.predict_proba([text]))
-        print(model.predict_words(text, visualization=False))
-        print(model.vectorize([text]))
+        try:
+            print(model.predict_words(text, visualization=False))
+            print(model.vectorize([text]))
+        except Exception as e:
+            print(m, e)
         os.system('rm -f ~/.cache/huggingface/hub/*')
         del model

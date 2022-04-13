@@ -7,7 +7,7 @@
 1. Install pytest,
 
 ```bash
-pip3 install pytest pytest-cov pytest-codecov
+pip3 install pytest pytest-cov pytest-codecov gitpython
 ```
 
 2. Run pytest,
@@ -38,5 +38,5 @@ pytest tests/test_emotion.py::test_multinomial --cov --cov-report term --cov-rep
 
 ```
 CODECOV_TOKEN=
-pytest tests/test_normalization.py --cov --codecov --codecov-token=$CODECOV_TOKEN
+pytest tests --cov --codecov --codecov-token=$CODECOV_TOKEN
 ```
