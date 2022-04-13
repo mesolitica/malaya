@@ -39,9 +39,9 @@ class Summarization(T5, Seq2Seq):
             tokenizer=tokenizer
         )
 
-    def _summarize(self, strings, mode, postprocess, **kwargs):
+    def _summarize(self, strings, postprocess, **kwargs):
         summaries = self._predict([f'ringkasan: {summarization_textcleaning(string)}' for string in strings])
-        if postprocess and mode != 'tajuk':
+        if postprocess:
             summaries = [postprocess_summary(strings[no], summary, **kwargs) for no, summary in enumerate(summaries)]
         return summaries
 
@@ -66,7 +66,7 @@ class Summarization(T5, Seq2Seq):
         result: List[str]
         """
 
-        return self._summarize(strings, mode, postprocess, **kwargs)
+        return self._summarize(strings, postprocess, **kwargs)
 
 
 class Generator(T5, Seq2Seq):

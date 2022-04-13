@@ -742,7 +742,6 @@ class TaggingXLNET(Base, Tagging):
         self._settings['idx2tag'] = {
             int(k): v for k, v in self._settings['idx2tag'].items()
         }
-        self._pos = 'organization' not in self._settings['tag2idx']
 
     def _tokenize(self, string):
         if self._tok:

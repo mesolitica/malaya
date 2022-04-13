@@ -282,16 +282,16 @@ def load(model: str = 'base', **kwargs):
     model = model.lower()
     path = check_file(PATH_BERT[model]['model'], S3_PATH_BERT[model], **kwargs)
 
-    if not os.path.exists(os.path.join(path['directory'], 'model.ckpt')):
+    if not os.path.exists(os.path.join(PATH_BERT[model]['directory'], 'model.ckpt')):
         import tarfile
 
-        with tarfile.open(path['model']['model']) as tar:
-            tar.extractall(path=path['path'])
+        with tarfile.open(path['model']) as tar:
+            tar.extractall(path=PATH_BERT[model]['path'])
 
-    bert_checkpoint = os.path.join(path['directory'], 'model.ckpt')
-    vocab_model = os.path.join(path['directory'], 'sp10m.cased.bert.model')
-    vocab = os.path.join(path['directory'], 'sp10m.cased.bert.vocab')
-    bert_config = os.path.join(path['directory'], 'config.json')
+    bert_checkpoint = os.path.join(PATH_BERT[model]['directory'], 'model.ckpt')
+    vocab_model = os.path.join(PATH_BERT[model]['directory'], 'sp10m.cased.bert.model')
+    vocab = os.path.join(PATH_BERT[model]['directory'], 'sp10m.cased.bert.vocab')
+    bert_config = os.path.join(PATH_BERT[model]['directory'], 'config.json')
 
     tokenizer = SentencePieceTokenizer(vocab_file=vocab, spm_model_file=vocab_model)
     bert_config = modeling.BertConfig.from_json_file(bert_config)

@@ -33,8 +33,6 @@ LANGUAGE_DETECTION_VOCAB = 'bpe/language-detection.yttm'
 
 STEMMER_VOCAB = 'bpe/stemmer.yttm'
 
-CONSTITUENCY_SETTING = 'setting/constituency.json'
-
 GPT2_ENCODER = 'bpe/gpt2-encoder.json'
 GPT2_VOCAB = 'bpe/gpt2-vocab.bpe'
 

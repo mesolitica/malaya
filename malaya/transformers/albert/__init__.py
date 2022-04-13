@@ -290,16 +290,16 @@ def load(model: str = 'albert', **kwargs):
     model = model.lower()
     path = check_file(PATH_ALBERT[model]['model'], S3_PATH_ALBERT[model], **kwargs)
 
-    if not os.path.exists(os.path.join(path['directory'], 'model.ckpt')):
+    if not os.path.exists(os.path.join(PATH_ALBERT[model]['directory'], 'model.ckpt')):
         import tarfile
 
-        with tarfile.open(path['model']['model']) as tar:
-            tar.extractall(path=path['path'])
+        with tarfile.open(path['model']) as tar:
+            tar.extractall(path=PATH_ALBERT[model]['path'])
 
-    bert_checkpoint = os.path.join(path['directory'], 'model.ckpt')
-    vocab_model = os.path.join(path['directory'], 'sp10m.cased.v10.model')
-    vocab = os.path.join(path['directory'], 'sp10m.cased.v10.vocab')
-    bert_config = os.path.join(path['directory'], 'config.json')
+    bert_checkpoint = os.path.join(PATH_ALBERT[model]['directory'], 'model.ckpt')
+    vocab_model = os.path.join(PATH_ALBERT[model]['directory'], 'sp10m.cased.v10.model')
+    vocab = os.path.join(PATH_ALBERT[model]['directory'], 'sp10m.cased.v10.vocab')
+    bert_config = os.path.join(PATH_ALBERT[model]['directory'], 'config.json')
 
     tokenizer = tokenization.FullTokenizer(
         vocab_file=vocab, do_lower_case=False, spm_model_file=vocab_model

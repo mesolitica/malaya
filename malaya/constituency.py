@@ -6,7 +6,8 @@ from malaya.function import (
 )
 from malaya.text.bpe import SentencePieceTokenizer
 from malaya.model.tf import Constituency
-from malaya.path import MODEL_VOCAB, MODEL_BPE, CONSTITUENCY_SETTING
+from malaya.path import MODEL_VOCAB, MODEL_BPE
+from malaya.supervised import settings
 import json
 from herpetologist import check_type
 
@@ -116,15 +117,11 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
             'model': 'model.pb',
             'vocab': MODEL_VOCAB[model],
             'tokenizer': MODEL_BPE[model],
-            'setting': CONSTITUENCY_SETTING,
         },
         quantized=quantized,
         **kwargs,
     )
     g = load_graph(path['model'], **kwargs)
-
-    with open(path['setting']) as fopen:
-        dictionary = json.load(fopen)
 
     inputs = ['input_ids', 'word_end_mask']
     outputs = ['charts', 'tags']
@@ -139,6 +136,6 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
         output_nodes=output_nodes,
         sess=generate_session(graph=g, **kwargs),
         tokenizer=tokenizer,
-        dictionary=dictionary,
+        dictionary=settings.constituency,
         mode=mode,
     )
