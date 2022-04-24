@@ -27,7 +27,7 @@ rules_compound_normalizer_regex = (
 )
 
 
-def _replace_compoud(string):
+def _replace_compound(string):
     results = re.findall(
         rules_compound_normalizer_regex, string, flags=re.IGNORECASE
     )

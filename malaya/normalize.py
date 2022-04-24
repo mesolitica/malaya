@@ -3,8 +3,8 @@ import dateparser
 import itertools
 from malaya.num2word import to_cardinal
 from malaya.text.function import (
-    ENGLISH_WORDS,
-    MALAY_WORDS,
+    is_english,
+    is_malay,
     multireplace,
     case_of,
     replace_laugh,
@@ -33,13 +33,14 @@ from malaya.text.tatabahasa import (
     date_replace,
     consonants,
     sounds,
+    bulan,
 )
 from malaya.text.normalization import (
     _remove_postfix,
     _normalize_title,
     _is_number_regex,
     _string_to_num,
-    _replace_compoud,
+    _replace_compound,
     cardinal,
     digit_unit,
     rom_to_int,
@@ -47,12 +48,16 @@ from malaya.text.normalization import (
     fraction,
     money,
     ignore_words,
+    digit,
 )
 from malaya.text.rules import rules_normalizer
 from malaya.cluster import cluster_words
 from malaya.function import validator
 from herpetologist import check_type
+from typing import Callable
 import logging
+
+logger = logging.getLogger('malaya.normalize')
 
 
 def normalized_entity(normalized):
@@ -61,43 +66,58 @@ def normalized_entity(normalized):
     dates_ = re.findall(_date, normalized)
 
     past_date_string_ = re.findall(_past_date_string, normalized)
+    logger.debug(f'past_date_string_: {past_date_string_}')
     now_date_string_ = re.findall(_now_date_string, normalized)
+    logger.debug(f'now_date_string_: {now_date_string_}')
     future_date_string_ = re.findall(_future_date_string, normalized)
+    logger.debug(f'future_date_string_: {future_date_string_}')
     yesterday_date_string_ = re.findall(
         _yesterday_tomorrow_date_string, normalized
     )
+    logger.debug(f'yesterday_date_string_: {yesterday_date_string_}')
     depan_date_string_ = re.findall(_depan_date_string, normalized)
+    logger.debug(f'depan_date_string_: {depan_date_string_}')
     today_time_ = re.findall(_today_time, normalized)
+    logger.debug(f'today_time_: {today_time_}')
     time_ = re.findall(_expressions['time'], normalized)
+    logger.debug(f'time_: {time_}')
 
     left_datetime_ = [
         f'{i[0]} {i[1]}' for i in re.findall(_left_datetime, normalized)
     ]
+    logger.debug(f'left_datetime_: {left_datetime_}')
     right_datetime_ = [
         f'{i[0]} {i[1]}' for i in re.findall(_right_datetime, normalized)
     ]
+    logger.debug(f'right_datetime_: {left_datetime_}')
     today_left_datetime_ = [
         f'{i[0]} {i[1]}' for i in re.findall(_left_datetodaytime, normalized)
     ]
+    logger.debug(f'today_left_datetime_: {today_left_datetime_}')
     today_right_datetime_ = [
         f'{i[0]} {i[1]}' for i in re.findall(_right_datetodaytime, normalized)
     ]
+    logger.debug(f'today_right_datetime_: {today_right_datetime_}')
     left_yesterdaydatetime_ = [
         f'{i[0]} {i[1]}'
         for i in re.findall(_left_yesterdaydatetime, normalized)
     ]
+    logger.debug(f'left_yesterdaydatetime_: {left_yesterdaydatetime_}')
     right_yesterdaydatetime_ = [
         f'{i[0]} {i[1]}'
         for i in re.findall(_right_yesterdaydatetime, normalized)
     ]
+    logger.debug(f'right_yesterdaydatetime_: {right_yesterdaydatetime_}')
     left_yesterdaydatetodaytime_ = [
         f'{i[0]} {i[1]}'
         for i in re.findall(_left_yesterdaydatetodaytime, normalized)
     ]
+    logger.debug(f'left_yesterdaydatetodaytime_: {left_yesterdaydatetodaytime_}')
     right_yesterdaydatetodaytime_ = [
         f'{i[0]} {i[1]}'
         for i in re.findall(_right_yesterdaydatetodaytime, normalized)
     ]
+    logger.debug(f'right_yesterdaydatetodaytime_: {right_yesterdaydatetodaytime_}')
 
     dates_ = (
         dates_
@@ -117,6 +137,7 @@ def normalized_entity(normalized):
         + left_yesterdaydatetodaytime_
         + right_yesterdaydatetodaytime_
     )
+    dates_ = [d.replace('.', ':') for d in dates_ if not isinstance(d, tuple)]
     dates_ = [multireplace(s, date_replace) for s in dates_]
     dates_ = [re.sub(r'[ ]+', ' ', s).strip() for s in dates_]
     dates_ = cluster_words(dates_)
@@ -169,13 +190,16 @@ class Normalizer:
     def normalize(
         self,
         string: str,
-        check_english: bool = True,
         normalize_text: bool = True,
         normalize_entity: bool = True,
         normalize_url: bool = False,
         normalize_email: bool = False,
         normalize_year: bool = True,
         normalize_telephone: bool = True,
+        normalize_date: bool = True,
+        normalize_time: bool = True,
+        check_english_func=is_english,
+        check_malay_func=is_malay,
     ):
         """
         Normalize a string.
@@ -183,8 +207,6 @@ class Normalizer:
         Parameters
         ----------
         string : str
-        check_english: bool, (default=True)
-            check a word in english dictionary.
         normalize_text: bool, (default=True)
             if True, will try to replace shortforms with internal corpus.
         normalize_entity: bool, (default=True)
@@ -201,19 +223,29 @@ class Normalizer:
             if False, `tahun 1987` -> `tahun seribu sembilan ratus lapan puluh tujuh`.
         normalize_telephone: bool, (default=True)
             if True, `no 012-1234567` -> `no kosong satu dua, satu dua tiga empat lima enam tujuh`
+        normalize_date: bool, (default=True)
+            if True, `01/12/2001` -> `satu disember dua ribu satu`.
+        normalize_time: bool, (default=True)
+            if True, `pukul 2.30` -> `pukul dua tiga puluh minit`.
+        check_english_func: Callable, (default=malaya.text.is_english)
+            function to check a word in english dictionary, default is malaya.text.is_english.
+        check_malay_func: Callable, (default=malaya.text.is_malay)
+            function to check a word in malay dictionary, default is malaya.text.is_malay.
 
         Returns
         -------
-        string: normalized string
+        string: {'normalize', 'date', 'money'}
         """
-
-        string = ' '.join(self._tokenizer(string))
+        tokenized = self._tokenizer(string)
+        s = f'tokenized: {tokenized}'
+        logger.debug(s)
+        string = ' '.join(tokenized)
         string = groupby(string)
 
         if normalize_text:
             string = replace_laugh(string)
             string = replace_mengeluh(string)
-            string = _replace_compoud(string)
+            string = _replace_compound(string)
 
         if hasattr(self._speller, 'normalize_elongated'):
             string = [
@@ -238,7 +270,7 @@ class Normalizer:
             first_c = word[0].isupper()
 
             s = f'index: {index}, word: {word}, queue: {result}'
-            logging.debug(s)
+            logger.debug(s)
 
             if word in '~@#$%^&*()_+{}|[:"\'];<>,.?/-':
                 result.append(word)
@@ -264,16 +296,17 @@ class Normalizer:
                     index += 1
                     continue
 
-            if check_english:
-                if word_lower in ENGLISH_WORDS:
+            if check_english_func is not None:
+                if check_english_func(word_lower):
                     result.append(word)
                     index += 1
                     continue
 
-            if word_lower in MALAY_WORDS and word_lower not in ['pada', 'ke']:
-                result.append(word)
-                index += 1
-                continue
+            if check_malay_func is not None:
+                if check_malay_func(word_lower) and word_lower not in ['pada', 'ke']:
+                    result.append(word)
+                    index += 1
+                    continue
 
             if len(word) > 2 and normalize_text:
                 if word[-2] in consonants and word[-1] == 'e':
@@ -416,23 +449,53 @@ class Normalizer:
                 word = word_lower
                 word = multireplace(word, date_replace)
                 word = re.sub(r'[ ]+', ' ', word).strip()
-                parsed = dateparser.parse(word)
-                if parsed:
-                    result.append(parsed.strftime('%d/%m/%Y'))
-                else:
-                    result.append(word)
+                try:
+                    s = f'index: {index}, word: {word}, parsing date'
+                    logger.debug(s)
+                    parsed = dateparser.parse(word)
+                    if parsed:
+                        word = parsed.strftime('%d/%m/%Y')
+                        if normalize_date:
+                            day, month, year = word.split('/')
+                            day = cardinal(day)
+                            month = bulan[int(month)]
+                            year = cardinal(year)
+                            word = f'{day} {month} {year}'
+                except Exception as e:
+                    logger.warning(str(e))
+                result.append(word)
+
                 index += 1
                 continue
 
-            if re.findall(_expressions['time'], word_lower):
+            if re.findall(_expressions['time'], word_lower) or re.findall(_expressions['time_pukul'], word_lower):
                 word = word_lower
                 word = multireplace(word, date_replace)
                 word = re.sub(r'[ ]+', ' ', word).strip()
-                parsed = dateparser.parse(word)
-                if parsed:
-                    result.append(parsed.strftime('%H:%M:%S'))
-                else:
-                    result.append(word)
+                try:
+                    s = f'index: {index}, word: {word}, parsing time'
+                    logger.debug(s)
+                    parsed = dateparser.parse(word.replace('.', ':'))
+                    if parsed:
+                        word = parsed.strftime('%H:%M:%S')
+                        if normalize_time:
+                            hour, minute, second = word.split(':')
+                            hour = cardinal(hour)
+                            if int(minute) > 0:
+                                minute = cardinal(minute)
+                                minute = f'{minute} minit'
+                            else:
+                                minute = ''
+                            if int(second) > 0:
+                                second = cardinal(second)
+                                second = f'{second} saat'
+                            else:
+                                second = ''
+                            word = f'pukul {hour} {minute} {second}'
+                            word = re.sub(r'[ ]+', ' ', word).strip()
+                except Exception as e:
+                    logger.warning(str(e))
+                result.append(word)
                 index += 1
                 continue
 
@@ -485,6 +548,16 @@ class Normalizer:
             ):
                 word = word.replace(' ', '')
                 result.append(digit_unit(word))
+                index += 1
+                continue
+
+            if re.findall(_expressions['ic'], word_lower):
+                result.append(digit(word))
+                index += 1
+                continue
+
+            if re.findall(_expressions['number'], word_lower) and word_lower[0] == '0':
+                result.append(digit(word))
                 index += 1
                 continue
 

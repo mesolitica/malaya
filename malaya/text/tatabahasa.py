@@ -28,6 +28,7 @@
 # 27. bi_vowels, bivowels, example, `aa`
 # 28. group_compound, group for biconsonant, example, `ng`
 # 29. penjodoh bilangan, penjodoh_bilangan
+# 30. bulan
 
 GO = 0
 PAD = 1
@@ -2245,3 +2246,18 @@ penjodoh_bilangan = [
     'urat',
     'utas',
 ]
+
+bulan = {
+    1: 'januari',
+    2: 'februari',
+    3: 'mac',
+    4: 'april',
+    5: 'mei',
+    6: 'jun',
+    7: 'julai',
+    8: 'ogos',
+    9: 'september',
+    10: 'oktober',
+    11: 'november',
+    12: 'disember'
+}

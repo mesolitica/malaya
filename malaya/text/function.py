@@ -37,6 +37,14 @@ before_digits = '([Nn]o|[Nn]ombor|[Nn]umber|[Kk]e|=|al|[Pp]ukul)'
 month = '([Jj]an(?:uari)?|[Ff]eb(?:ruari)?|[Mm]a(?:c)?|[Aa]pr(?:il)?|Mei|[Jj]u(?:n)?|[Jj]ula(?:i)?|[Aa]ug(?:ust)?|[Ss]ept?(?:ember)?|[Oo]kt(?:ober)?|[Nn]ov(?:ember)?|[Dd]is(?:ember)?)'
 
 
+def is_english(word):
+    return word in ENGLISH_WORDS
+
+
+def is_malay(word):
+    return word in MALAY_WORDS
+
+
 def get_stopwords():
     return list(STOPWORDS)
 

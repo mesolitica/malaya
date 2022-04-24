@@ -39,6 +39,8 @@ class Tokenizer:
             True to keep date expressions.
         time: bool, optional (default=True)
             True to keep time expressions.
+        time_pukul: bool, optional (default=True)
+            True to keep time `pukul` expressions.
         acronyms: bool, optional (default=True)
             True to keep acronyms.
         emoticons: bool, optional (default=True)
@@ -61,6 +63,8 @@ class Tokenizer:
             True to keep weights.
         hypen: bool, optional (default=True)
             True to keep hypens.
+        ic: bool, optional (default=True)
+            True to keep Malaysian IC.
         """
 
         self.lowercase = lowercase
@@ -80,6 +84,7 @@ class Tokenizer:
         money = kwargs.get('money', True)
         date = kwargs.get('date', True)
         time = kwargs.get('time', True)
+        time_pukul = kwargs.get('time_pukul', True)
         acronyms = kwargs.get('acronyms', True)
         emoticons = kwargs.get('emoticons', True)
         censored = kwargs.get('censored', True)
@@ -91,6 +96,7 @@ class Tokenizer:
         durations = kwargs.get('duration', True)
         weights = kwargs.get('weight', True)
         hypens = kwargs.get('hypen', True)
+        ic = kwargs.get('ic', True)
 
         if urls:
             pipeline.append(self.regexes['url'])
@@ -129,6 +135,9 @@ class Tokenizer:
         if time:
             pipeline.append(self.wrap_non_matching(self.regexes['time']))
 
+        if time_pukul:
+            pipeline.append(self.wrap_non_matching(self.regexes['time_pukul']))
+
         if acronyms:
             pipeline.append(self.wrap_non_matching(self.regexes['acronym']))
 
@@ -161,6 +170,9 @@ class Tokenizer:
 
         if weights:
             pipeline.append(self.wrap_non_matching(self.regexes['weight']))
+
+        if ic:
+            pipeline.append(self.wrap_non_matching(self.regexes['ic']))
 
         if numbers:
             pipeline.append(self.regexes['number'])
