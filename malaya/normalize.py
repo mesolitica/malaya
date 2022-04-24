@@ -166,6 +166,7 @@ def groupby(string):
             _is_number_regex(word)
             or re.findall(_expressions['url'], word)
             or re.findall(_money, word.lower())
+            or re.findall(_expressions['number'], word)
         ):
             word = ''.join([''.join(s)[:2] for _, s in itertools.groupby(word)])
         results.append(word)
@@ -527,9 +528,10 @@ class Normalizer:
             if re.findall(_expressions['phone'], word_lower):
                 if normalize_telephone:
                     splitted = word.split('-')
-                    left = put_spacing_num(splitted[0])
-                    right = put_spacing_num(splitted[1])
-                    word = f'{left}, {right}'
+                    if len(splitted) == 2:
+                        left = put_spacing_num(splitted[0])
+                        right = put_spacing_num(splitted[1])
+                        word = f'{left}, {right}'
                 result.append(word)
                 index += 1
                 continue
