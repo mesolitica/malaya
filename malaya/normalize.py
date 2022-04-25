@@ -11,13 +11,11 @@ from malaya.text.function import (
     replace_mengeluh,
 )
 from malaya.text.regex import (
-    _date,
     _past_date_string,
     _now_date_string,
     _future_date_string,
     _yesterday_tomorrow_date_string,
     _depan_date_string,
-    _money,
     _expressions,
     _left_datetime,
     _right_datetime,
@@ -61,9 +59,9 @@ logger = logging.getLogger('malaya.normalize')
 
 
 def normalized_entity(normalized):
-    money_ = re.findall(_money, normalized)
+    money_ = re.findall(_expressions['money'], normalized)
     money_ = [(s, money(s)[1]) for s in money_]
-    dates_ = re.findall(_date, normalized)
+    dates_ = re.findall(_expressions['date'], normalized)
 
     past_date_string_ = re.findall(_past_date_string, normalized)
     logger.debug(f'past_date_string_: {past_date_string_}')
@@ -165,7 +163,7 @@ def groupby(string):
         if not (
             _is_number_regex(word)
             or re.findall(_expressions['url'], word)
-            or re.findall(_money, word.lower())
+            or re.findall(_expressions['money'], word.lower())
             or re.findall(_expressions['number'], word)
         ):
             word = ''.join([''.join(s)[:2] for _, s in itertools.groupby(word)])
@@ -226,8 +224,13 @@ class Normalizer:
             if True, `no 012-1234567` -> `no kosong satu dua, satu dua tiga empat lima enam tujuh`
         normalize_date: bool, (default=True)
             if True, `01/12/2001` -> `satu disember dua ribu satu`.
+            if True, `Jun 2017` -> `satu Jun dua ribu tujuh belas`.
+            if True, `2017 Jun` -> `satu Jun dua ribu tujuh belas`.
+            if False, `2017 Jun` -> `01/06/2017`.
+            if False, `Jun 2017` -> `01/06/2017`.
         normalize_time: bool, (default=True)
             if True, `pukul 2.30` -> `pukul dua tiga puluh minit`.
+            if False, `pukul 2.30` -> `'02:00:00'`
         check_english_func: Callable, (default=malaya.text.is_english)
             function to check a word in english dictionary, default is malaya.text.is_english.
         check_malay_func: Callable, (default=malaya.text.is_malay)
@@ -285,7 +288,11 @@ class Normalizer:
                 index += 1
                 continue
 
-            if first_c and not len(re.findall(_money, word_lower)):
+            if (
+                first_c
+                and not len(re.findall(_expressions['money'], word_lower))
+                and not len(re.findall(_expressions['date'], word_lower))
+            ):
                 if word_lower in rules_normalizer and normalize_text:
                     result.append(case_of(word)(rules_normalizer[word_lower]))
                     index += 1
@@ -434,7 +441,7 @@ class Normalizer:
                     index += 3
                     continue
 
-            if re.findall(_money, word_lower):
+            if re.findall(_expressions['money'], word_lower):
                 money_, _ = money(word)
                 result.append(money_)
                 if index < (len(tokenized) - 1):
@@ -446,7 +453,7 @@ class Normalizer:
                     index += 1
                 continue
 
-            if re.findall(_date, word_lower):
+            if re.findall(_expressions['date'], word_lower):
                 word = word_lower
                 word = multireplace(word, date_replace)
                 word = re.sub(r'[ ]+', ' ', word).strip()
@@ -461,6 +468,7 @@ class Normalizer:
                             day = cardinal(day)
                             month = bulan[int(month)]
                             year = cardinal(year)
+
                             word = f'{day} {month} {year}'
                 except Exception as e:
                     logger.warning(str(e))
@@ -469,7 +477,10 @@ class Normalizer:
                 index += 1
                 continue
 
-            if re.findall(_expressions['time'], word_lower) or re.findall(_expressions['time_pukul'], word_lower):
+            if (
+                re.findall(_expressions['time'], word_lower)
+                or re.findall(_expressions['time_pukul'], word_lower)
+            ):
                 word = word_lower
                 word = multireplace(word, date_replace)
                 word = re.sub(r'[ ]+', ' ', word).strip()
@@ -509,6 +520,7 @@ class Normalizer:
                 if normalize_url:
                     word = word.replace('://', ' ').replace('.', ' dot ')
                     word = put_spacing_num(word)
+                    word = word.replace('https', 'HTTPS').replace('http', 'HTTP').replace('www', 'WWW')
                 result.append(word)
                 index += 1
                 continue
