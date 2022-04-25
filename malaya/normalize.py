@@ -626,8 +626,12 @@ class Normalizer:
                 index += 1
                 continue
 
-            if re.findall(_expressions['number'], word_lower) and word_lower[0] == '0':
-                s = f'index: {index}, word: {word}, condition number'
+            if (
+                re.findall(_expressions['number'], word_lower)
+                and word_lower[0] == '0'
+                and '.' not in word_lower
+            ):
+                s = f'index: {index}, word: {word}, condition digit and word[0] == `0`'
                 logger.debug(s)
                 result.append(digit(word))
                 index += 1
