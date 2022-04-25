@@ -2248,16 +2248,16 @@ penjodoh_bilangan = [
 ]
 
 bulan = {
-    1: 'januari',
-    2: 'februari',
-    3: 'mac',
-    4: 'april',
-    5: 'mei',
-    6: 'jun',
-    7: 'julai',
-    8: 'ogos',
-    9: 'september',
-    10: 'oktober',
-    11: 'november',
-    12: 'disember'
+    1: 'Januari',
+    2: 'Februari',
+    3: 'Mac',
+    4: 'April',
+    5: 'Mei',
+    6: 'Jun',
+    7: 'Julai',
+    8: 'Ogos',
+    9: 'September',
+    10: 'Oktober',
+    11: 'November',
+    12: 'Disember'
 }

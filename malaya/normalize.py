@@ -146,7 +146,7 @@ def normalized_entity(normalized):
 
 
 def check_repeat(word):
-    if word[-1].isdigit():
+    if word[-1].isdigit() and not word[-2].isdigit():
         repeat = int(word[-1])
         word = word[:-1]
     else:
@@ -277,6 +277,8 @@ class Normalizer:
             logger.debug(s)
 
             if word in '~@#$%^&*()_+{}|[:"\'];<>,.?/-':
+                s = f'index: {index}, word: {word}, condition punct'
+                logger.debug(s)
                 result.append(word)
                 index += 1
                 continue
@@ -284,6 +286,8 @@ class Normalizer:
             normalized.append(rules_normalizer.get(word_lower, word_lower))
 
             if word_lower in ignore_words:
+                s = f'index: {index}, word: {word}, condition ignore words'
+                logger.debug(s)
                 result.append(word)
                 index += 1
                 continue
@@ -293,6 +297,8 @@ class Normalizer:
                 and not len(re.findall(_expressions['money'], word_lower))
                 and not len(re.findall(_expressions['date'], word_lower))
             ):
+                s = f'index: {index}, word: {word}, condition not in money and date'
+                logger.debug(s)
                 if word_lower in rules_normalizer and normalize_text:
                     result.append(case_of(word)(rules_normalizer[word_lower]))
                     index += 1
@@ -305,28 +311,40 @@ class Normalizer:
                     continue
 
             if check_english_func is not None:
+                s = f'index: {index}, word: {word}, condition check english'
+                logger.debug(s)
                 if check_english_func(word_lower):
                     result.append(word)
                     index += 1
                     continue
 
             if check_malay_func is not None:
+                s = f'index: {index}, word: {word}, condition check malay'
+                logger.debug(s)
                 if check_malay_func(word_lower) and word_lower not in ['pada', 'ke']:
                     result.append(word)
                     index += 1
                     continue
 
             if len(word) > 2 and normalize_text:
+                s = f'index: {index}, word: {word}, condition len(word) > 2 and norm text'
+                logger.debug(s)
                 if word[-2] in consonants and word[-1] == 'e':
                     word = word[:-1] + 'a'
 
             if word[0] == 'x' and len(word) > 1 and normalize_text:
+                s = f'index: {index}, word: {word}, condition word[0] == `x` and len(word) > 1 and norm text'
+                logger.debug(s)
                 result_string = 'tak '
                 word = word[1:]
             else:
+                s = f'index: {index}, word: {word}, condition else for (word[0] == `x` and len(word) > 1 and norm text)'
+                logger.debug(s)
                 result_string = ''
 
             if word_lower == 'ke' and index < (len(tokenized) - 2):
+                s = f'index: {index}, word: {word}, condition ke'
+                logger.debug(s)
                 if tokenized[index + 1] == '-' and _is_number_regex(
                     tokenized[index + 2]
                 ):
@@ -355,6 +373,8 @@ class Normalizer:
                     continue
 
             if _is_number_regex(word) and index < (len(tokenized) - 2):
+                s = f'index: {index}, word: {word}, condition hingga'
+                logger.debug(s)
                 if tokenized[index + 1] == '-' and _is_number_regex(
                     tokenized[index + 2]
                 ):
@@ -367,6 +387,8 @@ class Normalizer:
                     continue
 
             if word_lower == 'pada' and index < (len(tokenized) - 3):
+                s = f'index: {index}, word: {word}, condition pada hari bulan'
+                logger.debug(s)
                 if (
                     _is_number_regex(tokenized[index + 1])
                     and tokenized[index + 2] in '/-'
@@ -387,6 +409,8 @@ class Normalizer:
                 and index < (len(tokenized) - 1)
                 and normalize_year
             ):
+                s = f'index: {index}, word: {word}, condition tahun'
+                logger.debug(s)
                 if (
                     _is_number_regex(tokenized[index + 1])
                     and len(tokenized[index + 1]) == 4
@@ -413,6 +437,8 @@ class Normalizer:
                     continue
 
             if _is_number_regex(word) and index < (len(tokenized) - 2):
+                s = f'index: {index}, word: {word}, condition fraction'
+                logger.debug(s)
                 if tokenized[index + 1] == '/' and _is_number_regex(
                     tokenized[index + 2]
                 ):
@@ -442,6 +468,8 @@ class Normalizer:
                     continue
 
             if re.findall(_expressions['money'], word_lower):
+                s = f'index: {index}, word: {word}, condition money'
+                logger.debug(s)
                 money_, _ = money(word)
                 result.append(money_)
                 if index < (len(tokenized) - 1):
@@ -454,6 +482,8 @@ class Normalizer:
                 continue
 
             if re.findall(_expressions['date'], word_lower):
+                s = f'index: {index}, word: {word}, condition date'
+                logger.debug(s)
                 word = word_lower
                 word = multireplace(word, date_replace)
                 word = re.sub(r'[ ]+', ' ', word).strip()
@@ -466,7 +496,7 @@ class Normalizer:
                         if normalize_date:
                             day, month, year = word.split('/')
                             day = cardinal(day)
-                            month = bulan[int(month)]
+                            month = bulan[int(month)].title()
                             year = cardinal(year)
 
                             word = f'{day} {month} {year}'
@@ -481,6 +511,8 @@ class Normalizer:
                 re.findall(_expressions['time'], word_lower)
                 or re.findall(_expressions['time_pukul'], word_lower)
             ):
+                s = f'index: {index}, word: {word}, condition time'
+                logger.debug(s)
                 word = word_lower
                 word = multireplace(word, date_replace)
                 word = re.sub(r'[ ]+', ' ', word).strip()
@@ -512,11 +544,15 @@ class Normalizer:
                 continue
 
             if re.findall(_expressions['hashtag'], word_lower):
+                s = f'index: {index}, word: {word}, condition hashtag'
+                logger.debug(s)
                 result.append(word)
                 index += 1
                 continue
 
             if re.findall(_expressions['url'], word_lower):
+                s = f'index: {index}, word: {word}, condition url'
+                logger.debug(s)
                 if normalize_url:
                     word = word.replace('://', ' ').replace('.', ' dot ')
                     word = put_spacing_num(word)
@@ -526,6 +562,8 @@ class Normalizer:
                 continue
 
             if re.findall(_expressions['email'], word_lower):
+                s = f'index: {index}, word: {word}, condition email'
+                logger.debug(s)
                 if normalize_email:
                     word = (
                         word.replace('://', ' ')
@@ -538,6 +576,8 @@ class Normalizer:
                 continue
 
             if re.findall(_expressions['phone'], word_lower):
+                s = f'index: {index}, word: {word}, condition phone'
+                logger.debug(s)
                 if normalize_telephone:
                     splitted = word.split('-')
                     if len(splitted) == 2:
@@ -549,6 +589,8 @@ class Normalizer:
                 continue
 
             if re.findall(_expressions['user'], word_lower):
+                s = f'index: {index}, word: {word}, condition user'
+                logger.debug(s)
                 result.append(word)
                 index += 1
                 continue
@@ -560,37 +602,62 @@ class Normalizer:
                 or re.findall(_expressions['duration'], word_lower)
                 or re.findall(_expressions['weight'], word_lower)
             ):
+                s = f'index: {index}, word: {word}, condition units'
+                logger.debug(s)
                 word = word.replace(' ', '')
                 result.append(digit_unit(word))
                 index += 1
                 continue
 
+            if (
+                re.findall(_expressions['percent'], word_lower)
+            ):
+                s = f'index: {index}, word: {word}, condition percent'
+                logger.debug(s)
+                word = word.replace('%', '')
+                result.append(cardinal(word) + ' peratus')
+                index += 1
+                continue
+
             if re.findall(_expressions['ic'], word_lower):
+                s = f'index: {index}, word: {word}, condition IC'
+                logger.debug(s)
                 result.append(digit(word))
                 index += 1
                 continue
 
             if re.findall(_expressions['number'], word_lower) and word_lower[0] == '0':
+                s = f'index: {index}, word: {word}, condition number'
+                logger.debug(s)
                 result.append(digit(word))
                 index += 1
                 continue
 
             cardinal_ = cardinal(word)
             if cardinal_ != word:
+                s = f'index: {index}, word: {word}, condition cardinal'
+                logger.debug(s)
                 result.append(cardinal_)
                 index += 1
                 continue
 
             normalized_ke = ordinal(word)
             if normalized_ke != word:
+                s = f'index: {index}, word: {word}, condition normalized ke'
+                logger.debug(s)
                 result.append(normalized_ke)
                 index += 1
                 continue
 
             word, end_result_string = _remove_postfix(word)
-            word, repeat = check_repeat(word)
+            if normalize_text:
+                word, repeat = check_repeat(word)
+            else:
+                repeat = 1
 
             if normalize_text:
+                s = f'index: {index}, word: {word}, condition normalize text'
+                logger.debug(s)
                 if word in sounds:
                     selected = sounds[word]
                 elif word in rules_normalizer:
