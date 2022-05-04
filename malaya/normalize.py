@@ -199,6 +199,7 @@ class Normalizer:
         normalize_time: bool = True,
         check_english_func=is_english,
         check_malay_func=is_malay,
+        **kwargs,
     ):
         """
         Normalize a string.

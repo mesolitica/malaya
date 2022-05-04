@@ -18,7 +18,7 @@ from malaya_boilerplate import frozen_graph
 from malaya import package, url
 import os
 
-MALAYA_USE_HUGGINGFACE = os.environ.get('MALAYA_USE_HUGGINGFACE', 'false').lower() == 'true'
+MALAYA_USE_HUGGINGFACE = os.environ.get('MALAYA_USE_HUGGINGFACE', 'true').lower() == 'true'
 
 
 def check_file(file, s3_file=None, use_huggingface=False, **kwargs):
