@@ -40,8 +40,6 @@ GPU version
 
 Only **Python 3.6.0 and above** and **Tensorflow 1.15.0 and above** are supported.
 
-We recommend to use **virtualenv** for development. All examples tested on Tensorflow version 1.15.4 and 2.4.1.
-
 We recommend to use **virtualenv** for development. All examples tested on Tensorflow version 1.15.4, 1.15.5, 2.4.1 and 2.5.
 
 Features
@@ -102,6 +100,9 @@ Malaya-Speech also released pretrained models, simply check at `malaya-speech/pr
 -  **FastPitch**, Parallel Text-to-speech with Pitch Prediction, https://arxiv.org/abs/2006.06873
 -  **GlowTTS**, A Generative Flow for Text-to-Speech via Monotonic Alignment Search, https://arxiv.org/abs/2005.11129
 -  **BEST-RQ**, Self-supervised learning with random-projection quantizer for speech recognition, https://arxiv.org/pdf/2202.01855.pdf
+-  **LightSpeech**, Lightweight and Fast Text to Speech with Neural Architecture Search, https://arxiv.org/abs/2102.04040
+-  **VITS**, Conditional Variational Autoencoder with Adversarial Learning for End-to-End Text-to-Speech, https://arxiv.org/pdf/2106.06103.pdf 
+-  **UnivNet**, A Neural Vocoder with Multi-Resolution Spectrogram Discriminators for High-Fidelity Waveform Generation, https://arxiv.org/abs/2106.07889
 
 References
 -----------
