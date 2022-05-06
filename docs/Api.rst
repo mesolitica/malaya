@@ -467,15 +467,6 @@ malaya.transformers.electra
 .. autoclass:: malaya.transformers.electra.Model()
     :members:
 
-malaya.transformers.gpt2
------------------------------
-
-.. automodule:: malaya.transformers.gpt2
-    :members:
-
-.. autoclass:: malaya.transformers.gpt2.Model()
-    :members:
-
 malaya.transformers.xlnet
 -----------------------------
 
