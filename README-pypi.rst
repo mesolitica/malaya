@@ -20,7 +20,7 @@ GPU version
 
 Only **Python 3.6.0 and above** and **Tensorflow 1.15.0 and above** are supported.
 
-We recommend to use **virtualenv** for development. All examples tested on Tensorflow version 1.15.4, 2.4.1, 2.5 and 2.7.
+We recommend to use **virtualenv** for development. All examples tested on Tensorflow version 1.15.4, 2.4.1, 2.5, 2.7 and 2.9.
 
 Features
 --------
