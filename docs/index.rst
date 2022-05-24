@@ -55,10 +55,15 @@ Contents:
    load-true-case
    load-segmentation
    load-preprocessing
-   load-tatabahasa
-   load-tatabahasa-tagging
    load-num2word
    load-word2num
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Kesalahan Tatabahasa Module
+
+   load-tatabahasa
+   load-tatabahasa-tagging
 
 .. toctree::
    :maxdepth: 2
