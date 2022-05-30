@@ -60,6 +60,12 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
+   :caption: Convert Module
+
+   load-phoneme
+
+.. toctree::
+   :maxdepth: 2
    :caption: Kesalahan Tatabahasa Module
 
    load-tatabahasa

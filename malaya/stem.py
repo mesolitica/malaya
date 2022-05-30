@@ -93,7 +93,8 @@ class DeepStemmer(Abstract):
         self._bpe = bpe
         self._tokenizer = tokenizer
 
-    def greedy_decoder(self, string):
+    @check_type
+    def greedy_decoder(self, string: str):
         """
         Stem a string, this also include lemmatization using greedy decoder.
 
@@ -108,7 +109,8 @@ class DeepStemmer(Abstract):
 
         return self.stem(string, beam_search=False)
 
-    def beam_decoder(self, string):
+    @check_type
+    def beam_decoder(self, string: str):
         """
         Stem a string, this also include lemmatization using beam decoder.
 
@@ -122,6 +124,23 @@ class DeepStemmer(Abstract):
         """
 
         return self.stem(string, beam_search=True)
+
+    def predict(self, string: str, beam_search: bool = False):
+        """
+        Stem a string, this also include lemmatization.
+
+        Parameters
+        ----------
+        string : str
+        beam_search : bool, (optional=False)
+            If True, use beam search decoder, else use greedy decoder.
+
+        Returns
+        -------
+        result: str
+        """
+
+        return self.stem(string=string, beam_search=beam_search)
 
     @check_type
     def stem(self, string: str, beam_search: bool = False):

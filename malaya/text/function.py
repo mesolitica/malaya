@@ -418,6 +418,14 @@ def summarization_textcleaning(string):
     return re.sub(r'[ ]+', ' ', string).strip()
 
 
+def phoneme_textcleaning(string, replace_chars='.,!?['):
+    l = string
+    for c in replace_chars:
+        l = l.replace(c, f' ')
+    l = l.lower()
+    return re.sub(r'[ ]+', ' ', l).strip()
+
+
 def separate_dataset(trainset):
     datastring = []
     datatarget = []

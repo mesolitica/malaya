@@ -108,6 +108,12 @@ malaya.paraphrase
 .. automodule:: malaya.paraphrase
     :members:
 
+malaya.phoneme
+------------------
+
+.. automodule:: malaya.phoneme
+    :members:
+
 malaya.pos
 -----------------
 
@@ -405,6 +411,12 @@ malaya.model.tf
     :members:
 
 .. autoclass:: malaya.model.tf.KnowledgeGraph()
+    :members:
+
+.. autoclass:: malaya.model.tf.GPT2()
+    :members:
+
+.. autoclass:: malaya.model.tf.Seq2SeqLSTM()
     :members:
 
 malaya.model.xlnet
