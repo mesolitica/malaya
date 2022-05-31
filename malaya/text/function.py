@@ -418,11 +418,17 @@ def summarization_textcleaning(string):
     return re.sub(r'[ ]+', ' ', string).strip()
 
 
-def phoneme_textcleaning(string, replace_chars='.,!?['):
+def phoneme_textcleaning(string, dict, replace_chars='.,!?['):
     l = string
     for c in replace_chars:
         l = l.replace(c, f' ')
     l = l.lower()
+    l = ''.join([c for c in l if c in dict])
+    return re.sub(r'[ ]+', ' ', l).strip()
+
+
+def rumi_jawi_textcleaning(string, dict):
+    l = ''.join([c for c in l if c in dict])
     return re.sub(r'[ ]+', ' ', l).strip()
 
 

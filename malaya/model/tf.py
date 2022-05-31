@@ -1131,7 +1131,7 @@ class Seq2SeqLSTM(Abstract):
         else:
             output = 'greedy'
 
-        batch = [[self._left_dict[c] for c in self._cleaning(string)] + [1] for string in strings]
+        batch = [[self._left_dict[c] for c in self._cleaning(string, self._left_dict)] + [1] for string in strings]
         batch = pad_sentence_batch(batch, 0)[0]
         r = self._execute(
             inputs=[batch],
