@@ -63,6 +63,8 @@ Contents:
    :caption: Convert Module
 
    load-phoneme
+   load-rumi-jawi
+   load-jawi-rumi
 
 .. toctree::
    :maxdepth: 2

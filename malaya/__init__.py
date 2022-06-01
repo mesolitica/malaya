@@ -8,8 +8,8 @@
 
 from malaya_boilerplate.utils import get_home
 
-version = '4.7'
-bump_version = '4.7.5'
+version = '4.8'
+bump_version = '4.8.0'
 __version__ = bump_version
 
 package = 'malaya'
@@ -25,6 +25,7 @@ from . import dependency
 from . import emotion
 from . import entity
 from . import generator
+from . import jawi_rumi
 from . import keyword_extraction
 from . import knowledge_graph
 from . import language_detection
@@ -38,6 +39,7 @@ from . import pos
 from . import preprocessing
 from . import qa
 from . import relevancy
+from . import rumi_jawi
 from . import segmentation
 from . import sentiment
 from . import similarity

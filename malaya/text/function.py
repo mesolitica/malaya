@@ -428,7 +428,7 @@ def phoneme_textcleaning(string, dict, replace_chars='.,!?['):
 
 
 def rumi_jawi_textcleaning(string, dict):
-    l = ''.join([c for c in l if c in dict])
+    l = ''.join([c for c in string if c in dict])
     return re.sub(r'[ ]+', ' ', l).strip()
 
 

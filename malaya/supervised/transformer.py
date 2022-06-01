@@ -11,6 +11,7 @@ from malaya.text.bpe import (
 )
 from malaya.preprocessing import Tokenizer
 from malaya.text.t2t import text_encoder
+from malaya.model.tf import TransformerChar
 from malaya.path import T2T_BPE_MODEL, LM_VOCAB
 
 ENCODER_MODEL = {
@@ -91,4 +92,26 @@ def load_tatabahasa(module, model, model_class, quantized=False, **kwargs):
         sess=generate_session(graph=g, **kwargs),
         tokenizer=tokenizer,
         word_tokenizer=word_tokenizer,
+    )
+
+
+def load_char(module, model, left_dict, cleaning, quantized=False, **kwargs):
+    path = check_file(
+        file=model,
+        module=module,
+        keys={'model': 'model.pb'},
+        quantized=quantized,
+        **kwargs,
+    )
+    g = load_graph(path['model'], **kwargs)
+    inputs = ['x_placeholder']
+    outputs = ['greedy', 'tag_greedy']
+    input_nodes, output_nodes = nodes_session(g, inputs, outputs)
+
+    return TransformerChar(
+        input_nodes=input_nodes,
+        output_nodes=output_nodes,
+        sess=generate_session(graph=g, **kwargs),
+        left_dict=left_dict,
+        cleaning=cleaning,
     )
