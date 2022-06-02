@@ -51,15 +51,18 @@ Features
 -  **Emotion Analysis**, detect and recognize 6 different emotions of texts using finetuned Transformer-Bahasa.
 -  **Entities Recognition**, seeks to locate and classify named entities mentioned in text using finetuned Transformer-Bahasa.
 -  **Generator**, generate any texts given a context using T5-Bahasa, GPT2-Bahasa or Transformer-Bahasa.
+-  **Jawi-to-Rumi**, convert from Jawi to Rumi using LSTM Seq2Seq with attention state-of-art.
 -  **Keyword Extraction**, provide RAKE, TextRank and Attention Mechanism hybrid with Transformer-Bahasa.
 -  **Knowledge Graph**, generate Knowledge Graph using T5-Bahasa or parse from Dependency Parsing models.
 -  **Language Detection**, using Fast-text and Sparse Deep learning Model to classify Malay (formal and social media), Indonesia (formal and social media), Rojak language and Manglish.
 -  **Normalizer**, using local Malaysia NLP researches hybrid with Transformer-Bahasa to normalize any bahasa texts.
 -  **Num2Word**, convert from numbers to cardinal or ordinal representation.
 -  **Paraphrase**, provide Abstractive Paraphrase using T5-Bahasa and Transformer-Bahasa.
+-  **Grapheme-to-Phoneme**, convert from Grapheme to Phoneme using LSTM Seq2Seq with attention state-of-art.
 -  **Part-of-Speech Recognition**, grammatical tagging is the process of marking up a word in a text using finetuned Transformer-Bahasa.
 -  **Question Answer**, reading comprehension using finetuned Transformer-Bahasa.
 -  **Relevancy Analysis**, detect and recognize relevancy of texts using finetuned Transformer-Bahasa.
+-  **Rumi-to-Jawi**, convert from Rumi to Jawi using LSTM Seq2Seq with attention state-of-art.
 -  **Sentiment Analysis**, detect and recognize polarity of texts using finetuned Transformer-Bahasa.
 -  **Text Similarity**, provide interface for lexical similarity deep semantic similarity using finetuned Transformer-Bahasa.
 -  **Spell Correction**, using local Malaysia NLP researches hybrid with Transformer-Bahasa to auto-correct any bahasa words and NeuSpell using T5-Bahasa.
