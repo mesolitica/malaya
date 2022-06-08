@@ -3,6 +3,7 @@ from malaya.model.bigbird import Translation as BigBird_Translation
 from malaya.supervised import transformer as load_transformer
 from malaya.supervised import bigbird as load_bigbird
 from herpetologist import check_type
+from malaya.translation.en_ms import dictionary as load_dictionary
 
 _transformer_availability = {
     'small': {
@@ -102,3 +103,16 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
             quantized=quantized,
             **kwargs
         )
+
+
+def dictionary(**kwargs):
+    """
+    Load dictionary {MS: EN} .
+
+    Returns
+    -------
+    result: Dict[str, str]
+    """
+    translator = load_dictionary()
+    translator = {v: k for k, v in translator.items()}
+    return translator

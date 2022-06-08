@@ -6,9 +6,11 @@ from malaya.text.rules import rules_normalizer
 from malaya.text.regex import _expressions
 from malaya.text.english.words import words as _english_words
 from malaya.tokenizer import Tokenizer
-from malaya.path import PATH_PREPROCESSING, S3_PATH_PREPROCESSING
-from malaya.function import check_file, validator
-from typing import List
+from malaya.function import validator
+from typing import List, Callable
+import logging
+
+logger = logging.getLogger('malaya.preprocessing')
 
 _annotate = [
     'hashtag',
@@ -20,6 +22,8 @@ _annotate = [
 ]
 
 _normalize = list(_expressions.keys())
+
+rejected = ['<', '</', '>', '>']
 
 
 def get_normalize():
@@ -149,7 +153,7 @@ class Preprocessing:
     def _handle_hashtag_match(self, m):
         expanded = m.group()[1:]
         if self._expand_hashtags:
-            expanded = self._segmenter.segment([expanded])[0]
+            expanded = self._segmenter(expanded)
             expanded = ' '.join(expanded.split('-'))
             expanded = ' '.join(expanded.split('_'))
 
@@ -164,7 +168,7 @@ class Preprocessing:
         text = ''.join(sorted(set(text), reverse=True))
 
         if 'repeated' in self._annotate:
-            text = self._add_special_tag(text, 'repeated')
+            text = self._add_special_tag(text, 'repeated', mode='wrap')
 
         return text
 
@@ -186,7 +190,7 @@ class Preprocessing:
             else:
                 text = _case_of(text)(self._speller.correct(text.lower()))
         if 'elongated' in self._annotate:
-            text = self._add_special_tag(text, 'elongated')
+            text = self._add_special_tag(text, 'elongated', mode='wrap')
         return text
 
     @lru_cache(maxsize=65536)
@@ -205,7 +209,6 @@ class Preprocessing:
         in_hashtag = False
         _words = []
         for word in wordlist:
-
             if word == '<hashtag>':
                 in_hashtag = True
             elif word == '</hashtag>':
@@ -218,6 +221,7 @@ class Preprocessing:
         return _words
 
     def process(self, text):
+        logger.debug(f'early process: {text}')
         text = re.sub(r' +', ' ', text)
         if self._fix_unidecode:
             text = ftfy.fix_text(text)
@@ -257,17 +261,30 @@ class Preprocessing:
         if self._expand_contractions:
             text = unpack_english_contractions(text)
 
+        logger.debug(f'before self._tokenizer: {text}')
         text = re.sub(r' +', ' ', text)
         text = self.text(text.split())
         text = ' '.join(text)
         text = self._tokenizer(text)
+        logger.debug(f'after self._tokenizer: {text}')
+
+        logger.debug(f'before rules_normalizer: {text}')
         text = self._dict_replace(text, rules_normalizer)
+        logger.debug(f'after rules_normalizer: {text}')
         if self._translator:
-            text = self._dict_replace(text, self._translator)
-        if self._stemmer:
-            rejected = ['<', '</', '>', '>']
+            logger.debug(f'before self._translator: {text}')
             text = [
-                self._stemmer.stem(w)
+                self._translator(w)
+                if all([r not in w for r in rejected])
+                else w
+                for w in text
+            ]
+            logger.debug(f'after self._translator: {text}')
+        if self._stemmer:
+            logger.debug(f'before self._stemmer: {text}')
+
+            text = [
+                self._stemmer(w)
                 if (
                     w not in _english_words
                     and all([r not in w for r in rejected])
@@ -275,7 +292,9 @@ class Preprocessing:
                 else w
                 for w in text
             ]
+            logger.debug(f'after self._stemmer: {text}')
 
+        text = [w for w in text if len(w) > 0]
         return text
 
 
@@ -302,10 +321,10 @@ def preprocessing(
     lowercase: bool = True,
     fix_unidecode: bool = True,
     expand_english_contractions: bool = True,
-    translate_english_to_bm: bool = True,
-    speller=None,
-    segmenter=None,
-    stemmer=None,
+    translator: Callable = None,
+    segmenter: Callable = None,
+    stemmer: Callable = None,
+    speller: Callable = None,
     **kwargs,
 ):
     """
@@ -313,25 +332,24 @@ def preprocessing(
 
     Parameters
     ----------
-    normalize: list
+    normalize: List[str], optional (default=['url', 'email', 'percent', 'money', 'phone', 'user', 'time', 'date', 'number'])
         normalizing tokens, can check all supported normalizing at `malaya.preprocessing.get_normalize()`.
-    annotate: list
+    annotate: List[str], optional (default=['hashtag', 'allcaps', 'elongated', 'repeated', 'emphasis', 'censored'])
         annonate tokens <open></open>,
         only accept ['hashtag', 'allcaps', 'elongated', 'repeated', 'emphasis', 'censored'].
-    lowercase: bool
-    fix_unidecode: bool
+    lowercase: bool, optional (default=True)
+    fix_unidecode: bool, optional (default=True)
     expand_english_contractions: bool
         expand english contractions
-    translate_english_to_bm: bool
-        translate english words to bahasa malaysia words
-    speller: object
-        spelling correction object, need to have a method `correct`
-    segmenter: object
-        segmentation object, need to have a method `segment`.
+    translator: Callable, optional (default=None)
+        function to translate EN word to MS word.
+    segmenter: Callable, optional (default=None)
+        function to segmentize word.
         If provide, it will expand hashtags, #mondayblues == monday blues
-    stemmer: object
-        stemmer object, need to have a method `stem`.
-        If provide, it will stem or lemmatize the string.
+    stemmer: Callable, optional (default=None)
+        function to stem word.
+    speller: object
+        spelling correction object, need to have a method `correct` or `normalize_elongated`
 
     Returns
     -------
@@ -349,23 +367,6 @@ def preprocessing(
     validator.validate_object_methods(
         speller, ['correct', 'normalize_elongated'], 'speller'
     )
-    validator.validate_object(segmenter, 'segment', 'segmenter')
-    validator.validate_object(stemmer, 'stem', 'stemmer')
-
-    if translate_english_to_bm:
-        path = check_file(
-            PATH_PREPROCESSING['english-malay'],
-            S3_PATH_PREPROCESSING['english-malay'],
-            **kwargs,
-        )
-        try:
-            with open(path['model']) as fopen:
-                translator = json.load(fopen)
-        except BaseException:
-            raise Exception(
-                "failed to load english-malay vocab, please try `malaya.utils.delete_cache('preprocessing/english-malay')` or rerun again.")
-    else:
-        translator = None
 
     return Preprocessing(
         normalize=normalize,
