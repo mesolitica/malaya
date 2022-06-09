@@ -2284,7 +2284,6 @@ rules_normalizer = {
     'nyampe': 'sampai',
     'kbawa': 'terbawa',
     'bradegan': 'beradegan',
-    'mlm': 'malam',
     'nikahin': 'menikahi',
     'hadeuh': 'aduh',
     'nyambung': 'menyambung',
@@ -4662,6 +4661,9 @@ rules_normalizer = {
     'camna': 'macam mana',
     'adui': 'aduh',
     'tibeh': 'tiba',
+    'pasai': 'hal',
+    'bodo': 'bodoh',
+    'duk': 'asyik',
 }
 
 rules_normalizer_rev = {v: k for k, v in rules_normalizer.items()}

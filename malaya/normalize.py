@@ -295,7 +295,7 @@ class Normalizer:
                     and not len(re.findall(_expressions['date'], word))
                     and not _is_number_regex(word)
                 ):
-                    word = self._compiled['normalize_elong1'].sub(r'\1', word)
+                    word = self._compiled['normalize_elong'].sub(r'\1\1', word)
                     if got_speller:
                         word = self._speller.normalize_elongated(word)
                 normalized.append(word)
@@ -759,6 +759,7 @@ class Normalizer:
                                 selected = translated
 
                         if selected == word and self._speller:
+                            s = f'index: {index}, word: {word}, condition to spelling correction'
                             selected = self._speller.correct(
                                 selected, string=' '.join(tokenized + words[:no_word + 1]), index=index
                             )

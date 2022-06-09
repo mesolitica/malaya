@@ -59,6 +59,7 @@ laughing = {
     'jahagaha',
     'ahakss',
     'ahksk',
+    'hahha'
 }
 
 mengeluh = {'haih', 'hais', 'aduh', 'adoi', 'ei', 'uh', 'argh', 'hoih'}
