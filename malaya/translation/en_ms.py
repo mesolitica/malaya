@@ -38,6 +38,18 @@ _transformer_availability = {
         'BLEU': 0.522,
         'Suggested length': 1024,
     },
+    'noisy-small': {
+        'Size (MB)': 42.7,
+        'Quantized Size (MB)': 13.4,
+        'BLEU': 0.626,
+        'Suggested length': 256,
+    },
+    'noisy-base': {
+        'Size (MB)': 234,
+        'Quantized Size (MB)': 82.7,
+        'BLEU': 0.792,
+        'Suggested length': 256,
+    },
 }
 
 

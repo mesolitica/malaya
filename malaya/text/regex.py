@@ -123,6 +123,7 @@ _expressions = {
     'camel_split': r'((?<=[a-z])[A-Z]|(?<!^)[A-Z](?=[a-z])|[0-9]+|(?<=[0-9\-\_])[A-Za-z]|[\-\_])',
     # REGEX_NORMALIZE_ELONG = '(.)\1+')
     'normalize_elong': r'(.)\1{2,}',
+    'normalize_elong1': r'(.)\1{1,}',
     'word': r'(?:[\w_]+)',
     'hypen': r'\w+(?:-\w+)+',
     'temperature': _temperature,
@@ -130,5 +131,6 @@ _expressions = {
     'volume': _volume,
     'duration': _duration,
     'weight': _weight,
-    'ic': r'(([[0-9]{2})(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01]))-([0-9]{2})-([0-9]{4})'
+    'ic': r'(([[0-9]{2})(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01]))-([0-9]{2})-([0-9]{4})',
+    'bracket': r'(\(.*?\))',
 }

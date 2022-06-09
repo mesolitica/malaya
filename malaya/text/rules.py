@@ -1069,6 +1069,8 @@ rules_compound_normalizer = {
     'ke eh': 'ke',
     'pape roger': 'bagitahu',
     'pe sume': 'apa semua',
+    'meh sapa': 'mari siapa',
+    'dah guane': 'bagaimana',
 }
 
 rules_normalizer = {
@@ -4225,7 +4227,7 @@ rules_normalizer = {
     'tdung': 'tudung',
     'gangguin': 'mengganggu',
     'lgkah2': 'langkah-langkah',
-    'taw': 'tau',
+    'taw': '',
     'cntiiikkk': 'cantik',
     'sktlrang': 'sekarang',
     'sjk': 'sejak',
@@ -4655,6 +4657,11 @@ rules_normalizer = {
     'sayaa': 'saya',
     'kitorang': 'kami',
     'tulah': 'itu lah',
+    'kelate': 'kelantan',
+    'camne': 'macam mana',
+    'camna': 'macam mana',
+    'adui': 'aduh',
+    'tibeh': 'tiba',
 }
 
 rules_normalizer_rev = {v: k for k, v in rules_normalizer.items()}

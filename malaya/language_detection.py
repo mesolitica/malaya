@@ -66,6 +66,7 @@ def fasttext(quantized: bool = True, **kwargs):
     return LanguageDetection(model_fasttext, lang_labels)
 
 
+@check_type
 def deep_model(quantized: bool = False, **kwargs):
     """
     Load deep learning language detection model.
@@ -116,3 +117,15 @@ def deep_model(quantized: bool = False, **kwargs):
         bpe=bpe,
         label=lang_labels,
     )
+
+
+@check_type
+def substring_transformer(
+    model: str = 'bert-base',
+    quantized: bool = False,
+    **kwargs
+):
+    """
+    detect languages in a string,
+    `i like to makan ayam` -> `[EN, EN, EN, MS, MS]`
+    """

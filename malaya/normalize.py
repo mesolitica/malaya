@@ -47,6 +47,7 @@ from malaya.text.normalization import (
     money,
     ignore_words,
     digit,
+    unpack_english_contractions,
 )
 from malaya.text.rules import rules_normalizer, rules_normalizer_rev
 from malaya.cluster import cluster_words
@@ -185,6 +186,9 @@ class Normalizer:
     def __init__(self, tokenizer, speller=None):
         self._tokenizer = tokenizer
         self._speller = speller
+        self._compiled = {
+            k.lower(): re.compile(_expressions[k]) for k, v in _expressions.items()
+        }
 
     @check_type
     def normalize(
@@ -198,6 +202,8 @@ class Normalizer:
         normalize_telephone: bool = True,
         normalize_date: bool = True,
         normalize_time: bool = True,
+        normalize_elongated: bool = True,
+        expand_contractions: bool = True,
         check_english_func=is_english,
         check_malay_func=is_malay,
         translator: Callable = None,
@@ -235,6 +241,10 @@ class Normalizer:
         normalize_time: bool, optional (default=True)
             if True, `pukul 2.30` -> `pukul dua tiga puluh minit`.
             if False, `pukul 2.30` -> `'02:00:00'`
+        normalize_elongated: bool, optional (default=True)
+            if True, `betuii` -> `betui`.
+        expand_contractions: bool, optional (default=True)
+            expand english contractions.
         check_english_func: Callable, optional (default=malaya.text.is_english)
             function to check a word in english dictionary, default is malaya.text.is_english.
         check_malay_func: Callable, optional (default=malaya.text.is_malay)
@@ -250,6 +260,11 @@ class Normalizer:
         result: {'normalize', 'date', 'money'}
         """
 
+        if expand_contractions:
+            logger.debug(f'before expand_contractions: {string}')
+            string = unpack_english_contractions(string)
+            logger.debug(f'after expand_contractions: {string}')
+
         tokenized = self._tokenizer(string)
         s = f'tokenized: {tokenized}'
         logger.debug(s)
@@ -257,21 +272,35 @@ class Normalizer:
         string = groupby(string)
 
         if normalize_text:
+            logger.debug(f'before normalize_text: {string}')
             string = replace_laugh(string)
             string = replace_mengeluh(string)
             string = _replace_compound(string)
+            logger.debug(f'after normalize_text: {string}')
 
-        if hasattr(self._speller, 'normalize_elongated'):
-            string = [
-                self._speller.normalize_elongated(word)
-                if len(re.findall(r'(.)\1{1}', word))
-                and not word[0].isupper()
-                and not word.lower().startswith('ke-')
-                and not _is_number_regex(word)
-                else word
-                for word in string.split()
-            ]
-            string = ' '.join(string)
+        if normalize_elongated:
+            logger.debug(f'before normalize_elongated: {string}')
+            normalized = []
+            got_speller = hasattr(self._speller, 'normalize_elongated')
+            for word in string.split():
+                if (
+                    len(re.findall(r'(.)\1{1}', word))
+                    and not word[0].isupper()
+                    and not word.lower().startswith('ke-')
+                    and not len(re.findall(_expressions['email'], word))
+                    and not len(re.findall(_expressions['url'], word))
+                    and not len(re.findall(_expressions['hashtag'], word))
+                    and not len(re.findall(_expressions['phone'], word))
+                    and not len(re.findall(_expressions['money'], word))
+                    and not len(re.findall(_expressions['date'], word))
+                    and not _is_number_regex(word)
+                ):
+                    word = self._compiled['normalize_elong1'].sub(r'\1', word)
+                    if got_speller:
+                        word = self._speller.normalize_elongated(word)
+                normalized.append(word)
+            string = ' '.join(normalized)
+            logger.debug(f'after normalize_elongated: {string}')
 
         result, normalized = [], []
 
@@ -336,7 +365,13 @@ class Normalizer:
                     if translator is not None:
                         s = f'index: {index}, word: {word}, condition to translate inside checking'
                         logger.debug(s)
-                        selected_word = translator(selected_word)
+                        translated = translator(selected_word)
+                        if len(translated) >= len(selected_word) * 3:
+                            logger.debug(f'reject translation, {selected_word} -> {translated}')
+                        elif ', United States' in translated:
+                            logger.debug(f'reject translation, {word} -> {translated}')
+                        else:
+                            selected_word = translated
                     result.append(selected_word)
                     index += 1
                     continue
@@ -715,7 +750,13 @@ class Normalizer:
                         if translator is not None:
                             s = f'index: {index}, word: {word}, condition to translate'
                             logger.debug(s)
-                            selected = translator(word)
+                            translated = translator(word)
+                            if len(translated) >= len(word) * 3:
+                                logger.debug(f'reject translation, {word} -> {translated}')
+                            elif ', United States' in translated:
+                                logger.debug(f'reject translation, {word} -> {translated}')
+                            else:
+                                selected = translated
 
                         if selected == word and self._speller:
                             selected = self._speller.correct(
@@ -731,6 +772,9 @@ class Normalizer:
 
         result = ' '.join(result)
         normalized = ' '.join(normalized)
+
+        result = re.sub(r'[ ]+', ' ', result).strip()
+        normalized = re.sub(r'[ ]+', ' ', normalized).strip()
 
         if normalize_entity:
             dates_, money_ = normalized_entity(normalized)

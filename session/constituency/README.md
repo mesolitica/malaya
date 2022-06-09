@@ -2,7 +2,7 @@
 
 Original implementation at https://github.com/nikitakit/self-attentive-parser. We adapted same algorithms and changed a bit tree structure to adapt bahasa structure.
 
-**This directory is very lack of comments, understand Tensorflow, Tensorflow estimator, Tensorflow Dataset really helpful**.
+**This directory is very lack of comments, able to understand Tensorflow, Tensorflow estimator and Tensorflow Dataset are really helpful**.
 
 ## Table of contents
   * [prepare dataset](#prepare-dataset)

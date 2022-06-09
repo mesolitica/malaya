@@ -5,6 +5,7 @@ from functools import lru_cache
 from malaya.text.rules import rules_normalizer
 from malaya.text.regex import _expressions
 from malaya.text.english.words import words as _english_words
+from malaya.text.normalization import unpack_english_contractions
 from malaya.tokenizer import Tokenizer
 from malaya.function import validator
 from typing import List, Callable
@@ -44,41 +45,6 @@ def _case_of(text):
         if text.istitle()
         else str
     )
-
-
-def unpack_english_contractions(text):
-    """
-    Replace *English* contractions in ``text`` str with their unshortened forms.
-    N.B. The "'d" and "'s" forms are ambiguous (had/would, is/has/possessive),
-    so are left as-is.
-    Important Note: The function is taken from textacy (https://github.com/chartbeat-labs/textacy).
-    """
-
-    text = re.sub(
-        r"(\b)([Aa]re|[Cc]ould|[Dd]id|[Dd]oes|[Dd]o|[Hh]ad|[Hh]as|[Hh]ave|[Ii]s|[Mm]ight|[Mm]ust|[Ss]hould|[Ww]ere|[Ww]ould)n't",
-        r'\1\2 not',
-        text,
-    )
-    text = re.sub(
-        r"(\b)([Hh]e|[Ii]|[Ss]he|[Tt]hey|[Ww]e|[Ww]hat|[Ww]ho|[Yy]ou)'ll",
-        r'\1\2 will',
-        text,
-    )
-    text = re.sub(
-        r"(\b)([Tt]hey|[Ww]e|[Ww]hat|[Ww]ho|[Yy]ou)'re", r'\1\2 are', text
-    )
-    text = re.sub(
-        r"(\b)([Ii]|[Ss]hould|[Tt]hey|[Ww]e|[Ww]hat|[Ww]ho|[Ww]ould|[Yy]ou)'ve",
-        r'\1\2 have',
-        text,
-    )
-    text = re.sub(r"(\b)([Cc]a)n't", r'\1\2n not', text)
-    text = re.sub(r"(\b)([Ii])'m", r'\1\2 am', text)
-    text = re.sub(r"(\b)([Ll]et)'s", r'\1\2 us', text)
-    text = re.sub(r"(\b)([Ww])on't", r'\1\2ill not', text)
-    text = re.sub(r"(\b)([Ss])han't", r'\1\2hall not', text)
-    text = re.sub(r"(\b)([Yy])(?:'all|a'll)", r'\1\2ou all', text)
-    return text
 
 
 def _get_expression_dict():
@@ -339,8 +305,9 @@ def preprocessing(
         only accept ['hashtag', 'allcaps', 'elongated', 'repeated', 'emphasis', 'censored'].
     lowercase: bool, optional (default=True)
     fix_unidecode: bool, optional (default=True)
-    expand_english_contractions: bool
-        expand english contractions
+        fix unidecode using `ftfy.fix_text`.
+    expand_english_contractions: bool, optional (default=True)
+        expand english contractions.
     translator: Callable, optional (default=None)
         function to translate EN word to MS word.
     segmenter: Callable, optional (default=None)

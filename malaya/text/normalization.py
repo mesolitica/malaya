@@ -6,7 +6,7 @@ from malaya.text.tatabahasa import (
     calon_dictionary,
 )
 from malaya.text.rules import rules_normalizer, rules_compound_normalizer
-from malaya.text.function import ENGLISH_WORDS, MALAY_WORDS
+from malaya.text.function import ENGLISH_WORDS, MALAY_WORDS, case_of
 
 ignore_words = ['ringgit', 'sen']
 ignore_postfix = ['adalah']
@@ -26,13 +26,23 @@ rules_compound_normalizer_regex = (
     '(?:' + '|'.join(list(rules_compound_normalizer.keys())) + ')'
 )
 
+rules_compound_normalizer_keys = list(rules_compound_normalizer.keys())
+
 
 def _replace_compound(string):
-    results = re.findall(
-        rules_compound_normalizer_regex, string, flags=re.IGNORECASE
-    )
-    for r in results:
-        string = string.replace(r, rules_compound_normalizer[r.lower()])
+    for k in rules_compound_normalizer_keys:
+        results = [(m.start(0), m.end(0)) for m in re.finditer(k, string, flags=re.IGNORECASE)]
+        for r in results:
+            sub = string[r[0]: r[1]]
+            replaced = rules_compound_normalizer.get(sub.lower())
+            if replaced:
+                if r[1] < len(string) and string[r[1]] != ' ':
+                    continue
+                if r[0] - 1 > len(string) and string[r[0] - 1] != ' ':
+                    continue
+
+                sub = case_of(sub)(replaced)
+                string = string[:r[0]] + sub + string[r[1]:]
     return string
 
 
@@ -164,6 +174,12 @@ def rom_to_int(string):
         ['IV', 4],
         ['I', 1],
     ]
+
+    set_string = set(string)
+    set_roman = set('MCDXLIV')
+    if len(set_roman & set_string) < len(set_string):
+        return -1
+
     returnint = 0
     for pair in table:
 
@@ -198,9 +214,13 @@ def ordinal(x):
             if re.match('^ke.*', x):
                 x = x[2:]
                 x = rom_to_int(x)
+                if x == -1:
+                    return cp_x
                 result_string = to_ordinal(x)
             else:
                 x = rom_to_int(x)
+                if x == -1:
+                    return cp_x
                 result_string = to_ordinal(x)
                 result_string = 'yang ' + result_string
         elif re.match('^ke.*', x):
@@ -470,3 +490,44 @@ def money(x):
 
     except Exception as e:
         return x, None
+
+
+def unpack_english_contractions(text):
+    """
+    Replace *English* contractions in ``text`` str with their unshortened forms.
+    N.B. The "'d" and "'s" forms are ambiguous (had/would, is/has/possessive),
+    so are left as-is.
+    Important Note: The function is taken from textacy (https://github.com/chartbeat-labs/textacy).
+    """
+
+    text = re.sub(
+        r"(\b)([Aa]re|[Cc]ould|[Dd]id|[Dd]oes|[Dd]o|[Hh]ad|[Hh]as|[Hh]ave|[Ii]s|[Mm]ight|[Mm]ust|[Ss]hould|[Ww]ere|[Ww]ould)n't",
+        r'\1\2 not',
+        text,
+    )
+    text = re.sub(
+        r"(\b)([Hh]e|[Ii]|[Ss]he|[Tt]hey|[Ww]e|[Ww]hat|[Ww]ho|[Yy]ou)'ll",
+        r'\1\2 will',
+        text,
+    )
+    text = re.sub(
+        r"(\b)([Tt]hey|[Ww]e|[Ww]hat|[Ww]ho|[Yy]ou)'re", r'\1\2 are', text
+    )
+    text = re.sub(
+        r"(\b)([Ii]|[Ss]hould|[Tt]hey|[Ww]e|[Ww]hat|[Ww]ho|[Ww]ould|[Yy]ou)'ve",
+        r'\1\2 have',
+        text,
+    )
+    text = re.sub(r"(\b)([Cc]a)n't", r'\1\2n not', text)
+    text = re.sub(r"(\b)([Ii])'m", r'\1\2 am', text)
+    text = re.sub(r"(\b)([Ll]et)'s", r'\1\2 us', text)
+    text = re.sub(r"(\b)([Ww])on't", r'\1\2ill not', text)
+    text = re.sub(r"(\b)([Ss])han't", r'\1\2hall not', text)
+    text = re.sub(r"(\b)([Yy])(?:'all|a'll)", r'\1\2ou all', text)
+
+    text = re.sub(r"(\b)([Cc]a)nt", r'\1\2n not', text)
+    text = re.sub(r"(\b)([Ii])m", r'\1\2 am', text)
+    text = re.sub(r"(\b)([Ll]et)s", r'\1\2 us', text)
+    text = re.sub(r"(\b)([Ww])ont", r'\1\2ill not', text)
+
+    return text
