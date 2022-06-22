@@ -1,6 +1,6 @@
 import tensorflow as tf
 from einops import rearrange, reduce
-from rotary_embedding_tensorflow import apply_rotary_emb
+from ..rotary_embedding_tensorflow import apply_rotary_emb
 
 
 class FastAttention(tf.keras.layers.Layer):

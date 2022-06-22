@@ -6,8 +6,8 @@ from __future__ import print_function
 import functools
 import os
 import tensorflow as tf
-import custom_modeling
-import alxlnet as xlnet
+from . import custom_modeling
+from . import alxlnet as xlnet
 
 
 def construct_scalar_host_call(

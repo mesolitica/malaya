@@ -2,7 +2,7 @@ import tensorflow as tf
 import numpy as np
 
 
-def get_shape_list(tensor, expected_rank = None, name = None):
+def get_shape_list(tensor, expected_rank=None, name=None):
     """Returns a list of the shape of tensor, preferring static dimensions.
   Args:
     tensor: A tf.Tensor object to find the shape of.
@@ -34,27 +34,27 @@ def get_shape_list(tensor, expected_rank = None, name = None):
     return shape
 
 
-def create_initializer(initializer_range = 0.02):
+def create_initializer(initializer_range=0.02):
     """Creates a `truncated_normal_initializer` with the given range."""
-    return tf.truncated_normal_initializer(stddev = initializer_range)
+    return tf.truncated_normal_initializer(stddev=initializer_range)
 
 
-def layer_norm(input_tensor, name = None):
+def layer_norm(input_tensor, name=None):
     return tf.contrib.layers.layer_norm(
-        inputs = input_tensor,
-        begin_norm_axis = -1,
-        begin_params_axis = -1,
-        scope = name,
+        inputs=input_tensor,
+        begin_norm_axis=-1,
+        begin_params_axis=-1,
+        scope=name,
     )
 
 
 def embedding_lookup(
     input_ids,
     vocab_size,
-    embedding_size = 128,
-    initializer_range = 0.02,
-    word_embedding_name = 'word_embeddings',
-    use_one_hot_embeddings = False,
+    embedding_size=128,
+    initializer_range=0.02,
+    word_embedding_name='word_embeddings',
+    use_one_hot_embeddings=False,
 ):
     """Looks up words embeddings for id tensor.
   Args:
@@ -75,17 +75,17 @@ def embedding_lookup(
     # If the input is a 2D tensor of shape [batch_size, seq_length], we
     # reshape to [batch_size, seq_length, 1].
     if input_ids.shape.ndims == 2:
-        input_ids = tf.expand_dims(input_ids, axis = [-1])
+        input_ids = tf.expand_dims(input_ids, axis=[-1])
 
     embedding_table = tf.get_variable(
-        name = word_embedding_name,
-        shape = [vocab_size, embedding_size],
-        initializer = create_initializer(initializer_range),
+        name=word_embedding_name,
+        shape=[vocab_size, embedding_size],
+        initializer=create_initializer(initializer_range),
     )
 
     flat_input_ids = tf.reshape(input_ids, [-1])
     if use_one_hot_embeddings:
-        one_hot_input_ids = tf.one_hot(flat_input_ids, depth = vocab_size)
+        one_hot_input_ids = tf.one_hot(flat_input_ids, depth=vocab_size)
         output = tf.matmul(one_hot_input_ids, embedding_table)
     else:
         output = tf.gather(embedding_table, flat_input_ids)
@@ -100,14 +100,14 @@ def embedding_lookup(
 
 def embedding_postprocessor(
     input_tensor,
-    use_token_type = False,
-    token_type_ids = None,
-    token_type_vocab_size = 2,
-    token_type_embedding_name = 'token_type_embeddings',
-    use_position_embeddings = True,
-    position_embedding_name = 'position_embeddings',
-    initializer_range = 0.02,
-    max_position_embeddings = 512,
+    use_token_type=False,
+    token_type_ids=None,
+    token_type_vocab_size=2,
+    token_type_embedding_name='token_type_embeddings',
+    use_position_embeddings=True,
+    position_embedding_name='position_embeddings',
+    initializer_range=0.02,
+    max_position_embeddings=512,
 ):
     """Performs various post-processing on a word embedding tensor.
   Args:
@@ -133,7 +133,7 @@ def embedding_postprocessor(
   Raises:
     ValueError: One of the tensor shapes or input values is invalid.
   """
-    input_shape = get_shape_list(input_tensor, expected_rank = 3)
+    input_shape = get_shape_list(input_tensor, expected_rank=3)
     batch_size = input_shape[0]
     seq_length = input_shape[1]
     width = input_shape[2]
@@ -147,13 +147,13 @@ def embedding_postprocessor(
                 '`use_token_type` is True.'
             )
         token_type_table = tf.get_variable(
-            name = token_type_embedding_name,
-            shape = [token_type_vocab_size, width],
-            initializer = create_initializer(initializer_range),
+            name=token_type_embedding_name,
+            shape=[token_type_vocab_size, width],
+            initializer=create_initializer(initializer_range),
         )
         flat_token_type_ids = tf.reshape(token_type_ids, [-1])
         one_hot_ids = tf.one_hot(
-            flat_token_type_ids, depth = token_type_vocab_size
+            flat_token_type_ids, depth=token_type_vocab_size
         )
         token_type_embeddings = tf.matmul(one_hot_ids, token_type_table)
         token_type_embeddings = tf.reshape(
@@ -165,9 +165,9 @@ def embedding_postprocessor(
         assert_op = tf.assert_less_equal(seq_length, max_position_embeddings)
         with tf.control_dependencies([assert_op]):
             full_position_embeddings = tf.get_variable(
-                name = position_embedding_name,
-                shape = [max_position_embeddings, width],
-                initializer = create_initializer(initializer_range),
+                name=position_embedding_name,
+                shape=[max_position_embeddings, width],
+                initializer=create_initializer(initializer_range),
             )
             position_embeddings = tf.slice(
                 full_position_embeddings, [0, 0], [seq_length, -1]
@@ -196,31 +196,31 @@ class Forward(tf.keras.layers.Layer):
     def __init__(self, dim, mlp_dim, dropout, **kwargs):
         super(Forward, self).__init__(**kwargs)
         self.rate = dropout
-        self.dense1 = tf.keras.layers.Dense(mlp_dim, activation = gelu)
+        self.dense1 = tf.keras.layers.Dense(mlp_dim, activation=gelu)
         self.dense2 = tf.keras.layers.Dense(dim)
         self.dropout = tf.keras.layers.Dropout(self.rate)
 
-    def call(self, inputs, training = True):
+    def call(self, inputs, training=True):
         X = self.dense1(inputs)
-        X = self.dropout(X, training = training)
+        X = self.dropout(X, training=training)
         X = self.dense2(X)
-        X = self.dropout(X, training = training)
+        X = self.dropout(X, training=training)
         return X
 
 
 class FNetBlock(tf.keras.layers.Layer):
-    def __init__(self, dim, mlp_dim, dropout = 0.1, **kwargs):
-        super(FNetBlock, self).__init__(name = 'FNetBlock', **kwargs)
+    def __init__(self, dim, mlp_dim, dropout=0.1, **kwargs):
+        super(FNetBlock, self).__init__(name='FNetBlock', **kwargs)
         self.norm_fourier = tf.keras.layers.LayerNormalization()
         self.norm_ffn = tf.keras.layers.LayerNormalization()
-        self.ffn = Forward(dim, mlp_dim, dropout = dropout)
+        self.ffn = Forward(dim, mlp_dim, dropout=dropout)
 
-    def call(self, inputs, training = True):
+    def call(self, inputs, training=True):
         X_complex = tf.cast(inputs, tf.complex64)
         X_fft = tf.math.real(tf.signal.fft2d(X_complex))
-        X_norm1 = self.norm_fourier(X_fft + inputs, training = training)
-        X_dense = self.ffn(X_norm1, training = training)
-        X_norm2 = self.norm_ffn(X_dense + X_norm1, training = training)
+        X_norm1 = self.norm_fourier(X_fft + inputs, training=training)
+        X_dense = self.ffn(X_norm1, training=training)
+        X_norm2 = self.norm_ffn(X_dense + X_norm1, training=training)
         return X_norm2
 
 
@@ -231,12 +231,12 @@ class Model(tf.keras.Model):
         vocab_size,
         depth,
         mlp_dim,
-        dropout = 0.1,
-        dropout_embedding = 0.1,
-        max_position_embeddings = 1024,
+        dropout=0.1,
+        dropout_embedding=0.1,
+        max_position_embeddings=1024,
         **kwargs,
     ):
-        super(Model, self).__init__(name = 'Model', **kwargs)
+        super(Model, self).__init__(name='Model', **kwargs)
         self.dim = dim
         self.hidden_size = dim
         self.vocab_size = vocab_size
@@ -245,58 +245,58 @@ class Model(tf.keras.Model):
         self.attn = []
         for _ in range(depth):
             self.attn.append(
-                FNetBlock(dim = dim, mlp_dim = mlp_dim, dropout = dropout)
+                FNetBlock(dim=dim, mlp_dim=mlp_dim, dropout=dropout)
             )
         self.layernorm_dropout = tf.keras.Sequential()
         self.layernorm_dropout.add(tf.keras.layers.LayerNormalization())
         self.layernorm_dropout.add(tf.keras.layers.Dropout(dropout_embedding))
 
     def call(
-        self, x, input_mask = None, token_type_ids = None, training = True
+        self, x, input_mask=None, token_type_ids=None, training=True
     ):
 
         if input_mask is None:
             input_mask = tf.ones(
-                shape = [tf.shape(x)[0], tf.shape(x)[1]], dtype = tf.int32
+                shape=[tf.shape(x)[0], tf.shape(x)[1]], dtype=tf.int32
             )
 
         input_mask = tf.expand_dims(tf.cast(input_mask, tf.float32), -1)
 
         if token_type_ids is None:
             token_type_ids = tf.zeros(
-                shape = [tf.shape(x)[0], tf.shape(x)[1]], dtype = tf.int32
+                shape=[tf.shape(x)[0], tf.shape(x)[1]], dtype=tf.int32
             )
         (self.embedding_output, self.embedding_table) = embedding_lookup(
-            input_ids = x,
-            vocab_size = self.vocab_size,
-            embedding_size = self.dim,
-            initializer_range = 0.02,
-            word_embedding_name = 'word_embeddings',
-            use_one_hot_embeddings = False,
+            input_ids=x,
+            vocab_size=self.vocab_size,
+            embedding_size=self.dim,
+            initializer_range=0.02,
+            word_embedding_name='word_embeddings',
+            use_one_hot_embeddings=False,
         )
         self.embedding_output = embedding_postprocessor(
-            input_tensor = self.embedding_output,
-            use_token_type = True,
-            token_type_ids = token_type_ids,
-            token_type_vocab_size = 2,
-            token_type_embedding_name = 'token_type_embeddings',
-            use_position_embeddings = True,
-            position_embedding_name = 'position_embeddings',
-            initializer_range = 0.02,
-            max_position_embeddings = self.max_position_embeddings,
+            input_tensor=self.embedding_output,
+            use_token_type=True,
+            token_type_ids=token_type_ids,
+            token_type_vocab_size=2,
+            token_type_embedding_name='token_type_embeddings',
+            use_position_embeddings=True,
+            position_embedding_name='position_embeddings',
+            initializer_range=0.02,
+            max_position_embeddings=self.max_position_embeddings,
         )
-        x = self.layernorm_dropout(self.embedding_output, training = training)
+        x = self.layernorm_dropout(self.embedding_output, training=training)
         for no, attn in enumerate(self.attn):
-            x = attn(x, training = training)
+            x = attn(x, training=training)
             x = x * input_mask
 
         with tf.variable_scope('pooler'):
-            first_token_tensor = tf.squeeze(x[:, 0:1, :], axis = 1)
+            first_token_tensor = tf.squeeze(x[:, 0:1, :], axis=1)
             self.pooled_output = tf.layers.dense(
                 first_token_tensor,
                 self.hidden_size,
-                activation = tf.tanh,
-                kernel_initializer = create_initializer(0.02),
+                activation=tf.tanh,
+                kernel_initializer=create_initializer(0.02),
             )
         return x
 

@@ -2,9 +2,9 @@ import tensorflow as tf
 import numpy as np
 from einops import rearrange
 from einops.layers.tensorflow import Rearrange
-from rotary_embedding_tensorflow import RotaryEmbedding
+from ..rotary_embedding_tensorflow import RotaryEmbedding
 
-from fast_attention import FastAttention
+from .fast_attention import FastAttention
 
 
 def gelu(x):
