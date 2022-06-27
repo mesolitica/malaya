@@ -16,7 +16,7 @@ package = 'malaya'
 url = 'https://f000.backblazeb2.com/file/malaya-model/'
 __home__, _ = get_home(package=package, package_version=version)
 
-
+from . import alignment
 from . import augmentation
 from . import cluster
 from . import constituency
