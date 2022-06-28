@@ -22,9 +22,14 @@ eflomal_model.align(left, right) originally ~4 seconds, now ~200 ms.
 """
 
 import numpy as np
+from malaya.text.bpe import padding_sequence
+from malaya.function.activation import softmax
 from collections import defaultdict
 from tempfile import NamedTemporaryFile
 from typing import List
+import logging
+
+logger = logging.getLogger('malaya.model.alignment')
 
 
 def read_text(text, lowercase=True):
@@ -54,12 +59,7 @@ def read_text(text, lowercase=True):
 class Eflomal:
     def __init__(self, priors_filename):
 
-        try:
-            from eflomal import read_text, write_text, align
-        except BaseException:
-            raise ModuleNotFoundError(
-                'eflomal not installed. Please install it from https://github.com/robertostling/eflomal for Linux / Windows or https://github.com/huseinzol05/maceflomal for Mac and try again.'
-            )
+        from eflomal import read_text, write_text, align
         self._read_text = read_text
         self._write_text = write_text
         self._align = align
@@ -67,6 +67,8 @@ class Eflomal:
         self._process_priors()
 
     def _process_priors(self):
+        logger.info('Caching Eflomal priors, will take some time.')
+
         priors_list_dict = defaultdict(list)
         ferf_priors_dict = defaultdict(list)
         ferr_priors_dict = defaultdict(list)
@@ -78,8 +80,9 @@ class Eflomal:
                 try:
                     alpha = float(fields[-1])
                 except ValueError:
-                    raise ValueError('ERROR: priors file %s line %d contains alpha value of "%s" which is not numeric' % (
-                        args.priors_filename, i+1, fields[2]))
+                    raise ValueError(
+                        'ERROR: priors file %s line %d contains alpha value of "%s" which is not numeric' %
+                        (args.priors_filename, i+1, fields[2]))
 
                 if fields[0] == 'LEX' and len(fields) == 4:
                     priors_list_dict[(fields[1].lower(), fields[2].lower())].append(alpha)
@@ -110,12 +113,34 @@ class Eflomal:
         length: float = 1.0,
         null_prior: float = 0.2,
         lowercase: bool = True,
-        verbose: bool = False,
         debug: bool = False,
         **kwargs,
     ):
         """
-        align text using eflomal.
+        align text using eflomal, https://github.com/robertostling/eflomal/blob/master/align.py
+
+        Parameters
+        ----------
+        source: List[str]
+        target: List[str]
+        model: int, optional (default=3)
+            Model (1 = IBM1, 2 = IBM1+HMM, 3 = IBM1+HMM+fertility).
+        score_model: int, optional (default=0)
+            (1 = IBM1, 2 = IBM1+HMM, 3 = IBM1+HMM+fertility).
+        n_samplers: int, optional (default=3)
+            Number of independent samplers to run.
+        length: float, optional (default=1.0)
+            Relative number of sampling iterations.
+        null_prior: float, optional (default=0.2)
+            Prior probability of NULL alignment.
+        lowercase: bool, optional (default=True)
+            lowercase during searching priors.
+        debug: bool, optional (default=False)
+            debug `eflomal` binary.
+
+        Returns
+        -------
+        result: Dict[List[List[Tuple]]]
         """
         if len(source) != len(target):
             raise ValueError('length source must be same as length of target')
@@ -217,7 +242,7 @@ class Eflomal:
                     score_model=score_model,
                     n_iterations=iters,
                     n_samplers=n_samplers,
-                    quiet=not verbose,
+                    quiet=not debug,
                     rel_iterations=length,
                     null_prior=null_prior,
                     use_gdb=debug)
@@ -236,4 +261,115 @@ class Eflomal:
         links_filename_fwd.close()
         links_filename_rev.close()
 
-        return {'forward': fwd.split('\n'), 'reverse': rev.split('\n')}
+        fwd = fwd.split('\n')
+        fwd_results = []
+        for row in fwd:
+            fwd_results_ = []
+            for a in row.split():
+                splitted = a.split('-')
+                fwd_results_.append((int(splitted[0]), int(splitted[1])))
+            fwd_results.append(fwd_results_)
+
+        rev = rev.split('\n')
+        rev_results = []
+        for row in rev:
+            rev_results_ = []
+            for a in row.split():
+                splitted = a.split('-')
+                rev_results_.append((int(splitted[0]), int(splitted[1])))
+            rev_results.append(rev_results_)
+
+        return {'forward': fwd_results, 'reverse': rev_results}
+
+
+class HuggingFace:
+    def __init__(self, model, tokenizer):
+        self._model = model
+        self._tokenizer = tokenizer
+
+    def align(
+        self,
+        source: List[str],
+        target: List[str],
+        align_layer: int = 8,
+        threshold: float = 1e-3,
+    ):
+        """
+        align text using eflomal, https://github.com/robertostling/eflomal/blob/master/align.py
+
+        Parameters
+        ----------
+        source: List[str]
+        target: List[str]
+        align_layer: int, optional (default=3)
+            transformer layer-k to choose for embedding output.
+        threshold: float, optional (default=1e-3)
+            minimum probability to assume as alignment.
+
+        Returns
+        -------
+        result: Dict[List[List[Tuple]]]
+        """
+
+        if len(source) != len(target):
+            raise ValueError('length source must be same as length of target')
+
+        if align_layer >= self._model.config.num_hidden_layers:
+            raise ValueError(f'`align_layer` must be < {self._model.config.num_hidden_layers}')
+
+        input_ids_src, token_type_ids_src, attention_mask_src = [], [], []
+        input_ids_tgt, token_type_ids_tgt, attention_mask_tgt = [], [], []
+        sub2word_map_srcs, sub2word_map_tgts = [], []
+        for i in range(len(source)):
+            sent_src, sent_tgt = source[i].strip().split(), target[i].strip().split()
+            token_src, token_tgt = [self._tokenizer.tokenize(word) for word in sent_src], [
+                self._tokenizer.tokenize(word) for word in sent_tgt]
+            wid_src, wid_tgt = [self._tokenizer.convert_tokens_to_ids(x) for x in token_src], [
+                self._tokenizer.convert_tokens_to_ids(x) for x in token_tgt]
+            ids_src = self._tokenizer.prepare_for_model(list(itertools.chain(
+                *wid_src)), return_tensors='np', model_max_length=self._tokenizer.model_max_length, truncation=True)
+            input_ids_src.append(ids_src['input_ids'].tolist())
+            token_type_ids_src.append(ids_src['token_type_ids'].tolist())
+            attention_mask_src.append(ids_src['attention_mask'].tolist())
+
+            ids_src = self._tokenizer.prepare_for_model(list(itertools.chain(
+                *wid_tgt)), return_tensors='np', model_max_length=self._tokenizer.model_max_length, truncation=True)
+            input_ids_tgt.append(ids_src['input_ids'].tolist())
+            token_type_ids_tgt.append(ids_src['token_type_ids'].tolist())
+            attention_mask_tgt.append(ids_src['attention_mask'].tolist())
+
+            sub2word_map_src = []
+            for i, word_list in enumerate(token_src):
+                sub2word_map_src += [i for x in word_list]
+            sub2word_map_tgt = []
+            for i, word_list in enumerate(token_tgt):
+                sub2word_map_tgt += [i for x in word_list]
+
+            sub2word_map_srcs.append(sub2word_map_src)
+            sub2word_map_tgts.append(sub2word_map_tgt)
+
+        input_ids_src, lens_src = padding_sequence(input_ids_src, return_len=True)
+        attention_mask_src = padding_sequence(attention_mask_src)
+
+        input_ids_tgt, lens_tgt = padding_sequence(input_ids_tgt, return_len=True)
+        attention_mask_tgt = padding_sequence(attention_mask_tgt)
+
+        out_src = self._model(np.array(input_ids_src), attention_mask=np.array(
+            attention_mask_src), output_hidden_states=True).hidden_states
+        out_tgt = self._model(np.array(input_ids_tgt), attention_mask=np.array(
+            attention_mask_tgt), output_hidden_states=True).hidden_states
+        out_src = out_src[align_layer]
+        out_tgt = out_tgt[align_layer]
+
+        aligns = []
+        for i in range(len(out_src)):
+            dot_product = tf.matmul(out_src[i, :lens_src[i]][1:-1], tf.transpose(out_tgt[i, :lens_tgt[i]][1:-1]))
+            softmax_srctgt = softmax(dot_product, axis=-1)
+            softmax_tgtsrc = softmax(dot_product, axis=-2)
+            softmax_inter = (softmax_srctgt > threshold)*(softmax_tgtsrc > threshold)
+            align_words = set()
+            for k, j in np.array(np.nonzero(softmax_inter)).T:
+                align_words.add((sub2word_map_srcs[i][k], sub2word_map_tgts[i][j]))
+
+            aligns.append([(i, j) for i, j in sorted(align_words)])
+        return aligns

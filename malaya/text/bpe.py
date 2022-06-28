@@ -548,16 +548,20 @@ def convert_to_unicode(text):
         raise ValueError('Not running on Python2 or Python 3?')
 
 
-def padding_sequence(seq, maxlen=None, padding='post', pad_int=0):
+def padding_sequence(seq, maxlen=None, padding='post', pad_int=0, return_len=False):
+    lens = [len(i) for i in seq]
     if not maxlen:
-        maxlen = max([len(i) for i in seq])
+        maxlen = max(lens)
     padded_seqs = []
     for s in seq:
         if padding == 'post':
             padded_seqs.append(s + [pad_int] * (maxlen - len(s)))
         if padding == 'pre':
             padded_seqs.append([pad_int] * (maxlen - len(s)) + s)
-    return padded_seqs
+    if return_len:
+        return padded_seqs, lens
+    else:
+        return padded_seqs
 
 
 def bert_tokenization(tokenizer, texts, socialmedia=False):
