@@ -12,13 +12,13 @@ malaya
 malaya.alignment.en_ms
 ------------------------
 
-.. automodule:: malaya.malaya.alignment.en_ms
+.. automodule:: malaya.alignment.en_ms
     :members:
 
 malaya.alignment.ms_en
 ------------------------
 
-.. automodule:: malaya.malaya.alignment.ms_en
+.. automodule:: malaya.alignment.ms_en
     :members:
 
 malaya.augmentation
