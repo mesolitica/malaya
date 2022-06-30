@@ -16,7 +16,7 @@ def _eflomal(file, **kwargs):
 
 def eflomal(**kwargs):
     """
-    load eflomal word alignment for EN-MS.
+    load eflomal word alignment for EN-MS. Model size around ~300MB.
 
     Returns
     -------
@@ -31,16 +31,16 @@ def eflomal(**kwargs):
     return _eflomal(file='en-ms', **kwargs)
 
 
-def huggingface(model: str = 'mesolitica/bert-base-multilingual-6layers-en-ms-alignment', **kwargs):
+def huggingface(model: str = 'mesolitica/finetuned-bert-base-multilingual-cased-noisy-en-ms', **kwargs):
     """
-    Load huggingface model word alignment for EN-MS, Required Tensorflow >= 2.0.
+    Load huggingface BERT model word alignment for EN-MS, Required Tensorflow >= 2.0.
 
     Parameters
     ----------
-    model : str, optional (default='bert')
+    model : str, optional (default='mesolitica/finetuned-bert-base-multilingual-cased-noisy-en-ms')
         Model architecture supported. Allowed values:
 
-        * ``'mesolitica/bert-base-multilingual-6layers-en-ms-alignment'`` - finetuned BERT multilanguage on EN-MS.
+        * ``'mesolitica/finetuned-bert-base-multilingual-cased-noisy-en-ms'`` - finetuned BERT multilanguage on noisy EN-MS.
         * ``'bert-base-multilingual-cased'`` - pretrained BERT multilanguage.
 
     Returns

@@ -45,6 +45,13 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
+   :caption: Alignment Module
+
+   alignment-en-ms-eflomal
+   alignment-ms-en-eflomal
+
+.. toctree::
+   :maxdepth: 2
    :caption: Normalization Module
    
    load-tokenizer

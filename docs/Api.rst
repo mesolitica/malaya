@@ -9,6 +9,18 @@ malaya
 .. automodule:: malaya
     :members:
 
+malaya.alignment.en_ms
+------------------------
+
+.. automodule:: malaya.malaya.alignment.en_ms
+    :members:
+
+malaya.alignment.ms_en
+------------------------
+
+.. automodule:: malaya.malaya.alignment.ms_en
+    :members:
+
 malaya.augmentation
 ---------------------
 
@@ -295,6 +307,15 @@ malaya.zero_shot.classification
 --------------------------------
 
 .. automodule:: malaya.zero_shot.classification
+    :members:
+
+malaya.model.alignment
+-------------------------
+
+.. autoclass:: malaya.model.alignment.Eflomal()
+    :members:
+
+.. autoclass:: malaya.model.alignment.HuggingFace()
     :members:
 
 malaya.model.bert

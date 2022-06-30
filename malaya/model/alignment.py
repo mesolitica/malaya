@@ -364,9 +364,10 @@ class HuggingFace:
         aligns = []
         for i in range(len(out_src)):
             dot_product = tf.matmul(out_src[i, :lens_src[i]][1:-1], tf.transpose(out_tgt[i, :lens_tgt[i]][1:-1]))
-            softmax_srctgt = softmax(dot_product, axis=-1)
-            softmax_tgtsrc = softmax(dot_product, axis=-2)
-            softmax_inter = (softmax_srctgt > threshold)*(softmax_tgtsrc > threshold)
+            softmax_srctgt = tf.nn.softmax(dot_product, axis=-1)
+            softmax_tgtsrc = tf.nn.softmax(dot_product, axis=-2)
+            softmax_inter = tf.cast(softmax_srctgt > threshold, tf.float32) * \
+                tf.cast(softmax_tgtsrc > threshold, tf.float32)
             align_words = set()
             for k, j in np.array(np.nonzero(softmax_inter)).T:
                 align_words.add((sub2word_map_srcs[i][k], sub2word_map_tgts[i][j]))

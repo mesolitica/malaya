@@ -44,6 +44,7 @@ We recommend to use **virtualenv** for development. All examples tested on Tenso
 Features
 --------
 
+-  **Alignment**, translation word alignment using Eflomal and pretrained Transformer models.
 -  **Augmentation**, augment any text using dictionary of synonym, Wordvector or Transformer-Bahasa.
 -  **Constituency Parsing**, breaking a text into sub-phrases using finetuned Transformer-Bahasa.  
 -  **Coreference Resolution**, finding all expressions that refer to the same entity in a text using Dependency Parsing models.
