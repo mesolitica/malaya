@@ -32,3 +32,4 @@ sphinxcontrib-qthelp==1.0.3
 sphinxcontrib-serializinghtml==1.1.4
 docutils==0.16
 Jinja2==2.11.2
+jupyter-client
