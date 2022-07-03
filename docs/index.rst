@@ -48,7 +48,9 @@ Contents:
    :caption: Alignment Module
 
    alignment-en-ms-eflomal
+   alignment-en-ms-huggingface
    alignment-ms-en-eflomal
+   alignment-ms-en-huggingface
 
 .. toctree::
    :maxdepth: 2

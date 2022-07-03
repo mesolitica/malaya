@@ -27,6 +27,8 @@ from malaya.function.activation import softmax
 from collections import defaultdict
 from tempfile import NamedTemporaryFile
 from typing import List
+import tensorflow as tf
+import itertools
 import logging
 
 logger = logging.getLogger('malaya.model.alignment')
@@ -295,7 +297,7 @@ class HuggingFace:
         threshold: float = 1e-3,
     ):
         """
-        align text using eflomal, https://github.com/robertostling/eflomal/blob/master/align.py
+        align text using softmax output layers.
 
         Parameters
         ----------
@@ -308,7 +310,7 @@ class HuggingFace:
 
         Returns
         -------
-        result: Dict[List[List[Tuple]]]
+        result: List[List[Tuple]]
         """
 
         if len(source) != len(target):

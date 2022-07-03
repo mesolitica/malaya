@@ -1,4 +1,4 @@
-from malaya.alignment.en_ms import _eflomal, huggingface as load_huggingface
+from malaya.alignment.en_ms import _eflomal, available_huggingface, huggingface as load_huggingface
 
 
 def eflomal(**kwargs):
@@ -10,7 +10,7 @@ def eflomal(**kwargs):
 
 def huggingface(model: str = 'mesolitica/finetuned-bert-base-multilingual-cased-noisy-en-ms', **kwargs):
     """
-    Load huggingface BERTmodel word alignment for MS-EN, Required Tensorflow >= 2.0.
+    Load huggingface BERT model word alignment for MS-EN, Required Tensorflow >= 2.0.
 
     Parameters
     ----------
