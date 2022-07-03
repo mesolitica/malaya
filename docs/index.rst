@@ -55,13 +55,14 @@ Contents:
    :caption: Normalization Module
    
    load-tokenizer
+   load-preprocessing
+   load-demoji
    load-spell-correction
    load-coreference-resolution
    load-normalizer
    load-stemmer
    load-true-case
    load-segmentation
-   load-preprocessing
    load-num2word
    load-word2num
 
