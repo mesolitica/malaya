@@ -3,6 +3,9 @@ from malaya.model.bigbird import Translation as BigBird_Translation
 from malaya.supervised import transformer as load_transformer
 from malaya.supervised import bigbird as load_bigbird
 from herpetologist import check_type
+from malaya.path import PATH_PREPROCESSING, S3_PATH_PREPROCESSING
+from malaya.function import check_file
+import json
 
 _transformer_availability = {
     'small': {
@@ -34,6 +37,18 @@ _transformer_availability = {
         'Quantized Size (MB)': 13.1,
         'BLEU': 0.522,
         'Suggested length': 1024,
+    },
+    'noisy-small': {
+        'Size (MB)': 42.7,
+        'Quantized Size (MB)': 13.4,
+        'BLEU': 0.626,
+        'Suggested length': 256,
+    },
+    'noisy-base': {
+        'Size (MB)': 234,
+        'Quantized Size (MB)': 82.7,
+        'BLEU': 0.792,
+        'Suggested length': 256,
     },
 }
 
@@ -102,3 +117,24 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
             quantized=quantized,
             **kwargs
         )
+
+
+def dictionary(**kwargs):
+    """
+    Load dictionary {EN: MS} .
+
+    Returns
+    -------
+    result: Dict[str, str]
+    """
+    path = check_file(
+        PATH_PREPROCESSING['english-malay'],
+        S3_PATH_PREPROCESSING['english-malay'],
+        **kwargs,
+    )
+    try:
+        with open(path['model']) as fopen:
+            translator = json.load(fopen)
+    except BaseException:
+        raise Exception('failed to load EN-MS vocab, please try clear cache or rerun again.')
+    return translator

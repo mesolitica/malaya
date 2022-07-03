@@ -3,6 +3,7 @@ from malaya.model.bigbird import Translation as BigBird_Translation
 from malaya.supervised import transformer as load_transformer
 from malaya.supervised import bigbird as load_bigbird
 from herpetologist import check_type
+from malaya.translation.en_ms import dictionary as load_dictionary
 
 _transformer_availability = {
     'small': {
@@ -35,9 +36,24 @@ _transformer_availability = {
         'BLEU': 0.586,
         'Suggested length': 1024,
     },
+    << << << < HEAD
     'noisy-base': {
 
     }
+    == == == =
+    'noisy-small': {
+        'Size (MB)': 42.7,
+        'Quantized Size (MB)': 13.4,
+        'BLEU': 0.626,
+        'Suggested length': 256,
+    },
+    'noisy-base': {
+        'Size (MB)': 234,
+        'Quantized Size (MB)': 82.7,
+        'BLEU': 0.792,
+        'Suggested length': 256,
+    },
+    >>>>>> > 4.8.1
 }
 
 
@@ -110,3 +126,16 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
 def huggingface(model: str = 'mesolitica/multibert4-multibert4-noisy-ms-en', **kwargs):
     """
     """
+
+
+def dictionary(**kwargs):
+    """
+    Load dictionary {MS: EN} .
+
+    Returns
+    -------
+    result: Dict[str, str]
+    """
+    translator = load_dictionary()
+    translator = {v: k for k, v in translator.items()}
+    return translator

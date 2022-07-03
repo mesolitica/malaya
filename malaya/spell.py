@@ -1081,8 +1081,7 @@ def jamspell(model: str = 'wiki', **kwargs):
         corrector = jamspellpy.TSpellCorrector()
         corrector.LoadLangModel(path['model'])
     except BaseException:
-        raise Exception(
-            f"failed to load jamspell model, please run `malaya.utils.delete_cache('preprocessing/jamspell/{model.replace('+', '-')}')`")
+        raise Exception('failed to load jamspell model, please try clear cache or rerun again.')
     return JamSpell(corrector=corrector)
 
 
@@ -1121,8 +1120,7 @@ def spylls(model: str = 'libreoffice-pejam', **kwargs):
     try:
         dictionary = Dictionary.from_zip(path['model'])
     except BaseException:
-        raise Exception(
-            f"failed to load spylls model, please run `malaya.utils.delete_cache('preprocessing/spylls/{model}')`")
+        raise Exception('failed to load spylls model, please try clear cache or rerun again.')
     return Spylls(dictionary=dictionary)
 
 

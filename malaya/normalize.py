@@ -47,10 +47,12 @@ from malaya.text.normalization import (
     money,
     ignore_words,
     digit,
+    unpack_english_contractions,
 )
-from malaya.text.rules import rules_normalizer
+from malaya.text.rules import rules_normalizer, rules_normalizer_rev
 from malaya.cluster import cluster_words
 from malaya.function import validator
+from malaya.preprocessing import Tokenizer
 from herpetologist import check_type
 from typing import Callable
 import logging
@@ -185,6 +187,9 @@ class Normalizer:
         self._tokenizer = tokenizer
         self._speller = speller
         self._demoji = None
+        self._compiled = {
+            k.lower(): re.compile(_expressions[k]) for k, v in _expressions.items()
+        }
 
     @check_type
     def normalize(
@@ -199,8 +204,12 @@ class Normalizer:
         normalize_date: bool = True,
         normalize_time: bool = True,
         normalize_emoji: bool = True,
+        normalize_elongated: bool = True,
+        expand_contractions: bool = True,
         check_english_func=is_english,
         check_malay_func=is_malay,
+        translator: Callable = None,
+        segmenter: Callable = None,
         **kwargs,
     ):
         """
@@ -209,42 +218,52 @@ class Normalizer:
         Parameters
         ----------
         string : str
-        normalize_text: bool, (default=True)
+        normalize_text: bool, optional (default=True)
             if True, will try to replace shortforms with internal corpus.
-        normalize_entity: bool, (default=True)
+        normalize_entity: bool, optional (default=True)
             normalize entities, only effect `date`, `datetime`, `time` and `money` patterns string only.
-        normalize_url: bool, (default=False)
+        normalize_url: bool, optional (default=False)
             if True, replace `://` with empty and `.` with `dot`.
             `https://huseinhouse.com` -> `https huseinhouse dot com`.
-        normalize_email: bool, (default=False)
+        normalize_email: bool, optional (default=False)
             if True, replace `@` with `di`, `.` with `dot`.
             `husein.zol05@gmail.com` -> `husein dot zol kosong lima di gmail dot com`.
-        normalize_year: bool, (default=True)
+        normalize_year: bool, optional (default=True)
             if True, `tahun 1987` -> `tahun sembilan belas lapan puluh tujuh`.
             if True, `1970-an` -> `sembilan belas tujuh puluh an`.
             if False, `tahun 1987` -> `tahun seribu sembilan ratus lapan puluh tujuh`.
-        normalize_telephone: bool, (default=True)
+        normalize_telephone: bool, optional (default=True)
             if True, `no 012-1234567` -> `no kosong satu dua, satu dua tiga empat lima enam tujuh`
-        normalize_date: bool, (default=True)
+        normalize_date: bool, optional (default=True)
             if True, `01/12/2001` -> `satu disember dua ribu satu`.
             if True, `Jun 2017` -> `satu Jun dua ribu tujuh belas`.
             if True, `2017 Jun` -> `satu Jun dua ribu tujuh belas`.
             if False, `2017 Jun` -> `01/06/2017`.
             if False, `Jun 2017` -> `01/06/2017`.
-        normalize_time: bool, (default=True)
+        normalize_time: bool, optional (default=True)
             if True, `pukul 2.30` -> `pukul dua tiga puluh minit`.
             if False, `pukul 2.30` -> `'02:00:00'`
         normalize_emoji: bool, (default=True)
             if True, `🔥` -> `emoji api`
             Load from `malaya.preprocessing.demoji`.
         check_english_func: Callable, (default=malaya.text.is_english)
+        normalize_elongated: bool, optional (default=True)
+            if True, `betuii` -> `betui`.
+        expand_contractions: bool, optional (default=True)
+            expand english contractions.
+        check_english_func: Callable, optional (default=malaya.text.is_english)
             function to check a word in english dictionary, default is malaya.text.is_english.
-        check_malay_func: Callable, (default=malaya.text.is_malay)
+        check_malay_func: Callable, optional (default=malaya.text.is_malay)
             function to check a word in malay dictionary, default is malaya.text.is_malay.
+        translator: Callable, optional (default=None)
+            function to translate EN word to MS word.
+        segmenter: Callable, optional (default=None)
+            function to segmentize word.
+            If provide, it will expand a word, apaitu -> apa itu
 
         Returns
         -------
-        string: {'normalize', 'date', 'money'}
+        result: {'normalize', 'date', 'money'}
         """
         if normalize_emoji:
             if self._demoji is None:
@@ -258,6 +277,11 @@ class Normalizer:
         else:
             result_demoji = None
 
+        if expand_contractions:
+            logger.debug(f'before expand_contractions: {string}')
+            string = unpack_english_contractions(string)
+            logger.debug(f'after expand_contractions: {string}')
+
         tokenized = self._tokenizer(string)
         s = f'tokenized: {tokenized}'
         logger.debug(s)
@@ -265,21 +289,35 @@ class Normalizer:
         string = groupby(string)
 
         if normalize_text:
+            logger.debug(f'before normalize_text: {string}')
             string = replace_laugh(string)
             string = replace_mengeluh(string)
             string = _replace_compound(string)
+            logger.debug(f'after normalize_text: {string}')
 
-        if hasattr(self._speller, 'normalize_elongated'):
-            string = [
-                self._speller.normalize_elongated(word)
-                if len(re.findall(r'(.)\1{1}', word))
-                and not word[0].isupper()
-                and not word.lower().startswith('ke-')
-                and not _is_number_regex(word)
-                else word
-                for word in string.split()
-            ]
-            string = ' '.join(string)
+        if normalize_elongated:
+            logger.debug(f'before normalize_elongated: {string}')
+            normalized = []
+            got_speller = hasattr(self._speller, 'normalize_elongated')
+            for word in string.split():
+                if (
+                    len(re.findall(r'(.)\1{1}', word))
+                    and not word[0].isupper()
+                    and not word.lower().startswith('ke-')
+                    and not len(re.findall(_expressions['email'], word))
+                    and not len(re.findall(_expressions['url'], word))
+                    and not len(re.findall(_expressions['hashtag'], word))
+                    and not len(re.findall(_expressions['phone'], word))
+                    and not len(re.findall(_expressions['money'], word))
+                    and not len(re.findall(_expressions['date'], word))
+                    and not _is_number_regex(word)
+                ):
+                    word = self._compiled['normalize_elong'].sub(r'\1\1', word)
+                    if got_speller:
+                        word = self._speller.normalize_elongated(word)
+                normalized.append(word)
+            string = ' '.join(normalized)
+            logger.debug(f'after normalize_elongated: {string}')
 
         result, normalized = [], []
 
@@ -352,18 +390,43 @@ class Normalizer:
             if check_english_func is not None:
                 s = f'index: {index}, word: {word}, condition check english'
                 logger.debug(s)
+                found = False
+                selected_word = word
                 if check_english_func(word_lower):
-                    result.append(word)
+                    found = True
+                # suree -> sure -> detect
+                elif len(word_lower) > 1 and word_lower[-1] == word_lower[-2] and check_english_func(word_lower[:-1]):
+                    found = True
+                    selected_word = word[:-1]
+
+                if found:
+                    if translator is not None:
+                        s = f'index: {index}, word: {word}, condition to translate inside checking'
+                        logger.debug(s)
+                        translated = translator(selected_word)
+                        if len(translated) >= len(selected_word) * 3:
+                            logger.debug(f'reject translation, {selected_word} -> {translated}')
+                        elif ', United States' in translated:
+                            logger.debug(f'reject translation, {word} -> {translated}')
+                        else:
+                            selected_word = translated
+                    result.append(selected_word)
                     index += 1
                     continue
 
             if check_malay_func is not None:
                 s = f'index: {index}, word: {word}, condition check malay'
                 logger.debug(s)
-                if check_malay_func(word_lower) and word_lower not in ['pada', 'ke']:
-                    result.append(word)
-                    index += 1
-                    continue
+                if word_lower not in ['pada', 'ke']:
+                    if check_malay_func(word_lower):
+                        result.append(word)
+                        index += 1
+                        continue
+                    # kenapaa -> kenapa -> detect
+                    elif len(word_lower) > 1 and word_lower[-1] == word_lower[-2] and check_malay_func(word_lower[:-1]):
+                        result.append(word[:-1])
+                        index += 1
+                        continue
 
             if len(word) > 2 and normalize_text:
                 s = f'index: {index}, word: {word}, condition len(word) > 2 and norm text'
@@ -692,35 +755,65 @@ class Normalizer:
                 index += 1
                 continue
 
-            word, end_result_string = _remove_postfix(word)
-            if normalize_text:
-                word, repeat = check_repeat(word)
-            else:
-                repeat = 1
-
-            if normalize_text:
-                s = f'index: {index}, word: {word}, condition normalize text'
+            if segmenter is not None:
+                s = f'index: {index}, word: {word}, condition to segment'
                 logger.debug(s)
-                if word in sounds:
-                    selected = sounds[word]
-                elif word in rules_normalizer:
-                    selected = rules_normalizer[word]
-                elif self._speller:
-                    selected = self._speller.correct(
-                        word, string=' '.join(tokenized), index=index
-                    )
+                segmentized = segmenter(word)
+                words = segmentized.split()
+            else:
+                words = [word]
+
+            for no_word, word in enumerate(words):
+                word, end_result_string = _remove_postfix(word)
+                if normalize_text:
+                    word, repeat = check_repeat(word)
+                else:
+                    repeat = 1
+
+                if normalize_text:
+                    s = f'index: {index}, word: {word}, condition normalize text'
+                    logger.debug(s)
+                    if word in sounds:
+                        selected = sounds[word]
+                    elif word in rules_normalizer:
+                        selected = rules_normalizer[word]
+                    # betuii -> betui -> betul
+                    elif len(word_lower) > 1 and word[-1] == word[-2] and word[:-1] in rules_normalizer:
+                        selected = rules_normalizer[word[:-1]]
+                    # # betuii -> betui -> betul
+                    elif len(word_lower) > 1 and word[-1] == word[-2] and word[:-1] in rules_normalizer_rev:
+                        selected = word[:-1]
+                    else:
+                        selected = word
+                        if translator is not None:
+                            s = f'index: {index}, word: {word}, condition to translate'
+                            logger.debug(s)
+                            translated = translator(word)
+                            if len(translated) >= len(word) * 3:
+                                logger.debug(f'reject translation, {word} -> {translated}')
+                            elif ', United States' in translated:
+                                logger.debug(f'reject translation, {word} -> {translated}')
+                            else:
+                                selected = translated
+
+                        if selected == word and self._speller:
+                            s = f'index: {index}, word: {word}, condition to spelling correction'
+                            selected = self._speller.correct(
+                                selected, string=' '.join(tokenized + words[:no_word + 1]), index=index
+                            )
+
                 else:
                     selected = word
 
-            else:
-                selected = word
-
-            selected = '-'.join([selected] * repeat)
-            result.append(result_string + selected + end_result_string)
+                selected = '-'.join([selected] * repeat)
+                result.append(result_string + selected + end_result_string)
             index += 1
 
         result = ' '.join(result)
         normalized = ' '.join(normalized)
+
+        result = re.sub(r'[ ]+', ' ', result).strip()
+        normalized = re.sub(r'[ ]+', ' ', normalized).strip()
 
         if normalize_entity:
             dates_, money_ = normalized_entity(normalized)
@@ -730,13 +823,14 @@ class Normalizer:
         return {'normalize': result, 'date': dates_, 'money': money_}
 
 
-def normalizer(speller=None, **kwargs):
+def normalizer(speller: Callable = None, **kwargs):
     """
     Load a Normalizer using any spelling correction model.
 
     Parameters
     ----------
-    speller : spelling correction object, optional (default = None)
+    speller : Callable, optional (default=None)
+        function to correct spelling.
 
     Returns
     -------
@@ -746,8 +840,6 @@ def normalizer(speller=None, **kwargs):
     validator.validate_object_methods(
         speller, ['correct', 'normalize_elongated'], 'speller'
     )
-
-    from malaya.preprocessing import Tokenizer
 
     tokenizer = Tokenizer(**kwargs).tokenize
     return Normalizer(tokenizer, speller)
