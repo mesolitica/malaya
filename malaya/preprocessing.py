@@ -279,6 +279,30 @@ class Preprocessing:
         return text
 
 
+class Demoji:
+    def __init__(self, dictionary):
+        self._dictionary = dictionary
+        escp = (re.escape(c) for c in sorted(self._dictionary, key=len, reverse=True))
+        self._compiled = re.compile(r'|'.join(escp))
+
+    def demoji(self, string: str):
+        """
+        Find emojis with string representation.
+        🔥 -> emoji api.
+
+        Parameters
+        ----------
+        string: str
+
+        Returns
+        -------
+        result: Dist[str]
+        """
+
+        results = self._compiled.findall(string)
+        return {r: self._dictionary[r]['ms'] for r in results}
+
+
 def preprocessing(
     normalize: List[str] = [
         'url',
@@ -378,3 +402,21 @@ def preprocessing(
         segmenter=segmenter,
         stemmer=stemmer,
     )
+
+
+def demoji():
+    """
+    Download latest emoji malay description from https://github.com/huseinzol05/malay-dataset/tree/master/dictionary/emoji
+
+    Returns
+    -------
+    result : malaya.preprocessing.Demoji class
+    """
+    try:
+        import requests
+    except BaseException:
+        raise ModuleNotFoundError(
+            'requests not installed. Please install it by `pip3 install requests` and try again.'
+        )
+    r = requests.get('https://raw.githubusercontent.com/huseinzol05/malay-dataset/master/dictionary/emoji/demoji.json').json()
+    return Demoji(dictionary=r)

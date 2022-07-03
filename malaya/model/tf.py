@@ -1201,3 +1201,90 @@ class TransformerChar:
         result: List[str]
         """
         return self._predict(strings=strings, beam_search=True)
+
+
+class Seq2SeqLSTM_Split(Abstract):
+    def __init__(self, input_nodes, output_nodes, sess, left_dict, right_dict, cleaning):
+        self._input_nodes = input_nodes
+        self._output_nodes = output_nodes
+        self._sess = sess
+        self._left_dict = left_dict
+        self._right_dict = right_dict
+        self._cleaning = cleaning
+        self._rev_right_dict = {v: k for k, v in self._right_dict.items()}
+
+    @check_type
+    def greedy_decoder(self, strings: List[str]):
+        """
+        Convert to target strings using greedy decoder.
+
+        Parameters
+        ----------
+        strings : List[str]
+
+        Returns
+        -------
+        result: List[str]
+        """
+        return self.predict(strings, beam_search=False)
+
+    @check_type
+    def beam_decoder(self, strings: List[str]):
+        """
+        Convert to target strings using beam decoder.
+
+        Parameters
+        ----------
+        strings : List[str]
+
+        Returns
+        -------
+        result: List[str]
+        """
+        return self.predict(strings, beam_search=True)
+
+    @check_type
+    def predict(self, strings: List[str], beam_search: bool = False):
+        """
+        Convert to target strings.
+
+        Parameters
+        ----------
+        strings : List[str]
+        beam_search : bool, (optional=False)
+            If True, use beam search decoder, else use greedy decoder.
+
+        Returns
+        -------
+        result: List[str]
+        """
+        if beam_search:
+            output = 'beam'
+        else:
+            output = 'greedy'
+
+        maps = {}
+        splitted, replaced_me = [], []
+        k = 0
+        for i in range(len(strings)):
+            replaced_me_ = []
+            for no, s in enumerate(strings[i].split()):
+                maps[k] = (i, no)
+                splitted.append(s)
+                replaced_me_.append('replace_me')
+                k += 1
+            replaced_me.append(replaced_me_)
+
+        batch = [[self._left_dict[c] for c in self._cleaning(string, self._left_dict)] + [1] for string in splitted]
+        batch = pad_sentence_batch(batch, 0)[0]
+        r = self._execute(
+            inputs=[batch],
+            input_labels=['Placeholder'],
+            output_labels=[output],
+        )
+        v = r[output]
+        results = [''.join([self._rev_right_dict[i] for i in r if i > 3]) for r in v]
+        for k, v in maps.items():
+            replaced_me[v[0]][v[1]] = results[k]
+
+        return [' '.join(r) for r in replaced_me]

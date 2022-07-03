@@ -70,6 +70,7 @@ Contents:
    :caption: Convert Module
 
    load-phoneme
+   load-phoneme-ipa
    load-rumi-jawi
    load-jawi-rumi
 

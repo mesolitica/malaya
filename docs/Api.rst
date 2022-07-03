@@ -440,6 +440,9 @@ malaya.model.tf
 .. autoclass:: malaya.model.tf.Seq2SeqLSTM()
     :members:
 
+.. autoclass:: malaya.model.tf.Seq2SeqLSTM_Split()
+    :members:
+
 malaya.model.xlnet
 ----------------------------------
 

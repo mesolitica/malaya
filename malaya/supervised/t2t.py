@@ -4,10 +4,10 @@ from malaya.function import (
     generate_session,
     nodes_session,
 )
-from malaya.model.tf import Seq2SeqLSTM
+from malaya.model.tf import Seq2SeqLSTM, Seq2SeqLSTM_Split
 
 
-def load_lstm(module, left_dict, right_dict, cleaning, quantized=False, **kwargs):
+def load_lstm(module, left_dict, right_dict, cleaning, split=False, quantized=False, **kwargs):
     path = check_file(
         file='lstm-bahdanau',
         module=module,
@@ -27,7 +27,12 @@ def load_lstm(module, left_dict, right_dict, cleaning, quantized=False, **kwargs
             'beam': 'import/decode_2/beam:0',
         },
     )
-    return Seq2SeqLSTM(
+    if split:
+        model_class = Seq2SeqLSTM_Split
+    else:
+        model_class = Seq2SeqLSTM
+
+    return model_class(
         input_nodes=input_nodes, output_nodes=output_nodes,
         sess=generate_session(graph=g, **kwargs),
         left_dict=left_dict,

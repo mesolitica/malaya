@@ -184,6 +184,7 @@ class Normalizer:
     def __init__(self, tokenizer, speller=None):
         self._tokenizer = tokenizer
         self._speller = speller
+        self._demoji = None
 
     @check_type
     def normalize(
@@ -197,6 +198,7 @@ class Normalizer:
         normalize_telephone: bool = True,
         normalize_date: bool = True,
         normalize_time: bool = True,
+        normalize_emoji: bool = True,
         check_english_func=is_english,
         check_malay_func=is_malay,
         **kwargs,
@@ -232,6 +234,9 @@ class Normalizer:
         normalize_time: bool, (default=True)
             if True, `pukul 2.30` -> `pukul dua tiga puluh minit`.
             if False, `pukul 2.30` -> `'02:00:00'`
+        normalize_emoji: bool, (default=True)
+            if True, `🔥` -> `emoji api`
+            Load from `malaya.preprocessing.demoji`.
         check_english_func: Callable, (default=malaya.text.is_english)
             function to check a word in english dictionary, default is malaya.text.is_english.
         check_malay_func: Callable, (default=malaya.text.is_malay)
@@ -241,6 +246,18 @@ class Normalizer:
         -------
         string: {'normalize', 'date', 'money'}
         """
+        if normalize_emoji:
+            if self._demoji is None:
+
+                from malaya.preprocessing import demoji
+
+                logger.info('caching malaya.preprocessing.demoji inside normalizer')
+                self._demoji = demoji().demoji
+
+            result_demoji = self._demoji(string)
+        else:
+            result_demoji = None
+
         tokenized = self._tokenizer(string)
         s = f'tokenized: {tokenized}'
         logger.debug(s)
@@ -285,6 +302,27 @@ class Normalizer:
                 continue
 
             normalized.append(rules_normalizer.get(word_lower, word_lower))
+
+            if normalize_emoji and word_lower in result_demoji:
+                s = f'index: {index}, word: {word}, condition emoji'
+                r = f'emoji {result_demoji[word_lower]}'
+                if index - 1 >= 0:
+                    if tokenized[index - 1] == '.':
+                        r = r[0].upper() + r[1:]
+                    elif len(result) and result[-1][-1] == ',':
+                        pass
+                    elif tokenized[index - 1] != ',':
+                        r = f', {r}'
+
+                if index + 1 < len(tokenized):
+                    if tokenized[index + 1] == '.':
+                        pass
+                    elif tokenized[index + 1] != ',':
+                        r = f'{r} ,'
+
+                result.append(r)
+                index += 1
+                continue
 
             if word_lower in ignore_words:
                 s = f'index: {index}, word: {word}, condition ignore words'

@@ -35,6 +35,9 @@ _transformer_availability = {
         'BLEU': 0.586,
         'Suggested length': 1024,
     },
+    'noisy-base': {
+
+    }
 }
 
 
@@ -102,3 +105,8 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
             quantized=quantized,
             **kwargs
         )
+
+
+def huggingface(model: str = 'mesolitica/multibert4-multibert4-noisy-ms-en', **kwargs):
+    """
+    """
