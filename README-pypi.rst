@@ -40,7 +40,7 @@ Features
 -  **Normalizer**, using local Malaysia NLP researches hybrid with Transformer-Bahasa to normalize any bahasa texts.
 -  **Num2Word**, convert from numbers to cardinal or ordinal representation.
 -  **Paraphrase**, provide Abstractive Paraphrase using T5-Bahasa and Transformer-Bahasa.
--  **Grapheme-to-Phoneme**, convert from Grapheme to Phoneme using LSTM Seq2Seq with attention state-of-art.
+-  **Grapheme-to-Phoneme**, convert from Grapheme to Phoneme DBP or IPA using LSTM Seq2Seq with attention state-of-art.
 -  **Part-of-Speech Recognition**, grammatical tagging is the process of marking up a word in a text using finetuned Transformer-Bahasa.
 -  **Question Answer**, reading comprehension using finetuned Transformer-Bahasa.
 -  **Relevancy Analysis**, detect and recognize relevancy of texts using finetuned Transformer-Bahasa.

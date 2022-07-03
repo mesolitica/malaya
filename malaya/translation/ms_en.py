@@ -36,11 +36,6 @@ _transformer_availability = {
         'BLEU': 0.586,
         'Suggested length': 1024,
     },
-    << << << < HEAD
-    'noisy-base': {
-
-    }
-    == == == =
     'noisy-small': {
         'Size (MB)': 42.7,
         'Quantized Size (MB)': 13.4,
@@ -53,7 +48,6 @@ _transformer_availability = {
         'BLEU': 0.792,
         'Suggested length': 256,
     },
-    >>>>>> > 4.8.1
 }
 
 

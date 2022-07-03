@@ -82,6 +82,7 @@ class Preprocessing:
         speller=None,
         segmenter=None,
         stemmer=None,
+        demoji=None,
     ):
         self._fix_unidecode = fix_unidecode
         self._normalize = normalize
@@ -89,7 +90,6 @@ class Preprocessing:
         self._regexes = _get_expression_dict()
         self._tokenizer = Tokenizer(lowercase=lowercase).tokenize
         self._expand_contractions = expand_english_contractions
-        self._all_caps_tag = 'wrap'
         self._translator = translator
         self._speller = speller
         self._segmenter = segmenter
@@ -98,6 +98,7 @@ class Preprocessing:
         else:
             self._expand_hashtags = False
         self._stemmer = stemmer
+        self._demoji = demoji
 
     def _add_special_tag(self, m, tag, mode='single'):
 
@@ -139,7 +140,7 @@ class Preprocessing:
         return text
 
     @lru_cache(maxsize=65536)
-    def _handle_generic_match(self, m, tag, mode='every'):
+    def _handle_generic_match(self, m, tag, mode='wrap'):
         text = m.group()
         text = self._add_special_tag(text, tag, mode=mode)
 
@@ -163,7 +164,14 @@ class Preprocessing:
     def _handle_emphasis_match(self, m):
         text = m.group().replace('*', '')
         if 'emphasis' in self._annotate:
-            text = self._add_special_tag(text, 'emphasis')
+            text = self._add_special_tag(text, 'emphasis', mode='wrap')
+
+        return text
+
+    @lru_cache(maxsize=65536)
+    def _handle_emphasis_emoji(self, m):
+        text = m.group().replace('*', '')
+        text = self._add_special_tag(text, 'emoji', mode='wrap')
 
         return text
 
@@ -204,7 +212,7 @@ class Preprocessing:
         if 'allcaps' in self._annotate:
             text = self._regexes['allcaps'].sub(
                 lambda w: self._handle_generic_match(
-                    w, 'allcaps', mode=self._all_caps_tag
+                    w, 'allcaps', mode='wrap'
                 ),
                 text,
             )
@@ -223,6 +231,10 @@ class Preprocessing:
         if 'censored' in self._annotate:
             text = self._regexes['censored'].sub(
                 lambda w: self._handle_generic_match(w, 'censored'), text
+            )
+        if self._demoji is not None:
+            text = self._demoji._compiled.sub(
+                lambda w: self._handle_generic_match(w, 'emoji'), text
             )
         if self._expand_contractions:
             text = unpack_english_contractions(text)
@@ -315,6 +327,7 @@ def preprocessing(
     segmenter: Callable = None,
     stemmer: Callable = None,
     speller: Callable = None,
+    demoji: Callable = None,
     **kwargs,
 ):
     """
@@ -340,7 +353,9 @@ def preprocessing(
     stemmer: Callable, optional (default=None)
         function to stem word.
     speller: object
-        spelling correction object, need to have a method `correct` or `normalize_elongated`
+        spelling correction object, need to have a method `correct` or `normalize_elongated`.
+    demoji: object
+        demoji object, need to have a method `demoji`.
 
     Returns
     -------
@@ -353,10 +368,13 @@ def preprocessing(
         )
     if any([e not in _annotate for e in annotate]):
         raise ValueError(
-            "annotate only accept ['hashtag', 'allcaps', 'elongated', 'repeated', 'emphasis', 'censored']"
+            f"annotate only accept {str(_annotate)}"
         )
     validator.validate_object_methods(
         speller, ['correct', 'normalize_elongated'], 'speller'
+    )
+    validator.validate_object_methods(
+        demoji, ['demoji'], 'demoji'
     )
 
     return Preprocessing(
@@ -369,6 +387,7 @@ def preprocessing(
         speller=speller,
         segmenter=segmenter,
         stemmer=stemmer,
+        demoji=demoji,
     )
 
 

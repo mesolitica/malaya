@@ -246,11 +246,11 @@ class Normalizer:
         normalize_emoji: bool, (default=True)
             if True, `🔥` -> `emoji api`
             Load from `malaya.preprocessing.demoji`.
-        check_english_func: Callable, (default=malaya.text.is_english)
         normalize_elongated: bool, optional (default=True)
             if True, `betuii` -> `betui`.
         expand_contractions: bool, optional (default=True)
             expand english contractions.
+        check_english_func: Callable, (default=malaya.text.is_english)
         check_english_func: Callable, optional (default=malaya.text.is_english)
             function to check a word in english dictionary, default is malaya.text.is_english.
         check_malay_func: Callable, optional (default=malaya.text.is_malay)
