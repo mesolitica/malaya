@@ -574,19 +574,22 @@ class Translation(T2T, Seq2Seq):
         """
         return self._greedy_decoder(strings)
 
-    def beam_decoder(self, strings: List[str]):
+    def beam_decoder(self, strings: List[str], beam_size: int = 3, temperature: float = 0.5):
         """
-        translate list of strings using beam decoder, beam width size 3, alpha 0.5 .
+        translate list of strings using beam decoder. 
+        Currently only `noisy` models supported `beam_size` and `temperature` parameters.
 
         Parameters
         ----------
         strings : List[str]
+        beam_size: int, optional (default=3)
+        temperature: float, optional (default=0.5)
 
         Returns
         -------
         result: List[str]
         """
-        return self._beam_decoder(strings)
+        return self._beam_decoder(strings, beam_size=beam_size, temperature=temperature)
 
 
 class TrueCase(T2T, Seq2Seq):

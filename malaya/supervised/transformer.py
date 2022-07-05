@@ -59,6 +59,9 @@ def load(module, model, encoder, model_class, quantized=False, **kwargs):
 
     inputs = ['Placeholder']
     outputs = ['greedy', 'beam']
+    if 'import/beam_size' in g._nodes_by_name:
+        inputs.extend(['beam_size', 'temperature'])
+
     input_nodes, output_nodes = nodes_session(g, inputs, outputs)
 
     return model_class(

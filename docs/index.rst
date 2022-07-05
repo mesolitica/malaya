@@ -150,6 +150,7 @@ Contents:
    :caption: Translation Module
 
    load-translation-ms-en
+   load-translation-noisy-ms-en
    load-translation-en-ms
    load-long-text-translation
 

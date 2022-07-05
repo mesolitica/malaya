@@ -36,12 +36,6 @@ _transformer_availability = {
         'BLEU': 0.586,
         'Suggested length': 1024,
     },
-    'noisy-small': {
-        'Size (MB)': 42.7,
-        'Quantized Size (MB)': 13.4,
-        'BLEU': 0.626,
-        'Suggested length': 256,
-    },
     'noisy-base': {
         'Size (MB)': 234,
         'Quantized Size (MB)': 82.7,
@@ -77,6 +71,7 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
         * ``'large'`` - Transformer LARGE parameters.
         * ``'bigbird'`` - BigBird BASE parameters.
         * ``'small-bigbird'`` - BigBird SMALL parameters.
+        * ``'noisy-base'`` - Transformer BASE parameters trained on noisy dataset.
 
     quantized : bool, optional (default=False)
         if True, will load 8-bit quantized model.

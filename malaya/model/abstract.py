@@ -75,7 +75,7 @@ class T2T:
         self._encoder = encoder
         self._translation_model = translation_model
 
-    def _predict(self, strings, beam_search=True):
+    def _predict(self, strings, beam_search=True, beam_size=3, temperature=0.5):
         if self._translation_model:
             encoded = [
                 self._encoder.encode(translation_textcleaning(string)) + [1]
@@ -90,9 +90,15 @@ class T2T:
         else:
             output = 'greedy'
 
+        inputs = [batch_x]
+        input_labels = ['Placeholder']
+        if 'beam_size' in self._input_nodes:
+            inputs.extend([[beam_size], [temperature]])
+            input_labels.extend(['beam_size', 'temperature'])
+
         r = self._execute(
-            inputs=[batch_x],
-            input_labels=['Placeholder'],
+            inputs=inputs,
+            input_labels=input_labels,
             output_labels=[output],
         )
         p = r[output].tolist()
@@ -109,8 +115,8 @@ class T2T:
     def _greedy_decoder(self, strings):
         return self._predict(strings, beam_search=False)
 
-    def _beam_decoder(self, strings):
-        return self._predict(strings, beam_search=True)
+    def _beam_decoder(self, strings, beam_size=3, temperature=0.5):
+        return self._predict(strings, beam_search=True, beam_size=beam_size, temperature=temperature)
 
 
 class Classification(Abstract):
