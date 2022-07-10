@@ -8,10 +8,12 @@ from typing import List
 @check_type
 def deep_model(quantized: bool = False, **kwargs):
     """
-    Load LSTM + Bahdanau Attention Rumi to Jawi model.
+    Load LSTM + Bahdanau Attention Rumi to Jawi model,
+    384 filter size, 2 layers, character level.
     Original size 11MB, quantized size 2.92MB .
-    CER on test set: 0.09239719040982326
-    WER on test set: 0.33811816744187656
+
+    CER on test set: 0.07554890502189067
+    WER on test set: 0.28035537906124763
 
     Parameters
     ----------
@@ -28,6 +30,19 @@ def deep_model(quantized: bool = False, **kwargs):
         left_dict=jawi_right,
         right_dict=jawi_left,
         cleaning=rumi_jawi_textcleaning,
+        quantized=quantized,
+        **kwargs,
+    )
+
+
+def transformer(model='small', quantized: bool = False, **kwargs):
+    """
+    """
+    return load_transformer.load(
+        module='jawi-rumi',
+        model=model,
+        encoder='yttm',
+        model_class=TrueCase,
         quantized=quantized,
         **kwargs,
     )

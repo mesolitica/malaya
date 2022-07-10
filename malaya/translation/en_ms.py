@@ -6,6 +6,18 @@ from herpetologist import check_type
 from malaya.path import PATH_PREPROCESSING, S3_PATH_PREPROCESSING
 from malaya.function import check_file
 import json
+import logging
+
+logger = logging.getLogger('malaya.translation.en_ms')
+
+"""
+NLLB Metrics, https://github.com/facebookresearch/fairseq/tree/nllb#multilingual-translation-models:
+1. NLLB-200, MOE, 54.5B, https://tinyurl.com/nllb200moe54bmetrics, eng_Latn-zsm_Latn,66.5
+2. NLLB-200, Dense, 3.3B, https://tinyurl.com/nllb200dense3bmetrics, eng_Latn-zsm_Latn,66.3
+3. NLLB-200, Dense, 1.3B, https://tinyurl.com/nllb200dense1bmetrics, eng_Latn-zsm_Latn,65.2
+4. NLLB-200-Distilled, Dense, 1.3B, https://tinyurl.com/nllb200densedst1bmetrics, eng_Latn-zsm_Latn,65.5
+5. NLLB-200-Distilled, Dense, 600M, https://tinyurl.com/nllb200densedst600mmetrics, eng_Latn-zsm_Latn,63.5
+"""
 
 _transformer_availability = {
     'small': {
@@ -20,12 +32,6 @@ _transformer_availability = {
         'BLEU': 0.696,
         'Suggested length': 256,
     },
-    'large': {
-        'Size (MB)': 817,
-        'Quantized Size (MB)': 244,
-        'BLEU': 0.699,
-        'Suggested length': 256,
-    },
     'bigbird': {
         'Size (MB)': 246,
         'Quantized Size (MB)': 63.7,
@@ -38,18 +44,6 @@ _transformer_availability = {
         'BLEU': 0.522,
         'Suggested length': 1024,
     },
-    'noisy-small': {
-        'Size (MB)': 42.7,
-        'Quantized Size (MB)': 13.4,
-        'BLEU': 0.626,
-        'Suggested length': 256,
-    },
-    'noisy-base': {
-        'Size (MB)': 234,
-        'Quantized Size (MB)': 82.7,
-        'BLEU': 0.792,
-        'Suggested length': 256,
-    },
 }
 
 
@@ -59,9 +53,20 @@ def available_transformer():
     """
     from malaya.function import describe_availability
 
-    return describe_availability(
-        _transformer_availability, text='tested on 77k EN-MS sentences.'
+    return describe_availability(_transformer_availability)
+
+
+def available_huggingface():
+    """
+    List available HuggingFace models.
+    """
+    from malaya.function import describe_availability
+
+    logger.warning(
+        'test set generated from teacher semisupervised model, the models might generate better results compared to '
+        'to the teacher semisupervised model, thus lower BLEU score.'
     )
+    return describe_availability(_huggingface_availability)
 
 
 @check_type
@@ -76,7 +81,6 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
 
         * ``'small'`` - Transformer SMALL parameters.
         * ``'base'`` - Transformer BASE parameters.
-        * ``'large'`` - Transformer LARGE parameters.
         * ``'bigbird'`` - BigBird BASE parameters.
         * ``'small-bigbird'`` - BigBird SMALL parameters.
 

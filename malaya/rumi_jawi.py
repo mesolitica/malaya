@@ -8,8 +8,10 @@ from typing import List
 @check_type
 def deep_model(quantized: bool = False, **kwargs):
     """
-    Load LSTM + Bahdanau Attention Rumi to Jawi model.
+    Load LSTM + Bahdanau Attention Rumi to Jawi model,
+    256 filter size, 2 layers, character level.
     Original size 11MB, quantized size 2.92MB .
+
     CER on test set: 0.014847105998349451
     WER on test set: 0.06737832963079593
 

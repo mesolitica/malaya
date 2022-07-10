@@ -4655,6 +4655,7 @@ rules_normalizer = {
     'pasai': 'hal',
     'bodo': 'bodoh',
     'duk': 'asyik',
+    'betui': 'betul',
 }
 
 rules_normalizer_rev = {v: k for k, v in rules_normalizer.items()}

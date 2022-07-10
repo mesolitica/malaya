@@ -11,8 +11,8 @@ from malaya.function import (
 from malaya.text.function import pad_sentence_batch, case_of
 from malaya.text.regex import _expressions, _money, _date
 from malaya.model.abstract import Abstract
+from malaya.supervised.t2t import load_lstm_yttm
 from malaya.preprocessing import Tokenizer
-from malaya.text.bpe import YTTMEncoder
 from malaya.path import STEMMER_VOCAB
 from herpetologist import check_type
 
@@ -245,7 +245,9 @@ def sastrawi():
 @check_type
 def deep_model(quantized: bool = False, **kwargs):
     """
-    Load LSTM + Bahdanau Attention stemming model, this also include lemmatization.
+    Load LSTM + Bahdanau Attention stemming model,
+    256 filter size, 2 layers, BPE level (YouTokenToMe 20k vocab size).
+    This model also include lemmatization.
     Original size 41.6MB, quantized size 10.6MB .
 
     Parameters
@@ -259,33 +261,12 @@ def deep_model(quantized: bool = False, **kwargs):
     result: malaya.stem.DeepStemmer class
     """
 
-    path = check_file(
-        file='lstm-bahdanau',
-        module='stem',
-        keys={'model': 'model.pb', 'vocab': STEMMER_VOCAB},
-        quantized=quantized,
-        **kwargs,
-    )
-    g = load_graph(path['model'], **kwargs)
-    inputs = ['Placeholder']
-    outputs = []
-    bpe = YTTMEncoder(vocab_file=path['vocab'], id_mode=True)
-    input_nodes, output_nodes = nodes_session(
-        g,
-        inputs,
-        outputs,
-        extra={
-            'greedy': 'import/decode_1/greedy:0',
-            'beam': 'import/decode_2/beam:0',
-        },
-    )
-
     tokenizer = Tokenizer().tokenize
 
-    return DeepStemmer(
-        input_nodes=input_nodes,
-        output_nodes=output_nodes,
-        sess=generate_session(graph=g, **kwargs),
-        bpe=bpe,
+    return load_lstm_yttm(
+        module='stem',
+        vocab=STEMMER_VOCAB,
+        model_class=DeepStemmer,
+        quantized=quantized,
         tokenizer=tokenizer,
-    )
+        **kwargs,)
