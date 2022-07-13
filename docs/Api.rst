@@ -383,6 +383,12 @@ malaya.model.pegasus
 .. autoclass:: malaya.model.pegasus.Summarization()
     :members:
 
+malaya.model.rules
+----------------------------------
+
+.. autoclass:: malaya.model.rules.LanguageDict()
+    :members:
+
 malaya.model.t5
 ----------------------------------
 

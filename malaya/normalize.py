@@ -52,9 +52,9 @@ from malaya.text.normalization import (
 from malaya.text.rules import rules_normalizer, rules_normalizer_rev
 from malaya.cluster import cluster_words
 from malaya.function import validator
-from malaya.preprocessing import Tokenizer
+from malaya.preprocessing import Tokenizer, demoji
 from herpetologist import check_type
-from typing import Callable
+from typing import Callable, List
 import logging
 
 logger = logging.getLogger('malaya.normalize')
@@ -209,6 +209,8 @@ class Normalizer:
         check_english_func=is_english,
         check_malay_func=is_malay,
         translator: Callable = None,
+        language_detection_word_func: Callable = None,
+        acceptable_language_detection: List[str] = ['MS', 'NOT_LANG'],
         segmenter: Callable = None,
         **kwargs,
     ):
@@ -257,6 +259,10 @@ class Normalizer:
             function to check a word in malay dictionary, default is malaya.text.is_malay.
         translator: Callable, optional (default=None)
             function to translate EN word to MS word.
+        language_detection_word_func: Callable, optional (default=None)
+            function to detect language for each words to get better translation results.
+        acceptable_language_detection: List[str], optional (default=['ms'])
+            only translate substrings if the results from `language_detection_word_func` is in `acceptable_language_detection`.
         segmenter: Callable, optional (default=None)
             function to segmentize word.
             If provide, it will expand a word, apaitu -> apa itu
@@ -267,8 +273,6 @@ class Normalizer:
         """
         if normalize_emoji:
             if self._demoji is None:
-
-                from malaya.preprocessing import demoji
 
                 logger.info('caching malaya.preprocessing.demoji inside normalizer')
                 self._demoji = demoji().demoji
@@ -780,12 +784,12 @@ class Normalizer:
                     # betuii -> betui -> betul
                     elif len(word_lower) > 1 and word[-1] == word[-2] and word[:-1] in rules_normalizer:
                         selected = rules_normalizer[word[:-1]]
-                    # # betuii -> betui -> betul
+                    # betuii -> betui -> betul
                     elif len(word_lower) > 1 and word[-1] == word[-2] and word[:-1] in rules_normalizer_rev:
                         selected = word[:-1]
                     else:
                         selected = word
-                        if translator is not None:
+                        if translator is not None and language_detection_word_func is None:
                             s = f'index: {index}, word: {word}, condition to translate'
                             logger.debug(s)
                             translated = translator(word)
@@ -814,6 +818,9 @@ class Normalizer:
 
         result = re.sub(r'[ ]+', ' ', result).strip()
         normalized = re.sub(r'[ ]+', ' ', normalized).strip()
+
+        if language_detection_word_func is not None:
+            result_langs = language_detection_word_func(result.split())
 
         if normalize_entity:
             dates_, money_ = normalized_entity(normalized)

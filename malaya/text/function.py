@@ -13,6 +13,7 @@ from malaya.text.tatabahasa import (
 from malaya.text.rules import normalized_chars
 from malaya.text.english.words import words as _english_words
 from malaya.text.bahasa.words import words as _malay_words
+from malaya.text.unicode.emoji import emoji
 
 STOPWORDS = set(stopwords + stopword_tatabahasa + stopwords_calon)
 STOPWORD_CALON = set(stopwords_calon)
@@ -122,6 +123,10 @@ def isword_english(word):
                     continue
                 return False
     return True
+
+
+def is_emoji(word):
+    return word in emoji
 
 
 def make_cleaning(s, c_dict):

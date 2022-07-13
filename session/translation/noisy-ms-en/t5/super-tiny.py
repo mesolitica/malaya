@@ -11,6 +11,9 @@ from mesh_tensorflow.transformer import learning_rate_schedules
 from glob import glob
 import seqio
 
+# !wget https://f000.backblazeb2.com/file/malaya-model/pretrained/t5-super-tiny-social-media-2021-11-15.tar.gz
+# !tar -zxf t5-super-tiny-social-media-2021-11-15.tar.gz
+# !rm t5-super-tiny-social-media-2021-11-15.tar.gz
 # !wget https://f000.backblazeb2.com/file/malaya-model/bpe/sp10m.cased.ms-en.model
 vocab = 'sp10m.cased.ms-en.model'
 
@@ -70,8 +73,8 @@ t5.data.MixtureRegistry.add(
     default_rate=1.0,
 )
 
-model_parallelism, train_batch_size, keep_checkpoint_max = 1, 32, 5
-BASE_DIR = 't5-tiny-noisy-ms-en'
+model_parallelism, train_batch_size, keep_checkpoint_max = 1, 52, 5
+BASE_DIR = 't5-super-tiny-noisy-ms-en'
 model = t5.models.MtfModel(
     model_dir=BASE_DIR,
     tpu=None,
@@ -82,13 +85,13 @@ model = t5.models.MtfModel(
     mesh_devices=['gpu:0'],
     sequence_length={'inputs': 256, 'targets': 256},
     learning_rate_schedule=learning_rate_schedules.constant_learning_rate,
-    save_checkpoints_steps=1000,
+    save_checkpoints_steps=10000,
     keep_checkpoint_max=5,
     iterations_per_loop=100,
 )
 
-FINETUNE_STEPS = 500000
-MODEL_DIR = 't5-tiny-social-media'
+FINETUNE_STEPS = 1000000
+MODEL_DIR = 't5-super-tiny-social-media'
 model.finetune(
     mixture_or_task_name='translation_dataset',
     pretrained_model_dir=MODEL_DIR,

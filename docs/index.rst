@@ -107,6 +107,7 @@ Contents:
 
    load-emotion
    load-language-detection
+   language-detection-words
    load-nsfw
    load-relevancy
    load-sentiment

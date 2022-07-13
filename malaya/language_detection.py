@@ -7,6 +7,7 @@ from malaya.function import (
 )
 from malaya.model.ml import LanguageDetection
 from malaya.model.tf import DeepLang
+from malaya.model.rules import LanguageDict
 from malaya.text.bpe import YTTMEncoder
 from malaya.path import (
     PATH_LANG_DETECTION,
@@ -72,6 +73,8 @@ def deep_model(quantized: bool = False, **kwargs):
     Load deep learning language detection model.
     Original size is 51.2MB, Quantized size 12.8MB.
 
+    Parameters
+    ----------
     quantized : bool, optional (default=False)
         if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
@@ -119,6 +122,19 @@ def deep_model(quantized: bool = False, **kwargs):
     )
 
 
+def substring_rules(**kwargs):
+    """
+    detect EN and MS languages in a string, detect EN words using `pyenchant` from https://pyenchant.github.io/pyenchant/
+    The rule is simple, if not detect as an EN word, assume it is a MS word.
+
+    Returns
+    -------
+    result : malaya.model.rules.LanguageDict class
+    """
+
+    return LanguageDict(**kwargs)
+
+
 @check_type
 def substring_transformer(
     model: str = 'bert-base',
@@ -126,6 +142,6 @@ def substring_transformer(
     **kwargs
 ):
     """
-    detect languages in a string,
-    `i like to makan ayam` -> `[EN, EN, EN, MS, MS]`
+    detect EN and MS languages in a string,
+    `i like to makan ayam pada pukul 2` -> `[EN, EN, EN, MS, MS, MS, MS, NOT_LANG]`
     """

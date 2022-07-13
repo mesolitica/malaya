@@ -68,9 +68,9 @@ _huggingface_availability = {
     },
     'mesolitica/t5-tiny-finetuned-noisy-ms-en': {
         'Size (MB)': 139,
-        'BLEU': 63.806656594496836,
+        'BLEU': 65.9069151371865,
         'SacreBLEU Verbose': '82.1/67.5/58.3/51.3 (BP = 1.000 ratio = 1.001 hyp_len = 2002291 ref_len = 2001100)',
-        'SacreBLEU-chrF++-FLORES200': 59.92,
+        'SacreBLEU-chrF++-FLORES200': 59.91,
         'Suggested length': 256,
     },
     'mesolitica/t5-small-finetuned-noisy-ms-en': {
