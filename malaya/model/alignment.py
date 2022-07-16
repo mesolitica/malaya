@@ -18,12 +18,11 @@ Copy from https://github.com/robertostling/eflomal/blob/master/align.py optimize
 
 left = ['Terminal 1 KKIA dilengkapi kemudahan 64 kaunter daftar masuk, 12 aero bridge selain mampu menampung 3,200 penumpang dalam satu masa.']
 right = ['Terminal 1 KKIA is equipped with 64 check-in counters, 12 aero bridges and can accommodate 3,200 passengers at a time.']
-eflomal_model.align(left, right) originally ~4 seconds, now ~200 ms.
+eflomal_model.align(left, right) originally ~4 seconds, now ~140 ms.
 """
 
 import numpy as np
 from malaya.text.bpe import padding_sequence
-from malaya.function.activation import softmax
 from collections import defaultdict
 from tempfile import NamedTemporaryFile
 from typing import List
@@ -59,51 +58,69 @@ def read_text(text, lowercase=True):
 
 
 class Eflomal:
-    def __init__(self, priors_filename):
+    def __init__(self, priors_filename, **kwargs):
 
-        from eflomal import read_text, write_text, align
+        try:
+            from eflomal import read_text, write_text, align
+        except BaseException:
+            raise ModuleNotFoundError(
+                'eflomal not installed. Please install it from https://github.com/robertostling/eflomal for Linux / Windows or https://github.com/huseinzol05/maceflomal for Mac and try again.'
+            )
+
         self._read_text = read_text
         self._write_text = write_text
         self._align = align
         self._priors_filename = priors_filename
+
         self._process_priors()
 
-    def _process_priors(self):
-        logger.info('Caching Eflomal priors, will take some time.')
+    def __del__(self):
+        try:
+            self._priors_list_dict.clear()
+            self._ferf_priors_dict.clear()
+            self._ferr_priors_dict.clear()
+            self._hmmf_priors.clear()
+            self._hmmr_priors.clear()
+        except:
+            pass
 
-        priors_list_dict = defaultdict(list)
-        ferf_priors_dict = defaultdict(list)
-        ferr_priors_dict = defaultdict(list)
-        hmmf_priors = {}
-        hmmr_priors = {}
+    def _process_priors(self):
+
+        self._priors_list_dict = defaultdict(list)
+        self._ferf_priors_dict = defaultdict(list)
+        self._ferr_priors_dict = defaultdict(list)
+        self._hmmf_priors = {}
+        self._hmmr_priors = {}
+
+        logger.debug('Caching Eflomal priors, will take some time.')
+
         with open(self._priors_filename, 'r', encoding='utf-8') as f:
-            for i, line in enumerate(f):
+            i = 0
+            for line in f:
                 fields = line.rstrip('\n').split('\t')
                 try:
                     alpha = float(fields[-1])
                 except ValueError:
                     raise ValueError(
                         'ERROR: priors file %s line %d contains alpha value of "%s" which is not numeric' %
-                        (args.priors_filename, i+1, fields[2]))
+                        (self_.priors_filename, i+1, fields[2]))
 
                 if fields[0] == 'LEX' and len(fields) == 4:
-                    priors_list_dict[(fields[1].lower(), fields[2].lower())].append(alpha)
+                    self._priors_list_dict[f'{fields[1].lower()}-{fields[2].lower()}'].append(alpha)
                 elif fields[0] == 'HMMF' and len(fields) == 3:
-                    hmmf_priors[int(fields[1])] = alpha
+                    self._hmmf_priors[int(fields[1])] = alpha
                 elif fields[0] == 'HMMR' and len(fields) == 3:
-                    hmmr_priors[int(fields[1])] = alpha
+                    self._hmmr_priors[int(fields[1])] = alpha
                 elif fields[0] == 'FERF' and len(fields) == 4:
-                    ferf_priors_dict[fields[1].lower()].append((int(fields[2]), alpha))
+                    self._ferf_priors_dict[fields[1].lower()].append((int(fields[2]), alpha))
                 elif fields[0] == 'FERR' and len(fields) == 4:
-                    ferr_priors_dict[fields[1].lower()].append((int(fields[2]), alpha))
+                    self._ferr_priors_dict[fields[1].lower()].append((int(fields[2]), alpha))
                 else:
-                    raise ValueError('ERROR: priors file %s line %d is invalid ' % (args.priors_filename, i+1))
+                    raise ValueError('ERROR: priors file %s line %d is invalid ' % (self._priors_filename, i+1))
 
-        self._priors_list_dict = priors_list_dict
-        self._ferf_priors_dict = ferf_priors_dict
-        self._ferr_priors_dict = ferr_priors_dict
-        self._hmmf_priors = hmmf_priors
-        self._hmmr_priors = hmmr_priors
+                i += 1
+
+            self._total_lines = i
 
     def align(
         self,
@@ -182,29 +199,33 @@ class Eflomal:
             for v in trg_index:
                 e = get_src_index(k)
                 f = get_trg_index(v)
-                alpha = self._priors_list_dict.get((k.lower(), v.lower()), [])
-                for a in alpha:
-                    priors_indexed[(e, f)] = priors_indexed.get((e, f), 0.0) + a
+
+                key = f'{k.lower()}-{v.lower()}'
+                if key in self._priors_list_dict:
+                    for n in range(len(self._priors_list_dict[key])):
+                        priors_indexed[(e, f)] = priors_indexed.get((e, f), 0.0) + self._priors_list_dict[key][n]
 
         ferf_indexed = {}
         for k in src_index:
             e = get_src_index(k)
-            tuples = self._ferf_priors_dict.get(k.lower(), [])
-            for t in tuples:
-                fert = t[0]
-                alpha = t[1]
-                ferf_indexed[(e, fert)] = \
-                    ferf_indexed.get((e, fert), 0.0) + alpha
+
+            key = k.lower()
+            if key in self._ferf_priors_dict:
+                for n in range(len(self._ferf_priors_dict[key])):
+                    fert = self._ferf_priors_dict[key][n][0]
+                    alpha = self._ferf_priors_dict[key][n][1]
+                    ferf_indexed[(e, fert)] = ferf_indexed.get((e, fert), 0.0) + alpha
 
         ferr_indexed = {}
         for k in trg_index:
             f = get_trg_index(k)
-            tuples = self._ferr_priors_dict.get(k.lower(), [])
-            for t in tuples:
-                fert = t[0]
-                alpha = t[1]
-                ferr_indexed[(f, fert)] = \
-                    ferr_indexed.get((f, fert), 0.0) + alpha
+            key = k.lower()
+            if key in self._ferr_priors_dict:
+                for n in range(len(self._ferr_priors_dict[key])):
+                    fert = self._ferr_priors_dict[key][n][0]
+                    alpha = self._ferr_priors_dict[key][n][0]
+                    ferr_indexed[(f, fert)] = \
+                        ferr_indexed.get((f, fert), 0.0) + alpha
 
         priorsf = NamedTemporaryFile('w', encoding='utf-8')
         print('%d %d %d %d %d %d %d' % (
@@ -212,6 +233,7 @@ class Eflomal:
             len(self._hmmf_priors), len(self._hmmr_priors),
             len(ferf_indexed), len(ferr_indexed)),
             file=priorsf)
+
         for (e, f), alpha in sorted(priors_indexed.items()):
             print('%d %d %g' % (e, f, alpha), file=priorsf)
 
