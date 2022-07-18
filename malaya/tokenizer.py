@@ -5,7 +5,7 @@ import html
 
 
 class Tokenizer:
-    def __init__(self, lowercase: bool = False, **kwargs):
+    def __init__(self, **kwargs):
         """
         Load Tokenizer object.
         Check supported regex pattern at 
@@ -13,9 +13,7 @@ class Tokenizer:
 
         Parameters
         ----------
-        lowercase: bool, optional (default=False)
-            lowercase tokens.
-        emojis: bool, optional (default=True)
+        emojis: bool, optional (default=False)
             True to keep emojis.
         urls: bool, optional (default=True)
             True to keep urls.
@@ -67,11 +65,10 @@ class Tokenizer:
             True to keep Malaysian IC.
         """
 
-        self.lowercase = lowercase
         pipeline = []
         self.regexes = _expressions
 
-        emojis = kwargs.get('emojis', True)
+        emojis = kwargs.get('emojis', False)
         urls = kwargs.get('urls', True)
         urls_improved = kwargs.get('urls_improved', True)
         tags = kwargs.get('tags', True)
@@ -201,13 +198,14 @@ class Tokenizer:
     def wrap_non_matching(exp):
         return '(?:{})'.format(exp)
 
-    def tokenize(self, string: str):
+    def tokenize(self, string: str, lowercase: bool = False):
         """
         Tokenize string into words.
 
         Parameters
         ----------
         string : str
+        lowercase: bool, optional (default=False)
 
         Returns
         -------
@@ -217,7 +215,7 @@ class Tokenizer:
         tokenized = self.tok.findall(escaped)
         tokenized = [t[0] if isinstance(t, tuple) else t for t in tokenized]
 
-        if self.lowercase:
+        if lowercase:
             tokenized = [t.lower() for t in tokenized]
 
         return tokenized
