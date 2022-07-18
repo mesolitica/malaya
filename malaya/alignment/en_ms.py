@@ -2,6 +2,7 @@ from malaya.function import check_file
 from malaya.model.alignment import Eflomal, HuggingFace
 from malaya_boilerplate import frozen_graph
 import tensorflow as tf
+from typing import Callable
 
 _huggingface_availability = {
     'mesolitica/finetuned-bert-base-multilingual-cased-noisy-en-ms': {
@@ -13,7 +14,7 @@ _huggingface_availability = {
 }
 
 
-def _eflomal(file, **kwargs):
+def _eflomal(preprocessing_func, file, **kwargs):
     path = check_file(
         file=file,
         module='eflomal-alignment',
@@ -21,7 +22,7 @@ def _eflomal(file, **kwargs):
         quantized=False,
         **kwargs,
     )
-    return Eflomal(priors_filename=path['model'])
+    return Eflomal(preprocessing_func=preprocessing_func, priors_filename=path['model'])
 
 
 def available_huggingface():
@@ -33,9 +34,15 @@ def available_huggingface():
     return describe_availability(_huggingface_availability)
 
 
-def eflomal(**kwargs):
+def eflomal(preprocessing_func: Callable = None, **kwargs):
     """
     load eflomal word alignment for EN-MS. Model size around ~300MB.
+
+    Parameters
+    ----------
+    preprocessing_func: Callable, optional (default=None)
+        preprocessing function to call during loading prior file.
+        Using `malaya.text.function.replace_punct` able to reduce ~30% of memory usage.
 
     Returns
     -------
@@ -47,7 +54,7 @@ def eflomal(**kwargs):
         raise ModuleNotFoundError(
             'eflomal not installed. Please install it from https://github.com/robertostling/eflomal for Linux / Windows or https://github.com/huseinzol05/maceflomal for Mac and try again.'
         )
-    return _eflomal(file='en-ms', **kwargs)
+    return _eflomal(preprocessing_func=preprocessing_func, file='en-ms', **kwargs)
 
 
 def huggingface(model: str = 'mesolitica/finetuned-bert-base-multilingual-cased-noisy-en-ms', **kwargs):

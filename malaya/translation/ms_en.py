@@ -40,13 +40,17 @@ _transformer_availability = {
     'bigbird': {
         'Size (MB)': 246,
         'Quantized Size (MB)': 63.7,
-        'BLEU': 0.678,
+        'BLEU': 71.68758277346333,
+        'SacreBLEU Verbose': '86.2/74.8/67.2/61.0 (BP = 1.000 ratio = 1.005 hyp_len = 2010492 ref_len = 2001100)',
+        'SacreBLEU-chrF++-FLORES200': 63.24,
         'Suggested length': 1024,
     },
     'small-bigbird': {
         'Size (MB)': 50.4,
         'Quantized Size (MB)': 13.1,
-        'BLEU': 0.586,
+        'BLEU': 71.68758277346333,
+        'SacreBLEU Verbose': '86.2/74.8/67.2/61.0 (BP = 1.000 ratio = 1.005 hyp_len = 2010492 ref_len = 2001100)',
+        'SacreBLEU-chrF++-FLORES200': 63.24,
         'Suggested length': 1024,
     },
     'noisy-base': {
@@ -61,15 +65,16 @@ _transformer_availability = {
 
 _huggingface_availability = {
     'mesolitica/t5-super-tiny-finetuned-noisy-ms-en': {
-        'Size (MB)': 139,
-        'BLEU': 63.806656594496836,
-        'SacreBLEU Verbose': '82.1/67.5/58.3/51.3 (BP = 1.000 ratio = 1.001 hyp_len = 2002291 ref_len = 2001100)',
+        'Size (MB)': 50.8,
+        'BLEU': 59.92897086989418,
+        'SacreBLEU Verbose': '79.8/64.0/54.1/46.6 (BP = 1.000 ratio = 1.008 hyp_len = 2017101 ref_len = 2001100)',
+        'SacreBLEU-chrF++-FLORES200': 58.76,
         'Suggested length': 256,
     },
     'mesolitica/t5-tiny-finetuned-noisy-ms-en': {
         'Size (MB)': 139,
         'BLEU': 65.9069151371865,
-        'SacreBLEU Verbose': '82.1/67.5/58.3/51.3 (BP = 1.000 ratio = 1.001 hyp_len = 2002291 ref_len = 2001100)',
+        'SacreBLEU Verbose': '83.0/69.3/60.7/54.1 (BP = 1.000 ratio = 1.001 hyp_len = 2003273 ref_len = 2001100)',
         'SacreBLEU-chrF++-FLORES200': 59.91,
         'Suggested length': 256,
     },
@@ -173,6 +178,7 @@ def huggingface(model: str = 'mesolitica/t5-tiny-finetuned-noisy-ms-en', **kwarg
     model : str, optional (default='base')
         Model architecture supported. Allowed values:
 
+        * ``'mesolitica/t5-super-tiny-finetuned-noisy-ms-en'`` - https://huggingface.co/mesolitica/t5-super-tiny-finetuned-noisy-ms-en
         * ``'mesolitica/t5-tiny-finetuned-noisy-ms-en'`` - https://huggingface.co/mesolitica/t5-tiny-finetuned-noisy-ms-en
         * ``'mesolitica/t5-small-finetuned-noisy-ms-en'`` - https://huggingface.co/mesolitica/t5-small-finetuned-noisy-ms-en
 

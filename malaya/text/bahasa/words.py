@@ -13497,7 +13497,6 @@ words = {
     'muhalil',
     'skuasy',
     'rumusan',
-    'bridge',
     'menggulai',
     'kerdum',
     'guna',

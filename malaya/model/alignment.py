@@ -58,7 +58,7 @@ def read_text(text, lowercase=True):
 
 
 class Eflomal:
-    def __init__(self, priors_filename, **kwargs):
+    def __init__(self, priors_filename, preprocessing_func=None, **kwargs):
 
         try:
             from eflomal import read_text, write_text, align
@@ -71,6 +71,10 @@ class Eflomal:
         self._write_text = write_text
         self._align = align
         self._priors_filename = priors_filename
+        if preprocessing_func is None:
+            self._preprocessing_func = lambda x: x
+        else:
+            self._preprocessing_func = preprocessing_func
 
         self._process_priors()
 
@@ -106,15 +110,16 @@ class Eflomal:
                         (self_.priors_filename, i+1, fields[2]))
 
                 if fields[0] == 'LEX' and len(fields) == 4:
-                    self._priors_list_dict[f'{fields[1].lower()}-{fields[2].lower()}'].append(alpha)
+                    k = f'{self._preprocessing_func(fields[1].lower())}-{self._preprocessing_func(fields[2].lower())}'
+                    self._priors_list_dict[k].append(alpha)
                 elif fields[0] == 'HMMF' and len(fields) == 3:
                     self._hmmf_priors[int(fields[1])] = alpha
                 elif fields[0] == 'HMMR' and len(fields) == 3:
                     self._hmmr_priors[int(fields[1])] = alpha
                 elif fields[0] == 'FERF' and len(fields) == 4:
-                    self._ferf_priors_dict[fields[1].lower()].append((int(fields[2]), alpha))
+                    self._ferf_priors_dict[self._preprocessing_func(fields[1].lower())].append((int(fields[2]), alpha))
                 elif fields[0] == 'FERR' and len(fields) == 4:
-                    self._ferr_priors_dict[fields[1].lower()].append((int(fields[2]), alpha))
+                    self._ferr_priors_dict[self._preprocessing_func(fields[1].lower())].append((int(fields[2]), alpha))
                 else:
                     raise ValueError('ERROR: priors file %s line %d is invalid ' % (self._priors_filename, i+1))
 
@@ -200,7 +205,7 @@ class Eflomal:
                 e = get_src_index(k)
                 f = get_trg_index(v)
 
-                key = f'{k.lower()}-{v.lower()}'
+                key = f'{self._preprocessing_func(k.lower())}-{self._preprocessing_func(v.lower())}'
                 if key in self._priors_list_dict:
                     for n in range(len(self._priors_list_dict[key])):
                         priors_indexed[(e, f)] = priors_indexed.get((e, f), 0.0) + self._priors_list_dict[key][n]
@@ -209,7 +214,7 @@ class Eflomal:
         for k in src_index:
             e = get_src_index(k)
 
-            key = k.lower()
+            key = self._preprocessing_func(k.lower())
             if key in self._ferf_priors_dict:
                 for n in range(len(self._ferf_priors_dict[key])):
                     fert = self._ferf_priors_dict[key][n][0]
@@ -219,11 +224,11 @@ class Eflomal:
         ferr_indexed = {}
         for k in trg_index:
             f = get_trg_index(k)
-            key = k.lower()
+            key = self._preprocessing_func(k.lower())
             if key in self._ferr_priors_dict:
                 for n in range(len(self._ferr_priors_dict[key])):
                     fert = self._ferr_priors_dict[key][n][0]
-                    alpha = self._ferr_priors_dict[key][n][0]
+                    alpha = self._ferr_priors_dict[key][n][1]
                     ferr_indexed[(f, fert)] = \
                         ferr_indexed.get((f, fert), 0.0) + alpha
 

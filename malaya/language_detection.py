@@ -62,8 +62,7 @@ def fasttext(quantized: bool = True, **kwargs):
     try:
         model_fasttext = fasttext.load_model(path['model'])
     except:
-        raise Exception(
-            f"failed to load fasttext model, please try `malaya.utils.delete_cache('language-detection/{model} or rerun again.")
+        raise Exception(f'failed to load fasttext model, please try clear the cache and try again')
     return LanguageDetection(model_fasttext, lang_labels)
 
 
@@ -124,20 +123,43 @@ def deep_model(quantized: bool = False, **kwargs):
 
 def substring_rules(**kwargs):
     """
-    detect EN and MS languages in a string, detect EN words using `pyenchant` from https://pyenchant.github.io/pyenchant/
-    The rule is simple, if not detect as an EN word, assume it is a MS word.
+    detect EN, MS and OTHER languages in a string.
+
+    EN words detection are using `pyenchant` from https://pyenchant.github.io/pyenchant/ and
+    fast-text https://fasttext.cc/docs/en/language-identification.html.
+
+    MS words detection are using `malaya.text.function.is_malay` and
+    fast-text https://fasttext.cc/docs/en/language-identification.html.
+
+    OTHER words detection are using fast-text https://fasttext.cc/docs/en/language-identification.html.
 
     Returns
     -------
     result : malaya.model.rules.LanguageDict class
     """
 
-    return LanguageDict(**kwargs)
+    try:
+        import fasttext
+    except BaseException:
+        raise ModuleNotFoundError(
+            'fasttext not installed. Please install it by `pip install fasttext` and try again.'
+        )
+
+    model = 'fasttext-176'
+    path = check_file(
+        PATH_LANG_DETECTION[model], S3_PATH_LANG_DETECTION[model], **kwargs
+    )
+    try:
+        model_fasttext = fasttext.load_model(path['model'])
+    except:
+        raise Exception(f'failed to load fasttext model, please try clear the cache and try again')
+
+    return LanguageDict(model_fasttext=model_fasttext, **kwargs)
 
 
 @check_type
 def substring_transformer(
-    model: str = 'bert-base',
+    model: str = 'tiny-bert',
     quantized: bool = False,
     **kwargs
 ):

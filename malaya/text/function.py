@@ -13,6 +13,7 @@ from malaya.text.tatabahasa import (
 from malaya.text.rules import normalized_chars
 from malaya.text.english.words import words as _english_words
 from malaya.text.bahasa.words import words as _malay_words
+from malaya.text.bahasa.cambridge_words import words as _cambridge_malay_words
 from malaya.text.unicode.emoji import emoji
 
 STOPWORDS = set(stopwords + stopword_tatabahasa + stopwords_calon)
@@ -20,8 +21,10 @@ STOPWORD_CALON = set(stopwords_calon)
 VOWELS = 'aeiou'
 PHONES = ['sh', 'ch', 'ph', 'sz', 'cz', 'sch', 'rz', 'dz']
 PUNCTUATION = '!"#$%&\'()*+,./:;<=>?@[\]^_`{|}~'
+NUMBERS = '1234567890'
 ENGLISH_WORDS = _english_words
 MALAY_WORDS = _malay_words
+CAMBRIDGE_MALAY_WORDS = _cambridge_malay_words
 
 alphabets = '([A-Za-z])'
 prefixes = (
@@ -43,7 +46,7 @@ def is_english(word):
 
 
 def is_malay(word):
-    return word in MALAY_WORDS
+    return word in MALAY_WORDS or word in CAMBRIDGE_MALAY_WORDS
 
 
 def get_stopwords():
@@ -127,6 +130,28 @@ def isword_english(word):
 
 def is_emoji(word):
     return word in emoji
+
+
+def check_ratio_numbers(word):
+    numbers, non_numbers = 0, 0
+    for c in word:
+        if c in NUMBERS:
+            numbers += 1
+        else:
+            non_numbers += 1
+    return numbers / len(word)
+
+
+def check_ratio_punct(word):
+    punct = 0
+    for c in word:
+        if c in PUNCTUATION:
+            punct += 1
+    return punct / len(word)
+
+
+def replace_punct(string):
+    return string.translate(str.maketrans('', '', PUNCTUATION))
 
 
 def make_cleaning(s, c_dict):

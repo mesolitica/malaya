@@ -117,6 +117,10 @@ PATH_LANG_DETECTION = {
         'model': home + '/language-detection/fasttext-quantized/fasttext.tfz',
         'version': 'v34',
     },
+    'fasttext-176': {
+        'model': home + '/language-detection/fasttext-176/model.bin',
+        'version': 'v49',
+    }
 }
 
 S3_PATH_LANG_DETECTION = {
@@ -125,6 +129,9 @@ S3_PATH_LANG_DETECTION = {
     },
     'fasttext-quantized': {
         'model': 'v34/language-detection/fasttext-malaya.ftz'
+    },
+    'fasttext-176': {
+        'model': 'fasttext-176/model.bin'
     },
 }
 
