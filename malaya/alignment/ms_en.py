@@ -4,7 +4,7 @@ from typing import Callable
 
 def eflomal(preprocessing_func: Callable = None, **kwargs):
     """
-    load eflomal word alignment for EN-MS. Model size around ~300MB.
+    load eflomal word alignment for MS-EN. Model size around ~300MB.
 
     Parameters
     ----------
@@ -16,6 +16,7 @@ def eflomal(preprocessing_func: Callable = None, **kwargs):
     -------
     result: malaya.model.alignment.Eflomal
     """
+
     return _eflomal(preprocessing_func=preprocessing_func, file='ms-en', **kwargs)
 
 

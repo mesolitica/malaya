@@ -48,6 +48,7 @@ def eflomal(preprocessing_func: Callable = None, **kwargs):
     -------
     result: malaya.model.alignment.Eflomal
     """
+
     try:
         from eflomal import read_text, write_text, align
     except BaseException:
