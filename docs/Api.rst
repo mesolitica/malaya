@@ -365,6 +365,12 @@ malaya.model.extractive_summarization
 
 .. autoclass:: malaya.model.extractive_summarization.Encoder()
 
+malaya.model.huggingface
+---------------------------
+
+.. autoclass:: malaya.model.huggingface.Generator()
+    :members:
+
 malaya.model.ml
 ----------------------------------
 

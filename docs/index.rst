@@ -152,6 +152,7 @@ Contents:
 
    load-translation-ms-en
    load-translation-noisy-ms-en
+   load-translation-noisy-ms-en-huggingface
    load-translation-en-ms
    load-long-text-translation
 

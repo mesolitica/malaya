@@ -68,7 +68,7 @@ _huggingface_availability = {
         'Size (MB)': 50.8,
         'BLEU': 59.92897086989418,
         'SacreBLEU Verbose': '79.8/64.0/54.1/46.6 (BP = 1.000 ratio = 1.008 hyp_len = 2017101 ref_len = 2001100)',
-        'SacreBLEU-chrF++-FLORES200': 58.76,
+        'SacreBLEU-chrF++-FLORES200': 59.12,
         'Suggested length': 256,
     },
     'mesolitica/t5-tiny-finetuned-noisy-ms-en': {
@@ -129,6 +129,7 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
         * ``'bigbird'`` - BigBird BASE parameters.
         * ``'small-bigbird'`` - BigBird SMALL parameters.
         * ``'noisy-base'`` - Transformer BASE parameters trained on noisy dataset.
+        * ``'noisy-small'`` - Transformer BASE parameters trained on noisy dataset.
 
     quantized : bool, optional (default=False)
         if True, will load 8-bit quantized model.
