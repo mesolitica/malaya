@@ -5,6 +5,7 @@ from malaya.function.activation import softmax
 from malaya.text.function import (
     translation_textcleaning,
     summarization_textcleaning,
+    bigbird_postprocessing,
 )
 from malaya.text.rouge import postprocess_summary
 from malaya.text.bpe import bert_tokenization
@@ -209,7 +210,7 @@ class Translation(Seq2Seq):
         result = []
         for r in p:
             result.append(
-                self._encoder.decode([i for i in r.tolist() if i > 0])
+                bigbird_postprocessing(self._encoder.decode([i for i in r.tolist() if i > 0]))
             )
         return result
 

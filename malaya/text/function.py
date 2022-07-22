@@ -462,6 +462,10 @@ def rumi_jawi_textcleaning(string, dict):
     return re.sub(r'[ ]+', ' ', l).strip()
 
 
+def bigbird_postprocessing(string):
+    return re.sub(r'([!,.?/;\'])\1+', r'\1 ', string).strip()
+
+
 def separate_dataset(trainset):
     datastring = []
     datatarget = []

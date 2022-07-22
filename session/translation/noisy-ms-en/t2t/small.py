@@ -1,6 +1,7 @@
 import os
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
 
 from tensor2tensor.data_generators import problem
 from tensor2tensor.data_generators import text_problems
@@ -65,7 +66,7 @@ t2t_problem = problems.problem(PROBLEM)
 
 train_steps = 1000000
 eval_steps = 20
-batch_size = 4096 * 2
+batch_size = 4096 * 4
 save_checkpoints_steps = 25000
 ALPHA = 0.1
 schedule = 'continuous_train_and_eval'

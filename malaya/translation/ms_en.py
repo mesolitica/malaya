@@ -24,7 +24,7 @@ _transformer_availability = {
     'small': {
         'Size (MB)': 42.7,
         'Quantized Size (MB)': 13.4,
-        'SacreBLEU': 59.87473086087865,
+        'BLEU': 59.87473086087865,
         'SacreBLEU Verbose': '80.6/64.3/54.1/46.3 (BP = 0.998 ratio = 0.998 hyp_len = 1996245 ref_len = 2001100)',
         'SacreBLEU-chrF++-FLORES200': 59.64,
         'Suggested length': 256,
@@ -40,17 +40,17 @@ _transformer_availability = {
     'bigbird': {
         'Size (MB)': 246,
         'Quantized Size (MB)': 63.7,
-        'BLEU': 71.68758277346333,
-        'SacreBLEU Verbose': '86.2/74.8/67.2/61.0 (BP = 1.000 ratio = 1.005 hyp_len = 2010492 ref_len = 2001100)',
-        'SacreBLEU-chrF++-FLORES200': 63.24,
+        'BLEU': 59.54825688811841,
+        'SacreBLEU Verbose': '79.6/63.8/53.8/46.0 (BP = 1.000 ratio = 1.026 hyp_len = 332247 ref_len = 323967)',
+        'SacreBLEU-chrF++-FLORES200': 62.49,
         'Suggested length': 1024,
     },
     'small-bigbird': {
         'Size (MB)': 50.4,
         'Quantized Size (MB)': 13.1,
-        'BLEU': 71.68758277346333,
-        'SacreBLEU Verbose': '86.2/74.8/67.2/61.0 (BP = 1.000 ratio = 1.005 hyp_len = 2010492 ref_len = 2001100)',
-        'SacreBLEU-chrF++-FLORES200': 63.24,
+        'BLEU': 55.967144835516855,
+        'SacreBLEU Verbose': '77.4/60.5/49.9/41.9 (BP = 1.000 ratio = 1.026 hyp_len = 2053414 ref_len = 2001100)',
+        'SacreBLEU-chrF++-FLORES200': 60.57,
         'Suggested length': 1024,
     },
     'noisy-base': {
@@ -60,7 +60,7 @@ _transformer_availability = {
         'SacreBLEU Verbose': '86.3/74.8/67.2/61.0 (BP = 1.000 ratio = 1.002 hyp_len = 2004164 ref_len = 2001100)',
         'SacreBLEU-chrF++-FLORES200': 63.31,
         'Suggested length': 256,
-    }
+    },
 }
 
 _huggingface_availability = {
@@ -94,7 +94,6 @@ def available_transformer():
     """
 
     logger.info('tested on 100k MS-EN test set generated from teacher semisupervised model, https://huggingface.co/datasets/mesolitica/ms-en')
-    logger.info('tested on 50k noisy MS-EN test set augmented from teacher semisupervised model, https://huggingface.co/datasets/mesolitica/noisy-ms-en-augmentation')
     logger.info('tested on FLORES200 MS-EN (zsm_Latn-eng_Latn) pair `dev` set, https://github.com/facebookresearch/flores/tree/main/flores200')
     return describe_availability(_transformer_availability)
 
@@ -105,7 +104,6 @@ def available_huggingface():
     """
 
     logger.info('tested on 100k MS-EN test set generated from teacher semisupervised model, https://huggingface.co/datasets/mesolitica/ms-en')
-    logger.info('tested on 50k noisy MS-EN test set augmented from teacher semisupervised model, https://huggingface.co/datasets/mesolitica/noisy-ms-en-augmentation')
     logger.info('tested on FLORES200 MS-EN (zsm_Latn-eng_Latn) pair, https://github.com/facebookresearch/flores/tree/main/flores200')
     logger.warning(
         '100k MS-EN test set generated from teacher semisupervised model, the models might generate better results compared to '
@@ -129,7 +127,6 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
         * ``'bigbird'`` - BigBird BASE parameters.
         * ``'small-bigbird'`` - BigBird SMALL parameters.
         * ``'noisy-base'`` - Transformer BASE parameters trained on noisy dataset.
-        * ``'noisy-small'`` - Transformer BASE parameters trained on noisy dataset.
 
     quantized : bool, optional (default=False)
         if True, will load 8-bit quantized model.
@@ -170,6 +167,7 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
         )
 
 
+@check_type
 def huggingface(model: str = 'mesolitica/t5-tiny-finetuned-noisy-ms-en', **kwargs):
     """
     Load HuggingFace model to translate MS-to-EN.

@@ -151,10 +151,10 @@ Contents:
    :caption: Translation Module
 
    load-translation-ms-en
+   ms-en-long-translation
    load-translation-noisy-ms-en
    load-translation-noisy-ms-en-huggingface
    load-translation-en-ms
-   load-long-text-translation
 
 .. toctree::
    :maxdepth: 2
