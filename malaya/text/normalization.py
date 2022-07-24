@@ -1,4 +1,5 @@
 import re
+import traceback
 from malaya.num2word import to_cardinal, to_ordinal
 from malaya.word2num import word2num
 from malaya.text.tatabahasa import (
@@ -8,6 +9,9 @@ from malaya.text.tatabahasa import (
 from malaya.text.rules import rules_normalizer, rules_compound_normalizer
 from malaya.text.function import ENGLISH_WORDS, MALAY_WORDS, case_of
 import math
+import logging
+
+logger = logging.getLogger('malaya.text.normalization')
 
 ignore_words = ['ringgit', 'sen']
 ignore_postfix = ['adalah']
@@ -103,7 +107,8 @@ def cardinal(x):
             x = to_cardinal(int(x))
         x = re.sub('-', ' ', x, count=10)
         return x
-    except BaseException:
+    except BaseException as e:
+        logger.debug(traceback.format_exc())
         return cp_x
 
 
@@ -125,7 +130,8 @@ def digit(x):
             result_string = result_string + cardinal(i) + ' '
         result_string = result_string.strip()
         return result_string
-    except BaseException:
+    except BaseException as e:
+        logger.debug(traceback.format_exc())
         return cp_x
 
 
@@ -142,6 +148,7 @@ def digit_unit(x):
         n = to_cardinal(n)
         return f'{n} {u}'
     except Exception as e:
+        logger.debug(traceback.format_exc())
         return cp_x
 
 
@@ -154,7 +161,8 @@ def letters(x):
         for i in range(len(x)):
             result_string = result_string + x[i] + ' '
         return result_string.strip()
-    except BaseException:
+    except BaseException as e:
+        logger.debug(traceback.format_exc())
         return cp_x
 
 
@@ -232,6 +240,7 @@ def ordinal(x):
             result_string = to_ordinal(int(x))
         return result_string
     except Exception as e:
+        logger.debug(traceback.format_exc())
         return cp_x
 
 
@@ -244,7 +253,8 @@ def telephone(x):
             else:
                 result_string = result_string + 'sil '
         return result_string.strip()
-    except BaseException:
+    except BaseException as e:
+        logger.debug(traceback.format_exc())
         return x
 
 
@@ -274,7 +284,8 @@ def electronic(x):
             return result_string.strip()
         else:
             return x
-    except BaseException:
+    except BaseException as e:
+        logger.debug(traceback.format_exc())
         return x
 
 
@@ -285,7 +296,8 @@ def fraction(x):
         y[0] = cardinal(y[0])
         y[1] = cardinal(y[1])
         return '%s per %s' % (y[0], y[1])
-    except BaseException:
+    except BaseException as e:
+        logger.debug(traceback.format_exc())
         return x
 
 
@@ -304,6 +316,12 @@ def combine_with_cent(
     return x, c
 
 
+def replace_ribu_juta(x):
+    x = x.lower().replace('ribu', 'k')
+    x = x.lower().replace('juta', 'm')
+    return x
+
+
 def money(x):
     try:
         if (
@@ -319,6 +337,7 @@ def money(x):
             x = x.replace('$', '').replace('dollar', '').replace('cent', '')
             x = re.sub(r'[ ]+', ' ', x).strip()
             x, n = re.split("(\\d+(?:[\\.,']\\d+)?)", x)[1:]
+            n = replace_ribu_juta(n)
             x = re.sub(',', '', x, count=10)
             labels = []
             for c in n:
@@ -328,6 +347,8 @@ def money(x):
                     labels.append(1e9)
                 elif re.match('.*(k|K)$', c):
                     labels.append(1e3)
+                elif re.match('.*(j|J)$', c):
+                    labels.append(1e6)
 
             if cent:
                 x = float(x)
@@ -336,7 +357,7 @@ def money(x):
                 x = float(x)
                 x = x * l
 
-            if 1 - (x % 1) < 1e-5:
+            if isinstance(x, float) and 1 - (x % 1) < 1e-5:
                 x = math.ceil(x)
 
             x, c = combine_with_cent(
@@ -364,6 +385,7 @@ def money(x):
             )
             x = re.sub(r'[ ]+', ' ', x).strip()
             x, n = re.split("(\\d+(?:[\\.,']\\d+)?)", x)[1:]
+            n = replace_ribu_juta(n)
             x = re.sub(',', '', x, count=10)
             labels = []
             for c in n:
@@ -373,6 +395,8 @@ def money(x):
                     labels.append(1e9)
                 elif re.match('.*(k|K)$', c):
                     labels.append(1e3)
+                elif re.match('.*(j|J)$', c):
+                    labels.append(1e6)
 
             if cent:
                 x = float(x)
@@ -381,7 +405,7 @@ def money(x):
                 x = float(x)
                 x = x * l
 
-            if 1 - (x % 1) < 1e-5:
+            if isinstance(x, float) and 1 - (x % 1) < 1e-5:
                 x = math.ceil(x)
 
             x, c = combine_with_cent(
@@ -403,6 +427,7 @@ def money(x):
             x = x.replace('£', '').replace('pound', '').replace('penny', '')
             x = re.sub(r'[ ]+', ' ', x).strip()
             x, n = re.split("(\\d+(?:[\\.,']\\d+)?)", x)[1:]
+            n = replace_ribu_juta(n)
             x = re.sub(',', '', x, count=10)
             labels = []
             for c in n:
@@ -412,6 +437,8 @@ def money(x):
                     labels.append(1e9)
                 elif re.match('.*(k|K)$', c):
                     labels.append(1e3)
+                elif re.match('.*(j|J)$', c):
+                    labels.append(1e6)
 
             if cent:
                 x = float(x)
@@ -420,7 +447,7 @@ def money(x):
                 x = float(x)
                 x = x * l
 
-            if 1 - (x % 1) < 1e-5:
+            if isinstance(x, float) and 1 - (x % 1) < 1e-5:
                 x = math.ceil(x)
 
             x, c = combine_with_cent(
@@ -441,6 +468,7 @@ def money(x):
             x = x.replace('€', '').replace('euro', '').replace('cent', '')
             x = re.sub(r'[ ]+', ' ', x).strip()
             x, n = re.split("(\\d+(?:[\\.,']\\d+)?)", x)[1:]
+            n = replace_ribu_juta(n)
             x = re.sub(',', '', x, count=10)
             labels = []
             for c in n:
@@ -450,6 +478,8 @@ def money(x):
                     labels.append(1e9)
                 elif re.match('.*(k|K)$', c):
                     labels.append(1e3)
+                elif re.match('.*(j|J)$', c):
+                    labels.append(1e6)
 
             x = float(x)
             if cent:
@@ -457,7 +487,7 @@ def money(x):
             for l in labels:
                 x = x * l
 
-            if 1 - (x % 1) < 1e-5:
+            if isinstance(x, float) and 1 - (x % 1) < 1e-5:
                 x = math.ceil(x)
 
             x, c = combine_with_cent(
@@ -480,6 +510,7 @@ def money(x):
             x = x.replace('rm', '').replace('ringgit', '').replace('sen', '')
             x = re.sub(r'[ ]+', ' ', x).strip()
             x, n = re.split("(\\d+(?:[\\.,']\\d+)?)", x)[1:]
+            n = replace_ribu_juta(n)
             x = re.sub(',', '', x, count=10)
             labels = []
             for c in n:
@@ -489,6 +520,8 @@ def money(x):
                     labels.append(1e9)
                 elif re.match('.*(k|K)$', c):
                     labels.append(1e3)
+                elif re.match('.*(j|J)$', c):
+                    labels.append(1e6)
 
             if cent:
                 x = float(x)
@@ -497,7 +530,7 @@ def money(x):
                 x = float(x)
                 x = x * l
 
-            if 1 - (x % 1) < 1e-5:
+            if isinstance(x, float) and 1 - (x % 1) < 1e-5:
                 x = math.ceil(x)
 
             x, c = combine_with_cent(x)
@@ -505,6 +538,7 @@ def money(x):
         return x, None
 
     except Exception as e:
+        logger.debug(traceback.format_exc())
         return x, None
 
 
