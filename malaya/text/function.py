@@ -15,6 +15,7 @@ from malaya.text.english.words import words as _english_words
 from malaya.text.bahasa.words import words as _malay_words
 from malaya.text.bahasa.cambridge_words import words as _cambridge_malay_words
 from malaya.text.unicode.emoji import emoji
+from malaya.text.regex import _expressions
 
 STOPWORDS = set(stopwords + stopword_tatabahasa + stopwords_calon)
 STOPWORD_CALON = set(stopwords_calon)
@@ -567,6 +568,13 @@ def replace_mengeluh(string, replace_with='aduh'):
     return replace_any(string, MENGELUH, replace_with)
 
 
+def replace_sub(pattern, text, replace_left='.', replace_right='<prd>'):
+    alls = re.findall(pattern, text)
+    for a in alls:
+        text = text.replace(a, a.replace(replace_left, replace_right))
+    return text
+
+
 def split_into_sentences(text, minimum_length=5):
     """
     Sentence tokenizer.
@@ -582,12 +590,6 @@ def split_into_sentences(text, minimum_length=5):
     result: List[str]
     """
 
-    def replace_sub(pattern, text):
-        alls = re.findall(pattern, text)
-        for a in alls:
-            text = text.replace(a, a.replace('.', '<prd>'))
-        return text
-
     text = text.replace('\x97', '\n')
     text = '. '.join([s for s in text.split('\n') if len(s)])
     text = text + '.'
@@ -596,6 +598,7 @@ def split_into_sentences(text, minimum_length=5):
     text = text.replace('\n', ' ')
     text = re.sub(prefixes, '\\1<prd>', text)
     text = replace_sub(emails, text)
+    text = replace_sub(_expressions['title'], text)
     text = re.sub(websites, '<prd>\\1', text)
     text = re.sub(another_websites, '\\1<prd>', text)
     text = re.sub('[,][.]+', '<prd>', text)

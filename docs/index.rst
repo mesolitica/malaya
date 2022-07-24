@@ -54,9 +54,15 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
+   :caption: Tokenization Module
+
+   load-tokenizer-word
+   load-tokenizer-sentence
+
+.. toctree::
+   :maxdepth: 2
    :caption: Normalization Module
    
-   load-tokenizer
    load-preprocessing
    load-demoji
    load-spell-correction
