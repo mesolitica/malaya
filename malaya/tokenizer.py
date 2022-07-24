@@ -63,6 +63,8 @@ class Tokenizer:
             True to keep hypens.
         ic: bool, optional (default=True)
             True to keep Malaysian IC.
+        title: bool, optional (default=True)
+            True to keep title with dot, Dr. ayam -> ['Dr.', 'ayam']
         """
 
         pipeline = []
@@ -94,6 +96,10 @@ class Tokenizer:
         weights = kwargs.get('weight', True)
         hypens = kwargs.get('hypen', True)
         ic = kwargs.get('ic', True)
+        title = kwargs.get('title', True)
+
+        if title:
+            pipeline.append(self.regexes['title'])
 
         if urls:
             pipeline.append(self.regexes['url'])
@@ -214,6 +220,7 @@ class Tokenizer:
         escaped = html.unescape(string)
         tokenized = self.tok.findall(escaped)
         tokenized = [t[0] if isinstance(t, tuple) else t for t in tokenized]
+        tokenized = [re.sub(r'[ ]+', ' ', t).strip() for t in tokenized]
 
         if lowercase:
             tokenized = [t.lower() for t in tokenized]

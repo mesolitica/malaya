@@ -1,10 +1,12 @@
 from malaya.model.tf import Translation
+from malaya.model.huggingface import Generator
 from malaya.model.bigbird import Translation as BigBird_Translation
 from malaya.supervised import transformer as load_transformer
 from malaya.supervised import bigbird as load_bigbird
+from malaya.supervised import huggingface as load_huggingface
+from malaya.function import describe_availability, check_file
 from herpetologist import check_type
 from malaya.path import PATH_PREPROCESSING, S3_PATH_PREPROCESSING
-from malaya.function import check_file
 import json
 import logging
 
@@ -19,30 +21,67 @@ NLLB Metrics, https://github.com/facebookresearch/fairseq/tree/nllb#multilingual
 5. NLLB-200-Distilled, Dense, 600M, https://tinyurl.com/nllb200densedst600mmetrics, eng_Latn-zsm_Latn,63.5
 """
 
+"""
+Google Translation metrics (2022-07-23) on FLORES200, https://github.com/huseinzol05/malay-dataset/blob/master/translation/malay-english/flores200-en-ms-google-translate.ipynb:
+{'name': 'BLEU',
+ 'score': 39.12728212969207,
+ '_mean': -1.0,
+ '_ci': -1.0,
+ '_verbose': '71.1/47.2/32.7/22.8 (BP = 0.984 ratio = 0.984 hyp_len = 21679 ref_len = 22027)',
+ 'bp': 0.9840757522087613,
+ 'counts': [15406, 9770, 6435, 4256],
+ 'totals': [21679, 20682, 19685, 18688],
+ 'sys_len': 21679,
+ 'ref_len': 22027,
+ 'precisions': [71.0641634761751,
+  47.2391451503723,
+  32.68986537973076,
+  22.773972602739725],
+ 'prec_str': '71.1/47.2/32.7/22.8',
+ 'ratio': 0.9842012076088437}
+chrF2++ = 64.45
+"""
+
 _transformer_availability = {
     'small': {
         'Size (MB)': 42.7,
         'Quantized Size (MB)': 13.4,
-        'BLEU': 0.512,
+        'BLEU': 58.67129043177485,
+        'SacreBLEU Verbose': '80.2/63.8/52.8/44.4 (BP = 0.997 ratio = 0.997 hyp_len = 2621510 ref_len = 2630014)',
+        'SacreBLEU-chrF++-FLORES200': 64.46,
         'Suggested length': 256,
     },
     'base': {
         'Size (MB)': 234,
         'Quantized Size (MB)': 82.7,
-        'BLEU': 0.696,
+        'BLEU': 68.25956937012508,
+        'SacreBLEU Verbose': '86.3/73.3/64.1/56.8 (BP = 0.985 ratio = 0.985 hyp_len = 2591093 ref_len = 2630014)',
+        'SacreBLEU-chrF++-FLORES200': 66.28,
         'Suggested length': 256,
     },
     'bigbird': {
         'Size (MB)': 246,
         'Quantized Size (MB)': 63.7,
-        'BLEU': 0.551,
+        'BLEU': 30.753140464768745,
+        'SacreBLEU Verbose': '42.7/33.5/27.4/22.8 (BP = 1.000 ratio = 1.902 hyp_len = 5001959 ref_len = 2630014)',
+        'SacreBLEU-chrF++-FLORES200': 59.64,
         'Suggested length': 1024,
     },
     'small-bigbird': {
         'Size (MB)': 50.4,
         'Quantized Size (MB)': 13.1,
-        'BLEU': 0.522,
+        'BLEU': 30.753140464768745,
+        'SacreBLEU Verbose': '42.7/33.5/27.4/22.8 (BP = 1.000 ratio = 1.902 hyp_len = 5001959 ref_len = 2630014)',
+        'SacreBLEU-chrF++-FLORES200': 59.64,
         'Suggested length': 1024,
+    },
+    'noisy-base': {
+        'Size (MB)': 234,
+        'Quantized Size (MB)': 82.7,
+        'BLEU': 71.72549311084798,
+        'SacreBLEU Verbose': '86.3/74.8/67.2/61.0 (BP = 1.000 ratio = 1.002 hyp_len = 2004164 ref_len = 2001100)',
+        'SacreBLEU-chrF++-FLORES200': 63.31,
+        'Suggested length': 256,
     },
 }
 
@@ -51,7 +90,9 @@ def available_transformer():
     """
     List available transformer models.
     """
-    from malaya.function import describe_availability
+
+    logger.info('tested on 77k EN-MS test set generated from teacher semisupervised model, https://huggingface.co/datasets/mesolitica/en-ms')
+    logger.info('tested on FLORES200 EN-MS (eng_Latn-zsm_Latn) pair `dev` set, https://github.com/facebookresearch/flores/tree/main/flores200')
 
     return describe_availability(_transformer_availability)
 
@@ -60,10 +101,11 @@ def available_huggingface():
     """
     List available HuggingFace models.
     """
-    from malaya.function import describe_availability
 
+    logger.info('tested on 77k EN-MS test set generated from teacher semisupervised model, https://huggingface.co/datasets/mesolitica/en-ms')
+    logger.info('tested on FLORES200 EN-MS (eng_Latn-zsm_Latn) pair `dev` set, https://github.com/facebookresearch/flores/tree/main/flores200')
     logger.warning(
-        'test set generated from teacher semisupervised model, the models might generate better results compared to '
+        '77k EN-MS test set generated from teacher semisupervised model, the models might generate better results compared to '
         'to the teacher semisupervised model, thus lower BLEU score.'
     )
     return describe_availability(_huggingface_availability)
@@ -83,6 +125,7 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
         * ``'base'`` - Transformer BASE parameters.
         * ``'bigbird'`` - BigBird BASE parameters.
         * ``'small-bigbird'`` - BigBird SMALL parameters.
+        * ``'noisy-base'`` - Transformer BASE parameters trained on noisy dataset.
 
     quantized : bool, optional (default=False)
         if True, will load 8-bit quantized model.
@@ -142,3 +185,50 @@ def dictionary(**kwargs):
     except BaseException:
         raise Exception('failed to load EN-MS vocab, please try clear cache or rerun again.')
     return translator
+
+
+def _huggingface(model, initial_text, **kwargs):
+
+    try:
+        from transformers import TFT5ForConditionalGeneration
+    except BaseException:
+        raise ModuleNotFoundError(
+            'transformers not installed. Please install it by `pip3 install transformers` and try again.'
+        )
+
+    if 't5' in model:
+        huggingface_class = TFT5ForConditionalGeneration
+
+    return load_huggingface.load_automodel(
+        model=model,
+        model_class=Generator,
+        huggingface_class=huggingface_class,
+        initial_text=initial_text,
+        **kwargs
+    )
+
+
+@check_type
+def huggingface(model: str = 'mesolitica/t5-tiny-finetuned-noisy-en-ms', **kwargs):
+    """
+    Load HuggingFace model to translate EN-to-MS.
+
+    Parameters
+    ----------
+    model : str, optional (default='base')
+        Model architecture supported. Allowed values:
+
+        * ``'mesolitica/t5-super-tiny-finetuned-noisy-en-ms'`` - https://huggingface.co/mesolitica/t5-super-tiny-finetuned-noisy-en-ms
+        * ``'mesolitica/t5-tiny-finetuned-noisy-en-ms'`` - https://huggingface.co/mesolitica/t5-tiny-finetuned-noisy-en-ms
+        * ``'mesolitica/t5-small-finetuned-noisy-en-ms'`` - https://huggingface.co/mesolitica/t5-small-finetuned-noisy-en-ms
+
+    Returns
+    -------
+    result: malaya.model.huggingface.Generator
+    """
+    model = model.lower()
+    if model not in _huggingface_availability:
+        raise ValueError(
+            'model not supported, please check supported models from `malaya.translation.en_ms.available_huggingface()`.'
+        )
+    return _huggingface(model=model, initial_text='terjemah Inggeris ke Melayu: ', **kwargs)

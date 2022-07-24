@@ -59,7 +59,7 @@ _depan_date_string = '(?:\\s|\\d+)\\s*(?:minggu|bulan|tahun|hari|thun|hri|mnggu|
 
 _number = r"\b\d+(?:[\.,']\d+)?\b"
 _percentage = _number + '%'
-_money = r"(?:(?:[$€£¢]|RM|rm)\s*\d+(?:[\.,']\d+)?(?:[MmKkBb](?:n|(?:il(?:lion)?))?)?)|(?:\d+(?:[\.,']\d+)?(?:[MmKkBb](?:n|(?:il(?:lion)?))?)?\s*(?:[$€£¢]|sen|ringgit|cent|penny))"
+_money = r"(?:(?:[$€£¢]|RM|rm)\s*\d+(?:[\.,']\d+)?\s*(?:[MmKkBb](?:n|(?:i(?:lion|llion)?))?)?)|(?:\d+(?:[\.,']\d+)?(?:[MmKkBb](?:n|(?:i(?:lion|llion)?))?)?\s*(?:[$€£¢]|sen|ringgit|cent|penny))"
 _temperature = "-?\\d+(?:[\\.,']\\d+)?\\s*(?:K|Kelvin|kelvin|Kvin|F|f|Farenheit|farenheit|C|c|Celcius|celcius|clcius|celsius)\\b"
 _distance = "-?\\d+(?:[\\.,']\\d+)?\\s*(?:kaki|mtrs|metres|meters|feet|km|m|cm|feet|feets|miles|batu|inch|inches|feets)\\b"
 _volume = "-?\\d+(?:[\\.,']\\d+)?\\s*(?:ml|ML|l|L|mililiter|Mililiter|millilitre|liter|litre|litres|liters|gallon|gallons|galon)\\b"
@@ -133,4 +133,5 @@ _expressions = {
     'weight': _weight,
     'ic': r'(([[0-9]{2})(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01]))-([0-9]{2})-([0-9]{4})',
     'bracket': r'(\(.*?\))',
+    'title': r'Datuk\.|datuk\.|Datin.\|datin.\|Datik\.|datik\.|dr\.|Dr\.|DR\.|yb\.|YB\.|hj\.|HJ\.|Hj\.|ybm\.|YBM\.|Ybm\.|tyt\.|TYT\.|yab\.|YAB\.|Yab\.|ybm\.|YBM\.|Ybm\.|yabhg\.|YABHG.\|Yabhg\.|ybhg\.|YBHG\.|Ybhg\.|phd\.|PhD\.',
 }

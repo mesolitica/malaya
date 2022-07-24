@@ -1,12 +1,11 @@
 from malaya.model.tf import Translation
-from malaya.model.huggingface import Generator
 from malaya.model.bigbird import Translation as BigBird_Translation
 from malaya.supervised import transformer as load_transformer
 from malaya.supervised import bigbird as load_bigbird
-from malaya.supervised import huggingface as load_huggingface
 from malaya.function import describe_availability
 from herpetologist import check_type
 from malaya.translation.en_ms import dictionary as load_dictionary
+from malaya.translation.en_ms import _huggingface
 import logging
 
 logger = logging.getLogger('malaya.translation.ms_en')
@@ -18,6 +17,27 @@ NLLB Metrics, https://github.com/facebookresearch/fairseq/tree/nllb#multilingual
 3. NLLB-200, Dense, 1.3B, https://tinyurl.com/nllb200dense1bmetrics, zsm_Latn-eng_Latn,66.4
 4. NLLB-200-Distilled, Dense, 1.3B, https://tinyurl.com/nllb200densedst1bmetrics, zsm_Latn-eng_Latn,66.2
 5. NLLB-200-Distilled, Dense, 600M, https://tinyurl.com/nllb200densedst600mmetrics, zsm_Latn-eng_Latn,64.3
+"""
+
+"""
+Google Translation metrics (2022-07-23) on FLORES200, https://github.com/huseinzol05/malay-dataset/blob/master/translation/malay-english/flores200-ms-en-google-translate.ipynb:
+{'name': 'BLEU',
+ 'score': 36.152220848177286,
+ '_mean': -1.0,
+ '_ci': -1.0,
+ '_verbose': '68.2/43.5/29.7/20.5 (BP = 0.986 ratio = 0.986 hyp_len = 23243 ref_len = 23570)',
+ 'bp': 0.9860297505310752,
+ 'counts': [15841, 9688, 6318, 4147],
+ 'totals': [23243, 22246, 21249, 20252],
+ 'sys_len': 23243,
+ 'ref_len': 23570,
+ 'precisions': [68.15385277287785,
+  43.54940213971051,
+  29.733163913595934,
+  20.476989926920798],
+ 'prec_str': '68.2/43.5/29.7/20.5',
+ 'ratio': 0.986126431904964}
+chrF2++ = 60.27
 """
 
 _transformer_availability = {
@@ -190,24 +210,7 @@ def huggingface(model: str = 'mesolitica/t5-tiny-finetuned-noisy-ms-en', **kwarg
         raise ValueError(
             'model not supported, please check supported models from `malaya.translation.ms_en.available_huggingface()`.'
         )
-
-    try:
-        from transformers import TFT5ForConditionalGeneration
-    except BaseException:
-        raise ModuleNotFoundError(
-            'transformers not installed. Please install it by `pip3 install transformers` and try again.'
-        )
-
-    if 't5' in model:
-        huggingface_class = TFT5ForConditionalGeneration
-
-    return load_huggingface.load_automodel(
-        model=model,
-        model_class=Generator,
-        huggingface_class=huggingface_class,
-        initial_text='terjemah Melayu ke Inggeris: ',
-        **kwargs
-    )
+    return _huggingface(model=model, initial_text='terjemah Melayu ke Inggeris: ', **kwargs)
 
 
 def dictionary(**kwargs):

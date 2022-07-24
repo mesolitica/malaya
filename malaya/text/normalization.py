@@ -7,6 +7,7 @@ from malaya.text.tatabahasa import (
 )
 from malaya.text.rules import rules_normalizer, rules_compound_normalizer
 from malaya.text.function import ENGLISH_WORDS, MALAY_WORDS, case_of
+import math
 
 ignore_words = ['ringgit', 'sen']
 ignore_postfix = ['adalah']
@@ -335,6 +336,9 @@ def money(x):
                 x = float(x)
                 x = x * l
 
+            if 1 - (x % 1) < 1e-5:
+                x = math.ceil(x)
+
             x, c = combine_with_cent(
                 x, currency='$', currency_end='dollar', cent='cent'
             )
@@ -377,6 +381,9 @@ def money(x):
                 x = float(x)
                 x = x * l
 
+            if 1 - (x % 1) < 1e-5:
+                x = math.ceil(x)
+
             x, c = combine_with_cent(
                 x, currency='$', currency_end='dollar', cent='cent'
             )
@@ -413,6 +420,9 @@ def money(x):
                 x = float(x)
                 x = x * l
 
+            if 1 - (x % 1) < 1e-5:
+                x = math.ceil(x)
+
             x, c = combine_with_cent(
                 x, currency='£', currency_end='pound', cent='cent'
             )
@@ -446,6 +456,9 @@ def money(x):
                 x = x / 100
             for l in labels:
                 x = x * l
+
+            if 1 - (x % 1) < 1e-5:
+                x = math.ceil(x)
 
             x, c = combine_with_cent(
                 x, currency='€', currency_end='euro', cent='cent'
@@ -483,6 +496,9 @@ def money(x):
             for l in labels:
                 x = float(x)
                 x = x * l
+
+            if 1 - (x % 1) < 1e-5:
+                x = math.ceil(x)
 
             x, c = combine_with_cent(x)
             return re.sub(r'[ ]+', ' ', x.lower()).strip(), c
