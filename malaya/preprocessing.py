@@ -11,7 +11,7 @@ from malaya.function import validator
 from typing import List, Callable
 import logging
 
-logger = logging.getLogger('malaya.preprocessing')
+logger = logging.getLogger(__name__)
 
 _annotate = [
     'hashtag',

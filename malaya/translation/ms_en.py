@@ -8,7 +8,7 @@ from malaya.translation.en_ms import dictionary as load_dictionary
 from malaya.translation.en_ms import _huggingface
 import logging
 
-logger = logging.getLogger('malaya.translation.ms_en')
+logger = logging.getLogger(__name__)
 
 """
 NLLB Metrics, https://github.com/facebookresearch/fairseq/tree/nllb#multilingual-translation-models:

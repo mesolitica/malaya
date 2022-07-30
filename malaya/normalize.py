@@ -57,7 +57,7 @@ from herpetologist import check_type
 from typing import Callable, List
 import logging
 
-logger = logging.getLogger('malaya.normalize')
+logger = logging.getLogger(__name__)
 
 
 def normalized_entity(normalized):
@@ -209,8 +209,8 @@ class Normalizer:
         check_english_func=is_english,
         check_malay_func=is_malay,
         translator: Callable = None,
-        language_detection_word_func: Callable = None,
-        acceptable_language_detection: List[str] = ['MS', 'NOT_LANG'],
+        language_detection_word: Callable = None,
+        acceptable_language_detection: List[str] = ['EN', 'CAPITAL', 'NOT_LANG'],
         segmenter: Callable = None,
         **kwargs,
     ):
@@ -259,10 +259,10 @@ class Normalizer:
             function to check a word in malay dictionary, default is malaya.text.is_malay.
         translator: Callable, optional (default=None)
             function to translate EN word to MS word.
-        language_detection_word_func: Callable, optional (default=None)
+        language_detection_word: Callable, optional (default=None)
             function to detect language for each words to get better translation results.
-        acceptable_language_detection: List[str], optional (default=['ms'])
-            only translate substrings if the results from `language_detection_word_func` is in `acceptable_language_detection`.
+        acceptable_language_detection: List[str], optional (default=['EN', 'CAPITAL', 'NOT_LANG'])
+            only translate substrings if the results from `language_detection_word` is in `acceptable_language_detection`.
         segmenter: Callable, optional (default=None)
             function to segmentize word.
             If provide, it will expand a word, apaitu -> apa itu
@@ -404,7 +404,7 @@ class Normalizer:
                     selected_word = word[:-1]
 
                 if found:
-                    if translator is not None:
+                    if translator is not None and language_detection_word is None:
                         s = f'index: {index}, word: {word}, condition to translate inside checking'
                         logger.debug(s)
                         translated = translator(selected_word)
@@ -789,7 +789,7 @@ class Normalizer:
                         selected = word[:-1]
                     else:
                         selected = word
-                        if translator is not None and language_detection_word_func is None:
+                        if translator is not None and language_detection_word is None:
                             s = f'index: {index}, word: {word}, condition to translate'
                             logger.debug(s)
                             translated = translator(word)
@@ -819,8 +819,42 @@ class Normalizer:
         result = re.sub(r'[ ]+', ' ', result).strip()
         normalized = re.sub(r'[ ]+', ' ', normalized).strip()
 
-        if language_detection_word_func is not None:
-            result_langs = language_detection_word_func(result.split())
+        if translator is not None and language_detection_word is not None:
+            splitted = result.split()
+            result_langs = language_detection_word(splitted)
+
+            logger.debug(f'condition translator and language_detection_word, {result_langs}')
+
+            new_result, temp, temp_lang = [], [], []
+            for no_r, r in enumerate(result_langs):
+                s = f'index: {no_r}, label: {r}, word: {splitted[no_r]}, queue: {new_result}'
+                logger.debug(s)
+                if r in acceptable_language_detection:
+                    temp.append(splitted[no_r])
+                    temp_lang.append(r)
+                else:
+                    if len(temp):
+                        if 'EN' in temp_lang:
+                            logger.debug(f'condition len(temp) and EN in temp_lang, {temp}, {temp_lang}')
+                            translated = translator(' '.join(temp))
+                            new_result.extend(translated.split())
+                        else:
+                            logger.debug(f'condition len(temp) and EN not in temp_lang, {temp}, {temp_lang}')
+                            new_result.extend(temp)
+                        temp = []
+                        temp_lang = []
+                    new_result.append(splitted[no_r])
+
+            if len(temp):
+                if 'EN' in temp_lang:
+                    logger.debug(f'condition len(temp) and EN in temp_lang, {temp}, {temp_lang}')
+                    translated = translator(' '.join(temp))
+                    new_result.extend(translated.split())
+                else:
+                    logger.debug(f'condition len(temp) and EN not in temp_lang, {temp}, {temp_lang}')
+                    new_result.extend(temp)
+
+            result = ' '.join(new_result)
 
         if normalize_entity:
             dates_, money_ = normalized_entity(normalized)

@@ -10,7 +10,7 @@ from malaya.path import PATH_PREPROCESSING, S3_PATH_PREPROCESSING
 import json
 import logging
 
-logger = logging.getLogger('malaya.translation.en_ms')
+logger = logging.getLogger(__name__)
 
 """
 NLLB Metrics, https://github.com/facebookresearch/fairseq/tree/nllb#multilingual-translation-models:
@@ -78,11 +78,35 @@ _transformer_availability = {
     'noisy-base': {
         'Size (MB)': 234,
         'Quantized Size (MB)': 82.7,
-        'BLEU': 71.72549311084798,
-        'SacreBLEU Verbose': '86.3/74.8/67.2/61.0 (BP = 1.000 ratio = 1.002 hyp_len = 2004164 ref_len = 2001100)',
-        'SacreBLEU-chrF++-FLORES200': 63.31,
+        'BLEU': 67.28571638641796,
+        'SacreBLEU Verbose': '86.1/72.7/63.3/55.8 (BP = 0.981 ratio = 0.981 hyp_len = 2580126 ref_len = 2630014)',
+        'SacreBLEU-chrF++-FLORES200': 66.20,
         'Suggested length': 256,
     },
+}
+
+_huggingface_availability = {
+    'mesolitica/t5-super-tiny-finetuned-noisy-en-ms': {
+        'Size (MB)': 50.8,
+        'BLEU': 59.92897086989418,
+        'SacreBLEU Verbose': '79.8/64.0/54.1/46.6 (BP = 1.000 ratio = 1.008 hyp_len = 2017101 ref_len = 2001100)',
+        'SacreBLEU-chrF++-FLORES200': 59.12,
+        'Suggested length': 256,
+    },
+    'mesolitica/t5-tiny-finetuned-noisy-en-ms': {
+        'Size (MB)': 139,
+        'BLEU': 65.9069151371865,
+        'SacreBLEU Verbose': '83.0/69.3/60.7/54.1 (BP = 1.000 ratio = 1.001 hyp_len = 2003273 ref_len = 2001100)',
+        'SacreBLEU-chrF++-FLORES200': 59.91,
+        'Suggested length': 256,
+    },
+    'mesolitica/t5-small-finetuned-noisy-en-ms': {
+        'Size (MB)': 242,
+        'BLEU': 63.806656594496836,
+        'SacreBLEU Verbose': '82.1/67.5/58.3/51.3 (BP = 1.000 ratio = 1.001 hyp_len = 2002291 ref_len = 2001100)',
+        'SacreBLEU-chrF++-FLORES200': 62.60,
+        'Suggested length': 256,
+    }
 }
 
 

@@ -9116,7 +9116,6 @@ words = {
     'seloroh',
     'sadapan',
     'telanjangi',
-    'but',
     'kecundang',
     'kecambah',
     'kinjat',

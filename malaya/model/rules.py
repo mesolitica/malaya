@@ -59,10 +59,10 @@ class LanguageDict:
                 results.append('NOT_LANG')
             elif check_ratio_punct(word) > 0.66666:
                 results.append('NOT_LANG')
-            elif is_malay(word.lower()):
-                results.append('MS')
             elif self.d.check(word):
                 results.append('EN')
+            elif is_malay(word.lower()):
+                results.append('MS')
             else:
                 results.append('REPLACE_ME')
                 others.append(word)

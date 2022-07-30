@@ -6,7 +6,7 @@ import shutil
 from malaya.function.server import serve, find_open_port
 import logging
 
-logger = logging.getLogger('malaya.html')
+logger = logging.getLogger(__name__)
 
 try:
     from html import escape

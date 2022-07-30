@@ -13,8 +13,9 @@ python3 -m venv tf-nvidia
 2. Install NVIDIA Tensorflow,
 
 ```bash
+~/tf-nvidia/bin/pip3 install wheel
 ~/tf-nvidia/bin/pip3 install nvidia-pyindex
-~/tf-nvidia/bin/pip3 install nvidia-tensorflow
+~/tf-nvidia/bin/pip3 install nvidia-tensorflow==1.15.5+nv22.5
 ```
 
 3. Run python3 code to test NVIDIA Tensorflow,
@@ -33,7 +34,7 @@ python3 -m venv tf-nvidia
 5. Install tensor2tensor,
 
 ```bash
-~/tf-nvidia/bin/pip3 install tensor2tensor --no-deps
+~/tf-nvidia/bin/pip3 install git+https://github.com/huseinzol05/tensor2tensor --no-deps
 ~/tf-nvidia/bin/pip3 install requests \
 tensorflow-probability==0.7.0 \
 scipy sympy tqdm gym==0.17.1 \

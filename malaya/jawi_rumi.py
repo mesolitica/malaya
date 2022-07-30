@@ -35,7 +35,7 @@ def deep_model(quantized: bool = False, **kwargs):
     )
 
 
-def transformer(model='small', quantized: bool = False, **kwargs):
+def transformer(model='base', quantized: bool = False, **kwargs):
     """
     """
     return load_transformer.load(

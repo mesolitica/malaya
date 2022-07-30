@@ -30,7 +30,7 @@ import tensorflow as tf
 import itertools
 import logging
 
-logger = logging.getLogger('malaya.model.alignment')
+logger = logging.getLogger(__name__)
 
 
 def read_text(text, lowercase=True):
