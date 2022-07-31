@@ -126,6 +126,7 @@ _expressions = {
     'normalize_elong1': r'(.)\1{1,}',
     'word': r'(?:[\w_]+)',
     'hypen': r'\w+(?:-\w+)+',
+    'apostrophe': r'\w+\'(?:s)?',
     'temperature': _temperature,
     'distance': _distance,
     'volume': _volume,

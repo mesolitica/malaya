@@ -62,7 +62,7 @@ laughing = {
     'hahha'
 }
 
-mengeluh = {'haih', 'hais', 'aduh', 'adoi', 'ei', 'uh', 'argh', 'hoih'}
+mengeluh = {'haih', 'hais', 'aduh', 'adoi', 'argh', 'hoih'}
 
 partial_noisy = {
     'uwuu',

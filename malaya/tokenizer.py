@@ -186,6 +186,7 @@ class Tokenizer:
         if hypens:
             pipeline.append(self.regexes['hypen'])
 
+        pipeline.append(self.regexes['apostrophe'])
         pipeline.append(self.regexes['word'])
 
         if emoticons:

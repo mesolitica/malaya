@@ -4656,6 +4656,12 @@ rules_normalizer = {
     'bodo': 'bodoh',
     'duk': 'asyik',
     'betui': 'betul',
+    'bf': 'teman lelaki',
+    'gf': 'teman wanita',
+    'bff': 'kawan baik selamanya',
+    'dapnya': 'sedapnya',
+    'dapnye': 'sedapnya',
+    'gais': 'semua orang',
 }
 
 rules_normalizer_rev = {v: k for k, v in rules_normalizer.items()}
