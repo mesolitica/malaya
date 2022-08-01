@@ -16,6 +16,9 @@ from malaya.path import (
     LANGUAGE_DETECTION_VOCAB,
 )
 from herpetologist import check_type
+import logging
+
+logger = logging.getLogger(__name__)
 
 lang_labels = {
     0: 'eng',

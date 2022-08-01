@@ -8,7 +8,7 @@
 
 ## prepare dataset
 
-1. Get the dataset at, [malay-dataset/parsing/dependency](https://github.com/huseinzol05/Malay-Dataset/tree/master/parsing).
+1. Get the dataset at https://github.com/huseinzol05/Malay-Dataset/tree/master/parsing/dependency
 
 ## training pretrained models
 

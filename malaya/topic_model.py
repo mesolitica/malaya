@@ -11,6 +11,7 @@ from malaya.function import validator
 from malaya.text.vectorizer import skipgrams
 from malaya.text.ngram import ngrams as ngrams_generator
 from herpetologist import check_type
+from malaya.function import describe_availability
 from typing import List, Tuple
 
 
@@ -391,7 +392,6 @@ def available_vectorizer():
     """
     List available vectorizer topic modeling.
     """
-    from malaya.function import describe_availability
 
     return describe_availability(_vectorizer_availability)
 

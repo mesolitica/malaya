@@ -8,7 +8,7 @@
 
 ## prepare dataset
 
-1. Get the dataset at, [sentiment/semi-supervised/twitter](https://github.com/huseinzol05/Malay-Dataset/tree/master/sentiment/semi-supervised/twitter).
+1. Get the dataset at https://github.com/huseinzol05/malay-dataset/tree/master/sentiment/semisupervised-twitter-3class
 
 ## training pretrained models
 

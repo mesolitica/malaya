@@ -1291,3 +1291,91 @@ class Seq2SeqLSTM_Split(Abstract):
             replaced_me[v[0]][v[1]] = results[k]
 
         return [' '.join(r) for r in replaced_me]
+
+
+class JawiRumi(T2T, Seq2Seq):
+    def __init__(self, input_nodes, output_nodes, sess, encoder, **kwargs):
+        T2T.__init__(
+            self,
+            input_nodes=input_nodes,
+            output_nodes=output_nodes,
+            sess=sess,
+            encoder=encoder,
+        )
+
+    @check_type
+    def greedy_decoder(self, strings: List[str]):
+        """
+        Convert list of jawi strings to rumi strings.
+        'ايسو بيل تنب دباوا ك كابينيت - صيفالدين' -> 'isu bil tnb dibawa ke kabinet - saifuddin'
+
+        Parameters
+        ----------
+        strings : List[str]
+
+        Returns
+        -------
+        result: List[str]
+        """
+        return self._greedy_decoder(strings)
+
+    def beam_decoder(self, strings: List[str], beam_size: int = 3, temperature: float = 0.5):
+        """
+        Convert list of jawi strings to rumi strings.
+        'ايسو بيل تنب دباوا ك كابينيت - صيفالدين' -> 'isu bil tnb dibawa ke kabinet - saifuddin'
+
+        Parameters
+        ----------
+        strings : List[str]
+        beam_size: int, optional (default=3)
+        temperature: float, optional (default=0.5)
+
+        Returns
+        -------
+        result: List[str]
+        """
+        return self._beam_decoder(strings, beam_size=beam_size, temperature=temperature)
+
+
+class RumiJawi(T2T, Seq2Seq):
+    def __init__(self, input_nodes, output_nodes, sess, encoder, **kwargs):
+        T2T.__init__(
+            self,
+            input_nodes=input_nodes,
+            output_nodes=output_nodes,
+            sess=sess,
+            encoder=encoder,
+        )
+
+    @check_type
+    def greedy_decoder(self, strings: List[str]):
+        """
+        Convert list of jawi strings to rumi strings.
+        'isu bil tnb dibawa ke kabinet - saifuddin' -> 'ايسو بيل تنب دباوا ك كابينيت - صيفالدين'
+
+        Parameters
+        ----------
+        strings : List[str]
+
+        Returns
+        -------
+        result: List[str]
+        """
+        return self._greedy_decoder(strings)
+
+    def beam_decoder(self, strings: List[str], beam_size: int = 3, temperature: float = 0.5):
+        """
+        Convert list of jawi strings to rumi strings.
+        'isu bil tnb dibawa ke kabinet - saifuddin' -> 'ايسو بيل تنب دباوا ك كابينيت - صيفالدين'
+
+        Parameters
+        ----------
+        strings : List[str]
+        beam_size: int, optional (default=3)
+        temperature: float, optional (default=0.5)
+
+        Returns
+        -------
+        result: List[str]
+        """
+        return self._beam_decoder(strings, beam_size=beam_size, temperature=temperature)

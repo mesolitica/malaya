@@ -19,6 +19,7 @@ from malaya.model.xlnet import KeyphraseXLNET
 from malaya.path import MODEL_VOCAB, MODEL_BPE
 from malaya.function import validator
 from malaya.graph.pagerank import pagerank
+from malaya.function import describe_availability
 from herpetologist import check_type
 
 
@@ -400,11 +401,8 @@ def available_transformer():
     """
     List available transformer keyword similarity model.
     """
-    from malaya.function import describe_availability
 
-    return describe_availability(
-        _transformer_availability, text='tested on 20% test set.'
-    )
+    return describe_availability(_transformer_availability)
 
 
 @check_type

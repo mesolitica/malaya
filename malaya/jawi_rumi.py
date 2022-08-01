@@ -1,48 +1,72 @@
-from malaya.supervised import t2t
-from malaya.supervised.settings import jawi_left, jawi_right
-from malaya.text.function import rumi_jawi_textcleaning
+from malaya.supervised import transformer as load_transformer
+from malaya.model.tf import JawiRumi
+from malaya.function import describe_availability
 from herpetologist import check_type
 from typing import List
+import logging
+
+logger = logging.getLogger(__name__)
+
+_transformer_availability = {
+    'small': {
+        'Size (MB)': 42.7,
+        'Quantized Size (MB)': 13.1,
+        'CER': 0.004477071098945696,
+        'WER': 0.013642122192393089,
+        'Suggested length': 256,
+    },
+    'base': {
+        'Size (MB)': 234,
+        'Quantized Size (MB)': 63.8,
+        'CER': 0.0007639846016540444,
+        'WER': 0.003042474270655385,
+        'Suggested length': 256,
+    },
+}
 
 
-@check_type
-def deep_model(quantized: bool = False, **kwargs):
+def available_transformer():
     """
-    Load LSTM + Bahdanau Attention Rumi to Jawi model,
-    384 filter size, 2 layers, character level.
-    Original size 11MB, quantized size 2.92MB .
+    List available transformer models.
+    """
 
-    CER on test set: 0.07554890502189067
-    WER on test set: 0.28035537906124763
+    logger.info('tested on first 10k Jawi-Rumi test set, dataset at https://huggingface.co/datasets/mesolitica/rumi-jawi')
+
+    return describe_availability(_transformer_availability)
+
+
+def transformer(model='base', quantized: bool = False, **kwargs):
+    """
+    Load transformer encoder-decoder model to convert jawi to rumi.
 
     Parameters
     ----------
+    model : str, optional (default='base')
+        Model architecture supported. Allowed values:
+
+        * ``'small'`` - Transformer SMALL parameters.
+        * ``'base'`` - Transformer BASE parameters.
+
     quantized : bool, optional (default=False)
         if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
 
     Returns
     -------
-    result: malaya.model.tf.Seq2SeqLSTM class
+    result: malaya.model.tf.JawiRumi class
     """
-    return t2t.load_lstm(
-        module='jawi-rumi',
-        left_dict=jawi_right,
-        right_dict=jawi_left,
-        cleaning=rumi_jawi_textcleaning,
-        quantized=quantized,
-        **kwargs,
-    )
 
+    model = model.lower()
+    if model not in _transformer_availability:
+        raise ValueError(
+            'model not supported, please check supported models from `malaya.jawi_rumi.available_transformer()`.'
+        )
 
-def transformer(model='base', quantized: bool = False, **kwargs):
-    """
-    """
     return load_transformer.load(
         module='jawi-rumi',
         model=model,
         encoder='yttm',
-        model_class=TrueCase,
+        model_class=JawiRumi,
         quantized=quantized,
         **kwargs,
     )

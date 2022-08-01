@@ -11,7 +11,7 @@ Original implementation at https://github.com/nikitakit/self-attentive-parser. W
 
 ## prepare dataset
 
-1. Get the dataset at, [malay-dataset/parsing/constituency](https://github.com/huseinzol05/Malay-Dataset/tree/master/parsing/constituency).
+1. Get the dataset at https://github.com/huseinzol05/Malay-Dataset/tree/master/parsing/constituency
 
 2. Split the dataset into train and test set, after that augment the dataset, [malay-dataset/parsing/constituency/augmented.ipynb](https://github.com/huseinzol05/Malay-Dataset/blob/master/parsing/constituency/augmented.ipynb).
 

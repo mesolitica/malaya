@@ -1,6 +1,10 @@
 from malaya.supervised import classification
 from malaya.path import PATH_SENTIMENT, S3_PATH_SENTIMENT
 from herpetologist import check_type
+from malaya.function import describe_availability
+import logging
+
+logger = logging.getLogger(__name__)
 
 label = ['negative', 'neutral', 'positive']
 
@@ -68,11 +72,10 @@ def available_transformer():
     """
     List available transformer sentiment analysis models.
     """
-    from malaya.function import describe_availability
 
-    return describe_availability(
-        _transformer_availability, text='tested on 20% test set.'
-    )
+    logger.info('tested on test set at https://github.com/huseinzol05/malay-dataset/tree/master/sentiment/semisupervised-twitter-3class')
+
+    return describe_availability(_transformer_availability)
 
 
 def multinomial(**kwargs):

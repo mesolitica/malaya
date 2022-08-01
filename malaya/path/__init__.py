@@ -27,6 +27,7 @@ TRANSLATION_MS_EN_VOCAB = 'bpe/ms-en.subwords'
 TRUE_CASE_VOCAB = 'bpe/true-case.yttm'
 SEGMENTATION_VOCAB = 'bpe/segmentation.yttm'
 PEGASUS_BPE_MODEL = 'bpe/pegasus.wordpiece'
+RUMI_JAWI_VOCAB = 'bpe/rumi-jawi.yttm'
 
 LANGUAGE_DETECTION_BOW = 'bpe/bow-language-detection.pkl'
 LANGUAGE_DETECTION_VOCAB = 'bpe/language-detection.yttm'
@@ -72,6 +73,8 @@ LM_VOCAB = {
     'true-case': TRUE_CASE_VOCAB,
     'segmentation': SEGMENTATION_VOCAB,
     'knowledge-graph-generator': MS_EN_BPE_MODEL,
+    'jawi-rumi': RUMI_JAWI_VOCAB,
+    'rumi-jawi': RUMI_JAWI_VOCAB,
 }
 
 # sorted based on modules, started from augmentation until toxic

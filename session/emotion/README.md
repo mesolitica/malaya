@@ -8,7 +8,7 @@
 
 ## prepare dataset
 
-1. Get the dataset at, [corpus/emotion/lexicon](https://github.com/huseinzol05/Malay-Dataset/tree/master/corpus/emotion/lexicon).
+1. Get the dataset at https://github.com/huseinzol05/malay-dataset/tree/master/corpus/emotion
 
 ## training pretrained models
 

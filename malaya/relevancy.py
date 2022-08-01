@@ -1,5 +1,9 @@
 from malaya.supervised import classification
 from herpetologist import check_type
+from malaya.function import describe_availability
+import logging
+
+logger = logging.getLogger(__name__)
 
 label = ['not relevant', 'relevant']
 
@@ -91,11 +95,10 @@ def available_transformer():
     """
     List available transformer relevancy analysis models.
     """
-    from malaya.function import describe_availability
 
-    return describe_availability(
-        _transformer_availability, text='tested on 20% test set.'
-    )
+    logger.info('trained on 90% dataset, tested on another 10% test set, dataset at https://github.com/huseinzol05/malaya/blob/master/session/relevancy/download-data.ipynb')
+
+    return describe_availability(_transformer_availability)
 
 
 @check_type

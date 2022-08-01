@@ -2,7 +2,11 @@ from malaya.supervised import t5 as t5_load
 from malaya.supervised import transformer as load_transformer
 from malaya.model.tf import Tatabahasa
 from malaya.model.t5 import Tatabahasa as T5_Tatabahasa
+from malaya.function import describe_availability
 from herpetologist import check_type
+import logging
+
+logger = logging.getLogger(__name__)
 
 _transformer_tagging_availability = {
     'small': {
@@ -144,8 +148,6 @@ def describe_tagging():
           },
          ]
 
-    from malaya.function import describe_availability
-
     return describe_availability(d, transpose=False)
 
 
@@ -153,27 +155,21 @@ def available_transformer_tagging():
     """
     List available transformer tagging models.
     """
-    from malaya.function import describe_availability
+    logger.info('tested on 10k generated dataset at https://github.com/huseinzol05/malaya/tree/master/session/tatabahasa')
 
-    return describe_availability(
-        _transformer_tagging_availability,
-        text='tested on 10k kesalahan tatabahasa texts.',
-    )
+    return describe_availability(_transformer_tagging_availability)
 
 
 def available_transformer():
     """
     List available transformer models.
     """
-    from malaya.function import describe_availability
+    logger.info('tested on 7.5k generated dataset at https://github.com/huseinzol05/malaya/blob/master/session/tatabahasa/t5/prepare-tatabahasa.ipynb')
 
-    return describe_availability(
-        _transformer_availability,
-        text='tested on 7.5k kesalahan tatabahasa texts.',
-    )
+    return describe_availability(_transformer_availability)
 
 
-@ check_type
+@check_type
 def transformer(model: str = 'small-t5', quantized: bool = False, **kwargs):
     """
     Load Malaya transformer encoder-decoder model to correct a `kesalahan tatabahasa` text.

@@ -2,6 +2,10 @@ import re
 from malaya.text.tatabahasa import tatabahasa_dict, hujung, permulaan
 from malaya.supervised import tag
 from herpetologist import check_type
+from malaya.function import describe_availability
+import logging
+
+logger = logging.getLogger(__name__)
 
 label = [
     'ADJ',
@@ -89,8 +93,6 @@ def describe():
         {'Tag': 'X', 'Description': 'Other'},
     ]
 
-    from malaya.function import describe_availability
-
     return describe_availability(d, transpose=False)
 
 
@@ -98,11 +100,9 @@ def available_transformer():
     """
     List available transformer Part-Of-Speech Tagging models.
     """
-    from malaya.function import describe_availability
+    logger.info('trained on 80% dataset, tested on another 20% test set, dataset at https://github.com/huseinzol05/Malay-Dataset/tree/master/tagging/part-of-speech')
 
-    return describe_availability(
-        _transformer_availability, text='tested on 20% test set.'
-    )
+    return describe_availability(_transformer_availability)
 
 
 def _naive_POS_word(word):

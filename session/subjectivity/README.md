@@ -8,7 +8,7 @@
 
 ## prepare dataset
 
-1. Get the dataset at, [corpus/subjectivity](https://github.com/huseinzol05/Malay-Dataset/tree/master/corpus/subjectivity).
+1. Get the dataset at https://github.com/huseinzol05/Malay-Dataset/tree/master/corpus/subjectivity
 
 ## training pretrained models
 

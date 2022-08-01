@@ -1,6 +1,10 @@
 from malaya.supervised import tag
 from malaya.text.entity import EntityRegex
 from herpetologist import check_type
+from malaya.function import describe_availability
+import logging
+
+logger = logging.getLogger(__name__)
 
 label = {
     'PAD': 0,
@@ -180,8 +184,6 @@ def describe():
         {'Tag': 'event', 'Description': 'unique event happened, etc'},
     ]
 
-    from malaya.function import describe_availability
-
     return describe_availability(d, transpose=False)
 
 
@@ -239,8 +241,6 @@ def describe_ontonotes5():
         },
     ]
 
-    from malaya.function import describe_availability
-
     return describe_availability(d, transpose=False)
 
 
@@ -248,22 +248,18 @@ def available_transformer():
     """
     List available transformer Entity Tagging models.
     """
-    from malaya.function import describe_availability
+    logger.info('test set at https://github.com/huseinzol05/Malay-Dataset/tree/master/tagging/entities')
 
-    return describe_availability(
-        _transformer_availability, text='tested on 20% test set.'
-    )
+    return describe_availability(_transformer_availability)
 
 
 def available_transformer_ontonotes5():
     """
     List available transformer Entity Tagging models trained on Ontonotes 5 Bahasa.
     """
-    from malaya.function import describe_availability
+    logger.info('test set at https://github.com/huseinzol05/malay-dataset/tree/master/tagging/entities-OntoNotes5')
 
-    return describe_availability(
-        _transformer_ontonotes5_availability, text='tested on 20% test set.'
-    )
+    return describe_availability(_transformer_ontonotes5_availability)
 
 
 @check_type

@@ -9,7 +9,11 @@ from malaya.function.parse_dependency import DependencyGraph
 from malaya.model.xlnet import DependencyXLNET
 from malaya.model.bert import DependencyBERT
 from malaya.path import MODEL_VOCAB, MODEL_BPE
+from malaya.function import describe_availability
 from herpetologist import check_type
+import logging
+
+logger = logging.getLogger(__name__)
 
 label = {
     'PAD': 0,
@@ -180,8 +184,6 @@ def describe():
         {'Tag': 'xcomp', 'Description': 'open clausal complement'},
     ]
 
-    from malaya.function import describe_availability
-
     return describe_availability(
         d,
         transpose=False,
@@ -213,13 +215,11 @@ def available_transformer(version: str = 'v2'):
 
         * ``'v1'`` - version 1, maintain for knowledge graph.
         * ``'v2'`` - Trained on bigger dataset, better version.
-
     """
-    from malaya.function import describe_availability
 
-    return describe_availability(
-        _transformer_availability[_validate_version(version)], text='tested on 20% test set.'
-    )
+    logger.info('tested on test set at https://github.com/huseinzol05/malay-dataset/tree/master/parsing/dependency')
+
+    return describe_availability(_transformer_availability[_validate_version(version)])
 
 
 @check_type

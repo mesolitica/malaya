@@ -18,6 +18,10 @@ from malaya.model.xlnet import SiameseXLNET
 from malaya.path import MODEL_VOCAB, MODEL_BPE
 from herpetologist import check_type
 from typing import List, Tuple, Callable
+from malaya.function import describe_availability
+import logging
+
+logger = logging.getLogger(__name__)
 
 similarity_functions = {
     'cosine': cosine_similarity,
@@ -464,11 +468,9 @@ def available_transformer():
     """
     List available transformer similarity models.
     """
-    from malaya.function import describe_availability
+    logger.info('trained on 80% dataset, tested on another 20% test set, dataset at https://github.com/huseinzol05/Malay-Dataset/tree/master/text-similarity')
 
-    return describe_availability(
-        _transformer_availability, text='tested on 20% test set.'
-    )
+    return describe_availability(_transformer_availability)
 
 
 def _transformer(

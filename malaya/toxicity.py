@@ -1,6 +1,10 @@
 from malaya.supervised import classification
 from malaya.path import PATH_TOXIC, S3_PATH_TOXIC
+from malaya.function import describe_availability
 from herpetologist import check_type
+import logging
+
+logger = logging.getLogger(__name__)
 
 label = [
     'severe toxic',
@@ -96,11 +100,10 @@ def available_transformer():
     """
     List available transformer toxicity analysis models.
     """
-    from malaya.function import describe_availability
 
-    return describe_availability(
-        _transformer_availability, text='tested on 20% test set.'
-    )
+    logger.info('trained on 80% dataset, tested on another 20% test set, dataset at https://github.com/huseinzol05/malay-dataset/tree/master/corpus/toxicity-large')
+
+    return describe_availability(_transformer_availability)
 
 
 def multinomial(**kwargs):

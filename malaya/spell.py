@@ -22,6 +22,10 @@ from malaya.function import check_file
 from malaya.supervised import t5 as t5_load
 from malaya.model.t5 import Spell as T5_Spell
 from herpetologist import check_type
+from malaya.function import describe_availability
+import logging
+
+logger = logging.getLogger(__name__)
 
 _transformer_availability = {
     'small-t5': {
@@ -1128,11 +1132,10 @@ def available_transformer():
     """
     List available transformer models.
     """
-    from malaya.function import describe_availability
 
-    return describe_availability(
-        _transformer_availability, text='tested on 10k test set.'
-    )
+    logger.info('tested on 10k generated dataset at https://github.com/huseinzol05/malaya/tree/master/session/spelling-correction/t5')
+
+    return describe_availability(_transformer_availability)
 
 
 @check_type

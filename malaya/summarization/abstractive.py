@@ -4,7 +4,11 @@ from malaya.supervised import pegasus as pegasus_load
 from malaya.model.t5 import Summarization as T5_Summarization
 from malaya.model.bigbird import Summarization as BigBird_Summarization
 from malaya.model.pegasus import Summarization as Pegasus_Summarization
+from malaya.function import describe_availability
 from herpetologist import check_type
+import logging
+
+logger = logging.getLogger(__name__)
 
 _transformer_availability = {
     't5': {
@@ -70,11 +74,9 @@ def available_transformer():
     """
     List available transformer models.
     """
-    from malaya.function import describe_availability
+    logger.info('tested on translated 12k CNN + DailyNews test set at https://github.com/huseinzol05/malay-dataset/tree/master/summarization')
 
-    return describe_availability(
-        _transformer_availability, text='tested on 12k CNN + DailyNews test set.'
-    )
+    return describe_availability(_transformer_availability)
 
 
 @check_type

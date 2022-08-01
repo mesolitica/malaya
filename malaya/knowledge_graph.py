@@ -1,8 +1,12 @@
 from malaya.supervised import t5 as load_t5
 from malaya.function.parse_dependency import DependencyGraph
 from malaya.model.t5 import KnowledgeGraph
+from malaya.function import describe_availability
 from herpetologist import check_type
 from typing import List, Tuple
+import logging
+
+logger = logging.getLogger(__name__)
 
 _transformer_availability = {
     't5': {
@@ -179,11 +183,10 @@ def available_transformer():
     """
     List available transformer models.
     """
-    from malaya.function import describe_availability
 
-    return describe_availability(
-        _transformer_availability, text='tested on KELM test set.'
-    )
+    logger.info('tested on translated KELM test set at https://github.com/huseinzol05/malaya-graph/tree/master/data/kelm')
+
+    return describe_availability(_transformer_availability)
 
 
 @check_type

@@ -8,7 +8,7 @@
 
 ## prepare dataset
 
-1. Get the dataset at, [tagging/part-of-speech](https://github.com/huseinzol05/Malay-Dataset/tree/master/tagging/part-of-speech).
+1. Get the dataset at https://github.com/huseinzol05/Malay-Dataset/tree/master/tagging/part-of-speech
 
 ## training pretrained models
 

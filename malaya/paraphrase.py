@@ -1,7 +1,10 @@
 from malaya.supervised import t5 as t5_load
 from malaya.model.t5 import Paraphrase as T5_Paraphrase
 from herpetologist import check_type
+from malaya.function import describe_availability
+import logging
 
+logger = logging.getLogger(__name__)
 
 _transformer_availability = {
     't5': {
@@ -26,11 +29,10 @@ def available_transformer():
     """
     List available transformer models.
     """
-    from malaya.function import describe_availability
 
-    return describe_availability(
-        _transformer_availability, text='tested on ParaSCI test set.'
-    )
+    logger.info('tested on translated ParaSCI test set at https://github.com/huseinzol05/malay-dataset/tree/master/paraphrase/parasci')
+
+    return describe_availability(_transformer_availability)
 
 
 @ check_type

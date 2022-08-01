@@ -1,16 +1,14 @@
 from malaya.model.bert import ZeroshotBERT
 from malaya.model.xlnet import ZeroshotXLNET
 from herpetologist import check_type
-from malaya.similarity import _transformer_availability, _transformer
+from malaya.similarity import available_transformer as _available_transformer, _transformer
 
 
 def available_transformer():
     """
     List available transformer zero-shot models.
     """
-    from malaya.function import describe_availability
-
-    return describe_availability(_transformer_availability)
+    return _available_transformer()
 
 
 @check_type

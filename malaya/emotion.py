@@ -1,6 +1,10 @@
 from malaya.supervised import classification
 from malaya.path import PATH_EMOTION, S3_PATH_EMOTION
 from herpetologist import check_type
+from malaya.function import describe_availability
+import logging
+
+logger = logging.getLogger(__name__)
 
 label = ['anger', 'fear', 'happy', 'love', 'sadness', 'surprise']
 label_goemotions = [
@@ -98,11 +102,9 @@ def available_transformer():
     """
     List available transformer emotion analysis models.
     """
-    from malaya.function import describe_availability
+    logger.info('trained on 80% dataset, tested on another 20% test set, dataset at https://github.com/huseinzol05/malay-dataset/tree/master/corpus/emotion')
 
-    return describe_availability(
-        _transformer_availability, text='tested on 20% test set.'
-    )
+    return describe_availability(_transformer_availability)
 
 
 def multinomial(**kwargs):

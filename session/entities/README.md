@@ -8,7 +8,7 @@
 
 ## prepare dataset
 
-1. Get the dataset at, [tagging/entities](https://github.com/huseinzol05/Malay-Dataset/tree/master/tagging/entities).
+1. Get the dataset at https://github.com/huseinzol05/Malay-Dataset/tree/master/tagging/entities
 
 ## training pretrained models
 

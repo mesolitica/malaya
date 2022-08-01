@@ -8,8 +8,12 @@ from malaya.text.bpe import SentencePieceTokenizer
 from malaya.model.tf import Constituency
 from malaya.path import MODEL_VOCAB, MODEL_BPE
 from malaya.supervised import settings
+from malaya.function import describe_availability
 import json
 from herpetologist import check_type
+import logging
+
+logger = logging.getLogger(__name__)
 
 _transformer_availability = {
     'bert': {
@@ -72,11 +76,10 @@ def available_transformer():
     """
     List available transformer models.
     """
-    from malaya.function import describe_availability
 
-    return describe_availability(
-        _transformer_availability, text='tested on 20% test set.'
-    )
+    logger.info('tested on test set at https://github.com/huseinzol05/malaya/blob/master/session/constituency/download-data.ipynb')
+
+    return describe_availability(_transformer_availability)
 
 
 @check_type

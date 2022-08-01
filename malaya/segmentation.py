@@ -11,6 +11,10 @@ from malaya.supervised import t5 as t5_load
 from malaya.model.t5 import Segmentation as T5_Segmentation
 from herpetologist import check_type
 from typing import List
+from malaya.function import describe_availability
+import logging
+
+logger = logging.getLogger(__name__)
 
 _transformer_availability = {
     'small': {
@@ -189,7 +193,8 @@ def available_transformer():
     """
     List available transformer models.
     """
-    from malaya.function import describe_availability
+
+    logger.info('tested on random generated dataset at https://github.com/huseinzol05/malaya/blob/master/session/segmentation/t5/test-set-segmentation.ipynb')
 
     return describe_availability(_transformer_availability)
 

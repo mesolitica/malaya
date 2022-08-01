@@ -1,5 +1,9 @@
 from malaya.supervised import qa
 from herpetologist import check_type
+from malaya.function import describe_availability
+import logging
+
+logger = logging.getLogger(__name__)
 
 _transformer_squad_availability = {
     'tiny-bert': {
@@ -51,11 +55,9 @@ def available_transformer_squad():
     """
     List available Transformer Span models.
     """
-    from malaya.function import describe_availability
+    logger.info('testes on translated SQUAD V2 Dev set at https://github.com/huseinzol05/malay-dataset/tree/master/question-answer/squad')
 
-    return describe_availability(
-        _transformer_squad_availability, text='tested on SQUAD V2 Dev set.'
-    )
+    return describe_availability(_transformer_squad_availability)
 
 
 @check_type

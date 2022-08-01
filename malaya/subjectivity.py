@@ -1,6 +1,10 @@
 from malaya.supervised import classification
 from malaya.path import PATH_SUBJECTIVE, S3_PATH_SUBJECTIVE
 from herpetologist import check_type
+from malaya.function import describe_availability
+import logging
+
+logger = logging.getLogger(__name__)
 
 label = ['negative', 'positive']
 
@@ -68,11 +72,9 @@ def available_transformer():
     """
     List available transformer subjective analysis models.
     """
-    from malaya.function import describe_availability
+    logger.info('trained on 80% dataset, tested on another 20% test set, dataset at https://github.com/huseinzol05/Malay-Dataset/tree/master/corpus/subjectivity')
 
-    return describe_availability(
-        _transformer_availability, text='tested on 20% test set.'
-    )
+    return describe_availability(_transformer_availability)
 
 
 def multinomial(**kwargs):
