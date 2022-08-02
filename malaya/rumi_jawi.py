@@ -1,9 +1,7 @@
-from malaya.supervised import t2t
-from malaya.supervised.settings import jawi_left, jawi_right
-from malaya.text.function import rumi_jawi_textcleaning
-from herpetologist import check_type
+from malaya.supervised import transformer as load_transformer
 from malaya.model.tf import RumiJawi
 from malaya.function import describe_availability
+from herpetologist import check_type
 from typing import List
 import logging
 
@@ -13,15 +11,15 @@ _transformer_availability = {
     'small': {
         'Size (MB)': 42.7,
         'Quantized Size (MB)': 13.1,
-        'CER': 0.0246012,
-        'WER': 0,
+        'CER': 0.0006167541656054869,
+        'WER': 0.0019283112815117458,
         'Suggested length': 256,
     },
     'base': {
         'Size (MB)': 234,
         'Quantized Size (MB)': 63.8,
-        'CER': 0.0146193,
-        'WER': 0,
+        'CER': 0.00012427460315431668,
+        'WER': 0.0004379943010206167,
         'Suggested length': 256,
     },
 }

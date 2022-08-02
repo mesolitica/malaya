@@ -138,10 +138,10 @@ malaya.preprocessing
 .. automodule:: malaya.preprocessing
     :members:
 
-.. autoclass:: malaya.preprocessing.Tokenizer()
+.. autoclass:: malaya.preprocessing.Preprocessing()
     :members:
 
-.. autoclass:: malaya.preprocessing.Preprocessing()
+.. autoclass:: malaya.preprocessing.Demoji()
     :members:
 
 malaya.qa
@@ -217,6 +217,18 @@ malaya.tatabahasa
 --------------------
 
 .. automodule:: malaya.tatabahasa
+    :members:
+
+malaya.tokenizer
+--------------------
+
+.. automodule:: malaya.tokenizer
+    :members:
+
+.. autoclass:: malaya.tokenizer.Tokenizer()
+    :members:
+
+.. autoclass:: malaya.tokenizer.SentenceTokenizer()
     :members:
 
 malaya.summarization.abstractive
@@ -452,7 +464,10 @@ malaya.model.tf
 .. autoclass:: malaya.model.tf.Seq2SeqLSTM()
     :members:
 
-.. autoclass:: malaya.model.tf.Seq2SeqLSTM_Split()
+.. autoclass:: malaya.model.tf.JawiRumi()
+    :members:
+
+.. autoclass:: malaya.model.tf.RumiJawi()
     :members:
 
 malaya.model.xlnet
