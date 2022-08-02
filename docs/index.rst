@@ -161,6 +161,8 @@ Contents:
    load-translation-noisy-ms-en
    load-translation-noisy-ms-en-huggingface
    load-translation-en-ms
+   load-translation-noisy-en-ms
+   load-translation-noisy-en-ms-huggingface
 
 .. toctree::
    :maxdepth: 2

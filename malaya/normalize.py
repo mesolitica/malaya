@@ -9,6 +9,7 @@ from malaya.text.function import (
     case_of,
     replace_laugh,
     replace_mengeluh,
+    PUNCTUATION,
 )
 from malaya.text.regex import (
     _past_date_string,
@@ -252,11 +253,11 @@ class Normalizer:
             if True, `betuii` -> `betui`.
         expand_contractions: bool, optional (default=True)
             expand english contractions.
-        check_english_func: Callable, (default=malaya.text.is_english)
-        check_english_func: Callable, optional (default=malaya.text.is_english)
-            function to check a word in english dictionary, default is malaya.text.is_english.
-        check_malay_func: Callable, optional (default=malaya.text.is_malay)
-            function to check a word in malay dictionary, default is malaya.text.is_malay.
+        check_english_func: Callable, optional (default=malaya.text.function.is_english)
+            function to check a word in english dictionary, default is malaya.text.function.is_english.
+            this parameter also will be use for malay text normalization.
+        check_malay_func: Callable, optional (default=malaya.text.function.is_malay)
+            function to check a word in malay dictionary, default is malaya.text.function.is_malay.
         translator: Callable, optional (default=None)
             function to translate EN word to MS word.
         language_detection_word: Callable, optional (default=None)
@@ -336,7 +337,7 @@ class Normalizer:
             s = f'index: {index}, word: {word}, queue: {result}'
             logger.debug(s)
 
-            if word in '~@#$%^&*()_+{}|[:"\'];<>,.?/-':
+            if word in PUNCTUATION:
                 s = f'index: {index}, word: {word}, condition punct'
                 logger.debug(s)
                 result.append(word)
@@ -391,7 +392,7 @@ class Normalizer:
                     index += 1
                     continue
 
-            if check_english_func is not None:
+            if check_english_func is not None and len(word) > 1:
                 s = f'index: {index}, word: {word}, condition check english'
                 logger.debug(s)
                 found = False
@@ -414,11 +415,11 @@ class Normalizer:
                             logger.debug(f'reject translation, {word} -> {translated}')
                         else:
                             selected_word = translated
-                    result.append(selected_word)
+                    result.append(case_of(word)(selected_word))
                     index += 1
                     continue
 
-            if check_malay_func is not None:
+            if check_malay_func is not None and len(word) > 1:
                 s = f'index: {index}, word: {word}, condition check malay'
                 logger.debug(s)
                 if word_lower not in ['pada', 'ke']:
@@ -432,13 +433,13 @@ class Normalizer:
                         index += 1
                         continue
 
-            if len(word) > 2 and normalize_text:
+            if len(word) > 2 and normalize_text and check_english_func is not None and not check_english_func(word):
                 s = f'index: {index}, word: {word}, condition len(word) > 2 and norm text'
                 logger.debug(s)
                 if word[-2] in consonants and word[-1] == 'e':
                     word = word[:-1] + 'a'
 
-            if word[0] == 'x' and len(word) > 1 and normalize_text:
+            if word[0] == 'x' and len(word) > 1 and normalize_text and check_english_func is not None and not check_english_func(word):
                 s = f'index: {index}, word: {word}, condition word[0] == `x` and len(word) > 1 and norm text'
                 logger.debug(s)
                 result_string = 'tak '
@@ -796,6 +797,8 @@ class Normalizer:
                             if len(translated) >= len(word) * 3:
                                 logger.debug(f'reject translation, {word} -> {translated}')
                             elif ', United States' in translated:
+                                logger.debug(f'reject translation, {word} -> {translated}')
+                            elif translated in PUNCTUATION:
                                 logger.debug(f'reject translation, {word} -> {translated}')
                             else:
                                 selected = translated

@@ -16,6 +16,7 @@ from malaya.path import (
     LANGUAGE_DETECTION_VOCAB,
 )
 from herpetologist import check_type
+from malaya.function import describe_availability
 import logging
 
 logger = logging.getLogger(__name__)
@@ -124,49 +125,30 @@ def deep_model(quantized: bool = False, **kwargs):
     )
 
 
-def substring_rules(**kwargs):
+def substring_rules(model, **kwargs):
     """
     detect EN, MS and OTHER languages in a string.
 
     EN words detection are using `pyenchant` from https://pyenchant.github.io/pyenchant/ and
-    fast-text https://fasttext.cc/docs/en/language-identification.html.
+    user language detection model.
 
     MS words detection are using `malaya.text.function.is_malay` and
-    fast-text https://fasttext.cc/docs/en/language-identification.html.
+    user language detection model.
 
-    OTHER words detection are using fast-text https://fasttext.cc/docs/en/language-identification.html.
+    OTHER words detection are using any language detection classification model, such as,
+    `malaya.language_detection.fasttext` or `malaya.language_detection.deep_model`.
+
+    Parameters
+    ----------
+    model : Callable
+        Callable model, must have `predict` method.
 
     Returns
     -------
     result : malaya.model.rules.LanguageDict class
     """
 
-    try:
-        import fasttext
-    except BaseException:
-        raise ModuleNotFoundError(
-            'fasttext not installed. Please install it by `pip install fasttext` and try again.'
-        )
+    if not hasattr(model, 'predict'):
+        raise ValueError('model must have `predict` method')
 
-    model = 'fasttext-176'
-    path = check_file(
-        PATH_LANG_DETECTION[model], S3_PATH_LANG_DETECTION[model], **kwargs
-    )
-    try:
-        model_fasttext = fasttext.load_model(path['model'])
-    except:
-        raise Exception(f'failed to load fasttext model, please try clear the cache and try again')
-
-    return LanguageDict(model_fasttext=model_fasttext, **kwargs)
-
-
-@check_type
-def substring_transformer(
-    model: str = 'tiny-bert',
-    quantized: bool = False,
-    **kwargs
-):
-    """
-    detect EN and MS languages in a string,
-    `i like to makan ayam pada pukul 2` -> `[EN, EN, EN, MS, MS, MS, MS, NOT_LANG]`
-    """
+    return LanguageDict(model=model, **kwargs)
