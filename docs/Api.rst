@@ -69,6 +69,12 @@ malaya.generator
 .. automodule:: malaya.generator
     :members:
 
+malaya.jawi_rumi
+-------------------------
+
+.. automodule:: malaya.jawi_rumi
+    :members:
+
 malaya.keyword_extraction
 --------------------------
 
@@ -154,6 +160,12 @@ malaya.relevancy
 ------------------
 
 .. automodule:: malaya.relevancy
+    :members:
+
+malaya.rumi_jawi
+------------------
+
+.. automodule:: malaya.rumi_jawi
     :members:
 
 malaya.segmentation
