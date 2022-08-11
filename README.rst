@@ -2,7 +2,7 @@
 
     <p align="center">
         <a href="#readme">
-            <img alt="logo" width="40%" src="https://f000.backblazeb2.com/file/huseinhouse-public/malaya.png">
+            <img alt="logo" width="40%" src="https://i.imgur.com/yi6jwST.png">
         </a>
     </p>
     <p align="center">
@@ -17,7 +17,7 @@
 
 =========
 
-**Malaya** is a Natural-Language-Toolkit library for bahasa Malaysia, powered by Deep Learning Tensorflow.
+**Malaya** is a Natural-Language-Toolkit library for bahasa Malaysia, powered by Tensorflow and PyTorch.
 
 Documentation
 --------------
@@ -37,9 +37,7 @@ GPU version
 
     $ pip install malaya[gpu]
 
-Only **Python 3.6.0 and above** and **Tensorflow 1.15.0 and above** are supported.
-
-All examples tested on Tensorflow version 1.15.4, 2.4.1, 2.5, 2.7 and 2.9.
+Only **Python >= 3.6.0**, **Tensorflow >= 1.15.0**, and **PyTorch >= 1.10** are supported.
 
 Development Release
 ---------------------------------
@@ -159,11 +157,3 @@ Thank you for contributing this library, really helps a lot. Feel free to contac
     <a href="#readme">
         <img alt="logo" width="30%" src="https://contributors-img.firebaseapp.com/image?repo=huseinzol05/malaya">
     </a>
-
-License
---------
-
-.. |License| image:: https://app.fossa.io/api/projects/git%2Bgithub.com%2Fhuseinzol05%2FMalaya.svg?type=large
-   :target: https://app.fossa.io/projects/git%2Bgithub.com%2Fhuseinzol05%2FMalaya?ref=badge_large
-
-|License|
