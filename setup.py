@@ -17,21 +17,14 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     version='4.9.0',
     python_requires='>=3.6.*',
-    description='Natural-Language-Toolkit for bahasa Malaysia, powered by Deep Learning Tensorflow.',
+    description='Natural-Language-Toolkit for bahasa Malaysia, powered by Tensorflow and PyTorch.',
     long_description=readme(),
     author='huseinzol05',
     author_email='husein.zol05@gmail.com',
     url='https://github.com/huseinzol05/Malaya',
     download_url='https://github.com/huseinzol05/Malaya/archive/master.zip',
-    keywords=[
-        'nlp',
-        'bm'],
+    keywords=['nlp', 'bm'],
     install_requires=req,
-    extras_require={
-        'gpu': ['tensorflow-gpu>=1.15'],
-        'cpu': ['tensorflow>=1.15'],
-        '': ['tensorflow>=1.15']
-    },
     license='MIT',
     classifiers=[
             'Programming Language :: Python :: 3.6',

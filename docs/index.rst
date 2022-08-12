@@ -17,24 +17,10 @@ Contents:
    :caption: Getting Started
 
    speech-toolkit
+   installation
    Dataset
-   Installation
-   huggingface-repository
-   load-cache
-   models-accuracy
    running-on-windows
-   Api
    Contributing
-   
-.. toctree::
-   :maxdepth: 2
-   :caption: Optimization
-
-   gpu-environment
-   devices
-   precision-mode
-   quantization
-   load-deployment
 
 .. toctree::
    :maxdepth: 2
@@ -197,6 +183,7 @@ Contents:
    :maxdepth: 2
    :caption: Misc
    
+   Api
    Crawler
    Donation
    Translator-malaya

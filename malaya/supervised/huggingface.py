@@ -1,10 +1,9 @@
 import tensorflow as tf
-from malaya_boilerplate import frozen_graph
+from malaya_boilerplate.utils import check_tf2
 
 
+@check_tf2
 def load_automodel(model, model_class, huggingface_class=None, **kwargs):
-    from malaya_boilerplate.utils import check_tf2_huggingface
-    check_tf2_huggingface()
 
     try:
         from transformers import TFAutoModel, AutoTokenizer
@@ -14,9 +13,7 @@ def load_automodel(model, model_class, huggingface_class=None, **kwargs):
         )
 
     tokenizer = AutoTokenizer.from_pretrained(model)
-    device = frozen_graph.get_device(**kwargs)
-    with tf.device(device):
-        if huggingface_class is None:
-            huggingface_class = TFAutoModel
-        model = huggingface_class.from_pretrained(model)
+    if huggingface_class is None:
+        huggingface_class = TFAutoModel
+    model = huggingface_class.from_pretrained(model)
     return model_class(model=model, tokenizer=tokenizer, **kwargs)
