@@ -47,6 +47,7 @@ from . import spell
 from . import stack
 from . import stem
 from . import subjectivity
+from . import syllable
 from . import tatabahasa
 from . import summarization
 from . import topic_model

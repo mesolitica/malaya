@@ -4,12 +4,13 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class SyllableTokenizer:
+class Tokenizer:
     def __init__(self):
         """
         originally from https://github.com/fahadh4ilyas/syllable_splitter/blob/master/SyllableSplitter.py
-        improved `cuaca` double vocal `ua` based on https://en.wikipedia.org/wiki/Comparison_of_Indonesian_and_Standard_Malay#Syllabification
-        improved `rans` double consonant `ns` based on https://www.semanticscholar.org/paper/Syllabification-algorithm-based-on-syllable-rules-Musa-Kadir/a819f255f066ae0fd7a30b3534de41da37d04ea1
+        - improved `cuaca` double vocal `ua` based on https://en.wikipedia.org/wiki/Comparison_of_Indonesian_and_Standard_Malay#Syllabification
+        - improved `rans` double consonant `ns` based on https://www.semanticscholar.org/paper/Syllabification-algorithm-based-on-syllable-rules-Musa-Kadir/a819f255f066ae0fd7a30b3534de41da37d04ea1
+        - improved `au` and `ai` double vocal.
         """
         self.consonant = ['b', 'c', 'd', 'f', 'g', 'h', 'j',
                           'k', 'l', 'm', 'n', 'p', 'q', 'r',
@@ -19,7 +20,7 @@ class SyllableTokenizer:
 
         self.double_consonant = ['ll', 'ks', 'rs', 'rt', 'ns']
 
-        self.double_vocal = ['ua']
+        self.double_vocal = ['ua', 'au', 'ai']
 
         self.vocal = ['a', 'e', 'i', 'o', 'u']
 

@@ -72,7 +72,7 @@ _transformer_availability = {
         'Quantized Size (MB)': 13.1,
         'BLEU': 56.70133817548828,
         'SacreBLEU Verbose': '80.7/63.2/51.6/42.8 (BP = 0.979 ratio = 0.979 hyp_len = 2575384 ref_len = 2630014)',
-        'SacreBLEU-chrF++-FLORES200': 59.64,
+        'SacreBLEU-chrF++-FLORES200': 58.01,
         'Suggested length': 1024,
     },
     'noisy-base': {

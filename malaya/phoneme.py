@@ -62,3 +62,32 @@ def deep_model_ipa(quantized: bool = False, **kwargs):
         quantized=quantized,
         **kwargs,
     )
+
+
+def deep_model_ipa_dbp(quantized: bool = False, **kwargs):
+    """
+    Load LSTM + Bahdanau Attention phonetic model,
+    256 filter size, 2 layers, character level. 
+    Original data from https://github.com/open-dict-data/ipa-dict/blob/master/data/ma.txt
+
+    Original size 10.4MB, quantized size 2.77MB .
+
+    Parameters
+    ----------
+    quantized : bool, optional (default=False)
+        if True, will load 8-bit quantized model.
+        Quantized model not necessary faster, totally depends on the machine.
+
+    Returns
+    -------
+    result: malaya.model.tf.Seq2SeqLSTM_Split class
+    """
+    return t2t.load_lstm(
+        module='phoneme-ipa',
+        left_dict=phoneme_ipa_left,
+        right_dict=phoneme_ipa_right,
+        cleaning=phoneme_textcleaning,
+        split=True,
+        quantized=quantized,
+        **kwargs,
+    )

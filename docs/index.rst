@@ -44,6 +44,7 @@ Contents:
 
    load-tokenizer-word
    load-tokenizer-sentence
+   load-tokenizer-syllable
 
 .. toctree::
    :maxdepth: 2
@@ -147,6 +148,7 @@ Contents:
    load-translation-noisy-ms-en
    load-translation-noisy-ms-en-huggingface
    load-translation-en-ms
+   en-ms-long-translation
    load-translation-noisy-en-ms
    load-translation-noisy-en-ms-huggingface
 

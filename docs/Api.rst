@@ -225,6 +225,15 @@ malaya.subjectivity
 .. automodule:: malaya.subjectivity
     :members:
 
+malaya.syllable
+--------------------
+
+.. automodule:: malaya.syllable
+    :members:
+
+.. autoclass:: malaya.syllable.Tokenizer()
+    :members:
+
 malaya.tatabahasa
 --------------------
 
