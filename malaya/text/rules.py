@@ -4662,6 +4662,9 @@ rules_normalizer = {
     'dapnya': 'sedapnya',
     'dapnye': 'sedapnya',
     'gais': 'semua orang',
+    'pedajal': 'memburukkan',
+    'ex': 'bekas',
+    # 'slhkn': 'salahkan',
 }
 
 rules_normalizer_rev = {v: k for k, v in rules_normalizer.items()}

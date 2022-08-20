@@ -6,6 +6,7 @@ from malaya.text.rules import rules_normalizer
 from malaya.text.regex import _expressions
 from malaya.text.english.words import words as _english_words
 from malaya.text.normalization import unpack_english_contractions
+from malaya.text.function import case_of
 from malaya.tokenizer import Tokenizer
 from malaya.function import validator
 from typing import List, Callable
@@ -33,18 +34,6 @@ def get_normalize():
 
 def get_annotate():
     return _annotate
-
-
-def _case_of(text):
-    return (
-        str.upper
-        if text.isupper()
-        else str.lower
-        if text.islower()
-        else str.title
-        if text.istitle()
-        else str
-    )
 
 
 def _get_expression_dict():
@@ -151,11 +140,11 @@ class Preprocessing:
         text = self._regexes['normalize_elong'].sub(r'\1\1', text)
         if self._speller and text.lower() not in _english_words:
             if hasattr(self._speller, 'normalize_elongated'):
-                text = _case_of(text)(
+                text = case_of(text)(
                     self._speller.normalize_elongated(text.lower())
                 )
             else:
-                text = _case_of(text)(self._speller.correct(text.lower()))
+                text = case_of(text)(self._speller.correct(text.lower()))
         if 'elongated' in self._annotate:
             text = self._add_special_tag(text, 'elongated', mode='wrap')
         return text

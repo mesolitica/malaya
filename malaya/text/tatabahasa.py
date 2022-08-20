@@ -1719,7 +1719,7 @@ stopwords = [
     'ya allah',
 ]
 
-group_compound = [
+group_compound = {
     'ng',
     'nt',
     'mp',
@@ -1735,7 +1735,8 @@ group_compound = [
     'gd',
     'nd',
     'mp',
-]
+    'hk',
+}
 
 """
 mw = []
@@ -1750,7 +1751,7 @@ u, c = np.unique(subwords, return_counts = True)
 quad_vowels = u
 """
 
-quad_vowels = [
+quad_vowels = {
     'aaaa',
     'aaai',
     'aaao',
@@ -2166,7 +2167,7 @@ quad_vowels = [
     'uuua',
     'uuui',
     'uuuu',
-]
+}
 
 # https://ms.wikipedia.org/wiki/Penjodoh_bilangan_bahasa_Melayu
 penjodoh_bilangan = [
@@ -2261,4 +2262,63 @@ bulan = {
     10: 'Oktober',
     11: 'November',
     12: 'Disember'
+}
+
+"""
+from malaya.text.tatabahasa import consonants, vowels
+import numpy as np
+
+compound_consonants = []
+for w in malaya.text.bahasa.words.words:
+    for no, c in enumerate(w[:-1]):
+        if c in consonants and w[no + 1] in consonants:
+            compound_consonants.append(c + w[no + 1])
+
+ws, cs = np.unique(compound_consonants, return_counts = True)
+set(ws[cs > 100])
+"""
+
+compound_consonants = {
+    'gg',
+    'gh',
+    'gk',
+    'gn',
+    'gr',
+    'gs',
+    'hk',
+    'kh',
+    'kk',
+    'kn',
+    'kr',
+    'ks',
+    'kt',
+    'lk',
+    'mb',
+    'mp',
+    'nc',
+    'nd',
+    'ng',
+    'nj',
+    'nk',
+    'nn',
+    'ns',
+    'nt',
+    'ny',
+    'pr',
+    'rb',
+    'rd',
+    'rg',
+    'rk',
+    'rl',
+    'rm',
+    'rn',
+    'rp',
+    'rs',
+    'rt',
+    'sk',
+    'st',
+    'sy',
+    'tk',
+    'tn',
+    'tr'
 }

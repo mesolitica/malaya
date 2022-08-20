@@ -25,6 +25,7 @@ from . import dependency
 from . import emotion
 from . import entity
 from . import generator
+from . import kenlm
 from . import jawi_rumi
 from . import keyword_extraction
 from . import knowledge_graph

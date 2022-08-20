@@ -4,7 +4,7 @@ import tensorflow as tf
 import numpy as np
 import json
 import re
-from malaya.text.function import case_of, ENGLISH_WORDS, MALAY_WORDS
+from malaya.text.function import case_of, is_english, is_malay
 from malaya.text.tatabahasa import (
     alphabet,
     consonants,
@@ -14,6 +14,7 @@ from malaya.text.tatabahasa import (
     stopword_tatabahasa,
     quad_vowels,
     group_compound,
+    compound_consonants,
 )
 from malaya.text.rules import rules_normalizer
 from malaya.text.bpe import SentencePieceTokenizer
@@ -171,6 +172,8 @@ def _augment_vowel_alternate(string):
 
     left = ''.join(r).replace('^', '')
     right = left + 'a'
+    if string[-1] in vowels:
+        left = left + string[-1]
     return left, right
 
 
@@ -333,11 +336,14 @@ class Spell:
         """
 
         ttt = self.known(self.edit_step(word)) or {word}
-        ttt = {i for i in ttt if len(i) > 3 and i not in ENGLISH_WORDS}
+        ttt = {i for i in ttt if len(i) > 3 and not is_english(i)}
         ttt = self.known([word]) | ttt
         if not len(ttt):
             ttt = {word}
-        return list(ttt)
+        ttt = list(ttt)
+        if word[-1] in vowels:
+            ttt = [w for w in ttt if w[-1] == word[-1] or (w[-1] in 'e' and word[-1] in 'a')]
+        return ttt
 
     @check_type
     def correct_text(self, text: str):
@@ -432,11 +438,11 @@ class Probability(Spell):
         result: str
         """
 
-        if word in ENGLISH_WORDS:
+        if is_english(word):
             return word
         if self._corpus.get(word, 0) > 5000:
             return word
-        if word in MALAY_WORDS:
+        if is_malay(word):
             return word
         if word in stopword_tatabahasa:
             return word
@@ -513,6 +519,108 @@ class Probability(Spell):
 
     def normalize_elongated(self, word):
         return case_of(word)(self.best_elong_candidate(word.lower()))
+
+
+class ProbabilityLM(Probability):
+    """
+    The SpellCorrector extends the functionality of the Peter Norvig's with Language Model.
+    spell-corrector in http://norvig.com/spell-correct.html
+    And improve it using some algorithms from Normalization of noisy texts in Malaysian online reviews,
+    https://www.researchgate.net/publication/287050449_Normalization_of_noisy_texts_in_Malaysian_online_reviews
+    Added custom vowels augmentation
+    """
+
+    def __init__(self, corpus, sp_tokenizer=None):
+        Spell.__init__(self, sp_tokenizer, corpus)
+
+    @check_type
+    def correct(
+        self, word: str, string: str, index: int = -1, lookback: int = 5,
+    ):
+        """
+        Correct a word within a text, returning the corrected word.
+
+        Parameters
+        ----------
+        word: str
+        string: str
+            Entire string, `word` must a word inside `string`.
+        index: int, optional (default=-1)
+            index of word in the string, if -1, will try to use `string.index(word)`.
+        lookback: int, optional (default=5)
+
+        Returns
+        -------
+        result: str
+        """
+
+        string = string.split()
+        if word not in string:
+            raise ValueError('word not in string after split by spaces')
+        if index < 0:
+            index = string.index(word)
+
+        if is_english(word):
+            return word
+        if self._corpus.get(word, 0) > 5000:
+            return word
+        if is_malay(word):
+            return word
+        if word in stopword_tatabahasa:
+            return word
+
+        cp_word = word[:]
+        hujung_result = [v for k, v in hujung.items() if word.endswith(k)]
+        if len(hujung_result):
+            hujung_result = max(hujung_result, key=len)
+            if len(hujung_result):
+                word = word[: -len(hujung_result)]
+        permulaan_result = [
+            v for k, v in permulaan.items() if word.startswith(k)
+        ]
+        if len(permulaan_result):
+            permulaan_result = max(permulaan_result, key=len)
+            if len(permulaan_result):
+                word = word[len(permulaan_result):]
+
+        combined = True
+        if len(word):
+            if word in rules_normalizer:
+                word = rules_normalizer[word]
+            elif self._corpus.get(word, 0) > 1000:
+                pass
+            else:
+                candidates1 = self.edit_candidates(word)
+                candidates2 = self.edit_candidates(cp_word)
+                word1 = max(candidates1, key=self.P)
+                word2 = max(candidates2, key=self.P)
+
+                if self.WORDS[word1] > self.WORDS[word2]:
+                    word = word1
+                else:
+                    word = word2
+                    combined = False
+
+            if (
+                len(hujung_result)
+                and not word.endswith(hujung_result)
+                and combined
+            ):
+                word = word + hujung_result
+            if (
+                len(permulaan_result)
+                and not word.startswith(permulaan_result)
+                and combined
+            ):
+                word = permulaan_result + word
+
+        else:
+            if len(hujung_result) and not word.endswith(hujung_result):
+                word = word + hujung_result
+            if len(permulaan_result) and not word.startswith(permulaan_result):
+                word = permulaan_result + word
+
+        return word
 
 
 class Symspell:
@@ -622,7 +730,7 @@ class Symspell:
         ttt = {
             k: v
             for k, v in ttt.items()
-            if len(k) > 3 and k not in ENGLISH_WORDS
+            if len(k) > 3 and and not is_english(k)
         }
         ttt[word] = ttt.get(word, 0) + 10
         if not len(ttt):
@@ -646,11 +754,11 @@ class Symspell:
         result: str
         """
 
-        if word in ENGLISH_WORDS:
+        if is_english(word):
             return word
         if self._corpus.get(word, 0) > 5000:
             return word
-        if word in MALAY_WORDS:
+        if is_malay(word):
             return word
         if word in stopword_tatabahasa:
             return word
@@ -909,9 +1017,9 @@ class Transformer(Spell):
         if index < 0:
             index = string.index(word)
 
-        if word in ENGLISH_WORDS:
+        if is_english(word):
             return word
-        if word in MALAY_WORDS:
+        if is_malay(word):
             return word
         if word in stopword_tatabahasa:
             return word
@@ -1000,7 +1108,6 @@ def probability(sentence_piece: bool = False, **kwargs):
             S3_PATH_NGRAM['sentencepiece'],
             **kwargs
         )
-        print(path)
 
         vocab = path['vocab']
         vocab_model = path['model']

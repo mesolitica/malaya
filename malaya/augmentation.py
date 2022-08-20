@@ -7,10 +7,10 @@ from collections import defaultdict
 from malaya.function import check_file
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from malaya.text.tatabahasa import consonants, vowels
-from malaya.text.function import augmentation_textcleaning, simple_textcleaning
+from malaya.text.function import augmentation_textcleaning, simple_textcleaning, case_of
 from malaya.path import PATH_AUGMENTATION, S3_PATH_AUGMENTATION
 from herpetologist import check_type
-from typing import Callable
+from typing import Callable, Dict, List
 
 _synonym_dict = None
 
@@ -325,48 +325,78 @@ def _replace(word, replace_dict, threshold=0.5):
     return ''.join(word)
 
 
-def replace_similar_consonants(word: str, threshold: float = 0.8):
-    """
-    Naively replace consonants into similar consonants in a word.
-
-    Parameters
-    ----------
-    word: str
-    threshold: float, optional (default=0.8)
-
-    Returns
-    -------
-    result: List[str]
-    """
-    replace_consonants = {
-        'n': 'm',
-        't': 'y',
-        'r': 't',
-        'g': 'h',
-        'j': 'k',
-        'k': 'l',
-        'd': 's',
-        'd': 'f',
-        'g': 'f',
-        'b': 'n',
+def replace_similar_consonants(
+    word: str,
+    threshold: float = 0.5,
+    replace_consonants: Dict[str, List[str]] = {
+        'n': ['m'],
+        'r': ['t', 'q'],
+        'g': ['h'],
+        'j': ['k'],
+        'k': ['l'],
+        'd': ['s', 'f'],
+        'g': ['f', 'h'],
+        'b': ['n'],
+        'f': ['p'],
     }
-    return _replace(word=word, replace_dict=replace_consonants, threshold=threshold)
-
-
-def replace_similar_vowels(word: str, threshold: float = 0.8):
+):
     """
-    Naively replace vowels into similar vowels in a word.
+    Naively replace consonants with another consonants to simulate typo or slang
+    if after consonants is a vowel.
+
     Parameters
     ----------
     word: str
-    threshold: float, optional (default=0.8)
+    threshold: float, optional (default=0.5)
 
     Returns
     -------
     result: List[str]
     """
-    replace_vowels = {'u': 'i', 'i': 'o', 'o': 'u'}
-    return _replace(word=word, replace_dict=replace_vowels, threshold=threshold)
+    results = list(word)
+    for no, c in enumerate(results[:-1]):
+        if random.random() >= threshold and c in consonants and results[no + 1] in vowels:
+            results[no] = random.choice(replace_consonants.get(c, [c]))
+
+    if random.random() >= threshold and results[-1] in consonants and results[-2] in vowels and results[-3] in consonants:
+        results[-1] = random.choice(replace_consonants.get(results[-1], [results[-1]]))
+
+    return ''.join(results)
+
+
+def replace_similar_vowels(
+    word: str,
+    threshold: float = 0.5,
+    replace_vowels: Dict[str, List[str]] = {
+        'u': ['o'],
+        'a': ['o'],
+        'i': ['o'],
+        'o': ['u'],
+    }
+):
+    """
+    Naively replace vowels with another vowels to simulate typo or slang
+    if after vowels is a consonant.
+
+    Parameters
+    ----------
+    word: str
+    threshold: float, optional (default=0.5)
+
+    Returns
+    -------
+    result: str
+    """
+
+    results = list(word)
+    for no, c in enumerate(results[:-1]):
+        if random.random() >= threshold and c in vowels and results[no + 1] in consonants:
+            results[no] = random.choice(replace_vowels.get(c, [c]))
+
+    if random.random() >= threshold and results[-1] in vowels and results[-2] in consonants and results[-3] in vowel:
+        results[-1] = random.choice(replace_vowels.get(results[-1], [results[-1]]))
+
+    return ''.join(results)
 
 
 @check_type
@@ -382,8 +412,10 @@ def socialmedia_form(word: str):
     -------
     result: List[str]
     """
-
+    word_temp = word
+    word = word.lower()
     word = simple_textcleaning(word)
+
     if not len(word):
         raise ValueError('word is too short to augment shortform.')
 
@@ -416,7 +448,9 @@ def socialmedia_form(word: str):
         if word[1:3] == 'ng':
             results.append(word[:1] + x[2:])
 
-    return list(set(results))
+    results = list(set(results))
+    results = [case_of(word_temp)(r) for r in results]
+    return results
 
 
 def vowel_alternate(word: str, threshold: float = 0.5):
@@ -441,8 +475,10 @@ def vowel_alternate(word: str, threshold: float = 0.5):
     -------
     result: str
     """
-
+    word_temp = word
+    word = word.lower()
     word = simple_textcleaning(word)
+
     if not len(word):
         raise ValueError('word is too short to augment shortform.')
 
@@ -454,4 +490,58 @@ def vowel_alternate(word: str, threshold: float = 0.5):
                 and random.random() >= threshold:
             word.pop(i + 1)
         i += 1
-    return ''.join(word)
+
+    return case_of(word_temp)(''.join(word))
+
+
+@check_type
+def kelantanese_form(word: str):
+    """
+    augmenting a word into kelantanese form.
+    `ayam` -> `ayom`
+    `otak` -> `otok`
+    `kakak` -> `kakok`
+
+    `barang` -> `bare`
+    `kembang` -> `kembe`
+    `nyarang` -> `nyare`
+
+    Parameters
+    ----------
+    word: str
+
+    Returns
+    -------
+    result: List[str]
+    """
+    word_temp = word
+    word = word.lower()
+    word = simple_textcleaning(word)
+
+    if not len(word):
+        raise ValueError('word is too short to augment shortform.')
+
+    results = []
+    if len(word) == 3:
+        if word[0] in consonants and word[1] in 'a' and word[2] in consonants:
+            results.append(word[0] + 'o' + word[2])
+
+    if len(word) >= 4:
+        if word[-1] in 'ao' and word[-2] in consonants and word[-3] in 'ae':
+            results.append(word[:-1] + 'o')
+
+        if word[-1] in consonants and word[-2] in 'au' and word[-3] in consonants and word[-4] in 'aou':
+            results.append(word[:-2] + 'o' + word[-1])
+
+        if word[-3:] == 'ang' and word[-4] in consonants:
+            results.append(word[:-3] + 'e')
+
+        if word[-2:] == 'ar' and word[-3] in consonants:
+            results.append(word[:-2] + 'o')
+
+        if word[-2] == 'an' and word[-3] in consonants:
+            results.append(word[:-2] + 'e')
+
+    results = list(set(results))
+    results = [case_of(word_temp)(r) for r in results]
+    return results
