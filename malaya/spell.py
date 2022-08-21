@@ -24,6 +24,7 @@ from malaya.supervised import t5 as t5_load
 from malaya.model.t5 import Spell as T5_Spell
 from herpetologist import check_type
 from malaya.function import describe_availability
+from typing import List
 import logging
 
 logger = logging.getLogger(__name__)
@@ -74,37 +75,6 @@ def _build_dicts(words):
     for word in words:
         occurences[word[0]][word] += 1
     return occurences
-
-
-def _get_indices(string, c='a'):
-    return [i for i in range(len(string)) if string[i] == c]
-
-
-def _permutate(string, indices):
-    p = [''.join(_set) for _set in product(list(vowels), repeat=len(indices))]
-    p = [p_ for p_ in p if not all([a in p_ for a in quad_vowels])]
-    mutate = []
-    for p_ in p:
-        s = list(string[:])
-        for i in range(len(indices)):
-            s[indices[i]] = p_[i]
-        mutate.append(''.join(s))
-    return mutate
-
-
-def _permutate_sp(string, indices, sp_tokenizer):
-    p = [''.join(_set) for _set in product(list(vowels), repeat=len(indices))]
-    p = [p_ for p_ in p if not all([a in p_ for a in quad_vowels])]
-    mutate = []
-    for p_ in p:
-        s = list(string[:])
-        for i in range(len(indices)):
-            s[indices[i]] = p_[i]
-        s = ''.join(s)
-        if sp_tokenizer.tokenize(s)[0] == '▁':
-            continue
-        mutate.append(s)
-    return mutate
 
 
 def _augment_vowel_alternate(string):
@@ -218,7 +188,7 @@ def _return_known(word, dicts):
 class Spell:
     def __init__(self, sp_tokenizer, corpus, add_norvig_method=True):
         self._sp_tokenizer = sp_tokenizer
-        if self._sp_tokenizer:
+        if self._sp_tokenizer is not None:
             self._augment = _augment_vowel_prob_sp
         else:
             self._augment = _augment_vowel_prob
@@ -361,28 +331,10 @@ class Spell:
 
         return re.sub('[a-zA-Z]+', self.correct_match, text)
 
-    def correct_match(self, match: str):
-        """
-        Spell-correct word in match, and preserve proper upper/lower/title case.
-
-        Parameters
-        ----------
-        match: str
-
-        Returns
-        -------
-        result: str
-        """
-
-        word = match.group()
-        if word[0].isupper():
-            return word
-        return case_of(word)(self.correct(word.lower()))
-
     @check_type
     def correct_word(self, word: str):
         """
-        Spell-correct word in match, and preserve proper upper/lower/title case.
+        Spell-correct word in match, and preserve proper upper, lower and title case.
 
         Parameters
         ----------
@@ -530,12 +482,18 @@ class ProbabilityLM(Probability):
     Added custom vowels augmentation
     """
 
-    def __init__(self, corpus, sp_tokenizer=None):
+    def __init__(self, language_model, corpus, sp_tokenizer=None):
         Spell.__init__(self, sp_tokenizer, corpus)
+        self._language_model = language_model
 
     @check_type
     def correct(
-        self, word: str, string: str, index: int = -1, lookback: int = 5,
+        self,
+        word: str,
+        string: List[str],
+        index: int = -1,
+        lookback: int = 3,
+        lookforward: int = 3,
     ):
         """
         Correct a word within a text, returning the corrected word.
@@ -547,22 +505,25 @@ class ProbabilityLM(Probability):
             Entire string, `word` must a word inside `string`.
         index: int, optional (default=-1)
             index of word in the string, if -1, will try to use `string.index(word)`.
-        lookback: int, optional (default=5)
+        lookback: int, optional (default=3)
+            N left hand side words.
+        lookforward: int, optional (default=3)
+            N right hand side words.
 
         Returns
         -------
         result: str
         """
 
-        string = string.split()
         if word not in string:
-            raise ValueError('word not in string after split by spaces')
+            raise ValueError('word is not inside the string')
         if index < 0:
             index = string.index(word)
+        else:
+            if string[index] != word:
+                raise ValueError('index of the splitted string is not equal to the word')
 
         if is_english(word):
-            return word
-        if self._corpus.get(word, 0) > 5000:
             return word
         if is_malay(word):
             return word
@@ -621,6 +582,38 @@ class ProbabilityLM(Probability):
                 word = permulaan_result + word
 
         return word
+
+    @check_type
+    def correct_text(self, text: str):
+        """
+        Correct all the words within a text, returning the corrected text.
+
+        Parameters
+        ----------
+        text: str
+
+        Returns
+        -------
+        result: str
+        """
+
+        return re.sub('[a-zA-Z]+', self.correct_match, text)
+
+    @check_type
+    def correct_word(self, word: str):
+        """
+        Spell-correct word in match, and preserve proper upper, lower and title case.
+
+        Parameters
+        ----------
+        word: str
+
+        Returns
+        -------
+        result: str
+        """
+
+        return case_of(word)(self.correct(word.lower()))
 
 
 class Symspell:
@@ -821,7 +814,7 @@ class Symspell:
 
     def correct_match(self, match):
         """
-        Spell-correct word in match, and preserve proper upper/lower/title case.
+        Spell-correct word in re.match, and preserve proper upper, lower, title case.
         """
 
         word = match.group()
@@ -834,24 +827,16 @@ class JamSpell:
     def __init__(self, corrector):
         self._corrector = corrector
 
-    def _validate(self, word: str, string: str, index: int = -1):
-        string = string.split()
-        if word not in string:
-            raise ValueError('word not in string after split by spaces')
-        if index < 0:
-            index = string.index(word)
-        return string, index
-
     @check_type
-    def correct(self, word: str, string: str, index: int = -1):
+    def correct(self, word: str, string: List[str], index: int = -1):
         """
         Correct a word within a text, returning the corrected word.
 
         Parameters
         ----------
         word: str
-        string: str
-            Entire string, `word` must a word inside `string`.
+        string: List[str]
+            Tokenized string, `word` must a word inside `string`.
         index: int, optional(default=-1)
             index of word in the string, if -1, will try to use `string.index(word)`.
 
@@ -879,7 +864,7 @@ class JamSpell:
 
         return self._corrector.FixFragment(text)
 
-    def edit_candidates(self, word: str, string: str, index: int = -1):
+    def edit_candidates(self, word: str, string: List[str], index: int = -1):
         """
         Generate candidates given a word.
 
@@ -895,9 +880,15 @@ class JamSpell:
         -------
         result: List[str]
         """
+        if word not in string:
+            raise ValueError('word is not inside the string')
+        if index < 0:
+            index = string.index(word)
+        else:
+            if string[index] != word:
+                raise ValueError('index of the splitted string is not equal to the word')
 
-        string, index = self._validate(word=word, string=string, index=index)
-        return self._corrector.GetCandidates(string, index)
+        return self._corrector.GetCandidates(' '.join(string), index)
 
 
 class Spylls(Spell):
@@ -997,8 +988,8 @@ class Transformer(Spell):
         Parameters
         ----------
         word: str
-        string: str
-            Entire string, `word` must a word inside `string`.
+        string: List[str]
+            Tokenized string, `word` must a word inside `string`.
         index: int, optional(default=-1)
             index of word in the string, if -1, will try to use `string.index(word)`.
         batch_size: int, optional(default=20)
@@ -1011,11 +1002,13 @@ class Transformer(Spell):
 
         if batch_size < 1:
             raise ValueError('batch_size must be bigger than 0')
-        string = string.split()
         if word not in string:
-            raise ValueError('word not in string after split by spaces')
+            raise ValueError('word is not inside the string')
         if index < 0:
             index = string.index(word)
+        else:
+            if string[index] != word:
+                raise ValueError('index of the splitted string is equal to the word')
 
         if is_english(word):
             return word
@@ -1051,54 +1044,39 @@ class Transformer(Spell):
 
         text = re.sub('[^a-zA-Z]+', ' ', text)
         string = re.sub(r'[ ]+', ' ', text).strip()
+        splitted = string.split()
         strings = []
-        for no, word in enumerate(string.split()):
+        for no, word in enumerate(splitted):
             if not word[0].isupper():
                 word = case_of(word)(
                     self.correct(
-                        word.lower(), string, no, batch_size=batch_size
+                        word.lower(), splitted, no, batch_size=batch_size
                     )
                 )
             strings.append(word)
 
         return ' '.join(strings)
 
-    @check_type
-    def correct_word(self, word: str, string: str, batch_size: int = 20):
-        """
-        Spell-correct word in match, and preserve proper upper/lower/title case.
-
-        Parameters
-        ----------
-        word: str
-        string: str
-            Entire string, `word` must a word inside `string`.
-        batch_size: int, optional(default=20)
-            batch size to insert into model.
-
-        Returns
-        -------
-        result: str
-        """
-
-        return case_of(word)(
-            self.correct(word.lower(), string, batch_size=batch_size)
-        )
-
 
 @check_type
-def probability(sentence_piece: bool = False, **kwargs):
+def probability(language_model=None, sentence_piece: bool = False, **kwargs):
     """
-    Train a Probability Spell Corrector.
+    Load a Probability Spell Corrector.
 
     Parameters
     ----------
+    language_model: Callable, optional (default=None)
+        If not None, must an instance of kenlm.Model.
     sentence_piece: bool, optional (default=False)
         if True, reduce possible augmentation states using sentence piece.
 
     Returns
     -------
-    result: malaya.spell.Probability class
+    result: model
+        List of model classes:
+
+        * if passed `language_model` will return `malaya.spell.ProbabilityLM`.
+        * else will return `malaya.spell.Probability`.
     """
 
     tokenizer = None
@@ -1117,41 +1095,20 @@ def probability(sentence_piece: bool = False, **kwargs):
 
     with open(path['model']) as fopen:
         corpus = json.load(fopen)
-    return Probability(corpus, tokenizer)
 
+    if language_model is not None:
+        try:
+            import kenlm
+        except:
+            raise ModuleNotFoundError(
+                'kenlm not installed. Please install it by `pip install pypi-kenlm` and try again.'
+            )
 
-@check_type
-def symspell(
-    max_edit_distance_dictionary: int = 2,
-    prefix_length: int = 7,
-    term_index: int = 0,
-    count_index: int = 1,
-    top_k: int = 10,
-    **kwargs
-):
-    """
-    Load a symspell Spell Corrector for Malay.
-
-    Returns
-    -------
-    result: malaya.spell.Symspell class
-    """
-
-    try:
-        from symspellpy.symspellpy import SymSpell, Verbosity
-    except BaseException:
-        raise ModuleNotFoundError(
-            'symspellpy not installed. Please install it and try again.'
-        )
-
-    path = check_file(PATH_NGRAM['symspell'], S3_PATH_NGRAM['symspell'], **kwargs)
-    sym_spell = SymSpell(max_edit_distance_dictionary, prefix_length)
-    sym_spell.load_dictionary(path['model'], term_index, count_index)
-
-    path = check_file(PATH_NGRAM[1], S3_PATH_NGRAM[1], **kwargs)
-    with open(path['model']) as fopen:
-        corpus = json.load(fopen)
-    return Symspell(sym_spell, Verbosity.ALL, corpus, k=top_k)
+        if not isinstance(language_model, kenlm.Model):
+            raise ValueError('`language_model` must an instance of `kenlm.Model`.')
+        return ProbabilityLM(language_model, corpus, tokenizer)
+    else:
+        return Probability(corpus, tokenizer)
 
 
 @check_type

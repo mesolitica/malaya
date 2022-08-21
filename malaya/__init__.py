@@ -44,7 +44,7 @@ from . import rumi_jawi
 from . import segmentation
 from . import sentiment
 from . import similarity
-from . import spell
+from . import spelling_correction
 from . import stack
 from . import stem
 from . import subjectivity

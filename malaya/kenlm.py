@@ -68,6 +68,13 @@ def load(
     -------
     result : str
     """
+    try:
+        import kenlm
+    except:
+        raise ModuleNotFoundError(
+            'kenlm not installed. Please install it by `pip install pypi-kenlm` and try again.'
+        )
+
     model = model.lower()
     if model not in _kenlm_availability:
         raise ValueError(
@@ -83,4 +90,4 @@ def load(
         quantized=False,
         **kwargs,
     )
-    return path['model']
+    return kenlm.Model(path['model'])

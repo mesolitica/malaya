@@ -325,6 +325,7 @@ class Normalizer:
             logger.debug(f'after normalize_elongated: {string}')
 
         result, normalized = [], []
+        spelling_correction = {}
 
         tokenized = self._tokenizer(string)
         index = 0
@@ -805,9 +806,7 @@ class Normalizer:
 
                         if selected == word and self._speller:
                             s = f'index: {index}, word: {word}, condition to spelling correction'
-                            selected = self._speller.correct(
-                                selected, string=' '.join(tokenized + words[:no_word + 1]), index=index
-                            )
+                            spelling_correction[index] = selected
 
                 else:
                     selected = word
