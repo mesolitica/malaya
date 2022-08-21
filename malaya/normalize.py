@@ -806,7 +806,7 @@ class Normalizer:
 
                         if selected == word and self._speller:
                             s = f'index: {index}, word: {word}, condition to spelling correction'
-                            spelling_correction[index] = selected
+                            spelling_correction[len(result)] = selected
 
                 else:
                     selected = word
@@ -815,6 +815,12 @@ class Normalizer:
                 result.append(result_string + selected + end_result_string)
             index += 1
 
+        for index, selected in spelling_correction.items():
+            logger.debug(f'spelling correction, index: {index}, selected: {selected}')
+            selected = self._speller.correct(
+                selected, string=result, index=index
+            )
+            result[index] = selected
         result = ' '.join(result)
         normalized = ' '.join(normalized)
 

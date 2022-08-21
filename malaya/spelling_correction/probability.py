@@ -168,7 +168,14 @@ class Spell:
         result: str
         """
 
-        return re.sub('[a-zA-Z]+', self.correct_match, text)
+        string = re.sub(r'[ ]+', ' ', text).strip()
+        splitted = string.split()
+        for no, word in enumerate(splitted):
+            if not word.isupper() and check_ratio_upper_lower(word) < 0.5:
+                word = re.sub('[a-zA-Z]+', self.correct_match, word)
+            splitted[no] = word
+
+        return ' '.join(splitted)
 
     def correct_match(self, match):
         """
@@ -321,28 +328,6 @@ class Probability(Spell):
     def normalize_elongated(self, word):
         return case_of(word)(self.best_elong_candidate(word.lower()))
 
-    def correct_text(self, text: str):
-        """
-        Correct all the words within a text, returning the corrected text.
-
-        Parameters
-        ----------
-        text: str
-
-        Returns
-        -------
-        result: str
-        """
-
-        string = re.sub(r'[ ]+', ' ', text).strip()
-        splitted = string.split()
-        for no, word in enumerate(splitted):
-            if not word.isupper() and check_ratio_upper_lower(word) < 0.5:
-                word = re.sub('[a-zA-Z]+', self.correct_match, word)
-            splitted[no] = word
-
-        return ' '.join(splitted)
-
 
 class ProbabilityLM(Probability):
     """
@@ -356,6 +341,28 @@ class ProbabilityLM(Probability):
     def __init__(self, language_model, corpus, sp_tokenizer=None):
         Spell.__init__(self, sp_tokenizer, corpus)
         self._language_model = language_model
+
+    def score(
+        self,
+        word,
+        string,
+        index: int = -1,
+        lookback: int = 3,
+        lookforward: int = 3,
+    ):
+        if lookback == -1:
+            lookback = index
+        elif lookback > index:
+            lookback = index
+
+        if lookforward == -1:
+            lookforward = 0
+
+        left_hand = string[index - lookback: index]
+        right_hand = string[index + 1: index + 1 + lookforward]
+        string = left_hand + [word] + right_hand
+
+        return self._language_model.score(' '.join(string))
 
     @check_type
     def correct(
@@ -386,13 +393,11 @@ class ProbabilityLM(Probability):
         result: str
         """
 
-        if word not in string:
-            raise ValueError('word is not inside the string')
         if index < 0:
             index = string.index(word)
         else:
-            if string[index] != word:
-                raise ValueError('index of the splitted string is not equal to the word')
+            if word.lower() not in string[index].lower():
+                raise ValueError(f'{word} is not a subset or equal to index of the {string}')
 
         if is_english(word):
             return word
@@ -424,8 +429,13 @@ class ProbabilityLM(Probability):
             else:
                 candidates1 = self.edit_candidates(word)
                 candidates2 = self.edit_candidates(cp_word)
-                word1 = max(candidates1, key=self.P)
-                word2 = max(candidates2, key=self.P)
+
+                candidates1_score = {w: self.score(w, string, index=index, lookback=lookback,
+                                                   lookforward=lookforward) for w in candidates1}
+                candidates2_score = {w: self.score(w, string, index=index, lookback=lookback,
+                                                   lookforward=lookforward) for w in candidates2}
+                word1 = max(candidates1_score, key=candidates1_score.get)
+                word2 = max(candidates2_score, key=candidates2_score.get)
 
                 if self.WORDS[word1] > self.WORDS[word2]:
                     word = word1
@@ -455,13 +465,26 @@ class ProbabilityLM(Probability):
         return word
 
     @check_type
-    def correct_text(self, text: str):
+    def correct_text(
+        self,
+        text: str,
+        lookback: int = 3,
+        lookforward: int = 3,
+    ):
         """
         Correct all the words within a text, returning the corrected text.
 
         Parameters
         ----------
         text: str
+        lookback: int, optional (default=3)
+            N words on the left hand side.
+            if put -1, will take all words on the left hand side.
+            longer left hand side will take longer to compute.
+        lookforward: int, optional (default=3)
+            N words on the right hand side.
+            if put -1, will take all words on the right hand side.
+            longer right hand side will take longer to compute.
 
         Returns
         -------
@@ -471,28 +494,81 @@ class ProbabilityLM(Probability):
         splitted = string.split()
         strings = []
         for no, word in enumerate(splitted):
-            if not word.isupper():
-                p = partial(self.correct_word, string=splitted, index=no, batch_size=batch_size)
+            if not word.isupper() and check_ratio_upper_lower(word) < 0.5:
+                p = partial(
+                    self.correct_match,
+                    string=splitted,
+                    index=no,
+                    lookback=lookback,
+                    lookforward=lookforward,
+                )
                 word = re.sub('[a-zA-Z]+', p, word)
             strings.append(word)
 
         return ' '.join(strings)
 
     @check_type
-    def correct_word(self, word: str):
+    def correct_word(
+        self,
+        word: str,
+        string: List[str],
+        index: int = -1,
+        lookback: int = 3,
+        lookforward: int = 3,
+    ):
         """
-        Spell-correct word in match, and preserve proper upper, lower and title case.
+        Spell-correct word, and preserve proper upper, lower and title case.
 
         Parameters
         ----------
         word: str
+        string: List[str]
+            Tokenized string, `word` must a word inside `string`.
+        index: int, optional(default=-1)
+            index of word in the string, if -1, will try to use `string.index(word)`.
+        lookback: int, optional (default=5)
+            N words on the left hand side.
+            if put -1, will take all words on the left hand side.
+            longer left hand side will take longer to compute.
+        lookforward: int, optional (default=5)
+            N words on the right hand side.
+            if put -1, will take all words on the right hand side.
+            longer right hand side will take longer to compute.
 
         Returns
         -------
         result: str
         """
 
-        return case_of(word)(self.correct(word.lower()))
+        return case_of(word)(self.correct(
+            word.lower(),
+            string=string,
+            index=index,
+            lookback=lookback,
+            lookforward=lookforward))
+
+    @check_type
+    def correct_match(
+        self,
+        match,
+        string: List[str],
+        index: int = -1,
+        lookback: int = 3,
+        lookforward: int = 3,
+    ):
+        """
+        Spell-correct word in re.match, and preserve proper upper, lower, title case.
+        """
+
+        word = match.group()
+        if len(word) < 2:
+            return word
+        return case_of(word)(self.correct(
+            word.lower(),
+            string=string,
+            index=index,
+            lookback=lookback,
+            lookforward=lookforward))
 
 
 @check_type

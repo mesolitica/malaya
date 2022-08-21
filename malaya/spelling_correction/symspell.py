@@ -5,11 +5,20 @@ from malaya.function import check_file
 from malaya.spelling_correction.base import (
     _augment_vowel_alternate,
 )
+from malaya.text.function import case_of, is_english, is_malay, check_ratio_upper_lower
+from malaya.text.rules import rules_normalizer
+from malaya.spelling_correction.probability import Spell
+from malaya.text.tatabahasa import (
+    consonants,
+    permulaan,
+    hujung,
+    stopword_tatabahasa,
+)
 from herpetologist import check_type
 from typing import List
 
 
-class Symspell:
+class Symspell(Spell):
     """
     The SymspellCorrector extends the functionality of symspeller, https://github.com/mammothb/symspellpy
     And improve it using some algorithms from Normalization of noisy texts in Malaysian online reviews,
@@ -188,32 +197,6 @@ class Symspell:
         ):
             word = permulaan_result + word
         return word
-
-    @check_type
-    def correct_text(self, text: str):
-        """
-        Correct all the words within a text, returning the corrected text.
-
-        Parameters
-        ----------
-        text: str
-
-        Returns
-        -------
-        result: str
-        """
-
-        return re.sub('[a-zA-Z]+', self.correct_match, text)
-
-    def correct_match(self, match):
-        """
-        Spell-correct word in match, and preserve proper upper/lower/title case.
-        """
-
-        word = match.group()
-        if word[0].isupper():
-            return word
-        return case_of(word)(self.correct(word.lower()))
 
 
 @check_type

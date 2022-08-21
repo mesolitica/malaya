@@ -17,6 +17,12 @@ url = 'https://f000.backblazeb2.com/file/malaya-model/'
 __home__, _ = get_home(package=package, package_version=version)
 
 from . import alignment
+from . import spelling_correction
+from . import summarization
+from . import translation
+from . import utils
+from . import zero_shot
+
 from . import augmentation
 from . import cluster
 from . import constituency
@@ -25,8 +31,8 @@ from . import dependency
 from . import emotion
 from . import entity
 from . import generator
-from . import kenlm
 from . import jawi_rumi
+from . import kenlm
 from . import keyword_extraction
 from . import knowledge_graph
 from . import language_detection
@@ -44,19 +50,15 @@ from . import rumi_jawi
 from . import segmentation
 from . import sentiment
 from . import similarity
-from . import spelling_correction
 from . import stack
 from . import stem
 from . import subjectivity
 from . import syllable
 from . import tatabahasa
-from . import summarization
+from . import tokenizer
 from . import topic_model
 from . import toxicity
 from . import transformer
 from . import true_case
-from . import translation
 from . import word2num
 from . import wordvector
-from . import zero_shot
-from . import utils

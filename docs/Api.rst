@@ -183,19 +183,37 @@ malaya.sentiment
 .. automodule:: malaya.sentiment
     :members:
 
-malaya.spell
------------------
+malaya.spelling_correction.jamspell
+---------------------------------------
 
-.. automodule:: malaya.spell
+.. autoclass:: malaya.spelling_correction.jamspell.JamSpell()
     :members:
 
-.. autoclass:: malaya.spell.Transformer()
+malaya.spelling_correction.probability
+---------------------------------------
+
+.. autoclass:: malaya.spelling_correction.probability.Probability()
     :members:
 
-.. autoclass:: malaya.spell.Probability()
+.. autoclass:: malaya.spelling_correction.probability.ProbabilityLM()
     :members:
 
-.. autoclass:: malaya.spell.Symspell()
+malaya.spelling_correction.spylls
+---------------------------------------
+
+.. autoclass:: malaya.spelling_correction.spylls.Spylls()
+    :members:
+
+malaya.spelling_correction.symspell
+---------------------------------------
+
+.. autoclass:: malaya.spelling_correction.symspell.Symspell()
+    :members:
+
+malaya.spelling_correction.transformer
+---------------------------------------
+
+.. autoclass:: malaya.spelling_correction.transformer.Transformer()
     :members:
 
 malaya.stack

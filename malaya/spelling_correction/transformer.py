@@ -209,9 +209,6 @@ class Transformer(Spell):
         result: str
         """
 
-        if batch_size < 1:
-            raise ValueError('batch_size must be bigger than 0')
-
         string = re.sub(r'[ ]+', ' ', text).strip()
         splitted = string.split()
         for no, word in enumerate(splitted):

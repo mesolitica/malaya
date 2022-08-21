@@ -40,7 +40,7 @@ _kenlm_availability = {
 }
 
 
-def available_kenlm():
+def available_models():
     """
     List available KenLM Language Model.
     """
@@ -66,8 +66,9 @@ def load(
 
     Returns
     -------
-    result : str
+    result : kenlm.Model class
     """
+
     try:
         import kenlm
     except:
@@ -78,7 +79,7 @@ def load(
     model = model.lower()
     if model not in _kenlm_availability:
         raise ValueError(
-            'model not supported, please check supported models from `malaya.kenlm.available_kenlm()`.'
+            'model not supported, please check supported models from `malaya.kenlm.available_models()`.'
         )
 
     path = check_file(
