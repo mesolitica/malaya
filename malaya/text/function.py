@@ -150,6 +150,13 @@ def check_ratio_punct(word):
             punct += 1
     return punct / len(word)
 
+def check_ratio_upper_lower(word):
+    upper = 0
+    for c in word:
+        if c.isupper():
+            upper += 1
+    return upper / len(word)
+
 
 def replace_punct(string):
     return string.translate(str.maketrans('', '', PUNCTUATION))

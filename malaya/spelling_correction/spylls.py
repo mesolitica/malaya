@@ -1,3 +1,4 @@
+from malaya.spelling_correction.probability import Spell
 from herpetologist import check_type
 from typing import List
 

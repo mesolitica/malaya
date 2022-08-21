@@ -1,7 +1,32 @@
+import re
+from functools import partial
+from malaya.text.function import case_of, is_english, is_malay, check_ratio_upper_lower
+from malaya.text.tatabahasa import stopword_tatabahasa
+from malaya.text.rules import rules_normalizer
 from malaya.path import PATH_NGRAM, S3_PATH_NGRAM
 from malaya.function import check_file, describe_availability
 from herpetologist import check_type
 from typing import List
+
+"""
+Before you able to use this spelling correction, you need to install https://github.com/bakwc/JamSpell,
+
+For mac,
+
+```bash
+wget http://prdownloads.sourceforge.net/swig/swig-3.0.12.tar.gz
+tar -zxf swig-3.0.12.tar.gz
+./swig-3.0.12/configure && make && make install
+pip3 install jamspell
+```
+
+For debian / ubuntu,
+
+```bash
+apt install swig3
+pip3 install jamspell
+```
+"""
 
 
 class JamSpell:
@@ -26,8 +51,44 @@ class JamSpell:
         result: str
         """
 
-        candidates = self.edit_candidates(word=word, string=string, index=index)
-        return candidates[0]
+        if is_english(word):
+            return word
+        if is_malay(word):
+            return word
+        if word in stopword_tatabahasa:
+            return word
+
+        if word in rules_normalizer:
+            word = rules_normalizer[word]
+        else:
+            candidates = self.edit_candidates(word=word, string=string, index=index)
+            word = candidates[0]
+        return word
+
+    def correct_word(
+        self,
+        word,
+        string: List[str],
+        index: int = -1,
+    ):
+        """
+        Spell-correct word in re.match, and preserve proper upper, lower, title case.
+        """
+
+        if len(word) < 2:
+            return word
+        return case_of(word)(self.correct(word.lower(), string=string, index=index))
+
+    def correct_match(
+        self,
+        match,
+        string: List[str],
+        index: int = -1,
+    ):
+        """
+        Spell-correct word in re.match, and preserve proper upper, lower, title case.
+        """
+        return self.correct_word(match.group(), string=string, index=index)
 
     @check_type
     def correct_text(self, text: str):
@@ -43,7 +104,19 @@ class JamSpell:
         result: str
         """
 
-        return self._corrector.FixFragment(text)
+        string = re.sub(r'[ ]+', ' ', text).strip()
+        splitted = string.split()
+        for no, word in enumerate(splitted):
+            if not word.isupper() and check_ratio_upper_lower(word) < 0.5:
+                p = partial(
+                    self.correct_match,
+                    string=splitted,
+                    index=no,
+                )
+                word = re.sub('[a-zA-Z]+', p, word)
+            splitted[no] = word
+
+        return ' '.join(splitted)
 
     def edit_candidates(self, word: str, string: List[str], index: int = -1):
         """
@@ -61,15 +134,13 @@ class JamSpell:
         -------
         result: List[str]
         """
-        if word not in string:
-            raise ValueError('word is not inside the string')
         if index < 0:
             index = string.index(word)
         else:
-            if string[index] != word:
-                raise ValueError('index of the splitted string is not equal to the word')
+            if word.lower() not in string[index].lower():
+                raise ValueError('word is not a subset or equal to index of the splitted string')
 
-        return self._corrector.GetCandidates(' '.join(string), index)
+        return self._corrector.GetCandidates(string, index)
 
 
 _availability = {

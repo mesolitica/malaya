@@ -1,11 +1,20 @@
 import tensorflow as tf
+import json
+import re
 from functools import partial
-from malaya.spelling_correction.probability import Spell
 from malaya.path import PATH_NGRAM, S3_PATH_NGRAM
 from malaya.function import check_file
 from malaya.supervised import t5 as t5_load
 from malaya.model.t5 import Spell as T5_Spell
+from malaya.text.bpe import SentencePieceTokenizer
+from malaya.text.function import case_of, is_english, is_malay, check_ratio_upper_lower
+from malaya.text.tatabahasa import stopword_tatabahasa
+from malaya.text.rules import rules_normalizer
+from malaya.spelling_correction.probability import Spell
+from malaya.function import describe_availability
 from typing import List
+from herpetologist import check_type
+import numpy as np
 import logging
 
 logger = logging.getLogger(__name__)
@@ -99,7 +108,14 @@ class Transformer(Spell):
 
     @check_type
     def correct(
-        self, word: str, string: List[str], index: int = -1, batch_size: int = 20
+        self,
+        word: str,
+        string: List[str],
+        index: int = -1,
+        lookback: int = 5,
+        lookforward: int = 5,
+        batch_size: int = 20,
+        **kwargs,
     ):
         """
         Correct a word within a text, returning the corrected word.
@@ -109,9 +125,17 @@ class Transformer(Spell):
         word: str
         string: List[str]
             Tokenized string, `word` must a word inside `string`.
-        index: int, optional(default=-1)
+        index: int, optional (default=-1)
             index of word in the string, if -1, will try to use `string.index(word)`.
-        batch_size: int, optional(default=20)
+        lookback: int, optional (default=5)
+            N words on the left hand side.
+            if put -1, will take all words on the left hand side.
+            longer left hand side will take longer to compute.
+        lookforward: int, optional (default=5)
+            N words on the right hand side.
+            if put -1, will take all words on the right hand side.
+            longer right hand side will take longer to compute.
+        batch_size: int, optional (default=20)
             batch size to insert into model.
 
         Returns
@@ -121,13 +145,11 @@ class Transformer(Spell):
 
         if batch_size < 1:
             raise ValueError('batch_size must be bigger than 0')
-        if word not in string:
-            raise ValueError('word is not inside the string')
         if index < 0:
             index = string.index(word)
         else:
-            if string[index] != word:
-                raise ValueError('index of the splitted string is equal to the word')
+            if word.lower() not in string[index].lower():
+                raise ValueError('word is not a subset or equal to index of the splitted string')
 
         if is_english(word):
             return word
@@ -139,39 +161,46 @@ class Transformer(Spell):
         if word in rules_normalizer:
             word = rules_normalizer[word]
         else:
+            if lookback == -1:
+                lookback = index
+            elif lookback > index:
+                lookback = index
+
+            if lookforward == -1:
+                lookforward = 0
+
+            left_hand = string[index - lookback: index]
+            right_hand = string[index + 1: index + 1 + lookforward]
+            string = left_hand + [word] + right_hand
+            index = len(left_hand)
+
+            logger.debug(f'left hand side: {left_hand}, right hand side: {right_hand}, index: {index}, word: {word}')
+
             word = self._correct(word, string, index, batch_size=batch_size)
         return word
 
     @check_type
-    def correct_word(self, word: str, string: List[str], index: int = -1, batch_size: int = 20):
-        """
-        Spell-correct word, and preserve proper upper, lower and title case.
-
-        Parameters
-        ----------
-        word: str
-        string: List[str]
-            Tokenized string, `word` must a word inside `string`.
-        index: int, optional(default=-1)
-            index of word in the string, if -1, will try to use `string.index(word)`.
-        batch_size: int, optional(default=20)
-            batch size to insert into model.
-
-        Returns
-        -------
-        result: str
-        """
-
-        return case_of(word)(self.correct(word.lower(), string=string, index=index, batch_size=batch_size))
-
-    @check_type
-    def correct_text(self, text: str, batch_size: int = 20):
+    def correct_text(
+        self,
+        text: str,
+        lookback: int = 5,
+        lookforward: int = 5,
+        batch_size: int = 20
+    ):
         """
         Correct all the words within a text, returning the corrected text.
 
         Parameters
         ----------
         text: str
+        lookback: int, optional (default=5)
+            N words on the left hand side.
+            if put -1, will take all words on the left hand side.
+            longer left hand side will take longer to compute.
+        lookforward: int, optional (default=5)
+            N words on the right hand side.
+            if put -1, will take all words on the right hand side.
+            longer right hand side will take longer to compute.
         batch_size: int, optional(default=20)
             batch size to insert into model.
 
@@ -185,14 +214,88 @@ class Transformer(Spell):
 
         string = re.sub(r'[ ]+', ' ', text).strip()
         splitted = string.split()
-        strings = []
         for no, word in enumerate(splitted):
-            if not word.isupper():
-                p = partial(self.correct_word, string=splitted, index=no, batch_size=batch_size)
+            if not word.isupper() and check_ratio_upper_lower(word) < 0.5:
+                p = partial(
+                    self.correct_match,
+                    string=splitted,
+                    index=no,
+                    lookback=lookback,
+                    lookforward=lookforward,
+                    batch_size=batch_size
+                )
                 word = re.sub('[a-zA-Z]+', p, word)
-            strings.append(word)
+            splitted[no] = word
 
-        return ' '.join(strings)
+        return ' '.join(splitted)
+
+    @check_type
+    def correct_word(
+        self,
+        word: str,
+        string: List[str],
+        index: int = -1,
+        lookback: int = 5,
+        lookforward: int = 5,
+        batch_size: int = 20,
+    ):
+        """
+        Spell-correct word, and preserve proper upper, lower and title case.
+
+        Parameters
+        ----------
+        word: str
+        string: List[str]
+            Tokenized string, `word` must a word inside `string`.
+        index: int, optional(default=-1)
+            index of word in the string, if -1, will try to use `string.index(word)`.
+        lookback: int, optional (default=5)
+            N words on the left hand side.
+            if put -1, will take all words on the left hand side.
+            longer left hand side will take longer to compute.
+        lookforward: int, optional (default=5)
+            N words on the right hand side.
+            if put -1, will take all words on the right hand side.
+            longer right hand side will take longer to compute.
+        batch_size: int, optional(default=20)
+            batch size to insert into model.
+
+        Returns
+        -------
+        result: str
+        """
+
+        return case_of(word)(self.correct(
+            word.lower(),
+            string=string,
+            index=index,
+            lookback=lookback,
+            lookforward=lookforward,
+            batch_size=batch_size))
+
+    def correct_match(
+        self,
+        match,
+        string: List[str],
+        index: int = -1,
+        lookback: int = 5,
+        lookforward: int = 5,
+        batch_size: int = 20,
+    ):
+        """
+        Spell-correct word in re.match, and preserve proper upper, lower, title case.
+        """
+
+        word = match.group()
+        if len(word) < 2:
+            return word
+        return case_of(word)(self.correct(
+            word.lower(),
+            string=string,
+            index=index,
+            lookback=lookback,
+            lookforward=lookforward,
+            batch_size=batch_size))
 
 
 def available_transformer():
@@ -253,7 +356,7 @@ def encoder(model, sentence_piece: bool = False, **kwargs):
 
     Returns
     -------
-    result: malaya.spell.Transformer class
+    result: malaya.spelling_correction.transformer.Transformer class
     """
 
     if not hasattr(model, '_log_vectorize'):

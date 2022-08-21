@@ -116,7 +116,7 @@ class Symspell:
         ttt = {
             k: v
             for k, v in ttt.items()
-            if len(k) > 3 and and not is_english(k)
+            if len(k) > 3 and not is_english(k)
         }
         ttt[word] = ttt.get(word, 0) + 10
         if not len(ttt):

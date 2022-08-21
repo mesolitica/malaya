@@ -2,7 +2,9 @@ from malaya.text.tatabahasa import (
     consonants,
     vowels,
     group_compound,
+    quad_vowels,
 )
+from itertools import product
 
 
 def _get_indices(string, c='a'):

@@ -1,7 +1,8 @@
 import json
+import re
 from functools import partial
 from collections import Counter
-from malaya.text.function import case_of, is_english, is_malay
+from malaya.text.function import case_of, is_english, is_malay, check_ratio_upper_lower
 from malaya.text.rules import rules_normalizer
 from malaya.text.bpe import SentencePieceTokenizer
 from malaya.path import PATH_NGRAM, S3_PATH_NGRAM
@@ -150,7 +151,7 @@ class Spell:
             ttt = {word}
         ttt = list(ttt)
         if word[-1] in vowels:
-            ttt = [w for w in ttt if w[-1] == word[-1] or (w[-1] in 'e' and word[-1] in 'a')]
+            ttt = [w for w in ttt if w[-1] == word[-1] or (w[-1] in 'a' and word[-1] in 'eo')]
         return ttt
 
     @check_type
@@ -175,9 +176,7 @@ class Spell:
         """
 
         word = match.group()
-        if word[0].isupper():
-            return word
-        return case_of(word)(self.correct(word.lower()))
+        return self.correct_word(word)
 
     @check_type
     def correct_word(self, word: str):
@@ -192,6 +191,8 @@ class Spell:
         -------
         result: str
         """
+        if len(word) < 2:
+            return word
 
         return case_of(word)(self.correct(word.lower()))
 
@@ -202,7 +203,7 @@ class Probability(Spell):
     spell-corrector in http://norvig.com/spell-correct.html
     And improve it using some algorithms from Normalization of noisy texts in Malaysian online reviews,
     https://www.researchgate.net/publication/287050449_Normalization_of_noisy_texts_in_Malaysian_online_reviews
-    Added custom vowels augmentation
+    Added custom vowels augmentation.
     """
 
     def __init__(self, corpus, sp_tokenizer=None):
@@ -320,6 +321,28 @@ class Probability(Spell):
     def normalize_elongated(self, word):
         return case_of(word)(self.best_elong_candidate(word.lower()))
 
+    def correct_text(self, text: str):
+        """
+        Correct all the words within a text, returning the corrected text.
+
+        Parameters
+        ----------
+        text: str
+
+        Returns
+        -------
+        result: str
+        """
+
+        string = re.sub(r'[ ]+', ' ', text).strip()
+        splitted = string.split()
+        for no, word in enumerate(splitted):
+            if not word.isupper() and check_ratio_upper_lower(word) < 0.5:
+                word = re.sub('[a-zA-Z]+', self.correct_match, word)
+            splitted[no] = word
+
+        return ' '.join(splitted)
+
 
 class ProbabilityLM(Probability):
     """
@@ -327,7 +350,7 @@ class ProbabilityLM(Probability):
     spell-corrector in http://norvig.com/spell-correct.html
     And improve it using some algorithms from Normalization of noisy texts in Malaysian online reviews,
     https://www.researchgate.net/publication/287050449_Normalization_of_noisy_texts_in_Malaysian_online_reviews
-    Added custom vowels augmentation
+    Added custom vowels augmentation.
     """
 
     def __init__(self, language_model, corpus, sp_tokenizer=None):
