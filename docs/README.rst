@@ -27,15 +27,11 @@ Proper documentation is available at https://malaya.readthedocs.io/
 Installing from the PyPI
 ----------------------------------
 
-CPU version
 ::
 
     $ pip install malaya
 
-GPU version
-::
-
-    $ pip install malaya[gpu]
+It will automatically all dependencies except for Tensorflow and PyTorch. So you can choose your own Tensorflow CPU / GPU version and PyTorch CPU / GPU version.
 
 Only **Python >= 3.6.0**, **Tensorflow >= 1.15.0**, and **PyTorch >= 1.10** are supported.
 
