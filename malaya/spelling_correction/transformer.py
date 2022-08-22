@@ -59,8 +59,8 @@ def generate_ids(mask, tokenizer):
 
 
 class Transformer(Spell):
-    def __init__(self, model, corpus, sp_tokenizer):
-        Spell.__init__(self, sp_tokenizer, corpus, add_norvig_method=False)
+    def __init__(self, model, corpus, sp_tokenizer, maxlen=15):
+        Spell.__init__(self, sp_tokenizer, corpus, add_norvig_method=False, maxlen=maxlen)
         self._model = model
         self._padding = tf.keras.preprocessing.sequence.pad_sequences
 
@@ -342,7 +342,12 @@ def transformer(model: str = 'small-t5', quantized: bool = False, **kwargs):
 
 
 @check_type
-def encoder(model, sentence_piece: bool = False, **kwargs):
+def encoder(
+    model,
+    sentence_piece: bool = False,
+    maxlen: int = 15,
+    **kwargs,
+):
     """
     Load a Transformer Encoder Spell Corrector. Right now only supported BERT and ALBERT.
 
@@ -350,6 +355,8 @@ def encoder(model, sentence_piece: bool = False, **kwargs):
     ----------
     sentence_piece: bool, optional (default=False)
         if True, reduce possible augmentation states using sentence piece.
+    maxlen: int, optional (default=15)
+        max length of the word to `edit_candidates`.
 
     Returns
     -------
@@ -374,4 +381,4 @@ def encoder(model, sentence_piece: bool = False, **kwargs):
     path = check_file(PATH_NGRAM[1], S3_PATH_NGRAM[1], **kwargs)
     with open(path['model']) as fopen:
         corpus = json.load(fopen)
-    return Transformer(model, corpus, tokenizer)
+    return Transformer(model, corpus, tokenizer, maxlen=maxlen)

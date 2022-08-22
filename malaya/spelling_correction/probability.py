@@ -11,6 +11,7 @@ from malaya.spelling_correction.base import (
     _augment_vowel_prob_sp,
     _augment_vowel_prob,
     _augment_vowel,
+    get_permulaan_hujung,
 )
 from malaya.text.tatabahasa import (
     alphabet,
@@ -22,10 +23,13 @@ from malaya.text.tatabahasa import (
 )
 from herpetologist import check_type
 from typing import List
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class Spell:
-    def __init__(self, sp_tokenizer, corpus, add_norvig_method=True):
+    def __init__(self, sp_tokenizer, corpus, add_norvig_method=True, maxlen=15):
         self._sp_tokenizer = sp_tokenizer
         if self._sp_tokenizer is not None:
             self._augment = _augment_vowel_prob_sp
@@ -35,6 +39,7 @@ class Spell:
         self._corpus = corpus
         self.WORDS = Counter(self._corpus)
         self.N = sum(self.WORDS.values())
+        self.maxlen = maxlen
 
     def edit_step(self, word):
         """
@@ -144,7 +149,7 @@ class Spell:
         result: List[str]
         """
 
-        ttt = self.known(self.edit_step(word)) or {word}
+        ttt = self.known(self.edit_step(word) if len(word) <= self.maxlen else [word]) or {word}
         ttt = {i for i in ttt if len(i) > 3 and not is_english(i)}
         ttt = self.known([word]) | ttt
         if not len(ttt):
@@ -213,8 +218,8 @@ class Probability(Spell):
     Added custom vowels augmentation.
     """
 
-    def __init__(self, corpus, sp_tokenizer=None):
-        Spell.__init__(self, sp_tokenizer, corpus)
+    def __init__(self, corpus, sp_tokenizer=None, maxlen=15):
+        Spell.__init__(self, sp_tokenizer, corpus, maxlen)
 
     def tokens(text):
         return REGEX_TOKEN.findall(text.lower())
@@ -233,7 +238,7 @@ class Probability(Spell):
             return []
 
     @check_type
-    def correct(self, word: str, **kwargs):
+    def correct(self, word: str, score_func=None, **kwargs):
         """
         Most probable spelling correction for word.
 
@@ -256,18 +261,7 @@ class Probability(Spell):
             return word
 
         cp_word = word[:]
-        hujung_result = [v for k, v in hujung.items() if word.endswith(k)]
-        if len(hujung_result):
-            hujung_result = max(hujung_result, key=len)
-            if len(hujung_result):
-                word = word[: -len(hujung_result)]
-        permulaan_result = [
-            v for k, v in permulaan.items() if word.startswith(k)
-        ]
-        if len(permulaan_result):
-            permulaan_result = max(permulaan_result, key=len)
-            if len(permulaan_result):
-                word = word[len(permulaan_result):]
+        word, hujung_result, permulaan_result = get_permulaan_hujung(word)
 
         combined = True
         if len(word):
@@ -278,8 +272,14 @@ class Probability(Spell):
             else:
                 candidates1 = self.edit_candidates(word)
                 candidates2 = self.edit_candidates(cp_word)
-                word1 = max(candidates1, key=self.P)
-                word2 = max(candidates2, key=self.P)
+                if score_func is None:
+                    word1 = max(candidates1, key=self.P)
+                    word2 = max(candidates2, key=self.P)
+                else:
+                    candidates1_score = {w: score_func(w, **kwargs) for w in candidates1}
+                    candidates2_score = {w: score_func(w, **kwargs) for w in candidates2}
+                    word1 = max(candidates1_score, key=candidates1_score.get)
+                    word2 = max(candidates2_score, key=candidates2_score.get)
 
                 if self.WORDS[word1] > self.WORDS[word2]:
                     word = word1
@@ -287,23 +287,12 @@ class Probability(Spell):
                     word = word2
                     combined = False
 
-            if (
-                len(hujung_result)
-                and not word.endswith(hujung_result)
-                and combined
-            ):
-                word = word + hujung_result
-            if (
-                len(permulaan_result)
-                and not word.startswith(permulaan_result)
-                and combined
-            ):
-                word = permulaan_result + word
-
-        else:
-            if len(hujung_result) and not word.endswith(hujung_result):
-                word = word + hujung_result
-            if len(permulaan_result) and not word.startswith(permulaan_result):
+        if len(hujung_result) and not word.endswith(hujung_result) and combined:
+            word = word + hujung_result
+        if len(permulaan_result) and not word.startswith(permulaan_result) and combined:
+            if permulaan_result[-1] == word[0]:
+                word = permulaan_result + word[1:]
+            else:
                 word = permulaan_result + word
 
         return word
@@ -338,8 +327,8 @@ class ProbabilityLM(Probability):
     Added custom vowels augmentation.
     """
 
-    def __init__(self, language_model, corpus, sp_tokenizer=None):
-        Spell.__init__(self, sp_tokenizer, corpus)
+    def __init__(self, language_model, corpus, sp_tokenizer=None, maxlen=15):
+        Spell.__init__(self, sp_tokenizer, corpus, maxlen)
         self._language_model = language_model
 
     def score(
@@ -349,6 +338,7 @@ class ProbabilityLM(Probability):
         index: int = -1,
         lookback: int = 3,
         lookforward: int = 3,
+        **kwargs,
     ):
         if lookback == -1:
             lookback = index
@@ -357,6 +347,9 @@ class ProbabilityLM(Probability):
 
         if lookforward == -1:
             lookforward = 0
+
+        s = f'word: {word}, string: {string}, index: {index}, lookback: {lookback}, lookforward: {lookforward}'
+        logger.debug(s)
 
         left_hand = string[index - lookback: index]
         right_hand = string[index + 1: index + 1 + lookforward]
@@ -372,6 +365,7 @@ class ProbabilityLM(Probability):
         index: int = -1,
         lookback: int = 3,
         lookforward: int = 3,
+        **kwargs,
     ):
         """
         Correct a word within a text, returning the corrected word.
@@ -399,70 +393,15 @@ class ProbabilityLM(Probability):
             if word.lower() not in string[index].lower():
                 raise ValueError(f'{word} is not a subset or equal to index of the {string}')
 
-        if is_english(word):
-            return word
-        if is_malay(word):
-            return word
-        if word in stopword_tatabahasa:
-            return word
-
-        cp_word = word[:]
-        hujung_result = [v for k, v in hujung.items() if word.endswith(k)]
-        if len(hujung_result):
-            hujung_result = max(hujung_result, key=len)
-            if len(hujung_result):
-                word = word[: -len(hujung_result)]
-        permulaan_result = [
-            v for k, v in permulaan.items() if word.startswith(k)
-        ]
-        if len(permulaan_result):
-            permulaan_result = max(permulaan_result, key=len)
-            if len(permulaan_result):
-                word = word[len(permulaan_result):]
-
-        combined = True
-        if len(word):
-            if word in rules_normalizer:
-                word = rules_normalizer[word]
-            elif self._corpus.get(word, 0) > 1000:
-                pass
-            else:
-                candidates1 = self.edit_candidates(word)
-                candidates2 = self.edit_candidates(cp_word)
-
-                candidates1_score = {w: self.score(w, string, index=index, lookback=lookback,
-                                                   lookforward=lookforward) for w in candidates1}
-                candidates2_score = {w: self.score(w, string, index=index, lookback=lookback,
-                                                   lookforward=lookforward) for w in candidates2}
-                word1 = max(candidates1_score, key=candidates1_score.get)
-                word2 = max(candidates2_score, key=candidates2_score.get)
-
-                if self.WORDS[word1] > self.WORDS[word2]:
-                    word = word1
-                else:
-                    word = word2
-                    combined = False
-
-            if (
-                len(hujung_result)
-                and not word.endswith(hujung_result)
-                and combined
-            ):
-                word = word + hujung_result
-            if (
-                len(permulaan_result)
-                and not word.startswith(permulaan_result)
-                and combined
-            ):
-                word = permulaan_result + word
-
-        else:
-            if len(hujung_result) and not word.endswith(hujung_result):
-                word = word + hujung_result
-            if len(permulaan_result) and not word.startswith(permulaan_result):
-                word = permulaan_result + word
-
-        return word
+        return super().correct(
+            word=word,
+            score_func=self.score,
+            string=string,
+            index=index,
+            lookback=lookback,
+            lookforward=lookforward,
+            **kwargs
+        )
 
     @check_type
     def correct_text(
@@ -572,7 +511,12 @@ class ProbabilityLM(Probability):
 
 
 @check_type
-def load(language_model=None, sentence_piece: bool = False, **kwargs):
+def load(
+    language_model=None,
+    sentence_piece: bool = False,
+    maxlen: int = 15,
+    **kwargs,
+):
     """
     Load a Probability Spell Corrector.
 
@@ -582,6 +526,8 @@ def load(language_model=None, sentence_piece: bool = False, **kwargs):
         If not None, must an instance of kenlm.Model.
     sentence_piece: bool, optional (default=False)
         if True, reduce possible augmentation states using sentence piece.
+    maxlen: int, optional (default=15)
+        max length of the word to `edit_candidates`.
 
     Returns
     -------
@@ -619,6 +565,6 @@ def load(language_model=None, sentence_piece: bool = False, **kwargs):
 
         if not isinstance(language_model, kenlm.Model):
             raise ValueError('`language_model` must an instance of `kenlm.Model`.')
-        return ProbabilityLM(language_model, corpus, tokenizer)
+        return ProbabilityLM(language_model, corpus, tokenizer, maxlen=maxlen)
     else:
-        return Probability(corpus, tokenizer)
+        return Probability(corpus, tokenizer, maxlen=maxlen)

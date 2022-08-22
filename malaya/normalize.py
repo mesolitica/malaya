@@ -305,10 +305,11 @@ class Normalizer:
             normalized = []
             got_speller = hasattr(self._speller, 'normalize_elongated')
             for word in string.split():
+                word_lower = word.lower()
                 if (
                     len(re.findall(r'(.)\1{1}', word))
                     and not word[0].isupper()
-                    and not word.lower().startswith('ke-')
+                    and not word_lower.startswith('ke-')
                     and not len(re.findall(_expressions['email'], word))
                     and not len(re.findall(_expressions['url'], word))
                     and not len(re.findall(_expressions['hashtag'], word))
@@ -316,6 +317,8 @@ class Normalizer:
                     and not len(re.findall(_expressions['money'], word))
                     and not len(re.findall(_expressions['date'], word))
                     and not _is_number_regex(word)
+                    and check_english_func is not None
+                    and not check_english_func(word_lower)
                 ):
                     word = self._compiled['normalize_elong'].sub(r'\1\1', word)
                     if got_speller:
@@ -326,6 +329,7 @@ class Normalizer:
 
         result, normalized = [], []
         spelling_correction = {}
+        spelling_correction_condition = {}
 
         tokenized = self._tokenizer(string)
         index = 0
@@ -806,13 +810,16 @@ class Normalizer:
 
                         if selected == word and self._speller:
                             s = f'index: {index}, word: {word}, condition to spelling correction'
+                            logger.debug(s)
                             spelling_correction[len(result)] = selected
 
                 else:
                     selected = word
 
                 selected = '-'.join([selected] * repeat)
+                spelling_correction_condition[len(result)] = [repeat, result_string, end_result_string]
                 result.append(result_string + selected + end_result_string)
+
             index += 1
 
         for index, selected in spelling_correction.items():
@@ -820,7 +827,11 @@ class Normalizer:
             selected = self._speller.correct(
                 selected, string=result, index=index
             )
+            repeat, result_string, end_result_string = spelling_correction_condition[index]
+            selected = '-'.join([selected] * repeat)
+            selected = result_string + selected + end_result_string
             result[index] = selected
+
         result = ' '.join(result)
         normalized = ' '.join(normalized)
 

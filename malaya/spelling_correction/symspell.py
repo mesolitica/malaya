@@ -4,6 +4,7 @@ from malaya.path import PATH_NGRAM, S3_PATH_NGRAM
 from malaya.function import check_file
 from malaya.spelling_correction.base import (
     _augment_vowel_alternate,
+    get_permulaan_hujung,
 )
 from malaya.text.function import case_of, is_english, is_malay, check_ratio_upper_lower
 from malaya.text.rules import rules_normalizer
@@ -159,18 +160,7 @@ class Symspell(Spell):
             return word
 
         cp_word = word[:]
-        hujung_result = [v for k, v in hujung.items() if word.endswith(k)]
-        if len(hujung_result):
-            hujung_result = max(hujung_result, key=len)
-            if len(hujung_result):
-                word = word[: -len(hujung_result)]
-        permulaan_result = [
-            v for k, v in permulaan.items() if word.startswith(k)
-        ]
-        if len(permulaan_result):
-            permulaan_result = max(permulaan_result, key=len)
-            if len(permulaan_result):
-                word = word[len(permulaan_result):]
+        word, hujung_result, permulaan_result = get_permulaan_hujung(word)
 
         combined = True
         if len(word):
@@ -190,12 +180,12 @@ class Symspell(Spell):
 
         if len(hujung_result) and not word.endswith(hujung_result) and combined:
             word = word + hujung_result
-        if (
-            len(permulaan_result)
-            and not word.startswith(permulaan_result)
-            and combined
-        ):
-            word = permulaan_result + word
+        if len(permulaan_result) and not word.startswith(permulaan_result) and combined:
+            if permulaan_result[-1] == word[0]:
+                word = permulaan_result + word[1:]
+            else:
+                word = permulaan_result + word
+
         return word
 
 

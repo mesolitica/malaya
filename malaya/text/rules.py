@@ -4664,7 +4664,7 @@ rules_normalizer = {
     'gais': 'semua orang',
     'pedajal': 'memburukkan',
     'ex': 'bekas',
-    # 'slhkn': 'salahkan',
+    'lh': 'lah',
 }
 
 rules_normalizer_rev = {v: k for k, v in rules_normalizer.items()}

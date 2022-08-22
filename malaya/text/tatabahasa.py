@@ -335,6 +335,8 @@ hujung = {
     'nyoo': 'nya',
     'loh': 'lah',
     'lohh': 'lah',
+    'lh': 'lah',
+    'lhh': 'lah',
 }
 
 hujung_malaysian = ['lah', 'la', 'ler']
