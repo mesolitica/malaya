@@ -49,6 +49,7 @@ from malaya.text.normalization import (
     ignore_words,
     digit,
     unpack_english_contractions,
+    repeat_word,
 )
 from malaya.text.rules import rules_normalizer, rules_normalizer_rev
 from malaya.cluster import cluster_words
@@ -62,6 +63,8 @@ logger = logging.getLogger(__name__)
 
 
 def normalized_entity(normalized):
+
+    normalized = re.sub(_expressions['ic'], '', normalized)
     money_ = re.findall(_expressions['money'], normalized)
     money_ = [(s, money(s)[1]) for s in money_]
     dates_ = re.findall(_expressions['date'], normalized)
@@ -197,7 +200,6 @@ class Normalizer:
         self,
         string: str,
         normalize_text: bool = True,
-        normalize_entity: bool = True,
         normalize_url: bool = False,
         normalize_email: bool = False,
         normalize_year: bool = True,
@@ -206,6 +208,17 @@ class Normalizer:
         normalize_time: bool = True,
         normalize_emoji: bool = True,
         normalize_elongated: bool = True,
+        normalize_hingga: bool = True,
+        normalize_pada_hari_bulan: bool = True,
+        normalize_fraction: bool = True,
+        normalize_money: bool = True,
+        normalize_units: bool = True,
+        normalize_percent: bool = True,
+        normalize_ic: bool = True,
+        normalize_number: bool = True,
+        normalize_cardinal: bool = True,
+        normalize_ordinal: bool = True,
+        normalize_entity: bool = True,
         expand_contractions: bool = True,
         check_english_func=is_english,
         check_malay_func=is_malay,
@@ -223,8 +236,6 @@ class Normalizer:
         string : str
         normalize_text: bool, optional (default=True)
             if True, will try to replace shortforms with internal corpus.
-        normalize_entity: bool, optional (default=True)
-            normalize entities, only effect `date`, `datetime`, `time` and `money` patterns string only.
         normalize_url: bool, optional (default=False)
             if True, replace `://` with empty and `.` with `dot`.
             `https://huseinhouse.com` -> `https huseinhouse dot com`.
@@ -251,6 +262,28 @@ class Normalizer:
             Load from `malaya.preprocessing.demoji`.
         normalize_elongated: bool, optional (default=True)
             if True, `betuii` -> `betui`.
+        normalize_hingga: bool, optional (default=True)
+            if True, `2011 - 2019` -> `dua ribu sebelas hingga dua ribu sembilan belas`
+        normalize_pada_hari_bulan: bool, optional (default=True)
+            if True, `pada 10/4` -> `pada sepuluh hari bulan empat`
+        normalize_fraction: bool, optional (default=True)
+            if True, `10 /4` -> `sepuluh per empat`
+        normalize_money: bool, optional (default=True)
+            if True, `rm10.4m` -> `sepuluh juta empat ratus ribu ringgit`
+        normalize_units: bool, optional (default=True)
+            if True, `61.2 kg` -> `enam puluh satu perpuluhan dua kilogram`
+        normalize_percent: bool, optional (default=True)
+            if True, `0.8%` -> `kosong perpuluhan lapan peratus`
+        normalize_ic: bool, optional (default=True)
+            if True, `911111-01-1111` -> `sembilan satu satu satu satu satu sempang kosong satu sempang satu satu satu satu`
+        normalize_number: bool, optional (default=True)
+            if True `0123` -> `kosong satu dua tiga`
+        normalize_cardinal: bool, optional (default=True)
+            if True, `123` -> `seratus dua puluh tiga`
+        normalize_ordinal: bool, optional (default=True)
+            if True, `ke-123` -> `keseratus dua puluh tiga`
+        normalize_entity: bool, optional (default=True)
+            normalize entities, only effect `date`, `datetime`, `time` and `money` patterns string only.
         expand_contractions: bool, optional (default=True)
             expand english contractions.
         check_english_func: Callable, optional (default=malaya.text.function.is_english)
@@ -379,278 +412,13 @@ class Normalizer:
                 index += 1
                 continue
 
-            if (
-                first_c
-                and not len(re.findall(_expressions['money'], word_lower))
-                and not len(re.findall(_expressions['date'], word_lower))
-            ):
-                s = f'index: {index}, word: {word}, condition not in money and date'
+            if re.findall(_expressions['ic'], word_lower):
+                s = f'index: {index}, word: {word}, condition IC'
                 logger.debug(s)
-                if word_lower in rules_normalizer and normalize_text:
-                    result.append(case_of(word)(rules_normalizer[word_lower]))
-                    index += 1
-                    continue
-                elif word_upper not in ['KE', 'PADA', 'RM', 'SEN', 'HINGGA']:
-                    result.append(
-                        _normalize_title(word) if normalize_text else word
-                    )
-                    index += 1
-                    continue
-
-            if check_english_func is not None and len(word) > 1:
-                s = f'index: {index}, word: {word}, condition check english'
-                logger.debug(s)
-                found = False
-                selected_word = word
-                if check_english_func(word_lower):
-                    found = True
-                # suree -> sure -> detect
-                elif len(word_lower) > 1 and word_lower[-1] == word_lower[-2] and check_english_func(word_lower[:-1]):
-                    found = True
-                    selected_word = word[:-1]
-
-                if found:
-                    if translator is not None and language_detection_word is None:
-                        s = f'index: {index}, word: {word}, condition to translate inside checking'
-                        logger.debug(s)
-                        translated = translator(selected_word)
-                        if len(translated) >= len(selected_word) * 3:
-                            logger.debug(f'reject translation, {selected_word} -> {translated}')
-                        elif ', United States' in translated:
-                            logger.debug(f'reject translation, {word} -> {translated}')
-                        else:
-                            selected_word = translated
-                    result.append(case_of(word)(selected_word))
-                    index += 1
-                    continue
-
-            if check_malay_func is not None and len(word) > 1:
-                s = f'index: {index}, word: {word}, condition check malay'
-                logger.debug(s)
-                if word_lower not in ['pada', 'ke']:
-                    if check_malay_func(word_lower):
-                        result.append(word)
-                        index += 1
-                        continue
-                    # kenapaa -> kenapa -> detect
-                    elif len(word_lower) > 1 and word_lower[-1] == word_lower[-2] and check_malay_func(word_lower[:-1]):
-                        result.append(word[:-1])
-                        index += 1
-                        continue
-
-            if len(word) > 2 and normalize_text and check_english_func is not None and not check_english_func(word):
-                s = f'index: {index}, word: {word}, condition len(word) > 2 and norm text'
-                logger.debug(s)
-                if word[-2] in consonants and word[-1] == 'e':
-                    word = word[:-1] + 'a'
-
-            if word[0] == 'x' and len(word) > 1 and normalize_text and check_english_func is not None and not check_english_func(word):
-                s = f'index: {index}, word: {word}, condition word[0] == `x` and len(word) > 1 and norm text'
-                logger.debug(s)
-                result_string = 'tak '
-                word = word[1:]
-            else:
-                s = f'index: {index}, word: {word}, condition else for (word[0] == `x` and len(word) > 1 and norm text)'
-                logger.debug(s)
-                result_string = ''
-
-            if word_lower == 'ke' and index < (len(tokenized) - 2):
-                s = f'index: {index}, word: {word}, condition ke'
-                logger.debug(s)
-                if tokenized[index + 1] == '-' and _is_number_regex(
-                    tokenized[index + 2]
-                ):
-                    result.append(
-                        ordinal(
-                            word + tokenized[index + 1] + tokenized[index + 2]
-                        )
-                    )
-                    index += 3
-                    continue
-                elif tokenized[index + 1] == '-' and re.match(
-                    '.*(V|X|I|L|D)', tokenized[index + 2]
-                ):
-                    result.append(
-                        ordinal(
-                            word
-                            + tokenized[index + 1]
-                            + str(rom_to_int(tokenized[index + 2]))
-                        )
-                    )
-                    index += 3
-                    continue
-                else:
-                    result.append('ke')
-                    index += 1
-                    continue
-
-            if _is_number_regex(word) and index < (len(tokenized) - 2):
-                s = f'index: {index}, word: {word}, condition hingga'
-                logger.debug(s)
-                if tokenized[index + 1] == '-' and _is_number_regex(
-                    tokenized[index + 2]
-                ):
-                    result.append(
-                        to_cardinal(_string_to_num(word))
-                        + ' hingga '
-                        + to_cardinal(_string_to_num(tokenized[index + 2]))
-                    )
-                    index += 3
-                    continue
-
-            if word_lower == 'pada' and index < (len(tokenized) - 3):
-                s = f'index: {index}, word: {word}, condition pada hari bulan'
-                logger.debug(s)
-                if (
-                    _is_number_regex(tokenized[index + 1])
-                    and tokenized[index + 2] in '/-'
-                    and _is_number_regex(tokenized[index + 3])
-                ):
-                    result.append(
-                        'pada %s hari bulan %s'
-                        % (
-                            to_cardinal(_string_to_num(tokenized[index + 1])),
-                            to_cardinal(_string_to_num(tokenized[index + 3])),
-                        )
-                    )
-                    index += 4
-                    continue
-
-            if (
-                word_lower in ['tahun', 'thun']
-                and index < (len(tokenized) - 1)
-                and normalize_year
-            ):
-                s = f'index: {index}, word: {word}, condition tahun'
-                logger.debug(s)
-                if (
-                    _is_number_regex(tokenized[index + 1])
-                    and len(tokenized[index + 1]) == 4
-                ):
-                    t = tokenized[index + 1]
-                    if t[1] != '0':
-                        l = to_cardinal(int(t[:2]))
-                        r = to_cardinal(int(t[2:]))
-                        c = f'{l} {r}'
-                    else:
-                        c = to_cardinal(int(t))
-                    if (
-                        index < (len(tokenized) - 3)
-                        and tokenized[index + 2] == '-'
-                        and tokenized[index + 3].lower() == 'an'
-                    ):
-                        end = 'an'
-                        plus = 4
-                    else:
-                        end = ''
-                        plus = 2
-                    result.append(f'tahun {c}{end}')
-                    index += plus
-                    continue
-
-            if _is_number_regex(word) and index < (len(tokenized) - 2):
-                s = f'index: {index}, word: {word}, condition fraction'
-                logger.debug(s)
-                if tokenized[index + 1] == '/' and _is_number_regex(
-                    tokenized[index + 2]
-                ):
-                    result.append(
-                        fraction(
-                            word + tokenized[index + 1] + tokenized[index + 2]
-                        )
-                    )
-                    index += 3
-                    continue
-
-                if (
-                    tokenized[index + 1] == '-'
-                    and tokenized[index + 2].lower() == 'an'
-                    and normalize_year
-                    and len(word) == 4
-                ):
-                    t = word
-                    if t[1] != '0':
-                        l = to_cardinal(int(t[:2]))
-                        r = to_cardinal(int(t[2:]))
-                        c = f'{l} {r}'
-                    else:
-                        c = to_cardinal(int(t))
-                    result.append(f'{c}an')
-                    index += 3
-                    continue
-
-            if re.findall(_expressions['money'], word_lower):
-                s = f'index: {index}, word: {word}, condition money'
-                logger.debug(s)
-                money_, _ = money(word)
-                result.append(money_)
-                if index < (len(tokenized) - 1):
-                    if tokenized[index + 1].lower() in ('sen', 'cent'):
-                        index += 2
-                    else:
-                        index += 1
-                else:
-                    index += 1
-                continue
-
-            if re.findall(_expressions['date'], word_lower):
-                s = f'index: {index}, word: {word}, condition date'
-                logger.debug(s)
-                word = word_lower
-                word = multireplace(word, date_replace)
-                word = re.sub(r'[ ]+', ' ', word).strip()
-                try:
-                    s = f'index: {index}, word: {word}, parsing date'
-                    logger.debug(s)
-                    parsed = dateparser.parse(word)
-                    if parsed:
-                        word = parsed.strftime('%d/%m/%Y')
-                        if normalize_date:
-                            day, month, year = word.split('/')
-                            day = cardinal(day)
-                            month = bulan[int(month)].title()
-                            year = cardinal(year)
-
-                            word = f'{day} {month} {year}'
-                except Exception as e:
-                    logger.warning(str(e))
-                result.append(word)
-
-                index += 1
-                continue
-
-            if (
-                re.findall(_expressions['time'], word_lower)
-                or re.findall(_expressions['time_pukul'], word_lower)
-            ):
-                s = f'index: {index}, word: {word}, condition time'
-                logger.debug(s)
-                word = word_lower
-                word = multireplace(word, date_replace)
-                word = re.sub(r'[ ]+', ' ', word).strip()
-                try:
-                    s = f'index: {index}, word: {word}, parsing time'
-                    logger.debug(s)
-                    parsed = dateparser.parse(word.replace('.', ':'))
-                    if parsed:
-                        word = parsed.strftime('%H:%M:%S')
-                        if normalize_time:
-                            hour, minute, second = word.split(':')
-                            hour = cardinal(hour)
-                            if int(minute) > 0:
-                                minute = cardinal(minute)
-                                minute = f'{minute} minit'
-                            else:
-                                minute = ''
-                            if int(second) > 0:
-                                second = cardinal(second)
-                                second = f'{second} saat'
-                            else:
-                                second = ''
-                            word = f'pukul {hour} {minute} {second}'
-                            word = re.sub(r'[ ]+', ' ', word).strip()
-                except Exception as e:
-                    logger.warning(str(e))
+                if normalize_ic:
+                    splitted = word.split('-')
+                    ics = [digit(s) for s in splitted]
+                    word = ' sempang '.join(ics)
                 result.append(word)
                 index += 1
                 continue
@@ -708,6 +476,224 @@ class Normalizer:
                 continue
 
             if (
+                first_c
+                and not len(re.findall(_expressions['money'], word_lower))
+                and not len(re.findall(_expressions['date'], word_lower))
+            ):
+                s = f'index: {index}, word: {word}, condition not in money and date'
+                logger.debug(s)
+                if word_lower in rules_normalizer and normalize_text:
+                    result.append(case_of(word)(rules_normalizer[word_lower]))
+                    index += 1
+                    continue
+                elif word_upper not in ['KE', 'PADA', 'RM', 'SEN', 'HINGGA']:
+                    result.append(
+                        _normalize_title(word) if normalize_text else word
+                    )
+                    index += 1
+                    continue
+
+            if check_english_func is not None and len(word) > 1:
+                s = f'index: {index}, word: {word}, condition check english'
+                logger.debug(s)
+                found = False
+                selected_word = word
+                if check_english_func(word_lower):
+                    found = True
+                # suree -> sure -> detect
+                elif len(word_lower) > 1 and word_lower[-1] == word_lower[-2] and check_english_func(word_lower[:-1]):
+                    found = True
+                    selected_word = word[:-1]
+
+                if found:
+                    if translator is not None and language_detection_word is None:
+                        s = f'index: {index}, word: {word}, condition to translate inside checking'
+                        logger.debug(s)
+                        translated = translator(selected_word)
+                        if len(translated) >= len(selected_word) * 3:
+                            logger.debug(f'reject translation, {selected_word} -> {translated}')
+                        elif ', United States' in translated:
+                            logger.debug(f'reject translation, {word} -> {translated}')
+                        else:
+                            selected_word = translated
+                    result.append(case_of(word)(selected_word))
+                    index += 1
+                    continue
+
+            if check_malay_func is not None and len(word) > 1:
+                s = f'index: {index}, word: {word}, condition check malay'
+                logger.debug(s)
+                if word_lower not in ['pada', 'ke', 'tahun', 'thun']:
+                    if check_malay_func(word_lower):
+                        result.append(word)
+                        index += 1
+                        continue
+                    # kenapaa -> kenapa -> detect
+                    elif len(word_lower) > 1 and word_lower[-1] == word_lower[-2] and check_malay_func(word_lower[:-1]):
+                        result.append(word[:-1])
+                        index += 1
+                        continue
+
+            if len(word) > 2 and normalize_text and check_english_func is not None and not check_english_func(word):
+                s = f'index: {index}, word: {word}, condition len(word) > 2 and norm text'
+                logger.debug(s)
+                if word[-2] in consonants and word[-1] == 'e':
+                    word = word[:-1] + 'a'
+
+            if word[0] == 'x' and len(word) > 1 and normalize_text and check_english_func is not None and not check_english_func(word):
+                s = f'index: {index}, word: {word}, condition word[0] == `x` and len(word) > 1 and norm text'
+                logger.debug(s)
+                result_string = 'tak '
+                word = word[1:]
+            else:
+                s = f'index: {index}, word: {word}, condition else for (word[0] == `x` and len(word) > 1 and norm text)'
+                logger.debug(s)
+                result_string = ''
+
+            if normalize_ordinal and word_lower == 'ke' and index < (len(tokenized) - 2):
+                s = f'index: {index}, word: {word}, condition ke'
+                logger.debug(s)
+                if tokenized[index + 1] == '-' and _is_number_regex(
+                    tokenized[index + 2]
+                ):
+                    result.append(
+                        ordinal(
+                            word + tokenized[index + 1] + tokenized[index + 2]
+                        )
+                    )
+                    index += 3
+                    continue
+                elif tokenized[index + 1] == '-' and re.match(
+                    '.*(V|X|I|L|D)', tokenized[index + 2]
+                ):
+                    result.append(
+                        ordinal(
+                            word
+                            + tokenized[index + 1]
+                            + str(rom_to_int(tokenized[index + 2]))
+                        )
+                    )
+                    index += 3
+                    continue
+                else:
+                    result.append('ke')
+                    index += 1
+                    continue
+
+            if normalize_hingga and _is_number_regex(word) and index < (len(tokenized) - 2):
+                s = f'index: {index}, word: {word}, condition hingga'
+                logger.debug(s)
+                if tokenized[index + 1] == '-' and _is_number_regex(
+                    tokenized[index + 2]
+                ):
+                    result.append(
+                        to_cardinal(_string_to_num(word))
+                        + ' hingga '
+                        + to_cardinal(_string_to_num(tokenized[index + 2]))
+                    )
+                    index += 3
+                    continue
+
+            if normalize_pada_hari_bulan and word_lower == 'pada' and index < (len(tokenized) - 3):
+                s = f'index: {index}, word: {word}, condition pada hari bulan'
+                logger.debug(s)
+                if (
+                    _is_number_regex(tokenized[index + 1])
+                    and tokenized[index + 2] in '/-'
+                    and _is_number_regex(tokenized[index + 3])
+                ):
+                    result.append(
+                        'pada %s hari bulan %s'
+                        % (
+                            to_cardinal(_string_to_num(tokenized[index + 1])),
+                            to_cardinal(_string_to_num(tokenized[index + 3])),
+                        )
+                    )
+                    index += 4
+                    continue
+
+            if (
+                word_lower in ['tahun', 'thun']
+                and index < (len(tokenized) - 1)
+                and normalize_year
+            ):
+                s = f'index: {index}, word: {word}, condition tahun'
+                logger.debug(s)
+                if (
+                    _is_number_regex(tokenized[index + 1])
+                    and len(tokenized[index + 1]) == 4
+                ):
+                    t = tokenized[index + 1]
+                    if t[1] != '0':
+                        l = to_cardinal(int(t[:2]))
+                        r = to_cardinal(int(t[2:]))
+                        c = f'{l} {r}'
+                    else:
+                        c = to_cardinal(int(t))
+                    if (
+                        index < (len(tokenized) - 3)
+                        and tokenized[index + 2] == '-'
+                        and tokenized[index + 3].lower() == 'an'
+                    ):
+                        end = 'an'
+                        plus = 4
+                    else:
+                        end = ''
+                        plus = 2
+                    result.append(f'tahun {c}{end}')
+                    index += plus
+                    continue
+
+            if normalize_fraction and _is_number_regex(word) and index < (len(tokenized) - 2):
+                s = f'index: {index}, word: {word}, condition fraction'
+                logger.debug(s)
+                if tokenized[index + 1] == '/' and _is_number_regex(
+                    tokenized[index + 2]
+                ):
+                    result.append(
+                        fraction(
+                            word + tokenized[index + 1] + tokenized[index + 2]
+                        )
+                    )
+                    index += 3
+                    continue
+
+                if (
+                    tokenized[index + 1] == '-'
+                    and tokenized[index + 2].lower() == 'an'
+                    and normalize_year
+                    and len(word) == 4
+                ):
+                    t = word
+                    if t[1] != '0':
+                        l = to_cardinal(int(t[:2]))
+                        r = to_cardinal(int(t[2:]))
+                        c = f'{l} {r}'
+                    else:
+                        c = to_cardinal(int(t))
+                    result.append(f'{c}an')
+                    index += 3
+                    continue
+
+            if re.findall(_expressions['money'], word_lower):
+                s = f'index: {index}, word: {word}, condition money'
+                logger.debug(s)
+                if normalize_money:
+                    money_, _ = money(word)
+                    result.append(money_)
+                    if index < (len(tokenized) - 1):
+                        if tokenized[index + 1].lower() in ('sen', 'cent'):
+                            index += 2
+                        else:
+                            index += 1
+                    else:
+                        index += 1
+                else:
+                    result.append(word)
+                    index += 1
+                continue
+
+            if (
                 re.findall(_expressions['temperature'], word_lower)
                 or re.findall(_expressions['distance'], word_lower)
                 or re.findall(_expressions['volume'], word_lower)
@@ -716,25 +702,89 @@ class Normalizer:
             ):
                 s = f'index: {index}, word: {word}, condition units'
                 logger.debug(s)
-                word = word.replace(' ', '')
-                result.append(digit_unit(word))
+                if normalize_units:
+                    word = word.replace(' ', '')
+                    word = digit_unit(word)
+                result.append(word)
+                index += 1
+                continue
+
+            if re.findall(_expressions['percent'], word_lower):
+                s = f'index: {index}, word: {word}, condition percent'
+                logger.debug(s)
+                if normalize_percent:
+                    word = word.replace('%', '')
+                    word = cardinal(word) + ' peratus'
+                result.append(word)
+                index += 1
+                continue
+
+            if re.findall(_expressions['date'], word_lower):
+                s = f'index: {index}, word: {word}, condition date'
+                logger.debug(s)
+                word = word_lower
+                word = multireplace(word, date_replace)
+                word = re.sub(r'[ ]+', ' ', word).strip()
+                try:
+                    s = f'index: {index}, word: {word}, parsing date'
+                    logger.debug(s)
+                    parsed = dateparser.parse(word)
+                    if parsed:
+                        word = parsed.strftime('%d/%m/%Y')
+                        if normalize_date:
+                            day, month, year = word.split('/')
+                            day = cardinal(day)
+                            month = bulan[int(month)].title()
+                            year = cardinal(year)
+                            word = f'{day} {month} {year}'
+
+                except Exception as e:
+                    logger.warning(str(e))
+                result.append(word)
+
                 index += 1
                 continue
 
             if (
-                re.findall(_expressions['percent'], word_lower)
+                re.findall(_expressions['time'], word_lower)
+                or re.findall(_expressions['time_pukul'], word_lower)
             ):
-                s = f'index: {index}, word: {word}, condition percent'
+                s = f'index: {index}, word: {word}, condition time'
                 logger.debug(s)
-                word = word.replace('%', '')
-                result.append(cardinal(word) + ' peratus')
-                index += 1
-                continue
-
-            if re.findall(_expressions['ic'], word_lower):
-                s = f'index: {index}, word: {word}, condition IC'
-                logger.debug(s)
-                result.append(digit(word))
+                word = word_lower
+                word = multireplace(word, date_replace)
+                word = re.sub(r'[ ]+', ' ', word).strip()
+                try:
+                    s = f'index: {index}, word: {word}, parsing time'
+                    logger.debug(s)
+                    parsed = dateparser.parse(word.replace('.', ':'))
+                    if parsed:
+                        word = parsed.strftime('%H:%M:%S')
+                        hour, minute, second = word.split(':')
+                        if normalize_time:
+                            hour = cardinal(hour)
+                            if int(minute) > 0:
+                                minute = cardinal(minute)
+                                minute = f'{minute} minit'
+                            else:
+                                minute = ''
+                            if int(second) > 0:
+                                second = cardinal(second)
+                                second = f'{second} saat'
+                            else:
+                                second = ''
+                            word = f'pukul {hour} {minute} {second}'
+                        else:
+                            pukul = f'pukul {hour}'
+                            if int(minute) > 0:
+                                pukul = f'{pukul}.{minute}'
+                            if int(second) > 0:
+                                pukul = f'{pukul}:{second}'
+                            word = pukul
+                        word = re.sub(r'[ ]+', ' ', word).strip()
+                except Exception as e:
+                    logger.warning(str(e))
+                result.append(word)
                 index += 1
                 continue
 
@@ -745,23 +795,34 @@ class Normalizer:
             ):
                 s = f'index: {index}, word: {word}, condition digit and word[0] == `0`'
                 logger.debug(s)
-                result.append(digit(word))
+                if normalize_number:
+                    word = digit(word)
+                result.append(word)
                 index += 1
                 continue
 
-            cardinal_ = cardinal(word)
-            if cardinal_ != word:
-                s = f'index: {index}, word: {word}, condition cardinal'
-                logger.debug(s)
-                result.append(cardinal_)
-                index += 1
-                continue
+            if normalize_cardinal:
+                cardinal_ = cardinal(word)
+                if cardinal_ != word:
+                    s = f'index: {index}, word: {word}, condition cardinal'
+                    logger.debug(s)
+                    result.append(cardinal_)
+                    index += 1
+                    continue
 
-            normalized_ke = ordinal(word)
-            if normalized_ke != word:
-                s = f'index: {index}, word: {word}, condition normalized ke'
+            if normalize_ordinal:
+                normalized_ke = ordinal(word)
+                if normalized_ke != word:
+                    s = f'index: {index}, word: {word}, condition ordinal'
+                    logger.debug(s)
+                    result.append(normalized_ke)
+                    index += 1
+                    continue
+
+            if len(re.findall(_expressions['number'], word)):
+                s = f'index: {index}, word: {word}, condition is number'
                 logger.debug(s)
-                result.append(normalized_ke)
+                result.append(word)
                 index += 1
                 continue
 
@@ -816,7 +877,7 @@ class Normalizer:
                 else:
                     selected = word
 
-                selected = '-'.join([selected] * repeat)
+                selected = repeat_word(selected, repeat)
                 spelling_correction_condition[len(result)] = [repeat, result_string, end_result_string]
                 result.append(result_string + selected + end_result_string)
 
@@ -828,7 +889,7 @@ class Normalizer:
                 selected, string=result, index=index
             )
             repeat, result_string, end_result_string = spelling_correction_condition[index]
-            selected = '-'.join([selected] * repeat)
+            selected = repeat_word(selected, repeat)
             selected = result_string + selected + end_result_string
             result[index] = selected
 

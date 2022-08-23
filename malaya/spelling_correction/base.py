@@ -4,10 +4,7 @@ from malaya.text.tatabahasa import (
     group_compound,
     quad_vowels,
 )
-from malaya.text.tatabahasa import (
-    permulaan,
-    hujung,
-)
+from malaya.text.normalization import get_hujung, get_permulaan
 from itertools import product
 
 
@@ -151,19 +148,7 @@ def _return_known(word, dicts):
 
 
 def get_permulaan_hujung(word):
-    cp_word = word[:]
-    hujung_result = [(k, v) for k, v in hujung.items() if word.endswith(k)]
-    if len(hujung_result):
-        hujung_result = max(hujung_result, key=lambda x: len(x[1]))
-        word = word[: -len(hujung_result[0])]
-        hujung_result = hujung_result[1]
-
-    permulaan_result = [
-        (k, v) for k, v in permulaan.items() if word.startswith(k)
-    ]
-    if len(permulaan_result):
-        permulaan_result = max(permulaan_result, key=lambda x: len(x[1]))
-        word = word[len(permulaan_result[0]):]
-        permulaan_result = permulaan_result[1]
+    word, hujung_result = get_hujung(word)
+    word, permulaan_result = get_permulaan(word)
 
     return word, hujung_result, permulaan_result

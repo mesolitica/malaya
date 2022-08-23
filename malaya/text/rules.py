@@ -4665,6 +4665,9 @@ rules_normalizer = {
     'pedajal': 'memburukkan',
     'ex': 'bekas',
     'lh': 'lah',
+    'dsnr': 'Datuk Seri Najib Razak',
+    'mcmn': 'macam mana',
+    'tkjut': 'terkejut',
 }
 
 rules_normalizer_rev = {v: k for k, v in rules_normalizer.items()}

@@ -221,7 +221,14 @@ class Tokenizer:
         escaped = html.unescape(string)
         tokenized = self.tok.findall(escaped)
         tokenized = [t[0] if isinstance(t, tuple) else t for t in tokenized]
-        tokenized = [re.sub(r'[ ]+', ' ', t).strip() for t in tokenized]
+        tokenized_all = []
+        for t in tokenized:
+            if len(re.findall(r'\.{2,}', t)):
+                splitted = [w if len(w) else '.' for w in t.split('.')]
+                tokenized_all.extend(splitted)
+            else:
+                tokenized_all.append(t)
+        tokenized = [re.sub(r'[ ]+', ' ', t).strip() for t in tokenized_all]
 
         if lowercase:
             tokenized = [t.lower() for t in tokenized]

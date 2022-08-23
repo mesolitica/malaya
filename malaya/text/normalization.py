@@ -5,6 +5,8 @@ from malaya.word2num import word2num
 from malaya.text.tatabahasa import (
     hujung_malaysian,
     calon_dictionary,
+    hujung,
+    permulaan,
 )
 from malaya.text.rules import rules_normalizer, rules_compound_normalizer
 from malaya.text.function import ENGLISH_WORDS, MALAY_WORDS, case_of
@@ -14,7 +16,7 @@ import logging
 logger = logging.getLogger('malaya.text.normalization')
 
 ignore_words = ['ringgit', 'sen']
-ignore_postfix = ['adalah']
+ignore_postfix = ['adalah', 'allah']
 unit_mapping = {
     'kg': 'kilogram',
     'g': 'gram',
@@ -32,6 +34,8 @@ rules_compound_normalizer_regex = (
 )
 
 rules_compound_normalizer_keys = list(rules_compound_normalizer.keys())
+
+sastrawi_stemmer = None
 
 
 def _replace_compound(string):
@@ -51,15 +55,46 @@ def _replace_compound(string):
     return string
 
 
+def get_hujung(word):
+
+    for p in ignore_postfix:
+        if word.endswith(p):
+            return word, ''
+
+    hujung_result = [(k, v) for k, v in hujung.items() if word.endswith(k)]
+    if len(hujung_result):
+        hujung_result = max(hujung_result, key=lambda x: len(x[1]))
+        word = word[: -len(hujung_result[0])]
+        hujung_result = hujung_result[1]
+        return word, hujung_result
+
+    return word, ''
+
+
+def get_permulaan(word):
+    permulaan_result = [
+        (k, v) for k, v in permulaan.items() if word.startswith(k)
+    ]
+    if len(permulaan_result):
+        permulaan_result = max(permulaan_result, key=lambda x: len(x[1]))
+        word = word[len(permulaan_result[0]):]
+        permulaan_result = permulaan_result[1]
+        return word, permulaan_result
+
+    return word, ''
+
+
 def _remove_postfix(word):
     if word in MALAY_WORDS or word in ENGLISH_WORDS or word in rules_normalizer:
         return word, ''
-    if word in ignore_postfix:
-        return word, ''
+    for p in ignore_postfix:
+        if word.endswith(p):
+            return word, ''
     for p in hujung_malaysian:
         if word.endswith(p):
             return word[: -len(p)], ' lah'
-    return word, ''
+
+    return get_hujung(word)
 
 
 def _normalize_title(word):
@@ -581,3 +616,21 @@ def unpack_english_contractions(text):
     text = re.sub(r"(\b)([Ww])ont", r'\1\2ill not', text)
 
     return text
+
+
+def repeat_word(word, repeat=1):
+    """
+    seadil2 -> seadil-adil
+    """
+    global sastrawi_stemmer
+    if sastrawi_stemmer is None:
+        from malaya.stem import sastrawi
+
+        sastrawi_stemmer = sastrawi()
+
+    stemmed = sastrawi_stemmer.stem(word)
+    repeated = '-'.join([stemmed] * (repeat - 1))
+    if len(repeated):
+        return f'{word}-{repeated}'
+    else:
+        return word
