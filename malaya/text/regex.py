@@ -134,5 +134,5 @@ _expressions = {
     'weight': _weight,
     'ic': r'(([[0-9]{2})(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01]))-([0-9]{2})-([0-9]{4})',
     'bracket': r'(\(.*?\))',
-    'title': r'Datuk\.|datuk\.|Datin.\|datin.\|Datik\.|datik\.|dr\.|Dr\.|DR\.|yb\.|YB\.|hj\.|HJ\.|Hj\.|ybm\.|YBM\.|Ybm\.|tyt\.|TYT\.|yab\.|YAB\.|Yab\.|ybm\.|YBM\.|Ybm\.|yabhg\.|YABHG.\|Yabhg\.|ybhg\.|YBHG\.|Ybhg\.|phd\.|PhD\.',
+    'title': r'Sdn\.|Bhd\.|Corp\.|Corporation\.|corp\.|Datuk\.|datuk\.|Datin.\|datin.\|Datik\.|datik\.|dr\.|Dr\.|DR\.|yb\.|YB\.|hj\.|HJ\.|Hj\.|ybm\.|YBM\.|Ybm\.|tyt\.|TYT\.|yab\.|YAB\.|Yab\.|ybm\.|YBM\.|Ybm\.|yabhg\.|YABHG.\|Yabhg\.|ybhg\.|YBHG\.|Ybhg\.|YBhg\.|phd\.|PhD\.',
 }

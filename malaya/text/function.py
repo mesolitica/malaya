@@ -150,6 +150,7 @@ def check_ratio_punct(word):
             punct += 1
     return punct / len(word)
 
+
 def check_ratio_upper_lower(word):
     upper = 0
     for c in word:
@@ -630,6 +631,7 @@ def split_into_sentences(text, minimum_length=5):
     text = re.sub(' ' + suffixes + '[.]', ' \\1<prd>', text)
     text = re.sub(' ' + alphabets + '[.]', ' \\1<prd>', text)
     text = re.sub(digits + '[.]' + digits, '\\1<prd>\\2', text)
+    text = re.sub(digits + '[.]', '\\1<prd>', text)
     if '”' in text:
         text = text.replace('.”', '”.')
     if '"' in text:
@@ -645,6 +647,7 @@ def split_into_sentences(text, minimum_length=5):
     sentences = text.split('<stop>')
     sentences = sentences[:-1]
     sentences = [s.strip() for s in sentences if len(s) > minimum_length]
+    sentences = [s[:-1] if len(s) >= 2 and s[-2] in ';:-?!.' else s for s in sentences]
     return sentences
 
 
