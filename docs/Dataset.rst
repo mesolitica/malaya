@@ -5,7 +5,7 @@ Dataset
 
     <p align="center">
         <a href="#readme">
-            <img alt="logo" width="70%" src="https://raw.githubusercontent.com/huseinzol05/Malay-Dataset/master/wordcloud.png">
+            <img alt="logo" width="70%" src="https://raw.githubusercontent.com/huseinzol05/malay-dataset/master/malay-dataset1.png">
         </a>
     </p>
 
@@ -24,3 +24,8 @@ Citation
    Remember all these hard workings we want to give it for free.
 3. What do you see just the data, but nobody can see how much we spent
    our cost to make it public.
+
+Contribution
+-------------
+
+Contact us at husein.zol05@gmail.com or husein@mesolitica.com if want to contribute to bahasa dataset.
