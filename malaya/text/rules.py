@@ -1071,6 +1071,14 @@ rules_compound_normalizer = {
     'pe sume': 'apa semua',
     'meh sapa': 'mari siapa',
     'dah guane': 'bagaimana',
+    'pm aku': 'private message aku',
+    'pm ak': 'private message aku',
+    'pm aq': 'private message aku',
+    'pm saya': 'private message saya',
+    'pm sya': 'private message saya',
+    'pm sy': 'private message saya',
+    'pm awak': 'private message awak',
+    'pm awk': 'private message awak',
 }
 
 rules_normalizer = {
@@ -4668,6 +4676,13 @@ rules_normalizer = {
     'dsnr': 'Datuk Seri Najib Razak',
     'mcmn': 'macam mana',
     'tkjut': 'terkejut',
+    'pasal': 'masalah',
+    'propa': 'propaganda',
+    'chub': 'chubby',
+    'ngepos': 'mengepos',
+    'smbhyg': 'sembahyang',
+    'td': 'tadi',
+    'bersize': 'bersaiz',
 }
 
 rules_normalizer_rev = {v: k for k, v in rules_normalizer.items()}

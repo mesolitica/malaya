@@ -38,6 +38,14 @@ rules_compound_normalizer_keys = list(rules_compound_normalizer.keys())
 sastrawi_stemmer = None
 
 
+def initialize_sastrawi():
+    global sastrawi_stemmer
+    if sastrawi_stemmer is None:
+        from malaya.stem import sastrawi
+
+        sastrawi_stemmer = sastrawi()
+
+
 def _replace_compound(string):
     for k in rules_compound_normalizer_keys:
         results = [(m.start(0), m.end(0)) for m in re.finditer(k, string, flags=re.IGNORECASE)]
@@ -57,6 +65,12 @@ def _replace_compound(string):
 
 def get_hujung(word):
 
+    initialize_sastrawi()
+
+    stemmed = sastrawi_stemmer.stem(word)
+    if word.endswith(stemmed):
+        return word, ''
+
     for p in ignore_postfix:
         if word.endswith(p):
             return word, ''
@@ -72,6 +86,7 @@ def get_hujung(word):
 
 
 def get_permulaan(word):
+
     permulaan_result = [
         (k, v) for k, v in permulaan.items() if word.startswith(k)
     ]
@@ -85,11 +100,19 @@ def get_permulaan(word):
 
 
 def _remove_postfix(word):
+
+    initialize_sastrawi()
+
     if word in MALAY_WORDS or word in ENGLISH_WORDS or word in rules_normalizer:
         return word, ''
     for p in ignore_postfix:
         if word.endswith(p):
             return word, ''
+
+    stemmed = sastrawi_stemmer.stem(word)
+    if word.endswith(stemmed):
+        return word, ''
+
     for p in hujung_malaysian:
         if word.endswith(p):
             return word[: -len(p)], ' lah'

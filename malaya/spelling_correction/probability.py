@@ -83,8 +83,15 @@ class Spell:
                 )
 
             # hnto -> hantar, bako -> bkar, sabo -> sabar
+            # tido -> tidur
             if word[-1] == 'o' and word[-2] in consonants:
                 inner = word[:-1] + 'ar'
+                fuzziness.append(inner)
+                pseudo.extend(
+                    self._augment(inner, sp_tokenizer=self._sp_tokenizer)
+                )
+
+                inner = word[:-1] + 'ur'
                 fuzziness.append(inner)
                 pseudo.extend(
                     self._augment(inner, sp_tokenizer=self._sp_tokenizer)
@@ -156,7 +163,8 @@ class Spell:
             ttt = {word}
         ttt = list(ttt)
         if word[-1] in vowels:
-            ttt = [w for w in ttt if w[-1] == word[-1] or (w[-1] in 'a' and word[-1] in 'eo')]
+            ttt = [w for w in ttt if w[-1] == word[-1]
+                   or (w[-1] in 'a' and word[-1] in 'eo') or (len(w) >= 2 and w[-2:] in 'arur' and word[-1] in 'o')]
         return ttt
 
     @check_type
@@ -354,8 +362,12 @@ class ProbabilityLM(Probability):
         left_hand = string[index - lookback: index]
         right_hand = string[index + 1: index + 1 + lookforward]
         string = left_hand + [word] + right_hand
+        score = self._language_model.score(' '.join(string))
 
-        return self._language_model.score(' '.join(string))
+        s = f'word: {word}, string: {string}, score: {score}'
+        logger.debug(s)
+
+        return score
 
     @check_type
     def correct(
@@ -465,11 +477,11 @@ class ProbabilityLM(Probability):
             Tokenized string, `word` must a word inside `string`.
         index: int, optional(default=-1)
             index of word in the string, if -1, will try to use `string.index(word)`.
-        lookback: int, optional (default=5)
+        lookback: int, optional (default=3)
             N words on the left hand side.
             if put -1, will take all words on the left hand side.
             longer left hand side will take longer to compute.
-        lookforward: int, optional (default=5)
+        lookforward: int, optional (default=3)
             N words on the right hand side.
             if put -1, will take all words on the right hand side.
             longer right hand side will take longer to compute.

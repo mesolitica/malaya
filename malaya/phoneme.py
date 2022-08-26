@@ -64,10 +64,10 @@ def deep_model_ipa(quantized: bool = False, **kwargs):
     )
 
 
-def deep_model_ipa_dbp(quantized: bool = False, **kwargs):
+def deep_model_ipa_bpe(quantized: bool = False, **kwargs):
     """
     Load LSTM + Bahdanau Attention phonetic model,
-    256 filter size, 2 layers, character level. 
+    256 filter size, 2 layers, BPE level. 
     Original data from https://github.com/open-dict-data/ipa-dict/blob/master/data/ma.txt
 
     Original size 10.4MB, quantized size 2.77MB .

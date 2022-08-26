@@ -10749,7 +10749,6 @@ words = {
     'persilatan',
     'gelepik',
     'durasi',
-    'suda',
     'jerungkau',
     'dikaitkan',
     'ulung',
@@ -24414,4 +24413,5 @@ words = {
     'hendak',
     'akomodasi',
     'paradigma',
+    'terserlah',
 }

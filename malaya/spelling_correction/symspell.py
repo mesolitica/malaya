@@ -72,12 +72,15 @@ class Symspell(Spell):
             # bapak -> bapa, mintak -> minta, mntak -> mnta
             if word[-2:] == 'ak':
                 inner = word[:-1]
-                fuzziness.append(word[:-1])
                 result.extend(list(_augment_vowel_alternate(word[:-1])))
 
             # hnto -> hantar, bako -> bkar, sabo -> sabar
+            # tido -> tidur
             if word[-1] == 'o' and word[-2] in consonants:
                 inner = word[:-1] + 'ar'
+                result.extend(list(_augment_vowel_alternate(inner)))
+
+                inner = word[:-1] + 'ur'
                 result.extend(list(_augment_vowel_alternate(inner)))
 
             # antu -> hantu, antar -> hantar

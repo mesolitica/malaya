@@ -5,6 +5,8 @@ from malaya.num2word import to_cardinal
 from malaya.text.function import (
     is_english,
     is_malay,
+    is_laugh,
+    is_mengeluh,
     multireplace,
     case_of,
     replace_laugh,
@@ -493,6 +495,13 @@ class Normalizer:
                     index += 1
                     continue
 
+            if word_lower in rules_normalizer and normalize_text:
+                s = f'index: {index}, word: {word}, condition in early rules normalizer'
+                logger.debug(s)
+                result.append(case_of(word)(rules_normalizer[word_lower]))
+                index += 1
+                continue
+
             if check_english_func is not None and len(word) > 1:
                 s = f'index: {index}, word: {word}, condition check english'
                 logger.debug(s)
@@ -909,7 +918,7 @@ class Normalizer:
             for no_r, r in enumerate(result_langs):
                 s = f'index: {no_r}, label: {r}, word: {splitted[no_r]}, queue: {new_result}'
                 logger.debug(s)
-                if r in acceptable_language_detection:
+                if r in acceptable_language_detection and not is_laugh(r) and not is_mengeluh(r):
                     temp.append(splitted[no_r])
                     temp_lang.append(r)
                 else:

@@ -1,9 +1,11 @@
 from malaya.text.normalization import _is_number_regex
 from malaya.text.function import (
-    is_emoji,
     check_ratio_numbers,
     check_ratio_punct,
     is_malay,
+    is_emoji,
+    is_laugh,
+    is_mengeluh,
     PUNCTUATION,
 )
 from typing import List
@@ -70,6 +72,10 @@ class LanguageDict:
             elif _is_number_regex(word.replace(',', '').replace('.', '')):
                 results.append('NOT_LANG')
             elif word in PUNCTUATION:
+                results.append('NOT_LANG')
+            elif is_laugh(word):
+                results.append('NOT_LANG')
+            elif is_mengeluh(word):
                 results.append('NOT_LANG')
             elif check_ratio_numbers(word) > 0.6666:
                 results.append('NOT_LANG')

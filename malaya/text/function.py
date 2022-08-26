@@ -129,8 +129,32 @@ def isword_english(word):
     return True
 
 
+def reject_word(word):
+    if word[0] == '#':
+        return True
+    if word[0] == '@':
+        return True
+    if word.isupper():
+        return True
+    return False
+
+
 def is_emoji(word):
     return word in emoji
+
+
+def is_laugh(word):
+    if reject_word(word):
+        return word
+    word_lower = word.lower()
+    return any([e in word_lower for e in laughing])
+
+
+def is_mengeluh(word):
+    if reject_word(word):
+        return word
+    word_lower = word.lower()
+    return any([e in word_lower for e in MENGELUH])
 
 
 def check_ratio_numbers(word):
