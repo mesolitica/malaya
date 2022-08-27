@@ -3867,7 +3867,6 @@ rules_normalizer = {
     'dtunggu': 'ditunggu',
     'kepikir': 'terpikir',
     'emeshh': 'gemas',
-    'kaya': 'kayak',
     'pacarn': 'pacaran',
     'ktg': 'kita',
     'pacaranya': 'pacarannya',
