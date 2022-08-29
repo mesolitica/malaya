@@ -339,7 +339,7 @@ hujung = {
     'lhh': 'lah',
 }
 
-hujung_malaysian = ['lah', 'la', 'ler']
+hujung_malaysian = ['lah', 'la', 'ler', 'lh']
 
 sounds = {
     'x': 'tidak',
@@ -1733,7 +1733,6 @@ group_compound = {
     'ny',
     'gk',
     'ky',
-    'km',
     'gd',
     'nd',
     'mp',

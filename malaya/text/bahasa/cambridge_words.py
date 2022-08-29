@@ -8247,7 +8247,6 @@ words = {
     'menyewakan',
     'berhantu',
     'bandaran',
-    'tenpat',
     'lapangan',
     'terlantar',
     'jelek',

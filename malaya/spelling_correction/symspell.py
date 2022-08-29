@@ -125,7 +125,8 @@ class Symspell(Spell):
         result: List[str]
         """
 
-        ttt = self.edit_step(word) or {word: 10}
+        ttt = self.edit_step(word)
+        ttt = {k: v for k, v in ttt.items() if not all([c in consonants for c in k])} or {word: 10}
         ttt = {
             k: v
             for k, v in ttt.items()

@@ -7,9 +7,11 @@ from malaya.text.tatabahasa import (
     calon_dictionary,
     hujung,
     permulaan,
+    laughing,
 )
 from malaya.text.rules import rules_normalizer, rules_compound_normalizer
-from malaya.text.function import ENGLISH_WORDS, MALAY_WORDS, case_of
+from malaya.text.function import ENGLISH_WORDS, MALAY_WORDS, MENGELUH, case_of, is_malay, is_english
+from malaya.text.regex import _expressions
 import math
 import logging
 
@@ -30,7 +32,7 @@ unit_mapping = {
 }
 
 rules_compound_normalizer_regex = (
-    '(?:' + '|'.join(list(rules_compound_normalizer.keys())) + ')'
+    r'\b(?:' + '|'.join(list(rules_compound_normalizer.keys())) + ')'
 )
 
 rules_compound_normalizer_keys = list(rules_compound_normalizer.keys())
@@ -48,7 +50,7 @@ def initialize_sastrawi():
 
 def _replace_compound(string):
     for k in rules_compound_normalizer_keys:
-        results = [(m.start(0), m.end(0)) for m in re.finditer(k, string, flags=re.IGNORECASE)]
+        results = [(m.start(0), m.end(0)) for m in re.finditer(r'\b' + k, string, flags=re.IGNORECASE)]
         for r in results:
             sub = string[r[0]: r[1]]
             replaced = rules_compound_normalizer.get(sub.lower())
@@ -65,11 +67,12 @@ def _replace_compound(string):
 
 def get_hujung(word):
 
-    initialize_sastrawi()
-
-    stemmed = sastrawi_stemmer.stem(word)
-    if word.endswith(stemmed):
-        return word, ''
+    # initialize_sastrawi()
+    # stemmed = sastrawi_stemmer.stem(word)
+    # if word.endswith(stemmed):
+    #     stemmed = True
+    # else:
+    #     stemmed = False
 
     for p in ignore_postfix:
         if word.endswith(p):
@@ -101,21 +104,20 @@ def get_permulaan(word):
 
 def _remove_postfix(word):
 
-    initialize_sastrawi()
-
-    if word in MALAY_WORDS or word in ENGLISH_WORDS or word in rules_normalizer:
+    if is_malay(word) or is_english(word) or word in rules_normalizer:
         return word, ''
     for p in ignore_postfix:
         if word.endswith(p):
             return word, ''
 
-    stemmed = sastrawi_stemmer.stem(word)
-    if word.endswith(stemmed):
-        return word, ''
+    # initialize_sastrawi()
+    # stemmed = sastrawi_stemmer.stem(word)
+    # if word.endswith(stemmed):
+    #     return word, ''
 
     for p in hujung_malaysian:
         if word.endswith(p):
-            return word[: -len(p)], ' lah'
+            return word[: -len(p)], 'lah'
 
     return get_hujung(word)
 
@@ -657,3 +659,37 @@ def repeat_word(word, repeat=1):
         return f'{word}-{repeated}'
     else:
         return word
+
+
+def replace_any(string, lists, replace_with):
+    result = []
+    for word in string.split():
+        word_lower = word.lower()
+
+        if is_malay(word_lower):
+            pass
+        elif is_english(word_lower):
+            pass
+        elif (
+            len(re.findall(_expressions['email'], word))
+            and not len(re.findall(_expressions['url'], word))
+            and not len(re.findall(_expressions['hashtag'], word))
+            and not len(re.findall(_expressions['phone'], word))
+            and not len(re.findall(_expressions['money'], word))
+            and not len(re.findall(_expressions['date'], word))
+            and not _is_number_regex(word)
+        ):
+            pass
+        elif any([e in word_lower for e in lists]):
+            word = case_of(word)(replace_with)
+
+        result.append(word)
+    return ' '.join(result)
+
+
+def replace_laugh(string, replace_with='haha'):
+    return replace_any(string, laughing, replace_with)
+
+
+def replace_mengeluh(string, replace_with='aduh'):
+    return replace_any(string, MENGELUH, replace_with)

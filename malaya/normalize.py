@@ -9,8 +9,6 @@ from malaya.text.function import (
     is_mengeluh,
     multireplace,
     case_of,
-    replace_laugh,
-    replace_mengeluh,
     PUNCTUATION,
 )
 from malaya.text.regex import (
@@ -52,6 +50,8 @@ from malaya.text.normalization import (
     digit,
     unpack_english_contractions,
     repeat_word,
+    replace_laugh,
+    replace_mengeluh,
 )
 from malaya.text.rules import rules_normalizer, rules_normalizer_rev
 from malaya.cluster import cluster_words
@@ -218,6 +218,7 @@ class Normalizer:
         normalize_percent: bool = True,
         normalize_ic: bool = True,
         normalize_number: bool = True,
+        normalize_x_kali: bool = True,
         normalize_cardinal: bool = True,
         normalize_ordinal: bool = True,
         normalize_entity: bool = True,
@@ -280,6 +281,8 @@ class Normalizer:
             if True, `911111-01-1111` -> `sembilan satu satu satu satu satu sempang kosong satu sempang satu satu satu satu`
         normalize_number: bool, optional (default=True)
             if True `0123` -> `kosong satu dua tiga`
+        normalize_x_kali: bool, optional (default=True)
+            if True `10x` -> 'sepuluh kali'
         normalize_cardinal: bool, optional (default=True)
             if True, `123` -> `seratus dua puluh tiga`
         normalize_ordinal: bool, optional (default=True)
@@ -330,6 +333,7 @@ class Normalizer:
 
         if normalize_text:
             logger.debug(f'before normalize_text: {string}')
+            string
             string = replace_laugh(string)
             string = replace_mengeluh(string)
             string = _replace_compound(string)
@@ -351,6 +355,8 @@ class Normalizer:
                     and not len(re.findall(_expressions['phone'], word))
                     and not len(re.findall(_expressions['money'], word))
                     and not len(re.findall(_expressions['date'], word))
+                    and not len(re.findall(_expressions['ic'], word))
+                    and not len(re.findall(_expressions['user'], word))
                     and not _is_number_regex(word)
                     and check_english_func is not None
                     and not check_english_func(word_lower)
@@ -495,13 +501,6 @@ class Normalizer:
                     index += 1
                     continue
 
-            if word_lower in rules_normalizer and normalize_text:
-                s = f'index: {index}, word: {word}, condition in early rules normalizer'
-                logger.debug(s)
-                result.append(case_of(word)(rules_normalizer[word_lower]))
-                index += 1
-                continue
-
             if check_english_func is not None and len(word) > 1:
                 s = f'index: {index}, word: {word}, condition check english'
                 logger.debug(s)
@@ -543,13 +542,21 @@ class Normalizer:
                         index += 1
                         continue
 
+            if word_lower in rules_normalizer and normalize_text:
+                s = f'index: {index}, word: {word}, condition in early rules normalizer'
+                logger.debug(s)
+                result.append(case_of(word)(rules_normalizer[word_lower]))
+                index += 1
+                continue
+
             if len(word) > 2 and normalize_text and check_english_func is not None and not check_english_func(word):
                 s = f'index: {index}, word: {word}, condition len(word) > 2 and norm text'
                 logger.debug(s)
                 if word[-2] in consonants and word[-1] == 'e':
                     word = word[:-1] + 'a'
 
-            if word[0] == 'x' and len(word) > 1 and normalize_text and check_english_func is not None and not check_english_func(word):
+            if word[0] == 'x' and len(
+                    word) > 1 and normalize_text and check_english_func is not None and not check_english_func(word):
                 s = f'index: {index}, word: {word}, condition word[0] == `x` and len(word) > 1 and norm text'
                 logger.debug(s)
                 result_string = 'tak '
@@ -763,6 +770,10 @@ class Normalizer:
                 word = word_lower
                 word = multireplace(word, date_replace)
                 word = re.sub(r'[ ]+', ' ', word).strip()
+                if index - 1 >= 0 and tokenized[index - 1].lower() in ['pkul', 'pukul', 'pkl']:
+                    prefix = ''
+                else:
+                    prefix = 'pukul '
                 try:
                     s = f'index: {index}, word: {word}, parsing time'
                     logger.debug(s)
@@ -782,9 +793,9 @@ class Normalizer:
                                 second = f'{second} saat'
                             else:
                                 second = ''
-                            word = f'pukul {hour} {minute} {second}'
+                            word = f'{prefix}{hour} {minute} {second}'
                         else:
-                            pukul = f'pukul {hour}'
+                            pukul = f'{prefix}{hour}'
                             if int(minute) > 0:
                                 pukul = f'{pukul}.{minute}'
                             if int(second) > 0:
@@ -810,6 +821,29 @@ class Normalizer:
                 index += 1
                 continue
 
+            if (
+                len(word_lower) >= 2
+                and word_lower[-1] == 'x'
+                and re.findall(_expressions['number'], word_lower[:-1])
+                and '.' not in word_lower
+            ):
+                s = f'index: {index}, word: {word}, condition x kali'
+                logger.debug(s)
+                word = word[:-1]
+                if normalize_x_kali:
+                    word = cardinal(word)
+                word = f'{word} kali'
+                result.append(word)
+                index += 1
+                continue
+
+            if len(re.findall(_expressions['number'], word)):
+                s = f'index: {index}, word: {word}, condition is number'
+                logger.debug(s)
+                result.append(word)
+                index += 1
+                continue
+
             if normalize_cardinal:
                 cardinal_ = cardinal(word)
                 if cardinal_ != word:
@@ -827,13 +861,6 @@ class Normalizer:
                     result.append(normalized_ke)
                     index += 1
                     continue
-
-            if len(re.findall(_expressions['number'], word)):
-                s = f'index: {index}, word: {word}, condition is number'
-                logger.debug(s)
-                result.append(word)
-                index += 1
-                continue
 
             if segmenter is not None:
                 s = f'index: {index}, word: {word}, condition to segment'
@@ -918,7 +945,7 @@ class Normalizer:
             for no_r, r in enumerate(result_langs):
                 s = f'index: {no_r}, label: {r}, word: {splitted[no_r]}, queue: {new_result}'
                 logger.debug(s)
-                if r in acceptable_language_detection and not is_laugh(r) and not is_mengeluh(r):
+                if r in acceptable_language_detection and not is_laugh(splitted[no_r]) and not is_mengeluh(splitted[no_r]):
                     temp.append(splitted[no_r])
                     temp_lang.append(r)
                 else:

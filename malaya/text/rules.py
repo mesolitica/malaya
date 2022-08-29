@@ -1079,6 +1079,7 @@ rules_compound_normalizer = {
     'pm sy': 'private message saya',
     'pm awak': 'private message awak',
     'pm awk': 'private message awak',
+    'es batu': 'ais batu',
 }
 
 rules_normalizer = {
@@ -1416,7 +1417,6 @@ rules_normalizer = {
     'ig': 'instagram',
     'iklas': 'ikhlas',
     'improve': 'menambah baik',
-    'in': 'masuk',
     'isn t': 'tidak',
     'isyaallah': 'insyallah',
     'ja': 'sahaja',
@@ -4682,6 +4682,14 @@ rules_normalizer = {
     'smbhyg': 'sembahyang',
     'td': 'tadi',
     'bersize': 'bersaiz',
+    'camnie': 'macam ini',
+    'dik': 'adik',
+    'omg': 'ya tuhanku',
+    'omaigod': 'ya tuhanku',
+    'ntmy': 'selamat berkenalan',
+    'btw': 'dengan cara itu',
+    'babeng': 'sangat',
+    'jnt': 'J&T Express',
 }
 
 rules_normalizer_rev = {v: k for k, v in rules_normalizer.items()}

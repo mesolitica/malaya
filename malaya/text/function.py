@@ -14,6 +14,7 @@ from malaya.text.rules import normalized_chars
 from malaya.text.english.words import words as _english_words
 from malaya.text.bahasa.words import words as _malay_words
 from malaya.text.bahasa.cambridge_words import words as _cambridge_malay_words
+from malaya.text.bahasa.kamus_dewan import words as _kamus_dewan_words
 from malaya.text.unicode.emoji import emoji
 from malaya.text.regex import _expressions
 
@@ -26,6 +27,7 @@ NUMBERS = '1234567890'
 ENGLISH_WORDS = _english_words
 MALAY_WORDS = _malay_words
 CAMBRIDGE_MALAY_WORDS = _cambridge_malay_words
+KAMUS_DEWAN_WORDS = _kamus_dewan_words
 
 alphabets = '([A-Za-z])'
 prefixes = (
@@ -47,7 +49,7 @@ def is_english(word):
 
 
 def is_malay(word):
-    return word in MALAY_WORDS or word in CAMBRIDGE_MALAY_WORDS
+    return word in MALAY_WORDS or word in CAMBRIDGE_MALAY_WORDS or word in KAMUS_DEWAN_WORDS
 
 
 def get_stopwords():
@@ -579,25 +581,6 @@ def case_of(text):
         if text.istitle()
         else str
     )
-
-
-def replace_any(string, lists, replace_with):
-    result = []
-    for word in string.split():
-        word_lower = word.lower()
-        if any([e in word_lower for e in lists]):
-            result.append(case_of(word)(replace_with))
-        else:
-            result.append(word)
-    return ' '.join(result)
-
-
-def replace_laugh(string, replace_with='haha'):
-    return replace_any(string, laughing, replace_with)
-
-
-def replace_mengeluh(string, replace_with='aduh'):
-    return replace_any(string, MENGELUH, replace_with)
 
 
 def replace_sub(pattern, text, replace_left='.', replace_right='<prd>'):

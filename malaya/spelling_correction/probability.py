@@ -12,6 +12,7 @@ from malaya.spelling_correction.base import (
     _augment_vowel_prob,
     _augment_vowel,
     get_permulaan_hujung,
+    norvig_method,
 )
 from malaya.text.tatabahasa import (
     alphabet,
@@ -22,20 +23,26 @@ from malaya.text.tatabahasa import (
     stopword_tatabahasa,
 )
 from herpetologist import check_type
-from typing import List
+from typing import List, Callable
 import logging
 
 logger = logging.getLogger(__name__)
 
 
 class Spell:
-    def __init__(self, sp_tokenizer, corpus, add_norvig_method=True, maxlen=15):
+    def __init__(
+        self,
+        sp_tokenizer,
+        corpus,
+        add_norvig_method=True,
+        replace_augmentation=False,
+        maxlen=15,
+        **kwargs,
+    ):
         self._sp_tokenizer = sp_tokenizer
-        if self._sp_tokenizer is not None:
-            self._augment = _augment_vowel_prob_sp
-        else:
-            self._augment = _augment_vowel_prob
+        self._augment = _augment_vowel_prob
         self._add_norvig_method = add_norvig_method
+        self._replace_augmentation = replace_augmentation
         self._corpus = corpus
         self.WORDS = Counter(self._corpus)
         self.N = sum(self.WORDS.values())
@@ -43,17 +50,22 @@ class Spell:
 
     def edit_step(self, word):
         """
-        All edits that are one edit away from `word`.
+        Generate possible combination of an input.
         """
+        deletes, transposes, inserts, replaces = [], [], [], []
         if self._add_norvig_method:
-            splits = [(word[:i], word[i:]) for i in range(len(word) + 1)]
-            deletes = [L + R[1:] for L, R in splits if R]
-            transposes = [
-                L + R[1] + R[0] + R[2:] for L, R in splits if len(R) > 1
-            ]
-            inserts = [L + c + R for L, R in splits for c in alphabet]
+            _, deletes_, transposes_, inserts_, replaces_ = norvig_method(word)
+            deletes.extend(deletes_)
+            transposes.extend(transposes_)
+            inserts.extend(inserts_)
+            replaces.extend(replaces_)
+
         pseudo = _augment_vowel(word)
-        pseudo.extend(self._augment(word, sp_tokenizer=self._sp_tokenizer))
+        pseudo.extend(self._augment(
+            word,
+            add_norvig_method=self._add_norvig_method,
+            sp_tokenizer=self._sp_tokenizer
+        ))
         fuzziness = []
         if len(word):
 
@@ -126,10 +138,23 @@ class Spell:
                     self._augment(inner, sp_tokenizer=self._sp_tokenizer)
                 )
 
+            # kecik -> kecil
+            if word[-1] == 'k' and word[-2] in vowels:
+                inner = word[:-1] + 'l'
+                fuzziness.append(inner)
+                pseudo.extend(
+                    self._augment(inner, sp_tokenizer=self._sp_tokenizer)
+                )
+
+        results = fuzziness + pseudo
+
         if self._add_norvig_method:
-            return set(deletes + transposes + inserts + fuzziness + pseudo)
+            if self._replace_augmentation:
+                return set(results + deletes + transposes + inserts + replaces)
+            else:
+                return set(results + deletes + transposes + inserts)
         else:
-            return set(fuzziness + pseudo)
+            return set(results)
 
     def edits2(self, word):
         """
@@ -141,7 +166,7 @@ class Spell:
         """
         The subset of `words` that appear in the dictionary of WORDS.
         """
-        return set(w for w in words if w in self.WORDS)
+        return set(w for w in words if w in self.WORDS or is_malay(w))
 
     def edit_candidates(self, word):
         """
@@ -156,8 +181,9 @@ class Spell:
         result: List[str]
         """
 
-        ttt = self.known(self.edit_step(word) if len(word) <= self.maxlen else [word]) or {word}
-        ttt = {i for i in ttt if len(i) > 3 and not is_english(i)}
+        ttt = self.known(self.edit_step(word) if len(word) <= self.maxlen else [word])
+        ttt = {i for i in ttt if not all([c in consonants for c in i])} or {word}
+        ttt = {i for i in ttt if len(i) >= 3 and not is_english(i)}
         ttt = self.known([word]) | ttt
         if not len(ttt):
             ttt = {word}
@@ -165,6 +191,8 @@ class Spell:
         if word[-1] in vowels:
             ttt = [w for w in ttt if w[-1] == word[-1]
                    or (w[-1] in 'a' and word[-1] in 'eo') or (len(w) >= 2 and w[-2:] in 'arur' and word[-1] in 'o')]
+        if not len(ttt):
+            return [word]
         return ttt
 
     @check_type
@@ -226,8 +254,8 @@ class Probability(Spell):
     Added custom vowels augmentation.
     """
 
-    def __init__(self, corpus, sp_tokenizer=None, maxlen=15):
-        Spell.__init__(self, sp_tokenizer, corpus, maxlen)
+    def __init__(self, corpus, sp_tokenizer=None, **kwargs):
+        Spell.__init__(self, sp_tokenizer, corpus, **kwargs)
 
     def tokens(text):
         return REGEX_TOKEN.findall(text.lower())
@@ -236,7 +264,12 @@ class Probability(Spell):
         """
         Probability of `word`.
         """
-        return self.WORDS[word] / self.N
+        if word in self.WORDS:
+            return self.WORDS[word] / self.N
+        elif is_malay(word):
+            return 1
+        else:
+            return 0
 
     def most_probable(self, words):
         _known = self.known(words)
@@ -283,21 +316,28 @@ class Probability(Spell):
                 if score_func is None:
                     word1 = max(candidates1, key=self.P)
                     word2 = max(candidates2, key=self.P)
+
+                    if self.P(word1) > self.P(word2):
+                        word = word1
+                    else:
+                        word = word2
+                        combined = False
+
                 else:
                     candidates1_score = {w: score_func(w, **kwargs) for w in candidates1}
                     candidates2_score = {w: score_func(w, **kwargs) for w in candidates2}
                     word1 = max(candidates1_score, key=candidates1_score.get)
                     word2 = max(candidates2_score, key=candidates2_score.get)
 
-                if self.WORDS[word1] > self.WORDS[word2]:
-                    word = word1
-                else:
-                    word = word2
-                    combined = False
+                    if candidates1_score[word1] > candidates2_score[word2]:
+                        word = word1
+                    else:
+                        word = word2
+                        combined = False
 
         if len(hujung_result) and not word.endswith(hujung_result) and combined:
             word = word + hujung_result
-        if len(permulaan_result) and not word.startswith(permulaan_result) and combined:
+        if len(permulaan_result) and len(word) > 1 and not word.startswith(permulaan_result) and combined:
             if permulaan_result[-1] == word[0]:
                 word = permulaan_result + word[1:]
             else:
@@ -335,8 +375,8 @@ class ProbabilityLM(Probability):
     Added custom vowels augmentation.
     """
 
-    def __init__(self, language_model, corpus, sp_tokenizer=None, maxlen=15):
-        Spell.__init__(self, sp_tokenizer, corpus, maxlen)
+    def __init__(self, language_model, corpus, sp_tokenizer=None, **kwargs):
+        Spell.__init__(self, sp_tokenizer, corpus, **kwargs)
         self._language_model = language_model
 
     def score(
@@ -356,15 +396,12 @@ class ProbabilityLM(Probability):
         if lookforward == -1:
             lookforward = 0
 
-        s = f'word: {word}, string: {string}, index: {index}, lookback: {lookback}, lookforward: {lookforward}'
-        logger.debug(s)
-
         left_hand = string[index - lookback: index]
         right_hand = string[index + 1: index + 1 + lookforward]
         string = left_hand + [word] + right_hand
         score = self._language_model.score(' '.join(string))
 
-        s = f'word: {word}, string: {string}, score: {score}'
+        s = f'word: {word}, string: {string}, index: {index}, lookback: {lookback}, lookforward: {lookforward}, score: {score}'
         logger.debug(s)
 
         return score
@@ -526,7 +563,6 @@ class ProbabilityLM(Probability):
 def load(
     language_model=None,
     sentence_piece: bool = False,
-    maxlen: int = 15,
     **kwargs,
 ):
     """
@@ -538,8 +574,6 @@ def load(
         If not None, must an instance of kenlm.Model.
     sentence_piece: bool, optional (default=False)
         if True, reduce possible augmentation states using sentence piece.
-    maxlen: int, optional (default=15)
-        max length of the word to `edit_candidates`.
 
     Returns
     -------
@@ -577,6 +611,6 @@ def load(
 
         if not isinstance(language_model, kenlm.Model):
             raise ValueError('`language_model` must an instance of `kenlm.Model`.')
-        return ProbabilityLM(language_model, corpus, tokenizer, maxlen=maxlen)
+        return ProbabilityLM(language_model, corpus, tokenizer, **kwargs)
     else:
-        return Probability(corpus, tokenizer, maxlen=maxlen)
+        return Probability(corpus, tokenizer, **kwargs)
