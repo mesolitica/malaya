@@ -2,13 +2,13 @@ import json
 import re
 from functools import partial
 from collections import Counter
-from malaya.text.function import case_of, is_english, is_malay, check_ratio_upper_lower
+from malaya.text.function import case_of, check_ratio_upper_lower
+from malaya.dictionary import is_english, is_malay
 from malaya.text.rules import rules_normalizer
 from malaya.text.bpe import SentencePieceTokenizer
 from malaya.path import PATH_NGRAM, S3_PATH_NGRAM
 from malaya.function import check_file
 from malaya.spelling_correction.base import (
-    _augment_vowel_prob_sp,
     _augment_vowel_prob,
     _augment_vowel,
     get_permulaan_hujung,
@@ -264,12 +264,7 @@ class Probability(Spell):
         """
         Probability of `word`.
         """
-        if word in self.WORDS:
-            return self.WORDS[word] / self.N
-        elif is_malay(word):
-            return 1
-        else:
-            return 0
+        return self.WORDS[word] / self.N
 
     def most_probable(self, words):
         _known = self.known(words)
@@ -303,6 +298,10 @@ class Probability(Spell):
 
         cp_word = word[:]
         word, hujung_result, permulaan_result = get_permulaan_hujung(word)
+        if len(word) < 2:
+            word = cp_word
+            hujung_result = ''
+            permulaan_result = ''
 
         combined = True
         if len(word):

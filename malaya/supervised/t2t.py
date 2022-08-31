@@ -7,10 +7,15 @@ from malaya.function import (
 from malaya.model.tf import Seq2SeqLSTM, Seq2SeqLSTM_Split
 from malaya.text.bpe import YTTMEncoder
 
+models = {
+    'base': 'lstm-bahdanau',
+    'noisy': 'lstm-bahdanau-noisy',
+}
 
-def load_lstm(module, left_dict, right_dict, cleaning, split=False, quantized=False, **kwargs):
+
+def load_lstm(module, left_dict, right_dict, cleaning, split=False, quantized=False, model='base', **kwargs):
     path = check_file(
-        file='lstm-bahdanau',
+        file=models[model],
         module=module,
         keys={'model': 'model.pb'},
         quantized=quantized,
@@ -42,9 +47,9 @@ def load_lstm(module, left_dict, right_dict, cleaning, split=False, quantized=Fa
     )
 
 
-def load_lstm_yttm(module, vocab, model_class, quantized=False, tokenizer=None, **kwargs):
+def load_lstm_yttm(module, vocab, model_class, quantized=False, tokenizer=None, model='base', **kwargs):
     path = check_file(
-        file='lstm-bahdanau',
+        file=models[model],
         module=module,
         keys={'model': 'model.pb', 'vocab': vocab},
         quantized=quantized,

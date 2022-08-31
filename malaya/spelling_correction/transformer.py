@@ -7,7 +7,8 @@ from malaya.function import check_file
 from malaya.supervised import t5 as t5_load
 from malaya.model.t5 import Spell as T5_Spell
 from malaya.text.bpe import SentencePieceTokenizer
-from malaya.text.function import case_of, is_english, is_malay, check_ratio_upper_lower
+from malaya.text.function import case_of, check_ratio_upper_lower
+from malaya.dictionary import is_english, is_malay
 from malaya.text.tatabahasa import stopword_tatabahasa
 from malaya.text.rules import rules_normalizer
 from malaya.spelling_correction.probability import Spell

@@ -2,7 +2,7 @@ import re
 from functools import partial
 from malaya.path import PATH_NGRAM, S3_PATH_NGRAM
 from malaya.function import check_file
-from malaya.text.function import is_english, is_malay
+from malaya.dictionary import is_english, is_malay
 from malaya.text.rules import rules_normalizer
 from malaya.text.tatabahasa import stopword_tatabahasa
 from malaya.spelling_correction.probability import Spell

@@ -8,7 +8,7 @@ from malaya.function import (
     generate_session,
     nodes_session,
 )
-from malaya.text.function import pad_sentence_batch, case_of
+from malaya.text.function import PUNCTUATION, case_of
 from malaya.text.regex import _expressions, _money, _date
 from malaya.model.abstract import Abstract
 from malaya.supervised.t2t import load_lstm_yttm
@@ -33,20 +33,89 @@ def _classification_textcleaning_stemmer(string, stemmer):
     return ' '.join([word[0] for word in string if len(word[0]) > 1])
 
 
-class Sastrawi:
+class Base:
+    _tokenizer = Tokenizer().tokenize
+
+    @check_type
+    def stem(self, string: str, **kwargs):
+        result = []
+        tokenized = self._tokenizer(string)
+        for no, word in enumerate(tokenized):
+            if word in PUNCTUATION:
+                result.append(word)
+            elif (
+                re.findall(_money, word.lower())
+                or re.findall(_date, word.lower())
+                or re.findall(_expressions['email'], word.lower())
+                or re.findall(_expressions['url'], word.lower())
+                or re.findall(_expressions['hashtag'], word.lower())
+                or re.findall(_expressions['phone'], word.lower())
+                or re.findall(_expressions['money'], word.lower())
+                or re.findall(_expressions['date'], word.lower())
+                or re.findall(_expressions['time'], word.lower())
+                or re.findall(_expressions['ic'], word.lower())
+                or re.findall(_expressions['user'], word.lower())
+            ):
+                result.append(word)
+            else:
+                result.append(case_of(word)(self.stem_word(word, **kwargs)))
+        return ' '.join(result)
+
+    def predict(self, string):
+        return self.stem(string)
+
+
+class Sastrawi(Base):
     def __init__(self, factory):
         self.sastrawi_stemmer = factory.create_stemmer()
 
     @check_type
+    def stem_word(self, word: str, **kwargs):
+        """
+        Stem a word using Sastrawi, this also include lemmatization.
+
+        Parameters
+        ----------
+        string : str
+
+        Returns
+        -------
+        result: str
+        """
+        return self.sastrawi_stemmer.stem(word)
+
+    @check_type
     def stem(self, string: str):
-        return self.sastrawi_stemmer.stem(string)
+        """
+        Stem a string using Sastrawi, this also include lemmatization.
+
+        Parameters
+        ----------
+        string : str
+
+        Returns
+        -------
+        result: str
+        """
+
+        return super().stem(string)
 
 
-class Naive:
-    def __init__(self, tokenizer):
-        self._tokenizer = tokenizer
+class Naive(Base):
 
-    def stem_word(self, word):
+    def stem_word(self, word, **kwargs):
+        """
+        Stem a word using Regex pattern.
+
+        Parameters
+        ----------
+        string : str
+
+        Returns
+        -------
+        result: str
+        """
+
         hujung_result = [v for k, v in hujung.items() if word.endswith(k)]
         if len(hujung_result):
             hujung_result = max(hujung_result, key=len)
@@ -63,35 +132,29 @@ class Naive:
 
     @check_type
     def stem(self, string: str):
-        result = []
-        tokenized = self._tokenizer(string)
-        for no, word in enumerate(tokenized):
-            if word in '~@#$%^&*()_+{}|[:"\'];<>,.?/-':
-                result.append(word)
-            elif (
-                re.findall(_money, word.lower())
-                or re.findall(_date, word.lower())
-                or re.findall(_expressions['time'], word.lower())
-                or re.findall(_expressions['hashtag'], word.lower())
-                or re.findall(_expressions['url'], word.lower())
-                or re.findall(_expressions['user'], word.lower())
-            ):
-                result.append(word)
-            else:
-                result.append(self.stem_word(word))
-        return ' '.join(result)
+        """
+        Stem a string using Regex pattern.
+
+        Parameters
+        ----------
+        string : str
+
+        Returns
+        -------
+        result: str
+        """
+
+        return super().stem(string)
 
 
-class DeepStemmer(Abstract):
+class DeepStemmer(Abstract, Base):
     def __init__(
-        self, input_nodes, output_nodes, sess, bpe, tokenizer
+        self, input_nodes, output_nodes, sess, bpe, **kwargs,
     ):
-
         self._input_nodes = input_nodes
         self._output_nodes = output_nodes
         self._sess = sess
         self._bpe = bpe
-        self._tokenizer = tokenizer
 
     @check_type
     def greedy_decoder(self, string: str):
@@ -142,6 +205,40 @@ class DeepStemmer(Abstract):
 
         return self.stem(string=string, beam_search=beam_search)
 
+    def stem_word(self, word, beam_search=False, **kwargs):
+        """
+        Stem a word, this also include lemmatization.
+
+        Parameters
+        ----------
+        string : str
+
+        Returns
+        -------
+        result: str
+        """
+
+        batch = self._bpe.bpe.encode([word], output_type=self._bpe.mode)
+        batch = [i + [1] for i in batch]
+
+        if beam_search:
+            output = 'beam'
+        else:
+            output = 'greedy'
+
+        r = self._execute(
+            inputs=[batch],
+            input_labels=['Placeholder'],
+            output_labels=[output],
+        )
+        output = r[output].tolist()[0]
+        predicted = (
+            self._bpe.bpe.decode(output)[0]
+            .replace('<EOS>', '')
+            .replace('<PAD>', '')
+        )
+        return predicted
+
     @check_type
     def stem(self, string: str, beam_search: bool = False):
         """
@@ -158,56 +255,7 @@ class DeepStemmer(Abstract):
         result: str
         """
 
-        tokenized = self._tokenizer(string)
-        result, batch, actual, mapping = [], [], [], {}
-        for no, word in enumerate(tokenized):
-            if word in '~@#$%^&*()_+{}|[:"\'];<>,.?/-':
-                result.append(word)
-            elif (
-                re.findall(_money, word.lower())
-                or re.findall(_date, word.lower())
-                or re.findall(_expressions['time'], word.lower())
-                or re.findall(_expressions['hashtag'], word.lower())
-                or re.findall(_expressions['url'], word.lower())
-                or re.findall(_expressions['user'], word.lower())
-            ):
-                result.append(word)
-            else:
-                mapping[len(batch)] = no
-                result.append('REPLACE-ME')
-                actual.append(word)
-                batch.append(word.lower())
-
-        if len(batch):
-
-            batch = self._bpe.bpe.encode(batch, output_type=self._bpe.mode)
-
-            batch = [i + [1] for i in batch]
-            batch = pad_sentence_batch(batch, 0)[0]
-
-            if beam_search:
-                output = 'beam'
-            else:
-                output = 'greedy'
-
-            r = self._execute(
-                inputs=[batch],
-                input_labels=['Placeholder'],
-                output_labels=[output],
-            )
-            output = r[output].tolist()
-
-            for no, o in enumerate(output):
-                predicted = list(dict.fromkeys(o))
-                predicted = (
-                    self._bpe.bpe.decode(predicted)[0]
-                    .replace('<EOS>', '')
-                    .replace('<PAD>', '')
-                )
-                predicted = case_of(actual[no])(predicted)
-                result[mapping[no]] = predicted
-
-        return ' '.join(result)
+        return super().stem(string, beam_search=beam_search)
 
 
 @check_type
@@ -219,9 +267,8 @@ def naive():
     -------
     result : malaya.stem.Naive class
     """
-    tokenizer = Tokenizer().tokenize
 
-    return Naive(tokenizer=tokenizer)
+    return Naive()
 
 
 @check_type
@@ -233,6 +280,7 @@ def sastrawi():
     -------
     result: malaya.stem.Sastrawi class
     """
+
     try:
         from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
     except BaseException:
@@ -243,7 +291,7 @@ def sastrawi():
 
 
 @check_type
-def deep_model(quantized: bool = False, **kwargs):
+def deep_model(model: str = 'base', quantized: bool = False, **kwargs):
     """
     Load LSTM + Bahdanau Attention stemming model,
     256 filter size, 2 layers, BPE level (YouTokenToMe 20k vocab size).
@@ -252,6 +300,12 @@ def deep_model(quantized: bool = False, **kwargs):
 
     Parameters
     ----------
+    model : str, optional (default='base')
+        Model architecture supported. Allowed values:
+
+        * ``'base'`` - trained on default dataset.
+        * ``'noisy'`` - trained on default and augmentation dataset.
+
     quantized : bool, optional (default=False)
         if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
@@ -261,12 +315,11 @@ def deep_model(quantized: bool = False, **kwargs):
     result: malaya.stem.DeepStemmer class
     """
 
-    tokenizer = Tokenizer().tokenize
-
     return load_lstm_yttm(
         module='stem',
         vocab=STEMMER_VOCAB,
         model_class=DeepStemmer,
         quantized=quantized,
-        tokenizer=tokenizer,
-        **kwargs,)
+        model=model,
+        **kwargs,
+    )

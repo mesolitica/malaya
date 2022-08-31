@@ -41,6 +41,12 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
+   :caption: Dictionary Module
+
+   dictionary-malay
+
+.. toctree::
+   :maxdepth: 2
    :caption: Tokenization Module
 
    load-tokenizer-word
@@ -200,5 +206,3 @@ Contents:
    Api
    Crawler
    Donation
-   Translator-malaya
-   Reference

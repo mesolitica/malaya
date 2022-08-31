@@ -1,12 +1,12 @@
 import json
-from malaya.text.function import case_of, is_english, is_malay
 from malaya.path import PATH_NGRAM, S3_PATH_NGRAM
 from malaya.function import check_file
 from malaya.spelling_correction.base import (
     _augment_vowel_alternate,
     get_permulaan_hujung,
 )
-from malaya.text.function import case_of, is_english, is_malay, check_ratio_upper_lower
+from malaya.text.function import case_of, check_ratio_upper_lower
+from malaya.dictionary import is_english, is_malay
 from malaya.text.rules import rules_normalizer
 from malaya.spelling_correction.probability import Spell
 from malaya.text.tatabahasa import (

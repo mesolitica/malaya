@@ -3,14 +3,13 @@ import dateparser
 import itertools
 from malaya.num2word import to_cardinal
 from malaya.text.function import (
-    is_english,
-    is_malay,
     is_laugh,
     is_mengeluh,
     multireplace,
     case_of,
     PUNCTUATION,
 )
+from malaya.dictionary import is_english, is_malay
 from malaya.text.regex import (
     _past_date_string,
     _now_date_string,

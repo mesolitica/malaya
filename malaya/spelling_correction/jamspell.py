@@ -1,6 +1,7 @@
 import re
 from functools import partial
-from malaya.text.function import case_of, is_english, is_malay, check_ratio_upper_lower
+from malaya.text.function import case_of, check_ratio_upper_lower
+from malaya.dictionary import is_english, is_malay
 from malaya.text.tatabahasa import stopword_tatabahasa
 from malaya.text.rules import rules_normalizer
 from malaya.path import PATH_NGRAM, S3_PATH_NGRAM

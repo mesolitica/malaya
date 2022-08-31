@@ -2,9 +2,9 @@ import re
 import json
 import ftfy
 from functools import lru_cache
+from malaya.dictionary.english.words import words as _english_words
 from malaya.text.rules import rules_normalizer
 from malaya.text.regex import _expressions
-from malaya.text.english.words import words as _english_words
 from malaya.text.normalization import unpack_english_contractions
 from malaya.text.function import case_of
 from malaya.tokenizer import Tokenizer

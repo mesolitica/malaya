@@ -27,6 +27,12 @@ malaya.augmentation
 .. automodule:: malaya.augmentation
     :members:
 
+malaya.dictionary
+---------------------
+
+.. automodule:: malaya.dictionary
+    :members:
+
 malaya.cluster
 -----------------
 

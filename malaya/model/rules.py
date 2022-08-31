@@ -2,12 +2,12 @@ from malaya.text.normalization import _is_number_regex
 from malaya.text.function import (
     check_ratio_numbers,
     check_ratio_punct,
-    is_malay,
     is_emoji,
     is_laugh,
     is_mengeluh,
     PUNCTUATION,
 )
+from malaya.dictionary import is_malay, is_english
 from typing import List
 import logging
 
@@ -55,7 +55,7 @@ class LanguageDict:
         acceptable_en_label: List[str], optional (default = ['eng', 'manglish'])
             accept labels from language detection model to assume a word is `EN`.
         use_is_malay: bool, optional (default=True)
-            if True`, will predict MS word using `malaya.text.function.is_malay`, 
+            if True`, will predict MS word using `malaya.dictionary.is_malay`, 
             else use language detection model.
 
         Returns

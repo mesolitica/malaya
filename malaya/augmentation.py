@@ -7,7 +7,7 @@ from collections import defaultdict
 from malaya.function import check_file
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from malaya.text.tatabahasa import consonants, vowels
-from malaya.text.function import augmentation_textcleaning, simple_textcleaning, case_of
+from malaya.text.function import augmentation_textcleaning, case_of
 from malaya.path import PATH_AUGMENTATION, S3_PATH_AUGMENTATION
 from herpetologist import check_type
 from typing import Callable, Dict, List
@@ -414,7 +414,6 @@ def socialmedia_form(word: str):
     """
     word_temp = word
     word = word.lower()
-    word = simple_textcleaning(word)
 
     if not len(word):
         raise ValueError('word is too short to augment shortform.')
@@ -477,7 +476,6 @@ def vowel_alternate(word: str, threshold: float = 0.5):
     """
     word_temp = word
     word = word.lower()
-    word = simple_textcleaning(word)
 
     if not len(word):
         raise ValueError('word is too short to augment shortform.')
@@ -516,7 +514,6 @@ def kelantanese_form(word: str):
     """
     word_temp = word
     word = word.lower()
-    word = simple_textcleaning(word)
 
     if not len(word):
         raise ValueError('word is too short to augment shortform.')

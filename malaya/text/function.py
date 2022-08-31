@@ -11,10 +11,6 @@ from malaya.text.tatabahasa import (
     mengeluh,
 )
 from malaya.text.rules import normalized_chars
-from malaya.text.english.words import words as _english_words
-from malaya.text.bahasa.words import words as _malay_words
-from malaya.text.bahasa.cambridge_words import words as _cambridge_malay_words
-from malaya.text.bahasa.kamus_dewan import words as _kamus_dewan_words
 from malaya.text.unicode.emoji import emoji
 from malaya.text.regex import _expressions
 
@@ -24,10 +20,6 @@ VOWELS = 'aeiou'
 PHONES = ['sh', 'ch', 'ph', 'sz', 'cz', 'sch', 'rz', 'dz']
 PUNCTUATION = '!"#$%&\'()*+,./:;<=>?@[\]^_`{|}~'
 NUMBERS = '1234567890'
-ENGLISH_WORDS = _english_words
-MALAY_WORDS = _malay_words
-CAMBRIDGE_MALAY_WORDS = _cambridge_malay_words
-KAMUS_DEWAN_WORDS = _kamus_dewan_words
 
 alphabets = '([A-Za-z])'
 prefixes = (
@@ -42,14 +34,6 @@ another_websites = '(www|http|https)[.]'
 digits = '([0-9])'
 before_digits = '([Nn]o|[Nn]ombor|[Nn]umber|[Kk]e|=|al|[Pp]ukul)'
 month = '([Jj]an(?:uari)?|[Ff]eb(?:ruari)?|[Mm]a(?:c)?|[Aa]pr(?:il)?|Mei|[Jj]u(?:n)?|[Jj]ula(?:i)?|[Aa]ug(?:ust)?|[Ss]ept?(?:ember)?|[Oo]kt(?:ober)?|[Nn]ov(?:ember)?|[Dd]is(?:ember)?)'
-
-
-def is_english(word):
-    return word in ENGLISH_WORDS
-
-
-def is_malay(word):
-    return word in MALAY_WORDS or word in CAMBRIDGE_MALAY_WORDS or word in KAMUS_DEWAN_WORDS
 
 
 def get_stopwords():

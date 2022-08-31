@@ -10,7 +10,8 @@ from malaya.text.tatabahasa import (
     laughing,
 )
 from malaya.text.rules import rules_normalizer, rules_compound_normalizer
-from malaya.text.function import ENGLISH_WORDS, MALAY_WORDS, MENGELUH, case_of, is_malay, is_english
+from malaya.text.function import case_of, MENGELUH
+from malaya.dictionary import ENGLISH_WORDS, MALAY_WORDS, is_malay, is_english
 from malaya.text.regex import _expressions
 import math
 import logging
@@ -65,7 +66,7 @@ def _replace_compound(string):
     return string
 
 
-def get_hujung(word):
+def get_hujung(word, stemmer=None):
 
     # initialize_sastrawi()
     # stemmed = sastrawi_stemmer.stem(word)
@@ -88,7 +89,7 @@ def get_hujung(word):
     return word, ''
 
 
-def get_permulaan(word):
+def get_permulaan(word, stemmer=None):
 
     permulaan_result = [
         (k, v) for k, v in permulaan.items() if word.startswith(k)
@@ -102,7 +103,7 @@ def get_permulaan(word):
     return word, ''
 
 
-def _remove_postfix(word):
+def _remove_postfix(word, stemmer=None):
 
     if is_malay(word) or is_english(word) or word in rules_normalizer:
         return word, ''
@@ -646,14 +647,19 @@ def unpack_english_contractions(text):
 def repeat_word(word, repeat=1):
     """
     seadil2 -> seadil-adil
+    terjadi2 -> terjadi-jadi
     """
-    global sastrawi_stemmer
-    if sastrawi_stemmer is None:
-        from malaya.stem import sastrawi
+    if word.startswith('se') or word.startswith('ter'):
+        global sastrawi_stemmer
+        if sastrawi_stemmer is None:
+            from malaya.stem import sastrawi
 
-        sastrawi_stemmer = sastrawi()
+            sastrawi_stemmer = sastrawi()
 
-    stemmed = sastrawi_stemmer.stem(word)
+        stemmed = sastrawi_stemmer.stem(word)
+    else:
+        stemmed = word
+
     repeated = '-'.join([stemmed] * (repeat - 1))
     if len(repeated):
         return f'{word}-{repeated}'

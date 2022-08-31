@@ -114,7 +114,7 @@ def _augment_vowel_alternate(string):
 
 def norvig_method(word, delete_only=False):
     splits = [(word[:i], word[i:]) for i in range(len(word) + 1)]
-    deletes = [L + R[1:] for L, R in splits if R]
+    deletes = [L + R[1:] for L, R in splits if R if R[0] in vowels]
 
     if delete_only:
         return deletes
@@ -131,7 +131,7 @@ def norvig_method(word, delete_only=False):
 
 def _augment_vowel_prob(word, add_norvig_method=False, sp_tokenizer=None, **kwargs):
     l, r = _augment_vowel_alternate(word)
-    results = _permutate(l, _get_indices(l)) + _permutate(r, _get_indices(r))
+    results = _permutate(l, _get_indices(l), sp_tokenizer) + _permutate(r, _get_indices(r), sp_tokenizer)
     if add_norvig_method:
         l_norvig = norvig_method(l, delete_only=True)
         for s in l_norvig:
@@ -140,21 +140,6 @@ def _augment_vowel_prob(word, add_norvig_method=False, sp_tokenizer=None, **kwar
         r_norvig = norvig_method(r, delete_only=True)
         for s in r_norvig:
             results.extend(_permutate(s, _get_indices(s), sp_tokenizer))
-
-    return list(set(results))
-
-
-def _augment_vowel_prob_sp(word, sp_tokenizer, add_norvig_method=False, **kwargs):
-    l, r = _augment_vowel_alternate(word)
-    results = _permutate_sp(l, _get_indices(l), sp_tokenizer) + _permutate_sp(r, _get_indices(r), sp_tokenizer)
-    if add_norvig_method:
-        l_norvig = norvig_method(l, delete_only=True)
-        for s in l_norvig:
-            results.extend(_permutate_sp(s, _get_indices(s), sp_tokenizer))
-
-        r_norvig = norvig_method(r, delete_only=True)
-        for s in l_norvig:
-            results.extend(_permutate(s, _get_indices(s)), sp_tokenizer)
 
     return list(set(results))
 
@@ -180,8 +165,8 @@ def _return_known(word, dicts):
     return set(w for w in word if w in dicts)
 
 
-def get_permulaan_hujung(word):
-    word, hujung_result = get_hujung(word)
-    word, permulaan_result = get_permulaan(word)
+def get_permulaan_hujung(word, stemmer=None):
+    word, hujung_result = get_hujung(word, stemmer=stemmer)
+    word, permulaan_result = get_permulaan(word, stemmer=stemmer)
 
     return word, hujung_result, permulaan_result
