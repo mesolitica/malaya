@@ -71,13 +71,13 @@ Contents:
    
    load-preprocessing
    load-demoji
-   load-coreference-resolution
-   load-normalizer
    load-stemmer
    load-true-case
    load-segmentation
    load-num2word
    load-word2num
+   load-coreference-resolution
+   load-normalizer
 
 .. toctree::
    :maxdepth: 2

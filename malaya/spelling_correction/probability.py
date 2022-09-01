@@ -34,6 +34,7 @@ class Spell:
         self,
         sp_tokenizer,
         corpus,
+        stemmer,
         add_norvig_method=True,
         replace_augmentation=False,
         maxlen=15,
@@ -44,6 +45,7 @@ class Spell:
         self._add_norvig_method = add_norvig_method
         self._replace_augmentation = replace_augmentation
         self._corpus = corpus
+        self._stemmer = stemmer
         self.WORDS = Counter(self._corpus)
         self.N = sum(self.WORDS.values())
         self.maxlen = maxlen
@@ -254,8 +256,8 @@ class Probability(Spell):
     Added custom vowels augmentation.
     """
 
-    def __init__(self, corpus, sp_tokenizer=None, **kwargs):
-        Spell.__init__(self, sp_tokenizer, corpus, **kwargs)
+    def __init__(self, corpus, sp_tokenizer=None, stemmer=None, **kwargs):
+        Spell.__init__(self, sp_tokenizer, corpus, stemmer, **kwargs)
 
     def tokens(text):
         return REGEX_TOKEN.findall(text.lower())
@@ -297,7 +299,7 @@ class Probability(Spell):
             return word
 
         cp_word = word[:]
-        word, hujung_result, permulaan_result = get_permulaan_hujung(word)
+        word, hujung_result, permulaan_result = get_permulaan_hujung(word, stemmer=self._stemmer)
         if len(word) < 2:
             word = cp_word
             hujung_result = ''
@@ -361,7 +363,7 @@ class Probability(Spell):
         best = self.most_probable(candidates)
         return best or word
 
-    def normalize_elongated(self, word):
+    def normalize_elongated(self, word, **kwargs):
         return case_of(word)(self.best_elong_candidate(word.lower()))
 
 
@@ -374,8 +376,8 @@ class ProbabilityLM(Probability):
     Added custom vowels augmentation.
     """
 
-    def __init__(self, language_model, corpus, sp_tokenizer=None, **kwargs):
-        Spell.__init__(self, sp_tokenizer, corpus, **kwargs)
+    def __init__(self, language_model, corpus, sp_tokenizer=None, stemmer=None, **kwargs):
+        Spell.__init__(self, sp_tokenizer, corpus, stemmer, **kwargs)
         self._language_model = language_model
 
     def score(
@@ -557,11 +559,20 @@ class ProbabilityLM(Probability):
             lookback=lookback,
             lookforward=lookforward))
 
+    def best_elong_candidate(self, word):
+        candidates = self.elong_normalized_candidates(word)
+        best = self.most_probable(candidates)
+        return best or word
+
+    def normalize_elongated(self, word):
+        return case_of(word)(self.best_elong_candidate(word.lower()))
+
 
 @check_type
 def load(
     language_model=None,
     sentence_piece: bool = False,
+    stemmer=None,
     **kwargs,
 ):
     """
@@ -573,6 +584,8 @@ def load(
         If not None, must an instance of kenlm.Model.
     sentence_piece: bool, optional (default=False)
         if True, reduce possible augmentation states using sentence piece.
+    stemmer: Callable, optional (default=None)
+        a Callable object, must have `stem_word` method.
 
     Returns
     -------
@@ -582,6 +595,10 @@ def load(
         * if passed `language_model` will return `malaya.spelling_correction.probability.ProbabilityLM`.
         * else will return `malaya.spelling_correction.probability.Probability`.
     """
+
+    if stemmer is not None:
+        if not hasattr(stemmer, 'stem_word'):
+            raise ValueError('stemmer must have `stem_word` method')
 
     tokenizer = None
     if sentence_piece:
@@ -610,6 +627,7 @@ def load(
 
         if not isinstance(language_model, kenlm.Model):
             raise ValueError('`language_model` must an instance of `kenlm.Model`.')
-        return ProbabilityLM(language_model, corpus, tokenizer, **kwargs)
+
+        return ProbabilityLM(language_model, corpus, tokenizer, stemmer, **kwargs)
     else:
-        return Probability(corpus, tokenizer, **kwargs)
+        return Probability(corpus, tokenizer, stemmer, **kwargs)

@@ -228,6 +228,7 @@ class Normalizer:
         language_detection_word: Callable = None,
         acceptable_language_detection: List[str] = ['EN', 'CAPITAL', 'NOT_LANG'],
         segmenter: Callable = None,
+        stemmer=None,
         **kwargs,
     ):
         """
@@ -304,11 +305,20 @@ class Normalizer:
         segmenter: Callable, optional (default=None)
             function to segmentize word.
             If provide, it will expand a word, apaitu -> apa itu
+        stemmer: Callable, optional (default=None)
+            a Callable object, must have `stem_word` method.
+            If provide, will stem a word, tlonglh -> tlong
+            Else, will use regex based.
 
         Returns
         -------
         result: {'normalize', 'date', 'money'}
         """
+
+        if stemmer is not None:
+            if not hasattr(stemmer, 'stem_word'):
+                raise ValueError('stemmer must have `stem_word` method')
+
         if normalize_emoji:
             if self._demoji is None:
 
@@ -870,7 +880,7 @@ class Normalizer:
                 words = [word]
 
             for no_word, word in enumerate(words):
-                word, end_result_string = _remove_postfix(word)
+                word, end_result_string = _remove_postfix(word, stemmer=stemmer)
                 if normalize_text:
                     word, repeat = check_repeat(word)
                 else:
@@ -884,10 +894,10 @@ class Normalizer:
                     elif word in rules_normalizer:
                         selected = rules_normalizer[word]
                     # betuii -> betui -> betul
-                    elif len(word_lower) > 1 and word[-1] == word[-2] and word[:-1] in rules_normalizer:
+                    elif len(word) > 1 and word[-1] == word[-2] and word[:-1] in rules_normalizer:
                         selected = rules_normalizer[word[:-1]]
                     # betuii -> betui -> betul
-                    elif len(word_lower) > 1 and word[-1] == word[-2] and word[:-1] in rules_normalizer_rev:
+                    elif len(word) > 1 and word[-1] == word[-2] and word[:-1] in rules_normalizer_rev:
                         selected = word[:-1]
                     else:
                         selected = word

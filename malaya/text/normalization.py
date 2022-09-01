@@ -66,39 +66,66 @@ def _replace_compound(string):
     return string
 
 
-def get_hujung(word, stemmer=None):
+def get_stemmed(word, stemmed):
+    if word == stemmed:
+        return '', '', word
 
-    # initialize_sastrawi()
-    # stemmed = sastrawi_stemmer.stem(word)
-    # if word.endswith(stemmed):
-    #     stemmed = True
-    # else:
-    #     stemmed = False
+    index = [(m.start(0), m.end(0)) for m in re.finditer(stemmed, word, flags=re.IGNORECASE)]
+    if len(index):
+        permulaann = word[:index[0][0]]
+        hujungan = word[index[-1][1]:]
+        no_imbuhan = word[index[0][0]:index[-1][1]]
+
+        permulaann = permulaan.get(permulaann, permulaann)
+        hujungan = hujung.get(hujungan, hujungan)
+    else:
+        permulaann = ''
+        hujungan = ''
+        no_imbuhan = word
+
+    return permulaann, hujungan, no_imbuhan
+
+
+def get_hujung(word, stemmer=None):
 
     for p in ignore_postfix:
         if word.endswith(p):
             return word, ''
 
-    hujung_result = [(k, v) for k, v in hujung.items() if word.endswith(k)]
-    if len(hujung_result):
-        hujung_result = max(hujung_result, key=lambda x: len(x[1]))
-        word = word[: -len(hujung_result[0])]
-        hujung_result = hujung_result[1]
-        return word, hujung_result
+    if stemmer is not None:
+        stemmed = stemmer.stem_word(word)
+        permulaann, hujungan, no_imbuhan = get_stemmed(word, stemmed)
+        no_imbuhan = f'{permulaann}{no_imbuhan}'
+        return no_imbuhan, hujungan
+
+    else:
+        hujung_result = [(k, v) for k, v in hujung.items() if word.endswith(k)]
+        if len(hujung_result):
+            hujung_result = max(hujung_result, key=lambda x: len(x[1]))
+            word = word[: -len(hujung_result[0])]
+            hujung_result = hujung_result[1]
+            return word, hujung_result
 
     return word, ''
 
 
 def get_permulaan(word, stemmer=None):
 
-    permulaan_result = [
-        (k, v) for k, v in permulaan.items() if word.startswith(k)
-    ]
-    if len(permulaan_result):
-        permulaan_result = max(permulaan_result, key=lambda x: len(x[1]))
-        word = word[len(permulaan_result[0]):]
-        permulaan_result = permulaan_result[1]
-        return word, permulaan_result
+    if stemmer is not None:
+        stemmed = stemmer.stem_word(word)
+        permulaann, hujungan, no_imbuhan = get_stemmed(word, stemmed)
+        no_imbuhan = f'{no_imbuhan}{hujungan}'
+        return no_imbuhan, permulaann
+
+    else:
+        permulaan_result = [
+            (k, v) for k, v in permulaan.items() if word.startswith(k)
+        ]
+        if len(permulaan_result):
+            permulaan_result = max(permulaan_result, key=lambda x: len(x[1]))
+            word = word[len(permulaan_result[0]):]
+            permulaan_result = permulaan_result[1]
+            return word, permulaan_result
 
     return word, ''
 
@@ -111,16 +138,19 @@ def _remove_postfix(word, stemmer=None):
         if word.endswith(p):
             return word, ''
 
-    # initialize_sastrawi()
-    # stemmed = sastrawi_stemmer.stem(word)
-    # if word.endswith(stemmed):
-    #     return word, ''
+    if stemmer is not None:
+        stemmed = stemmer.stem_word(word)
+        permulaann, hujungan, no_imbuhan = get_stemmed(word, stemmed)
+        no_imbuhan = f'{permulaann}{no_imbuhan}'
+        if hujungan in hujung_malaysian:
+            return no_imbuhan, 'lah'
 
-    for p in hujung_malaysian:
-        if word.endswith(p):
-            return word[: -len(p)], 'lah'
+    else:
+        for p in hujung_malaysian:
+            if word.endswith(p):
+                return word[: -len(p)], 'lah'
 
-    return get_hujung(word)
+    return get_hujung(word, stemmer=stemmer)
 
 
 def _normalize_title(word):

@@ -1,14 +1,7 @@
 ## how-to
 
-1. Download and preprocessing news dataset, [preprocessing-news.ipynb](preprocessing-news.ipynb).
-
-2. Download and preprocessing parliament dataset, [preprocessing-parliament.ipynb](preprocessing-parliament.ipynb).
-
-3. Download and preprocessing PDF dataset, [preprocessing-pdf.ipynb](preprocessing-pdf.ipynb).
-
-4. Download and preprocessing Wikipedia dataset, [preprocessing-wiki.ipynb](preprocessing-wiki.ipynb).
-
-5. Generate SentencePiece,
+1. Download dataset at https://github.com/huseinzol05/malay-dataset/tree/master/dumping/clean
+2. Generate SentencePiece,
 
 ```
 LD_LIBRARY_PATH=/home/husein/lib

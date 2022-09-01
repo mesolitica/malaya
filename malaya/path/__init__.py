@@ -32,7 +32,7 @@ RUMI_JAWI_VOCAB = 'bpe/rumi-jawi.yttm'
 LANGUAGE_DETECTION_BOW = 'bpe/bow-language-detection.pkl'
 LANGUAGE_DETECTION_VOCAB = 'bpe/language-detection.yttm'
 
-STEMMER_VOCAB = 'bpe/stemmer.yttm'
+STEMMER_VOCAB = 'bpe/stemmer-v2.yttm'
 
 GPT2_ENCODER = 'bpe/gpt2-encoder.json'
 GPT2_VOCAB = 'bpe/gpt2-vocab.bpe'

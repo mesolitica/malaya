@@ -8,13 +8,18 @@ from malaya.function import (
     generate_session,
     nodes_session,
 )
-from malaya.text.function import PUNCTUATION, case_of
+from malaya.dictionary import is_english
+from malaya.text.function import PUNCTUATION, case_of, is_emoji
 from malaya.text.regex import _expressions, _money, _date
 from malaya.model.abstract import Abstract
 from malaya.supervised.t2t import load_lstm_yttm
 from malaya.preprocessing import Tokenizer
+from malaya.function import describe_availability
 from malaya.path import STEMMER_VOCAB
 from herpetologist import check_type
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def _classification_textcleaning_stemmer(string, stemmer):
@@ -55,6 +60,8 @@ class Base:
                 or re.findall(_expressions['time'], word.lower())
                 or re.findall(_expressions['ic'], word.lower())
                 or re.findall(_expressions['user'], word.lower())
+                or is_emoji(word.lower())
+                or is_english(word.lower())
             ):
                 result.append(word)
             else:
@@ -115,7 +122,7 @@ class Naive(Base):
         -------
         result: str
         """
-
+        word_temp = word
         hujung_result = [v for k, v in hujung.items() if word.endswith(k)]
         if len(hujung_result):
             hujung_result = max(hujung_result, key=len)
@@ -128,6 +135,9 @@ class Naive(Base):
             permulaan_result = max(permulaan_result, key=len)
             if len(permulaan_result):
                 word = word[len(permulaan_result):]
+
+        if not len(word):
+            word = word_temp
         return word
 
     @check_type
@@ -237,6 +247,7 @@ class DeepStemmer(Abstract, Base):
             .replace('<EOS>', '')
             .replace('<PAD>', '')
         )
+
         return predicted
 
     @check_type
@@ -256,6 +267,32 @@ class DeepStemmer(Abstract, Base):
         """
 
         return super().stem(string, beam_search=beam_search)
+
+
+_availability = {
+    'base': {
+        'Size (MB)': 13.6,
+        'Quantized Size (MB)': 3.64,
+        'CER': 0.02143794,
+        'WER': 0.04399622,
+    },
+    'noisy': {
+        'Size (MB)': 28.5,
+        'Quantized Size (MB)': 7.3,
+        'CER': 0.02138838,
+        'WER': 0.04952738,
+    },
+}
+
+
+def available_deep_model():
+    """
+    List available stemmer deep models.
+    """
+    logger.info('trained on 90% dataset, tested on another 10% test set, dataset at https://github.com/huseinzol05/malay-dataset/tree/master/normalization/stemmer')
+    logger.info('`base` tested on non-noisy dataset, while `noisy` tested on noisy dataset.')
+
+    return describe_availability(_availability)
 
 
 @check_type
@@ -293,10 +330,8 @@ def sastrawi():
 @check_type
 def deep_model(model: str = 'base', quantized: bool = False, **kwargs):
     """
-    Load LSTM + Bahdanau Attention stemming model,
-    256 filter size, 2 layers, BPE level (YouTokenToMe 20k vocab size).
+    Load LSTM + Bahdanau Attention stemming model, BPE level (YouTokenToMe 1000 vocab size).
     This model also include lemmatization.
-    Original size 41.6MB, quantized size 10.6MB .
 
     Parameters
     ----------
@@ -315,8 +350,14 @@ def deep_model(model: str = 'base', quantized: bool = False, **kwargs):
     result: malaya.stem.DeepStemmer class
     """
 
+    model = model.lower()
+    if model not in _availability:
+        raise ValueError(
+            'model not supported, please check supported models from `malaya.stem.available_deep_model()`.'
+        )
+
     return load_lstm_yttm(
-        module='stem',
+        module='stem-v2',
         vocab=STEMMER_VOCAB,
         model_class=DeepStemmer,
         quantized=quantized,

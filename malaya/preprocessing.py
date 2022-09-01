@@ -2,7 +2,7 @@ import re
 import json
 import ftfy
 from functools import lru_cache
-from malaya.dictionary.english.words import words as _english_words
+from malaya.dictionary import is_english
 from malaya.text.rules import rules_normalizer
 from malaya.text.regex import _expressions
 from malaya.text.normalization import unpack_english_contractions
@@ -67,10 +67,7 @@ class Preprocessing:
         lowercase=True,
         fix_unidecode=True,
         expand_english_contractions=True,
-        translator=None,
-        speller=None,
         segmenter=None,
-        stemmer=None,
         demoji=None,
     ):
         self._fix_unidecode = fix_unidecode
@@ -79,14 +76,11 @@ class Preprocessing:
         self._regexes = _get_expression_dict()
         self._tokenizer = Tokenizer(lowercase=lowercase).tokenize
         self._expand_contractions = expand_english_contractions
-        self._translator = translator
-        self._speller = speller
         self._segmenter = segmenter
         if self._segmenter:
             self._expand_hashtags = True
         else:
             self._expand_hashtags = False
-        self._stemmer = stemmer
         self._demoji = demoji
 
     def _add_special_tag(self, m, tag, mode='single'):
@@ -107,9 +101,9 @@ class Preprocessing:
 
     @lru_cache(maxsize=65536)
     def _handle_hashtag_match(self, m):
-        expanded = m.group()[1:]
+        expanded = m.group()
         if self._expand_hashtags:
-            expanded = self._segmenter(expanded)
+            expanded = self._segmenter(expanded[1:])
             expanded = ' '.join(expanded.split('-'))
             expanded = ' '.join(expanded.split('_'))
 
@@ -137,14 +131,6 @@ class Preprocessing:
 
     def _handle_elongated_match(self, m):
         text = m.group()
-        text = self._regexes['normalize_elong'].sub(r'\1\1', text)
-        if self._speller and text.lower() not in _english_words:
-            if hasattr(self._speller, 'normalize_elongated'):
-                text = case_of(text)(
-                    self._speller.normalize_elongated(text.lower())
-                )
-            else:
-                text = case_of(text)(self._speller.correct(text.lower()))
         if 'elongated' in self._annotate:
             text = self._add_special_tag(text, 'elongated', mode='wrap')
         return text
@@ -205,10 +191,6 @@ class Preprocessing:
                 ),
                 text,
             )
-        if 'elongated' in self._annotate:
-            text = self._regexes['elongated'].sub(
-                lambda w: self._handle_elongated_match(w), text
-            )
         if 'repeated' in self._annotate:
             text = self._regexes['repeat_puncts'].sub(
                 lambda w: self._handle_repeated_puncts(w), text
@@ -238,28 +220,6 @@ class Preprocessing:
         logger.debug(f'before rules_normalizer: {text}')
         text = self._dict_replace(text, rules_normalizer)
         logger.debug(f'after rules_normalizer: {text}')
-        if self._translator:
-            logger.debug(f'before self._translator: {text}')
-            text = [
-                self._translator(w)
-                if all([r not in w for r in rejected])
-                else w
-                for w in text
-            ]
-            logger.debug(f'after self._translator: {text}')
-        if self._stemmer:
-            logger.debug(f'before self._stemmer: {text}')
-
-            text = [
-                self._stemmer(w)
-                if (
-                    w not in _english_words
-                    and all([r not in w for r in rejected])
-                )
-                else w
-                for w in text
-            ]
-            logger.debug(f'after self._stemmer: {text}')
 
         text = [w for w in text if len(w) > 0]
         return text
@@ -312,10 +272,7 @@ def preprocessing(
     lowercase: bool = True,
     fix_unidecode: bool = True,
     expand_english_contractions: bool = True,
-    translator: Callable = None,
     segmenter: Callable = None,
-    stemmer: Callable = None,
-    speller: Callable = None,
     demoji: Callable = None,
     **kwargs,
 ):
@@ -334,15 +291,9 @@ def preprocessing(
         fix unidecode using `ftfy.fix_text`.
     expand_english_contractions: bool, optional (default=True)
         expand english contractions.
-    translator: Callable, optional (default=None)
-        function to translate EN word to MS word.
     segmenter: Callable, optional (default=None)
         function to segmentize word.
         If provide, it will expand hashtags, #mondayblues == monday blues
-    stemmer: Callable, optional (default=None)
-        function to stem word.
-    speller: object
-        spelling correction object, need to have a method `correct` or `normalize_elongated`.
     demoji: object
         demoji object, need to have a method `demoji`.
 
@@ -360,9 +311,6 @@ def preprocessing(
             f"annotate only accept {str(_annotate)}"
         )
     validator.validate_object_methods(
-        speller, ['correct', 'normalize_elongated'], 'speller'
-    )
-    validator.validate_object_methods(
         demoji, ['demoji'], 'demoji'
     )
 
@@ -372,10 +320,7 @@ def preprocessing(
         lowercase=lowercase,
         fix_unidecode=fix_unidecode,
         expand_english_contractions=expand_english_contractions,
-        translator=translator,
-        speller=speller,
         segmenter=segmenter,
-        stemmer=stemmer,
         demoji=demoji,
     )
 

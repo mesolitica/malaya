@@ -1,4 +1,4 @@
-```
+```bash
 python3 train_mlm.py \
 --model_name_or_path bert-multilanguage-8layers \
 --train_file train.txt \

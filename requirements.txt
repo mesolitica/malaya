@@ -9,5 +9,5 @@ networkx<=2.5.1
 sentencepiece
 tqdm
 herpetologist
-malaya-boilerplate>=0.0.22rc
+malaya-boilerplate>=0.0.22
 regex
