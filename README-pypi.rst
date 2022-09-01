@@ -20,6 +20,7 @@ Development Release
 ---------------------------------
 
 Install from `master` branch,
+
 ::
 
     $ pip install git+https://github.com/huseinzol05/malaya.git
@@ -41,6 +42,7 @@ Features
 -  **Entities Recognition**, seeks to locate and classify named entities mentioned in text using finetuned Transformer-Bahasa.
 -  **Generator**, generate any texts given a context using T5-Bahasa, GPT2-Bahasa or Transformer-Bahasa.
 -  **Jawi-to-Rumi**, convert from Jawi to Rumi using Transformer.
+-  **KenLM**, provide easy interface to load Pretrained KenLM Malaya models.
 -  **Keyword Extraction**, provide RAKE, TextRank and Attention Mechanism hybrid with Transformer-Bahasa.
 -  **Knowledge Graph**, generate Knowledge Graph using T5-Bahasa or parse from Dependency Parsing models.
 -  **Language Detection**, using Fast-text and Sparse Deep learning Model to classify Malay (formal and social media), Indonesia (formal and social media), Rojak language and Manglish.
@@ -55,13 +57,14 @@ Features
 -  **Sentiment Analysis**, detect and recognize polarity of texts using finetuned Transformer-Bahasa.
 -  **Text Similarity**, provide interface for lexical similarity deep semantic similarity using finetuned Transformer-Bahasa.
 -  **Spelling Correction**, using local Malaysia NLP researches hybrid with Transformer-Bahasa to auto-correct any bahasa words and NeuSpell using T5-Bahasa.
--  **Stemmer**, using BPE LSTM Seq2Seq with attention state-of-art to do Bahasa stemming.
+-  **Stemmer**, using BPE LSTM Seq2Seq with attention state-of-art to do Bahasa stemming including local language structure.
 -  **Subjectivity Analysis**, detect and recognize self-opinion polarity of texts using finetuned Transformer-Bahasa.
 -  **Kesalahan Tatabahasa**, Fix kesalahan tatabahasa using TransformerTag-Bahasa.
 -  **Summarization**, provide Abstractive T5-Bahasa also Extractive interface using Transformer-Bahasa, skip-thought and Doc2Vec.
+-  **Tokenizer**, provide word, sentence and syllable tokenizers.
 -  **Topic Modelling**, provide Transformer-Bahasa, LDA2Vec, LDA, NMF and LSA interface for easy topic modelling with topics visualization.
 -  **Toxicity Analysis**, detect and recognize 27 different toxicity patterns of texts using finetuned Transformer-Bahasa.
--  **Transformer**, provide easy interface to load Pretrained Language models Malaya.
+-  **Transformer**, provide easy interface to load Pretrained Language Malaya models.
 -  **Translation**, provide Neural Machine Translation using Transformer for EN to MS and MS to EN.
 -  **Word2Num**, convert from cardinal or ordinal representation to numbers.
 -  **Word2Vec**, provide pretrained bahasa wikipedia and bahasa news Word2Vec, with easy interface and visualization.
