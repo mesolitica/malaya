@@ -581,7 +581,7 @@ def load(
     Parameters
     ----------
     language_model: Callable, optional (default=None)
-        If not None, must an instance of kenlm.Model.
+        If not None, must an object with `score` method.
     sentence_piece: bool, optional (default=False)
         if True, reduce possible augmentation states using sentence piece.
     stemmer: Callable, optional (default=None)
@@ -618,15 +618,8 @@ def load(
         corpus = json.load(fopen)
 
     if language_model is not None:
-        try:
-            import kenlm
-        except BaseException:
-            raise ModuleNotFoundError(
-                'kenlm not installed. Please install it by `pip install pypi-kenlm` and try again.'
-            )
-
-        if not isinstance(language_model, kenlm.Model):
-            raise ValueError('`language_model` must an instance of `kenlm.Model`.')
+        if not hasattr(language_model, 'score'):
+            raise ValueError('`language_model` must have `score` method.')
 
         return ProbabilityLM(language_model, corpus, tokenizer, stemmer, **kwargs)
     else:

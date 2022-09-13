@@ -1,3 +1,27 @@
+"""
+MIT License
+
+Copyright (c) 2020 Simone Primarosa
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+"""
+
 import torch
 from transformers import GPT2Tokenizer, GPT2LMHeadModel
 from malaya_boilerplate.torch_utils import to_tensor_cuda, to_numpy
@@ -53,6 +77,21 @@ class LM(GPT2LMHeadModel):
         return outputs
 
     def score(self, string, log: bool = True, reduce: str = 'prod'):
+        """
+        score a string.
+
+        Parameters
+        ----------
+        string: str
+        log: bool, optional (default=True)
+            return in log, else in exponent.
+        reduce: str, optional (default='prod')
+            aggregate function.
+
+        Returns
+        -------
+        result: float
+        """
         log_probs = self._tokens_log_prob_for_batch([string])[0][0]
 
         if reduce == 'prod':

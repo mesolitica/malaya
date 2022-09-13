@@ -412,15 +412,9 @@ def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
 
     Parameters
     ----------
-    model : str, optional (default='bert')
-        Model architecture supported. Allowed values:
-
-        * ``'bert'`` - Google BERT BASE parameters.
-        * ``'tiny-bert'`` - Google BERT TINY parameters.
-        * ``'xlnet'`` - Google XLNET BASE parameters.
-        * ``'alxlnet'`` - Malaya ALXLNET BASE parameters.
-
-    quantized : bool, optional (default=False)
+    model: str, optional (default='bert')
+        Check available models at `malaya.keyword_extraction.available_transformer()`.
+    quantized: bool, optional (default=False)
         if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
 

@@ -28,7 +28,6 @@ Contents:
 
    load-transformer
    load-wordvector
-   load-kenlm
 
 .. toctree::
    :maxdepth: 2
@@ -55,11 +54,19 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
+   :caption: Language Model Module
+
+   load-kenlm
+   load-mlm
+
+.. toctree::
+   :maxdepth: 2
    :caption: Spelling Correction Module
 
    load-spelling-correction-jamspell
    load-spelling-correction-probability
    load-spelling-correction-probability-lm
+   load-compare-lm-spelling-correction
    load-spelling-correction-spylls
    load-spelling-correction-symspell
    load-spelling-correction-encoder-transformer

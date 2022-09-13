@@ -176,16 +176,9 @@ def transformer(model: str = 'small-t5', quantized: bool = False, **kwargs):
 
     Parameters
     ----------
-    model : str, optional (default='small-t5')
-        Model architecture supported. Allowed values:
-
-        * ``'t5'`` - T5 BASE parameters.
-        * ``'small-t5'`` - T5 SMALL parameters.
-        * ``'tiny-t5'`` - T5 TINY parameters.
-        * ``'super-tiny-t5'`` - T5 SUPER TINY parameters.
-        * ``'3x-super-tiny-t5'`` - T5 3X SUPER TINY parameters.
-
-    quantized : bool, optional (default=False)
+    model: str, optional (default='small-t5')
+        Check available models at `malaya.tatabahasa.available_transformer()`.
+    quantized: bool, optional (default=False)
         if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
 
@@ -218,13 +211,9 @@ def transformer_tagging(model: str = 'base', quantized: bool = False, **kwargs):
 
     Parameters
     ----------
-    model : str, optional (default='base')
-        Model architecture supported. Allowed values:
-
-        * ``'small'`` - Malaya Transformer Tag SMALL parameters.
-        * ``'base'`` - Malaya Transformer Tag BASE parameters.
-
-    quantized : bool, optional (default=False)
+    model: str, optional (default='base')
+        Check available models at `malaya.tatabahasa.available_transformer_tagging()`.
+    quantized: bool, optional (default=False)
         if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
 

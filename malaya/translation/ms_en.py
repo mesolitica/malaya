@@ -139,16 +139,9 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
 
     Parameters
     ----------
-    model : str, optional (default='base')
-        Model architecture supported. Allowed values:
-
-        * ``'small'`` - Transformer SMALL parameters.
-        * ``'base'`` - Transformer BASE parameters.
-        * ``'bigbird'`` - BigBird BASE parameters.
-        * ``'small-bigbird'`` - BigBird SMALL parameters.
-        * ``'noisy-base'`` - Transformer BASE parameters trained on noisy dataset.
-
-    quantized : bool, optional (default=False)
+    model: str, optional (default='base')
+        Check available models at `malaya.translation.ms_en.available_transformer()`.
+    quantized: bool, optional (default=False)
         if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
 
@@ -194,12 +187,8 @@ def huggingface(model: str = 'mesolitica/t5-tiny-finetuned-noisy-ms-en', **kwarg
 
     Parameters
     ----------
-    model : str, optional (default='base')
-        Model architecture supported. Allowed values:
-
-        * ``'mesolitica/t5-super-tiny-finetuned-noisy-ms-en'`` - https://huggingface.co/mesolitica/t5-super-tiny-finetuned-noisy-ms-en
-        * ``'mesolitica/t5-tiny-finetuned-noisy-ms-en'`` - https://huggingface.co/mesolitica/t5-tiny-finetuned-noisy-ms-en
-        * ``'mesolitica/t5-small-finetuned-noisy-ms-en'`` - https://huggingface.co/mesolitica/t5-small-finetuned-noisy-ms-en
+    model: str, optional (default='base')
+        Check available models at `malaya.translation.ms_en.available_huggingface()`.
 
     Returns
     -------

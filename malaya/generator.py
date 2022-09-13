@@ -61,9 +61,9 @@ def ngrams(
 
     Parameters
     ----------
-    sequence : List[str]
+    sequence: List[str]
         list of tokenize words.
-    n : int
+    n: int
         ngram size
 
     Returns
@@ -99,15 +99,15 @@ def pos_entities_ngram(
 
     Parameters
     ----------
-    result_pos : List[Tuple[str, str]]
+    result_pos: List[Tuple[str, str]]
         result from POS recognition.
-    result_entities : List[Tuple[str, str]]
+    result_entities: List[Tuple[str, str]]
         result of Entities recognition.
-    ngram : Tuple[int, int]
+    ngram: Tuple[int, int]
         ngram sizes.
-    accept_pos : List[str]
+    accept_pos: List[str]
         accepted POS elements.
-    accept_entities : List[str]
+    accept_entities: List[str]
         accept entities elements.
 
     Returns
@@ -146,7 +146,7 @@ def sentence_ngram(sentence: str, ngram: Tuple[int, int] = (1, 3)):
     Parameters
     ----------
     sentence: str
-    ngram : tuple
+    ngram: tuple
         ngram sizes.
 
     Returns
@@ -183,9 +183,9 @@ def babble(
     string: str
     model: object
         transformer interface object. Right now only supported BERT, ALBERT and ELECTRA.
-    generate_length : int, optional (default=256)
+    generate_length: int, optional (default=256)
         length of sentence to generate.
-    leed_out_len : int, optional (default=1)
+    leed_out_len: int, optional (default=1)
         length of extra masks for each iteration.
     temperature: float, optional (default=1.0)
         logits * temperature.
@@ -253,13 +253,9 @@ def gpt2(model: str = '345M', quantized: bool = False, **kwargs):
 
     Parameters
     ----------
-    model : str, optional (default='345M')
-        Model architecture supported. Allowed values:
-
-        * ``'117M'`` - GPT2 117M parameters.
-        * ``'345M'`` - GPT2 345M parameters.
-
-    quantized : bool, optional (default=False)
+    model: str, optional (default='345M')
+        Check available models at `malaya.generator.available_gpt2()`.
+    quantized: bool, optional (default=False)
         if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
 
@@ -297,13 +293,9 @@ def isi_penting(model: str = 't5', quantized: bool = False, **kwargs):
 
     Parameters
     ----------
-    model : str, optional (default='base')
-        Model architecture supported. Allowed values:
-
-        * ``'t5'`` - T5 BASE parameters.
-        * ``'small-t5'`` - T5 SMALL parameters.
-
-    quantized : bool, optional (default=False)
+    model: str, optional (default='base')
+        Check available models at `malaya.generator.available_isi_penting()`.
+    quantized: bool, optional (default=False)
         if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
 

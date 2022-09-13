@@ -66,7 +66,7 @@ def load(model: str = 'libreoffice-pejam', **kwargs):
 
     Parameters
     ----------
-    model : str, optional (default='libreoffice-pejam')
+    model: str, optional (default='libreoffice-pejam')
         Model spelling correction supported. Allowed values:
 
         * ``'libreoffice-pejam'`` - from LibreOffice pEJAm, https://extensions.libreoffice.org/en/extensions/show/3868

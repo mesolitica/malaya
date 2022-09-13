@@ -56,14 +56,8 @@ def load(model: str = 'wikipedia', **kwargs):
 
     Parameters
     ----------
-    model : str, optional (default='wikipedia')
-        Model architecture supported. Allowed values:
-
-        * ``'news'`` - pretrained on cleaned Malay news size 256.
-        * ``'wikipedia'`` - pretrained on Malay wikipedia word2vec size 256.
-        * ``'socialmedia'`` - pretrained on cleaned Malay twitter and Malay instagram size 256.
-        * ``'combine'`` - pretrained on cleaned Malay news + Malay social media + Malay wikipedia size 256.
-
+    model: str, optional (default='wikipedia')
+        Check available models at `malaya.wordvector.available_wordvector()`.
     Returns
     -------
     vocabulary: indices dictionary for `vector`.

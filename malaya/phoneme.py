@@ -17,7 +17,7 @@ def deep_model_dbp(quantized: bool = False, **kwargs):
 
     Parameters
     ----------
-    quantized : bool, optional (default=False)
+    quantized: bool, optional (default=False)
         if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
 
@@ -45,7 +45,7 @@ def deep_model_ipa(quantized: bool = False, **kwargs):
 
     Parameters
     ----------
-    quantized : bool, optional (default=False)
+    quantized: bool, optional (default=False)
         if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
 

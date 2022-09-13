@@ -335,13 +335,9 @@ def deep_model(model: str = 'base', quantized: bool = False, **kwargs):
 
     Parameters
     ----------
-    model : str, optional (default='base')
-        Model architecture supported. Allowed values:
-
-        * ``'base'`` - trained on default dataset.
-        * ``'noisy'`` - trained on default and augmentation dataset.
-
-    quantized : bool, optional (default=False)
+    model: str, optional (default='base')
+        Check available models at `malaya.stem.available_deep_model()`.
+    quantized: bool, optional (default=False)
         if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
 

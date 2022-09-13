@@ -197,14 +197,9 @@ def transformer(model: str = 'small-t5', quantized: bool = False, **kwargs):
 
     Parameters
     ----------
-    model : str, optional (default='small-t5')
-        Model architecture supported. Allowed values:
-
-        * ``'t5'`` - T5 BASE parameters.
-        * ``'small-t5'`` - T5 SMALL parameters.
-        * ``'tiny-t5'`` - T5 TINY parameters.
-
-    quantized : bool, optional (default=False)
+    model: str, optional (default='small-t5')
+        Check available models at `malaya.knowledge_graph.available_transformer()`.
+    quantized: bool, optional (default=False)
         if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
 

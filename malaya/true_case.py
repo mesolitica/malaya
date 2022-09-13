@@ -64,17 +64,9 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
 
     Parameters
     ----------
-    model : str, optional (default='base')
-        Model architecture supported. Allowed values:
-
-        * ``'small'`` - Transformer SMALL parameters.
-        * ``'base'`` - Transformer BASE parameters.
-        * ``'super-tiny-t5'`` - T5 SUPER TINY parameters.
-        * ``'super-super-tiny-t5'`` - T5 SUPER SUPER TINY parameters.
-        * ``'3x-super-tiny-t5'`` - T5 3X SUPER TINY parameters.
-        * ``'3x-super-tiny-t5-4k'`` - T5 3X SUPER TINY 4k vocab size parameters.
-
-    quantized : bool, optional (default=False)
+    model: str, optional (default='base')
+        Check available models at `malaya.true_case.available_transformer()`.
+    quantized: bool, optional (default=False)
         if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
 

@@ -86,7 +86,7 @@ def transformer(model: str = 'small-t5', quantized: bool = False, **kwargs):
 
     Parameters
     ----------
-    model : str, optional (default='small-t5')
+    model: str, optional (default='small-t5')
         Model architecture supported. Allowed values:
 
         * ``'t5'`` - T5 BASE parameters.
@@ -97,7 +97,7 @@ def transformer(model: str = 'small-t5', quantized: bool = False, **kwargs):
         * ``'bigbird'`` - BigBird + Pegasus BASE parameters.
         * ``'small-bigbird'`` - BigBird + Pegasus SMALL parameters.
 
-    quantized : bool, optional (default=False)
+    quantized: bool, optional (default=False)
         if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
 

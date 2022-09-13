@@ -269,19 +269,9 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
 
     Parameters
     ----------
-    model : str, optional (default='bert')
-        Model architecture supported. Allowed values:
-
-        * ``'bert'`` - Google BERT BASE parameters.
-        * ``'tiny-bert'`` - Google BERT TINY parameters.
-        * ``'albert'`` - Google ALBERT BASE parameters.
-        * ``'tiny-albert'`` - Google ALBERT TINY parameters.
-        * ``'xlnet'`` - Google XLNET BASE parameters.
-        * ``'alxlnet'`` - Malaya ALXLNET BASE parameters.
-        * ``'fastformer'`` - FastFormer BASE parameters.
-        * ``'tiny-fastformer'`` - FastFormer TINY parameters.
-
-    quantized : bool, optional (default=False)
+    model: str, optional (default='bert')
+        Check available models at `malaya.entity.available_transformer()`.
+    quantized: bool, optional (default=False)
         if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
 
@@ -314,19 +304,9 @@ def transformer_ontonotes5(
 
     Parameters
     ----------
-    model : str, optional (default='bert')
-        Model architecture supported. Allowed values:
-
-        * ``'bert'`` - Google BERT BASE parameters.
-        * ``'tiny-bert'`` - Google BERT TINY parameters.
-        * ``'albert'`` - Google ALBERT BASE parameters.
-        * ``'tiny-albert'`` - Google ALBERT TINY parameters.
-        * ``'xlnet'`` - Google XLNET BASE parameters.
-        * ``'alxlnet'`` - Malaya ALXLNET BASE parameters.
-        * ``'fastformer'`` - FastFormer BASE parameters.
-        * ``'tiny-fastformer'`` - FastFormer TINY parameters.
-
-    quantized : bool, optional (default=False)
+    model: str, optional (default='bert')
+        Check available models at `malaya.entity.available_transformer_ontonotes5()`.
+    quantized: bool, optional (default=False)
         if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
 
@@ -359,7 +339,7 @@ def general_entity(model=None):
 
     Parameters
     ----------
-    model : object
+    model: object
         model must have `predict` method.
         Make sure the `predict` method returned [(string, label), (string, label)].
 

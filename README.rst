@@ -65,6 +65,7 @@ Features
 -  **Keyword Extraction**, provide RAKE, TextRank and Attention Mechanism hybrid with Transformer-Bahasa.
 -  **Knowledge Graph**, generate Knowledge Graph using T5-Bahasa or parse from Dependency Parsing models.
 -  **Language Detection**, using Fast-text and Sparse Deep learning Model to classify Malay (formal and social media), Indonesia (formal and social media), Rojak language and Manglish.
+-  **Language Model**, using KenLM, Masked language model using BERT, ALBERT and RoBERTa, and GPT2 to do text scoring.
 -  **Normalizer**, using local Malaysia NLP researches hybrid with Transformer-Bahasa to normalize any bahasa texts.
 -  **Num2Word**, convert from numbers to cardinal or ordinal representation.
 -  **Paraphrase**, provide Abstractive Paraphrase using T5-Bahasa and Transformer-Bahasa.
@@ -110,6 +111,7 @@ Malaya also released Bahasa pretrained models, simply check at `Malaya/pretraine
 - **XLNET**, Generalized Autoregressive Pretraining for Language Understanding, https://arxiv.org/abs/1906.08237
 - **FNet**, FNet: Mixing Tokens with Fourier Transforms, https://arxiv.org/abs/2105.03824
 - **Fastformer**, Fastformer: Additive Attention Can Be All You Need, https://arxiv.org/abs/2108.09084
+- **MLM Scoring**, Masked Language Model Scoring, https://arxiv.org/abs/1910.14659
 
 References
 -----------

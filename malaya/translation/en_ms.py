@@ -130,8 +130,7 @@ def available_huggingface():
     logger.info('tested on FLORES200 EN-MS (eng_Latn-zsm_Latn) pair `dev` set, https://github.com/facebookresearch/flores/tree/main/flores200')
     logger.warning(
         '77k EN-MS test set generated from teacher semisupervised model, the models might generate better results compared to '
-        'to the teacher semisupervised model, thus lower BLEU score.'
-    )
+        'to the teacher semisupervised model, thus lower BLEU score.')
     return describe_availability(_huggingface_availability)
 
 
@@ -142,16 +141,9 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
 
     Parameters
     ----------
-    model : str, optional (default='base')
-        Model architecture supported. Allowed values:
-
-        * ``'small'`` - Transformer SMALL parameters.
-        * ``'base'`` - Transformer BASE parameters.
-        * ``'bigbird'`` - BigBird BASE parameters.
-        * ``'small-bigbird'`` - BigBird SMALL parameters.
-        * ``'noisy-base'`` - Transformer BASE parameters trained on noisy dataset.
-
-    quantized : bool, optional (default=False)
+    model: str, optional (default='base')
+        Check available models at `malaya.translation.en_ms.available_transformer()`.
+    quantized: bool, optional (default=False)
         if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
 
@@ -239,12 +231,8 @@ def huggingface(model: str = 'mesolitica/t5-tiny-finetuned-noisy-en-ms', **kwarg
 
     Parameters
     ----------
-    model : str, optional (default='base')
-        Model architecture supported. Allowed values:
-
-        * ``'mesolitica/t5-super-tiny-finetuned-noisy-en-ms'`` - https://huggingface.co/mesolitica/t5-super-tiny-finetuned-noisy-en-ms
-        * ``'mesolitica/t5-tiny-finetuned-noisy-en-ms'`` - https://huggingface.co/mesolitica/t5-tiny-finetuned-noisy-en-ms
-        * ``'mesolitica/t5-small-finetuned-noisy-en-ms'`` - https://huggingface.co/mesolitica/t5-small-finetuned-noisy-en-ms
+    model: str, optional (default='base')
+        Check available models at `malaya.translation.en_ms.available_huggingface()`.
 
     Returns
     -------

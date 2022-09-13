@@ -51,19 +51,9 @@ def load(model: str = 'electra', pool_mode: str = 'last', **kwargs):
 
     Parameters
     ----------
-    model : str, optional (default='bert')
-        Model architecture supported. Allowed values:
-
-        * ``'bert'`` - Google BERT BASE parameters.
-        * ``'tiny-bert'`` - Google BERT TINY parameters.
-        * ``'albert'`` - Google ALBERT BASE parameters.
-        * ``'tiny-albert'`` - Google ALBERT TINY parameters.
-        * ``'xlnet'`` - Google XLNET BASE parameters.
-        * ``'alxlnet'`` - Malaya ALXLNET BASE parameters.
-        * ``'electra'`` - Google ELECTRA BASE parameters.
-        * ``'small-electra'`` - Google ELECTRA SMALL parameters.
-
-    pool_mode : str, optional (default='last')
+    model: str, optional (default='bert')
+        Check available models at `malaya.transformer.available_transformer()`.
+    pool_mode: str, optional (default='last')
         Model logits architecture supported. Only usable if model in ['xlnet', 'alxlnet']. Allowed values:
 
         * ``'last'`` - last of the sequence.

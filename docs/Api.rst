@@ -99,6 +99,12 @@ malaya.language_detection
 .. automodule:: malaya.language_detection
     :members:
 
+malaya.language_model
+-------------------------
+
+.. automodule:: malaya.language_model
+    :members:
+
 malaya.lexicon
 -------------------------
 
@@ -537,6 +543,18 @@ malaya.model.xlnet
     :members:
 
 .. autoclass:: malaya.model.xlnet.ZeroshotXLNET()
+    :members:
+
+malaya.torch_model.gpt2_lm
+----------------------------------
+
+.. autoclass:: malaya.torch_model.gpt2_lm.LM()
+    :members:
+
+malaya.torch_model.mask_lm
+----------------------------------
+
+.. autoclass:: malaya.torch_model.mask_lm.MLMScorer()
     :members:
 
 malaya.transformers.albert

@@ -210,7 +210,7 @@ def available_transformer(version: str = 'v2'):
 
     Parameters
     ----------
-    version : str, optional (default='v2')
+    version: str, optional (default='v2')
         Version supported. Allowed values:
 
         * ``'v1'`` - version 1, maintain for knowledge graph.
@@ -229,23 +229,15 @@ def transformer(version: str = 'v2', model: str = 'xlnet', quantized: bool = Fal
 
     Parameters
     ----------
-    version : str, optional (default='v2')
+    version: str, optional (default='v2')
         Version supported. Allowed values:
 
         * ``'v1'`` - version 1, maintain for knowledge graph.
         * ``'v2'`` - Trained on bigger dataset, better version.
 
-    model : str, optional (default='xlnet')
-        Model architecture supported. Allowed values:
-
-        * ``'bert'`` - Google BERT BASE parameters.
-        * ``'tiny-bert'`` - Google BERT TINY parameters.
-        * ``'albert'`` - Google ALBERT BASE parameters.
-        * ``'tiny-albert'`` - Google ALBERT TINY parameters.
-        * ``'xlnet'`` - Google XLNET BASE parameters.
-        * ``'alxlnet'`` - Malaya ALXLNET BASE parameters.
-
-    quantized : bool, optional (default=False)
+    model: str, optional (default='xlnet')
+        Check available models at `malaya.dependency.available_transformer(version='{version}')`.
+    quantized: bool, optional (default=False)
         if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
 

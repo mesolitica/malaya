@@ -52,7 +52,7 @@ def cluster_words(list_words: List[str], lowercase: bool = False):
 
     Parameters
     ----------
-    list_words : List[str]
+    list_words: List[str]
     lowercase: bool, optional (default=True)
         if True, will group using lowercase but maintain the original form.
 

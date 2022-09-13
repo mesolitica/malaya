@@ -113,7 +113,7 @@ def multinomial(**kwargs):
 
     Returns
     -------
-    result : malaya.model.ml.MulticlassBayes class
+    result: malaya.model.ml.MulticlassBayes class
     """
     return classification.multinomial(
         path=PATH_EMOTION,
@@ -131,19 +131,9 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
 
     Parameters
     ----------
-    model : str, optional (default='bert')
-        Model architecture supported. Allowed values:
-
-        * ``'bert'`` - Google BERT BASE parameters.
-        * ``'tiny-bert'`` - Google BERT TINY parameters.
-        * ``'albert'`` - Google ALBERT BASE parameters.
-        * ``'tiny-albert'`` - Google ALBERT TINY parameters.
-        * ``'xlnet'`` - Google XLNET BASE parameters.
-        * ``'alxlnet'`` - Malaya ALXLNET BASE parameters.
-        * ``'fastformer'`` - FastFormer BASE parameters.
-        * ``'tiny-fastformer'`` - FastFormer TINY parameters.
-
-    quantized : bool, optional (default=False)
+    model: str, optional (default='bert')
+        Check available models at `malaya.emotion.available_transformer()`.
+    quantized: bool, optional (default=False)
         if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
 

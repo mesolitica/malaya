@@ -106,19 +106,9 @@ def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
 
     Parameters
     ----------
-    model : str, optional (default='bert')
-        Model architecture supported. Allowed values:
-
-        * ``'bert'`` - Google BERT BASE parameters.
-        * ``'tiny-bert'`` - Google BERT TINY parameters.
-        * ``'albert'`` - Google ALBERT BASE parameters.
-        * ``'tiny-albert'`` - Google ALBERT TINY parameters.
-        * ``'xlnet'`` - Google XLNET BASE parameters.
-        * ``'alxlnet'`` - Malaya ALXLNET BASE parameters.
-        * ``'fastformer'`` - FastFormer BASE parameters.
-        * ``'tiny-fastformer'`` - FastFormer TINY parameters.
-
-    quantized : bool, optional (default=False)
+    model: str, optional (default='bert')
+        Check available models at `malaya.subjectivity.available_transformer()`.
+    quantized: bool, optional (default=False)
         if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
 
