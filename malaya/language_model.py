@@ -58,11 +58,8 @@ _kenlm_availability = {
 }
 
 _gpt2_availability = {
-    'mesolitica/gpt2-base-bahasa-standard-cased': {
-        'Size (MB)': 443,
-    },
-    'mesolitica/gpt2-small-bahasa-standard-cased': {
-        'Size (MB)': 443,
+    'mesolitica/gpt2-117m-bahasa-cased': {
+        'Size (MB)': 510,
     },
 }
 
@@ -152,13 +149,13 @@ def kenlm(model: str = 'dump-combined', **kwargs):
 
 
 @check_type
-def gpt2(model: str = 'mesolitica/gpt2-small-bahasa-standard-cased', force_check: bool = True, **kwargs):
+def gpt2(model: str = 'mesolitica/gpt2-117m-bahasa-cased', force_check: bool = True, **kwargs):
     """
     Load GPT2 language model.
 
     Parameters
     ----------
-    model: str, optional (default='mesolitica/gpt2-small-bahasa-standard-cased')
+    model: str, optional (default='mesolitica/gpt2-117m-bahasa-cased')
         Check available models at `malaya.language_model.available_gpt2()`.
     force_check: bool, optional (default=True)
         Force check model one of malaya model.

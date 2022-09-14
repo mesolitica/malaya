@@ -58,6 +58,7 @@ Contents:
 
    load-kenlm
    load-mlm
+   load-gpt2-lm
 
 .. toctree::
    :maxdepth: 2

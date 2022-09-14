@@ -72,7 +72,7 @@ Use [117m-hparams.json](117m-hparams.json) to load parameter config.
 
 Use [345m-hparams.json](345m-hparams.json) to load parameter config.
 
-1. **117M**, last update 23rd September 2021, [117m-bahasa.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/117m-bahasa.tar.gz)
+1. **117M**, last update 23rd September 2021, [117m-bahasa.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/gpt2-117m.tar.gz)
 
   - Vocab size 57k.
   - Trained on raw wikipedia, raw parliament, raw news, raw wattpad, raw academia, translated the pile and raw common-crawl, ~2B words.
@@ -80,7 +80,7 @@ Use [345m-hparams.json](345m-hparams.json) to load parameter config.
 
 Use [117m-hparams.json](117m-hparams.json) to load parameter config.
 
-2. **345M**, last update 23rd September 2021, [345m-bahasa.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/345m-bahasa.tar.gz)
+2. **345M**, last update 23rd September 2021, [345m-bahasa.tar.gz](https://f000.backblazeb2.com/file/malaya-model/pretrained/gpt2-345m.tar.gz
 
   - Vocab size 57k.
   - Trained on raw wikipedia, raw parliament, raw news, raw wattpad, raw academia, translated the pile and raw common-crawl, ~2B words.
