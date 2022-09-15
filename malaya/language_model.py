@@ -59,7 +59,7 @@ _kenlm_availability = {
 
 _gpt2_availability = {
     'mesolitica/gpt2-117m-bahasa-cased': {
-        'Size (MB)': 510,
+        'Size (MB)': 454,
     },
 }
 

@@ -11,7 +11,7 @@ Train GPT2 for text scoring and neural beam scoring.
 ```bash
 WANDB_DISABLED=true \
 python3 run_clm.py \
---model_name_or_path mesolitica/gpt2-117m-bahasa-cased \
+--model_name_or_path malay-cased-gpt2 \
 --train_file train-v2.txt \
 --validation_file sample-wiki.txt \
 --per_device_train_batch_size 8 \
@@ -19,11 +19,11 @@ python3 run_clm.py \
 --num_train_epochs 10 \
 --logging_steps 100 \
 --eval_steps 1000 \
---save_steps 10000 \
+--save_steps 1000 \
 --evaluation_strategy steps \
 --do_train \
 --do_eval \
---output_dir gpt2-117m-bahasa-cased-clm \
+--output_dir malay-cased-gpt2-clm \
 --save_total_limit 5 \
 --ignore_data_skip \
 --block_size 1024 \
