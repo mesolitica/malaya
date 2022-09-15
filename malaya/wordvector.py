@@ -10,7 +10,9 @@ from malaya.function import get_device, generate_session
 from malaya.text.calculator import Calculator
 from herpetologist import check_type
 from typing import List, Tuple
+import logging
 
+logger = logging.getLogger(__name__)
 
 _wordvector_availability = {
     'news': {
@@ -86,6 +88,11 @@ class WordVector:
         embed_matrix: numpy array
         dictionary: dictionary
         """
+        if tf.executing_eagerly():
+            logger.warning(
+                'Load pretrained wordvector into `malaya.wordvector.WordVector` class will disable eager execution.'
+            )
+            tf.compat.v1.disable_eager_execution()
 
         self._embed_matrix = embed_matrix
         self._dictionary = dictionary

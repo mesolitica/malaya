@@ -1,6 +1,8 @@
 import tensorflow as tf
-import logging
 from herpetologist import check_type
+import logging
+
+logger = logging.getLogger(__name__)
 
 _transformer_availability = {
     'bert': {'Size (MB)': 425.6, 'Description': 'Google BERT BASE parameters'},
@@ -80,7 +82,7 @@ def load(model: str = 'electra', pool_mode: str = 'last', **kwargs):
         )
 
     if tf.executing_eagerly():
-        logging.warning(
+        logger.warning(
             'Load pretrained transformer model will disable eager execution.'
         )
         tf.compat.v1.disable_eager_execution()

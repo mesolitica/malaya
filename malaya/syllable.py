@@ -1,5 +1,6 @@
 import re
 import logging
+from herpetologist import check_type
 
 logger = logging.getLogger(__name__)
 
@@ -139,3 +140,33 @@ class Tokenizer:
         """
         letters, arrange = self.split_letters(string)
         return self.split_syllables_from_letters(letters, arrange)
+
+
+def rules(**kwargs):
+    """
+    Load rules based syllable tokenizer.
+
+    Returns
+    -------
+    result: malaya.syllable.Tokenizer class
+    """
+    return Tokenizer()
+
+
+@check_type
+def deep_model(model: str = 'base', quantized: bool = False, **kwargs):
+    """
+    Load LSTM + Bahdanau Attention syllable tokenizer model, BPE level (YouTokenToMe 1000 vocab size).
+
+    Parameters
+    ----------
+    model: str, optional (default='base')
+        Check available models at `malaya.syllable.available_deep_model()`.
+    quantized: bool, optional (default=False)
+        if True, will load 8-bit quantized model.
+        Quantized model not necessary faster, totally depends on the machine.
+
+    Returns
+    -------
+    result: malaya.syllable.DeepTokenizer class
+    """

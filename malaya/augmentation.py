@@ -2,12 +2,14 @@ import random
 import json
 import inspect
 import numpy as np
+import re
 import string as string_function
 from collections import defaultdict
 from malaya.function import check_file
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from malaya.text.tatabahasa import consonants, vowels
-from malaya.text.function import augmentation_textcleaning, case_of
+from malaya.text.function import augmentation_textcleaning, case_of, is_emoji
+from malaya.text.regex import _expressions, _money, _date
 from malaya.path import PATH_AUGMENTATION, S3_PATH_AUGMENTATION
 from herpetologist import check_type
 from typing import Callable, Dict, List
@@ -51,7 +53,6 @@ def synonym(
     string: str,
     threshold: float = 0.5,
     top_n=5,
-    cleaning=augmentation_textcleaning,
     **kwargs
 ):
     """
@@ -60,19 +61,16 @@ def synonym(
     Parameters
     ----------
     string: str
+        this string input assumed been properly tokenized and cleaned.
     threshold: float, optional (default=0.5)
         random selection for a word.
     top_n: int, (default=5)
         number of nearest neighbors returned. Length of returned result should as top_n.
-    cleaning: function, (default=malaya.text.function.augmentation_textcleaning)
-        function to clean text.
 
     Returns
     -------
     result: List[str]
     """
-    if not isinstance(cleaning, Callable) and cleaning is not None:
-        raise ValueError('cleaning must be a callable type or None')
 
     global _synonym_dict
 
@@ -99,8 +97,7 @@ def synonym(
         _synonym_dict = synonyms
 
     original_string = string
-    if cleaning:
-        string = cleaning(string).split()
+    string = string.split()
 
     augmented = []
     for i in range(top_n):
@@ -118,7 +115,6 @@ def wordvector(
     threshold: float = 0.5,
     top_n: int = 5,
     soft: bool = False,
-    cleaning=augmentation_textcleaning,
 ):
     """
     augmenting a string using wordvector.
@@ -126,6 +122,7 @@ def wordvector(
     Parameters
     ----------
     string: str
+        this string input assumed been properly tokenized and cleaned.
     wordvector: object
         wordvector interface object.
     threshold: float, optional (default=0.5)
@@ -135,33 +132,40 @@ def wordvector(
         if False, it will throw an exception if a word not in the dictionary.
     top_n: int, (default=5)
         number of nearest neighbors returned. Length of returned result should as top_n.
-    cleaning: function, (default=malaya.text.function.augmentation_textcleaning)
-        function to clean text.
 
     Returns
     -------
     result: List[str]
     """
-
-    if not isinstance(cleaning, Callable) and cleaning is not None:
-        raise ValueError('cleaning must be a callable type or None')
     if not hasattr(wordvector, 'batch_n_closest'):
         raise ValueError('wordvector must have `batch_n_closest` method')
     if not hasattr(wordvector, '_dictionary'):
         raise ValueError('wordvector must have `_dictionary` attribute')
 
-    from malaya.preprocessing import _tokenizer
-
     original_string = string
-    if cleaning:
-        string = cleaning(string)
-    string = _tokenizer(string)
+    string = string.split()
     original_string = string[:]
     selected = []
     for no, w in enumerate(string):
+        word = w
         if w in string_function.punctuation:
             continue
         if w[0].isupper():
+            continue
+        if (
+            re.findall(_money, word.lower())
+            or re.findall(_date, word.lower())
+            or re.findall(_expressions['email'], word.lower())
+            or re.findall(_expressions['url'], word.lower())
+            or re.findall(_expressions['hashtag'], word.lower())
+            or re.findall(_expressions['phone'], word.lower())
+            or re.findall(_expressions['money'], word.lower())
+            or re.findall(_expressions['date'], word.lower())
+            or re.findall(_expressions['time'], word.lower())
+            or re.findall(_expressions['ic'], word.lower())
+            or re.findall(_expressions['user'], word.lower())
+            or is_emoji(word.lower())
+        ):
             continue
         if random.random() > threshold:
             selected.append((no, w))
@@ -202,7 +206,6 @@ def transformer(
     top_k: int = 100,
     temperature: float = 1.0,
     top_n: int = 5,
-    cleaning=None,
 ):
     """
     augmenting a string using transformer + nucleus sampling / top-k sampling.
@@ -210,6 +213,7 @@ def transformer(
     Parameters
     ----------
     string: str
+        this string input assumed been properly tokenized and cleaned.
     model: object
         transformer interface object. Right now only supported BERT, ALBERT and ELECTRA.
     threshold: float, optional (default=0.5)
@@ -223,15 +227,11 @@ def transformer(
         logits * temperature.
     top_n: int, (default=5)
         number of nearest neighbors returned. Length of returned result should as top_n.
-    cleaning: function, (default=None)
-        function to clean text.
 
     Returns
     -------
     result: List[str]
     """
-    if not isinstance(cleaning, Callable) and cleaning is not None:
-        raise ValueError('cleaning must be a callable type or None')
     if not hasattr(model, 'samples'):
         raise ValueError('model must have `samples` attribute')
     if not (threshold > 0 and threshold < 1):
@@ -247,19 +247,31 @@ def transformer(
     if top_n > top_k:
         raise ValueError('top_k must be bigger than top_n')
 
-    from malaya.preprocessing import _tokenizer
-
     original_string = string
-    if cleaning:
-        string = cleaning(string)
-    string = _tokenizer(string)
+    string = string.split()
     results = []
     for token_idx, token in enumerate(string):
+        word = token
         if token in string_function.punctuation:
             continue
         if token[0].isupper():
             continue
         if token.isdigit():
+            continue
+        if (
+            re.findall(_money, word.lower())
+            or re.findall(_date, word.lower())
+            or re.findall(_expressions['email'], word.lower())
+            or re.findall(_expressions['url'], word.lower())
+            or re.findall(_expressions['hashtag'], word.lower())
+            or re.findall(_expressions['phone'], word.lower())
+            or re.findall(_expressions['money'], word.lower())
+            or re.findall(_expressions['date'], word.lower())
+            or re.findall(_expressions['time'], word.lower())
+            or re.findall(_expressions['ic'], word.lower())
+            or re.findall(_expressions['user'], word.lower())
+            or is_emoji(word.lower())
+        ):
             continue
         if random.random() > threshold:
             results.append(token_idx)
