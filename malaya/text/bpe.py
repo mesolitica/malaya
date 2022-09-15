@@ -88,7 +88,7 @@ class SentencePieceTokenizer:
         with open(vocab_file) as fopen:
             v = fopen.read().split('\n')[:-1]
         v = [i.split('\t') for i in v]
-        self.vocab = {i[0]: i[1] for i in v}
+        self.vocab = {i[0]: no for no, i in enumerate(v)}
 
     def tokenize(self, string):
         return encode_sentencepiece(
