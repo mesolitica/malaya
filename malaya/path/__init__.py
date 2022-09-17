@@ -28,6 +28,7 @@ TRUE_CASE_VOCAB = 'bpe/true-case.yttm'
 SEGMENTATION_VOCAB = 'bpe/segmentation.yttm'
 PEGASUS_BPE_MODEL = 'bpe/pegasus.wordpiece'
 RUMI_JAWI_VOCAB = 'bpe/rumi-jawi.yttm'
+SYLLABLE_VOCAB = 'bpe/syllable.yttm'
 
 LANGUAGE_DETECTION_BOW = 'bpe/bow-language-detection.pkl'
 LANGUAGE_DETECTION_VOCAB = 'bpe/language-detection.yttm'

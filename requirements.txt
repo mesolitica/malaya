@@ -9,6 +9,6 @@ networkx<=2.5.1
 sentencepiece
 tqdm
 herpetologist
-malaya-boilerplate>=0.0.23rc1
+malaya-boilerplate>=0.0.23
 regex
 transformers

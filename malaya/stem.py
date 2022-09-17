@@ -2,12 +2,6 @@ import re
 from unidecode import unidecode
 from malaya.text.tatabahasa import permulaan, hujung
 from malaya.text.rules import rules_normalizer
-from malaya.function import (
-    check_file,
-    load_graph,
-    generate_session,
-    nodes_session,
-)
 from malaya.dictionary import is_english
 from malaya.text.function import PUNCTUATION, case_of, is_emoji
 from malaya.text.regex import _expressions, _money, _date

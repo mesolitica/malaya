@@ -264,6 +264,9 @@ malaya.syllable
 .. autoclass:: malaya.syllable.Tokenizer()
     :members:
 
+.. autoclass:: malaya.syllable.DeepSyllable()
+    :members:
+
 malaya.tatabahasa
 --------------------
 
