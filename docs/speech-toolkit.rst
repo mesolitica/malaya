@@ -5,7 +5,7 @@ Speech Toolkit
 
     <p align="center">
         <a href="#readme">
-            <img alt="logo" width="40%" src="https://f000.backblazeb2.com/file/huseinhouse-public/malaya-speech.png">
+            <img alt="logo" width="40%" src="https://i.imgur.com/ImYNHnm.png">
         </a>
     </p>
     <p align="center">
@@ -14,33 +14,41 @@ Speech Toolkit
         <a href="https://github.com/huseinzol05/Malaya-Speech/blob/master/LICENSE"><img alt="MIT License" src="https://img.shields.io/github/license/huseinzol05/malaya-speech.svg?color=blue"></a>
         <a href="https://pepy.tech/project/malaya-speech"><img alt="total stats" src="https://static.pepy.tech/badge/malaya-speech"></a>
         <a href="https://pepy.tech/project/malaya-speech"><img alt="download stats / month" src="https://static.pepy.tech/badge/malaya-speech/month"></a>
+        <a href="https://discord.gg/aNzbnRqt3A"><img alt="discord" src="https://img.shields.io/badge/discord%20server-malaya-rgb(118,138,212).svg"></a>
     </p>
 
 =========
 
-**Malaya-Speech** is a Speech-Toolkit library for bahasa Malaysia, powered by Deep Learning Tensorflow. We maintain it at separate repository, https://github.com/huseinzol05/malaya-speech
+**Malaya-Speech** is a Speech-Toolkit library for bahasa Malaysia, powered by Tensorflow and PyTorch.
 
 Documentation
 --------------
 
-Proper documentation is available at https://malaya-speech.readthedocs.io/
+Stable released documentation is available at https://malaya-speech.readthedocs.io/en/stable/
 
 Installing from the PyPI
 ----------------------------------
 
-CPU version
 ::
 
     $ pip install malaya-speech
 
-GPU version
+It will automatically install all dependencies except for Tensorflow and PyTorch. So you can choose your own Tensorflow CPU / GPU version and PyTorch CPU / GPU version.
+
+Only **Python >= 3.6.0**, **Tensorflow >= 1.15.0**, and **PyTorch >= 1.10** are supported.
+
+Development Release
+---------------------------------
+
+Install from `master` branch,
 ::
 
-    $ pip install malaya-speech[gpu]
+    $ pip install git+https://github.com/huseinzol05/malaya-speech.git
 
-Only **Python 3.6.0 and above** and **Tensorflow 1.15.0 and above** are supported.
 
-We recommend to use **virtualenv** for development. All examples tested on Tensorflow version 1.15.4, 1.15.5, 2.4.1 and 2.5.
+We recommend to use **virtualenv** for development. 
+
+While development released documentation is available at https://malaya-speech.readthedocs.io/en/latest/
 
 Features
 --------
@@ -51,6 +59,7 @@ Features
 -  **Force Alignment**, generate a time-aligned transcription of an audio file using RNNT and CTC.
 -  **Gender Detection**, detect genders in speech using Finetuned Speaker Vector.
 -  **Language Detection**, detect hyperlocal languages in speech using Finetuned Speaker Vector.
+-  **Language Model**, using KenLM, Masked language model using BERT and RoBERTa, and GPT2 to do ASR decoder scoring.
 -  **Multispeaker Separation**, Multispeaker separation using FastSep on 8k Wav.
 -  **Noise Reduction**, reduce multilevel noises using STFT UNET.
 -  **Speaker Change**, detect changing speakers using Finetuned Speaker Vector.
@@ -59,7 +68,7 @@ Features
 -  **Speech Enhancement**, enhance voice activities using Waveform UNET.
 -  **SpeechSplit Conversion**, detailed speaking style conversion by disentangling speech into content, timbre, rhythm and pitch using PyWorld and PySPTK.
 -  **Speech-to-Text**, End-to-End Speech to Text for Malay, Mixed (Malay, Singlish and Mandarin) and Singlish using RNNT, Wav2Vec2, HuBERT and BEST-RQ CTC.
--  **Super Resolution**, Super Resolution 4x for Waveform.
+-  **Super Resolution**, Super Resolution 4x for Waveform using ResNet UNET and Neural Vocoder.
 -  **Text-to-Speech**, Text to Speech for Malay and Singlish using Tacotron2, FastSpeech2, FastPitch, GlowTTS, LightSpeech and VITS.
 -  **Vocoder**, convert Mel to Waveform using MelGAN, Multiband MelGAN and Universal MelGAN Vocoder.
 -  **Voice Activity Detection**, detect voice activities using Finetuned Speaker Vector.
