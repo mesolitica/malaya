@@ -473,6 +473,7 @@ calon_dictionary = {
     'yabhg': 'Yang Amat Berbahagia',
     'ybhg': 'Yang Berbahagia',
     'miss': 'Cik',
+    'ydh': 'Yang Dihormati',
 }
 stopwords = [
     'not',

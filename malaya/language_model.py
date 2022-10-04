@@ -10,15 +10,6 @@ from transformers import AutoTokenizer
 from herpetologist import check_type
 
 _kenlm_availability = {
-    'bahasa-news': {
-        'Size (MB)': 107,
-        'LM order': 3,
-        'Description': 'local news.',
-        'Command': [
-            './lmplz --text text.txt --arpa out.arpa -o 3 --prune 0 1 1',
-            './build_binary -q 8 -b 7 -a 256 trie out.arpa out.trie.klm',
-        ],
-    },
     'bahasa-wiki': {
         'Size (MB)': 70.5,
         'LM order': 3,
@@ -28,10 +19,37 @@ _kenlm_availability = {
             './build_binary -q 8 -b 7 -a 256 trie out.arpa out.trie.klm',
         ],
     },
+    'bahasa-news': {
+        'Size (MB)': 107,
+        'LM order': 3,
+        'Description': 'local news.',
+        'Command': [
+            './lmplz --text text.txt --arpa out.arpa -o 3 --prune 0 1 1',
+            './build_binary -q 8 -b 7 -a 256 trie out.arpa out.trie.klm',
+        ],
+    },
     'bahasa-wiki-news': {
-        'Size (MB)': 29,
+        'Size (MB)': 165,
         'LM order': 3,
         'Description': 'MS wikipedia + local news.',
+        'Command': [
+            './lmplz --text text.txt --arpa out.arpa -o 3 --prune 0 1 1',
+            './build_binary -q 8 -b 7 -a 256 trie out.arpa out.trie.klm',
+        ],
+    },
+    'bahasa-wiki-news-iium-stt': {
+        'Size (MB)': 416,
+        'LM order': 3,
+        'Description': 'MS wikipedia + local news + IIUM + STT',
+        'Command': [
+            './lmplz --text text.txt --arpa out.arpa -o 3 --prune 0 1 1',
+            './build_binary -q 8 -b 7 -a 256 trie out.arpa out.trie.klm',
+        ],
+    },
+    'dump-combined': {
+        'Size (MB)': 310,
+        'LM order': 3,
+        'Description': 'Academia + News + IIUM + Parliament + Watpadd + Wikipedia + Common Crawl + training set from https://github.com/huseinzol05/malaya-speech/tree/master/pretrained-model/prepare-stt',
         'Command': [
             './lmplz --text text.txt --arpa out.arpa -o 3 --prune 0 1 1',
             './build_binary -q 8 -b 7 -a 256 trie out.arpa out.trie.klm',
@@ -43,15 +61,6 @@ _kenlm_availability = {
         'Description': 'Mirror for https://github.com/redapesolutions/suara-kami-community',
         'Command': [
             './lmplz --text text.txt --arpa out.arpa -o 4 --prune 0 1 1 1',
-            './build_binary -q 8 -b 7 -a 256 trie out.arpa out.trie.klm',
-        ],
-    },
-    'dump-combined': {
-        'Size (MB)': 310,
-        'LM order': 3,
-        'Description': 'Academia + News + IIUM + Parliament + Watpadd + Wikipedia + Common Crawl + training set from https://github.com/huseinzol05/malaya-speech/tree/master/pretrained-model/prepare-stt',
-        'Command': [
-            './lmplz --text text.txt --arpa out.arpa -o 3 --prune 0 1 1',
             './build_binary -q 8 -b 7 -a 256 trie out.arpa out.trie.klm',
         ],
     },
@@ -76,10 +85,10 @@ _mlm_availability = {
     'malay-huggingface/albert-tiny-bahasa-cased': {
         'Size (MB)': 22.6,
     },
-    'mesolitica/roberta-base-bahasa-cased': {
+    'mesolitica/roberta-base-standard-bahasa-cased': {
         'Size (MB)': 443,
     },
-    'mesolitica/roberta-tiny-bahasa-cased': {
+    'mesolitica/roberta-tiny-standard-bahasa-cased': {
         'Size (MB)': 66.1,
     },
 }

@@ -4,6 +4,7 @@ from malaya.supervised import t5 as t5_load
 from malaya.model.t5 import TrueCase as T5_TrueCase
 from herpetologist import check_type
 from malaya.function import describe_availability
+import numpy as np
 import logging
 
 logger = logging.getLogger(__name__)
@@ -46,6 +47,70 @@ _transformer_availability = {
         'Suggested length': 256,
     }
 }
+
+
+class TrueCase_LM:
+    def __init__(self, language_model):
+        self._language_model = language_model
+
+    def true_case(
+        self,
+        string: str,
+        lookback: int = 3,
+        lookforward: int = 3,
+    ):
+        """
+        True case string input.
+
+        Parameters
+        ----------
+        string: str
+            Entire string, `word` must a word inside `string`.
+        lookback: int, optional (default=3)
+            N words on the left hand side.
+            if put -1, will take all words on the left hand side.
+            longer left hand side will take longer to compute.
+        lookforward: int, optional (default=3)
+            N words on the right hand side.
+            if put -1, will take all words on the right hand side.
+            longer right hand side will take longer to compute.
+
+        Returns
+        -------
+        result: str
+        """
+
+        splitted = string.split()
+        for index, word in enumerate(splitted):
+            if lookback == -1:
+                lookback_ = index
+            elif lookback > index:
+                lookback_ = index
+            else:
+                lookback_ = lookback
+
+            if lookforward == -1:
+                lookforward_ = 9999999
+            else:
+                lookforward_ = lookforward
+
+            left_hand = splitted[index - lookback_: index]
+            right_hand = splitted[index + 1: index + 1 + lookforward_]
+
+            words = [word, word.lower(), word.upper(), word.title()]
+            scores, strings = [], []
+            for w in words:
+                string_ = left_hand + [w] + right_hand
+                score = self._language_model.score(' '.join(string_), bos=index == 0, eos=index == (len(splitted) - 1))
+                scores.append(score)
+                strings.append(string_)
+
+            s = f'index: {index}, word: {word}, words: {words}, strings: {strings}, scores: {scores}'
+            logger.debug(s)
+
+            splitted[index] = words[np.argmin(scores)]
+
+        return ' '.join(splitted)
 
 
 def available_transformer():
@@ -98,3 +163,19 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
             quantized=quantized,
             **kwargs,
         )
+
+
+def probability(language_model):
+    """
+    Use language model to True Case.
+
+    Parameters
+    ----------
+    language_model: Callable
+        must an object with `score` method.
+
+    Returns
+    -------
+    result: malaya.true_case.TrueCase_LM class
+    """
+    return TrueCase_LM(language_model=language_model)

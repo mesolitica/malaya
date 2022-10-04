@@ -1,6 +1,7 @@
 import re
 import dateparser
 import itertools
+import math
 from malaya.num2word import to_cardinal
 from malaya.text.function import (
     is_laugh,
@@ -9,7 +10,7 @@ from malaya.text.function import (
     case_of,
     PUNCTUATION,
 )
-from malaya.dictionary import is_english, is_malay
+from malaya.dictionary import is_english, is_malay, is_malaysia_location
 from malaya.text.regex import (
     _past_date_string,
     _now_date_string,
@@ -51,6 +52,8 @@ from malaya.text.normalization import (
     repeat_word,
     replace_laugh,
     replace_mengeluh,
+    replace_betul,
+    digits,
 )
 from malaya.text.rules import rules_normalizer, rules_normalizer_rev
 from malaya.cluster import cluster_words
@@ -153,6 +156,9 @@ def normalized_entity(normalized):
 
 
 def check_repeat(word):
+    if len(word) < 2:
+        return word, 1
+
     if word[-1].isdigit() and not word[-2].isdigit():
         repeat = int(word[-1])
         word = word[:-1]
@@ -188,9 +194,10 @@ def put_spacing_num(string):
 
 
 class Normalizer:
-    def __init__(self, tokenizer, speller=None):
+    def __init__(self, tokenizer, speller=None, stemmer=None):
         self._tokenizer = tokenizer
         self._speller = speller
+        self._stemmer = stemmer
         self._demoji = None
         self._compiled = {
             k.lower(): re.compile(_expressions[k]) for k, v in _expressions.items()
@@ -228,7 +235,9 @@ class Normalizer:
         language_detection_word: Callable = None,
         acceptable_language_detection: List[str] = ['EN', 'CAPITAL', 'NOT_LANG'],
         segmenter: Callable = None,
-        stemmer=None,
+        text_scorer: Callable = None,
+        text_scorer_window: int = 2,
+        not_a_word_threshold: float = 1e-4,
         **kwargs,
     ):
         """
@@ -305,19 +314,19 @@ class Normalizer:
         segmenter: Callable, optional (default=None)
             function to segmentize word.
             If provide, it will expand a word, apaitu -> apa itu
-        stemmer: Callable, optional (default=None)
-            a Callable object, must have `stem_word` method.
-            If provide, will stem a word, tlonglh -> tlong
-            Else, will use regex based.
+        text_scorer: Callable, optional (default=None)
+            function to validate upper word. 
+            If lower case score is higher or equal than upper case score, will choose lower case.
+        text_scorer_window: int, optional (default=2)
+            size of lookback and lookforward to validate upper word.
+        not_a_word_threshold: float, optional (default=1e-4)
+            assume a word is not a human word if score lower than `not_a_word_threshold`.
+            only usable if passed `text_scorer` parameter.
 
         Returns
         -------
         result: {'normalize', 'date', 'money'}
         """
-
-        if stemmer is not None:
-            if not hasattr(stemmer, 'stem_word'):
-                raise ValueError('stemmer must have `stem_word` method')
 
         if normalize_emoji:
             if self._demoji is None:
@@ -342,9 +351,9 @@ class Normalizer:
 
         if normalize_text:
             logger.debug(f'before normalize_text: {string}')
-            string
             string = replace_laugh(string)
             string = replace_mengeluh(string)
+            string = replace_betul(string)
             string = _replace_compound(string)
             logger.debug(f'after normalize_text: {string}')
 
@@ -387,6 +396,7 @@ class Normalizer:
             word = tokenized[index]
             word_lower = word.lower()
             word_upper = word.upper()
+            word_title = word.title()
             first_c = word[0].isupper()
 
             s = f'index: {index}, word: {word}, queue: {result}'
@@ -400,27 +410,6 @@ class Normalizer:
                 continue
 
             normalized.append(rules_normalizer.get(word_lower, word_lower))
-
-            if normalize_emoji and word_lower in result_demoji:
-                s = f'index: {index}, word: {word}, condition emoji'
-                r = f'emoji {result_demoji[word_lower]}'
-                if index - 1 >= 0:
-                    if tokenized[index - 1] == '.':
-                        r = r[0].upper() + r[1:]
-                    elif len(result) and result[-1][-1] == ',':
-                        pass
-                    elif tokenized[index - 1] != ',':
-                        r = f', {r}'
-
-                if index + 1 < len(tokenized):
-                    if tokenized[index + 1] == '.':
-                        pass
-                    elif tokenized[index + 1] != ',':
-                        r = f'{r} ,'
-
-                result.append(r)
-                index += 1
-                continue
 
             if word_lower in ignore_words:
                 s = f'index: {index}, word: {word}, condition ignore words'
@@ -492,6 +481,38 @@ class Normalizer:
                 index += 1
                 continue
 
+            if normalize_emoji and word_lower in result_demoji:
+                s = f'index: {index}, word: {word}, condition emoji'
+                r = f'emoji {result_demoji[word_lower]}'
+                if index - 1 >= 0:
+                    if tokenized[index - 1] == '.':
+                        r = r[0].upper() + r[1:]
+                    elif len(result) and result[-1][-1] == ',':
+                        pass
+                    elif tokenized[index - 1] != ',':
+                        r = f', {r}'
+
+                if index + 1 < len(tokenized):
+                    if tokenized[index + 1] == '.':
+                        pass
+                    elif tokenized[index + 1] != ',':
+                        r = f'{r} ,'
+
+                result.append(r)
+                index += 1
+                continue
+
+            if text_scorer is not None:
+                score = math.exp(text_scorer(word_lower))
+                s = f'index: {index}, word: {word}, score: {score}, text_scorer is not None'
+                logger.debug(s)
+                if score <= not_a_word_threshold:
+                    s = f'index: {index}, word: {word}, text_scorer(word_lower) <= not_a_word_threshold'
+                    logger.debug(s)
+                    result.append(word)
+                    index += 1
+                    continue
+
             if (
                 first_c
                 and not len(re.findall(_expressions['money'], word_lower))
@@ -499,41 +520,91 @@ class Normalizer:
             ):
                 s = f'index: {index}, word: {word}, condition not in money and date'
                 logger.debug(s)
+
                 if word_lower in rules_normalizer and normalize_text:
                     result.append(case_of(word)(rules_normalizer[word_lower]))
                     index += 1
                     continue
+
                 elif word_upper not in ['KE', 'PADA', 'RM', 'SEN', 'HINGGA']:
-                    result.append(
-                        _normalize_title(word) if normalize_text else word
-                    )
-                    index += 1
-                    continue
+
+                    norm_title = _normalize_title(word) if normalize_text else word
+                    if norm_title != word:
+                        s = f'index: {index}, word: {word}, norm_title != word'
+                        logger.debug(s)
+                        result.append(norm_title)
+                        index += 1
+                        continue
+
+                    titled = True
+                    if len(word) > 1 and text_scorer is not None:
+                        s = f'index: {index}, word: {word}, condition text_scorer is not None'
+                        logger.debug(s)
+                        l = ' '.join(result[-text_scorer_window:])
+                        if len(l):
+                            lower = f'{l} {word_lower}'
+                            title = f'{l} {word_title}'
+                            normal = f'{l} {word}'
+                        else:
+                            lower = word_lower
+                            title = word_title
+                            normal = word
+
+                        if index + 1 < len(tokenized):
+                            r = ' '.join(tokenized[index + 1: index + 1 + text_scorer_window])
+                            if len(r):
+                                lower = f'{lower} {r}'
+                                title = f'{title} {r}'
+                                normal = f'{normal} {r}'
+
+                        lower_score = text_scorer(lower)
+                        title_score = text_scorer(title)
+                        normal_score = text_scorer(normal)
+                        s = f'index: {index}, word: {word}, lower: {lower} , normal: {normal} , lower_score: {lower_score}, title_score: {title_score}, normal_score: {normal_score}'
+                        logger.debug(s)
+                        if lower_score > normal_score or title_score > normal_score:
+                            s = f'index: {index}, word: {word}, condition lower_score > normal_score or title_score > normal_score'
+                            logger.debug(s)
+                            if lower_score > title_score:
+                                word = word_lower
+                                titled = False
+                            else:
+                                word = word_title
+
+                    if titled:
+                        s = f'index: {index}, word: {word}, condition titled'
+                        logger.debug(s)
+                        result.append(word)
+                        index += 1
+                        continue
 
             if check_english_func is not None and len(word) > 1:
                 s = f'index: {index}, word: {word}, condition check english'
                 logger.debug(s)
                 found = False
-                selected_word = word
-                if check_english_func(word_lower):
+                word_, repeat = check_repeat(word)
+                word_lower_ = word_.lower()
+                selected_word = word_
+                if check_english_func(word_lower_):
                     found = True
                 # suree -> sure -> detect
-                elif len(word_lower) > 1 and word_lower[-1] == word_lower[-2] and check_english_func(word_lower[:-1]):
+                elif len(word_lower_) > 1 and word_lower_[-1] == word_lower_[-2] and check_english_func(word_lower_[:-1]):
                     found = True
-                    selected_word = word[:-1]
+                    selected_word = word_[:-1]
 
                 if found:
                     if translator is not None and language_detection_word is None:
-                        s = f'index: {index}, word: {word}, condition to translate inside checking'
+                        s = f'index: {index}, word: {word_}, condition to translate inside checking'
                         logger.debug(s)
                         translated = translator(selected_word)
                         if len(translated) >= len(selected_word) * 3:
                             logger.debug(f'reject translation, {selected_word} -> {translated}')
                         elif ', United States' in translated:
-                            logger.debug(f'reject translation, {word} -> {translated}')
+                            logger.debug(f'reject translation, {word_} -> {translated}')
                         else:
                             selected_word = translated
-                    result.append(case_of(word)(selected_word))
+
+                    result.append(repeat_word(case_of(word)(selected_word), repeat))
                     index += 1
                     continue
 
@@ -550,6 +621,13 @@ class Normalizer:
                         result.append(word[:-1])
                         index += 1
                         continue
+
+            if is_malaysia_location(word):
+                s = f'index: {index}, word: {word}, is_malaysia_location'
+                logger.debug(s)
+                result.append(word_lower.title())
+                index += 1
+                continue
 
             if word_lower in rules_normalizer and normalize_text:
                 s = f'index: {index}, word: {word}, condition in early rules normalizer'
@@ -874,17 +952,34 @@ class Normalizer:
             if segmenter is not None:
                 s = f'index: {index}, word: {word}, condition to segment'
                 logger.debug(s)
-                segmentized = segmenter(word)
+                if word[-1] in digits:
+                    word_ = word[:-1]
+                    d = word[-1]
+                else:
+                    word_ = word
+                    d = ''
+                segmentized = segmenter(word_) + d
                 words = segmentized.split()
             else:
                 words = [word]
 
             for no_word, word in enumerate(words):
-                word, end_result_string = _remove_postfix(word, stemmer=stemmer)
+                if self._stemmer is not None:
+                    s = f'index: {index}, word: {word}, self._stemmer is not None'
+                    word, end_result_string = _remove_postfix(word, stemmer=self._stemmer)
+                    if len(end_result_string) and end_result_string[0] in digits:
+                        word = word + end_result_string[0]
+                        end_result_string = end_result_string[1:]
+                else:
+                    end_result_string = ''
+
                 if normalize_text:
                     word, repeat = check_repeat(word)
                 else:
                     repeat = 1
+
+                s = f'index: {index}, word: {word}, end_result_string: {end_result_string}, repeat: {repeat}'
+                logger.debug(s)
 
                 if normalize_text:
                     s = f'index: {index}, word: {word}, condition normalize text'
@@ -931,7 +1026,7 @@ class Normalizer:
         for index, selected in spelling_correction.items():
             logger.debug(f'spelling correction, index: {index}, selected: {selected}')
             selected = self._speller.correct(
-                selected, string=result, index=index
+                selected, string=result, index=index, **kwargs
             )
             repeat, result_string, end_result_string = spelling_correction_condition[index]
             selected = repeat_word(selected, repeat)
@@ -989,14 +1084,21 @@ class Normalizer:
         return {'normalize': result, 'date': dates_, 'money': money_}
 
 
-def normalizer(speller: Callable = None, **kwargs):
+def normalizer(
+    speller: Callable = None,
+    stemmer: Callable = None,
+    **kwargs,
+):
     """
     Load a Normalizer using any spelling correction model.
 
     Parameters
     ----------
-    speller : Callable, optional (default=None)
-        function to correct spelling.
+    speller: Callable, optional (default=None)
+        function to correct spelling, must have `correct` or `normalize_elongated` method.
+    stemmer: Callable, optional (default=None)
+        function to stem, must have `stem_word` method.
+        If provide stemmer, will accurately to stem kata imbuhan akhir.
 
     Returns
     -------
@@ -1006,6 +1108,9 @@ def normalizer(speller: Callable = None, **kwargs):
     validator.validate_object_methods(
         speller, ['correct', 'normalize_elongated'], 'speller'
     )
+    if stemmer is not None:
+        if not hasattr(stemmer, 'stem_word'):
+            raise ValueError('stemmer must have `stem_word` method')
 
     tokenizer = Tokenizer(**kwargs).tokenize
-    return Normalizer(tokenizer, speller)
+    return Normalizer(tokenizer=tokenizer, speller=speller, stemmer=stemmer)

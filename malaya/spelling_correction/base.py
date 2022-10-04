@@ -20,6 +20,8 @@ replace_consonants = {
     'm': 'n',
 }
 
+letters = 'abcdefghijklmnopqrstuvwxyz'
+
 
 def _get_indices(string, c='a'):
     return [i for i in range(len(string)) if string[i] == c]
@@ -42,7 +44,7 @@ def _permutate(string, indices, sp_tokenizer=None, validate_qual_vowels=False):
     return mutate
 
 
-def _augment_vowel_alternate(string):
+def _augment_vowel_alternate(string, use_group_compound=True):
     """
     malaya.spell._augment_vowel_alternate('sngpore')
     -> ('sangapor', 'sangapora')
@@ -63,10 +65,10 @@ def _augment_vowel_alternate(string):
 
         # we only want to put a vowel after consonant if next that consonant if not a wovel
         if c in consonants and string[i] not in vowels:
-            if c + string[i] in group_compound and not last_time:
+            if use_group_compound and c + string[i] in group_compound and not last_time:
                 r.append(c + string[i])
                 last_time = True
-            elif string[last] + c in group_compound and not last_time:
+            elif use_group_compound and string[last] + c in group_compound and not last_time:
                 r.append(string[last] + c)
                 last_time = True
             else:
@@ -74,12 +76,12 @@ def _augment_vowel_alternate(string):
                 if len(r):
                     # ['ng'] gg
                     if (
-                        r[-1] in group_compound
+                        use_group_compound and r[-1] in group_compound
                         and c + string[i] == r[-1][-1] * 2
                     ):
                         r.append('^')
                         continue
-                    elif r[-1] in group_compound and c == r[-1][-1]:
+                    elif use_group_compound and r[-1] in group_compound and c == r[-1][-1]:
                         if c + string[i] in group_compound:
                             continue
                         else:
@@ -89,7 +91,7 @@ def _augment_vowel_alternate(string):
 
         else:
             if len(r):
-                if r[-1] in group_compound and c == r[-1][-1]:
+                if use_group_compound and r[-1] in group_compound and c == r[-1][-1]:
                     continue
             r.append(c)
 
@@ -99,7 +101,7 @@ def _augment_vowel_alternate(string):
             r.append(string[-1])
 
         elif (
-            r[-1] in group_compound
+            use_group_compound and r[-1] in group_compound
             and string[-2] in vowels
             and string[-1] in consonants
         ):
@@ -125,20 +127,20 @@ def norvig_method(word, delete_only=False):
     inserts = [L + c + R for L, R in splits for c in alphabet]
 
     replaces = [L + replace_consonants.get(R[0], R[0]) + R[1:] for L, R in splits if R]
+    replaces.extend([L + c + R[1:] for L, R in splits if R for c in letters])
 
     return splits, deletes, transposes, inserts, replaces
 
 
 def _augment_vowel_prob(word, add_norvig_method=False, sp_tokenizer=None, **kwargs):
-    l, r = _augment_vowel_alternate(word)
-    results = _permutate(l, _get_indices(l), sp_tokenizer) + _permutate(r, _get_indices(r), sp_tokenizer)
-    if add_norvig_method:
-        l_norvig = norvig_method(l, delete_only=True)
-        for s in l_norvig:
-            results.extend(_permutate(s, _get_indices(s), sp_tokenizer))
-
-        r_norvig = norvig_method(r, delete_only=True)
-        for s in r_norvig:
+    l, r = _augment_vowel_alternate(word, use_group_compound=True)
+    l_, r_ = _augment_vowel_alternate(word, use_group_compound=False)
+    groups = [l, r, l_, r_]
+    results = []
+    for g in groups:
+        results.extend(_permutate(g, _get_indices(g), sp_tokenizer))
+        g_norvig = norvig_method(g, delete_only=True)
+        for s in g_norvig:
             results.extend(_permutate(s, _get_indices(s), sp_tokenizer))
 
     return list(set(results))

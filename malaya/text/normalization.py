@@ -10,7 +10,7 @@ from malaya.text.tatabahasa import (
     laughing,
 )
 from malaya.text.rules import rules_normalizer, rules_compound_normalizer
-from malaya.text.function import case_of, MENGELUH
+from malaya.text.function import case_of, MENGELUH, BETUL, GEMBIRA
 from malaya.dictionary import ENGLISH_WORDS, MALAY_WORDS, is_malay, is_english
 from malaya.text.regex import _expressions
 import math
@@ -18,7 +18,7 @@ import logging
 
 logger = logging.getLogger('malaya.text.normalization')
 
-ignore_words = ['ringgit', 'sen']
+ignore_words = ['ringgit', 'sen', 'hmm', 'hhmm', 'hmmm']
 ignore_postfix = ['adalah', 'allah']
 unit_mapping = {
     'kg': 'kilogram',
@@ -38,6 +38,7 @@ rules_compound_normalizer_regex = (
 
 rules_compound_normalizer_keys = list(rules_compound_normalizer.keys())
 
+digits = '0123456789'
 sastrawi_stemmer = None
 
 
@@ -92,11 +93,17 @@ def get_hujung(word, stemmer=None):
         if word.endswith(p):
             return word, ''
 
+    if word[-1] in digits:
+        digit = word[-1]
+        word = word[:-1]
+    else:
+        digit = ''
+
     if stemmer is not None:
         stemmed = stemmer.stem_word(word)
         permulaann, hujungan, no_imbuhan = get_stemmed(word, stemmed)
         no_imbuhan = f'{permulaann}{no_imbuhan}'
-        return no_imbuhan, hujungan
+        return no_imbuhan + digit, hujungan
 
     else:
         hujung_result = [(k, v) for k, v in hujung.items() if word.endswith(k)]
@@ -104,9 +111,9 @@ def get_hujung(word, stemmer=None):
             hujung_result = max(hujung_result, key=lambda x: len(x[1]))
             word = word[: -len(hujung_result[0])]
             hujung_result = hujung_result[1]
-            return word, hujung_result
+            return word + digit, hujung_result
 
-    return word, ''
+    return word + digit, ''
 
 
 def get_permulaan(word, stemmer=None):
@@ -138,19 +145,25 @@ def _remove_postfix(word, stemmer=None):
         if word.endswith(p):
             return word, ''
 
+    if word[-1] in digits:
+        digit = word[-1]
+        word = word[:-1]
+    else:
+        digit = ''
+
     if stemmer is not None:
         stemmed = stemmer.stem_word(word)
         permulaann, hujungan, no_imbuhan = get_stemmed(word, stemmed)
         no_imbuhan = f'{permulaann}{no_imbuhan}'
         if hujungan in hujung_malaysian:
-            return no_imbuhan, 'lah'
+            return no_imbuhan + digit, 'lah'
 
     else:
         for p in hujung_malaysian:
             if word.endswith(p):
-                return word[: -len(p)], 'lah'
+                return word[: -len(p)] + digit, 'lah'
 
-    return get_hujung(word, stemmer=stemmer)
+    return get_hujung(word + digit, stemmer=stemmer)
 
 
 def _normalize_title(word):
@@ -642,34 +655,34 @@ def unpack_english_contractions(text):
     """
 
     text = re.sub(
-        r"(\b)([Aa]re|[Cc]ould|[Dd]id|[Dd]oes|[Dd]o|[Hh]ad|[Hh]as|[Hh]ave|[Ii]s|[Mm]ight|[Mm]ust|[Ss]hould|[Ww]ere|[Ww]ould)n't",
+        r"(\b)([Aa]re|[Cc]ould|[Dd]id|[Dd]oes|[Dd]o|[Hh]ad|[Hh]as|[Hh]ave|[Ii]s|[Mm]ight|[Mm]ust|[Ss]hould|[Ww]ere|[Ww]ould)n't\b",
         r'\1\2 not',
         text,
     )
     text = re.sub(
-        r"(\b)([Hh]e|[Ii]|[Ss]he|[Tt]hey|[Ww]e|[Ww]hat|[Ww]ho|[Yy]ou)'ll",
+        r"(\b)([Hh]e|[Ii]|[Ss]he|[Tt]hey|[Ww]e|[Ww]hat|[Ww]ho|[Yy]ou)'ll\b",
         r'\1\2 will',
         text,
     )
     text = re.sub(
-        r"(\b)([Tt]hey|[Ww]e|[Ww]hat|[Ww]ho|[Yy]ou)'re", r'\1\2 are', text
+        r"(\b)([Tt]hey|[Ww]e|[Ww]hat|[Ww]ho|[Yy]ou)'re\b", r'\1\2 are', text
     )
     text = re.sub(
-        r"(\b)([Ii]|[Ss]hould|[Tt]hey|[Ww]e|[Ww]hat|[Ww]ho|[Ww]ould|[Yy]ou)'ve",
+        r"(\b)([Ii]|[Ss]hould|[Tt]hey|[Ww]e|[Ww]hat|[Ww]ho|[Ww]ould|[Yy]ou)'ve\b",
         r'\1\2 have',
         text,
     )
-    text = re.sub(r"(\b)([Cc]a)n't", r'\1\2n not', text)
-    text = re.sub(r"(\b)([Ii])'m", r'\1\2 am', text)
-    text = re.sub(r"(\b)([Ll]et)'s", r'\1\2 us', text)
-    text = re.sub(r"(\b)([Ww])on't", r'\1\2ill not', text)
-    text = re.sub(r"(\b)([Ss])han't", r'\1\2hall not', text)
-    text = re.sub(r"(\b)([Yy])(?:'all|a'll)", r'\1\2ou all', text)
+    text = re.sub(r"(\b)([Cc]a)n't\b", r'\1\2n not', text)
+    text = re.sub(r"(\b)([Ii])'m\b", r'\1\2 am', text)
+    text = re.sub(r"(\b)([Ll]et)'s\b", r'\1\2 us', text)
+    text = re.sub(r"(\b)([Ww])on't\b", r'\1\2ill not', text)
+    text = re.sub(r"(\b)([Ss])han't\b", r'\1\2hall not', text)
+    text = re.sub(r"(\b)([Yy])(?:'all|a'll)\b", r'\1\2ou all', text)
 
-    text = re.sub(r"(\b)([Cc]a)nt", r'\1\2n not', text)
-    text = re.sub(r"(\b)([Ii])m", r'\1\2 am', text)
-    text = re.sub(r"(\b)([Ll]et)s", r'\1\2 us', text)
-    text = re.sub(r"(\b)([Ww])ont", r'\1\2ill not', text)
+    text = re.sub(r"(\b)([Cc]a)nt\b", r'\1\2n not', text)
+    text = re.sub(r"(\b)([Ii])m\b", r'\1\2 am', text)
+    text = re.sub(r"(\b)([Ll]et)s\b", r'\1\2 us', text)
+    text = re.sub(r"(\b)([Ww])ont\b", r'\1\2ill not', text)
 
     return text
 
@@ -729,3 +742,11 @@ def replace_laugh(string, replace_with='haha'):
 
 def replace_mengeluh(string, replace_with='aduh'):
     return replace_any(string, MENGELUH, replace_with)
+
+
+def replace_betul(string, replace_with='betul'):
+    return replace_any(string, BETUL, replace_with)
+
+
+def replace_gembira(string, replace_with='gembira'):
+    return replace_any(string, GEMBIRA, replace_with)

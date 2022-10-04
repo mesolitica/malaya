@@ -3,9 +3,17 @@ from malaya.dictionary.bahasa.words import words as _malay_words
 from malaya.dictionary.bahasa.cambridge_words import words as _cambridge_malay_words
 from malaya.dictionary.bahasa.kamus_dewan import words as _kamus_dewan_words
 from malaya.dictionary.bahasa.dbp import words as _dbp_words
+from malaya.dictionary.bahasa.negeri import negeri
+from malaya.dictionary.bahasa.city import city
+from malaya.dictionary.bahasa.country import country
+from malaya.dictionary.bahasa.places import places
+from malaya.dictionary.bahasa.daerah import daerah
+from malaya.dictionary.bahasa.parlimen import parlimen
+from malaya.dictionary.bahasa.adun import adun
+from malaya.text.rules import rules_normalizer
 from typing import List
 
-ENGLISH_WORDS = _english_words
+ENGLISH_WORDS = {i for i in _english_words if len(i) > 2} | {'me', 'on', 'of'}
 MALAY_WORDS = _malay_words
 CAMBRIDGE_MALAY_WORDS = _cambridge_malay_words
 KAMUS_DEWAN_WORDS = _kamus_dewan_words
@@ -193,11 +201,16 @@ def is_malay(word, stemmer=None):
     -------
     result: bool
     """
+    if word.lower() in rules_normalizer:
+        return False
+
     if stemmer is not None:
         if not hasattr(stemmer, 'stem_word'):
             raise ValueError('stemmer must have `stem_word` method')
 
         word = stemmer.stem_word(word)
+        if word.lower() in rules_normalizer:
+            return False
 
     return word in MALAY_WORDS or word in CAMBRIDGE_MALAY_WORDS or word in KAMUS_DEWAN_WORDS or word in DBP_WORDS
 
@@ -220,3 +233,11 @@ def is_english(word):
     elif len(word) > 1 and word[-1] in 's' and word[:-1] in ENGLISH_WORDS:
         is_in = True
     return is_in
+
+
+def is_malaysia_location(string):
+    string_lower = string.lower()
+    title = string_lower.title()
+    if string_lower in negeri or title in city or title in country or title in daerah or title in parlimen or title in adun:
+        return True
+    return False

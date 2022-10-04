@@ -12,9 +12,9 @@ Train GPT2 for text scoring and neural beam scoring.
 WANDB_DISABLED=true \
 python3 run_clm.py \
 --model_name_or_path malay-cased-gpt2 \
---train_file train-v2.txt \
+--train_file train-v3.txt \
 --validation_file sample-wiki.txt \
---per_device_train_batch_size 8 \
+--per_device_train_batch_size 16 \
 --per_device_eval_batch_size 8 \
 --num_train_epochs 10 \
 --logging_steps 100 \
@@ -26,6 +26,6 @@ python3 run_clm.py \
 --output_dir malay-cased-gpt2-clm \
 --save_total_limit 5 \
 --ignore_data_skip \
---block_size 1024 \
+--block_size 512 \
 --fp16
 ```

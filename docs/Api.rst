@@ -204,6 +204,9 @@ malaya.spelling_correction.jamspell
 malaya.spelling_correction.probability
 ---------------------------------------
 
+.. autoclass:: malaya.spelling_correction.probability.Spell()
+    :members:
+
 .. autoclass:: malaya.spelling_correction.probability.Probability()
     :members:
 

@@ -65,6 +65,8 @@ class Tokenizer:
             True to keep Malaysian IC.
         title: bool, optional (default=True)
             True to keep title with dot, Dr. ayam -> ['Dr.', 'ayam']
+        parliament: bool, optional (default=True)
+            True to keep P.123 / D.123
         """
 
         pipeline = []
@@ -97,9 +99,13 @@ class Tokenizer:
         hypens = kwargs.get('hypen', True)
         ic = kwargs.get('ic', True)
         title = kwargs.get('title', True)
+        parliament = kwargs.get('parliament', True)
 
         if title:
             pipeline.append(self.regexes['title'])
+
+        if parliament:
+            pipeline.append(self.regexes['parliament'])
 
         if urls:
             pipeline.append(self.regexes['url'])

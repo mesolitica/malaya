@@ -35,6 +35,9 @@ digits = '([0-9])'
 before_digits = '([Nn]o|[Nn]ombor|[Nn]umber|[Kk]e|=|al|[Pp]ukul)'
 month = '([Jj]an(?:uari)?|[Ff]eb(?:ruari)?|[Mm]a(?:c)?|[Aa]pr(?:il)?|Mei|[Jj]u(?:n)?|[Jj]ula(?:i)?|[Aa]ug(?:ust)?|[Ss]ept?(?:ember)?|[Oo]kt(?:ober)?|[Nn]ov(?:ember)?|[Dd]is(?:ember)?)'
 
+BETUL = ['haah', 'aah', "ha'ah", 'haahh', 'hhaahh']
+GEMBIRA = ['yeay', 'yey', 'yeey']
+
 
 def get_stopwords():
     return list(STOPWORDS)
@@ -557,12 +560,12 @@ def multireplace(string, replacements):
 
 def case_of(text):
     return (
-        str.upper
-        if text.isupper()
+        str.title
+        if text.istitle()
         else str.lower
         if text.islower()
-        else str.title
-        if text.istitle()
+        else str.upper
+        if text.isupper()
         else str
     )
 

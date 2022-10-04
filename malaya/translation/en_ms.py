@@ -46,7 +46,7 @@ _transformer_availability = {
     'small': {
         'Size (MB)': 42.7,
         'Quantized Size (MB)': 13.4,
-        'BLEU': 58.67129043177485,
+        'BLEU': 39.80538744027295,
         'SacreBLEU Verbose': '80.2/63.8/52.8/44.4 (BP = 0.997 ratio = 0.997 hyp_len = 2621510 ref_len = 2630014)',
         'SacreBLEU-chrF++-FLORES200': 64.46,
         'Suggested length': 256,
@@ -54,7 +54,7 @@ _transformer_availability = {
     'base': {
         'Size (MB)': 234,
         'Quantized Size (MB)': 82.7,
-        'BLEU': 68.25956937012508,
+        'BLEU': 42.21071347388556,
         'SacreBLEU Verbose': '86.3/73.3/64.1/56.8 (BP = 0.985 ratio = 0.985 hyp_len = 2591093 ref_len = 2630014)',
         'SacreBLEU-chrF++-FLORES200': 66.28,
         'Suggested length': 256,
@@ -62,51 +62,58 @@ _transformer_availability = {
     'bigbird': {
         'Size (MB)': 246,
         'Quantized Size (MB)': 63.7,
-        'BLEU': 59.86353498474623,
-        'SacreBLEU Verbose': '82.2/65.9/54.9/46.4 (BP = 0.982 ratio = 0.982 hyp_len = 2583848 ref_len = 2630014)',
-        'SacreBLEU-chrF++-FLORES200': 59.64,
+        'BLEU': 39.09071749208737,
+        'SacreBLEU Verbose': '70.5/46.7/32.4/22.9 (BP = 0.989 ratio = 0.989 hyp_len = 21782 ref_len = 22027)',
+        'SacreBLEU-chrF++-FLORES200': 63.96,
         'Suggested length': 1024,
     },
     'small-bigbird': {
         'Size (MB)': 50.4,
         'Quantized Size (MB)': 13.1,
-        'BLEU': 56.70133817548828,
-        'SacreBLEU Verbose': '80.7/63.2/51.6/42.8 (BP = 0.979 ratio = 0.979 hyp_len = 2575384 ref_len = 2630014)',
-        'SacreBLEU-chrF++-FLORES200': 58.01,
+        'BLEU': 36.90195033318057,
+        'SacreBLEU Verbose': '67.0/43.8/30.1/21.0 (BP = 1.000 ratio = 1.028 hyp_len = 22637 ref_len = 22027)',
+        'SacreBLEU-chrF++-FLORES200': 62.85,
         'Suggested length': 1024,
     },
     'noisy-base': {
         'Size (MB)': 234,
         'Quantized Size (MB)': 82.7,
-        'BLEU': 67.28571638641796,
-        'SacreBLEU Verbose': '86.1/72.7/63.3/55.8 (BP = 0.981 ratio = 0.981 hyp_len = 2580126 ref_len = 2630014)',
+        'BLEU': 41.949315647096626,
+        'SacreBLEU Verbose': '73.4/50.3/35.7/25.7 (BP = 0.977 ratio = 0.977 hyp_len = 21526 ref_len = 22027)',
         'SacreBLEU-chrF++-FLORES200': 66.20,
         'Suggested length': 256,
     },
 }
 
 _huggingface_availability = {
-    'mesolitica/t5-super-tiny-finetuned-noisy-en-ms': {
-        'Size (MB)': 50.8,
-        'BLEU': 58.72114029430599,
-        'SacreBLEU Verbose': '80.4/64.0/53.0/44.7 (BP = 0.994 ratio = 0.994 hyp_len = 2614280 ref_len = 2630014)',
-        'SacreBLEU-chrF++-FLORES200': 64.22,
+    'mesolitica/finetune-translation-t5-super-tiny-standard-bahasa-cased': {
+        'Size (MB)': 50.7,
+        'BLEU': 39.18834189893951,
+        'SacreBLEU Verbose': '72.6/48.3/33.5/23.6 (BP = 0.960 ratio = 0.961 hyp_len = 21172 ref_len = 22027)',
+        'SacreBLEU-chrF++-FLORES200': 64.03,
         'Suggested length': 256,
     },
-    'mesolitica/t5-tiny-finetuned-noisy-en-ms': {
+    'mesolitica/finetune-translation-t5-tiny-standard-bahasa-cased': {
         'Size (MB)': 139,
-        'BLEU': 62.34308405954152,
-        'SacreBLEU Verbose': '82.6/67.5/57.2/49.3 (BP = 0.990 ratio = 0.990 hyp_len = 2604652 ref_len = 2630014)',
-        'SacreBLEU-chrF++-FLORES200': 64.26,
+        'BLEU': 41.625536185056305,
+        'SacreBLEU Verbose': '73.4/50.1/35.7/25.7 (BP = 0.971 ratio = 0.972 hyp_len = 21400 ref_len = 22027)',
+        'SacreBLEU-chrF++-FLORES200': 65.70,
         'Suggested length': 256,
     },
-    'mesolitica/t5-small-finetuned-noisy-en-ms': {
+    'mesolitica/finetune-translation-t5-small-standard-bahasa-cased': {
         'Size (MB)': 242,
-        'BLEU': 65.00070822235693,
-        'SacreBLEU Verbose': '84.8/70.5/60.6/52.9 (BP = 0.983 ratio = 0.983 hyp_len = 2585122 ref_len = 2630014)',
-        'SacreBLEU-chrF++-FLORES200': 66.31,
+        'BLEU': 43.93729753370648,
+        'SacreBLEU Verbose': '74.9/52.2/37.9/27.7 (BP = 0.976 ratio = 0.977 hyp_len = 21510 ref_len = 22027)',
+        'SacreBLEU-chrF++-FLORES200': 67.43,
         'Suggested length': 256,
     },
+    'mesolitica/finetune-translation-t5-base-standard-bahasa-cased': {
+        'Size (MB)': 892,
+        'BLEU': 44.17355862158963,
+        'SacreBLEU Verbose': '74.7/52.3/38.0/28.0 (BP = 0.979 ratio = 0.979 hyp_len = 21569 ref_len = 22027)',
+        'SacreBLEU-chrF++-FLORES200': 67.60,
+        'Suggested length': 256,
+    }
 }
 
 
@@ -115,9 +122,7 @@ def available_transformer():
     List available transformer models.
     """
 
-    logger.info('tested on 77k EN-MS test set generated from teacher semisupervised model, https://huggingface.co/datasets/mesolitica/en-ms')
     logger.info('tested on FLORES200 EN-MS (eng_Latn-zsm_Latn) pair `dev` set, https://github.com/facebookresearch/flores/tree/main/flores200')
-
     return describe_availability(_transformer_availability)
 
 
@@ -126,11 +131,7 @@ def available_huggingface():
     List available HuggingFace models.
     """
 
-    logger.info('tested on 77k EN-MS test set generated from teacher semisupervised model, https://huggingface.co/datasets/mesolitica/en-ms')
     logger.info('tested on FLORES200 EN-MS (eng_Latn-zsm_Latn) pair `dev` set, https://github.com/facebookresearch/flores/tree/main/flores200')
-    logger.warning(
-        '77k EN-MS test set generated from teacher semisupervised model, the models might generate better results compared to '
-        'to the teacher semisupervised model, thus lower BLEU score.')
     return describe_availability(_huggingface_availability)
 
 
@@ -203,44 +204,22 @@ def dictionary(**kwargs):
     return translator
 
 
-def _huggingface(model, initial_text, **kwargs):
-
-    try:
-        from transformers import TFT5ForConditionalGeneration
-    except BaseException:
-        raise ModuleNotFoundError(
-            'transformers not installed. Please install it by `pip3 install transformers` and try again.'
-        )
-
-    if 't5' in model:
-        huggingface_class = TFT5ForConditionalGeneration
-
-    return load_huggingface.load_automodel(
-        model=model,
-        model_class=Generator,
-        huggingface_class=huggingface_class,
-        initial_text=initial_text,
-        **kwargs
-    )
-
-
 @check_type
-def huggingface(model: str = 'mesolitica/t5-tiny-finetuned-noisy-en-ms', **kwargs):
+def huggingface(model: str = 'mesolitica/finetune-translation-t5-small-standard-bahasa-cased', **kwargs):
     """
     Load HuggingFace model to translate EN-to-MS.
 
     Parameters
     ----------
-    model: str, optional (default='base')
+    model: str, optional (default='mesolitica/finetune-translation-t5-small-standard-bahasa-cased')
         Check available models at `malaya.translation.en_ms.available_huggingface()`.
 
     Returns
     -------
-    result: malaya.model.huggingface.Generator
+    result: malaya.torch_model.huggingface.Generator
     """
-    model = model.lower()
     if model not in _huggingface_availability:
         raise ValueError(
             'model not supported, please check supported models from `malaya.translation.en_ms.available_huggingface()`.'
         )
-    return _huggingface(model=model, initial_text='terjemah Inggeris ke Melayu: ', **kwargs)
+    return load_huggingface.load_generator(model=model, initial_text='terjemah Inggeris ke Melayu: ', **kwargs)

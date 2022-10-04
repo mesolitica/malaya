@@ -2,10 +2,10 @@ from malaya.model.tf import Translation
 from malaya.model.bigbird import Translation as BigBird_Translation
 from malaya.supervised import transformer as load_transformer
 from malaya.supervised import bigbird as load_bigbird
+from malaya.supervised import huggingface as load_huggingface
 from malaya.function import describe_availability
 from herpetologist import check_type
 from malaya.translation.en_ms import dictionary as load_dictionary
-from malaya.translation.en_ms import _huggingface
 import logging
 
 logger = logging.getLogger(__name__)
@@ -44,65 +44,72 @@ _transformer_availability = {
     'small': {
         'Size (MB)': 42.7,
         'Quantized Size (MB)': 13.4,
-        'BLEU': 59.87473086087865,
-        'SacreBLEU Verbose': '80.6/64.3/54.1/46.3 (BP = 0.998 ratio = 0.998 hyp_len = 1996245 ref_len = 2001100)',
+        'BLEU': 35.392560621251945,
+        'SacreBLEU Verbose': '68.4/43.4/29.5/20.5 (BP = 0.967 ratio = 0.967 hyp_len = 22798 ref_len = 23570)',
         'SacreBLEU-chrF++-FLORES200': 59.64,
         'Suggested length': 256,
     },
     'base': {
         'Size (MB)': 234,
         'Quantized Size (MB)': 82.7,
-        'BLEU': 71.68758277346333,
-        'SacreBLEU Verbose': '86.2/74.8/67.2/61.0 (BP = 1.000 ratio = 1.005 hyp_len = 2010492 ref_len = 2001100)',
+        'BLEU': 40.35382320721753,
+        'SacreBLEU Verbose': '71.4/48.1/34.5/25.1 (BP = 0.971 ratio = 0.972 hyp_len = 22907 ref_len = 23570)',
         'SacreBLEU-chrF++-FLORES200': 63.24,
         'Suggested length': 256,
     },
     'bigbird': {
         'Size (MB)': 246,
         'Quantized Size (MB)': 63.7,
-        'BLEU': 59.54825688811841,
-        'SacreBLEU Verbose': '79.6/63.8/53.8/46.0 (BP = 1.000 ratio = 1.026 hyp_len = 332247 ref_len = 323967)',
+        'BLEU': 38.87758831959203,
+        'SacreBLEU Verbose': '70.2/46.3/32.5/23.2 (BP = 0.983 ratio = 0.983 hyp_len = 23166 ref_len = 23570)',
         'SacreBLEU-chrF++-FLORES200': 62.49,
         'Suggested length': 1024,
     },
     'small-bigbird': {
         'Size (MB)': 50.4,
         'Quantized Size (MB)': 13.1,
-        'BLEU': 55.967144835516855,
-        'SacreBLEU Verbose': '77.4/60.5/49.9/41.9 (BP = 1.000 ratio = 1.026 hyp_len = 2053414 ref_len = 2001100)',
+        'BLEU': 36.33139297963485,
+        'SacreBLEU Verbose': '68.9/44.1/30.3/21.2 (BP = 0.973 ratio = 0.973 hyp_len = 22937 ref_len = 23570)',
         'SacreBLEU-chrF++-FLORES200': 60.57,
         'Suggested length': 1024,
     },
     'noisy-base': {
         'Size (MB)': 234,
         'Quantized Size (MB)': 82.7,
-        'BLEU': 71.72549311084798,
-        'SacreBLEU Verbose': '86.3/74.8/67.2/61.0 (BP = 1.000 ratio = 1.002 hyp_len = 2004164 ref_len = 2001100)',
+        'BLEU': 40.38461101332913,
+        'SacreBLEU Verbose': '71.4/48.2/34.6/25.1 (BP = 0.971 ratio = 0.971 hyp_len = 22889 ref_len = 23570)',
         'SacreBLEU-chrF++-FLORES200': 63.31,
         'Suggested length': 256,
     },
 }
 
 _huggingface_availability = {
-    'mesolitica/t5-super-tiny-finetuned-noisy-ms-en': {
-        'Size (MB)': 50.8,
-        'BLEU': 59.92897086989418,
-        'SacreBLEU Verbose': '79.8/64.0/54.1/46.6 (BP = 1.000 ratio = 1.008 hyp_len = 2017101 ref_len = 2001100)',
-        'SacreBLEU-chrF++-FLORES200': 59.12,
+    'mesolitica/finetune-translation-t5-super-tiny-standard-bahasa-cased': {
+        'Size (MB)': 50.7,
+        'BLEU': 34.10561487832948,
+        'SacreBLEU Verbose': '67.3/41.6/27.8/18.7 (BP = 0.982 ratio = 0.982 hyp_len = 23139 ref_len = 23570)',
+        'SacreBLEU-chrF++-FLORES200': 59.18,
         'Suggested length': 256,
     },
-    'mesolitica/t5-tiny-finetuned-noisy-ms-en': {
+    'mesolitica/finetune-translation-t5-tiny-standard-bahasa-cased': {
         'Size (MB)': 139,
-        'BLEU': 65.9069151371865,
-        'SacreBLEU Verbose': '83.0/69.3/60.7/54.1 (BP = 1.000 ratio = 1.001 hyp_len = 2003273 ref_len = 2001100)',
-        'SacreBLEU-chrF++-FLORES200': 59.91,
+        'BLEU': 37.26048464066508,
+        'SacreBLEU Verbose': '68.3/44.1/30.5/21.4 (BP = 0.995 ratio = 0.995 hyp_len = 23457 ref_len = 23570)',
+        'SacreBLEU-chrF++-FLORES200': 61.29,
         'Suggested length': 256,
     },
-    'mesolitica/t5-small-finetuned-noisy-ms-en': {
+    'mesolitica/finetune-translation-t5-small-standard-bahasa-cased': {
         'Size (MB)': 242,
-        'BLEU': 63.806656594496836,
-        'SacreBLEU Verbose': '82.1/67.5/58.3/51.3 (BP = 1.000 ratio = 1.001 hyp_len = 2002291 ref_len = 2001100)',
-        'SacreBLEU-chrF++-FLORES200': 62.60,
+        'BLEU': 42.01021763049599,
+        'SacreBLEU Verbose': '71.7/49.0/35.6/26.1 (BP = 0.989 ratio = 0.989 hyp_len = 23302 ref_len = 23570)',
+        'SacreBLEU-chrF++-FLORES200': 64.67,
+        'Suggested length': 256,
+    },
+    'mesolitica/finetune-translation-t5-base-standard-bahasa-cased': {
+        'Size (MB)': 892,
+        'BLEU': 43.40885318934906,
+        'SacreBLEU Verbose': '72.3/50.5/37.1/27.7 (BP = 0.987 ratio = 0.987 hyp_len = 23258 ref_len = 23570)',
+        'SacreBLEU-chrF++-FLORES200': 65.44,
         'Suggested length': 256,
     }
 }
@@ -113,7 +120,6 @@ def available_transformer():
     List available transformer models.
     """
 
-    logger.info('tested on 100k MS-EN test set generated from teacher semisupervised model, https://huggingface.co/datasets/mesolitica/ms-en')
     logger.info('tested on FLORES200 MS-EN (zsm_Latn-eng_Latn) pair `dev` set, https://github.com/facebookresearch/flores/tree/main/flores200')
     return describe_availability(_transformer_availability)
 
@@ -123,12 +129,7 @@ def available_huggingface():
     List available HuggingFace models.
     """
 
-    logger.info('tested on 100k MS-EN test set generated from teacher semisupervised model, https://huggingface.co/datasets/mesolitica/ms-en')
     logger.info('tested on FLORES200 MS-EN (zsm_Latn-eng_Latn) pair, https://github.com/facebookresearch/flores/tree/main/flores200')
-    logger.warning(
-        '100k MS-EN test set generated from teacher semisupervised model, the models might generate better results compared to '
-        'to the teacher semisupervised model, thus lower BLEU score.'
-    )
     return describe_availability(_huggingface_availability)
 
 
@@ -181,25 +182,24 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
 
 
 @check_type
-def huggingface(model: str = 'mesolitica/t5-tiny-finetuned-noisy-ms-en', **kwargs):
+def huggingface(model: str = 'mesolitica/finetune-translation-t5-small-standard-bahasa-cased', **kwargs):
     """
     Load HuggingFace model to translate MS-to-EN.
 
     Parameters
     ----------
-    model: str, optional (default='base')
+    model: str, optional (default=''mesolitica/finetune-translation-t5-small-standard-bahasa-cased')
         Check available models at `malaya.translation.ms_en.available_huggingface()`.
 
     Returns
     -------
-    result: malaya.model.huggingface.Generator
+    result: malaya.torch_model.huggingface.Generator
     """
-    model = model.lower()
     if model not in _huggingface_availability:
         raise ValueError(
             'model not supported, please check supported models from `malaya.translation.ms_en.available_huggingface()`.'
         )
-    return _huggingface(model=model, initial_text='terjemah Melayu ke Inggeris: ', **kwargs)
+    return load_huggingface.load_generator(model=model, initial_text='terjemah Melayu ke Inggeris: ', **kwargs)
 
 
 def dictionary(**kwargs):

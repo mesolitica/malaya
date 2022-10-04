@@ -1034,7 +1034,6 @@ words = {
 'ansar',
 'ansur',
 'ansuran',
-'anta',
 'antaboga',
 'antagonis',
 'antagonisme',

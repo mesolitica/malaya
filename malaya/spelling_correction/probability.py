@@ -23,7 +23,7 @@ from malaya.text.tatabahasa import (
     stopword_tatabahasa,
 )
 from herpetologist import check_type
-from typing import List, Callable
+from typing import List, Callable, Dict
 import logging
 
 logger = logging.getLogger(__name__)
@@ -37,9 +37,31 @@ class Spell:
         stemmer,
         add_norvig_method=True,
         replace_augmentation=False,
+        validate_end_vowel=True,
+        minlen=3,
         maxlen=15,
         **kwargs,
     ):
+        """
+        Base class for probability spelling correction.
+
+        Parameters
+        ----------
+        add_norvig_method: bool, optional (default=True)
+            Use norvig augmentation method.
+        replace_augmentation: bool, optional (default=False)
+            Use replace norvig augmentation method.
+        validate_end_vowel: bool, optional (default=True)
+            Will validate candidate end vowels with word input.
+            A candidate is a valid candidate if,
+            - last vowel same as last input vowel.
+            - if last vowel is `a` and last last input vowel is one of `eo`.
+        minlen: int, optional (default=3)
+            minimum length of candidates
+        maxlen: int, optional (default=15)
+            if input word length longer than max length, will ignore to search candidates.
+        """
+
         self._sp_tokenizer = sp_tokenizer
         self._augment = _augment_vowel_prob
         self._add_norvig_method = add_norvig_method
@@ -48,105 +70,109 @@ class Spell:
         self._stemmer = stemmer
         self.WORDS = Counter(self._corpus)
         self.N = sum(self.WORDS.values())
+        self.validate_end_vowel = validate_end_vowel
+        self.minlen = minlen
         self.maxlen = maxlen
 
     def edit_step(self, word):
         """
         Generate possible combination of an input.
         """
-        deletes, transposes, inserts, replaces = [], [], [], []
-        if self._add_norvig_method:
-            _, deletes_, transposes_, inserts_, replaces_ = norvig_method(word)
-            deletes.extend(deletes_)
-            transposes.extend(transposes_)
-            inserts.extend(inserts_)
-            replaces.extend(replaces_)
 
         pseudo = _augment_vowel(word)
-        pseudo.extend(self._augment(
-            word,
-            add_norvig_method=self._add_norvig_method,
-            sp_tokenizer=self._sp_tokenizer
-        ))
-        fuzziness = []
-        if len(word):
+        deletes, transposes, inserts, replaces, fuzziness = [], [], [], [], []
+        if all([len(w) < self.maxlen for w in pseudo]):
+            if self._add_norvig_method:
+                _, deletes_, transposes_, inserts_, replaces_ = norvig_method(word)
+                deletes.extend(deletes_)
+                transposes.extend(transposes_)
+                inserts.extend(inserts_)
+                replaces.extend(replaces_)
 
-            # berape -> berapa, mne -> mna
-            if word[-1] == 'e':
-                inner = word[:-1] + 'a'
-                fuzziness.append(inner)
-                pseudo.extend(
-                    self._augment(inner, sp_tokenizer=self._sp_tokenizer)
-                )
+            pseudo.extend(self._augment(
+                word,
+                add_norvig_method=self._add_norvig_method,
+                sp_tokenizer=self._sp_tokenizer
+            ))
 
-            # pikir -> fikir
-            if word[0] == 'p':
-                inner = 'f' + word[1:]
-                fuzziness.append(inner)
-                pseudo.extend(
-                    self._augment(inner, sp_tokenizer=self._sp_tokenizer)
-                )
+            if len(word):
 
-        if len(word) > 2:
-            # bapak -> bapa, mintak -> minta, mntak -> mnta
-            if word[-2:] == 'ak':
-                inner = word[:-1]
-                fuzziness.append(word[:-1])
-                pseudo.extend(
-                    self._augment(word[:-1], sp_tokenizer=self._sp_tokenizer)
-                )
+                # berape -> berapa, mne -> mna
+                if word[-1] == 'e':
+                    inner = word[:-1] + 'a'
+                    fuzziness.append(inner)
+                    pseudo.extend(
+                        self._augment(inner, sp_tokenizer=self._sp_tokenizer)
+                    )
 
-            # hnto -> hantar, bako -> bkar, sabo -> sabar
-            # tido -> tidur
-            if word[-1] == 'o' and word[-2] in consonants:
-                inner = word[:-1] + 'ar'
-                fuzziness.append(inner)
-                pseudo.extend(
-                    self._augment(inner, sp_tokenizer=self._sp_tokenizer)
-                )
+                # pikir -> fikir
+                if word[0] == 'p':
+                    inner = 'f' + word[1:]
+                    fuzziness.append(inner)
+                    pseudo.extend(
+                        self._augment(inner, sp_tokenizer=self._sp_tokenizer)
+                    )
 
-                inner = word[:-1] + 'ur'
-                fuzziness.append(inner)
-                pseudo.extend(
-                    self._augment(inner, sp_tokenizer=self._sp_tokenizer)
-                )
+            if len(word) > 2:
+                # bapak -> bapa, mintak -> minta, mntak -> mnta
+                if word[-2:] == 'ak':
+                    inner = word[:-1]
+                    fuzziness.append(word[:-1])
+                    pseudo.extend(
+                        self._augment(word[:-1], sp_tokenizer=self._sp_tokenizer)
+                    )
 
-            # antu -> hantu, antar -> hantar
-            if word[0] == 'a' and word[1] in consonants:
-                inner = 'h' + word
-                fuzziness.append(inner)
-                pseudo.extend(_augment_vowel(inner))
-                pseudo.extend(
-                    self._augment(inner, sp_tokenizer=self._sp_tokenizer)
-                )
+                # hnto -> hantar, bako -> bkar, sabo -> sabar
+                # tido -> tidur
+                if word[-1] in 'oa' and word[-2] in consonants:
+                    inner = word[:-1] + 'ar'
+                    fuzziness.append(inner)
+                    pseudo.extend(
+                        self._augment(inner, sp_tokenizer=self._sp_tokenizer)
+                    )
 
-            # ptg -> ptng, dtg -> dtng
-            if (
-                word[-3] in consonants
-                and word[-2] in consonants
-                and word[-1] == 'g'
-            ):
-                inner = word[:-1] + 'ng'
-                fuzziness.append(inner)
-                pseudo.extend(
-                    self._augment(inner, sp_tokenizer=self._sp_tokenizer)
-                )
+                    inner = word[:-1] + 'ur'
+                    fuzziness.append(inner)
+                    pseudo.extend(
+                        self._augment(inner, sp_tokenizer=self._sp_tokenizer)
+                    )
 
-            # igt -> ingt
-            if word[1] == 'g' and word[2] in consonants:
-                inner = word[0] + 'n' + word[1:]
-                fuzziness.append(inner)
-                pseudo.extend(
-                    self._augment(inner, sp_tokenizer=self._sp_tokenizer)
-                )
+                # antu -> hantu, antar -> hantar
+                if word[0] == 'a' and word[1] in consonants:
+                    inner = 'h' + word
+                    fuzziness.append(inner)
+                    pseudo.extend(_augment_vowel(inner))
+                    pseudo.extend(
+                        self._augment(inner, sp_tokenizer=self._sp_tokenizer)
+                    )
 
-            # kecik -> kecil
-            if word[-1] == 'k' and word[-2] in vowels:
-                inner = word[:-1] + 'l'
-                fuzziness.append(inner)
-                pseudo.extend(
-                    self._augment(inner, sp_tokenizer=self._sp_tokenizer)
-                )
+                # ptg -> ptng, dtg -> dtng
+                if (
+                    word[-3] in consonants
+                    and word[-2] in consonants
+                    and word[-1] == 'g'
+                ):
+                    inner = word[:-1] + 'ng'
+                    fuzziness.append(inner)
+                    pseudo.extend(
+                        self._augment(inner, sp_tokenizer=self._sp_tokenizer)
+                    )
+
+                # igt -> ingt
+                if word[1] == 'g' and word[2] in consonants:
+                    inner = word[0] + 'n' + word[1:]
+                    fuzziness.append(inner)
+                    pseudo.extend(
+                        self._augment(inner, sp_tokenizer=self._sp_tokenizer)
+                    )
+
+                # kecik -> kecil
+                if word[-1] == 'k' and word[-2] in vowels:
+                    inner = word[:-1] + 'l'
+                    fuzziness.append(inner)
+                    pseudo.extend(
+                        self._augment(inner, sp_tokenizer=self._sp_tokenizer)
+                    )
 
         results = fuzziness + pseudo
 
@@ -185,16 +211,17 @@ class Spell:
 
         ttt = self.known(self.edit_step(word) if len(word) <= self.maxlen else [word])
         ttt = {i for i in ttt if not all([c in consonants for c in i])} or {word}
-        ttt = {i for i in ttt if len(i) >= 3 and not is_english(i)}
+        ttt = {i for i in ttt if len(i) >= self.minlen and not is_english(i)}
         ttt = self.known([word]) | ttt
         if not len(ttt):
             ttt = {word}
         ttt = list(ttt)
-        if word[-1] in vowels:
-            ttt = [w for w in ttt if w[-1] == word[-1]
-                   or (w[-1] in 'a' and word[-1] in 'eo') or (len(w) >= 2 and w[-2:] in 'arur' and word[-1] in 'o')]
-        if not len(ttt):
-            return [word]
+        if self.validate_end_vowel:
+            if word[-1] in vowels:
+                ttt = [w for w in ttt if w[-1] == word[-1]
+                       or (w[-1] in 'a' and word[-1] in 'eo') or (len(w) >= 2 and w[-2:] in 'arur' and word[-1] in 'o')]
+            if not len(ttt):
+                return [word]
         return ttt
 
     @check_type
@@ -395,7 +422,7 @@ class ProbabilityLM(Probability):
             lookback = index
 
         if lookforward == -1:
-            lookforward = 0
+            lookforward = 9999999
 
         left_hand = string[index - lookback: index]
         right_hand = string[index + 1: index + 1 + lookforward]
@@ -423,14 +450,18 @@ class ProbabilityLM(Probability):
         Parameters
         ----------
         word: str
-        string: str
+        string: List[str]
             Entire string, `word` must a word inside `string`.
         index: int, optional (default=-1)
             index of word in the string, if -1, will try to use `string.index(word)`.
         lookback: int, optional (default=3)
-            N left hand side words.
+            N words on the left hand side.
+            if put -1, will take all words on the left hand side.
+            longer left hand side will take longer to compute.
         lookforward: int, optional (default=3)
-            N right hand side words.
+            N words on the right hand side.
+            if put -1, will take all words on the right hand side.
+            longer right hand side will take longer to compute.
 
         Returns
         -------
@@ -573,6 +604,7 @@ def load(
     language_model=None,
     sentence_piece: bool = False,
     stemmer=None,
+    additional_words: Dict[str, int] = {'ni': 100000, 'pun': 100000, 'la': 100000},
     **kwargs,
 ):
     """
@@ -586,6 +618,8 @@ def load(
         if True, reduce possible augmentation states using sentence piece.
     stemmer: Callable, optional (default=None)
         a Callable object, must have `stem_word` method.
+    additional_words: Dict[str, int], (default={'ni': 100000, 'pun': 100000, 'la': 100000})
+        additional bias vocab.
 
     Returns
     -------
@@ -616,6 +650,8 @@ def load(
 
     with open(path['model']) as fopen:
         corpus = json.load(fopen)
+
+    corpus = {**corpus, **additional_words}
 
     if language_model is not None:
         if not hasattr(language_model, 'score'):

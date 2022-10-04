@@ -39,3 +39,5 @@ a
 crawl-dbp*
 dbp.ipynb
 unique-words.json
+*.normalized
+normalized-twitter.ipynb

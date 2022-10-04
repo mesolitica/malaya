@@ -3364,7 +3364,6 @@ words = {
     'duda',
     'berbela',
     'senda',
-    'anta',
     'huluran',
     'ubatan',
     'pengawal',

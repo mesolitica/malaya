@@ -171,12 +171,12 @@ Contents:
 
    load-translation-ms-en
    ms-en-long-translation
+   load-translation-ms-en-huggingface
    load-translation-noisy-ms-en
-   load-translation-noisy-ms-en-huggingface
    load-translation-en-ms
+   load-translation-en-ms-huggingface
    en-ms-long-translation
    load-translation-noisy-en-ms
-   load-translation-noisy-en-ms-huggingface
 
 .. toctree::
    :maxdepth: 2
@@ -212,5 +212,4 @@ Contents:
    :caption: Misc
    
    Api
-   Crawler
    Donation
