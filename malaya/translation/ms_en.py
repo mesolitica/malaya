@@ -10,16 +10,16 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-"""
+nllb_metrics = """
 NLLB Metrics, https://github.com/facebookresearch/fairseq/tree/nllb#multilingual-translation-models:
 1. NLLB-200, MOE, 54.5B, https://tinyurl.com/nllb200moe54bmetrics, zsm_Latn-eng_Latn,68
-2. NLLB-200, Dense, 3.3B, https://tinyurl.com/nllb200dense3bmetrics, zsm_Latn-eng_Latn,67.8
-3. NLLB-200, Dense, 1.3B, https://tinyurl.com/nllb200dense1bmetrics, zsm_Latn-eng_Latn,66.4
-4. NLLB-200-Distilled, Dense, 1.3B, https://tinyurl.com/nllb200densedst1bmetrics, zsm_Latn-eng_Latn,66.2
-5. NLLB-200-Distilled, Dense, 600M, https://tinyurl.com/nllb200densedst600mmetrics, zsm_Latn-eng_Latn,64.3
+2. NLLB-200, Dense, 3.3B, 17.58 GB, https://tinyurl.com/nllb200dense3bmetrics, zsm_Latn-eng_Latn,67.8
+3. NLLB-200, Dense, 1.3B,  5.48 GB, https://tinyurl.com/nllb200dense1bmetrics, zsm_Latn-eng_Latn,66.4
+4. NLLB-200-Distilled, Dense, 1.3B,  5.48 GB, https://tinyurl.com/nllb200densedst1bmetrics, zsm_Latn-eng_Latn,66.2
+5. NLLB-200-Distilled, Dense, 600M, 2.46 GB, https://tinyurl.com/nllb200densedst600mmetrics, zsm_Latn-eng_Latn,64.3
 """
 
-"""
+google_translate_metrics = """
 Google Translation metrics (2022-07-23) on FLORES200, https://github.com/huseinzol05/malay-dataset/blob/master/translation/malay-english/flores200-ms-en-google-translate.ipynb:
 {'name': 'BLEU',
  'score': 36.152220848177286,
@@ -84,6 +84,13 @@ _transformer_availability = {
 }
 
 _huggingface_availability = {
+    'mesolitica/finetune-translation-t5-super-super-tiny-standard-bahasa-cased': {
+        'Size (MB)': 23.3,
+        'BLEU': 30.216143755278946,
+        'SacreBLEU Verbose': '64.9/38.1/24.1/15.3 (BP = 0.978 ratio = 0.978 hyp_len = 23057 ref_len = 23570)',
+        'SacreBLEU-chrF++-FLORES200': 56.46,
+        'Suggested length': 256,
+    },
     'mesolitica/finetune-translation-t5-super-tiny-standard-bahasa-cased': {
         'Size (MB)': 50.7,
         'BLEU': 34.10561487832948,

@@ -12,16 +12,16 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-"""
+nllb_metrics = """
 NLLB Metrics, https://github.com/facebookresearch/fairseq/tree/nllb#multilingual-translation-models:
-1. NLLB-200, MOE, 54.5B, https://tinyurl.com/nllb200moe54bmetrics, eng_Latn-zsm_Latn,66.5
-2. NLLB-200, Dense, 3.3B, https://tinyurl.com/nllb200dense3bmetrics, eng_Latn-zsm_Latn,66.3
-3. NLLB-200, Dense, 1.3B, https://tinyurl.com/nllb200dense1bmetrics, eng_Latn-zsm_Latn,65.2
-4. NLLB-200-Distilled, Dense, 1.3B, https://tinyurl.com/nllb200densedst1bmetrics, eng_Latn-zsm_Latn,65.5
-5. NLLB-200-Distilled, Dense, 600M, https://tinyurl.com/nllb200densedst600mmetrics, eng_Latn-zsm_Latn,63.5
+1. NLLB-200, MOE, 54.5B, https://tinyurl.com/nllb200moe54bmetrics, eng_Latn-zsm_Latn, 66.5
+2. NLLB-200, Dense, 3.3B, 17.58 GB, https://tinyurl.com/nllb200dense3bmetrics, eng_Latn-zsm_Latn, 66.3
+3. NLLB-200, Dense, 1.3B, 5.48 GB, https://tinyurl.com/nllb200dense1bmetrics, eng_Latn-zsm_Latn, 65.2
+4. NLLB-200-Distilled, Dense, 1.3B, 5.48 GB, https://tinyurl.com/nllb200densedst1bmetrics, eng_Latn-zsm_Latn, 65.5
+5. NLLB-200-Distilled, Dense, 600M, 2.46 GB, https://tinyurl.com/nllb200densedst600mmetrics, eng_Latn-zsm_Latn, 63.5
 """
 
-"""
+google_translate_metrics = """
 Google Translation metrics (2022-07-23) on FLORES200, https://github.com/huseinzol05/malay-dataset/blob/master/translation/malay-english/flores200-en-ms-google-translate.ipynb:
 {'name': 'BLEU',
  'score': 39.12728212969207,
@@ -86,6 +86,13 @@ _transformer_availability = {
 }
 
 _huggingface_availability = {
+    'mesolitica/finetune-translation-t5-super-super-tiny-standard-bahasa-cased': {
+        'Size (MB)': 23.3,
+        'BLEU': 36.29074311583665,
+        'SacreBLEU Verbose': '71.2/46.0/30.9/21.0 (BP = 0.950 ratio = 0.951 hyp_len = 20958 ref_len = 22027)',
+        'SacreBLEU-chrF++-FLORES200': 61.89,
+        'Suggested length': 256,
+    },
     'mesolitica/finetune-translation-t5-super-tiny-standard-bahasa-cased': {
         'Size (MB)': 50.7,
         'BLEU': 39.18834189893951,
