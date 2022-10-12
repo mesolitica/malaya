@@ -1,16 +1,18 @@
 from transformers import T5Tokenizer, T5ForConditionalGeneration
+from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 from malaya_boilerplate.torch_utils import to_tensor_cuda, to_numpy
 from herpetologist import check_type
 from typing import List
 
 
-class Generator(T5ForConditionalGeneration):
-    def __init__(self, config):
-        super().__init__(config)
+class Generator:
+    def __init__(self, model, initial_text, use_fast_tokenizer=False):
+        self.tokenizer = AutoTokenizer.from_pretrained(model, use_fast=use_fast_tokenizer)
+        self.model = AutoModelForSeq2SeqLM.from_pretrained(model)
+        self._initial_text = initial_text
 
-    def load_tokenizer(self, model_name=None, use_fast_tokenizer=False):
-        self.tokenizer = T5Tokenizer.from_pretrained(
-            model_name or self.config._name_or_path, use_fast=use_fast_tokenizer)
+    def cuda():
+        self.model.cuda()
 
     @check_type
     def generate(self, strings: List[str], **kwargs):
@@ -27,13 +29,13 @@ class Generator(T5ForConditionalGeneration):
         -------
         result: List[str]
         """
-        cuda = next(self.parameters()).is_cuda
+        cuda = next(self.model.parameters()).is_cuda
         input_ids = [{'input_ids': self.tokenizer.encode(f'{self._initial_text}{s}', return_tensors='pt')[
             0]} for s in strings]
         padded = self.tokenizer.pad(input_ids, padding='longest')
         for k in padded.keys():
             padded[k] = to_tensor_cuda(padded[k], cuda)
-        outputs = super().generate(**padded, **kwargs)
+        outputs = self.model.generate(**padded, **kwargs)
         results = []
         for o in outputs:
             results.append(self.tokenizer.decode(o, skip_special_tokens=True))

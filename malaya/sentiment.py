@@ -51,20 +51,6 @@ _transformer_availability = {
         'macro recall': 0.92589,
         'macro f1-score': 0.92198,
     },
-    'fastformer': {
-        'Size (MB)': 458,
-        'Quantized Size (MB)': 116,
-        'macro precision': 0.96882,
-        'macro recall': 0.96832,
-        'macro f1-score': 0.96836,
-    },
-    'tiny-fastformer': {
-        'Size (MB)': 77.3,
-        'Quantized Size (MB)': 19.7,
-        'macro precision': 0.90655,
-        'macro recall': 0.89819,
-        'macro f1-score': 0.90196,
-    },
 }
 
 

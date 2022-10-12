@@ -21,7 +21,4 @@ def load_automodel(model, model_class, huggingface_class=None, **kwargs):
 
 
 def load_generator(model, initial_text, **kwargs):
-    model_ = Generator.from_pretrained(model)
-    model_.load_tokenizer(model)
-    model_._initial_text = initial_text
-    return model_
+    return Generator(model, initial_text)
