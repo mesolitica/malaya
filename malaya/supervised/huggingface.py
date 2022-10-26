@@ -1,5 +1,5 @@
 import tensorflow as tf
-from malaya.torch_model.huggingface import Generator
+from malaya.torch_model.huggingface import Generator, Prefix
 from transformers import AutoTokenizer
 from malaya_boilerplate.utils import check_tf2
 
@@ -22,3 +22,7 @@ def load_automodel(model, model_class, huggingface_class=None, **kwargs):
 
 def load_generator(model, initial_text, **kwargs):
     return Generator(model, initial_text)
+
+
+def load_prefix(model, **kwargs):
+    return Prefix(model)

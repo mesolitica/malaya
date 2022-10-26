@@ -232,7 +232,7 @@ def transformer(version: str = 'v2', model: str = 'xlnet', quantized: bool = Fal
     version: str, optional (default='v2')
         Version supported. Allowed values:
 
-        * ``'v1'`` - version 1, maintain for knowledge graph.
+        * ``'v1'`` - version 1, maintain for knowledge graph, `malaya_graph.text_to_kg.parser.from_dependency`
         * ``'v2'`` - Trained on bigger dataset, better version.
 
     model: str, optional (default='xlnet')

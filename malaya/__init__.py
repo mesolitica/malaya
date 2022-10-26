@@ -18,6 +18,7 @@ __home__, _ = get_home(package=package, package_version=version)
 
 from . import alignment
 from . import dictionary
+from . import generator
 from . import spelling_correction
 from . import summarization
 from . import translation
@@ -31,10 +32,9 @@ from . import coref
 from . import dependency
 from . import emotion
 from . import entity
-from . import generator
+from . import intent
 from . import jawi_rumi
 from . import keyword_extraction
-from . import knowledge_graph
 from . import language_detection
 from . import language_model
 from . import lexicon

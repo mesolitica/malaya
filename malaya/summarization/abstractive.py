@@ -4,6 +4,7 @@ from malaya.supervised import pegasus as pegasus_load
 from malaya.model.t5 import Summarization as T5_Summarization
 from malaya.model.bigbird import Summarization as BigBird_Summarization
 from malaya.model.pegasus import Summarization as Pegasus_Summarization
+from malaya.supervised import huggingface as load_huggingface
 from malaya.function import describe_availability
 from herpetologist import check_type
 import logging
@@ -69,14 +70,33 @@ _transformer_availability = {
     },
 }
 
+_huggingface_availability = {
+
+}
+
+
+def _describe():
+    logger.info('tested on translated test set CNN Daily Mail, ')
+
 
 def available_transformer():
     """
     List available transformer models.
     """
-    logger.info('tested on translated 12k CNN + DailyNews test set at https://github.com/huseinzol05/malay-dataset/tree/master/summarization')
+    warnings.warn(
+        '`malaya.summarization.abstractive.available_transformer` is deprecated, use `malaya.summarization.abstractive.available_huggingface` instead', DeprecationWarning)
 
+    _describe()
     return describe_availability(_transformer_availability)
+
+
+def available_huggingface():
+    """
+    List available huggingface models.
+    """
+
+    _describe()
+    return describe_availability(_huggingface_availability)
 
 
 @check_type
@@ -110,6 +130,8 @@ def transformer(model: str = 'small-t5', quantized: bool = False, **kwargs):
         * if `bigbird` in model, will return `malaya.model.bigbird.Summarization`.
         * if `pegasus` in model, will return `malaya.model.pegasus.Summarization`.
     """
+    warnings.warn(
+        '`malaya.summarization.abstractive.transformer` is deprecated, use `malaya.summarization.abstractive.huggingface` instead', DeprecationWarning)
 
     model = model.lower()
     if model not in _transformer_availability:
@@ -144,3 +166,11 @@ def transformer(model: str = 'small-t5', quantized: bool = False, **kwargs):
             quantized=quantized,
             **kwargs,
         )
+
+
+def huggingface(model='', **kwargs):
+    if model not in _huggingface_availability:
+        raise ValueError(
+            'model not supported, please check supported models from `malaya.summarization.abstractive.available_huggingface()`.'
+        )
+    return load_huggingface.load_generator(model=model, initial_text='ringkasan: ', **kwargs)

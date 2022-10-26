@@ -87,12 +87,6 @@ malaya.keyword_extraction
 .. automodule:: malaya.keyword_extraction
     :members:
 
-malaya.knowledge_graph
---------------------------
-
-.. automodule:: malaya.knowledge_graph
-    :members:
-
 malaya.language_detection
 -------------------------
 
@@ -476,9 +470,6 @@ malaya.model.t5
 .. autoclass:: malaya.model.t5.Paraphrase()
     :members:
 
-.. autoclass:: malaya.model.t5.KnowledgeGraph()
-    :members:
-
 .. autoclass:: malaya.model.t5.Spell()
     :members:
 
@@ -510,9 +501,6 @@ malaya.model.tf
     :members:
 
 .. autoclass:: malaya.model.tf.SQUAD()
-    :members:
-
-.. autoclass:: malaya.model.tf.KnowledgeGraph()
     :members:
 
 .. autoclass:: malaya.model.tf.GPT2()

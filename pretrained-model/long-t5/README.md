@@ -43,7 +43,7 @@ python3 run_t5.py \
 --gradient_checkpointing true
 ```
 
-TGLOBAL BASE model,
+LOCAL BASE model,
 ```
 WANDB_DISABLED=true \
 python3 run_t5.py \
@@ -62,6 +62,35 @@ python3 run_t5.py \
 --validation_file test-longer.json \
 --output_dir translation-long-t5-local-base-v2 \
 --per_device_train_batch_size=16 \
+--per_device_eval_batch_size=4 \
+--predict_with_generate \
+--ignore_data_skip \
+--max_source_length 1024 \
+--max_target_length 1024 \
+--warmup_steps 100000 \
+--weight_decay 0.1 \
+--gradient_checkpointing true
+```
+
+LOCAL SMALL model,
+```
+WANDB_DISABLED=true \
+python3 run_t5.py \
+--model_name_or_path ./ms-long-t5-local-small \
+--num_train_epochs 10 \
+--logging_steps 100 \
+--eval_steps 10000 \
+--save_steps 10000 \
+--evaluation_strategy steps \
+--save_total_limit 5 \
+--do_train \
+--do_eval \
+--source_lang src \
+--target_lang tgt \
+--train_file train-longer.json \
+--validation_file test-longer.json \
+--output_dir translation-long-t5-local-small \
+--per_device_train_batch_size=26 \
 --per_device_eval_batch_size=4 \
 --predict_with_generate \
 --ignore_data_skip \

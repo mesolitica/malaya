@@ -7,6 +7,7 @@ from malaya.function import describe_availability
 from herpetologist import check_type
 from malaya.translation.en_ms import dictionary as load_dictionary
 import logging
+import warnings
 
 logger = logging.getLogger(__name__)
 
@@ -76,9 +77,9 @@ _transformer_availability = {
     'noisy-base': {
         'Size (MB)': 234,
         'Quantized Size (MB)': 82.7,
-        'BLEU': 40.38461101332913,
-        'SacreBLEU Verbose': '71.4/48.2/34.6/25.1 (BP = 0.971 ratio = 0.971 hyp_len = 22889 ref_len = 23570)',
-        'SacreBLEU-chrF++-FLORES200': 63.31,
+        'BLEU': 40.77050068227297,
+        'SacreBLEU Verbose': '72.0/48.5/34.8/25.5 (BP = 0.972 ratio = 0.972 hyp_len = 90382 ref_len = 92985)',
+        'SacreBLEU-chrF++-FLORES200': 63.68,
         'Suggested length': 256,
     },
 }
@@ -118,8 +119,34 @@ _huggingface_availability = {
         'SacreBLEU Verbose': '72.3/50.5/37.1/27.7 (BP = 0.987 ratio = 0.987 hyp_len = 23258 ref_len = 23570)',
         'SacreBLEU-chrF++-FLORES200': 65.44,
         'Suggested length': 256,
-    }
+    },
+    'mesolitica/finetune-noisy-translation-t5-tiny-bahasa-cased': {
+        'Size (MB)': 139,
+        'BLEU': 39.72513374635353,
+        'SacreBLEU Verbose': '69.8/46.2/32.8/23.6 (BP = 0.999 ratio = 0.999 hyp_len = 92913 ref_len = 92985)',
+        'SacreBLEU-chrF++-FLORES200': 63.16,
+        'Suggested length': 256,
+    },
+    'mesolitica/finetune-noisy-translation-t5-small-bahasa-cased': {
+        'Size (MB)': 242,
+        'BLEU': 41.83407099646298,
+        'SacreBLEU Verbose': '71.7/48.7/35.4/26.0 (BP = 0.989 ratio = 0.989 hyp_len = 91952 ref_len = 92985)',
+        'SacreBLEU-chrF++-FLORES200': 64.52,
+        'Suggested length': 256,
+    },
+    'mesolitica/finetune-noisy-translation-t5-base-bahasa-cased': {
+        'Size (MB)': 242,
+        'BLEU': 43.432723192596406,
+        'SacreBLEU Verbose': '71.8/49.8/36.6/27.2 (BP = 1.000 ratio = 1.000 hyp_len = 92982 ref_len = 92985)',
+        'SacreBLEU-chrF++-FLORES200': 65.52,
+        'Suggested length': 256,
+    },
 }
+
+
+def _describe():
+    logger.info('tested on FLORES200 EN-MS (eng_Latn-zsm_Latn) pair `dev` set, https://github.com/facebookresearch/flores/tree/main/flores200')
+    logger.info('for noisy, tested on noisy augmented FLORES200 EN-MS (eng_Latn-zsm_Latn) pair `dev` set, https://github.com/huseinzol05/malay-dataset/tree/master/translation/nllb-noisy-dev-augmentation')
 
 
 def available_transformer():
@@ -127,7 +154,9 @@ def available_transformer():
     List available transformer models.
     """
 
-    logger.info('tested on FLORES200 MS-EN (zsm_Latn-eng_Latn) pair `dev` set, https://github.com/facebookresearch/flores/tree/main/flores200')
+    warnings.warn('`malaya.translation.ms_en.available_transformer` is deprecated, use `malaya.translation.ms_en.available_huggingface` instead', DeprecationWarning)
+
+    _describe()
     return describe_availability(_transformer_availability)
 
 
@@ -136,7 +165,7 @@ def available_huggingface():
     List available HuggingFace models.
     """
 
-    logger.info('tested on FLORES200 MS-EN (zsm_Latn-eng_Latn) pair, https://github.com/facebookresearch/flores/tree/main/flores200')
+    _describe()
     return describe_availability(_huggingface_availability)
 
 
@@ -161,6 +190,9 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
         * if `bigbird` in model, return `malaya.model.bigbird.Translation`.
         * else, return `malaya.model.tf.Translation`.
     """
+    warnings.warn(
+        '`malaya.translation.ms_en.transformer` is deprecated, use `malaya.translation.ms_en.huggingface` instead', DeprecationWarning)
+
     model = model.lower()
     if model not in _transformer_availability:
         raise ValueError(

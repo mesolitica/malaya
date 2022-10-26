@@ -1030,6 +1030,58 @@ def merge_sentencepiece_tokens_tagging(x, y, model='bert'):
     return words, labels
 
 
+def merge_bpe_tokens(
+    paired_tokens,
+    weighted=True,
+    vectorize=False,
+    rejected=['<s>', '</s>', '<unk>', '<pad>', '<mask>'],
+    prefix_char='Ġ',
+):
+    new_paired_tokens = []
+    n_tokens = len(paired_tokens)
+
+    i = 0
+
+    while i < n_tokens:
+
+        current_token, current_weight = paired_tokens[i]
+        if isinstance(current_token, bytes):
+            current_token = current_token.decode()
+        if i > 0 and not current_token.startswith(prefix_char) and current_token not in rejected:
+            previous_token, previous_weight = new_paired_tokens.pop()
+            merged_token = previous_token
+            merged_weight = [previous_weight]
+            while (
+                not current_token.startswith(prefix_char)
+                and current_token not in rejected
+            ):
+                merged_token = merged_token + current_token.replace(prefix_char, '')
+                merged_weight.append(current_weight)
+                i = i + 1
+                if i < n_tokens:
+                    current_token, current_weight = paired_tokens[i]
+                else:
+                    break
+            if vectorize:
+                merged_weight = np.mean(merged_weight, axis=0)
+            else:
+                merged_weight = np.mean(merged_weight)
+            new_paired_tokens.append((merged_token, merged_weight))
+
+        else:
+            new_paired_tokens.append((current_token, current_weight))
+            i = i + 1
+
+    words = [
+        i[0].replace(prefix_char, '') for i in new_paired_tokens if i[0] not in rejected
+    ]
+    weights = [i[1] for i in new_paired_tokens if i[0] not in rejected]
+    if weighted:
+        weights = np.array(weights)
+        weights = weights / np.sum(weights)
+    return list(zip(words, weights))
+
+
 def constituency_bert(tokenizer, sentences):
     all_input_ids, all_word_end_mask, all_tokens = [], [], []
 

@@ -24,6 +24,13 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
+   :caption: GPU Environment
+
+   gpu-environment-tensorflow
+   gpu-environment-pytorch
+
+.. toctree::
+   :maxdepth: 2
    :caption: Pre-trained model
 
    load-transformer
@@ -102,13 +109,6 @@ Contents:
 
    load-tatabahasa
    load-tatabahasa-tagging
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Knowledge Graph Module
-
-   load-knowledge-graph-triples
-   load-knowledge-graph-from-dependency
 
 .. toctree::
    :maxdepth: 2
