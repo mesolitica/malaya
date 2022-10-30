@@ -8,6 +8,7 @@ from malaya.supervised import huggingface as load_huggingface
 from malaya.function import describe_availability
 from herpetologist import check_type
 import logging
+import warnings
 
 logger = logging.getLogger(__name__)
 
@@ -71,12 +72,27 @@ _transformer_availability = {
 }
 
 _huggingface_availability = {
-
+    'mesolitica/finetune-summarization-t5-small-standard-bahasa-cased': {
+        'Size (MB)': 242,
+        'BLEU': 61.559202822392486,
+        'ROUGE-1': 0.24620333,
+        'ROUGE-2': 0.05896076,
+        'ROUGE-L': 0.15158954,
+        'Suggested length': 1024,
+    },
+    'mesolitica/finetune-summarization-t5-base-standard-bahasa-cased': {
+        'Size (MB)': 892,
+        'BLEU': 58.764876478744064,
+        'ROUGE-1': 0.24620333,
+        'ROUGE-2': 0.05896076,
+        'ROUGE-L': 0.15158954,
+        'Suggested length': 1024,
+    },
 }
 
 
 def _describe():
-    logger.info('tested on translated test set CNN Daily Mail, ')
+    logger.info('tested on translated validation set CNN Daily Mail, https://huggingface.co/mesolitica')
 
 
 def available_transformer():
@@ -107,16 +123,7 @@ def transformer(model: str = 'small-t5', quantized: bool = False, **kwargs):
     Parameters
     ----------
     model: str, optional (default='small-t5')
-        Model architecture supported. Allowed values:
-
-        * ``'t5'`` - T5 BASE parameters.
-        * ``'small-t5'`` - T5 SMALL parameters.
-        * ``'tiny-t5'`` - T5 TINY parameters.
-        * ``'pegasus'`` - Pegasus BASE parameters.
-        * ``'small-pegasus'`` - Pegasus SMALL parameters.
-        * ``'bigbird'`` - BigBird + Pegasus BASE parameters.
-        * ``'small-bigbird'`` - BigBird + Pegasus SMALL parameters.
-
+        Check available models at `malaya.summarization.abstractive.available_transformer()`.
     quantized: bool, optional (default=False)
         if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
@@ -168,7 +175,19 @@ def transformer(model: str = 'small-t5', quantized: bool = False, **kwargs):
         )
 
 
-def huggingface(model='', **kwargs):
+def huggingface(model: str = 'mesolitica/finetune-summarization-t5-small-standard-bahasa-cased', **kwargs):
+    """
+    Load HuggingFace model to abstractive summarization.
+
+    Parameters
+    ----------
+    model: str, optional (default='mesolitica/finetune-summarization-t5-small-standard-bahasa-cased')
+        Check available models at `malaya.summarization.abstractive.available_huggingface()`.
+
+    Returns
+    -------
+    result: malaya.torch_model.huggingface.Summarization
+    """
     if model not in _huggingface_availability:
         raise ValueError(
             'model not supported, please check supported models from `malaya.summarization.abstractive.available_huggingface()`.'

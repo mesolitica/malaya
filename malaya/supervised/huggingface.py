@@ -1,5 +1,5 @@
 import tensorflow as tf
-from malaya.torch_model.huggingface import Generator, Prefix
+from malaya.torch_model.huggingface import Generator, Prefix, Paraphrase, Summarization
 from transformers import AutoTokenizer
 from malaya_boilerplate.utils import check_tf2
 
@@ -26,3 +26,11 @@ def load_generator(model, initial_text, **kwargs):
 
 def load_prefix(model, **kwargs):
     return Prefix(model)
+
+
+def load_paraphrase(model, initial_text, **kwargs):
+    return Paraphrase(model, initial_text)
+
+
+def load_summarization(model, initial_text, **kwargs):
+    return Summarization(model, initial_text)

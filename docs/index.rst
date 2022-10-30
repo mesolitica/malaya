@@ -119,6 +119,7 @@ Contents:
    load-isi-penting-generator
    load-lexicon
    load-paraphrase
+   load-paraphrase-huggingface
 
 .. toctree::
    :maxdepth: 2
@@ -162,7 +163,7 @@ Contents:
    :caption: Summarization Module
 
    load-abstractive
-   long-text-abstractive-summarization
+   load-abstractive-huggingface
    load-extractive
 
 .. toctree::

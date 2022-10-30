@@ -545,6 +545,21 @@ malaya.torch_model.gpt2_lm
 .. autoclass:: malaya.torch_model.gpt2_lm.LM()
     :members:
 
+malaya.torch_model.huggingface
+----------------------------------
+
+.. autoclass:: malaya.torch_model.huggingface.Generator()
+    :members:
+
+.. autoclass:: malaya.torch_model.huggingface.Prefix()
+    :members:
+
+.. autoclass:: malaya.torch_model.huggingface.Paraphrase()
+    :members:
+
+.. autoclass:: malaya.torch_model.huggingface.Summarization()
+    :members:
+
 malaya.torch_model.mask_lm
 ----------------------------------
 

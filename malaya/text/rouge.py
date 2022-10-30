@@ -62,6 +62,13 @@ def postprocessing_summarization(string, lapors=_lapor_words):
     return string
 
 
+def find_kata_encik(string):
+    finds = [(m.start(0), m.end(0)) for m in re.finditer('\\w*kata Encik\\w*', string)]
+    if len(finds):
+        string = re.sub(r'[ ]+', ' ', string[:finds[0][0]]).strip()
+    return string
+
+
 def find_lapor_and_remove(article, summary):
     lapor = []
     lowered = article.lower()
@@ -122,6 +129,17 @@ def filter_rouge(article, summary, n=2, threshold=0.1, **kwargs):
 
 
 def postprocess_summary(string, summary, **kwargs):
+    """
+    Parameters
+    ----------
+
+    n: int, optional (default=2)
+        N size of rouge to filter
+    threshold: float, optional (default=0.1)
+        minimum threshold for N rouge score to select a sentence.
+    reject_similarity: float, optional (default=0.85)
+        reject similar sentences while maintain position.
+    """
     summary = filter_rouge(string, summary, **kwargs)
     summary = postprocessing_summarization(summary)
     summary = find_lapor_and_remove(string, summary)

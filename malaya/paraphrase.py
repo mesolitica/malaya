@@ -128,10 +128,10 @@ def huggingface(model='mesolitica/finetune-paraphrase-t5-small-standard-bahasa-c
 
     Returns
     -------
-    result: malaya.torch_model.huggingface.Generator
+    result: malaya.torch_model.huggingface.Paraphrase
     """
     if model not in _huggingface_availability:
         raise ValueError(
             'model not supported, please check supported models from `malaya.paraphrase.available_huggingface()`.'
         )
-    return load_huggingface.load_generator(model=model, initial_text='parafrasa: ', **kwargs)
+    return load_huggingface.load_paraphrase(model=model, initial_text='parafrasa: ', **kwargs)
