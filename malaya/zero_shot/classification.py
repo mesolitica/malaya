@@ -1,14 +1,36 @@
 from malaya.model.bert import ZeroshotBERT
 from malaya.model.xlnet import ZeroshotXLNET
 from herpetologist import check_type
-from malaya.similarity import available_transformer as _available_transformer, _transformer
+from malaya.similarity.semantic import (
+    _transformer_availability,
+    _huggingface_availability,
+    _describe,
+    _transformer,
+)
+from malaya.supervised import huggingface as load_huggingface
+from malaya.function import describe_availability
+import warnings
 
 
 def available_transformer():
     """
     List available transformer zero-shot models.
     """
-    return _available_transformer()
+
+    warnings.warn(
+        '`malaya.zero_shot.classification.available_transformer` is deprecated, use `malaya.zero_shot.classification.available_huggingface` instead', DeprecationWarning)
+
+    _describe()
+    return describe_availability(_transformer_availability)
+
+
+def available_huggingface():
+    """
+    List available huggingface zero-shot models.
+    """
+
+    _describe()
+    return describe_availability(_huggingface_availability)
 
 
 @check_type
@@ -19,7 +41,7 @@ def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
     Parameters
     ----------
     model: str, optional (default='bert')
-        Check available models at `malaya.similarity.available_transformer()`.
+        Check available models at `malaya.zero_shot.classification.available_transformer()`.
     quantized: bool, optional (default=False)
         if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
@@ -33,6 +55,9 @@ def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
         * if `xlnet` in model, will return `malaya.model.xlnet.ZeroshotXLNET`.
     """
 
+    warnings.warn(
+        '`malaya.zero_shot.classification.transformer` is deprecated, use `malaya.zero_shot.classification.huggingface` instead', DeprecationWarning)
+
     return _transformer(
         model=model,
         bert_model=ZeroshotBERT,
@@ -41,3 +66,24 @@ def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
         siamese=False,
         **kwargs
     )
+
+
+def huggingface(model: str = 'mesolitica/finetune-mnli-t5-small-standard-bahasa-cased', **kwargs):
+    """
+    Load HuggingFace model to zeroshot text classification.
+
+    Parameters
+    ----------
+    model: str, optional (default='mesolitica/finetune-mnli-t5-small-standard-bahasa-cased')
+        Check available models at `malaya.zero_shot.classification.available_huggingface()`.
+
+    Returns
+    -------
+    result: malaya.torch_model.huggingface.ZeroShotClassification
+    """
+
+    if model not in _huggingface_availability:
+        raise ValueError(
+            'model not supported, please check supported models from `malaya.zero_shot.classification.available_huggingface()`.'
+        )
+    return load_huggingface.load_zeroshot_classification(model=model, **kwargs)

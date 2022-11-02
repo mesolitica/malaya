@@ -69,10 +69,16 @@ malaya.entity
 .. automodule:: malaya.entity
     :members:
 
-malaya.generator
--------------------------
+malaya.generator.isi_penting
+-----------------------------
 
-.. automodule:: malaya.generator
+.. automodule:: malaya.generator.isi_penting
+    :members:
+
+malaya.generator.prefix
+-----------------------------
+
+.. automodule:: malaya.generator.prefix
     :members:
 
 malaya.jawi_rumi
@@ -294,17 +300,22 @@ malaya.summarization.extractive
 .. automodule:: malaya.summarization.extractive
     :members:
 
-malaya.similarity
+malaya.similarity.doc2vec
 -------------------------
 
-.. automodule:: malaya.similarity
+.. automodule:: malaya.similarity.doc2vec
     :members:
 
-.. autoclass:: malaya.similarity.VectorizerSimilarity()
+.. autoclass:: malaya.similarity.doc2vec.VectorizerSimilarity()
     :members:
 
-.. autoclass:: malaya.similarity.Doc2VecSimilarity()
+.. autoclass:: malaya.similarity.doc2vec.Doc2VecSimilarity()
     :members:
+
+malaya.similarity.semantic
+----------------------------
+
+.. automodule:: malaya.similarity.semantic
 
 malaya.topic_model
 -----------------------
@@ -558,6 +569,12 @@ malaya.torch_model.huggingface
     :members:
 
 .. autoclass:: malaya.torch_model.huggingface.Summarization()
+    :members:
+
+.. autoclass:: malaya.torch_model.huggingface.Similarity()
+    :members:
+
+.. autoclass:: malaya.torch_model.huggingface.ZeroShotClassification()
     :members:
 
 malaya.torch_model.mask_lm

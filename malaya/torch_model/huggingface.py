@@ -1,8 +1,11 @@
 from transformers import AutoModelForSeq2SeqLM, AutoModelForCausalLM, AutoTokenizer
 from malaya.text.rouge import postprocess_summary, find_kata_encik
+from malaya.torch_model.t5 import T5ForSequenceClassification
 from malaya_boilerplate.torch_utils import to_tensor_cuda, to_numpy
+from collections import defaultdict
 from herpetologist import check_type
 from typing import List
+import re
 
 
 class Base:
@@ -165,4 +168,101 @@ class Summarization(Generator):
                     reject_similarity=reject_similarity,
                 )
                 results[no] = s
+        return results
+
+
+class Similarity(Base):
+    def __init__(self, model, use_fast_tokenizer=False):
+        self.tokenizer = AutoTokenizer.from_pretrained(model, use_fast=use_fast_tokenizer)
+        self.model = T5ForSequenceClassification.from_pretrained(model)
+
+    def forward(self, strings_left: List[str], strings_right: List[str]):
+        if len(strings_left) != len(strings_right):
+            raise ValueError('len(strings_left) != len(strings_right)')
+
+        cuda = next(self.model.parameters()).is_cuda
+
+        strings = []
+        for i in range(len(strings_left)):
+            s1 = strings_left[i]
+            s2 = strings_right[i]
+            s = f'ayat1: {s1} ayat2: {s2}'
+            strings.append(s)
+
+        input_ids = [{'input_ids': self.tokenizer.encode(s, return_tensors='pt')[0]} for s in strings]
+        padded = self.tokenizer.pad(input_ids, padding='longest')
+        for k in padded.keys():
+            padded[k] = to_tensor_cuda(padded[k], cuda)
+
+        outputs = self.model(**padded, return_dict=True)
+        return outputs
+
+    @check_type
+    def predict_proba(self, strings_left: List[str], strings_right: List[str]):
+        """
+        calculate similarity for two different batch of texts.
+
+        Parameters
+        ----------
+        strings_left : List[str]
+        strings_right : List[str]
+
+        Returns
+        -------
+        list: List[float]
+        """
+
+        outputs = self.forward(strings_left=strings_left, strings_right=strings_right)
+        entail_contradiction_logits = outputs.logits
+        probs = entail_contradiction_logits.softmax(dim=1)[:, 1]
+        return to_numpy(probs)
+
+
+class ZeroShotClassification(Similarity):
+    def __init__(self, model):
+        Similarity.__init__(
+            self,
+            model=model,
+        )
+
+    def predict_proba(
+        self,
+        strings: List[str],
+        labels: List[str],
+        prefix: str = 'ayat ini berkaitan tentang'
+    ):
+        """
+        classify list of strings and return probability.
+
+        Parameters
+        ----------
+        strings: List[str]
+        labels: List[str]
+        prefix: str
+            prefix of labels to zero shot. Playing around with prefix can get better results.
+
+        Returns
+        -------
+        list: List[Dict[str, float]]
+        """
+        strings_left, strings_right, mapping = [], [], defaultdict(list)
+        index = 0
+        for no, string in enumerate(strings):
+            for label in labels:
+                strings_left.append(string)
+                text_label = f'{prefix} {label}'
+                text_label = re.sub(r'[ ]+', ' ', text_label).strip()
+                strings_right.append(text_label)
+                mapping[no].append(index)
+                index += 1
+
+        outputs = super().forward(strings_left=strings_left, strings_right=strings_right)
+        entail_contradiction_logits = outputs.logits[:, [0, 1]]
+        probs = to_numpy(entail_contradiction_logits.softmax(dim=1)[:, 1])
+        results = []
+        for k, v in mapping.items():
+            result = {}
+            for no, index in enumerate(v):
+                result[labels[no]] = probs[index]
+            results.append(result)
         return results

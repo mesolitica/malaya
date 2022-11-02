@@ -1,3 +1,5 @@
+# https://github.com/tensorflow/tensor2tensor/blob/master/tensor2tensor/utils/rouge.py
+
 import re
 import numpy as np
 from malaya.text.bahasa.lapor import lapor as _lapor_words
@@ -8,6 +10,90 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import pairwise_distances
 
 split_words = ['SPPPPLIIIT>', 'SPPPPLIIIT']
+
+
+def _len_lcs(x, y):
+    """Returns the length of the Longest Common Subsequence between two seqs.
+    Source: http://www.algorithmist.com/index.php/Longest_Common_Subsequence
+    Args:
+      x: sequence of words
+      y: sequence of words
+    Returns
+      integer: Length of LCS between x and y
+    """
+    table = _lcs(x, y)
+    n, m = len(x), len(y)
+    return table[n, m]
+
+
+def _lcs(x, y):
+    """Computes the length of the LCS between two seqs.
+    The implementation below uses a DP programming algorithm and runs
+    in O(nm) time where n = len(x) and m = len(y).
+    Source: http://www.algorithmist.com/index.php/Longest_Common_Subsequence
+    Args:
+      x: collection of words
+      y: collection of words
+    Returns:
+      Table of dictionary of coord and len lcs
+    """
+    n, m = len(x), len(y)
+    table = {}
+    for i in range(n + 1):
+        for j in range(m + 1):
+            if i == 0 or j == 0:
+                table[i, j] = 0
+            elif x[i - 1] == y[j - 1]:
+                table[i, j] = table[i - 1, j - 1] + 1
+            else:
+                table[i, j] = max(table[i - 1, j], table[i, j - 1])
+    return table
+
+
+def _f_lcs(llcs, m, n):
+    """Computes the LCS-based F-measure score.
+    Source: https://www.microsoft.com/en-us/research/publication/
+    rouge-a-package-for-automatic-evaluation-of-summaries/
+    Args:
+      llcs: Length of LCS
+      m: number of words in reference summary
+      n: number of words in candidate summary
+    Returns:
+      Float. LCS-based F-measure score
+    """
+    r_lcs = llcs / m
+    p_lcs = llcs / n
+    beta = p_lcs / (r_lcs + 1e-12)
+    num = (1 + (beta**2)) * r_lcs * p_lcs
+    denom = r_lcs + ((beta**2) * p_lcs)
+    f_lcs = num / (denom + 1e-12)
+    return f_lcs
+
+
+def rouge_l_sentence_level(eval_sentence, ref_sentence):
+    """Computes ROUGE-L (sentence level) of two collections of sentences.
+    Source: https://www.microsoft.com/en-us/research/publication/
+    rouge-a-package-for-automatic-evaluation-of-summaries/
+    Calculated according to:
+    R_lcs = LCS(X,Y)/m
+    P_lcs = LCS(X,Y)/n
+    F_lcs = ((1 + beta^2)*R_lcs*P_lcs) / (R_lcs + (beta^2) * P_lcs)
+    where:
+    X = reference summary
+    Y = Candidate summary
+    m = length of reference summary
+    n = length of candidate summary
+    Args:
+      eval_sentences: The sentences that have been picked by the summarizer
+      ref_sentences: The sentences from the reference set
+    Returns:
+      A float: F_lcs
+    """
+
+    m = len(ref_sentence)
+    n = len(eval_sentence)
+    lcs = _len_lcs(eval_sentence, ref_sentence)
+    return _f_lcs(lcs, m, n)
 
 
 def _rouge_clean(s):

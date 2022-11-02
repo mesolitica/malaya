@@ -8,8 +8,8 @@
 
 from malaya_boilerplate.utils import get_home
 
-version = '4.9'
-bump_version = '4.9.2'
+version = '5.0'
+bump_version = '5.0'
 __version__ = bump_version
 
 package = 'malaya'
@@ -19,6 +19,7 @@ __home__, _ = get_home(package=package, package_version=version)
 from . import alignment
 from . import dictionary
 from . import generator
+from . import similarity
 from . import spelling_correction
 from . import summarization
 from . import translation
@@ -50,7 +51,6 @@ from . import relevancy
 from . import rumi_jawi
 from . import segmentation
 from . import sentiment
-from . import similarity
 from . import stack
 from . import stem
 from . import subjectivity

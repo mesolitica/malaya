@@ -117,7 +117,7 @@ def transformer(model: str = 'small-t5', quantized: bool = False, **kwargs):
     )
 
 
-def huggingface(model='mesolitica/finetune-paraphrase-t5-small-standard-bahasa-cased', **kwargs):
+def huggingface(model: str = 'mesolitica/finetune-paraphrase-t5-small-standard-bahasa-cased', **kwargs):
     """
     Load HuggingFace model to paraphrase.
 

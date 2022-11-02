@@ -1,5 +1,12 @@
 import tensorflow as tf
-from malaya.torch_model.huggingface import Generator, Prefix, Paraphrase, Summarization
+from malaya.torch_model.huggingface import (
+    Generator,
+    Prefix,
+    Paraphrase,
+    Summarization,
+    Similarity,
+    ZeroShotClassification,
+)
 from transformers import AutoTokenizer
 from malaya_boilerplate.utils import check_tf2
 
@@ -34,3 +41,11 @@ def load_paraphrase(model, initial_text, **kwargs):
 
 def load_summarization(model, initial_text, **kwargs):
     return Summarization(model, initial_text)
+
+
+def load_similarity(model, **kwargs):
+    return Similarity(model=model)
+
+
+def load_zeroshot_classification(model, **kwargs):
+    return ZeroShotClassification(model=model)

@@ -92,7 +92,7 @@ _huggingface_availability = {
 
 
 def _describe():
-    logger.info('tested on translated validation set CNN Daily Mail, https://huggingface.co/mesolitica')
+    logger.info('tested on translated validation set CNN Daily Mail, https://huggingface.co/datasets/mesolitica/translated-cnn-dailymail')
 
 
 def available_transformer():

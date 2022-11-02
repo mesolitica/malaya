@@ -133,7 +133,6 @@ Contents:
    load-sentiment
    load-subjectivity
    load-toxic
-   load-zeroshot-classification
 
 .. toctree::
    :maxdepth: 2
@@ -141,6 +140,7 @@ Contents:
 
    load-doc2vec-similarity
    load-semantic-similarity
+   load-semantic-similarity-huggingface
    load-unsupervised-keyword-extraction
    load-keyphrase-similarity
 
@@ -184,6 +184,13 @@ Contents:
    :caption: Question Answer Module
 
    load-qa-squad
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Zeroshot Module
+
+   load-zeroshot-classification
+   load-zeroshot-classification-huggingface
 
 .. toctree::
    :maxdepth: 2

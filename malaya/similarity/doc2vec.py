@@ -1,35 +1,19 @@
 import numpy as np
+from malaya.preprocessing import Tokenizer
 from malaya.text.jarowinkler import JaroWinkler
 from sklearn.metrics.pairwise import (
     cosine_similarity,
     euclidean_distances,
     manhattan_distances,
 )
-from malaya.function import (
-    check_file,
-    load_graph,
-    generate_session,
-    nodes_session,
-)
-from malaya.text.bpe import SentencePieceTokenizer
-from malaya.preprocessing import Tokenizer
-from malaya.model.bert import SiameseBERT
-from malaya.model.xlnet import SiameseXLNET
-from malaya.path import MODEL_VOCAB, MODEL_BPE
 from herpetologist import check_type
 from typing import List, Tuple, Callable
-from malaya.function import describe_availability
-import logging
-
-logger = logging.getLogger(__name__)
 
 similarity_functions = {
     'cosine': cosine_similarity,
     'euclidean': euclidean_distances,
     'manhattan': manhattan_distances,
 }
-
-label = ['not similar', 'similar']
 
 
 class VectorizerSimilarity:
@@ -369,188 +353,41 @@ class Doc2VecSimilarity:
         plt.show()
 
 
-def doc2vec_wordvector(wordvector):
+def wordvector(wv):
     """
     Doc2vec interface for text similarity using Word Vector.
 
     Parameters
     ----------
-    wordvector : object
+    wv: object
         malaya.wordvector.WordVector object.
         should have `get_vector_by_name` method.
 
     Returns
     -------
-    result: malaya.similarity.Doc2VecSimilarity
+    result: malaya.similarity.doc2vec.Doc2VecSimilarity
     """
 
-    if not hasattr(wordvector, 'get_vector_by_name'):
+    if not hasattr(wv, 'get_vector_by_name'):
         raise ValueError('wordvector must have `get_vector_by_name` method')
-    return Doc2VecSimilarity(wordvector)
+    return Doc2VecSimilarity(wv)
 
 
-def doc2vec_vectorizer(vectorizer):
+def vectorizer(v):
     """
     Doc2vec interface for text similarity using Encoder model.
 
     Parameters
     ----------
-    vectorizer : object
+    v: object
         encoder interface object, BERT, XLNET.
         should have `vectorize` method.
 
     Returns
     -------
-    result: malaya.similarity.VectorizerSimilarity
+    result: malaya.similarity.doc2vec.VectorizerSimilarity
     """
 
-    if not hasattr(vectorizer, 'vectorize'):
+    if not hasattr(v, 'vectorize'):
         raise ValueError('vectorizer must have `vectorize` method')
-    return VectorizerSimilarity(vectorizer)
-
-
-_transformer_availability = {
-    'bert': {
-        'Size (MB)': 423.4,
-        'Quantized Size (MB)': 111,
-        'macro precision': 0.88315,
-        'macro recall': 0.88656,
-        'macro f1-score': 0.88405,
-    },
-    'tiny-bert': {
-        'Size (MB)': 56.6,
-        'Quantized Size (MB)': 15,
-        'macro precision': 0.87210,
-        'macro recall': 0.87546,
-        'macro f1-score': 0.87292,
-    },
-    'albert': {
-        'Size (MB)': 48.3,
-        'Quantized Size (MB)': 12.8,
-        'macro precision': 0.87164,
-        'macro recall': 0.87146,
-        'macro f1-score': 0.87155,
-    },
-    'tiny-albert': {
-        'Size (MB)': 21.9,
-        'Quantized Size (MB)': 6,
-        'macro precision': 0.82234,
-        'macro recall': 0.82383,
-        'macro f1-score': 0.82295,
-    },
-    'xlnet': {
-        'Size (MB)': 448.7,
-        'Quantized Size (MB)': 119,
-        'macro precision': 0.80866,
-        'macro recall': 0.76775,
-        'macro f1-score': 0.77112,
-    },
-    'alxlnet': {
-        'Size (MB)': 49.0,
-        'Quantized Size (MB)': 13.9,
-        'macro precision': 0.88756,
-        'macro recall': 0.88700,
-        'macro f1-score': 0.88727,
-    },
-}
-
-_vectorizer_mapping = {
-    'bert': 'import/bert/encoder/layer_11/output/LayerNorm/batchnorm/add_1:0',
-    'tiny-bert': 'import/bert/encoder/layer_3/output/LayerNorm/batchnorm/add_1:0',
-    'albert': 'import/bert/encoder/transformer/group_0_11/layer_11/inner_group_0/LayerNorm_1/batchnorm/add_1:0',
-    'tiny-albert': 'import/bert/encoder/transformer/group_0_3/layer_3/inner_group_0/LayerNorm_1/batchnorm/add_1:0',
-    'xlnet': 'import/model/transformer/layer_11/ff/LayerNorm/batchnorm/add_1:0',
-    'alxlnet': 'import/model/transformer/layer_shared_11/ff/LayerNorm/batchnorm/add_1:0',
-}
-
-
-def available_transformer():
-    """
-    List available transformer similarity models.
-    """
-    logger.info('trained on 80% dataset, tested on another 20% test set, dataset at https://github.com/huseinzol05/Malay-Dataset/tree/master/text-similarity')
-
-    return describe_availability(_transformer_availability)
-
-
-def _transformer(
-    model, bert_model, xlnet_model, quantized=False, siamese=False, **kwargs
-):
-    model = model.lower()
-    if model not in _transformer_availability:
-        raise ValueError(
-            'model not supported, please check supported models from `malaya.similarity.available_transformer()`.'
-        )
-
-    path = check_file(
-        file=model,
-        module='similarity',
-        keys={
-            'model': 'model.pb',
-            'vocab': MODEL_VOCAB[model],
-            'tokenizer': MODEL_BPE[model],
-        },
-        quantized=quantized,
-        **kwargs,
-    )
-    g = load_graph(path['model'], **kwargs)
-
-    if model in ['albert', 'bert', 'tiny-albert', 'tiny-bert']:
-        selected_model = bert_model
-        if siamese:
-            selected_node = 'import/bert/pooler/dense/BiasAdd:0'
-
-    if model in ['xlnet', 'alxlnet']:
-        selected_model = xlnet_model
-        if siamese:
-            selected_node = 'import/model_1/sequnece_summary/summary/BiasAdd:0'
-
-    if not siamese:
-        selected_node = _vectorizer_mapping[model]
-
-    inputs = ['Placeholder', 'Placeholder_1', 'Placeholder_2']
-    outputs = ['logits']
-    tokenizer = SentencePieceTokenizer(vocab_file=path['vocab'], spm_model_file=path['tokenizer'])
-    input_nodes, output_nodes = nodes_session(
-        g, inputs, outputs, extra={'vectorizer': selected_node}
-    )
-
-    return selected_model(
-        input_nodes=input_nodes,
-        output_nodes=output_nodes,
-        sess=generate_session(graph=g, **kwargs),
-        tokenizer=tokenizer,
-        label=label,
-    )
-
-
-@check_type
-def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
-    """
-    Load Transformer similarity model.
-
-    Parameters
-    ----------
-    model: str, optional (default='bert')
-        Check available models at `malaya.similarity.available_transformer()`.
-    quantized: bool, optional (default=False)
-        if True, will load 8-bit quantized model.
-        Quantized model not necessary faster, totally depends on the machine.
-
-    Returns
-    -------
-    result: model
-        List of model classes:
-
-        * if `bert` in model, will return `malaya.model.bert.SiameseBERT`.
-        * if `xlnet` in model, will return `malaya.model.xlnet.SiameseXLNET`.
-    """
-
-    return _transformer(
-        model=model,
-        bert_model=SiameseBERT,
-        xlnet_model=SiameseXLNET,
-        quantized=quantized,
-        siamese=True,
-        **kwargs,
-    )
+    return VectorizerSimilarity(v)
