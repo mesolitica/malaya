@@ -1,6 +1,8 @@
 import tensorflow as tf
 from herpetologist import check_type
+from malaya.function import describe_availability
 import logging
+import warnings
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +43,8 @@ def available_transformer():
     """
     List available transformer models.
     """
-    from malaya.function import describe_availability
+
+    warnings.warn('`malaya.transformer.available_transformer` is deprecated', DeprecationWarning)
 
     return describe_availability(_transformer_availability)
 
@@ -73,6 +76,8 @@ def load(model: str = 'electra', pool_mode: str = 'last', **kwargs):
         * if `albert` in model, will return `malaya.transformers.albert.Model`.
         * if `electra` in model, will return `malaya.transformers.electra.Model`.
     """
+
+    warnings.warn('`malaya.transformer.load` is deprecated', DeprecationWarning)
 
     model = model.lower()
     pool_mode = pool_mode.lower()

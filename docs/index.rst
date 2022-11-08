@@ -17,6 +17,7 @@ Contents:
    :caption: Getting Started
 
    speech-toolkit
+   knowledge-graph-toolkit
    installation
    Dataset
    running-on-windows
@@ -89,6 +90,7 @@ Contents:
    load-stemmer
    load-true-case
    load-segmentation
+   load-segmentation-huggingface
    load-num2word
    load-word2num
    load-coreference-resolution

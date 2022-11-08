@@ -41,10 +41,7 @@ class Generator(Base):
         for k in padded.keys():
             padded[k] = to_tensor_cuda(padded[k], cuda)
         outputs = self.model.generate(**padded, **kwargs)
-        results = []
-        for o in outputs:
-            results.append(self.tokenizer.decode(o, skip_special_tokens=True))
-        return results
+        return self.tokenizer.batch_decode(outputs, skip_special_tokens=True)
 
 
 class Prefix(Base):
@@ -71,11 +68,8 @@ class Prefix(Base):
         padded = {'input_ids': tokenizer.encode(string, return_tensors='pt')}
         for k in padded.keys():
             padded[k] = to_tensor_cuda(padded[k], cuda)
-        outputs = model.generate(**padded, **kwargs)
-        results = []
-        for o in outputs:
-            results.append(tokenizer.decode(o, skip_special_tokens=True))
-        return results
+        outputs = self.model.generate(**padded, **kwargs)
+        return self.tokenizer.batch_decode(outputs, skip_special_tokens=True)
 
 
 class Paraphrase(Generator):
@@ -266,3 +260,50 @@ class ZeroShotClassification(Similarity):
                 result[labels[no]] = probs[index]
             results.append(result)
         return results
+
+
+class ZeroShotNER(Base):
+    def __init__(self, model, use_fast_tokenizer=False):
+        self.tokenizer = AutoTokenizer.from_pretrained(model, use_fast=use_fast_tokenizer)
+        self.model = T5ForSequenceClassification.from_pretrained(model)
+        self._q = 'apakah entiti <entity>?'
+        self._placeholder = '<entity>'
+
+    def predict(self, string: str, tags: List[str], **kwargs):
+        """
+        classify entities in a string.
+
+        Parameters
+        ----------
+        strings: str
+            We assumed the string input been properly tokenized.
+        tags: List[str]
+        **kwargs: vector arguments pass to huggingface `generate` method.
+            Read more at https://huggingface.co/docs/transformers/main_classes/text_generation
+
+        Returns
+        -------
+        list: Dict[str, List[str]]
+        """
+
+        cuda = next(self.model.parameters()).is_cuda
+        input_ids = []
+        for t in tags:
+            q = self._q.replace(self._placeholder, t)
+            s = f'teks: {text} soalan: {q}'
+            input_ids.append({'input_ids': tokenizer.encode(s, return_tensors='pt')[0]})
+
+        padded = tokenizer.pad(input_ids, padding='longest')
+        for k in padded.keys():
+            padded[k] = to_tensor_cuda(padded[k], cuda)
+
+        outputs = self.model.generate(**padded, **kwargs)
+        outputs = tokenizer.batch_decode(outputs, skip_special_tokens=True)
+        entities = defaultdict(list)
+        for no, t in enumerate(tags):
+            e = outputs[no].split(' dan ')
+            e = [e_ for e_ in e if len(e_) and e_ != 'tiada' and e_ != 'tiada jawapan' and e_ in string]
+            e = list(set(e))
+            entities[t].extend(e)
+
+        return dict(entities)

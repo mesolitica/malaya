@@ -75,27 +75,27 @@ _vectorizer_mapping = {
 _huggingface_availability = {
     'mesolitica/finetune-mnli-t5-super-tiny-standard-bahasa-cased': {
         'Size (MB)': 50.7,
-        'macro precision': 0.88756,
-        'macro recall': 0.88700,
-        'macro f1-score': 0.88727,
+        'macro precision': 0.74562,
+        'macro recall': 0.74574,
+        'macro f1-score': 0.74501,
     },
     'mesolitica/finetune-mnli-t5-tiny-standard-bahasa-cased': {
         'Size (MB)': 139,
-        'macro precision': 0.88756,
-        'macro recall': 0.88700,
-        'macro f1-score': 0.88727,
+        'macro precision': 0.76584,
+        'macro recall': 0.76565,
+        'macro f1-score': 0.76542,
     },
     'mesolitica/finetune-mnli-t5-small-standard-bahasa-cased': {
         'Size (MB)': 242,
-        'macro precision': 0.88756,
-        'macro recall': 0.88700,
-        'macro f1-score': 0.88727,
+        'macro precision': 0.78067,
+        'macro recall': 0.78063,
+        'macro f1-score': 0.78010,
     },
     'mesolitica/finetune-mnli-t5-base-standard-bahasa-cased': {
         'Size (MB)': 892,
-        'macro precision': 0.88756,
-        'macro recall': 0.88700,
-        'macro f1-score': 0.88727,
+        'macro precision': 0.78903,
+        'macro recall': 0.79064,
+        'macro f1-score': 0.78918,
     },
 }
 
@@ -111,8 +111,9 @@ def available_transformer():
 
     warnings.warn(
         '`malaya.similarity.semantic.available_transformer` is deprecated, use `malaya.similarity.semantic.available_huggingface` instead', DeprecationWarning)
-
     _describe()
+    logger.warning('test set been leaked during training session.')
+
     return describe_availability(_transformer_availability)
 
 

@@ -6,6 +6,7 @@ from malaya.torch_model.huggingface import (
     Summarization,
     Similarity,
     ZeroShotClassification,
+    ZeroShotNER,
 )
 from transformers import AutoTokenizer
 from malaya_boilerplate.utils import check_tf2
@@ -49,3 +50,7 @@ def load_similarity(model, **kwargs):
 
 def load_zeroshot_classification(model, **kwargs):
     return ZeroShotClassification(model=model)
+
+
+def load_zeroshot_ner(model, **kwargs):
+    return ZeroShotNER(model=model)
