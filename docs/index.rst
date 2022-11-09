@@ -185,7 +185,8 @@ Contents:
    :maxdepth: 2
    :caption: Question Answer Module
 
-   load-qa-squad
+   load-qa-extractive
+   load-qa-extractive-huggingface
 
 .. toctree::
    :maxdepth: 2

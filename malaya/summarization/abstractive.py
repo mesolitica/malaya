@@ -192,4 +192,4 @@ def huggingface(model: str = 'mesolitica/finetune-summarization-t5-small-standar
         raise ValueError(
             'model not supported, please check supported models from `malaya.summarization.abstractive.available_huggingface()`.'
         )
-    return load_huggingface.load_generator(model=model, initial_text='ringkasan: ', **kwargs)
+    return load_huggingface.load_summarization(model=model, initial_text='ringkasan: ', **kwargs)

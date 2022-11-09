@@ -45,10 +45,10 @@ malaya.generator.prefix
 .. automodule:: malaya.generator.prefix
     :members:
 
-malaya.qa.context
+malaya.qa.extractive
 -------------------------
 
-.. automodule:: malaya.qa.context
+.. automodule:: malaya.qa.extractive
     :members:
 
 malaya.similarity.doc2vec
@@ -581,6 +581,12 @@ malaya.torch_model.huggingface
     :members:
 
 .. autoclass:: malaya.torch_model.huggingface.ZeroShotClassification()
+    :members:
+
+.. autoclass:: malaya.torch_model.huggingface.ZeroShotNER()
+    :members:
+
+.. autoclass:: malaya.torch_model.huggingface.ExtractiveQA()
     :members:
 
 malaya.torch_model.mask_lm

@@ -1,4 +1,5 @@
 from malaya.supervised import qa
+from malaya.supervised import huggingface as load_huggingface
 from herpetologist import check_type
 from malaya.function import describe_availability
 import logging
@@ -52,26 +53,35 @@ _transformer_availability = {
 }
 
 _huggingface_availability = {
-    'mesolitica/finetune-qa-context-t5-tiny-standard-bahasa-cased': {
+    'mesolitica/finetune-extractive-qa-t5-tiny-standard-bahasa-cased': {
         'Size (MB)': 139,
-        'WER': 0.1345597,
+        'exact-ms': 61.97503,
+        'f1-ms': 61.97503,
+        'exact-en': 61.97503,
+        'f1-en': 61.97503,
         'Suggested length': 256,
     },
-    'mesolitica/finetune-qa-context-t5-small-standard-bahasa-cased': {
+    'mesolitica/finetune-extractive-qa-t5-small-standard-bahasa-cased': {
         'Size (MB)': 242,
-        'WER': 0.1345597,
+        'exact-ms': 61.97503,
+        'f1-ms': 61.97503,
+        'exact-en': 61.97503,
+        'f1-en': 61.97503,
         'Suggested length': 256,
     },
-    'mesolitica/finetune-qa-context-t5-base-standard-bahasa-cased': {
+    'mesolitica/finetune-extractive-qa-t5-base-standard-bahasa-cased': {
         'Size (MB)': 892,
-        'WER': 0.1345597,
+        'exact-ms': 61.97503,
+        'f1-ms': 61.97503,
+        'exact-en': 61.97503,
+        'f1-en': 61.97503,
         'Suggested length': 256,
     },
 }
 
 
 def _describe():
-    logger.info('testes on translated SQUAD V2 Dev set at https://github.com/huseinzol05/malay-dataset/tree/master/question-answer/squad')
+    logger.info('tested on translated SQUAD V2 Dev set, https://github.com/huseinzol05/malay-dataset/tree/master/question-answer/squad')
 
 
 def available_transformer():
@@ -80,7 +90,7 @@ def available_transformer():
     """
 
     warnings.warn(
-        '`malaya.qa.context.available_transformer` is deprecated, use `malaya.qa.context.available_huggingface` instead', DeprecationWarning)
+        '`malaya.qa.extractive.available_transformer` is deprecated, use `malaya.qa.extractive.available_huggingface` instead', DeprecationWarning)
 
     _describe()
     return describe_availability(_transformer_availability)
@@ -92,6 +102,7 @@ def available_huggingface():
     """
 
     _describe()
+    logger.info('tested on SQUAD V2 Dev set, https://rajpurkar.github.io/SQuAD-explorer/')
     return describe_availability(_huggingface_availability)
 
 
@@ -103,7 +114,7 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
     Parameters
     ----------
     model: str, optional (default='xlnet')
-        Check available models at `malaya.qa.context.available_transformer()`.
+        Check available models at `malaya.qa.extractive.available_transformer()`.
     quantized: bool, optional (default=False)
         if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
@@ -114,33 +125,35 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
     """
 
     warnings.warn(
-        '`malaya.qa.context.transformer` is deprecated, use `malaya.qa.context.huggingface` instead', DeprecationWarning)
+        '`malaya.qa.extractive.transformer` is deprecated, use `malaya.qa.extractive.huggingface` instead', DeprecationWarning)
 
     model = model.lower()
     if model not in _transformer_availability:
         raise ValueError(
-            'model not supported, please check supported models from `malaya.qa.context.available_transformer()`.'
+            'model not supported, please check supported models from `malaya.qa.extractive.available_transformer()`.'
         )
     return qa.transformer_squad(
         module='qa-squad', model=model, quantized=quantized, **kwargs
     )
 
 
-def huggingface(model: str = 'mesolitica/finetune-qa-context-t5-small-standard-bahasa-cased', **kwargs):
+def huggingface(model: str = 'mesolitica/finetune-qa-extractive-t5-small-standard-bahasa-cased', **kwargs):
     """
-    Load HuggingFace model to answer questions based on context.
+    Load HuggingFace model to answer extractive question answers.
 
     Parameters
     ----------
-    model: str, optional (default='mesolitica/finetune-qa-context-t5-small-standard-bahasa-cased')
-        Check available models at `malaya.qa.context.available_huggingface()`.
+    model: str, optional (default='mesolitica/finetune-extractive-qa-t5-small-standard-bahasa-cased')
+        Check available models at `malaya.qa.extractive.available_huggingface()`.
 
     Returns
     -------
-    result: malaya.torch_model.huggingface.QAContext
+    result: malaya.torch_model.huggingface.ExtractiveQA
     """
 
     if model not in _huggingface_availability:
         raise ValueError(
-            'model not supported, please check supported models from `malaya.qa.context.available_huggingface()`.'
+            'model not supported, please check supported models from `malaya.qa.extractive.available_huggingface()`.'
         )
+
+    return load_huggingface.load_extractive_qa(model=model, **kwargs)
