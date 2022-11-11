@@ -22,6 +22,7 @@ from . import generator
 from . import similarity
 from . import spelling_correction
 from . import summarization
+from . import topic_model
 from . import translation
 from . import utils
 from . import zero_shot

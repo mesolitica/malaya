@@ -1,4 +1,20 @@
-from transformers import AutoModelForSeq2SeqLM, AutoModelForCausalLM, AutoTokenizer
+from transformers import (
+    AutoModelForSeq2SeqLM,
+    AutoModelForCausalLM,
+    AutoModelForMaskedLM,
+    AutoTokenizer,
+    RobertaTokenizer,
+    ElectraTokenizer,
+    BertTokenizer,
+    T5Tokenizer,
+    AlbertTokenizer,
+    XLNetTokenizer,
+)
+from malaya.text.bpe import (
+    merge_sentencepiece_tokens,
+    merge_wordpiece_tokens,
+    merge_bpe_tokens,
+)
 from malaya.text.rouge import postprocess_summary, find_kata_encik
 from malaya.text.function import remove_newlines
 from malaya.torch_model.t5 import T5ForSequenceClassification
@@ -6,6 +22,8 @@ from malaya_boilerplate.torch_utils import to_tensor_cuda, to_numpy
 from collections import defaultdict
 from herpetologist import check_type
 from typing import List
+import numpy as np
+import torch
 import re
 
 
@@ -15,9 +33,9 @@ class Base:
 
 
 class Generator(Base):
-    def __init__(self, model, initial_text, use_fast_tokenizer=False):
-        self.tokenizer = AutoTokenizer.from_pretrained(model, use_fast=use_fast_tokenizer)
-        self.model = AutoModelForSeq2SeqLM.from_pretrained(model)
+    def __init__(self, model, initial_text, **kwargs):
+        self.tokenizer = AutoTokenizer.from_pretrained(model, **kwargs)
+        self.model = AutoModelForSeq2SeqLM.from_pretrained(model, **kwargs)
         self._initial_text = initial_text
 
     @check_type
@@ -46,9 +64,9 @@ class Generator(Base):
 
 
 class Prefix(Base):
-    def __init__(self, model, use_fast_tokenizer=False):
-        self.tokenizer = AutoTokenizer.from_pretrained(model, use_fast=use_fast_tokenizer)
-        self.model = AutoModelForCausalLM.from_pretrained(model)
+    def __init__(self, model, **kwargs):
+        self.tokenizer = AutoTokenizer.from_pretrained(model, **kwargs)
+        self.model = AutoModelForCausalLM.from_pretrained(model, **kwargs)
 
     @check_type
     def generate(self, string, **kwargs):
@@ -74,12 +92,12 @@ class Prefix(Base):
 
 
 class Paraphrase(Generator):
-    def __init__(self, model, initial_text, use_fast_tokenizer=False):
+    def __init__(self, model, initial_text, **kwargs):
         Generator.__init__(
             self,
             model=model,
             initial_text=initial_text,
-            use_fast_tokenizer=use_fast_tokenizer,
+            **kwargs,
         )
 
     @check_type
@@ -113,12 +131,12 @@ class Paraphrase(Generator):
 
 
 class Summarization(Generator):
-    def __init__(self, model, initial_text, use_fast_tokenizer=False):
+    def __init__(self, model, initial_text, **kwargs):
         Generator.__init__(
             self,
             model=model,
             initial_text=initial_text,
-            use_fast_tokenizer=use_fast_tokenizer,
+            **kwargs,
         )
 
     @check_type
@@ -167,9 +185,9 @@ class Summarization(Generator):
 
 
 class Similarity(Base):
-    def __init__(self, model, use_fast_tokenizer=False):
-        self.tokenizer = AutoTokenizer.from_pretrained(model, use_fast=use_fast_tokenizer)
-        self.model = T5ForSequenceClassification.from_pretrained(model)
+    def __init__(self, model, **kwargs):
+        self.tokenizer = AutoTokenizer.from_pretrained(model, **kwargs)
+        self.model = T5ForSequenceClassification.from_pretrained(model, **kwargs)
 
     def forward(self, strings_left: List[str], strings_right: List[str]):
         if len(strings_left) != len(strings_right):
@@ -214,10 +232,11 @@ class Similarity(Base):
 
 
 class ZeroShotClassification(Similarity):
-    def __init__(self, model):
+    def __init__(self, model, **kwargs):
         Similarity.__init__(
             self,
             model=model,
+            **kwargs
         )
 
     def predict_proba(
@@ -264,9 +283,9 @@ class ZeroShotClassification(Similarity):
 
 
 class ZeroShotNER(Base):
-    def __init__(self, model, use_fast_tokenizer=False):
-        self.tokenizer = AutoTokenizer.from_pretrained(model, use_fast=use_fast_tokenizer)
-        self.model = T5ForSequenceClassification.from_pretrained(model)
+    def __init__(self, model, **kwargs):
+        self.tokenizer = AutoTokenizer.from_pretrained(model, **kwargs)
+        self.model = T5ForSequenceClassification.from_pretrained(model, **kwargs)
         self._q = 'apakah entiti <entity>?'
         self._placeholder = '<entity>'
 
@@ -294,16 +313,16 @@ class ZeroShotNER(Base):
             s = f'teks: {text} soalan: {q}'
             input_ids.append({'input_ids': tokenizer.encode(s, return_tensors='pt')[0]})
 
-        padded = tokenizer.pad(input_ids, padding='longest')
+        padded = self.tokenizer.pad(input_ids, padding='longest')
         for k in padded.keys():
             padded[k] = to_tensor_cuda(padded[k], cuda)
 
         outputs = self.model.generate(**padded, **kwargs)
-        outputs = tokenizer.batch_decode(outputs, skip_special_tokens=True)
+        outputs = self.tokenizer.batch_decode(outputs, skip_special_tokens=True)
         entities = defaultdict(list)
         for no, t in enumerate(tags):
             e = outputs[no].split(' dan ')
-            e = [e_ for e_ in e if len(e_) and e_ != 'tiada' and e_ != 'tiada jawapan' and e_ in string]
+            e = [e_ for e_ in e if len(e_) > 1 and e_ != 'tiada' and e_ != 'tiada jawapan' and e_ in string]
             e = list(set(e))
             entities[t].extend(e)
 
@@ -311,12 +330,11 @@ class ZeroShotNER(Base):
 
 
 class Aligment(Generator):
-    def __init__(self, model, initial_text, use_fast_tokenizer=False):
+    def __init__(self, model, initial_text):
         Generator.__init__(
             self,
             model=model,
             initial_text=initial_text,
-            use_fast_tokenizer=use_fast_tokenizer,
         )
 
     def align(self):
@@ -345,12 +363,12 @@ class Aligment(Generator):
 
 
 class ExtractiveQA(Generator):
-    def __init__(self, model, use_fast_tokenizer=False):
+    def __init__(self, model, **kwargs):
         Generator.__init__(
             self,
             model=model,
             initial_text='',
-            use_fast_tokenizer=use_fast_tokenizer,
+            **kwargs,
         )
 
     def predict(
@@ -382,3 +400,178 @@ class ExtractiveQA(Generator):
             strings.append(s)
 
         return super().generate(strings, **kwargs)
+
+
+class ExtractiveQAFlan(Generator):
+    def __init__(self, model, **kwargs):
+        Generator.__init__(
+            self,
+            model=model,
+            initial_text='',
+            **kwargs,
+        )
+
+    def predict(
+        self,
+        paragraph_text: str,
+        question_texts: List[str],
+        **kwargs,
+    ):
+        """
+        Predict Span from questions given a paragraph.
+
+        Parameters
+        ----------
+        paragraph_text: str
+        question_texts: List[str]
+            List of questions, results really depends on case sensitive questions.
+        **kwargs: vector arguments pass to huggingface `generate` method.
+            Read more at https://huggingface.co/docs/transformers/main_classes/text_generation
+
+        Returns
+        -------
+        result: List[str]
+        """
+
+        text = remove_newlines(paragraph_text)
+        strings = []
+        for q in question_texts:
+            s = f'read the following context and answer the question given: context: {text} question: {remove_newlines(q)}'
+            strings.append(s)
+
+        return super().generate(strings, **kwargs)
+
+
+class Transformer(Base):
+    def __init__(
+        self,
+        model,
+        **kwargs,
+    ):
+        self.tokenizer = AutoTokenizer.from_pretrained(model, **kwargs)
+
+        if self.tokenizer.slow_tokenizer_class in (RobertaTokenizer,):
+            self._tokenizer_type = 'bpe'
+            self._merge = merge_bpe_tokens
+        elif self.tokenizer.slow_tokenizer_class in (ElectraTokenizer, BertTokenizer):
+            self._tokenizer_type = 'wordpiece'
+            self._merge = merge_wordpiece_tokens
+        elif self.tokenizer.slow_tokenizer_class in (T5Tokenizer, AlbertTokenizer, XLNetTokenizer):
+            self._tokenizer_type = 'sentencepiece'
+            self._merge = merge_sentencepiece_tokens
+        else:
+            raise ValueError(
+                'currently `malaya.transformer.load_huggingface` only supported `bpe`, `wordpiece` and `sentencepiece` tokenizer')
+
+        if 't5' in model:
+            self.model = T5ForSequenceClassification.from_pretrained(model, **kwargs)
+        else:
+            self.model = AutoModelForMaskedLM.from_pretrained(model, **kwargs)
+
+    def forward(self, strings):
+        cuda = next(self.model.parameters()).is_cuda
+        input_ids = [{'input_ids': self.tokenizer.encode(s, return_tensors='pt')[0]} for s in strings]
+        padded = self.tokenizer.pad(input_ids, padding='longest')
+        for k in padded.keys():
+            padded[k] = to_tensor_cuda(padded[k], cuda)
+
+        return self.model(**padded, return_dict=True, output_attentions=True, output_hidden_states=True), padded
+
+    def _method(self, layers, method, dim=0):
+        method = method.lower()
+        if method == 'last':
+            layer = layers[-1]
+        elif method == 'first':
+            layer = layers[0]
+        elif method == 'mean':
+            layer = torch.mean(layers, dim=dim)
+        else:
+            raise ValueError('only supported `last`, `first` and `mean`.')
+        return layer
+
+    def vectorize(
+        self,
+        strings: List[str],
+        method: str = 'last',
+        method_token: str = 'first',
+        **kwargs,
+    ):
+        """
+        Vectorize string inputs.
+
+        Parameters
+        ----------
+        strings: List[str]
+        method: str, optional (default='last')
+            hidden layers supported. Allowed values:
+
+            * ``'last'`` - last layer.
+            * ``'first'`` - first layer.
+            * ``'mean'`` - average all layers.
+        method_token: str, optional (default='first')
+            token layers supported. Allowed values:
+
+            * ``'last'`` - last token.
+            * ``'first'`` - first token.
+            * ``'mean'`` - average all tokens.
+
+            usually pretrained models trained on `first` token for classification task.
+
+        Returns
+        -------
+        result: np.array
+        """
+
+        hidden_states = self.forward(strings=strings)[0].hidden_states
+        stacked = torch.stack(hidden_states)
+        layer = self._method(stacked, method)
+        layer = layer.transpose(0, 1)
+        return to_numpy(self._method(layer, method_token))
+
+    def attention(
+        self,
+        strings: List[str],
+        method: str = 'last',
+        method_head: str = 'mean',
+    ):
+        """
+        Get attention string inputs.
+
+        Parameters
+        ----------
+        strings: List[str]
+        method: str, optional (default='last')
+            Attention layer supported. Allowed values:
+
+            * ``'last'`` - attention from last layer.
+            * ``'first'`` - attention from first layer.
+            * ``'mean'`` - average attentions from all layers.
+        method_head: str, optional (default='mean')
+            attention head layer supported. Allowed values:
+
+            * ``'last'`` - attention from last layer.
+            * ``'first'`` - attention from first layer.
+            * ``'mean'`` - average attentions from all layers.
+
+        Returns
+        -------
+        result : List[List[Tuple[str, float]]]
+        """
+
+        forward = self.forward(strings=strings)
+        attentions = forward[0].attentions
+        stacked = torch.stack(attentions)
+        layer = self._method(stacked, method)
+        layer = layer.transpose(0, 2).transpose(1, 2)
+        cls_attn = to_numpy(self._method(layer, method_head))
+        cls_attn = np.mean(cls_attn, axis=1)
+        total_weights = np.sum(cls_attn, axis=-1, keepdims=True)
+        attn = cls_attn / total_weights
+        tokenized = [self.tokenizer.convert_ids_to_tokens(to_numpy(forward[1]['input_ids'][i]))
+                     for i in range(len(forward[1]['input_ids']))]
+        output = []
+        for i in range(attn.shape[0]):
+            output.append(
+                self._merge(list(zip(tokenized[i], attn[i])))
+            )
+        return output

@@ -1,13 +1,17 @@
 import tensorflow as tf
 from herpetologist import check_type
 from malaya.function import describe_availability
+from malaya.supervised import huggingface as load_huggingface
 import logging
 import warnings
 
 logger = logging.getLogger(__name__)
 
 _transformer_availability = {
-    'bert': {'Size (MB)': 425.6, 'Description': 'Google BERT BASE parameters'},
+    'bert': {
+        'Size (MB)': 425.6,
+        'Description': 'Google BERT BASE parameters'
+    },
     'tiny-bert': {
         'Size (MB)': 57.4,
         'Description': 'Google BERT TINY parameters',
@@ -38,15 +42,63 @@ _transformer_availability = {
     },
 }
 
+_huggingface_availability = {
+    'mesolitica/roberta-base-bahasa-cased': {
+        'Size (MB)': 443,
+    },
+    'mesolitica/roberta-tiny-bahasa-cased': {
+        'Size (MB)': 66.1,
+    },
+    'mesolitica/bert-base-standard-bahasa-cased': {
+        'Size (MB)': 443,
+    },
+    'mesolitica/bert-tiny-standard-bahasa-cased': {
+        'Size (MB)': 66.1,
+    },
+    'mesolitica/roberta-base-standard-bahasa-cased': {
+        'Size (MB)': 443,
+    },
+    'mesolitica/roberta-tiny-standard-bahasa-cased': {
+        'Size (MB)': 66.1,
+    },
+    'mesolitica/electra-base-generator-bahasa-cased': {
+        'Size (MB)': 140,
+    },
+    'mesolitica/electra-small-generator-bahasa-cased': {
+        'Size (MB)': 19.3,
+    },
+    'mesolitica/finetune-mnli-t5-super-tiny-standard-bahasa-cased': {
+        'Size (MB)': 50.7,
+    },
+    'mesolitica/finetune-mnli-t5-tiny-standard-bahasa-cased': {
+        'Size (MB)': 139,
+    },
+    'mesolitica/finetune-mnli-t5-small-standard-bahasa-cased': {
+        'Size (MB)': 242,
+    },
+    'mesolitica/finetune-mnli-t5-base-standard-bahasa-cased': {
+        'Size (MB)': 892,
+    }
+}
+
 
 def available_transformer():
     """
     List available transformer models.
     """
 
-    warnings.warn('`malaya.transformer.available_transformer` is deprecated', DeprecationWarning)
+    warnings.warn(
+        '`malaya.transformer.available_transformer` is deprecated, use `malaya.transformer.available_huggingface` instead', DeprecationWarning)
 
     return describe_availability(_transformer_availability)
+
+
+def available_huggingface():
+    """
+    List available huggingface models.
+    """
+
+    return describe_availability(_huggingface_availability)
 
 
 @check_type
@@ -77,7 +129,7 @@ def load(model: str = 'electra', pool_mode: str = 'last', **kwargs):
         * if `electra` in model, will return `malaya.transformers.electra.Model`.
     """
 
-    warnings.warn('`malaya.transformer.load` is deprecated', DeprecationWarning)
+    warnings.warn('`malaya.transformer.load` is deprecated, use `malaya.transformer.huggingface` instead', DeprecationWarning)
 
     model = model.lower()
     pool_mode = pool_mode.lower()
@@ -88,7 +140,7 @@ def load(model: str = 'electra', pool_mode: str = 'last', **kwargs):
 
     if tf.executing_eagerly():
         logger.warning(
-            'Load pretrained transformer model will disable eager execution.'
+            f'Load pretrained transformer {model} model will disable eager execution.'
         )
         tf.compat.v1.disable_eager_execution()
 
@@ -114,3 +166,28 @@ def load(model: str = 'electra', pool_mode: str = 'last', **kwargs):
         from malaya.transformers.electra import load
 
         return load(model=model, **kwargs)
+
+
+def huggingface(
+    model: str = 'mesolitica/electra-base-generator-bahasa-cased',
+    force_check: bool = True,
+    **kwargs,
+):
+    """
+    Load transformer model.
+
+    Parameters
+    ----------
+    model: str, optional (default='mesolitica/electra-base-generator-bahasa-cased')
+        Check available models at `malaya.transformer.available_huggingface()`.
+    force_check: bool, optional (default=True)
+        Force check model one of malaya model.
+        Set to False if you have your own huggingface model.
+    """
+
+    if model not in _huggingface_availability and force_check:
+        raise ValueError(
+            'model not supported, please check supported models from `malaya.transformer.available_huggingface()`.'
+        )
+
+    return load_huggingface.load_transformer(model=model, **kwargs)

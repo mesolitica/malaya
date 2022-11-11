@@ -45,7 +45,7 @@ python3 run_t5.py \
 --target_lang tgt \
 --train_file shuffled-train.json \
 --validation_file test-4k.json \
---output_dir finetune-t5-tiny-standard-bahasa-cased-combined \
+--output_dir finetune-t5-tiny-standard-bahasa-cased \
 --per_device_train_batch_size=32 \
 --per_device_eval_batch_size=4 \
 --predict_with_generate \
@@ -73,7 +73,7 @@ python3 run_t5.py \
 --target_lang tgt \
 --train_file shuffled-train.json \
 --validation_file test-4k.json \
---output_dir finetune-t5-super-tiny-standard-bahasa-cased-combined \
+--output_dir finetune-t5-super-tiny-standard-bahasa-cased \
 --per_device_train_batch_size=64 \
 --per_device_eval_batch_size=4 \
 --predict_with_generate \

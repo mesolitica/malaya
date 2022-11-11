@@ -500,7 +500,7 @@ def separate_dataset(trainset):
     return datastring, datatarget
 
 
-def print_topics_modelling(
+def print_topics_modeling(
     topics, feature_names, sorting, n_words=20, return_df=True
 ):
     if return_df:

@@ -6,6 +6,7 @@ from herpetologist import check_type
 from malaya.function import describe_availability
 import numpy as np
 import logging
+import warnings
 
 logger = logging.getLogger(__name__)
 
@@ -46,6 +47,24 @@ _transformer_availability = {
         'CER': 0.0798906,
         'Suggested length': 256,
     }
+}
+
+_huggingface_availability = {
+    'mesolitica/finetune-true-case-t5-super-tiny-standard-bahasa-cased': {
+        'Size (MB)': 51,
+        'WER': 0.1345597,
+        'Suggested length': 256,
+    },
+    'mesolitica/finetune-true-case-t5-tiny-standard-bahasa-cased': {
+        'Size (MB)': 139,
+        'WER': 0.1345597,
+        'Suggested length': 256,
+    },
+    'mesolitica/finetune-true-case-t5-small-standard-bahasa-cased': {
+        'Size (MB)': 242,
+        'WER': 0.1345597,
+        'Suggested length': 256,
+    },
 }
 
 
@@ -113,13 +132,29 @@ class TrueCase_LM:
         return ' '.join(splitted)
 
 
+def _describe():
+    logger.info('tested on generated dataset at https://f000.backblazeb2.com/file/malay-dataset/true-case/test-set-true-case.json')
+
+
 def available_transformer():
     """
     List available transformer models.
     """
-    logger.info('tested on generated dataset at https://github.com/huseinzol05/malaya/tree/master/session/true-case')
 
+    warnings.warn(
+        '`malaya.true_case.available_transformer` is deprecated, use `malaya.true_case.available_huggingface` instead', DeprecationWarning)
+
+    _describe()
     return describe_availability(_transformer_availability)
+
+
+def available_huggingface():
+    """
+    List available huggingface models.
+    """
+
+    _describe()
+    return describe_availability(_huggingface_availability)
 
 
 @check_type
@@ -139,6 +174,9 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
     -------
     result: malaya.model.tf.TrueCase class
     """
+
+    warnings.warn(
+        '`malaya.true_case.transformer` is deprecated, use `malaya.true_case.huggingface` instead', DeprecationWarning)
 
     model = model.lower()
     if model not in _transformer_availability:
@@ -163,6 +201,27 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
             quantized=quantized,
             **kwargs,
         )
+
+
+@check_type
+def huggingface(model: str = 'mesolitica/finetune-true-case-t5-tiny-standard-bahasa-cased', **kwargs):
+    """
+    Load HuggingFace model to true case.
+
+    Parameters
+    ----------
+    model: str, optional (default='mesolitica/finetune-true-case-t5-tiny-standard-bahasa-cased')
+        Check available models at `malaya.true_case.available_huggingface()`.
+
+    Returns
+    -------
+    result: malaya.torch_model.huggingface.Generator
+    """
+    if model not in _huggingface_availability:
+        raise ValueError(
+            'model not supported, please check supported models from `malaya.true_case.available_huggingface()`.'
+        )
+    return load_huggingface.load_generator(model=model, initial_text='kes benar: ', **kwargs)
 
 
 def probability(language_model):

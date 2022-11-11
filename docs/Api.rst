@@ -116,6 +116,30 @@ malaya.summarization.extractive
 .. automodule:: malaya.summarization.extractive
     :members:
 
+malaya.topic_model.decomposition
+---------------------------------
+
+.. automodule:: malaya.topic_model.decomposition
+    :members:
+
+.. autoclass:: malaya.topic_model.decomposition.Topic()
+    :members:
+
+malaya.topic_model.lda2vec
+---------------------------------
+
+.. automodule:: malaya.topic_model.lda2vec
+    :members:
+
+.. autoclass:: malaya.topic_model.lda2vec.DeepTopic()
+    :members:
+
+malaya.topic_model.transformer
+---------------------------------
+
+.. autoclass:: malaya.topic_model.transformer.AttentionTopic()
+    :members:
+
 malaya.translation.en_ms
 -------------------------
 
@@ -339,21 +363,6 @@ malaya.tokenizer
     :members:
 
 .. autoclass:: malaya.tokenizer.SentenceTokenizer()
-    :members:
-
-malaya.topic_model
------------------------
-
-.. automodule:: malaya.topic_model
-    :members:
-
-.. autoclass:: malaya.topic_model.AttentionTopic()
-    :members:
-
-.. autoclass:: malaya.topic_model.DeepTopic()
-    :members:
-
-.. autoclass:: malaya.topic_model.Topic()
     :members:
 
 malaya.toxicity

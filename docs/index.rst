@@ -29,12 +29,14 @@ Contents:
 
    gpu-environment-tensorflow
    gpu-environment-pytorch
+   different-precision-pytorch
 
 .. toctree::
    :maxdepth: 2
    :caption: Pre-trained model
 
    load-transformer
+   load-transformer-huggingface
    load-wordvector
 
 .. toctree::
@@ -194,6 +196,15 @@ Contents:
 
    load-zeroshot-classification
    load-zeroshot-classification-huggingface
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Topic Modeling Module
+
+   load-topic-model-decomposition
+   load-topic-model-lda2vec
+   load-topic-model-transformer
+   load-topic-model-bertopic
 
 .. toctree::
    :maxdepth: 2

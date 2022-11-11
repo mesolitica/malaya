@@ -848,10 +848,15 @@ def xlnet_tokenization_token(tokenizer, tok, texts):
     return input_ids, input_masks, segment_ids, s_tokens
 
 
-def merge_wordpiece_tokens(paired_tokens, weighted=True, vectorize=False):
+def merge_wordpiece_tokens(
+    paired_tokens,
+    weighted=True,
+    vectorize=False,
+    rejected=['[CLS]', '[SEP]', '[PAD]'],
+    **kwargs,
+):
     new_paired_tokens = []
     n_tokens = len(paired_tokens)
-    rejected = ['[CLS]', '[SEP]', '[PAD]']
 
     i = 0
 
@@ -946,11 +951,17 @@ def parse_bert_token_tagging(left, tok, tokenizer):
 
 
 def merge_sentencepiece_tokens(
-    paired_tokens, weighted=True, vectorize=False, model='bert'
+    paired_tokens,
+    weighted=True,
+    vectorize=False,
+    model='bert',
+    rejected=None,
+    **kwargs,
 ):
     new_paired_tokens = []
     n_tokens = len(paired_tokens)
-    rejected = list(SPECIAL_TOKENS[model].values())
+    if rejected is None:
+        rejected = list(SPECIAL_TOKENS[model].values())
 
     i = 0
 
@@ -1036,8 +1047,10 @@ def merge_bpe_tokens(
     vectorize=False,
     rejected=['<s>', '</s>', '<unk>', '<pad>', '<mask>'],
     prefix_char='Ġ',
+    **kwargs,
 ):
     new_paired_tokens = []
+    paired_tokens = [t for t in paired_tokens if t[0] not in rejected]
     n_tokens = len(paired_tokens)
 
     i = 0
