@@ -53,16 +53,19 @@ _huggingface_availability = {
     'mesolitica/finetune-true-case-t5-super-tiny-standard-bahasa-cased': {
         'Size (MB)': 51,
         'WER': 0.1345597,
+        'CER': 0.0798906,
         'Suggested length': 256,
     },
     'mesolitica/finetune-true-case-t5-tiny-standard-bahasa-cased': {
         'Size (MB)': 139,
         'WER': 0.1345597,
+        'CER': 0.0798906,
         'Suggested length': 256,
     },
     'mesolitica/finetune-true-case-t5-small-standard-bahasa-cased': {
         'Size (MB)': 242,
         'WER': 0.1345597,
+        'CER': 0.0798906,
         'Suggested length': 256,
     },
 }

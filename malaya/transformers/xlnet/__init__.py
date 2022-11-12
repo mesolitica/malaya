@@ -117,7 +117,7 @@ class Model:
                 ]
 
     @check_type
-    def vectorize(self, strings: List[str]):
+    def vectorize(self, strings: List[str], **kwargs):
         """
         Vectorize string inputs.
 

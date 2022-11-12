@@ -25,6 +25,9 @@ from typing import List
 import numpy as np
 import torch
 import re
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class Base:
@@ -53,6 +56,9 @@ class Generator(Base):
         -------
         result: List[str]
         """
+
+        logger.debug(f'generate, strings: {strings}')
+
         cuda = next(self.model.parameters()).is_cuda
         input_ids = [{'input_ids': self.tokenizer.encode(f'{self._initial_text}{s}', return_tensors='pt')[
             0]} for s in strings]
@@ -282,14 +288,24 @@ class ZeroShotClassification(Similarity):
         return results
 
 
-class ZeroShotNER(Base):
+class ZeroShotNER(Generator):
     def __init__(self, model, **kwargs):
-        self.tokenizer = AutoTokenizer.from_pretrained(model, **kwargs)
-        self.model = T5ForSequenceClassification.from_pretrained(model, **kwargs)
-        self._q = 'apakah entiti <entity>?'
+        Generator.__init__(
+            self,
+            model=model,
+            initial_text='',
+            **kwargs,
+        )
+        self._q = 'Ekstrak <entity> dari teks: '
         self._placeholder = '<entity>'
 
-    def predict(self, string: str, tags: List[str], **kwargs):
+    def predict(
+        self,
+        string: str,
+        tags: List[str],
+        minimum_length: int = 2,
+        **kwargs,
+    ):
         """
         classify entities in a string.
 
@@ -298,6 +314,8 @@ class ZeroShotNER(Base):
         strings: str
             We assumed the string input been properly tokenized.
         tags: List[str]
+        minimum_length: int, optional (default=2)
+            minimum length of string for an entity.
         **kwargs: vector arguments pass to huggingface `generate` method.
             Read more at https://huggingface.co/docs/transformers/main_classes/text_generation
 
@@ -306,23 +324,20 @@ class ZeroShotNER(Base):
         list: Dict[str, List[str]]
         """
 
-        cuda = next(self.model.parameters()).is_cuda
-        input_ids = []
+        strings = []
         for t in tags:
             q = self._q.replace(self._placeholder, t)
-            s = f'teks: {text} soalan: {q}'
-            input_ids.append({'input_ids': tokenizer.encode(s, return_tensors='pt')[0]})
+            s = f'{q}{string}'
+            strings.append(s)
 
-        padded = self.tokenizer.pad(input_ids, padding='longest')
-        for k in padded.keys():
-            padded[k] = to_tensor_cuda(padded[k], cuda)
+        logger.debug(strings)
 
-        outputs = self.model.generate(**padded, **kwargs)
-        outputs = self.tokenizer.batch_decode(outputs, skip_special_tokens=True)
+        outputs = super().generate(strings, **kwargs)
         entities = defaultdict(list)
         for no, t in enumerate(tags):
             e = outputs[no].split(' dan ')
-            e = [e_ for e_ in e if len(e_) > 1 and e_ != 'tiada' and e_ != 'tiada jawapan' and e_ in string]
+            e = [e_ for e_ in e if len(e_) >= minimum_length and e_ != 'tiada' and e_ !=
+                 'tiada jawapan' and e_ in string]
             e = list(set(e))
             entities[t].extend(e)
 
@@ -463,8 +478,10 @@ class Transformer(Base):
             raise ValueError(
                 'currently `malaya.transformer.load_huggingface` only supported `bpe`, `wordpiece` and `sentencepiece` tokenizer')
 
+        self._t5 = False
         if 't5' in model:
             self.model = T5ForSequenceClassification.from_pretrained(model, **kwargs)
+            self._t5 = True
         else:
             self.model = AutoModelForMaskedLM.from_pretrained(model, **kwargs)
 
@@ -475,7 +492,11 @@ class Transformer(Base):
         for k in padded.keys():
             padded[k] = to_tensor_cuda(padded[k], cuda)
 
-        return self.model(**padded, return_dict=True, output_attentions=True, output_hidden_states=True), padded
+        if self._t5:
+            return self.model.embed(**padded, return_dict=True, output_attentions=True,
+                                    output_hidden_states=True), padded
+        else:
+            return self.model(**padded, return_dict=True, output_attentions=True, output_hidden_states=True), padded
 
     def _method(self, layers, method, dim=0):
         method = method.lower()
@@ -494,6 +515,7 @@ class Transformer(Base):
         strings: List[str],
         method: str = 'last',
         method_token: str = 'first',
+        t5_head_logits: bool = True,
         **kwargs,
     ):
         """
@@ -508,6 +530,8 @@ class Transformer(Base):
             * ``'last'`` - last layer.
             * ``'first'`` - first layer.
             * ``'mean'`` - average all layers.
+
+            This only applicable for non T5 models.
         method_token: str, optional (default='first')
             token layers supported. Allowed values:
 
@@ -516,23 +540,38 @@ class Transformer(Base):
             * ``'mean'`` - average all tokens.
 
             usually pretrained models trained on `first` token for classification task.
+            This only applicable for non T5 models.
+        t5_head_logits: str, optional (default=True)
+            if True, will take head logits, else, last token.
+            This only applicable for T5 models.
 
         Returns
         -------
         result: np.array
         """
 
-        hidden_states = self.forward(strings=strings)[0].hidden_states
-        stacked = torch.stack(hidden_states)
-        layer = self._method(stacked, method)
-        layer = layer.transpose(0, 1)
-        return to_numpy(self._method(layer, method_token))
+        if self._t5:
+            logits = self.forward(strings=strings)[0].logits
+            if t5_head_logits:
+                logits = logits[1]
+            else:
+                logits = logits[0]
+            return to_numpy(logits)
+
+        else:
+            hidden_states = self.forward(strings=strings)[0].hidden_states
+            stacked = torch.stack(hidden_states)
+            layer = self._method(stacked, method)
+            layer = layer.transpose(0, 1)
+            return to_numpy(self._method(layer, method_token))
 
     def attention(
         self,
         strings: List[str],
         method: str = 'last',
         method_head: str = 'mean',
+        t5_attention: str = 'cross_attentions',
+        **kwargs,
     ):
         """
         Get attention string inputs.
@@ -552,6 +591,14 @@ class Transformer(Base):
             * ``'last'`` - attention from last layer.
             * ``'first'`` - attention from first layer.
             * ``'mean'`` - average attentions from all layers.
+        t5_attention: str, optional (default='cross_attentions')
+            attention type for T5 models. Allowed values:
+
+            * ``'cross_attentions'`` - cross attention.
+            * ``'encoder_attentions'`` - encoder attention.
+            * ``'decoder_attentions'`` - decoder attention.
+
+            This only applicable for T5 models.
 
         Returns
         -------
@@ -559,7 +606,10 @@ class Transformer(Base):
         """
 
         forward = self.forward(strings=strings)
-        attentions = forward[0].attentions
+        if self._t5:
+            attentions = getattr(forward[0], t5_attention)
+        else:
+            attentions = forward[0].attentions
         stacked = torch.stack(attentions)
         layer = self._method(stacked, method)
         layer = layer.transpose(0, 2).transpose(1, 2)
@@ -572,6 +622,7 @@ class Transformer(Base):
         output = []
         for i in range(attn.shape[0]):
             output.append(
-                self._merge(list(zip(tokenized[i], attn[i])))
+                self._merge(list(zip(tokenized[i], attn[i])),
+                            rejected=self.tokenizer.all_special_tokens)
             )
         return output

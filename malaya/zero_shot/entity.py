@@ -10,16 +10,19 @@ _huggingface_availability = {
         'Size (MB)': 139,
         'WER': 0,
         'CER': 0,
+        'exactly-match': 0,
     },
     'mesolitica/finetune-zeroshot-ner-t5-small-standard-bahasa-cased': {
         'Size (MB)': 242,
         'WER': 0,
         'CER': 0,
+        'exactly-match': 0,
     },
     'mesolitica/finetune-zeroshot-ner-t5-base-standard-bahasa-cased': {
         'Size (MB)': 892,
         'WER': 0,
         'CER': 0,
+        'exactly-match': 0,
     },
 }
 

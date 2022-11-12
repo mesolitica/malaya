@@ -39,7 +39,7 @@ Features
 -  **Coreference Resolution**, finding all expressions that refer to the same entity in a text using Dependency Parsing models.
 -  **Dependency Parsing**, extracting a dependency parse of a sentence using finetuned Transformer-Bahasa.
 -  **Emotion Analysis**, detect and recognize 6 different emotions of texts using finetuned Transformer-Bahasa.
--  **Entities Recognition**, seeks to locate and classify named entities mentioned in text using finetuned Transformer-Bahasa.
+-  **Entity Recognition**, seeks to locate and classify named entities mentioned in text using finetuned Transformer-Bahasa.
 -  **Generator**, generate any texts given a context using T5-Bahasa, GPT2-Bahasa or Transformer-Bahasa.
 -  **Jawi-to-Rumi**, convert from Jawi to Rumi using Transformer.
 -  **Keyword Extraction**, provide RAKE, TextRank and Attention Mechanism hybrid with Transformer-Bahasa.
@@ -61,13 +61,14 @@ Features
 -  **Kesalahan Tatabahasa**, Fix kesalahan tatabahasa using TransformerTag-Bahasa.
 -  **Summarization**, provide Abstractive T5-Bahasa also Extractive interface using Transformer-Bahasa, skip-thought and Doc2Vec.
 -  **Tokenizer**, provide word, sentence and syllable tokenizers.
--  **Topic Modelling**, provide Transformer-Bahasa, LDA2Vec, LDA, NMF and LSA interface for easy topic modelling with topics visualization.
+-  **Topic Modeling**, provide Transformer-Bahasa, LDA2Vec, LDA, NMF and LSA interface for easy topic modelling with topics visualization.
 -  **Toxicity Analysis**, detect and recognize 27 different toxicity patterns of texts using finetuned Transformer-Bahasa.
 -  **Transformer**, provide easy interface to load Pretrained Language Malaya models.
 -  **Translation**, provide Neural Machine Translation using Transformer for EN to MS and MS to EN.
 -  **Word2Num**, convert from cardinal or ordinal representation to numbers.
 -  **Word2Vec**, provide pretrained bahasa wikipedia and bahasa news Word2Vec, with easy interface and visualization.
 -  **Zero-shot classification**, provide Zero-shot classification interface using Transformer-Bahasa to recognize texts without any labeled training data.
+-  **Zero-shot Entity Recognition**, provide Zero-shot entity tagging interface using Transformer-Bahasa to extract entities.
 -  **Hybrid 8-bit Quantization**, provide hybrid 8-bit quantization for all models to reduce inference time up to 2x and model size up to 4x.
 -  **Longer Sequences Transformer**, provide BigBird, BigBird + Pegasus and Fastformer for longer sequence tasks.
 

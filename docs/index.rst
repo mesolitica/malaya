@@ -196,6 +196,7 @@ Contents:
 
    load-zeroshot-classification
    load-zeroshot-classification-huggingface
+   zeroshot-ner
 
 .. toctree::
    :maxdepth: 2
