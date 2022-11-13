@@ -42,14 +42,14 @@ python3 run_t5.py \
 --source_lang src \
 --target_lang tgt \
 --train_file shuffled-train.json \
---validation_file test-4k.json \
+--validation_file test-10k.json \
 --output_dir finetune-t5-base-standard-bahasa-cased-ner \
---per_device_train_batch_size=12 \
+--per_device_train_batch_size=16 \
 --per_device_eval_batch_size=4 \
 --predict_with_generate \
 --ignore_data_skip \
---max_source_length 512 \
---max_target_length 512 \
+--max_source_length 256 \
+--max_target_length 256 \
 --fp16
 ```
 

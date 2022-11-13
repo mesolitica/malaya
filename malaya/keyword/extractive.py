@@ -21,6 +21,7 @@ from malaya.function import validator
 from malaya.graph.pagerank import pagerank
 from malaya.function import describe_availability
 from herpetologist import check_type
+import warnings
 
 
 def _auto_ngram(string, stopwords):
@@ -342,9 +343,6 @@ def similarity(
     if auto_ngram and not len(stopwords):
         raise ValueError('insert stopwords if auto_ngram')
 
-    if nr_candidates < top_k:
-        raise ValueError('nr_candidates must bigger than top_k')
-
     string = transformer_textcleaning(string)
 
     if auto_ngram:
@@ -402,6 +400,9 @@ def available_transformer():
     List available transformer keyword similarity model.
     """
 
+    warnings.warn(
+        '`malaya.keyword.extractive.available_transformer` is deprecated', DeprecationWarning)
+
     return describe_availability(_transformer_availability)
 
 
@@ -413,7 +414,7 @@ def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
     Parameters
     ----------
     model: str, optional (default='bert')
-        Check available models at `malaya.keyword_extraction.available_transformer()`.
+        Check available models at `malaya.keyword.extractive.available_transformer()`.
     quantized: bool, optional (default=False)
         if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
@@ -427,10 +428,13 @@ def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
         * if `xlnet` in model, will return `malaya.model.xlnet.KeyphraseXLNET`.
     """
 
+    warnings.warn(
+        '`malaya.keyword.extractive.transformer` is deprecated', DeprecationWarning)
+
     model = model.lower()
     if model not in _transformer_availability:
         raise ValueError(
-            'model not supported, please check supported models from `malaya.keyword_extraction.available_transformer()`.'
+            'model not supported, please check supported models from `malaya.keyword.extractive.available_transformer()`.'
         )
 
     path = check_file(

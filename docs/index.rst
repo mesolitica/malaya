@@ -145,8 +145,6 @@ Contents:
    load-doc2vec-similarity
    load-semantic-similarity
    load-semantic-similarity-huggingface
-   load-unsupervised-keyword-extraction
-   load-keyphrase-similarity
 
 .. toctree::
    :maxdepth: 2
@@ -166,9 +164,9 @@ Contents:
    :maxdepth: 2
    :caption: Summarization Module
 
+   load-extractive
    load-abstractive
    load-abstractive-huggingface
-   load-extractive
 
 .. toctree::
    :maxdepth: 2
@@ -206,6 +204,12 @@ Contents:
    load-topic-model-lda2vec
    load-topic-model-transformer
    load-topic-model-bertopic
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Keyword Module
+
+   load-keyword-extractive
 
 .. toctree::
    :maxdepth: 2

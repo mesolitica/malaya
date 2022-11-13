@@ -45,6 +45,12 @@ malaya.generator.prefix
 .. automodule:: malaya.generator.prefix
     :members:
 
+malaya.keyword.extractive
+--------------------------
+
+.. automodule:: malaya.keyword.extractive
+    :members:
+
 malaya.qa.extractive
 -------------------------
 
@@ -204,12 +210,6 @@ malaya.jawi_rumi
 -------------------------
 
 .. automodule:: malaya.jawi_rumi
-    :members:
-
-malaya.keyword_extraction
---------------------------
-
-.. automodule:: malaya.keyword_extraction
     :members:
 
 malaya.language_detection
