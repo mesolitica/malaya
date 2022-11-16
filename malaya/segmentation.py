@@ -60,17 +60,20 @@ _transformer_availability = {
 _huggingface_availability = {
     'mesolitica/finetune-segmentation-t5-super-tiny-standard-bahasa-cased': {
         'Size (MB)': 51,
-        'WER': 0.1345597,
+        'WER': 0.030962535,
+        'CER': 0.0041129253,
         'Suggested length': 256,
     },
     'mesolitica/finetune-segmentation-t5-tiny-standard-bahasa-cased': {
         'Size (MB)': 139,
-        'WER': 0.1345597,
+        'WER': 0.0207876127,
+        'CER': 0.002146691161,
         'Suggested length': 256,
     },
     'mesolitica/finetune-segmentation-t5-small-standard-bahasa-cased': {
         'Size (MB)': 242,
-        'WER': 0.1345597,
+        'WER': 0.0202468274,
+        'CER': 0.0024325431,
         'Suggested length': 256,
     },
 }

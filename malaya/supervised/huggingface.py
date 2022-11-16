@@ -10,6 +10,8 @@ from malaya.torch_model.huggingface import (
     ExtractiveQA,
     ExtractiveQAFlan,
     Transformer,
+    IsiPentingGenerator,
+    Tatabahasa,
 )
 from transformers import AutoTokenizer
 from malaya_boilerplate.utils import check_tf2
@@ -68,3 +70,11 @@ def load_extractive_qa(model, **kwargs):
 
 def load_transformer(model, **kwargs):
     return Transformer(model=model, **kwargs)
+
+
+def load_isi_penting(model, initial_text, **kwargs):
+    return IsiPentingGenerator(model, initial_text, **kwargs)
+
+
+def load_tatabahasa(model, initial_text, **kwargs):
+    return Tatabahasa(model, initial_text, **kwargs)

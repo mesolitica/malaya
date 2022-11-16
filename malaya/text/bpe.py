@@ -1002,10 +1002,11 @@ def merge_sentencepiece_tokens(
     return list(zip(words, weights))
 
 
-def merge_sentencepiece_tokens_tagging(x, y, model='bert'):
+def merge_sentencepiece_tokens_tagging(x, y, model='bert', rejected=None, **kwargs):
     new_paired_tokens = []
     n_tokens = len(x)
-    rejected = list(SPECIAL_TOKENS[model].values())
+    if rejected is None:
+        rejected = list(SPECIAL_TOKENS[model].values())
 
     i = 0
 
@@ -1015,7 +1016,7 @@ def merge_sentencepiece_tokens_tagging(x, y, model='bert'):
 
         if isinstance(current_token, bytes):
             current_token = current_token.decode()
-        if not current_token.startswith('▁') and current_token not in rejected:
+        if not current_token.startswith('▁') and current_token not in rejected and i > 0:
             previous_token, previous_label = new_paired_tokens.pop()
             merged_token = previous_token
             merged_label = [previous_label]

@@ -2,13 +2,15 @@ from malaya.supervised import t5 as t5_load
 from malaya.supervised import transformer as load_transformer
 from malaya.model.tf import Tatabahasa
 from malaya.model.t5 import Tatabahasa as T5_Tatabahasa
+from malaya.supervised import huggingface as load_huggingface
 from malaya.function import describe_availability
 from herpetologist import check_type
 import logging
+import warnings
 
 logger = logging.getLogger(__name__)
 
-_transformer_tagging_availability = {
+_transformer_availability = {
     'small': {
         'Size (MB)': 397,
         'Quantized Size (MB)': 100,
@@ -23,31 +25,24 @@ _transformer_tagging_availability = {
     },
 }
 
-_transformer_availability = {
-    't5': {
-        'Size (MB)': 1250,
-        'Quantized Size (MB)': 481,
-        'WER': 0.0178902,
+_huggingface_availability = {
+    'mesolitica/finetune-tatabahasa-t5-tiny-standard-bahasa-cased': {
+        'Size (MB)': 139,
+        'Sequence Accuracy': 0.860198,
+        'Sequence Tagging Accuracy': 0.96326745,
+        'Suggested length': 256,
     },
-    'small-t5': {
-        'Size (MB)': 355.6,
-        'Quantized Size (MB)': 195,
-        'WER': 0.0187973,
+    'mesolitica/finetune-tatabahasa-t5-small-standard-bahasa-cased': {
+        'Size (MB)': 242,
+        'Sequence Accuracy': 0.860198,
+        'Sequence Tagging Accuracy': 0.96326745,
+        'Suggested length': 256,
     },
-    'tiny-t5': {
-        'Size (MB)': 208,
-        'Quantized Size (MB)': 103,
-        'WER': 0.0328037,
-    },
-    'super-tiny-t5': {
-        'Size (MB)': 81.8,
-        'Quantized Size (MB)': 27.1,
-        'WER': 0.0351141,
-    },
-    '3x-super-tiny-t5': {
-        'Size (MB)': 18.3,
-        'Quantized Size (MB)': 4.46,
-        'WER': 0.03676189,
+    'mesolitica/finetune-tatabahasa-t5-base-standard-bahasa-cased': {
+        'Size (MB)': 892,
+        'Sequence Accuracy': 0.860198,
+        'Sequence Tagging Accuracy': 0.96326745,
+        'Suggested length': 256,
     },
 }
 
@@ -151,68 +146,40 @@ def describe_tagging():
     return describe_availability(d, transpose=False)
 
 
-def available_transformer_tagging():
-    """
-    List available transformer tagging models.
-    """
-    logger.info('tested on 10k generated dataset at https://github.com/huseinzol05/malaya/tree/master/session/tatabahasa')
-
-    return describe_availability(_transformer_tagging_availability)
+def _describe():
+    logger.info('tested on 5k generated dataset at https://f000.backblazeb2.com/file/malay-dataset/tatabahasa/test-set-tatabahasa.pkl')
 
 
 def available_transformer():
     """
-    List available transformer models.
+    List available transformer tagging models.
     """
-    logger.info('tested on 7.5k generated dataset at https://github.com/huseinzol05/malaya/blob/master/session/tatabahasa/t5/prepare-tatabahasa.ipynb')
+    warnings.warn(
+        '`malaya.tatabahasa.available_transformer` is deprecated, use `malaya.tatabahasa.available_huggingface` instead',
+        DeprecationWarning)
+    _describe()
 
     return describe_availability(_transformer_availability)
 
 
-@check_type
-def transformer(model: str = 'small-t5', quantized: bool = False, **kwargs):
+def available_huggingface():
     """
-    Load Malaya transformer encoder-decoder model to correct a `kesalahan tatabahasa` text.
-
-    Parameters
-    ----------
-    model: str, optional (default='small-t5')
-        Check available models at `malaya.tatabahasa.available_transformer()`.
-    quantized: bool, optional (default=False)
-        if True, will load 8-bit quantized model.
-        Quantized model not necessary faster, totally depends on the machine.
-
-    Returns
-    -------
-    result: model
-        List of model classes:
-
-        * if `t5` in model, will return `malaya.model.t5.Tatabahasa`.
+    List available huggingface models.
     """
+    _describe()
 
-    model = model.lower()
-    if model not in _transformer_availability:
-        raise ValueError(
-            'model not supported, please check supported models from `malaya.tatabahasa.available_transformer()`.'
-        )
-    return t5_load.load(
-        module='kesalahan-tatabahasa',
-        model=model,
-        model_class=T5_Tatabahasa,
-        quantized=quantized,
-        **kwargs,
-    )
+    return describe_availability(_huggingface_availability)
 
 
 @check_type
-def transformer_tagging(model: str = 'base', quantized: bool = False, **kwargs):
+def transformer(model: str = 'base', quantized: bool = False, **kwargs):
     """
     Load Malaya transformer encoder-decoder + tagging model to correct a `kesalahan tatabahasa` text.
 
     Parameters
     ----------
     model: str, optional (default='base')
-        Check available models at `malaya.tatabahasa.available_transformer_tagging()`.
+        Check available models at `malaya.tatabahasa.available_transformer()`.
     quantized: bool, optional (default=False)
         if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
@@ -222,10 +189,14 @@ def transformer_tagging(model: str = 'base', quantized: bool = False, **kwargs):
     result: malaya.model.tf.Tatabahasa class
     """
 
+    warnings.warn(
+        '`malaya.tatabahasa.transformer` is deprecated, use `malaya.tatabahasa.huggingface` instead',
+        DeprecationWarning)
+
     model = model.lower()
-    if model not in _transformer_tagging_availability:
+    if model not in _transformer_availability:
         raise ValueError(
-            'model not supported, please check supported models from `malaya.tatabahasa.available_transformer_tagging()`.'
+            'model not supported, please check supported models from `malaya.tatabahasa.available_transformer()`.'
         )
 
     return load_transformer.load_tatabahasa(
@@ -235,3 +206,24 @@ def transformer_tagging(model: str = 'base', quantized: bool = False, **kwargs):
         quantized=quantized,
         **kwargs
     )
+
+
+@check_type
+def huggingface(model: str = 'mesolitica/finetune-tatabahasa-t5-small-standard-bahasa-cased', **kwargs):
+    """
+    Load HuggingFace model to fix kesalahan tatabahasa.
+
+    Parameters
+    ----------
+    model: str, optional (default='mesolitica/finetune-tatabahasa-t5-small-standard-bahasa-cased')
+        Check available models at `malaya.tatabahasa.available_huggingface()`.
+
+    Returns
+    -------
+    result: malaya.torch_model.huggingface.Tatabahasa
+    """
+    if model not in _huggingface_availability:
+        raise ValueError(
+            'model not supported, please check supported models from `malaya.tatabahasa.available_huggingface()`.'
+        )
+    return load_huggingface.load_tatabahasa(model=model, initial_text='kesalahan tatabahasa:', **kwargs)

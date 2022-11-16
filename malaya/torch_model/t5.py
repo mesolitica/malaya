@@ -1,6 +1,6 @@
 from transformers.models.bart.modeling_bart import shift_tokens_right
 from transformers.modeling_outputs import Seq2SeqSequenceClassifierOutput
-from transformers import T5Model, T5Config
+from transformers import T5Model, T5Config, T5ForConditionalGeneration
 from typing import List, Optional, Tuple, Union
 from torch import nn
 import torch
@@ -170,3 +170,64 @@ class T5ForSequenceClassification(T5Model):
             encoder_hidden_states=outputs.encoder_hidden_states,
             encoder_attentions=outputs.encoder_attentions,
         )
+
+
+class T5Tagging(T5ForConditionalGeneration):
+    def __init__(self, config: T5Config, **kwargs):
+        super().__init__(config, **kwargs)
+        self.classification_head = BartClassificationHead(
+            config.d_model,
+            config.d_model,
+            config.num_labels,
+            config.dropout_rate,
+        )
+        self._init_weights(self.classification_head.dense)
+        self._init_weights(self.classification_head.out_proj)
+
+    def forward(
+        self,
+        input_ids: Optional[torch.LongTensor] = None,
+        attention_mask: Optional[torch.FloatTensor] = None,
+        decoder_input_ids: Optional[torch.LongTensor] = None,
+        decoder_attention_mask: Optional[torch.BoolTensor] = None,
+        head_mask: Optional[torch.FloatTensor] = None,
+        decoder_head_mask: Optional[torch.FloatTensor] = None,
+        cross_attn_head_mask: Optional[torch.Tensor] = None,
+        encoder_outputs: Optional[Tuple[Tuple[torch.Tensor]]] = None,
+        past_key_values: Optional[Tuple[Tuple[torch.Tensor]]] = None,
+        inputs_embeds: Optional[torch.FloatTensor] = None,
+        decoder_inputs_embeds: Optional[torch.FloatTensor] = None,
+        labels: Optional[torch.LongTensor] = None,
+        labels_tag=None,
+        use_cache: Optional[bool] = None,
+        output_attentions: Optional[bool] = None,
+        output_hidden_states: Optional[bool] = None,
+        return_dict: Optional[bool] = None,
+    ):
+        outputs = super().forward(
+            input_ids,
+            attention_mask=attention_mask,
+            decoder_input_ids=decoder_input_ids,
+            decoder_attention_mask=decoder_attention_mask,
+            head_mask=head_mask,
+            decoder_head_mask=decoder_head_mask,
+            cross_attn_head_mask=cross_attn_head_mask,
+            encoder_outputs=encoder_outputs,
+            past_key_values=past_key_values,
+            inputs_embeds=inputs_embeds,
+            decoder_inputs_embeds=decoder_inputs_embeds,
+            labels=labels,
+            use_cache=use_cache,
+            output_attentions=output_attentions,
+            output_hidden_states=True,
+            return_dict=True,
+        )
+
+        last_layer = outputs.decoder_hidden_states[-1]
+        logits = self.classification_head(last_layer)
+        if labels_tag is not None:
+            loss_fct = CrossEntropyLoss()
+            loss = loss_fct(logits.view(-1, self.config.num_labels), labels_tag.view(-1))
+            outputs.loss += loss
+
+        return outputs

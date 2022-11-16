@@ -11,13 +11,19 @@ from transformers import (
     XLNetTokenizer,
 )
 from malaya.text.bpe import (
+    merge_sentencepiece_tokens_tagging,
     merge_sentencepiece_tokens,
     merge_wordpiece_tokens,
     merge_bpe_tokens,
 )
+from malaya.text.function import (
+    summarization_textcleaning,
+    upperfirst,
+    remove_repeat_fullstop,
+    remove_newlines,
+)
 from malaya.text.rouge import postprocess_summary, find_kata_encik
-from malaya.text.function import remove_newlines
-from malaya.torch_model.t5 import T5ForSequenceClassification
+from malaya.torch_model.t5 import T5ForSequenceClassification, T5Tagging
 from malaya_boilerplate.torch_utils import to_tensor_cuda, to_numpy
 from collections import defaultdict
 from herpetologist import check_type
@@ -36,13 +42,13 @@ class Base:
 
 
 class Generator(Base):
-    def __init__(self, model, initial_text, **kwargs):
+    def __init__(self, model, initial_text, base_model=AutoModelForSeq2SeqLM, **kwargs):
         self.tokenizer = AutoTokenizer.from_pretrained(model, **kwargs)
-        self.model = AutoModelForSeq2SeqLM.from_pretrained(model, **kwargs)
+        self.model = base_model.from_pretrained(model, **kwargs)
         self._initial_text = initial_text
 
     @check_type
-    def generate(self, strings: List[str], **kwargs):
+    def generate(self, strings: List[str], return_generate=False, **kwargs):
         """
         Generate texts from the input.
 
@@ -66,7 +72,10 @@ class Generator(Base):
         for k in padded.keys():
             padded[k] = to_tensor_cuda(padded[k], cuda)
         outputs = self.model.generate(**padded, **kwargs)
-        return self.tokenizer.batch_decode(outputs, skip_special_tokens=True)
+        if return_generate:
+            return outputs
+        else:
+            return self.tokenizer.batch_decode(outputs, skip_special_tokens=True)
 
 
 class Prefix(Base):
@@ -626,3 +635,98 @@ class Transformer(Base):
                             rejected=self.tokenizer.all_special_tokens)
             )
         return output
+
+
+class IsiPentingGenerator(Generator):
+    def __init__(self, model, initial_text, **kwargs):
+        Generator.__init__(
+            self,
+            model=model,
+            initial_text=initial_text,
+            **kwargs,
+        )
+
+    @check_type
+    def generate(
+        self,
+        strings: List[str],
+        **kwargs,
+    ):
+        """
+        generate a long text given a isi penting.
+
+        Parameters
+        ----------
+        strings : List[str]
+        **kwargs: vector arguments pass to huggingface `generate` method.
+            Read more at https://huggingface.co/docs/transformers/main_classes/text_generation
+
+        Returns
+        -------
+        result: List[str]
+        """
+        points = [
+            f'{no + 1}. {remove_repeat_fullstop(string)}.'
+            for no, string in enumerate(strings)
+        ]
+        points = ' '.join(points)
+        points = f'karangan: {points}'
+        results = super().generate([points], **kwargs)
+        return [upperfirst(r) for r in results]
+
+
+class Tatabahasa(Generator):
+    def __init__(self, model, initial_text, **kwargs):
+        Generator.__init__(
+            self,
+            model=model,
+            initial_text=initial_text,
+            base_model=T5Tagging,
+            **kwargs,
+        )
+
+    @check_type
+    def generate(
+        self,
+        strings: List[str],
+        **kwargs,
+    ):
+        """
+        Fix kesalahan tatatabahasa.
+
+        Parameters
+        ----------
+        strings : List[str]
+        **kwargs: vector arguments pass to huggingface `generate` method.
+            Read more at https://huggingface.co/docs/transformers/main_classes/text_generation
+            Fix kesalahan tatabahasa supported all decoding methods except beam.
+
+        Returns
+        -------
+        result: List[Tuple[str, int]]
+        """
+        if kwargs.get('num_beams', 0) > 0:
+            raise ValueError('beam decoding is not supported.')
+
+        outputs = super().generate(
+            strings,
+            output_attentions=True,
+            output_hidden_states=True,
+            output_scores=True,
+            return_dict_in_generate=True,
+            return_generate=True,
+            **kwargs,
+        )
+        last_layer = torch.stack([o[-1] for o in outputs.decoder_hidden_states])[:, :, 0]
+        last_layer = last_layer.transpose(0, 1)
+        tags = to_numpy(self.model.classification_head(last_layer)).argmax(axis=-1)
+        results = []
+        for no in range(len(outputs.sequences)):
+            s = to_numpy(outputs.sequences[:, 1:][no])
+            s = self.tokenizer.convert_ids_to_tokens(s)
+            t = tags[no]
+            merged = merge_sentencepiece_tokens_tagging(
+                s, t, rejected=self.tokenizer.all_special_tokens
+            )
+            results.append(list(zip(merged[0], merged[1])))
+        return results

@@ -598,6 +598,18 @@ malaya.torch_model.huggingface
 .. autoclass:: malaya.torch_model.huggingface.ExtractiveQA()
     :members:
 
+.. autoclass:: malaya.torch_model.huggingface.ExtractiveQAFlan()
+    :members:
+
+.. autoclass:: malaya.torch_model.huggingface.Transformer()
+    :members:
+
+.. autoclass:: malaya.torch_model.huggingface.IsiPentingGenerator()
+    :members:
+
+.. autoclass:: malaya.torch_model.huggingface.Tatabahasa()
+    :members:
+
 malaya.torch_model.mask_lm
 ----------------------------------
 

@@ -41,3 +41,5 @@ dbp.ipynb
 unique-words.json
 *.normalized
 normalized-twitter.ipynb
+synonym*.json
+filtered-dumping-wiki.txt

@@ -35,7 +35,6 @@ from . import coref
 from . import dependency
 from . import emotion
 from . import entity
-from . import intent
 from . import jawi_rumi
 from . import language_detection
 from . import language_model

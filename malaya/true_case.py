@@ -1,5 +1,6 @@
 from malaya.model.tf import TrueCase
 from malaya.supervised import transformer as load_transformer
+from malaya.supervised import huggingface as load_huggingface
 from malaya.supervised import t5 as t5_load
 from malaya.model.t5 import TrueCase as T5_TrueCase
 from herpetologist import check_type

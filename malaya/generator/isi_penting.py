@@ -1,6 +1,7 @@
 from malaya.supervised import t5 as t5_load
 from malaya.model.t5 import Generator
 from malaya.function import describe_availability
+from malaya.supervised import huggingface as load_huggingface
 import logging
 import warnings
 
@@ -13,7 +14,7 @@ _transformer_availability = {
         'ROUGE-1': 0.3717403,
         'ROUGE-2': 0.18471429,
         'ROUGE-L': 0.2582724,
-        'Maximum Length': 1024
+        'Maximum Length': 1024,
     },
     'small-t5': {
         'Size (MB)': 355.6,
@@ -21,12 +22,12 @@ _transformer_availability = {
         'ROUGE-1': 0.3717403,
         'ROUGE-2': 0.18471429,
         'ROUGE-L': 0.2582724,
-        'Maximum Length': 1024
+        'Maximum Length': 1024,
     },
 }
 
 _huggingface_availability = {
-    'mesolitica/finetune-isi-penting-t5-small-standard-bahasa-cased': {
+    'mesolitica/finetune-isi-penting-generator-t5-small-standard-bahasa-cased': {
         'Size (MB)': 242,
         'BLEU': 61.559202822392486,
         'ROUGE-1': 0.24620333,
@@ -34,7 +35,7 @@ _huggingface_availability = {
         'ROUGE-L': 0.15158954,
         'Suggested length': 1024,
     },
-    'mesolitica/finetune-isi-penting-t5-base-standard-bahasa-cased': {
+    'mesolitica/finetune-isi-penting-generator-t5-base-standard-bahasa-cased': {
         'Size (MB)': 892,
         'BLEU': 58.764876478744064,
         'ROUGE-1': 0.24620333,
@@ -91,7 +92,7 @@ def transformer(model: str = 't5', quantized: bool = False, **kwargs):
         '`malaya.generator.isi_penting.transformer` is deprecated, use `malaya.generator.isi_penting.huggingface` instead', DeprecationWarning)
 
     model = model.lower()
-    if model not in _isi_penting_availability:
+    if model not in _transformer_availability:
         raise ValueError(
             'model not supported, please check supported models from `malaya.generator.isi_penting.available_transformer()`.'
         )
@@ -105,13 +106,13 @@ def transformer(model: str = 't5', quantized: bool = False, **kwargs):
     )
 
 
-def huggingface(model: str = 'mesolitica/finetune-isi-penting-generator-t5-small-standard-bahasa-cased', **kwargs):
+def huggingface(model: str = 'mesolitica/finetune-isi-penting-generator-t5-base-standard-bahasa-cased', **kwargs):
     """
     Load HuggingFace model to generate text based on isi penting.
 
     Parameters
     ----------
-    model: str, optional (default='mesolitica/finetune-isi-penting-generator-t5-small-standard-bahasa-cased')
+    model: str, optional (default='mesolitica/finetune-isi-penting-generator-t5-base-standard-bahasa-cased')
         Check available models at `malaya.generator.isi_penting.available_huggingface()`.
 
     Returns

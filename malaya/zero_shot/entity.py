@@ -8,21 +8,18 @@ logger = logging.getLogger(__name__)
 _huggingface_availability = {
     'mesolitica/finetune-zeroshot-ner-t5-tiny-standard-bahasa-cased': {
         'Size (MB)': 139,
-        'WER': 0,
-        'CER': 0,
-        'exactly-match': 0,
+        'exactly-match': 0.920265194,
+        'f1': 0.9508079,
     },
     'mesolitica/finetune-zeroshot-ner-t5-small-standard-bahasa-cased': {
         'Size (MB)': 242,
-        'WER': 0,
-        'CER': 0,
-        'exactly-match': 0,
+        'exactly-match': 0.920894092,
+        'f1': 0.951281162,
     },
     'mesolitica/finetune-zeroshot-ner-t5-base-standard-bahasa-cased': {
         'Size (MB)': 892,
-        'WER': 0,
-        'CER': 0,
-        'exactly-match': 0,
+        'exactly-match': 0.8917532135,
+        'f1': 0.934447887,
     },
 }
 
@@ -33,6 +30,8 @@ def available_huggingface():
     """
 
     logger.info('tested on test set, https://huggingface.co/datasets/mesolitica/zeroshot-NER')
+    logger.warning(
+        '`exactly-match` and `f1` scores based on generated test set, it does not represent accuracy on actual human texts.')
     return describe_availability(_huggingface_availability)
 
 

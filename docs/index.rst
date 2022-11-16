@@ -91,6 +91,7 @@ Contents:
    load-demoji
    load-stemmer
    load-true-case
+   load-true-case-huggingface
    load-segmentation
    load-segmentation-huggingface
    load-num2word
@@ -111,8 +112,8 @@ Contents:
    :maxdepth: 2
    :caption: Kesalahan Tatabahasa Module
 
-   load-tatabahasa
    load-tatabahasa-tagging
+   load-tatabahasa-tagging-huggingface
 
 .. toctree::
    :maxdepth: 2
@@ -121,7 +122,7 @@ Contents:
    load-augmentation
    load-prefix-generator
    load-isi-penting-generator
-   load-lexicon
+   load-isi-penting-generator-huggingface
    load-paraphrase
    load-paraphrase-huggingface
 
@@ -215,6 +216,7 @@ Contents:
    :maxdepth: 2
    :caption: Misc Module
    
+   load-lexicon
    load-topic-modeling
    load-clustering
    load-stack

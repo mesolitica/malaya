@@ -679,3 +679,7 @@ def tag_chunk(seq):
         results.append(tag)
 
     return results
+
+
+def remove_repeat_fullstop(string):
+    return ' '.join([k.strip() for k in string.split('.') if len(k.strip())])
