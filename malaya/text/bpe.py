@@ -931,7 +931,7 @@ def merge_wordpiece_tokens_tagging(x, y):
     return words, labels
 
 
-def parse_bert_tagging(left, tokenizer, space_after_punct=False):
+def parse_bert_tagging(left, tokenizer, space_after_punct=False, **kwargs):
     left = transformer_textcleaning(left, space_after_punct=space_after_punct)
     bert_tokens = ['[CLS]'] + tokenizer.tokenize(left) + ['[SEP]']
     input_mask = [1] * len(bert_tokens)

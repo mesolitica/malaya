@@ -1,3 +1,15 @@
+# HuggingFace T5
+
+**This directory is very lack of comments, able to understand PyTorch and HuggingFace Transformers are really helpful**.
+
+## how-to
+
+1. Prepare dataset, [prepare-data.ipynb](prepare-data.ipynb).
+
+2. Run training script,
+
+Original script, https://github.com/huggingface/transformers/blob/v4.21.2/examples/pytorch/translation/run_translation.py
+
 SMALL model,
 ```
 WANDB_DISABLED=true \
@@ -43,8 +55,8 @@ python3 run_t5_tag.py \
 --source_lang src \
 --target_lang tgt \
 --train_file shuffled-train.json \
---validation_file test.json \
---output_dir finetune-t5-base-standard-bahasa-cased-ner \
+--validation_file test-v2.json \
+--output_dir finetune-t5-base-standard-bahasa-cased \
 --per_device_train_batch_size=16 \
 --per_device_eval_batch_size=4 \
 --predict_with_generate \
@@ -52,7 +64,7 @@ python3 run_t5_tag.py \
 --max_source_length 256 \
 --max_target_length 256 \
 --fp16 \
---preprocessing_num_workers 5
+--preprocessing_num_workers 10
 ```
 
 TINY model,

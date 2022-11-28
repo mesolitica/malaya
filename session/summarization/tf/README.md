@@ -1,9 +1,14 @@
-# how-to
+# Tensorflow
 
 **This directory is very lack of comments, able to understand Tensorflow, Tensorflow estimator and Tensorflow Dataset are really helpful**.
 
-## Table of contents
-  * [Download](#download)
+## how-to
+
+1. Run training script,
+
+```bash
+python3 finetune_base.py
+```
 
 ## Download
 

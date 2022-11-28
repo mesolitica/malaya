@@ -74,7 +74,6 @@ _transformer_availability = {
 _huggingface_availability = {
     'mesolitica/finetune-summarization-t5-small-standard-bahasa-cased': {
         'Size (MB)': 242,
-        'BLEU': 61.559202822392486,
         'ROUGE-1': 0.24620333,
         'ROUGE-2': 0.05896076,
         'ROUGE-L': 0.15158954,
@@ -82,7 +81,20 @@ _huggingface_availability = {
     },
     'mesolitica/finetune-summarization-t5-base-standard-bahasa-cased': {
         'Size (MB)': 892,
-        'BLEU': 58.764876478744064,
+        'ROUGE-1': 0.24620333,
+        'ROUGE-2': 0.05896076,
+        'ROUGE-L': 0.15158954,
+        'Suggested length': 1024,
+    },
+    'mesolitica/finetune-summarization-ms-t5-small-standard-bahasa-cased': {
+        'Size (MB)': 242,
+        'ROUGE-1': 0.24620333,
+        'ROUGE-2': 0.05896076,
+        'ROUGE-L': 0.15158954,
+        'Suggested length': 1024,
+    },
+    'mesolitica/finetune-summarization-ms-t5-base-standard-bahasa-cased': {
+        'Size (MB)': 892,
         'ROUGE-1': 0.24620333,
         'ROUGE-2': 0.05896076,
         'ROUGE-L': 0.15158954,
@@ -93,6 +105,7 @@ _huggingface_availability = {
 
 def _describe():
     logger.info('tested on translated validation set CNN Daily Mail, https://huggingface.co/datasets/mesolitica/translated-cnn-dailymail')
+    logger.info('tested on translated test set Xwikis, https://huggingface.co/datasets/mesolitica/translated-xwikis')
 
 
 def available_transformer():

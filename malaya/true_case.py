@@ -53,14 +53,14 @@ _transformer_availability = {
 _huggingface_availability = {
     'mesolitica/finetune-true-case-t5-super-tiny-standard-bahasa-cased': {
         'Size (MB)': 51,
-        'WER': 0.1345597,
-        'CER': 0.0798906,
+        'WER': 0.105094863,
+        'CER': 0.02163576,
         'Suggested length': 256,
     },
     'mesolitica/finetune-true-case-t5-tiny-standard-bahasa-cased': {
         'Size (MB)': 139,
-        'WER': 0.1345597,
-        'CER': 0.0798906,
+        'WER': 0.0967551738,
+        'CER': 0.0201099683,
         'Suggested length': 256,
     },
     'mesolitica/finetune-true-case-t5-small-standard-bahasa-cased': {

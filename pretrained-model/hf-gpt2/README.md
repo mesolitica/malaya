@@ -42,14 +42,14 @@ python3 run_clm.py \
 2. Train the model,
 
 ```bash
-CUDA_VISIBLE_DEVICES=1 \
+CUDA_VISIBLE_DEVICES=0 \
 WANDB_DISABLED=true \
 python3 run_clm.py \
 --model_name_or_path malay-cased-gpt2-355m \
 --train_file combined-gpt2.txt \
 --validation_file sample-wiki.txt \
 --per_device_train_batch_size 6 \
---per_device_eval_batch_size 8 \
+--per_device_eval_batch_size 14 \
 --num_train_epochs 10 \
 --logging_steps 100 \
 --eval_steps 1000 \
@@ -57,9 +57,10 @@ python3 run_clm.py \
 --evaluation_strategy steps \
 --do_train \
 --do_eval \
---output_dir malay-cased-gpt2-344m-clm \
+--output_dir malay-cased-gpt2-355m-clm \
 --save_total_limit 3 \
 --ignore_data_skip \
 --block_size 512 \
---fp16
+--fp16 \
+--gradient_checkpointing true
 ```

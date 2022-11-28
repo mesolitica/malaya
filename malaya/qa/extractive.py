@@ -62,10 +62,10 @@ _huggingface_availability = {
     },
     'mesolitica/finetune-extractive-qa-t5-small-standard-bahasa-cased': {
         'Size (MB)': 242,
-        'exact-ms': 0.58201013513,
-        'f1-ms': 0.6511001359,
-        'exact-en': 0.58201013513,
-        'f1-en': 0.65110013,
+        'exact-ms': 0.530340113,
+        'f1-ms': 0.61693299,
+        'exact-en': 0.55878378,
+        'f1-en': 0.6292999233,
     },
     'mesolitica/finetune-extractive-qa-t5-base-standard-bahasa-cased': {
         'Size (MB)': 892,

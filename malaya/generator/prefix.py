@@ -1,6 +1,7 @@
 import tensorflow as tf
 from malaya.function import describe_availability
 from herpetologist import check_type
+from malaya.supervised import gpt2 as gpt2_load
 from malaya.supervised import huggingface as load_huggingface
 import logging
 import warnings
@@ -95,7 +96,10 @@ _transformer_availability = {
 }
 
 _huggingface_availability = {
-    'mesolitica/gpt2-117m-bahasa-cased': {
+    'mesolitica/gpt2-117m-bahasa-cased-v2': {
+        'Size (MB)': 454,
+    },
+    'mesolitica/gpt2-355m-bahasa-cased': {
         'Size (MB)': 454,
     },
 }
@@ -147,7 +151,7 @@ def transformer(model: str = '345M', quantized: bool = False, **kwargs):
         '`malaya.generator.prefix.transformer` is deprecated, use `malaya.generator.prefix.huggingface` instead', DeprecationWarning)
 
     model = model.upper()
-    if model not in _gpt2_availability:
+    if model not in _transformer_availability:
         raise ValueError(
             'model not supported, please check supported models from `malaya.generator.prefix.available_transformer()`.'
         )
@@ -159,13 +163,13 @@ def transformer(model: str = '345M', quantized: bool = False, **kwargs):
     )
 
 
-def huggingface(model='mesolitica/gpt2-117m-bahasa-cased', force_check: bool = True, **kwargs):
+def huggingface(model: str = 'mesolitica/gpt2-117m-bahasa-cased-v2', force_check: bool = True, **kwargs):
     """
     Load Prefix language model.
 
     Parameters
     ----------
-    model: str, optional (default='mesolitica/gpt2-117m-bahasa-cased')
+    model: str, optional (default='mesolitica/gpt2-117m-bahasa-cased-v2')
         Check available models at `malaya.generator.prefix.available_huggingface()`.
     force_check: bool, optional (default=True)
         Force check model one of malaya model.
@@ -181,4 +185,4 @@ def huggingface(model='mesolitica/gpt2-117m-bahasa-cased', force_check: bool = T
             'model not supported, please check supported models from `malaya.generator.prefix.available_huggingface()`.'
         )
 
-    return load_huggingface.prefix(model=model, **kwargs)
+    return load_huggingface.load_prefix(model=model, **kwargs)

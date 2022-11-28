@@ -99,7 +99,7 @@ class Prefix(Base):
         result: List[str]
         """
         cuda = next(self.model.parameters()).is_cuda
-        padded = {'input_ids': tokenizer.encode(string, return_tensors='pt')}
+        padded = {'input_ids': self.tokenizer.encode(string, return_tensors='pt')}
         for k in padded.keys():
             padded[k] = to_tensor_cuda(padded[k], cuda)
         outputs = self.model.generate(**padded, **kwargs)
@@ -140,7 +140,7 @@ class Paraphrase(Generator):
         results = super().generate(strings, **kwargs)
         if postprocess:
             for no in range(len(results)):
-                s = find_kata_encik(strings[no])
+                s = find_kata_encik(strings[no], **kwargs)
                 results[no] = s
         return results
 
@@ -189,7 +189,7 @@ class Summarization(Generator):
         if postprocess:
             for no in range(len(results)):
                 s = postprocess_summary(
-                    strings[no],
+                    strings[no // (len(results) // len(strings))],
                     results[no],
                     n=n,
                     threshold=threshold,

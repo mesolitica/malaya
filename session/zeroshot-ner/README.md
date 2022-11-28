@@ -1,3 +1,13 @@
+# HuggingFace T5
+
+**This directory is very lack of comments, able to understand PyTorch and HuggingFace Transformers are really helpful**.
+
+## how-to
+
+1. Prepare dataset, [prepare-dataset.ipynb](prepare-dataset.ipynb).
+
+2. Run training script,
+
 SMALL model,
 ```
 WANDB_DISABLED=true \

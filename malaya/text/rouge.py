@@ -4,7 +4,7 @@ import re
 import numpy as np
 from malaya.text.bahasa.lapor import lapor as _lapor_words
 from malaya.text.bahasa.news import news as _news_words
-from malaya.text.function import split_into_sentences
+from malaya.text.function import split_into_sentences, remove_empty_parenthesis
 from malaya.text.ngram import ngrams
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import pairwise_distances
@@ -70,7 +70,12 @@ def _f_lcs(llcs, m, n):
     return f_lcs
 
 
-def rouge_l_sentence_level(eval_sentence, ref_sentence):
+def _rouge_clean(s):
+    s = re.sub(r'[^a-zA-Z0-9 ]', '', s)
+    return re.sub(r'[ ]+', ' ', s).strip().lower()
+
+
+def rouge_l(eval_sentence, ref_sentence):
     """Computes ROUGE-L (sentence level) of two collections of sentences.
     Source: https://www.microsoft.com/en-us/research/publication/
     rouge-a-package-for-automatic-evaluation-of-summaries/
@@ -96,9 +101,27 @@ def rouge_l_sentence_level(eval_sentence, ref_sentence):
     return _f_lcs(lcs, m, n)
 
 
-def _rouge_clean(s):
-    s = re.sub(r'[^a-zA-Z0-9 ]', '', s)
-    return re.sub(r'[ ]+', ' ', s).strip().lower()
+def rouge_n(eval_sentence, ref_sentence, n=2):
+
+    eval_ngrams = _get_ngrams(n, eval_sentence)
+    ref_ngrams = _get_ngrams(n, ref_sentence)
+    ref_count = len(ref_ngrams)
+    eval_count = len(eval_ngrams)
+
+    overlapping_ngrams = eval_ngrams.intersection(ref_ngrams)
+    overlapping_count = len(overlapping_ngrams)
+
+    if eval_count == 0:
+        precision = 0.0
+    else:
+        precision = overlapping_count / eval_count
+
+    if ref_count == 0:
+        recall = 0.0
+    else:
+        recall = overlapping_count / ref_count
+
+    return 2.0 * ((precision * recall) / (precision + recall + 1e-8))
 
 
 def _get_ngrams(n, text):
@@ -148,8 +171,8 @@ def postprocessing_summarization(string, lapors=_lapor_words):
     return string
 
 
-def find_kata_encik(string):
-    finds = [(m.start(0), m.end(0)) for m in re.finditer('\\w*kata Encik\\w*', string)]
+def find_kata_encik(string, substring='kata Encik', **kwargs):
+    finds = [(m.start(0), m.end(0)) for m in re.finditer(f'\\w*{substring}\\w*', string)]
     if len(finds):
         string = re.sub(r'[ ]+', ' ', string[:finds[0][0]]).strip()
     return string
@@ -225,12 +248,16 @@ def postprocess_summary(string, summary, **kwargs):
         minimum threshold for N rouge score to select a sentence.
     reject_similarity: float, optional (default=0.85)
         reject similar sentences while maintain position.
+    min_length_inside: int, optional, (default=2)
+        minimum length inside parenthesis to not reject.
     """
+
     summary = filter_rouge(string, summary, **kwargs)
     summary = postprocessing_summarization(summary)
     summary = find_lapor_and_remove(string, summary)
     summary = filter_news_sentence(summary)
     summary = get_unique_sentences(summary, **kwargs)
+    summary = remove_empty_parenthesis(summary, **kwargs)
     for s in split_words:
         summary = summary.replace(s, ' ')
     return re.sub(r'[ ]+', ' ', summary).strip()

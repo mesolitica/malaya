@@ -1,3 +1,11 @@
+# HuggingFace T5
+
+## how-to
+
+1. Run prepare dataset, [prepare-tatabahasa.ipynb](prepare-tatabahasa.ipynb).
+
+2. Run training script,
+
 Original script, https://github.com/huggingface/transformers/blob/v4.21.2/examples/pytorch/translation/run_translation.py
 
 SMALL model,
@@ -163,3 +171,12 @@ python3 run_t5.py \
 --max_target_length 256 \
 --learning_rate 5e-5
 ```
+
+## download
+
+1. https://huggingface.co/mesolitica/finetune-noisy-translation-t5-base-bahasa-cased
+2. https://huggingface.co/mesolitica/finetune-noisy-translation-t5-small-bahasa-cased
+3. https://huggingface.co/mesolitica/finetune-noisy-translation-t5-tiny-bahasa-cased
+4. https://huggingface.co/mesolitica/finetune-translation-t5-base-standard-bahasa-cased
+5. https://huggingface.co/mesolitica/finetune-translation-t5-small-standard-bahasa-cased
+6. https://huggingface.co/mesolitica/finetune-translation-t5-tiny-standard-bahasa-cased

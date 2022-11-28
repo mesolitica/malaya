@@ -1,8 +1,18 @@
-# Tatabahasa
+# T2T
 
 Pretrained TransformerTag models to fix kesalahan tatabahasa.
 
 **This directory is very lack of comments, able to understand Tensorflow, Tensorflow estimator and Tensorflow Dataset are really helpful**.
+
+## how-to
+
+1. Prepare dataset, [prepare-tatabahasa.ipynb](prepare-tatabahasa.ipynb).
+
+2. Run training script,
+
+```bash
+python3 t2t-base.py
+```
 
 ## Download
 

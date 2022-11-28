@@ -683,3 +683,42 @@ def tag_chunk(seq):
 
 def remove_repeat_fullstop(string):
     return ' '.join([k.strip() for k in string.split('.') if len(k.strip())])
+
+
+def remove_parenthesis(string, substring, lower_case=True):
+    removed = []
+    for r in re.finditer(r'\([^()]*\)', string):
+        span = r.span()
+        subs = string[span[0]: span[1]]
+        if substring in (subs.lower() if lower_case else subs):
+            removed.append(span)
+
+    if len(removed):
+        selected = [string[:removed[0][0]]]
+        for i in range(0, len(removed) - 1, 2):
+            selected.append(string[removed[i][1]: removed[i + 1][0]])
+
+        selected.append(string[removed[-1][1]:])
+        return re.sub(r'[ ]+', ' ', ' '.join(selected)).strip()
+    else:
+        return string
+
+
+def remove_empty_parenthesis(string, min_length_inside=2, **kwargs):
+    removed = []
+    for r in re.finditer(r'\([^()]*\)', string):
+        span = r.span()
+        subs = string[span[0]: span[1]]
+        subs = re.sub(r'[ ]+', ' ', subs.replace('(', '').replace(')', '')).strip()
+        if len(subs) < min_length_inside:
+            removed.append(span)
+
+    if len(removed):
+        selected = [string[:removed[0][0]]]
+        for i in range(0, len(removed) - 1, 2):
+            selected.append(string[removed[i][1]: removed[i + 1][0]])
+
+        selected.append(string[removed[-1][1]:])
+        return re.sub(r'[ ]+', ' ', ' '.join(selected)).strip()
+    else:
+        return string

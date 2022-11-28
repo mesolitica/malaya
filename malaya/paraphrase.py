@@ -12,22 +12,22 @@ _transformer_availability = {
     't5': {
         'Size (MB)': 1250,
         'Quantized Size (MB)': 481,
-        'BLEU': 63.43349716445256,
-        'SacreBLEU Verbose': '86.1/69.9/58.4/49.2 (BP = 0.983 ratio = 0.984 hyp_len = 138679 ref_len = 141004)',
+        'BLEU': 35.86211127195363,
+        'SacreBLEU Verbose': '61.1/40.6/31.3/25.2 (BP = 0.959 ratio = 0.960 hyp_len = 96986 ref_len = 101064)',
         'Suggested length': 256,
     },
     'small-t5': {
         'Size (MB)': 355.6,
         'Quantized Size (MB)': 195,
-        'BLEU': 61.47064047142362,
-        'SacreBLEU Verbose': '85.0/67.7/55.3/45.6 (BP = 0.996 ratio = 0.996 hyp_len = 140439 ref_len = 141004)',
+        'BLEU': 37.24731076156855,
+        'SacreBLEU Verbose': '61.6/41.7/32.5/26.3 (BP = 0.968 ratio = 0.968 hyp_len = 97840 ref_len = 101064)',
         'Suggested length': 256,
     },
     'tiny-t5': {
         'Size (MB)': 208,
         'Quantized Size (MB)': 103,
-        'BLEU': 44.21090693563815,
-        'SacreBLEU Verbose': '69.3/49.2/38.0/30.2 (BP = 0.994 ratio = 0.994 hyp_len = 140115 ref_len = 141004)',
+        'BLEU': 13.253918978157994,
+        'SacreBLEU Verbose': '38.6/16.3/9.4/5.8 (BP = 0.973 ratio = 0.974 hyp_len = 98419 ref_len = 101064)',
         'Suggested length': 256,
     },
 }
@@ -35,20 +35,20 @@ _transformer_availability = {
 _huggingface_availability = {
     'mesolitica/finetune-paraphrase-t5-tiny-standard-bahasa-cased': {
         'Size (MB)': 139,
-        'BLEU': 61.06784273649806,
-        'SacreBLEU Verbose': '86.1/68.4/55.8/45.9 (BP = 0.980 ratio = 0.980 hyp_len = 138209 ref_len = 141004)',
+        'BLEU': 36.92696648298233,
+        'SacreBLEU Verbose': '62.5/42.3/33.0/26.9 (BP = 0.943 ratio = 0.945 hyp_len = 95496 ref_len = 101064)',
         'Suggested length': 256,
     },
     'mesolitica/finetune-paraphrase-t5-small-standard-bahasa-cased': {
         'Size (MB)': 242,
-        'BLEU': 61.559202822392486,
-        'SacreBLEU Verbose': '86.0/68.4/56.1/46.3 (BP = 0.984 ratio = 0.984 hyp_len = 138806 ref_len = 141004)',
+        'BLEU': 37.598729045833316,
+        'SacreBLEU Verbose': '62.6/42.5/33.2/27.0 (BP = 0.957 ratio = 0.958 hyp_len = 96781 ref_len = 101064)',
         'Suggested length': 256,
     },
     'mesolitica/finetune-paraphrase-t5-base-standard-bahasa-cased': {
         'Size (MB)': 892,
-        'BLEU': 58.764876478744064,
-        'SacreBLEU Verbose': '84.5/65.8/53.0/43.1 (BP = 0.984 ratio = 0.985 hyp_len = 138828 ref_len = 141004)',
+        'BLEU': 35.95965899952292,
+        'SacreBLEU Verbose': '61.7/41.3/32.0/25.8 (BP = 0.944 ratio = 0.946 hyp_len = 95593 ref_len = 101064)',
         'Suggested length': 256,
     },
 }
@@ -56,7 +56,7 @@ _huggingface_availability = {
 
 def _describe():
     logger.info('tested on MRPC validation set, https://huggingface.co/datasets/mesolitica/translated-MRPC')
-    logger.info('tested on PAWS test set, https://huggingface.co/datasets/mesolitica/translated-PAWS')
+    logger.info('tested on ParaSCI ARXIV test set, https://huggingface.co/datasets/mesolitica/translated-paraSCI')
 
 
 def available_transformer():
