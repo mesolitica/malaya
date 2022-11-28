@@ -34,43 +34,55 @@ Features
 --------
 
 -  **Alignment**, translation word alignment using Eflomal and pretrained Transformer models.
+-  **Isi Penting Generator**, generate text from list of isi penting using T5-Bahasa.
+-  **Prefix Generator**, generate text from prefix using GPT2-Bahasa.
+-  **Extractive Keyword**, provide RAKE, TextRank and Attention Mechanism hybrid with Transformer-Bahasa.
+-  **Extractive QA**, reading comprehension using T5-Bahasa and Flan-T5.
+-  **Doc2Vec Similarity**, provide Word2Vec and Encoder interface for text similarity.
+-  **Semantic Similarity**, provide semantic similarity using T5-Bahasa.
+-  **Spelling Correction**, using local Malaysia NLP researches hybrid with Transformer-Bahasa to auto-correct any bahasa words and NeuSpell using T5-Bahasa.
+-  **Abstractive Summarization**, provide abstractive summarization using T5-Bahasa.
+-  **Extractive Summarization**, Extractive interface using Transformer-Bahasa and Doc2Vec.
+-  **Topic Modeling**, provide Transformer-Bahasa, LDA2Vec, LDA, NMF, LSA interface and easy BERTopic integration.
+-  **BJN-MS Translation**, provide Banjar to standard Malay using T5-Bahasa.
+-  **EN-MS Translation**, provide English to standard Malay using T5-Bahasa.
+-  **IND-MS Translation**, provide Indonesian to standard Malay using T5-Bahasa.
+-  **JAV-MS Translation**, provide Jawa to standard Malay using T5-Bahasa.
+-  **MS-BJN Translation**, provide standard Malay to Banjar using T5-Bahasa.
+-  **MS-EN Translation**, provide standard Malay to English using T5-Bahasa.
+-  **MS-IND Translation**, provide standard Malay to Indonesian using T5-Bahasa.
+-  **MS-JAV Translation**, provide standard Malay to Jawa using T5-Bahasa.
+-  **Zero-shot classification**, provide Zero-shot classification interface using Transformer-Bahasa to recognize texts without any labeled training data.
+-  **Zero-shot Entity Recognition**, provide Zero-shot entity tagging interface using Transformer-Bahasa to extract entities.
 -  **Augmentation**, augment any text using dictionary of synonym, Wordvector or Transformer-Bahasa.
 -  **Constituency Parsing**, breaking a text into sub-phrases using finetuned Transformer-Bahasa.  
 -  **Coreference Resolution**, finding all expressions that refer to the same entity in a text using Dependency Parsing models.
 -  **Dependency Parsing**, extracting a dependency parse of a sentence using finetuned Transformer-Bahasa.
 -  **Emotion Analysis**, detect and recognize 6 different emotions of texts using finetuned Transformer-Bahasa.
 -  **Entity Recognition**, seeks to locate and classify named entities mentioned in text using finetuned Transformer-Bahasa.
--  **Generator**, generate any texts given a context using T5-Bahasa, GPT2-Bahasa or Transformer-Bahasa.
 -  **Jawi-to-Rumi**, convert from Jawi to Rumi using Transformer.
--  **Keyword Extraction**, provide RAKE, TextRank and Attention Mechanism hybrid with Transformer-Bahasa.
--  **Knowledge Graph**, generate Knowledge Graph using T5-Bahasa or parse from Dependency Parsing models.
 -  **Language Detection**, using Fast-text and Sparse Deep learning Model to classify Malay (formal and social media), Indonesia (formal and social media), Rojak language and Manglish.
+-  **Language Model**, using KenLM, Masked language model using BERT, ALBERT and RoBERTa, and GPT2 to do text scoring.
 -  **Normalizer**, using local Malaysia NLP researches hybrid with Transformer-Bahasa to normalize any bahasa texts.
+-  **NSFW Detection**, detect NSFW text using rules based and subwords Naive Bayes.
 -  **Num2Word**, convert from numbers to cardinal or ordinal representation.
 -  **Paraphrase**, provide Abstractive Paraphrase using T5-Bahasa and Transformer-Bahasa.
 -  **Grapheme-to-Phoneme**, convert from Grapheme to Phoneme DBP or IPA using LSTM Seq2Seq with attention state-of-art.
 -  **Part-of-Speech Recognition**, grammatical tagging is the process of marking up a word in a text using finetuned Transformer-Bahasa.
--  **Question Answer**, reading comprehension using finetuned Transformer-Bahasa.
 -  **Relevancy Analysis**, detect and recognize relevancy of texts using finetuned Transformer-Bahasa.
 -  **Rumi-to-Jawi**, convert from Rumi to Jawi using Transformer.
+-  **Text Segmentation**, dividing written text into meaningful words using T5-Bahasa.
 -  **Sentiment Analysis**, detect and recognize polarity of texts using finetuned Transformer-Bahasa.
 -  **Text Similarity**, provide interface for lexical similarity deep semantic similarity using finetuned Transformer-Bahasa.
--  **Spelling Correction**, using local Malaysia NLP researches hybrid with Transformer-Bahasa to auto-correct any bahasa words and NeuSpell using T5-Bahasa.
 -  **Stemmer**, using BPE LSTM Seq2Seq with attention state-of-art to do Bahasa stemming including local language structure.
 -  **Subjectivity Analysis**, detect and recognize self-opinion polarity of texts using finetuned Transformer-Bahasa.
 -  **Kesalahan Tatabahasa**, Fix kesalahan tatabahasa using TransformerTag-Bahasa.
--  **Summarization**, provide Abstractive T5-Bahasa also Extractive interface using Transformer-Bahasa, skip-thought and Doc2Vec.
 -  **Tokenizer**, provide word, sentence and syllable tokenizers.
--  **Topic Modeling**, provide Transformer-Bahasa, LDA2Vec, LDA, NMF and LSA interface for easy topic modelling with topics visualization.
 -  **Toxicity Analysis**, detect and recognize 27 different toxicity patterns of texts using finetuned Transformer-Bahasa.
 -  **Transformer**, provide easy interface to load Pretrained Language Malaya models.
--  **Translation**, provide Neural Machine Translation using Transformer for EN to MS and MS to EN.
+-  **True Case**, provide true casing utility using T5-Bahasa.
 -  **Word2Num**, convert from cardinal or ordinal representation to numbers.
 -  **Word2Vec**, provide pretrained bahasa wikipedia and bahasa news Word2Vec, with easy interface and visualization.
--  **Zero-shot classification**, provide Zero-shot classification interface using Transformer-Bahasa to recognize texts without any labeled training data.
--  **Zero-shot Entity Recognition**, provide Zero-shot entity tagging interface using Transformer-Bahasa to extract entities.
--  **Hybrid 8-bit Quantization**, provide hybrid 8-bit quantization for all models to reduce inference time up to 2x and model size up to 4x.
--  **Longer Sequences Transformer**, provide BigBird, BigBird + Pegasus and Fastformer for longer sequence tasks.
 
 Pretrained Models
 ------------------
@@ -91,6 +103,7 @@ Malaya also released Bahasa pretrained models, simply check at `Malaya/pretraine
 - **XLNET**, Generalized Autoregressive Pretraining for Language Understanding, https://arxiv.org/abs/1906.08237
 - **FNet**, FNet: Mixing Tokens with Fourier Transforms, https://arxiv.org/abs/2105.03824
 - **Fastformer**, Fastformer: Additive Attention Can Be All You Need, https://arxiv.org/abs/2108.09084
+- **MLM Scoring**, Masked Language Model Scoring, https://arxiv.org/abs/1910.14659
 
 References
 -----------
