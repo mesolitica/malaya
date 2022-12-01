@@ -682,7 +682,7 @@ def tag_chunk(seq):
 
 
 def remove_repeat_fullstop(string):
-    return ' '.join([k.strip() for k in string.split('.') if len(k.strip())])
+    return ' '.join([unidecode(k.strip()) for k in string.split('.') if len(k.strip())])
 
 
 def remove_parenthesis(string, substring, lower_case=True):

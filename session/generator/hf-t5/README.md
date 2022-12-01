@@ -41,14 +41,15 @@ python3 run_t5.py \
 BASE model,
 ```
 WANDB_DISABLED=true \
-python3 run_t5.py \
+accelerate launch \
+run_t5.py \
 --model_name_or_path mesolitica/t5-base-standard-bahasa-cased \
 --num_train_epochs 20 \
 --logging_steps 20 \
 --eval_steps 2000 \
 --save_steps 2000 \
 --evaluation_strategy steps \
---save_total_limit 5 \
+--save_total_limit 2 \
 --do_train \
 --do_eval \
 --source_lang src \
@@ -62,7 +63,7 @@ python3 run_t5.py \
 --ignore_data_skip \
 --max_source_length 1024 \
 --max_target_length 1024 \
---learning_rate 2e-5 \
+--learning_rate 2e-4 \
 --fp16 \
 --gradient_checkpointing true
 ```

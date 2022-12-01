@@ -2,7 +2,7 @@
 
 ## how-to
 
-1. Run prepare dataset, [prepare-tatabahasa.ipynb](prepare-tatabahasa.ipynb).
+1. Run prepare dataset, [prepare-data.ipynb](prepare-data.ipynb).
 
 2. Run training script,
 

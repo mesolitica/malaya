@@ -122,7 +122,11 @@ Contents:
    load-augmentation
    load-prefix-generator
    load-isi-penting-generator
-   load-isi-penting-generator-huggingface
+   load-isi-penting-generator-huggingface-article-style
+   load-isi-penting-generator-huggingface-headline-news-style
+   load-isi-penting-generator-huggingface-karangan-style
+   load-isi-penting-generator-huggingface-news-style
+   load-isi-penting-generator-huggingface-product-description-style
    load-paraphrase
    load-paraphrase-huggingface
 

@@ -40,7 +40,7 @@ python3 run_t5.py \
 --max_source_length 1024 \
 --max_target_length 1024 \
 --fp16 \
---gradient_checkpointing true
+--gradient_checkpointing true \
 ```
 
 SMALL MS model,
@@ -65,12 +65,37 @@ python3 run_t5.py \
 --per_device_train_batch_size=32 \
 --per_device_eval_batch_size=4 \
 --predict_with_generate \
---ignore_data_skip \
 --max_source_length 1024 \
 --max_target_length 1024 \
 --fp16 \
 --gradient_checkpointing true
 ```
+
+```
+WANDB_DISABLED=true \
+accelerate launch \
+run_t5.py \
+--model_name_or_path mesolitica/t5-small-standard-bahasa-cased \
+--num_train_epochs 10 \
+--logging_steps 100 \
+--eval_steps 10000 \
+--save_steps 10000 \
+--evaluation_strategy steps \
+--save_total_limit 5 \
+--do_train \
+--do_eval \
+--source_lang src \
+--target_lang tgt \
+--train_file shuffled-train-ms.json \
+--validation_file shuffled-test-ms.json \
+--output_dir finetune-t5-small-standard-bahasa-cased-ms \
+--per_device_train_batch_size=32 \
+--per_device_eval_batch_size=4 \
+--predict_with_generate \
+--max_source_length 1024 \
+--max_target_length 1024
+```
+
 
 BASE model,
 ```
@@ -94,12 +119,13 @@ python3 run_t5.py \
 --per_device_train_batch_size=16 \
 --per_device_eval_batch_size=4 \
 --predict_with_generate \
---ignore_data_skip \
 --max_source_length 1024 \
 --max_target_length 1024 \
 --fp16 \
 --gradient_checkpointing true
 ```
+
+
 
 BASE MS model,
 ```
@@ -123,7 +149,6 @@ python3 run_t5.py \
 --per_device_train_batch_size=16 \
 --per_device_eval_batch_size=4 \
 --predict_with_generate \
---ignore_data_skip \
 --max_source_length 1024 \
 --max_target_length 1024 \
 --fp16 \

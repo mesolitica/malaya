@@ -77,7 +77,7 @@ def rake(
         return top-k results.
     atleast: int, optional (default=1)
         at least count appeared in the string to accept as candidate.
-    stopwords: List[str], (default=malaya.texts.function.get_stopwords)
+    stopwords: List[str], (default=malaya.text.function.get_stopwords)
         A callable that returned a List[str], or a List[str], or a Tuple[str]
         For automatic Ngram generator.
 
@@ -161,7 +161,7 @@ def textrank(
         return top-k results.
     atleast: int, optional (default=1)
         at least count appeared in the string to accept as candidate.
-    stopwords: List[str], (default=malaya.texts.function.get_stopwords)
+    stopwords: List[str], (default=malaya.text.function.get_stopwords)
         A callable that returned a List[str], or a List[str], or a Tuple[str]
 
     Returns
@@ -239,7 +239,7 @@ def attention(
         return top-k results.
     atleast: int, optional (default=1)
         at least count appeared in the string to accept as candidate.
-    stopwords: List[str], (default=malaya.texts.function.get_stopwords)
+    stopwords: List[str], (default=malaya.text.function.get_stopwords)
         A callable that returned a List[str], or a List[str], or a Tuple[str]
 
     Returns
@@ -319,7 +319,7 @@ def similarity(
         return top-k results.
     atleast: int, optional (default=1)
         at least count appeared in the string to accept as candidate.
-    stopwords: List[str], (default=malaya.texts.function.get_stopwords)
+    stopwords: List[str], (default=malaya.text.function.get_stopwords)
         A callable that returned a List[str], or a List[str], or a Tuple[str]
 
     Returns

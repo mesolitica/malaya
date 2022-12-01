@@ -638,18 +638,26 @@ class Transformer(Base):
 
 
 class IsiPentingGenerator(Generator):
-    def __init__(self, model, initial_text, **kwargs):
+    def __init__(self, model, **kwargs):
         Generator.__init__(
             self,
             model=model,
-            initial_text=initial_text,
+            initial_text='',
             **kwargs,
         )
+        self._mode = [
+            'surat-khabar',
+            'tajuk-surat-khabar',
+            'artikel',
+            'penerangan-produk',
+            'karangan',
+        ]
 
     @check_type
     def generate(
         self,
         strings: List[str],
+        mode: str = 'surat-khabar',
         **kwargs,
     ):
         """
@@ -658,6 +666,15 @@ class IsiPentingGenerator(Generator):
         Parameters
         ----------
         strings : List[str]
+        mode: str, optional (default='surat-khabar')
+            Mode supported. Allowed values:
+
+            * ``'surat-khabar'`` - news style writing.
+            * ``'tajuk-surat-khabar'`` - headline news style writing.
+            * ``'artikel'`` - article style writing.
+            * ``'penerangan-produk'`` - product description style writing.
+            * ``'karangan'`` - karangan sekolah style writing.
+
         **kwargs: vector arguments pass to huggingface `generate` method.
             Read more at https://huggingface.co/docs/transformers/main_classes/text_generation
 
@@ -665,12 +682,16 @@ class IsiPentingGenerator(Generator):
         -------
         result: List[str]
         """
+        mode = mode.lower()
+        if mode not in self._mode:
+            raise ValueError(f'only supported one of {self._mode}')
+
         points = [
             f'{no + 1}. {remove_repeat_fullstop(string)}.'
             for no, string in enumerate(strings)
         ]
         points = ' '.join(points)
-        points = f'karangan: {points}'
+        points = f'{mode}: {points}'
         results = super().generate([points], **kwargs)
         return [upperfirst(r) for r in results]
 

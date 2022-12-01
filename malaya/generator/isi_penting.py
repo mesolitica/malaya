@@ -8,17 +8,15 @@ import warnings
 logger = logging.getLogger(__name__)
 
 _transformer_availability = {
-    't5': {
-        'Size (MB)': 1250,
-        'Quantized Size (MB)': 481,
+    'small-t5': {
+        'Size (MB)': 355.6,
         'ROUGE-1': 0.3717403,
         'ROUGE-2': 0.18471429,
         'ROUGE-L': 0.2582724,
         'Maximum Length': 1024,
     },
-    'small-t5': {
-        'Size (MB)': 355.6,
-        'Quantized Size (MB)': 195,
+    't5': {
+        'Size (MB)': 1250,
         'ROUGE-1': 0.3717403,
         'ROUGE-2': 0.18471429,
         'ROUGE-L': 0.2582724,
@@ -29,7 +27,6 @@ _transformer_availability = {
 _huggingface_availability = {
     'mesolitica/finetune-isi-penting-generator-t5-small-standard-bahasa-cased': {
         'Size (MB)': 242,
-        'BLEU': 61.559202822392486,
         'ROUGE-1': 0.24620333,
         'ROUGE-2': 0.05896076,
         'ROUGE-L': 0.15158954,
@@ -37,7 +34,6 @@ _huggingface_availability = {
     },
     'mesolitica/finetune-isi-penting-generator-t5-base-standard-bahasa-cased': {
         'Size (MB)': 892,
-        'BLEU': 58.764876478744064,
         'ROUGE-1': 0.24620333,
         'ROUGE-2': 0.05896076,
         'ROUGE-L': 0.15158954,
@@ -123,4 +119,4 @@ def huggingface(model: str = 'mesolitica/finetune-isi-penting-generator-t5-base-
         raise ValueError(
             'model not supported, please check supported models from `malaya.generator.isi_penting.available_huggingface()`.'
         )
-    return load_huggingface.load_isi_penting(model=model, initial_text='karangan: ', **kwargs)
+    return load_huggingface.load_isi_penting(model=model, **kwargs)

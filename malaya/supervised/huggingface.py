@@ -72,8 +72,8 @@ def load_transformer(model, **kwargs):
     return Transformer(model=model, **kwargs)
 
 
-def load_isi_penting(model, initial_text, **kwargs):
-    return IsiPentingGenerator(model, initial_text, **kwargs)
+def load_isi_penting(model, **kwargs):
+    return IsiPentingGenerator(model, **kwargs)
 
 
 def load_tatabahasa(model, initial_text, **kwargs):

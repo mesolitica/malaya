@@ -1,5 +1,5 @@
 from malaya.function import get_device
-from malaya.graph import fast_pagerank
+from malaya.graph import fast_pagerank as load_fast_pagerank
 from scipy import sparse
 from networkx import nx
 import numpy as np
@@ -28,7 +28,7 @@ def pagerank(array, fast_pagerank=True, retry=5, **kwargs):
     if cpu:
         if fast_pagerank:
             G = sparse.csr_matrix(array)
-            r = fast_pagerank.pagerank(G)
+            r = load_fast_pagerank.pagerank(G)
             scores = {i: r[i] for i in range(len(r))}
             fail = False
 
