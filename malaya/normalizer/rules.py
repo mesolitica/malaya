@@ -1087,7 +1087,7 @@ class Normalizer:
         return {'normalize': result, 'date': dates_, 'money': money_}
 
 
-def normalizer(
+def load(
     speller: Callable = None,
     stemmer: Callable = None,
     **kwargs,

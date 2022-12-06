@@ -56,16 +56,16 @@ _huggingface_availability = {
     },
     'mesolitica/finetune-summarization-ms-t5-small-standard-bahasa-cased': {
         'Size (MB)': 242,
-        'ROUGE-1': 0.704253387,
-        'ROUGE-2': 0.492785896,
-        'ROUGE-L': 0.376294086,
+        'ROUGE-1': 0.742572468,
+        'ROUGE-2': 0.50196339,
+        'ROUGE-L': 0.3741226432,
         'Suggested length': 1024,
     },
     'mesolitica/finetune-summarization-ms-t5-base-standard-bahasa-cased': {
         'Size (MB)': 892,
-        'ROUGE-1': 0.711362621,
-        'ROUGE-2': 0.45666219008,
-        'ROUGE-L': 0.368140917,
+        'ROUGE-1': 0.728116529,
+        'ROUGE-2': 0.49656772621,
+        'ROUGE-L': 0.376577199,
         'Suggested length': 1024,
     },
 }

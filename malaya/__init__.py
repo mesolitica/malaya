@@ -20,6 +20,7 @@ from . import alignment
 from . import dictionary
 from . import generator
 from . import keyword
+from . import normalizer
 from . import similarity
 from . import spelling_correction
 from . import summarization

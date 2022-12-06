@@ -47,7 +47,7 @@ _fd2 = '(?:{})'.format(
 
 
 _date = '(?:' + '(?:' + _fd1 + '|' + _fd2 + ')' + '|' + _short_date + ')'
-_time = r'(?:(?:\d+)?\.?\d+\s*(?:AM|PM|am|pm|a\.m\.|p\.m\.|pagi|pgi|morning|tengahari|tngahari|petang|ptg|malam|jam|hours|hour|hrs))|(?:(?:[0-2]?[0-9]|[2][0-3]):(?:[0-5][0-9])(?::(?:[0-5][0-9]))?(?: ?(?:AM|PM|am|pm|a\.m\.|p\.m\.|pagi|pgi|morning|tengahari|tngahari|petang|ptg|malam))?)'
+_time = r'(?:(?:\d+)?\.?\d+\s*(?:AM|PM|am|pm|a\.m\.|p\.m\.|pagi|pgi|morning|tengahari|tngahari|petang|ptg|malam|jam|hours|hour|hrs))|(?:(?:[0-2]?[0-9]|[2][0-3]):(?:[0-5][0-9])(?::(?:[0-5][0-9]))?(?: ?(?:AM|PM|am|pm|a\.m\.|p\.m\.|pagi|pgi|morning|tengahari|tngahari|petang|ptg|malam|hours|hrs|jam))?)'
 _today_time = r'(?:(?:pkul|pukul|kul)\s*(?:(?:([01]?\d|2[0-3]):)?([0-5]?\d):)([0-5]?\d))|(?:(?:pkul|pukul|kul)\s*(?:\d+)?\.?\d+)'
 _past_date_string = '(?:\\s|\\d+)\\s*(?:minggu|bulan|tahun|hari|thun|hri|mnggu|jam|minit|saat)\\s*(?:lalu|lepas|lps)\\b'
 _now_date_string = '(?:sekarang|skrg|jam|tahun|thun|saat|minit) (?:ini|ni)\\b'

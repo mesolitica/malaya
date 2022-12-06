@@ -21,6 +21,7 @@ from malaya.text.function import (
     upperfirst,
     remove_repeat_fullstop,
     remove_newlines,
+    remove_html_tags as f_remove_html_tags,
 )
 from malaya.text.rouge import postprocess_summary, find_kata_encik
 from malaya.torch_model.t5 import T5ForSequenceClassification, T5Tagging
@@ -63,6 +64,7 @@ class Generator(Base):
         result: List[str]
         """
 
+        logger.debug(f'generate, initial_text: {self._initial_text}')
         logger.debug(f'generate, strings: {strings}')
 
         cuda = next(self.model.parameters()).is_cuda
@@ -658,6 +660,7 @@ class IsiPentingGenerator(Generator):
         self,
         strings: List[str],
         mode: str = 'surat-khabar',
+        remove_html_tags: bool = True,
         **kwargs,
     ):
         """
@@ -674,6 +677,8 @@ class IsiPentingGenerator(Generator):
             * ``'artikel'`` - article style writing.
             * ``'penerangan-produk'`` - product description style writing.
             * ``'karangan'`` - karangan sekolah style writing.
+        remove_html_tags: bool, optional (default=True)
+            Will remove html tags using `malaya.text.function.remove_html_tags`.
 
         **kwargs: vector arguments pass to huggingface `generate` method.
             Read more at https://huggingface.co/docs/transformers/main_classes/text_generation
@@ -693,7 +698,11 @@ class IsiPentingGenerator(Generator):
         points = ' '.join(points)
         points = f'{mode}: {points}'
         results = super().generate([points], **kwargs)
-        return [upperfirst(r) for r in results]
+        results = [upperfirst(r) for r in results]
+        if remove_html_tags:
+            results = [f_remove_html_tags(r) for r in results]
+
+        return results
 
 
 class Tatabahasa(Generator):
@@ -751,3 +760,13 @@ class Tatabahasa(Generator):
             )
             results.append(list(zip(merged[0], merged[1])))
         return results
+
+
+class Normalizer(Generator):
+    def __init__(self, model, **kwargs):
+        Generator.__init__(
+            self,
+            model=model,
+            initial_text='',
+            **kwargs,
+        )
