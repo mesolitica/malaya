@@ -12,6 +12,7 @@ from malaya.torch_model.huggingface import (
     Transformer,
     IsiPentingGenerator,
     Tatabahasa,
+    Normalizer,
 )
 from transformers import AutoTokenizer
 from malaya_boilerplate.utils import check_tf2
@@ -78,3 +79,21 @@ def load_isi_penting(model, **kwargs):
 
 def load_tatabahasa(model, initial_text, **kwargs):
     return Tatabahasa(model, initial_text, **kwargs)
+
+
+def load_normalizer(
+    model,
+    initial_text,
+    corrector,
+    segmenter=None,
+    text_scorer=None,
+    **kwargs,
+):
+    return Normalizer(
+        model,
+        initial_text,
+        corrector,
+        segmenter=segmenter,
+        text_scorer=text_scorer,
+        **kwargs,
+    )

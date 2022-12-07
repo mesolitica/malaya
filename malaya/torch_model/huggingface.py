@@ -763,10 +763,43 @@ class Tatabahasa(Generator):
 
 
 class Normalizer(Generator):
-    def __init__(self, model, **kwargs):
+    def __init__(
+        self,
+        model,
+        initial_text,
+        corrector,
+        segmenter=None,
+        text_scorer=None,
+        **kwargs,
+    ):
         Generator.__init__(
             self,
             model=model,
-            initial_text='',
+            initial_text=initial_text,
             **kwargs,
         )
+        self.corrector = corrector
+        self.segmenter = segmenter
+        self.text_scorer = text_scorer
+
+    @check_type
+    def generate(
+        self,
+        strings: List[str],
+        **kwargs,
+    ):
+        """
+        abstractive text normalization.
+
+        Parameters
+        ----------
+        strings : List[str]
+        **kwargs: vector arguments pass to huggingface `generate` method.
+            Read more at https://huggingface.co/docs/transformers/main_classes/text_generation
+
+            Also vector arguments pass to `malaya.normalizer.rules.Normalizer.normalize`
+
+        Returns
+        -------
+        result: List[str]
+        """
