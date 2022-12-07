@@ -60,8 +60,8 @@ def generate_ids(mask, tokenizer):
 
 
 class Transformer(Spell):
-    def __init__(self, model, corpus, sp_tokenizer, **kwargs):
-        Spell.__init__(self, sp_tokenizer, corpus, **kwargs)
+    def __init__(self, model, corpus, sp_tokenizer, stemmer, **kwargs):
+        Spell.__init__(self, sp_tokenizer, corpus, stemmer, **kwargs)
         self._model = model
         self._padding = tf.keras.preprocessing.sequence.pad_sequences
 
@@ -346,6 +346,7 @@ def transformer(model: str = 'small-t5', quantized: bool = False, **kwargs):
 def encoder(
     model,
     sentence_piece: bool = False,
+    stemmer=None,
     **kwargs,
 ):
     """
@@ -353,8 +354,11 @@ def encoder(
 
     Parameters
     ----------
+    model: Callable
     sentence_piece: bool, optional (default=False)
         if True, reduce possible augmentation states using sentence piece.
+    stemmer: Callable, optional (default=None)
+        a Callable object, must have `stem_word` method.
 
     Returns
     -------
@@ -363,6 +367,10 @@ def encoder(
 
     if not hasattr(model, '_log_vectorize'):
         raise ValueError('model must have `_log_vectorize` method')
+
+    if stemmer is not None:
+        if not hasattr(stemmer, 'stem_word'):
+            raise ValueError('stemmer must have `stem_word` method')
 
     tokenizer = None
     if sentence_piece:
@@ -379,4 +387,4 @@ def encoder(
     path = check_file(PATH_NGRAM[1], S3_PATH_NGRAM[1], **kwargs)
     with open(path['model']) as fopen:
         corpus = json.load(fopen)
-    return Transformer(model, corpus, tokenizer, **kwargs)
+    return Transformer(model, corpus, tokenizer, stemmer, **kwargs)
