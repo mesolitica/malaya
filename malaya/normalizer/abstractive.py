@@ -1,7 +1,4 @@
 from malaya.supervised import huggingface as load_huggingface
-from malaya.language_model import kenlm
-from malaya.stem import deep_model
-from malaya.spelling_correction.probability import load_spelling
 from malaya.function import describe_availability
 from typing import Callable
 import logging
@@ -25,6 +22,7 @@ def available_huggingface():
 
 def huggingface(
     model: str = 'mesolitica/finetune-normalizer-t5-small-standard-bahasa-cased',
+    force_check: bool = True,
     use_rules_normalizer: bool = True,
     kenlm_model: str = 'bahasa-wiki-news',
     stem_model: str = 'noisy',
@@ -44,6 +42,9 @@ def huggingface(
     ----------
     model: str, optional (default='mesolitica/finetune-normalizer-t5-small-standard-bahasa-cased')
         Check available models at `malaya.normalizer.abstractive.available_huggingface()`.
+    force_check: bool, optional (default=True)
+        Force check model one of malaya model.
+        Set to False if you have your own huggingface model.
     use_rules_normalizer: bool, optional(default=True)
     kenlm_model: str, optional (default='bahasa-wiki-news')
         the model trained on `malaya.language_model.kenlm(model = 'bahasa-wiki-news')`,
@@ -77,6 +78,11 @@ def huggingface(
     result: malaya.torch_model.huggingface.Normalizer
     """
     if use_rules_normalizer:
+
+        from malaya.language_model import kenlm
+        from malaya.stem import deep_model
+        from malaya.spelling_correction.probability import load_spelling
+
         lm = kenlm(model=kenlm_model)
         stemmer = deep_model(model=stem_model)
         corrector = load_spelling(

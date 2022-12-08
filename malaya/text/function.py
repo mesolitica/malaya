@@ -656,6 +656,20 @@ def split_into_sentences(text, minimum_length=5):
     return sentences
 
 
+def maxlen_slide(string, maxlen=128):
+    splitted = split_into_sentences(string)
+    r, temp = [], []
+    for s in splitted:
+        temp.append(s)
+        if len(' '.join(temp).split()) > maxlen:
+            r.append(' '.join(temp))
+            temp = []
+
+    if len(temp):
+        r.append(' '.join(temp))
+    return r
+
+
 def tag_chunk(seq):
     results = []
     last_no, last_label, tokens = 0, None, []

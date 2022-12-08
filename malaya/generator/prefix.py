@@ -163,7 +163,11 @@ def transformer(model: str = '345M', quantized: bool = False, **kwargs):
     )
 
 
-def huggingface(model: str = 'mesolitica/gpt2-117m-bahasa-cased-v2', force_check: bool = True, **kwargs):
+def huggingface(
+    model: str = 'mesolitica/gpt2-117m-bahasa-cased-v2',
+    force_check: bool = True,
+    **kwargs,
+):
     """
     Load Prefix language model.
 

@@ -26,6 +26,7 @@ from malaya.text.function import (
 from malaya.text.rouge import postprocess_summary, find_kata_encik
 from malaya.torch_model.t5 import T5ForSequenceClassification, T5Tagging
 from malaya_boilerplate.torch_utils import to_tensor_cuda, to_numpy
+from malaya.function.activation import softmax
 from collections import defaultdict
 from herpetologist import check_type
 from typing import List
@@ -40,6 +41,9 @@ logger = logging.getLogger(__name__)
 class Base:
     def cuda(self, **kwargs):
         return self.model.cuda(**kwargs)
+
+    def save_pretrained(self, *args, **kwargs):
+        return self.model.save_pretrained(*args, **kwargs), self.tokenizer.save_pretrained(*args, **kwargs)
 
 
 class Generator(Base):
@@ -260,7 +264,8 @@ class ZeroShotClassification(Similarity):
         self,
         strings: List[str],
         labels: List[str],
-        prefix: str = 'ayat ini berkaitan tentang'
+        prefix: str = 'ayat ini berkaitan tentang',
+        multilabel: bool = True,
     ):
         """
         classify list of strings and return probability.
@@ -269,8 +274,10 @@ class ZeroShotClassification(Similarity):
         ----------
         strings: List[str]
         labels: List[str]
-        prefix: str
+        prefix: str, optional (default='ayat ini berkaitan tentang')
             prefix of labels to zero shot. Playing around with prefix can get better results.
+        multilabel: bool, optional (default=True)
+            probability of labels can be more than 1.0
 
         Returns
         -------
@@ -289,12 +296,28 @@ class ZeroShotClassification(Similarity):
 
         outputs = super().forward(strings_left=strings_left, strings_right=strings_right)
         entail_contradiction_logits = outputs.logits[:, [0, 1]]
-        probs = to_numpy(entail_contradiction_logits.softmax(dim=1)[:, 1])
+        if multilabel:
+            probs = to_numpy(entail_contradiction_logits.softmax(dim=1)[:, 1])
+        else:
+            probs = to_numpy(entail_contradiction_logits[:, 1])
+
         results = []
         for k, v in mapping.items():
-            result = {}
-            for no, index in enumerate(v):
-                result[labels[no]] = probs[index]
+            if multilabel:
+                result = {}
+                for no, index in enumerate(v):
+                    result[labels[no]] = probs[index]
+
+            else:
+                result = []
+                for no, index in enumerate(v):
+                    result.append(probs[index])
+                p = softmax(result)
+
+                result = {}
+                for no, index in enumerate(v):
+                    result[labels[no]] = p[no]
+
             results.append(result)
         return results
 

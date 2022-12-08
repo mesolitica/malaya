@@ -12,14 +12,12 @@ _transformer_availability = {
         'Size (MB)': 355.6,
         'ROUGE-1': 0.3717403,
         'ROUGE-2': 0.18471429,
-        'ROUGE-L': 0.2582724,
         'Maximum Length': 1024,
     },
     't5': {
         'Size (MB)': 1250,
         'ROUGE-1': 0.3717403,
         'ROUGE-2': 0.18471429,
-        'ROUGE-L': 0.2582724,
         'Maximum Length': 1024,
     },
 }
@@ -43,7 +41,8 @@ _huggingface_availability = {
 
 
 def _describe():
-    logger.info('tested on semisupervised summarization isi penting validation set, ')
+    logger.info('tested on semisupervised summarization on unseen AstroAwani 20 news, https://github.com/huseinzol05/malay-dataset/tree/master/summarization/semisupervised-astroawani')
+    logger.info('each news compared ROUGE with 5 different generated texts.')
 
 
 def available_transformer():
@@ -102,7 +101,11 @@ def transformer(model: str = 't5', quantized: bool = False, **kwargs):
     )
 
 
-def huggingface(model: str = 'mesolitica/finetune-isi-penting-generator-t5-base-standard-bahasa-cased', **kwargs):
+def huggingface(
+    model: str = 'mesolitica/finetune-isi-penting-generator-t5-base-standard-bahasa-cased',
+    force_check: bool = True,
+    **kwargs,
+):
     """
     Load HuggingFace model to generate text based on isi penting.
 
@@ -110,12 +113,15 @@ def huggingface(model: str = 'mesolitica/finetune-isi-penting-generator-t5-base-
     ----------
     model: str, optional (default='mesolitica/finetune-isi-penting-generator-t5-base-standard-bahasa-cased')
         Check available models at `malaya.generator.isi_penting.available_huggingface()`.
+    force_check: bool, optional (default=True)
+        Force check model one of malaya model.
+        Set to False if you have your own huggingface model.
 
     Returns
     -------
     result: malaya.torch_model.huggingface.IsiPentingGenerator
     """
-    if model not in _huggingface_availability:
+    if model not in _huggingface_availability and force_check:
         raise ValueError(
             'model not supported, please check supported models from `malaya.generator.isi_penting.available_huggingface()`.'
         )

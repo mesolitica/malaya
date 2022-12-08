@@ -1,6 +1,7 @@
 from malaya.function import check_file
 from malaya.model.alignment import Eflomal, HuggingFace
 from malaya_boilerplate import frozen_graph
+from malaya_boilerplate.utils import check_tf2
 import tensorflow as tf
 from typing import Callable
 
@@ -58,38 +59,31 @@ def eflomal(preprocessing_func: Callable = None, **kwargs):
     return _eflomal(preprocessing_func=preprocessing_func, file='en-ms', **kwargs)
 
 
-def huggingface(model: str = 'mesolitica/finetuned-bert-base-multilingual-cased-noisy-en-ms', **kwargs):
+@check_tf2
+def huggingface(
+    model: str = 'mesolitica/finetuned-bert-base-multilingual-cased-noisy-en-ms',
+    force_check: bool = True,
+    **kwargs,
+):
     """
     Load huggingface BERT model word alignment for EN-MS, Required Tensorflow >= 2.0.
 
     Parameters
     ----------
     model : str, optional (default='mesolitica/finetuned-bert-base-multilingual-cased-noisy-en-ms')
-        Model architecture supported. Allowed values:
-
-        * ``'mesolitica/finetuned-bert-base-multilingual-cased-noisy-en-ms'`` - finetuned BERT multilanguage on noisy EN-MS.
-        * ``'bert-base-multilingual-cased'`` - pretrained BERT multilanguage.
+        Check available models at `malaya.alignment.en_ms.available_huggingface()`.
+    force_check: bool, optional (default=True)
+        Force check model one of malaya model.
+        Set to False if you have your own huggingface model.
 
     Returns
     -------
     result: malaya.model.alignment.HuggingFace
     """
 
-    model = model.lower()
-    if model not in _huggingface_availability:
+    if model not in _huggingface_availability and force_check:
         raise ValueError(
             'model not supported, please check supported models from `malaya_speech.alignment.en_ms.available_huggingface()`.'
-        )
-
-    from malaya_boilerplate.utils import check_tf2_huggingface
-
-    check_tf2_huggingface()
-
-    try:
-        from transformers import TFBertModel, BertTokenizer
-    except BaseException:
-        raise ModuleNotFoundError(
-            'transformers not installed. Please install it by `pip3 install transformers` and try again.'
         )
 
     tokenizer = BertTokenizer.from_pretrained(model)

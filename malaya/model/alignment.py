@@ -313,8 +313,8 @@ class Eflomal:
 
 class HuggingFace:
     def __init__(self, model, tokenizer):
-        self._model = model
-        self._tokenizer = tokenizer
+        self.model = model
+        self.tokenizer = tokenizer
 
     def align(
         self,

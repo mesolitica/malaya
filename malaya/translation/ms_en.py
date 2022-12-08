@@ -221,7 +221,11 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
 
 
 @check_type
-def huggingface(model: str = 'mesolitica/finetune-translation-t5-small-standard-bahasa-cased', **kwargs):
+def huggingface(
+    model: str = 'mesolitica/finetune-translation-t5-small-standard-bahasa-cased',
+    force_check: bool = True,
+    **kwargs,
+):
     """
     Load HuggingFace model to translate MS-to-EN.
 
@@ -229,12 +233,15 @@ def huggingface(model: str = 'mesolitica/finetune-translation-t5-small-standard-
     ----------
     model: str, optional (default=''mesolitica/finetune-translation-t5-small-standard-bahasa-cased')
         Check available models at `malaya.translation.ms_en.available_huggingface()`.
+    force_check: bool, optional (default=True)
+        Force check model one of malaya model.
+        Set to False if you have your own huggingface model.
 
     Returns
     -------
     result: malaya.torch_model.huggingface.Generator
     """
-    if model not in _huggingface_availability:
+    if model not in _huggingface_availability and force_check:
         raise ValueError(
             'model not supported, please check supported models from `malaya.translation.ms_en.available_huggingface()`.'
         )

@@ -117,7 +117,11 @@ def transformer(model: str = 'small-t5', quantized: bool = False, **kwargs):
     )
 
 
-def huggingface(model: str = 'mesolitica/finetune-paraphrase-t5-small-standard-bahasa-cased', **kwargs):
+def huggingface(
+    model: str = 'mesolitica/finetune-paraphrase-t5-small-standard-bahasa-cased',
+    force_check: bool = True,
+    **kwargs,
+):
     """
     Load HuggingFace model to paraphrase.
 
@@ -125,12 +129,15 @@ def huggingface(model: str = 'mesolitica/finetune-paraphrase-t5-small-standard-b
     ----------
     model: str, optional (default='mesolitica/finetune-paraphrase-t5-small-standard-bahasa-cased')
         Check available models at `malaya.paraphrase.available_huggingface()`.
+    force_check: bool, optional (default=True)
+        Force check model one of malaya model.
+        Set to False if you have your own huggingface model.
 
     Returns
     -------
     result: malaya.torch_model.huggingface.Paraphrase
     """
-    if model not in _huggingface_availability:
+    if model not in _huggingface_availability and force_check:
         raise ValueError(
             'model not supported, please check supported models from `malaya.paraphrase.available_huggingface()`.'
         )

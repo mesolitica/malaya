@@ -49,6 +49,8 @@ class Tokenizer:
             True to keep words with emphasis: *very* good.
         numbers: bool, optional (default=True)
             True to keep numbers.
+        numbers_with_shortform: bool, optional (default=True)
+            True to keep numbers with shortform.
         temperature: bool, optional (default=True)
             True to keep temperatures
         distance: bool, optional (default=True)
@@ -91,6 +93,7 @@ class Tokenizer:
         censored = kwargs.get('censored', True)
         emphasis = kwargs.get('emphasis', True)
         numbers = kwargs.get('numbers', True)
+        numbers_with_shortform = kwargs.get('numbers_with_shortform', True)
         temperatures = kwargs.get('temperature', True)
         distances = kwargs.get('distance', True)
         volumes = kwargs.get('volume', True)
@@ -182,6 +185,9 @@ class Tokenizer:
 
         if ic:
             pipeline.append(self.wrap_non_matching(self.regexes['ic']))
+
+        if numbers_with_shortform:
+            pipeline.append(self.regexes['number_with_shortform'])
 
         if numbers:
             pipeline.append(self.regexes['number'])
