@@ -90,3 +90,23 @@ python3 run_t5_classification.py \
 --ignore_data_skip \
 --fp16
 ```
+
+```
+WANDB_DISABLED=true \
+python3 run_glue.py \
+--model_name_or_path mesolitica/roberta-base-bahasa-cased \
+--num_train_epochs 10 \
+--logging_steps 100 \
+--save_total_limit 3 \
+--num_train_epochs 10 \
+--eval_steps 10000 \
+--save_steps 10000 \
+--do_train \
+--do_eval \
+--train_file mnli-train.json \
+--validation_file mnli-test.json \
+--max_seq_length 128 \
+--per_device_train_batch_size 32 \
+--learning_rate 2e-5 \
+--output_dir roberta-base
+```

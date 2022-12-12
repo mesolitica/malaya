@@ -50,6 +50,13 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
+   :caption: Augmentation Module
+
+   load-augmentation-encoder
+   load-augmentation-rules
+
+.. toctree::
+   :maxdepth: 2
    :caption: Dictionary Module
 
    dictionary-malay
@@ -119,7 +126,6 @@ Contents:
    :maxdepth: 2
    :caption: Generative Module
 
-   load-augmentation
    load-prefix-generator
    load-isi-penting-generator
    load-isi-penting-generator-huggingface-article-style
@@ -214,6 +220,7 @@ Contents:
    :maxdepth: 2
    :caption: Keyword Module
 
+   load-abstractive-keyword-huggingface
    load-keyword-extractive
 
 .. toctree::

@@ -13,6 +13,7 @@ from malaya.torch_model.huggingface import (
     IsiPentingGenerator,
     Tatabahasa,
     Normalizer,
+    Keyword,
 )
 from transformers import TFAutoModel, AutoTokenizer
 from transformers import AutoTokenizer
@@ -92,3 +93,7 @@ def load_normalizer(
         text_scorer=text_scorer,
         **kwargs,
     )
+
+
+def load_keyword(model, **kwargs):
+    return Keyword(model, **kwargs)

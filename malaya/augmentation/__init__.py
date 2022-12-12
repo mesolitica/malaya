@@ -6,5 +6,7 @@
 # URL: <https://malaya.readthedocs.io/>
 # For license information, see https://github.com/huseinzol05/Malaya/blob/master/LICENSE
 
+from . import base
 from . import abstractive
-from . import extractive
+from . import encoder
+from . import rules

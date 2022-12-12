@@ -826,3 +826,44 @@ class Normalizer(Generator):
         -------
         result: List[str]
         """
+
+
+class Keyword(Generator):
+    def __init__(self, model, **kwargs):
+        Generator.__init__(
+            self,
+            model=model,
+            initial_text='',
+            **kwargs,
+        )
+
+    @check_type
+    def generate(
+        self,
+        strings: List[str],
+        top_keywords: int = 5,
+        **kwargs,
+    ):
+        """
+        Generate texts from the input.
+
+        Parameters
+        ----------
+        strings : List[str]
+        top_keywords: int, optional (default=5)
+        **kwargs: vector arguments pass to huggingface `generate` method.
+            Read more at https://huggingface.co/docs/transformers/main_classes/text_generation
+
+        Returns
+        -------
+        result: List[str]
+        """
+        prefix = f'{top_keywords} kata kunci: '
+        strings = [f'{prefix}{s}' for s in strings]
+        results = super().generate(strings, **kwargs)
+        outputs = []
+        for r in results:
+            r = r.split(',')
+            r = list(set(r))
+            outputs.append(r)
+        return outputs

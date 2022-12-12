@@ -53,6 +53,8 @@ Features
 --------
 
 -  **Alignment**, translation word alignment using Eflomal and pretrained Transformer models.
+-  **Abstractive Keyword**, provide abstractive keyword using T5-Bahasa.
+-  **Extractive Keyword**, Extractive interface using RAKE, TextRank and Attention.
 -  **Isi Penting Generator**, generate text from list of isi penting using T5-Bahasa.
 -  **Prefix Generator**, generate text from prefix using GPT2-Bahasa.
 -  **Extractive Keyword**, provide RAKE, TextRank and Attention Mechanism hybrid with Transformer-Bahasa.

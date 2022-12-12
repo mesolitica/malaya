@@ -1084,6 +1084,8 @@ rules_compound_normalizer = {
     'b . i': 'bahasa inggeris',
     'b . m': 'bahasa melayu',
     'bt live': 'buat live',
+    'tu ha': 'tu ,',
+    'la boh': 'la ya'
 }
 
 rules_normalizer = {
@@ -4491,6 +4493,7 @@ rules_normalizer = {
     'klate': 'kelantan',
     'kelate': 'kelantan',
     'yb': 'Yang Bahagia',
+    'xbole': 'tak boleh',
 }
 
 rules_normalizer_rev = {v: k for k, v in rules_normalizer.items()}

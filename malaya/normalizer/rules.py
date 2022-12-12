@@ -2,6 +2,7 @@ import re
 import dateparser
 import itertools
 import math
+import numpy as np
 from malaya.num2word import to_cardinal
 from malaya.text.function import (
     is_laugh,
@@ -54,6 +55,7 @@ from malaya.text.normalization import (
     replace_mengeluh,
     replace_betul,
     digits,
+    normalize_numbers_with_shortform,
 )
 from malaya.text.rules import rules_normalizer, rules_normalizer_rev
 from malaya.cluster import cluster_words
@@ -350,15 +352,6 @@ class Normalizer:
         s = f'tokenized: {tokenized}'
         logger.debug(s)
         string = ' '.join(tokenized)
-        string = groupby(string)
-
-        if normalize_text:
-            logger.debug(f'before normalize_text: {string}')
-            string = replace_laugh(string)
-            string = replace_mengeluh(string)
-            string = replace_betul(string)
-            string = _replace_compound(string)
-            logger.debug(f'after normalize_text: {string}')
 
         if normalize_elongated:
             logger.debug(f'before normalize_elongated: {string}')
@@ -378,16 +371,25 @@ class Normalizer:
                     and not len(re.findall(_expressions['date'], word))
                     and not len(re.findall(_expressions['ic'], word))
                     and not len(re.findall(_expressions['user'], word))
+                    and not len(re.findall(_expressions['number'], word))
                     and not _is_number_regex(word)
                     and check_english_func is not None
                     and not check_english_func(word_lower)
                 ):
-                    word = self._compiled['normalize_elong'].sub(r'\1\1', word)
+                    word = self._compiled['normalize_elong'].sub(r'\1\1', groupby(word))
                     if got_speller:
                         word = self._speller.normalize_elongated(word)
                 normalized.append(word)
             string = ' '.join(normalized)
             logger.debug(f'after normalize_elongated: {string}')
+
+        if normalize_text:
+            logger.debug(f'before normalize_text: {string}')
+            string = replace_laugh(string)
+            string = replace_mengeluh(string)
+            string = replace_betul(string)
+            string = _replace_compound(string)
+            logger.debug(f'after normalize_text: {string}')
 
         result, normalized = [], []
         spelling_correction = {}
@@ -548,10 +550,12 @@ class Normalizer:
                             lower = f'{l} {word_lower}'
                             title = f'{l} {word_title}'
                             normal = f'{l} {word}'
+                            upper = f'{l} {word_upper}'
                         else:
                             lower = word_lower
                             title = word_title
                             normal = word
+                            upper = word_upper
 
                         if index + 1 < len(tokenized):
                             r = ' '.join(tokenized[index + 1: index + 1 + text_scorer_window])
@@ -559,20 +563,28 @@ class Normalizer:
                                 lower = f'{lower} {r}'
                                 title = f'{title} {r}'
                                 normal = f'{normal} {r}'
+                                upper = f'{upper} {r}'
 
                         lower_score = text_scorer(lower)
                         title_score = text_scorer(title)
                         normal_score = text_scorer(normal)
-                        s = f'index: {index}, word: {word}, lower: {lower} , normal: {normal} , lower_score: {lower_score}, title_score: {title_score}, normal_score: {normal_score}'
+                        upper_score = text_scorer(upper)
+                        s = f'index: {index}, word: {word}, lower: {lower} , normal: {normal} , lower_score: {lower_score}, title_score: {title_score}, normal_score: {normal_score}, upper_score: {upper_score}'
                         logger.debug(s)
-                        if lower_score > normal_score or title_score > normal_score:
-                            s = f'index: {index}, word: {word}, condition lower_score > normal_score or title_score > normal_score'
+                        scores = [lower_score, title_score, upper_score]
+                        max_score = max(scores)
+                        argmax = np.argmax(scores)
+                        if max_score > normal_score:
+                            s = f'index: {index}, word: {word}, max_score > normal_score'
                             logger.debug(s)
-                            if lower_score > title_score:
+
+                            if argmax == 0:
                                 word = word_lower
                                 titled = False
-                            else:
+                            elif argmax == 1:
                                 word = word_title
+                            elif argmax == 2:
+                                word = word_upper
 
                     if titled:
                         s = f'index: {index}, word: {word}, condition titled'
@@ -591,7 +603,7 @@ class Normalizer:
                 if check_english_func(word_lower_):
                     found = True
                 # suree -> sure -> detect
-                elif len(word_lower_) > 1 and word_lower_[-1] == word_lower_[-2] and check_english_func(word_lower_[:-1]):
+                elif len(word_lower_) > 1 and len(word_) > 1 and word_lower_[-1] == word_lower_[-2] and check_english_func(word_lower_[:-1]):
                     found = True
                     selected_word = word_[:-1]
 
@@ -931,6 +943,17 @@ class Normalizer:
                 s = f'index: {index}, word: {word}, condition is number'
                 logger.debug(s)
                 result.append(word)
+                index += 1
+                continue
+
+            if re.findall(_expressions['number_with_shortform'], word_lower):
+                s = f'index: {index}, word: {word_lower}, condition is number_with_shortform'
+                logger.debug(s)
+                if normalize_cardinal:
+                    w = normalize_numbers_with_shortform(word_lower)
+                else:
+                    w = word
+                result.append(w)
                 index += 1
                 continue
 

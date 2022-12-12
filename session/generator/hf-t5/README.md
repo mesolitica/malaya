@@ -4,7 +4,7 @@
 
 ## how-to
 
-1. Prepare dataset, [prepare-dataset.ipynb](prepare-dataset.ipynb).
+1. Prepare dataset, [prepare-data.ipynb](prepare-data.ipynb).
 
 2. Run training script,
 
@@ -18,7 +18,7 @@ python3 run_t5.py \
 --num_train_epochs 20 \
 --logging_steps 20 \
 --eval_steps 2000 \
---save_steps 2000000 \
+--save_steps 2000 \
 --evaluation_strategy steps \
 --save_total_limit 2 \
 --do_train \
@@ -46,8 +46,8 @@ run_t5.py \
 --model_name_or_path mesolitica/t5-small-standard-bahasa-cased \
 --num_train_epochs 20 \
 --logging_steps 20 \
---eval_steps 2000 \
---save_steps 20000000 \
+--eval_steps 20000000 \
+--save_steps 2000 \
 --evaluation_strategy steps \
 --save_total_limit 2 \
 --do_train \

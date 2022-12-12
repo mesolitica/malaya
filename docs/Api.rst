@@ -21,10 +21,22 @@ malaya.alignment.ms_en
 .. automodule:: malaya.alignment.ms_en
     :members:
 
-malaya.augmentation
----------------------
+malaya.augmentation.abstractive
+--------------------------------
 
-.. automodule:: malaya.augmentation
+.. automodule:: malaya.augmentation.abstractive
+    :members:
+
+malaya.augmentation.encoder
+--------------------------------
+
+.. automodule:: malaya.augmentation.encoder
+    :members:
+
+malaya.augmentation.rules
+--------------------------------
+
+.. automodule:: malaya.augmentation.rules
     :members:
 
 malaya.dictionary
@@ -45,10 +57,31 @@ malaya.generator.prefix
 .. automodule:: malaya.generator.prefix
     :members:
 
+malaya.keyword.abstractive
+---------------------------
+
+.. automodule:: malaya.keyword.abstractive
+    :members:
+
 malaya.keyword.extractive
 --------------------------
 
 .. automodule:: malaya.keyword.extractive
+    :members:
+
+malaya.normalizer.abstractive
+------------------------------
+
+.. automodule:: malaya.normalizer.abstractive
+    :members:
+
+malaya.normalizer.rules
+------------------------------
+
+.. automodule:: malaya.normalizer.rules
+    :members:
+
+.. autoclass:: malaya.normalizer.rules.Normalizer()
     :members:
 
 malaya.qa.extractive
@@ -228,15 +261,6 @@ malaya.lexicon
 -------------------------
 
 .. automodule:: malaya.lexicon
-    :members:
-
-malaya.normalize
--------------------------
-
-.. automodule:: malaya.normalize
-    :members:
-
-.. autoclass:: malaya.normalize.Normalizer()
     :members:
 
 malaya.nsfw
@@ -609,6 +633,13 @@ malaya.torch_model.huggingface
 
 .. autoclass:: malaya.torch_model.huggingface.Tatabahasa()
     :members:
+
+.. autoclass:: malaya.torch_model.huggingface.Normalizer()
+    :members:
+
+.. autoclass:: malaya.torch_model.huggingface.Keyword()
+    :members:
+
 
 malaya.torch_model.mask_lm
 ----------------------------------
