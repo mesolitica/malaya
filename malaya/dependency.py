@@ -9,6 +9,7 @@ from malaya.function.parse_dependency import DependencyGraph
 from malaya.model.xlnet import DependencyXLNET
 from malaya.model.bert import DependencyBERT
 from malaya.path import MODEL_VOCAB, MODEL_BPE
+from malaya.supervised import huggingface as load_huggingface
 from malaya.function import describe_availability
 from herpetologist import check_type
 import logging
@@ -143,12 +144,37 @@ _transformer_availability_v2 = {
 
 _transformer_availability = {'v1': _transformer_availability_v1, 'v2': _transformer_availability_v2}
 
+_huggingface_availability = {
+    'mesolitica/finetune-dependency-t5-tiny-standard-bahasa-cased': {
+        'Size (MB)': 143,
+        'Arc Accuracy': 0.84929,
+        'Types Accuracy': 0.8281,
+        'Root Accuracy': 0.92099,
+    },
+    'mesolitica/finetune-dependency-t5-small-standard-bahasa-cased': {
+        'Size (MB)': 247,
+        'Arc Accuracy': 0.851851929250072,
+        'Types Accuracy': 0.7856446186193573,
+        'Root Accuracy': 0.8687050359712231,
+    },
+    'mesolitica/finetune-dependency-t5-base-standard-bahasa-cased': {
+        'Size (MB)': 61.2,
+        'Arc Accuracy': 0.84929,
+        'Types Accuracy': 0.8281,
+        'Root Accuracy': 0.92099,
+    },
+}
+
 
 def _validate_version(version):
     version = version.lower()
     if version not in _transformer_availability:
         raise ValueError('version not supported, only supported `v1` or `v2`.')
     return version
+
+
+def _describe():
+    logger.info('tested on test set at https://github.com/huseinzol05/malay-dataset/tree/master/parsing/dependency')
 
 
 def describe():
@@ -217,9 +243,17 @@ def available_transformer(version: str = 'v2'):
         * ``'v2'`` - Trained on bigger dataset, better version.
     """
 
-    logger.info('tested on test set at https://github.com/huseinzol05/malay-dataset/tree/master/parsing/dependency')
-
+    _describe()
     return describe_availability(_transformer_availability[_validate_version(version)])
+
+
+def available_huggingface():
+    """
+    List available huggingface models.
+    """
+
+    _describe()
+    return describe_availability(_huggingface_availability)
 
 
 @check_type
@@ -249,6 +283,9 @@ def transformer(version: str = 'v2', model: str = 'xlnet', quantized: bool = Fal
         * if `bert` in model, will return `malaya.model.bert.DependencyBERT`.
         * if `xlnet` in model, will return `malaya.model.xlnet.DependencyXLNET`.
     """
+
+    logger.warning(
+        '`malaya.dependency.transformer` trained on indonesian dataset and augmented dataset, not an actual malay dataset.')
 
     version = _validate_version(version)
     model = model.lower()
@@ -302,3 +339,29 @@ def transformer(version: str = 'v2', model: str = 'xlnet', quantized: bool = Fal
         settings=label,
         minus=minus
     )
+
+
+def huggingface(
+    model: str = 'mesolitica/finetune-dependency-t5-small-standard-bahasa-cased',
+    force_check: bool = True,
+    **kwargs,
+):
+    """
+    Load HuggingFace model to dependency parsing.
+
+    Parameters
+    ----------
+    model: str, optional (default='mesolitica/finetune-dependency-t5-small-standard-bahasa-cased')
+        Check available models at `malaya.dependency.available_huggingface()`.
+    force_check: bool, optional (default=True)
+        Force check model one of malaya model.
+        Set to False if you have your own huggingface model.
+
+    Returns
+    -------
+    result: malaya.torch_model.huggingface.Dependency
+    """
+    logger.warning(
+        '`malaya.dependency.huggingface` trained on indonesian dataset and augmented dataset, not an actual malay dataset.')
+
+    return load_huggingface.load_dependency(model=model, **kwargs)

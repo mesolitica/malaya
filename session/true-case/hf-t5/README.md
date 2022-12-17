@@ -1,3 +1,13 @@
+# HuggingFace T5
+
+**This directory is very lack of comments, able to understand PyTorch and HuggingFace Transformers are really helpful**.
+
+## how-to
+
+1. Prepare dataset, [prepare-data.ipynb](prepare-data.ipynb).
+
+2. Run training script,
+
 Original script, https://github.com/huggingface/transformers/blob/v4.21.2/examples/pytorch/translation/run_translation.py
 
 SMALL model,

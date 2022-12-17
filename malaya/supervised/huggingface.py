@@ -14,6 +14,7 @@ from malaya.torch_model.huggingface import (
     Tatabahasa,
     Normalizer,
     Keyword,
+    Dependency,
 )
 from transformers import TFAutoModel, AutoTokenizer
 from transformers import AutoTokenizer
@@ -97,3 +98,7 @@ def load_normalizer(
 
 def load_keyword(model, **kwargs):
     return Keyword(model, **kwargs)
+
+
+def load_dependency(model, **kwargs):
+    return Dependency(model, **kwargs)

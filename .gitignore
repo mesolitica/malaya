@@ -44,3 +44,4 @@ unique-words.json
 normalized-twitter.ipynb
 synonym*.json
 filtered-dumping-wiki.txt
+gsd-ud-dev.conllu.txt

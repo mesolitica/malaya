@@ -1027,7 +1027,10 @@ def merge_sentencepiece_tokens_tagging(x, y, model='bert', rejected=None, **kwar
                 merged_token = merged_token + current_token.replace('▁', '')
                 merged_label.append(current_label)
                 i = i + 1
-                current_token, current_label = x[i], y[i]
+                if i < n_tokens:
+                    current_token, current_label = x[i], y[i]
+                else:
+                    break
             merged_label = merged_label[0]
             new_paired_tokens.append((merged_token, merged_label))
 

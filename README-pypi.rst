@@ -34,15 +34,19 @@ Features
 --------
 
 -  **Alignment**, translation word alignment using Eflomal and pretrained Transformer models.
--  **Abstractive Keyword**, provide abstractive keyword using T5-Bahasa.
--  **Extractive Keyword**, Extractive interface using RAKE, TextRank and Attention.
+-  **Abstractive text augmentation**, augment any text into social media text structure using T5-Bahasa.
+-  **Encoder text augmentation**, augment any text Wordvector or Transformer-Bahasa word replacement technique.
+-  **Rules based text augmentation**, augment any text using dictionary of synonym and rules based.
 -  **Isi Penting Generator**, generate text from list of isi penting using T5-Bahasa.
 -  **Prefix Generator**, generate text from prefix using GPT2-Bahasa.
+-  **Abstractive Keyword**, provide abstractive keyword using T5-Bahasa.
 -  **Extractive Keyword**, provide RAKE, TextRank and Attention Mechanism hybrid with Transformer-Bahasa.
+-  **Abstractive Normalizer**, normalize any malay texts using T5-Bahasa.
+-  **Rules based Normalizer**, using local Malaysia NLP researches hybrid with Transformer-Bahasa to normalize any malay texts.
 -  **Extractive QA**, reading comprehension using T5-Bahasa and Flan-T5.
 -  **Doc2Vec Similarity**, provide Word2Vec and Encoder interface for text similarity.
 -  **Semantic Similarity**, provide semantic similarity using T5-Bahasa.
--  **Spelling Correction**, using local Malaysia NLP researches hybrid with Transformer-Bahasa to auto-correct any bahasa words and NeuSpell using T5-Bahasa.
+-  **Spelling Correction**, using local Malaysia NLP researches hybrid with Transformer-Bahasa to auto-correct any malay words and NeuSpell using T5-Bahasa.
 -  **Abstractive Summarization**, provide abstractive summarization using T5-Bahasa.
 -  **Extractive Summarization**, Extractive interface using Transformer-Bahasa and Doc2Vec.
 -  **Topic Modeling**, provide Transformer-Bahasa, LDA2Vec, LDA, NMF, LSA interface and easy BERTopic integration.
@@ -50,16 +54,14 @@ Features
 -  **MS-EN Translation**, provide standard Malay to English using T5-Bahasa.
 -  **Zero-shot classification**, provide Zero-shot classification interface using Transformer-Bahasa to recognize texts without any labeled training data.
 -  **Zero-shot Entity Recognition**, provide Zero-shot entity tagging interface using Transformer-Bahasa to extract entities.
--  **Augmentation**, augment any text using dictionary of synonym, Wordvector or Transformer-Bahasa.
 -  **Constituency Parsing**, breaking a text into sub-phrases using finetuned Transformer-Bahasa.  
 -  **Coreference Resolution**, finding all expressions that refer to the same entity in a text using Dependency Parsing models.
--  **Dependency Parsing**, extracting a dependency parse of a sentence using finetuned Transformer-Bahasa.
+-  **Dependency Parsing**, extracting a dependency parse of a sentence using finetuned Transformer-Bahasa and T5-Bahasa.
 -  **Emotion Analysis**, detect and recognize 6 different emotions of texts using finetuned Transformer-Bahasa.
 -  **Entity Recognition**, seeks to locate and classify named entities mentioned in text using finetuned Transformer-Bahasa.
 -  **Jawi-to-Rumi**, convert from Jawi to Rumi using Transformer.
 -  **Language Detection**, using Fast-text and Sparse Deep learning Model to classify Malay (formal and social media), Indonesia (formal and social media), Rojak language and Manglish.
 -  **Language Model**, using KenLM, Masked language model using BERT, ALBERT and RoBERTa, and GPT2 to do text scoring.
--  **Normalizer**, using local Malaysia NLP researches hybrid with Transformer-Bahasa to normalize any bahasa texts.
 -  **NSFW Detection**, detect NSFW text using rules based and subwords Naive Bayes.
 -  **Num2Word**, convert from numbers to cardinal or ordinal representation.
 -  **Paraphrase**, provide Abstractive Paraphrase using T5-Bahasa and Transformer-Bahasa.
@@ -78,7 +80,7 @@ Features
 -  **Transformer**, provide easy interface to load Pretrained Language Malaya models.
 -  **True Case**, provide true casing utility using T5-Bahasa.
 -  **Word2Num**, convert from cardinal or ordinal representation to numbers.
--  **Word2Vec**, provide pretrained bahasa wikipedia and bahasa news Word2Vec, with easy interface and visualization.
+-  **Word2Vec**, provide pretrained malay wikipedia and malay news Word2Vec, with easy interface and visualization.
 
 Pretrained Models
 ------------------

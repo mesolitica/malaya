@@ -1128,7 +1128,7 @@ def load(
 
     Returns
     -------
-    result: malaya.normalize.Normalizer class
+    result: malaya.normalizer.rules.Normalizer class
     """
 
     validator.validate_object_methods(

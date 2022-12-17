@@ -44,9 +44,10 @@ with open(filename) as fopen:
             data = json.loads(l)
             if 'r' in data and 'result' in data['r']:
                 text = data['r']['result']
-                for k in range(retry):
+                k = 0
+                while True:
                     try:
-                        r = requests.post('http://100.105.246.81:8999/api', timeout=5, json={
+                        r = requests.post('http://localhost:8999/api', timeout=5, json={
                             'text': text,
                             'from': 'en',
                             'to': 'ms',
@@ -55,13 +56,16 @@ with open(filename) as fopen:
                         r = r.json()
                         if 'error' in r:
                             t = r['message']
-                            print(k, f'{t}, sleep for 2.0')
+                            print(k, f'{t}, sleep for 2.0')      
                             
-                            time.sleep(2.0)
                         else:
                             break
                     except Exception as e:
                         print(k, e)
+                    
+                    time.sleep(2.0)
+                    k += 1
+                    
                 data = {'src': data, 'r': r}
 
                 d = json.dumps(data)
@@ -71,6 +75,6 @@ with open(filename) as fopen:
             pointer.index = i
             pointer._save()
             
-            time.sleep(random.uniform(2.0, 3.5))
+            time.sleep(random.uniform(0.5, 1.0))
 
 file.close()

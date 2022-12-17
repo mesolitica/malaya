@@ -52,6 +52,7 @@ Contents:
    :maxdepth: 2
    :caption: Augmentation Module
 
+   load-augmentation-abstractive
    load-augmentation-encoder
    load-augmentation-rules
 
@@ -104,6 +105,7 @@ Contents:
    load-num2word
    load-word2num
    load-coreference-resolution
+   load-normalizer-abstractive
    load-normalizer
 
 .. toctree::
@@ -169,6 +171,7 @@ Contents:
    :caption: Parsing Module
 
    load-dependency
+   load-dependency-huggingface
    load-constituency
 
 .. toctree::

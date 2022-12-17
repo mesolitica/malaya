@@ -44,7 +44,8 @@ with open(filename) as fopen:
         if i >= pointer.index:
             data = json.loads(l)
             text = data['normalized']
-            for k in range(retry):
+            k = 0
+            while True:
                 try:
                     r = requests.post('http://localhost:8999/api', timeout=5, json={
                         'text': text,
@@ -58,6 +59,7 @@ with open(filename) as fopen:
                     print(k, e)
                     
                 time.sleep(2)
+                k += 1
                 
             data = {'src': data, 'r': r}
 
@@ -68,6 +70,6 @@ with open(filename) as fopen:
             pointer.index = i
             pointer._save()
 
-            time.sleep(random.uniform(0.5, 1.0))
+            time.sleep(random.uniform(0.2, 0.5))
 
 file.close()

@@ -8,16 +8,12 @@ logger = logging.getLogger(__name__)
 _huggingface_availability = {
     'mesolitica/finetune-keyword-t5-small-standard-bahasa-cased': {
         'Size (MB)': 242,
-        'ROUGE-1': 0.75721802,
-        'ROUGE-2': 0.496729027,
-        'ROUGE-L': 0.304021823,
+        'f1': 0.3291554473802324,
         'Suggested length': 1024,
     },
     'mesolitica/finetune-keyword-t5-base-standard-bahasa-cased': {
         'Size (MB)': 892,
-        'ROUGE-1': 0.7132268255,
-        'ROUGE-2': 0.470135011,
-        'ROUGE-L': 0.366797009,
+        'f1': 0.9508079,
         'Suggested length': 1024,
     },
 }
@@ -28,7 +24,7 @@ def available_huggingface():
     List available huggingface models.
     """
 
-    logger.info('tested on test set, ')
+    logger.info('tested on test set, https://huggingface.co/datasets/51la5/keyword-extraction/tree/main')
     return describe_availability(_huggingface_availability)
 
 

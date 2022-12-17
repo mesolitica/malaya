@@ -23,13 +23,17 @@ from malaya.text.function import (
     remove_newlines,
     remove_html_tags as f_remove_html_tags,
 )
+from malaya.function.parse_dependency import DependencyGraph
 from malaya.text.rouge import postprocess_summary, find_kata_encik
-from malaya.torch_model.t5 import T5ForSequenceClassification, T5Tagging
+from malaya.torch_model.t5 import T5ForSequenceClassification, T5Tagging, T5Diaparser
 from malaya_boilerplate.torch_utils import to_tensor_cuda, to_numpy
 from malaya.function.activation import softmax
+from malaya.parser.conll import CoNLL
+from malaya.parser.alg import eisner, mst
+from malaya.supervised.settings import dependency as dependency_settings
 from collections import defaultdict
 from herpetologist import check_type
-from typing import List
+from typing import List, Callable
 import numpy as np
 import torch
 import re
@@ -826,6 +830,10 @@ class Normalizer(Generator):
         -------
         result: List[str]
         """
+        if self.corrector is not None:
+            pass
+
+        return super().generate(strings, **kwargs)
 
 
 class Keyword(Generator):
@@ -867,3 +875,126 @@ class Keyword(Generator):
             r = list(set(r))
             outputs.append(r)
         return outputs
+
+
+class Dependency(Base):
+    def __init__(self, model, **kwargs):
+        self.tokenizer = AutoTokenizer.from_pretrained(model, **kwargs)
+        self.model = T5Diaparser.from_pretrained(model, **kwargs)
+
+    @check_type
+    def predict(
+        self,
+        string: str,
+        validate_tree: bool = False,
+        f_tree: Callable = eisner,
+    ):
+        """
+        Tag a string. We assumed the string input been properly tokenized.
+
+        Parameters
+        ----------
+        string: str
+        validate_tree: bool, optional (default=False)
+            validate arcs is a valid tree using `malaya.parser.conll.CoNLL.istree`.
+            Originally from https://github.com/Unipisa/diaparser
+        f_tree: Callable, optional (default=malaya.parser.alg.eisner)
+            if arcs is not a tree, use approximate function to fix arcs.
+            Originally from https://github.com/Unipisa/diaparser
+
+        Returns
+        -------
+        result: Tuple
+        """
+        cuda = next(self.model.parameters()).is_cuda
+
+        texts, indices = [1], [0]
+        text = string.split()
+        for i in range(len(text)):
+            t = self.tokenizer.encode(text[i], add_special_tokens=False)
+            texts.extend(t)
+            indices.extend([i + 1] * len(t))
+
+        model_inputs = {
+            'input_ids': texts,
+            'attention_mask': [1] * len(texts),
+            'indices': indices
+        }
+
+        padded = self.tokenizer.pad(
+            [model_inputs],
+            padding=True,
+            max_length=None,
+            pad_to_multiple_of=None,
+            return_tensors='pt',
+        )
+        for k in padded.keys():
+            padded[k] = to_tensor_cuda(padded[k], cuda)
+
+        o = self.model(**padded)
+
+        seq = padded['input_ids'][0, 1:]
+        seq = self.tokenizer.convert_ids_to_tokens(seq)
+        arc_preds = o.s_arc.argmax(axis=-1)
+        rel_preds = o.s_rel.argmax(-1)
+
+        if validate_tree:
+            depend = to_numpy(arc_preds[0, 1:])
+            indexing = merge_sentencepiece_tokens_tagging(
+                seq,
+                depend,
+                rejected=self.tokenizer.all_special_tokens
+            )
+            if not CoNLL.istree(indexing[1]):
+                s = to_numpy(o.s_arc[0])
+                c = defaultdict(list)
+                for i in range(len(s)):
+                    c_ = defaultdict(list)
+                    for k in range(len(s[i])):
+                        c_[indices[k]].append(s[i][k])
+
+                    for k in c_:
+                        c_[k] = np.mean(c_[k])
+
+                    c[indices[i]].append([v for v in c_.values()])
+
+                new_score = np.zeros((len(c), len(c)))
+                for k in c:
+                    new_score[k] = np.mean(c[k], axis=0)
+
+                new_index = f_tree(torch.Tensor(new_score).unsqueeze(0),
+                                   torch.Tensor([0] + [1] * (len(new_score) - 1)).int().unsqueeze(0))[0].tolist()
+
+                arcs = [0]
+                for i in range(len(text)):
+                    t = self.tokenizer.encode(text[i], add_special_tokens=False)
+                    arcs.extend([new_index[i]] * len(t))
+
+                arc_preds = torch.Tensor(arcs).long().unsqueeze(0)
+
+        rel_preds = rel_preds.gather(-1, arc_preds.unsqueeze(-1)).squeeze(-1)
+        tagging = to_numpy(rel_preds[0, 1:])
+        depend = to_numpy(arc_preds[0, 1:])
+        tagging = [dependency_settings['idx2tag'][i] for i in tagging]
+
+        tagging = merge_sentencepiece_tokens_tagging(seq, tagging, rejected=self.tokenizer.all_special_tokens)
+        tagging = list(zip(*tagging))
+        indexing = merge_sentencepiece_tokens_tagging(seq, depend, rejected=self.tokenizer.all_special_tokens)
+        indexing = list(zip(*indexing))
+
+        result, indexing_ = [], []
+        for i in range(len(tagging)):
+            index = int(indexing[i][1])
+            if index > len(tagging):
+                index = len(tagging)
+            elif (i + 1) == index:
+                index = index + 1
+            elif index == -1:
+                index = i
+            indexing_.append((indexing[i][0], index))
+            result.append(
+                '%d\t%s\t_\t_\t_\t_\t%d\t%s\t_\t_'
+                % (i + 1, tagging[i][0], index, tagging[i][1])
+            )
+        d = DependencyGraph('\n'.join(result), top_relation_label='root')
+        return d, tagging, indexing_

@@ -7,39 +7,13 @@ shuf test-noisy.json > test-noisy-shuffled.json
 
 BASE model,
 ```
+CUDA_VISIBLE_DEVICES=0 \
 WANDB_DISABLED=true \
 python3 run_t5.py \
 --model_name_or_path mesolitica/finetune-translation-t5-base-standard-bahasa-cased \
 --num_train_epochs 10 \
 --logging_steps 100 \
---eval_steps 10000 \
---save_steps 10000 \
---evaluation_strategy steps \
---save_total_limit 5 \
---do_train \
---do_eval \
---source_lang src \
---target_lang tgt \
---train_file train-noisy-shuffled.json \
---validation_file test-noisy-shuffled.json \
---output_dir finetune-t5-base-noisy-bahasa-cased \
---per_device_train_batch_size=16 \
---per_device_eval_batch_size=4 \
---predict_with_generate \
---ignore_data_skip \
---max_source_length 256 \
---max_target_length 256 \
---fp16
-```
-
-SMALL model,
-```
-WANDB_DISABLED=true \
-python3 run_t5.py \
---model_name_or_path mesolitica/finetune-translation-t5-small-standard-bahasa-cased \
---num_train_epochs 10 \
---logging_steps 100 \
---eval_steps 10000 \
+--eval_steps 100000 \
 --save_steps 10000 \
 --evaluation_strategy steps \
 --save_total_limit 3 \
@@ -48,15 +22,45 @@ python3 run_t5.py \
 --source_lang src \
 --target_lang tgt \
 --train_file shuffled-train.json \
---validation_file test.json \
---output_dir finetune-t5-small-standard-bahasa-cased \
+--validation_file shuffled-test.json \
+--output_dir finetune-t5-base-standard-bahasa-cased-combined \
+--per_device_train_batch_size=16 \
+--per_device_eval_batch_size=4 \
+--predict_with_generate \
+--ignore_data_skip \
+--max_source_length 256 \
+--max_target_length 256 \
+--fp16 \
+--learning_rate 2e-4
+```
+
+SMALL model,
+```
+CUDA_VISIBLE_DEVICES=1 \
+WANDB_DISABLED=true \
+python3 run_t5.py \
+--model_name_or_path mesolitica/finetune-translation-t5-small-standard-bahasa-cased \
+--num_train_epochs 10 \
+--logging_steps 100 \
+--eval_steps 100000 \
+--save_steps 10000 \
+--evaluation_strategy steps \
+--save_total_limit 3 \
+--do_train \
+--do_eval \
+--source_lang src \
+--target_lang tgt \
+--train_file shuffled-train.json \
+--validation_file shuffled-test.json \
+--output_dir finetune-t5-small-standard-bahasa-cased-combined \
 --per_device_train_batch_size=42 \
 --per_device_eval_batch_size=4 \
 --predict_with_generate \
 --ignore_data_skip \
 --max_source_length 256 \
 --max_target_length 256 \
---fp16
+--fp16 \
+--learning_rate 2e-4
 ```
 
 TINY model,
@@ -66,8 +70,8 @@ python3 run_t5.py \
 --model_name_or_path mesolitica/finetune-translation-t5-tiny-standard-bahasa-cased \
 --num_train_epochs 10 \
 --logging_steps 100 \
---eval_steps 10000 \
---save_steps 50000 \
+--eval_steps 100000 \
+--save_steps 10000 \
 --evaluation_strategy steps \
 --save_total_limit 3 \
 --do_train \
@@ -76,7 +80,7 @@ python3 run_t5.py \
 --target_lang tgt \
 --train_file shuffled-train.json \
 --validation_file shuffled-test.json \
---output_dir finetune-t5-tiny-standard-bahasa-cased \
+--output_dir finetune-t5-tiny-standard-bahasa-cased-combined \
 --per_device_train_batch_size=42 \
 --per_device_eval_batch_size=4 \
 --predict_with_generate \

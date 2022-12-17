@@ -6,6 +6,20 @@ import logging
 logger = logging.getLogger(__name__)
 
 _huggingface_availability = {
+    'mesolitica/finetune-noisy-translation-t5-small-bahasa-cased-v4': {
+        'Size (MB)': 242,
+        'ROUGE-1': 0.75721802,
+        'ROUGE-2': 0.496729027,
+        'ROUGE-L': 0.304021823,
+        'Suggested length': 256,
+    },
+    'mesolitica/finetune-noisy-translation-t5-base-bahasa-cased-v2': {
+        'Size (MB)': 892,
+        'ROUGE-1': 0.7132268255,
+        'ROUGE-2': 0.470135011,
+        'ROUGE-L': 0.366797009,
+        'Suggested length': 256,
+    },
 }
 
 
@@ -14,14 +28,13 @@ def available_huggingface():
     List available huggingface models.
     """
 
-    logger.info('tested on test set IIUM confession normalization dataset, https://huggingface.co/datasets/mesolitica/IIUM-Confession-abstractive-normalization')
     logger.info('tested on test set Twitter normalization dataset, https://huggingface.co/datasets/mesolitica/twitter-abstractive-normalization')
 
     return describe_availability(_huggingface_availability)
 
 
 def huggingface(
-    model: str = 'mesolitica/finetune-normalizer-t5-small-standard-bahasa-cased',
+    model: str = 'mesolitica/finetune-noisy-translation-t5-small-bahasa-cased-v4',
     force_check: bool = True,
     use_rules_normalizer: bool = True,
     kenlm_model: str = 'bahasa-wiki-news',
@@ -40,7 +53,7 @@ def huggingface(
 
     Parameters
     ----------
-    model: str, optional (default='mesolitica/finetune-normalizer-t5-small-standard-bahasa-cased')
+    model: str, optional (default='mesolitica/finetune-noisy-translation-t5-small-bahasa-cased-v4')
         Check available models at `malaya.normalizer.abstractive.available_huggingface()`.
     force_check: bool, optional (default=True)
         Force check model one of malaya model.
