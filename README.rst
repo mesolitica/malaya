@@ -35,6 +35,8 @@ It will automatically install all dependencies except for Tensorflow and PyTorch
 
 Only **Python >= 3.6.0**, **Tensorflow >= 1.15.0**, and **PyTorch >= 1.10** are supported.
 
+If you are a Windows user, make sure read https://malaya.readthedocs.io/en/latest/running-on-windows.html
+
 Development Release
 ---------------------------------
 

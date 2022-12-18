@@ -147,21 +147,21 @@ _transformer_availability = {'v1': _transformer_availability_v1, 'v2': _transfor
 _huggingface_availability = {
     'mesolitica/finetune-dependency-t5-tiny-standard-bahasa-cased': {
         'Size (MB)': 143,
-        'Arc Accuracy': 0.84929,
-        'Types Accuracy': 0.8281,
-        'Root Accuracy': 0.92099,
+        'Arc Accuracy': 0.8506069089930276,
+        'Types Accuracy': 0.7831641780774206,
+        'Root Accuracy': 0.8723021582733813,
     },
     'mesolitica/finetune-dependency-t5-small-standard-bahasa-cased': {
         'Size (MB)': 247,
-        'Arc Accuracy': 0.851851929250072,
-        'Types Accuracy': 0.7856446186193573,
-        'Root Accuracy': 0.8687050359712231,
+        'Arc Accuracy': 0.8494045261191319,
+        'Types Accuracy': 0.783103051811978,
+        'Root Accuracy': 0.8669064748201439,
     },
     'mesolitica/finetune-dependency-t5-base-standard-bahasa-cased': {
-        'Size (MB)': 61.2,
-        'Arc Accuracy': 0.84929,
-        'Types Accuracy': 0.8281,
-        'Root Accuracy': 0.92099,
+        'Size (MB)': 898,
+        'Arc Accuracy': 0.8528921010932324,
+        'Types Accuracy': 0.7840908663367674,
+        'Root Accuracy': 0.8597122302158273,
     },
 }
 

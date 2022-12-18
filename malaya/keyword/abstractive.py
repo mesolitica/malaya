@@ -13,7 +13,7 @@ _huggingface_availability = {
     },
     'mesolitica/finetune-keyword-t5-base-standard-bahasa-cased': {
         'Size (MB)': 892,
-        'f1': 0.9508079,
+        'f1': 0.3367989506031038,
         'Suggested length': 1024,
     },
 }

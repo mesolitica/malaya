@@ -187,13 +187,11 @@ Contents:
    :caption: Translation Module
 
    load-translation-ms-en
-   ms-en-long-translation
    load-translation-ms-en-huggingface
-   load-translation-noisy-ms-en
+   load-translation-noisy-ms-en-huggingface
    load-translation-en-ms
    load-translation-en-ms-huggingface
-   en-ms-long-translation
-   load-translation-noisy-en-ms
+   load-translation-noisy-en-ms-huggingface
 
 .. toctree::
    :maxdepth: 2
@@ -231,7 +229,6 @@ Contents:
    :caption: Misc Module
    
    load-lexicon
-   load-topic-modeling
    load-clustering
    load-stack
 
@@ -241,14 +238,6 @@ Contents:
 
    sentiment-bias-towards-countries
    sentiment-bias-towards-politicians
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Finetune Pretrained Model
-
-   tf-estimator-alxlnet
-   tf-estimator-bert
-   tf-estimator-xlnet
 
 .. toctree::
    :maxdepth: 2

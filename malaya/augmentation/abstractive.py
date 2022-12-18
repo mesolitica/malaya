@@ -6,18 +6,22 @@ import logging
 logger = logging.getLogger(__name__)
 
 _huggingface_availability = {
+    'mesolitica/finetune-noisy-translation-t5-tiny-bahasa-cased-v2': {
+        'Size (MB)': 139,
+        'BLEU': 41.625536185056305,
+        'SacreBLEU Verbose': '73.4/50.1/35.7/25.7 (BP = 0.971 ratio = 0.972 hyp_len = 21400 ref_len = 22027)',
+        'Suggested length': 256,
+    },
     'mesolitica/finetune-noisy-translation-t5-small-bahasa-cased-v4': {
         'Size (MB)': 242,
-        'ROUGE-1': 0.75721802,
-        'ROUGE-2': 0.496729027,
-        'ROUGE-L': 0.304021823,
+        'BLEU': 41.625536185056305,
+        'SacreBLEU Verbose': '73.4/50.1/35.7/25.7 (BP = 0.971 ratio = 0.972 hyp_len = 21400 ref_len = 22027)',
         'Suggested length': 256,
     },
     'mesolitica/finetune-noisy-translation-t5-base-bahasa-cased-v2': {
         'Size (MB)': 892,
-        'ROUGE-1': 0.7132268255,
-        'ROUGE-2': 0.470135011,
-        'ROUGE-L': 0.366797009,
+        'BLEU': 41.625536185056305,
+        'SacreBLEU Verbose': '73.4/50.1/35.7/25.7 (BP = 0.971 ratio = 0.972 hyp_len = 21400 ref_len = 22027)',
         'Suggested length': 256,
     },
 }
@@ -28,6 +32,7 @@ def available_huggingface():
     List available huggingface models.
     """
 
+    logger.info('tested on noisy twitter google translation, https://huggingface.co/datasets/mesolitica/augmentation-test-set')
     return describe_availability(_huggingface_availability)
 
 
@@ -63,4 +68,7 @@ def huggingface(
         raise ValueError(
             'model not supported, please check supported models from `malaya.augmentation.abstractive.available_huggingface()`.'
         )
-    return load_huggingface.load_generator(model=model, initial_text=f'terjemah {map_lang[lang]} ke pasar Melayu: ', **kwargs)
+    return load_huggingface.load_generator(
+        model=model,
+        initial_text=f'terjemah {map_lang[lang]} ke pasar Melayu: ',
+        **kwargs)
