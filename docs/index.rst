@@ -17,6 +17,7 @@ Contents:
    :caption: Getting Started
 
    speech-toolkit
+   knowledge-graph-toolkit
    installation
    Dataset
    running-on-windows
@@ -24,9 +25,18 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
+   :caption: GPU Environment
+
+   gpu-environment-tensorflow
+   gpu-environment-pytorch
+   different-precision-pytorch
+
+.. toctree::
+   :maxdepth: 2
    :caption: Pre-trained model
 
    load-transformer
+   load-transformer-huggingface
    load-wordvector
 
 .. toctree::
@@ -37,6 +47,14 @@ Contents:
    alignment-en-ms-huggingface
    alignment-ms-en-eflomal
    alignment-ms-en-huggingface
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Augmentation Module
+
+   load-augmentation-abstractive
+   load-augmentation-encoder
+   load-augmentation-rules
 
 .. toctree::
    :maxdepth: 2
@@ -81,10 +99,13 @@ Contents:
    load-demoji
    load-stemmer
    load-true-case
+   load-true-case-huggingface
    load-segmentation
+   load-segmentation-huggingface
    load-num2word
    load-word2num
    load-coreference-resolution
+   load-normalizer-abstractive
    load-normalizer
 
 .. toctree::
@@ -100,25 +121,22 @@ Contents:
    :maxdepth: 2
    :caption: Kesalahan Tatabahasa Module
 
-   load-tatabahasa
    load-tatabahasa-tagging
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Knowledge Graph Module
-
-   load-knowledge-graph-triples
-   load-knowledge-graph-from-dependency
+   load-tatabahasa-tagging-huggingface
 
 .. toctree::
    :maxdepth: 2
    :caption: Generative Module
 
-   load-augmentation
    load-prefix-generator
    load-isi-penting-generator
-   load-lexicon
+   load-isi-penting-generator-huggingface-article-style
+   load-isi-penting-generator-huggingface-headline-news-style
+   load-isi-penting-generator-huggingface-karangan-style
+   load-isi-penting-generator-huggingface-news-style
+   load-isi-penting-generator-huggingface-product-description-style
    load-paraphrase
+   load-paraphrase-huggingface
 
 .. toctree::
    :maxdepth: 2
@@ -132,7 +150,6 @@ Contents:
    load-sentiment
    load-subjectivity
    load-toxic
-   load-zeroshot-classification
 
 .. toctree::
    :maxdepth: 2
@@ -140,8 +157,7 @@ Contents:
 
    load-doc2vec-similarity
    load-semantic-similarity
-   load-unsupervised-keyword-extraction
-   load-keyphrase-similarity
+   load-semantic-similarity-huggingface
 
 .. toctree::
    :maxdepth: 2
@@ -155,40 +171,64 @@ Contents:
    :caption: Parsing Module
 
    load-dependency
+   load-dependency-huggingface
    load-constituency
 
 .. toctree::
    :maxdepth: 2
    :caption: Summarization Module
 
-   load-abstractive
-   long-text-abstractive-summarization
    load-extractive
+   load-abstractive
+   load-abstractive-huggingface
 
 .. toctree::
    :maxdepth: 2
    :caption: Translation Module
 
    load-translation-ms-en
-   ms-en-long-translation
    load-translation-ms-en-huggingface
-   load-translation-noisy-ms-en
+   load-translation-noisy-ms-en-huggingface
    load-translation-en-ms
    load-translation-en-ms-huggingface
-   en-ms-long-translation
-   load-translation-noisy-en-ms
+   load-translation-noisy-en-ms-huggingface
 
 .. toctree::
    :maxdepth: 2
    :caption: Question Answer Module
 
-   load-qa-squad
+   load-qa-extractive
+   load-qa-extractive-huggingface
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Zeroshot Module
+
+   load-zeroshot-classification
+   load-zeroshot-classification-huggingface
+   zeroshot-ner
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Topic Modeling Module
+
+   load-topic-model-decomposition
+   load-topic-model-lda2vec
+   load-topic-model-transformer
+   load-topic-model-bertopic
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Keyword Module
+
+   load-abstractive-keyword-huggingface
+   load-keyword-extractive
 
 .. toctree::
    :maxdepth: 2
    :caption: Misc Module
    
-   load-topic-modeling
+   load-lexicon
    load-clustering
    load-stack
 
@@ -198,14 +238,6 @@ Contents:
 
    sentiment-bias-towards-countries
    sentiment-bias-towards-politicians
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Finetune Pretrained Model
-
-   tf-estimator-alxlnet
-   tf-estimator-bert
-   tf-estimator-xlnet
 
 .. toctree::
    :maxdepth: 2

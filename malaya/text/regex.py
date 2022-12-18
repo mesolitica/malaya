@@ -47,7 +47,7 @@ _fd2 = '(?:{})'.format(
 
 
 _date = '(?:' + '(?:' + _fd1 + '|' + _fd2 + ')' + '|' + _short_date + ')'
-_time = r'(?:(?:\d+)?\.?\d+\s*(?:AM|PM|am|pm|a\.m\.|p\.m\.|pagi|pgi|morning|tengahari|tngahari|petang|ptg|malam|jam|hours|hour|hrs))|(?:(?:[0-2]?[0-9]|[2][0-3]):(?:[0-5][0-9])(?::(?:[0-5][0-9]))?(?: ?(?:AM|PM|am|pm|a\.m\.|p\.m\.|pagi|pgi|morning|tengahari|tngahari|petang|ptg|malam))?)'
+_time = r'(?:(?:\d+)?\.?\d+\s*(?:AM|PM|am|pm|a\.m\.|p\.m\.|pagi|pgi|morning|tengahari|tngahari|petang|ptg|malam|jam|hours|hour|hrs))|(?:(?:[0-2]?[0-9]|[2][0-3]):(?:[0-5][0-9])(?::(?:[0-5][0-9]))?(?: ?(?:AM|PM|am|pm|a\.m\.|p\.m\.|pagi|pgi|morning|tengahari|tngahari|petang|ptg|malam|hours|hrs|jam))?)'
 _today_time = r'(?:(?:pkul|pukul|kul)\s*(?:(?:([01]?\d|2[0-3]):)?([0-5]?\d):)([0-5]?\d))|(?:(?:pkul|pukul|kul)\s*(?:\d+)?\.?\d+)'
 _past_date_string = '(?:\\s|\\d+)\\s*(?:minggu|bulan|tahun|hari|thun|hri|mnggu|jam|minit|saat)\\s*(?:lalu|lepas|lps)\\b'
 _now_date_string = '(?:sekarang|skrg|jam|tahun|thun|saat|minit) (?:ini|ni)\\b'
@@ -58,6 +58,7 @@ _future_date_string = '(?:dlm|dalam)\\s*\\d+(?:minggu|bulan|tahun|hari|thun|hri|
 _depan_date_string = '(?:\\s|\\d+)\\s*(?:minggu|bulan|tahun|hari|thun|hri|mnggu|jam|minit|saat)\\s*(?:depan|dpan|dpn)\\b'
 
 _number = r"\b\d+(?:[\.,']\d+)?\b"
+_number_with_shortform = r"\b(?:\d+(?:[\.,']\d+)?\s*(?:[Rr]ibu|[Jj]uta|[MmKkBbj](?:n|(?:i(?:lion|llion)?))?)?)\b|\b(?:\d+(?:[\.,']\d+)?\s*(?:[MmKkBbj](?:n|(?:i(?:lion|llion)?))?|[Rr]ibu|[Jj]uta)?)\b"
 _percentage = _number + '%'
 _money = r"(?:(?:[$€£¢]|RM|rm)\s*\d+(?:[\.,']\d+)?\s*(?:[Rr]ibu|[Jj]uta|[MmKkBbj](?:n|(?:i(?:lion|llion)?))?)?)\b|(?:\d+(?:[\.,']\d+)?\s*(?:[MmKkBbj](?:n|(?:i(?:lion|llion)?))?|[Rr]ibu|[Jj]uta)?\s*(?:[$€£¢]|sen|ringgit|cent|penny))\b"
 _temperature = "-?\\d+(?:[\\.,']\\d+)?\\s*(?:K|Kelvin|kelvin|Kvin|F|f|Farenheit|farenheit|C|c|Celcius|celcius|clcius|celsius)\\b"
@@ -109,6 +110,7 @@ _expressions = {
     # 'temperature': _temperature,
     # 'distance': _distance,
     'number': _number,
+    'number_with_shortform': _number_with_shortform,
     'allcaps': r'(?<![#@$])\b([A-Z][A-Z ]{1,}[A-Z])\b',
     'url': r'(?:https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})',
     # https://regexr.com/39nr7

@@ -234296,4 +234296,13 @@ words = {
     'parents',
     'website',
     'cafe',
+    'google',
+    'facebook',
+    'microsoft',
+    'twitter',
+    'meta',
+    'netflix',
+    'dell',
+    'intel',
+    'ibm',
 }

@@ -7,3 +7,4 @@
 # For license information, see https://github.com/huseinzol05/Malaya/blob/master/LICENSE
 
 from . import classification
+from . import entity

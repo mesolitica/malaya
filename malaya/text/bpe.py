@@ -848,10 +848,15 @@ def xlnet_tokenization_token(tokenizer, tok, texts):
     return input_ids, input_masks, segment_ids, s_tokens
 
 
-def merge_wordpiece_tokens(paired_tokens, weighted=True, vectorize=False):
+def merge_wordpiece_tokens(
+    paired_tokens,
+    weighted=True,
+    vectorize=False,
+    rejected=['[CLS]', '[SEP]', '[PAD]'],
+    **kwargs,
+):
     new_paired_tokens = []
     n_tokens = len(paired_tokens)
-    rejected = ['[CLS]', '[SEP]', '[PAD]']
 
     i = 0
 
@@ -926,7 +931,7 @@ def merge_wordpiece_tokens_tagging(x, y):
     return words, labels
 
 
-def parse_bert_tagging(left, tokenizer, space_after_punct=False):
+def parse_bert_tagging(left, tokenizer, space_after_punct=False, **kwargs):
     left = transformer_textcleaning(left, space_after_punct=space_after_punct)
     bert_tokens = ['[CLS]'] + tokenizer.tokenize(left) + ['[SEP]']
     input_mask = [1] * len(bert_tokens)
@@ -946,11 +951,17 @@ def parse_bert_token_tagging(left, tok, tokenizer):
 
 
 def merge_sentencepiece_tokens(
-    paired_tokens, weighted=True, vectorize=False, model='bert'
+    paired_tokens,
+    weighted=True,
+    vectorize=False,
+    model='bert',
+    rejected=None,
+    **kwargs,
 ):
     new_paired_tokens = []
     n_tokens = len(paired_tokens)
-    rejected = list(SPECIAL_TOKENS[model].values())
+    if rejected is None:
+        rejected = list(SPECIAL_TOKENS[model].values())
 
     i = 0
 
@@ -991,10 +1002,11 @@ def merge_sentencepiece_tokens(
     return list(zip(words, weights))
 
 
-def merge_sentencepiece_tokens_tagging(x, y, model='bert'):
+def merge_sentencepiece_tokens_tagging(x, y, model='bert', rejected=None, **kwargs):
     new_paired_tokens = []
     n_tokens = len(x)
-    rejected = list(SPECIAL_TOKENS[model].values())
+    if rejected is None:
+        rejected = list(SPECIAL_TOKENS[model].values())
 
     i = 0
 
@@ -1004,7 +1016,7 @@ def merge_sentencepiece_tokens_tagging(x, y, model='bert'):
 
         if isinstance(current_token, bytes):
             current_token = current_token.decode()
-        if not current_token.startswith('▁') and current_token not in rejected:
+        if not current_token.startswith('▁') and current_token not in rejected and i > 0:
             previous_token, previous_label = new_paired_tokens.pop()
             merged_token = previous_token
             merged_label = [previous_label]
@@ -1015,7 +1027,10 @@ def merge_sentencepiece_tokens_tagging(x, y, model='bert'):
                 merged_token = merged_token + current_token.replace('▁', '')
                 merged_label.append(current_label)
                 i = i + 1
-                current_token, current_label = x[i], y[i]
+                if i < n_tokens:
+                    current_token, current_label = x[i], y[i]
+                else:
+                    break
             merged_label = merged_label[0]
             new_paired_tokens.append((merged_token, merged_label))
 
@@ -1028,6 +1043,60 @@ def merge_sentencepiece_tokens_tagging(x, y, model='bert'):
     ]
     labels = [i[1] for i in new_paired_tokens if i[0] not in rejected]
     return words, labels
+
+
+def merge_bpe_tokens(
+    paired_tokens,
+    weighted=True,
+    vectorize=False,
+    rejected=['<s>', '</s>', '<unk>', '<pad>', '<mask>'],
+    prefix_char='Ġ',
+    **kwargs,
+):
+    new_paired_tokens = []
+    paired_tokens = [t for t in paired_tokens if t[0] not in rejected]
+    n_tokens = len(paired_tokens)
+
+    i = 0
+
+    while i < n_tokens:
+
+        current_token, current_weight = paired_tokens[i]
+        if isinstance(current_token, bytes):
+            current_token = current_token.decode()
+        if i > 0 and not current_token.startswith(prefix_char) and current_token not in rejected:
+            previous_token, previous_weight = new_paired_tokens.pop()
+            merged_token = previous_token
+            merged_weight = [previous_weight]
+            while (
+                not current_token.startswith(prefix_char)
+                and current_token not in rejected
+            ):
+                merged_token = merged_token + current_token.replace(prefix_char, '')
+                merged_weight.append(current_weight)
+                i = i + 1
+                if i < n_tokens:
+                    current_token, current_weight = paired_tokens[i]
+                else:
+                    break
+            if vectorize:
+                merged_weight = np.mean(merged_weight, axis=0)
+            else:
+                merged_weight = np.mean(merged_weight)
+            new_paired_tokens.append((merged_token, merged_weight))
+
+        else:
+            new_paired_tokens.append((current_token, current_weight))
+            i = i + 1
+
+    words = [
+        i[0].replace(prefix_char, '') for i in new_paired_tokens if i[0] not in rejected
+    ]
+    weights = [i[1] for i in new_paired_tokens if i[0] not in rejected]
+    if weighted:
+        weights = np.array(weights)
+        weights = weights / np.sum(weights)
+    return list(zip(words, weights))
 
 
 def constituency_bert(tokenizer, sentences):

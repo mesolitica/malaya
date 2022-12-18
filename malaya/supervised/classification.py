@@ -80,7 +80,7 @@ TOKENIZER_MODEL = {
 }
 
 
-def multinomial(path, s3_path, module, label, sigmoid=False, **kwargs):
+def multinomial(path, s3_path, module, label, sigmoid=False, wordpiece=False, **kwargs):
     path = check_file(path['multinomial'], s3_path['multinomial'], **kwargs)
     try:
         with open(path['model'], 'rb') as fopen:
@@ -93,7 +93,10 @@ def multinomial(path, s3_path, module, label, sigmoid=False, **kwargs):
             f"model corrupted due to some reasons, please run `malaya.clear_cache('{path}')` and try again"
         )
 
-    bpe = YTTMEncoder(vocab_file=path['bpe'])
+    if wordpiece:
+        bpe = WordPieceTokenizer(vocab_file=path['bpe'])
+    else:
+        bpe = YTTMEncoder(vocab_file=path['bpe'])
 
     stemmer = naive()
     cleaning = partial(_classification_textcleaning_stemmer, stemmer=stemmer)
@@ -112,6 +115,7 @@ def multinomial(path, s3_path, module, label, sigmoid=False, **kwargs):
         vectorize=vectorize,
         bpe=bpe,
         cleaning=cleaning,
+        wordpiece=wordpiece,
     )
 
 

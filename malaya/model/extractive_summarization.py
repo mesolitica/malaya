@@ -240,7 +240,7 @@ class Doc2Vec:
         window_size,
         aggregation=np.mean,
         soft=False,
-        **kwargs
+        **kwargs,
     ):
         corpus = corpus_checker(corpus)
         splitted_fullstop = [summary_textcleaning(i) for i in corpus]
@@ -404,7 +404,7 @@ class Doc2Vec:
         window_size: int = 10,
         aggregation=np.mean,
         soft: bool = False,
-        **kwargs
+        **kwargs,
     ):
         """
         Summarize list of strings / string on sentence level.
@@ -474,7 +474,7 @@ class Doc2Vec:
             isi_penting=isi_penting,
             aggregation=aggregation,
             soft=soft,
-            **kwargs
+            **kwargs,
         )
         for score, s, rank in ranked_sentences:
             s = original_strings[rank].split()
@@ -489,12 +489,12 @@ class Encoder:
     def __init__(self, vectorizer):
         self.vectorizer = vectorizer
 
-    def _batching(self, l, batch_size=10):
+    def _batching(self, l, batch_size=10, **kwargs):
         vs = []
         for i in range(0, len(l), batch_size):
             index = min(i + batch_size, len(l))
             batch_x = l[i:index]
-            vectors = self.vectorizer.vectorize(batch_x)
+            vectors = self.vectorizer.vectorize(batch_x, **kwargs)
             vs.append(vectors)
         return np.concatenate(vs, axis=0)
 
@@ -505,7 +505,7 @@ class Encoder:
         window_size=10,
         important_words=10,
         batch_size=10,
-        **kwargs
+        **kwargs,
     ):
         corpus = corpus_checker(corpus)
         splitted_fullstop = [summary_textcleaning(i) for i in corpus]
@@ -520,9 +520,9 @@ class Encoder:
         else:
             isi_penting = original_strings
 
-        vectors = self._batching(ngram_list, batch_size=batch_size)
+        vectors = self._batching(ngram_list, batch_size=batch_size, **kwargs)
         vectors_isi_penting = self._batching(
-            isi_penting, batch_size=batch_size
+            isi_penting, batch_size=batch_size, **kwargs,
         )
 
         if 'DeepSkipThought' in str(self.vectorizer):
@@ -562,17 +562,17 @@ class Encoder:
         important_words=10,
         batch_size=10,
         retry=5,
-        **kwargs
+        **kwargs,
     ):
         corpus = corpus_checker(corpus)
         splitted_fullstop = [summary_textcleaning(i) for i in corpus]
         original_strings = [i[0] for i in splitted_fullstop]
         cleaned_strings = [i[1] for i in splitted_fullstop]
 
-        vectors = self._batching(cleaned_strings, batch_size=batch_size)
+        vectors = self._batching(cleaned_strings, batch_size=batch_size, **kwargs)
         if isi_penting:
             vectors_isi_penting = self._batching(
-                [isi_penting], batch_size=batch_size
+                [isi_penting], batch_size=batch_size, **kwargs,
             )
 
         if 'DeepSkipThought' in str(self.vectorizer):
@@ -669,7 +669,7 @@ class Encoder:
         top_k: int = 3,
         important_words: int = 10,
         batch_size: int = 16,
-        **kwargs
+        **kwargs,
     ):
         """
         Summarize list of strings / string on sentence level.
@@ -696,7 +696,7 @@ class Encoder:
             isi_penting=isi_penting,
             important_words=important_words,
             batch_size=batch_size,
-            **kwargs
+            **kwargs,
         )
         for score, s, rank in ranked_sentences:
             s = original_strings[rank].split()

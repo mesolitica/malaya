@@ -6,6 +6,7 @@ from malaya.text.regex import _expressions
 from malaya.model.tf import Segmentation
 from malaya.path import PATH_PREPROCESSING, S3_PATH_PREPROCESSING
 from malaya.supervised import transformer as load_transformer
+from malaya.supervised import huggingface as load_huggingface
 from malaya.function import check_file
 from malaya.supervised import t5 as t5_load
 from malaya.model.t5 import Segmentation as T5_Segmentation
@@ -13,6 +14,7 @@ from herpetologist import check_type
 from typing import List
 from malaya.function import describe_availability
 import logging
+import warnings
 
 logger = logging.getLogger(__name__)
 
@@ -53,6 +55,27 @@ _transformer_availability = {
         'WER': 0.1345597,
         'Suggested length': 256,
     }
+}
+
+_huggingface_availability = {
+    'mesolitica/finetune-segmentation-t5-super-tiny-standard-bahasa-cased': {
+        'Size (MB)': 51,
+        'WER': 0.030962535,
+        'CER': 0.0041129253,
+        'Suggested length': 256,
+    },
+    'mesolitica/finetune-segmentation-t5-tiny-standard-bahasa-cased': {
+        'Size (MB)': 139,
+        'WER': 0.0207876127,
+        'CER': 0.002146691161,
+        'Suggested length': 256,
+    },
+    'mesolitica/finetune-segmentation-t5-small-standard-bahasa-cased': {
+        'Size (MB)': 242,
+        'WER': 0.0202468274,
+        'CER': 0.0024325431,
+        'Suggested length': 256,
+    },
 }
 
 REGEX_TOKEN = re.compile(r'\b[a-z]{2,}\b')
@@ -189,20 +212,35 @@ def viterbi(max_split_length: int = 20, **kwargs):
     return Segmenter(path_unigram, path_bigram, max_split_length=max_split_length)
 
 
+def _describe():
+    logger.info('tested on random generated dataset at https://f000.backblazeb2.com/file/malay-dataset/segmentation/test-set-segmentation.json')
+
+
 def available_transformer():
     """
     List available transformer models.
     """
 
-    logger.info('tested on random generated dataset at https://github.com/huseinzol05/malaya/blob/master/session/segmentation/t5/test-set-segmentation.ipynb')
+    warnings.warn(
+        '`malaya.segmentation.available_transformer` is deprecated, use `malaya.segmentation.available_huggingface` instead', DeprecationWarning)
 
+    _describe()
     return describe_availability(_transformer_availability)
+
+
+def available_huggingface():
+    """
+    List available huggingface models.
+    """
+
+    _describe()
+    return describe_availability(_huggingface_availability)
 
 
 @check_type
 def transformer(model: str = 'small', quantized: bool = False, **kwargs):
     """
-    Load transformer encoder-decoder model to Segmentize.
+    Load transformer encoder-decoder model to segmentation.
 
     Parameters
     ----------
@@ -216,6 +254,9 @@ def transformer(model: str = 'small', quantized: bool = False, **kwargs):
     -------
     result: malaya.model.tf.Segmentation class
     """
+
+    warnings.warn(
+        '`malaya.segmentation.transformer` is deprecated, use `malaya.segmentation.huggingface` instead', DeprecationWarning)
 
     model = model.lower()
     if model not in _transformer_availability:
@@ -240,3 +281,31 @@ def transformer(model: str = 'small', quantized: bool = False, **kwargs):
             quantized=quantized,
             **kwargs,
         )
+
+
+@check_type
+def huggingface(
+    model: str = 'mesolitica/finetune-segmentation-t5-tiny-standard-bahasa-cased',
+    force_check: bool = True,
+    **kwargs,
+):
+    """
+    Load HuggingFace model to segmentation.
+
+    Parameters
+    ----------
+    model: str, optional (default='mesolitica/finetune-segmentation-t5-tiny-standard-bahasa-cased')
+        Check available models at `malaya.segmentation.available_huggingface()`.
+    force_check: bool, optional (default=True)
+        Force check model one of malaya model.
+        Set to False if you have your own huggingface model.
+
+    Returns
+    -------
+    result: malaya.torch_model.huggingface.Generator
+    """
+    if model not in _huggingface_availability and force_check:
+        raise ValueError(
+            'model not supported, please check supported models from `malaya.segmentation.available_huggingface()`.'
+        )
+    return load_huggingface.load_generator(model=model, initial_text='segmentasi: ', **kwargs)

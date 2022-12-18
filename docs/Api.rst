@@ -21,16 +21,186 @@ malaya.alignment.ms_en
 .. automodule:: malaya.alignment.ms_en
     :members:
 
-malaya.augmentation
----------------------
+malaya.augmentation.abstractive
+--------------------------------
 
-.. automodule:: malaya.augmentation
+.. automodule:: malaya.augmentation.abstractive
+    :members:
+
+malaya.augmentation.encoder
+--------------------------------
+
+.. automodule:: malaya.augmentation.encoder
+    :members:
+
+malaya.augmentation.rules
+--------------------------------
+
+.. automodule:: malaya.augmentation.rules
     :members:
 
 malaya.dictionary
 ---------------------
 
 .. automodule:: malaya.dictionary
+    :members:
+
+malaya.generator.isi_penting
+-----------------------------
+
+.. automodule:: malaya.generator.isi_penting
+    :members:
+
+malaya.generator.prefix
+-----------------------------
+
+.. automodule:: malaya.generator.prefix
+    :members:
+
+malaya.keyword.abstractive
+---------------------------
+
+.. automodule:: malaya.keyword.abstractive
+    :members:
+
+malaya.keyword.extractive
+--------------------------
+
+.. automodule:: malaya.keyword.extractive
+    :members:
+
+malaya.normalizer.abstractive
+------------------------------
+
+.. automodule:: malaya.normalizer.abstractive
+    :members:
+
+malaya.normalizer.rules
+------------------------------
+
+.. automodule:: malaya.normalizer.rules
+    :members:
+
+.. autoclass:: malaya.normalizer.rules.Normalizer()
+    :members:
+
+malaya.qa.extractive
+-------------------------
+
+.. automodule:: malaya.qa.extractive
+    :members:
+
+malaya.similarity.doc2vec
+-------------------------
+
+.. automodule:: malaya.similarity.doc2vec
+    :members:
+
+.. autoclass:: malaya.similarity.doc2vec.VectorizerSimilarity()
+    :members:
+
+.. autoclass:: malaya.similarity.doc2vec.Doc2VecSimilarity()
+    :members:
+
+malaya.similarity.semantic
+----------------------------
+
+.. automodule:: malaya.similarity.semantic
+
+malaya.spelling_correction.jamspell
+---------------------------------------
+
+.. autoclass:: malaya.spelling_correction.jamspell.JamSpell()
+    :members:
+
+malaya.spelling_correction.probability
+---------------------------------------
+
+.. autoclass:: malaya.spelling_correction.probability.Spell()
+    :members:
+
+.. autoclass:: malaya.spelling_correction.probability.Probability()
+    :members:
+
+.. autoclass:: malaya.spelling_correction.probability.ProbabilityLM()
+    :members:
+
+malaya.spelling_correction.spylls
+---------------------------------------
+
+.. autoclass:: malaya.spelling_correction.spylls.Spylls()
+    :members:
+
+malaya.spelling_correction.symspell
+---------------------------------------
+
+.. autoclass:: malaya.spelling_correction.symspell.Symspell()
+    :members:
+
+malaya.spelling_correction.transformer
+---------------------------------------
+
+.. autoclass:: malaya.spelling_correction.transformer.Transformer()
+    :members:
+
+malaya.summarization.abstractive
+---------------------------------
+
+.. automodule:: malaya.summarization.abstractive
+    :members:
+
+malaya.summarization.extractive
+---------------------------------
+
+.. automodule:: malaya.summarization.extractive
+    :members:
+
+malaya.topic_model.decomposition
+---------------------------------
+
+.. automodule:: malaya.topic_model.decomposition
+    :members:
+
+.. autoclass:: malaya.topic_model.decomposition.Topic()
+    :members:
+
+malaya.topic_model.lda2vec
+---------------------------------
+
+.. automodule:: malaya.topic_model.lda2vec
+    :members:
+
+.. autoclass:: malaya.topic_model.lda2vec.DeepTopic()
+    :members:
+
+malaya.topic_model.transformer
+---------------------------------
+
+.. autoclass:: malaya.topic_model.transformer.AttentionTopic()
+    :members:
+
+malaya.translation.en_ms
+-------------------------
+
+.. automodule:: malaya.translation.en_ms
+    :members:
+
+malaya.translation.ms_en
+-------------------------
+
+.. automodule:: malaya.translation.ms_en
+    :members:
+
+malaya.zero_shot.classification
+--------------------------------
+
+.. automodule:: malaya.zero_shot.classification
+    :members:
+
+malaya.zero_shot.entity
+--------------------------------
+
+.. automodule:: malaya.zero_shot.entity
     :members:
 
 malaya.cluster
@@ -69,28 +239,10 @@ malaya.entity
 .. automodule:: malaya.entity
     :members:
 
-malaya.generator
--------------------------
-
-.. automodule:: malaya.generator
-    :members:
-
 malaya.jawi_rumi
 -------------------------
 
 .. automodule:: malaya.jawi_rumi
-    :members:
-
-malaya.keyword_extraction
---------------------------
-
-.. automodule:: malaya.keyword_extraction
-    :members:
-
-malaya.knowledge_graph
---------------------------
-
-.. automodule:: malaya.knowledge_graph
     :members:
 
 malaya.language_detection
@@ -109,15 +261,6 @@ malaya.lexicon
 -------------------------
 
 .. automodule:: malaya.lexicon
-    :members:
-
-malaya.normalize
--------------------------
-
-.. automodule:: malaya.normalize
-    :members:
-
-.. autoclass:: malaya.normalize.Normalizer()
     :members:
 
 malaya.nsfw
@@ -162,12 +305,6 @@ malaya.preprocessing
 .. autoclass:: malaya.preprocessing.Demoji()
     :members:
 
-malaya.qa
-------------------
-
-.. automodule:: malaya.qa
-    :members:
-
 malaya.relevancy
 ------------------
 
@@ -193,42 +330,6 @@ malaya.sentiment
 -----------------
 
 .. automodule:: malaya.sentiment
-    :members:
-
-malaya.spelling_correction.jamspell
----------------------------------------
-
-.. autoclass:: malaya.spelling_correction.jamspell.JamSpell()
-    :members:
-
-malaya.spelling_correction.probability
----------------------------------------
-
-.. autoclass:: malaya.spelling_correction.probability.Spell()
-    :members:
-
-.. autoclass:: malaya.spelling_correction.probability.Probability()
-    :members:
-
-.. autoclass:: malaya.spelling_correction.probability.ProbabilityLM()
-    :members:
-
-malaya.spelling_correction.spylls
----------------------------------------
-
-.. autoclass:: malaya.spelling_correction.spylls.Spylls()
-    :members:
-
-malaya.spelling_correction.symspell
----------------------------------------
-
-.. autoclass:: malaya.spelling_correction.symspell.Symspell()
-    :members:
-
-malaya.spelling_correction.transformer
----------------------------------------
-
-.. autoclass:: malaya.spelling_correction.transformer.Transformer()
     :members:
 
 malaya.stack
@@ -288,45 +389,6 @@ malaya.tokenizer
 .. autoclass:: malaya.tokenizer.SentenceTokenizer()
     :members:
 
-malaya.summarization.abstractive
----------------------------------
-
-.. automodule:: malaya.summarization.abstractive
-    :members:
-
-malaya.summarization.extractive
----------------------------------
-
-.. automodule:: malaya.summarization.extractive
-    :members:
-
-malaya.similarity
--------------------------
-
-.. automodule:: malaya.similarity
-    :members:
-
-.. autoclass:: malaya.similarity.VectorizerSimilarity()
-    :members:
-
-.. autoclass:: malaya.similarity.Doc2VecSimilarity()
-    :members:
-
-malaya.topic_model
------------------------
-
-.. automodule:: malaya.topic_model
-    :members:
-
-.. autoclass:: malaya.topic_model.AttentionTopic()
-    :members:
-
-.. autoclass:: malaya.topic_model.DeepTopic()
-    :members:
-
-.. autoclass:: malaya.topic_model.Topic()
-    :members:
-
 malaya.toxicity
 -------------------------
 
@@ -337,18 +399,6 @@ malaya.transformer
 -------------------------
 
 .. automodule:: malaya.transformer
-    :members:
-
-malaya.translation.en_ms
--------------------------
-
-.. automodule:: malaya.translation.en_ms
-    :members:
-
-malaya.translation.ms_en
--------------------------
-
-.. automodule:: malaya.translation.ms_en
     :members:
 
 malaya.true_case
@@ -370,12 +420,6 @@ malaya.wordvector
     :members:
 
 .. autoclass:: malaya.wordvector.WordVector()
-    :members:
-
-malaya.zero_shot.classification
---------------------------------
-
-.. automodule:: malaya.zero_shot.classification
     :members:
 
 malaya.model.alignment
@@ -476,9 +520,6 @@ malaya.model.t5
 .. autoclass:: malaya.model.t5.Paraphrase()
     :members:
 
-.. autoclass:: malaya.model.t5.KnowledgeGraph()
-    :members:
-
 .. autoclass:: malaya.model.t5.Spell()
     :members:
 
@@ -510,9 +551,6 @@ malaya.model.tf
     :members:
 
 .. autoclass:: malaya.model.tf.SQUAD()
-    :members:
-
-.. autoclass:: malaya.model.tf.KnowledgeGraph()
     :members:
 
 .. autoclass:: malaya.model.tf.GPT2()
@@ -556,6 +594,52 @@ malaya.torch_model.gpt2_lm
 
 .. autoclass:: malaya.torch_model.gpt2_lm.LM()
     :members:
+
+malaya.torch_model.huggingface
+----------------------------------
+
+.. autoclass:: malaya.torch_model.huggingface.Generator()
+    :members:
+
+.. autoclass:: malaya.torch_model.huggingface.Prefix()
+    :members:
+
+.. autoclass:: malaya.torch_model.huggingface.Paraphrase()
+    :members:
+
+.. autoclass:: malaya.torch_model.huggingface.Summarization()
+    :members:
+
+.. autoclass:: malaya.torch_model.huggingface.Similarity()
+    :members:
+
+.. autoclass:: malaya.torch_model.huggingface.ZeroShotClassification()
+    :members:
+
+.. autoclass:: malaya.torch_model.huggingface.ZeroShotNER()
+    :members:
+
+.. autoclass:: malaya.torch_model.huggingface.ExtractiveQA()
+    :members:
+
+.. autoclass:: malaya.torch_model.huggingface.ExtractiveQAFlan()
+    :members:
+
+.. autoclass:: malaya.torch_model.huggingface.Transformer()
+    :members:
+
+.. autoclass:: malaya.torch_model.huggingface.IsiPentingGenerator()
+    :members:
+
+.. autoclass:: malaya.torch_model.huggingface.Tatabahasa()
+    :members:
+
+.. autoclass:: malaya.torch_model.huggingface.Normalizer()
+    :members:
+
+.. autoclass:: malaya.torch_model.huggingface.Keyword()
+    :members:
+
 
 malaya.torch_model.mask_lm
 ----------------------------------

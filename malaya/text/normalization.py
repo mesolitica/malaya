@@ -426,6 +426,39 @@ def replace_ribu_juta(x):
     return x
 
 
+def normalize_numbers_with_shortform(x):
+    x_ = x[:]
+    try:
+        x = re.sub(r'[ ]+', ' ', x).strip()
+        x, n = re.split("(\\d+(?:[\\.,']\\d+)?)", x)[1:]
+        n = replace_ribu_juta(n)
+        x = re.sub(',', '', x, count=10)
+        labels = []
+        for c in n:
+            if re.match('.*(M|m)$', c):
+                labels.append(1e6)
+            elif re.match('.*(b|B)$', c):
+                labels.append(1e9)
+            elif re.match('.*(k|K)$', c):
+                labels.append(1e3)
+            elif re.match('.*(j|J)$', c):
+                labels.append(1e6)
+
+        for l in labels:
+            x = float(x)
+            x = x * l
+
+        if isinstance(x, float) and 1 - (x % 1) < 1e-5:
+            x = math.ceil(x)
+
+        x = str(x)
+        if x.endswith('.0'):
+            x = x[:-2]
+        return x
+    except:
+        return x_
+
+
 def money(x):
     try:
         if (

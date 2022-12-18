@@ -1,4 +1,8 @@
+# HuggingFace
+
 ## how-to
+
+1. Run training script,
 
 ```bash
 python3 train_mlm.py \
@@ -13,3 +17,7 @@ python3 train_mlm.py \
 --max_seq_length 256 \
 --line_by_line
 ```
+
+## download
+
+1. https://huggingface.co/mesolitica/finetuned-bert-base-multilingual-cased-noisy-en-ms

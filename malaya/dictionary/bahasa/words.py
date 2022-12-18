@@ -24413,4 +24413,7 @@ words = {
     'akomodasi',
     'paradigma',
     'terserlah',
+    'woi',
+    'macha',
+    'eh',
 }

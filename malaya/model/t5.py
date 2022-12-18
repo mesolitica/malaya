@@ -1,16 +1,13 @@
 from malaya.text.function import (
     summarization_textcleaning,
     upperfirst,
+    remove_repeat_fullstop,
 )
 from malaya.text.rouge import postprocess_summary
 from malaya.text.knowledge_graph import parse_triples
 from malaya.model.abstract import Seq2Seq, Abstract
 from herpetologist import check_type
 from typing import List
-
-
-def remove_repeat_fullstop(string):
-    return ' '.join([k.strip() for k in string.split('.') if len(k.strip())])
 
 
 class T5(Abstract):

@@ -4,79 +4,96 @@ from malaya.supervised import pegasus as pegasus_load
 from malaya.model.t5 import Summarization as T5_Summarization
 from malaya.model.bigbird import Summarization as BigBird_Summarization
 from malaya.model.pegasus import Summarization as Pegasus_Summarization
+from malaya.supervised import huggingface as load_huggingface
 from malaya.function import describe_availability
 from herpetologist import check_type
 import logging
+import warnings
 
 logger = logging.getLogger(__name__)
 
 _transformer_availability = {
-    't5': {
-        'Size (MB)': 1250,
-        'Quantized Size (MB)': 481,
-        'ROUGE-1': 0.3717403,
-        'ROUGE-2': 0.18471429,
-        'ROUGE-L': 0.2582724,
-        'Suggested length': 512,
+    'tiny-t5': {
+        'Size (MB)': 208,
+        'Quantized Size (MB)': 103,
+        'ROUGE-1': 0.820415874,
+        'ROUGE-2': 0.6233588777,
+        'ROUGE-L': 0.418418003,
+        'Suggested length': 1024,
     },
     'small-t5': {
         'Size (MB)': 355.6,
         'Quantized Size (MB)': 195,
-        'ROUGE-1': 0.36696956,
-        'ROUGE-2': 0.1773298,
-        'ROUGE-L': 0.2546696,
-        'Suggested length': 512,
+        'ROUGE-1': 0.8354927651,
+        'ROUGE-2': 0.6516714426,
+        'ROUGE-L': 0.443235174,
+        'Suggested length': 1024,
     },
-    'tiny-t5': {
-        'Size (MB)': 208,
-        'Quantized Size (MB)': 103,
-        'ROUGE-1': 0.302676,
-        'ROUGE-2': 0.11932098,
-        'ROUGE-L': 0.20291817,
-        'Suggested length': 512,
-    },
-    'pegasus': {
-        'Size (MB)': 894,
-        'Quantized Size (MB)': 225,
-        'ROUGE-1': 0.25109342,
-        'ROUGE-2': 0.06678945,
-        'ROUGE-L': 0.15590666,
-        'Suggested length': 512,
-    },
-    'small-pegasus': {
-        'Size (MB)': 293,
-        'Quantized Size (MB)': 74.2,
-        'ROUGE-1': 0.29012334,
-        'ROUGE-2': 0.11878814,
-        'ROUGE-L': 0.19232224,
-        'Suggested length': 512,
-    },
-    'bigbird': {
-        'Size (MB)': 910,
-        'Quantized Size (MB)': 230,
-        'ROUGE-1': 0.2673456,
-        'ROUGE-2': 0.07239062,
-        'ROUGE-L': 0.16132586,
-        'Suggested length': 1536,
-    },
-    'small-bigbird': {
-        'Size (MB)': 303.0,
-        'Quantized Size (MB)': 77.3,
-        'ROUGE-1': 0.24620333,
-        'ROUGE-2': 0.05896076,
-        'ROUGE-L': 0.15158954,
-        'Suggested length': 1536,
+    't5': {
+        'Size (MB)': 1250,
+        'Quantized Size (MB)': 481,
+        'ROUGE-1': 0.840805448,
+        'ROUGE-2': 0.6613555630,
+        'ROUGE-L': 0.4529222596,
+        'Suggested length': 1024,
     },
 }
+
+_huggingface_availability = {
+    'mesolitica/finetune-summarization-t5-small-standard-bahasa-cased': {
+        'Size (MB)': 242,
+        'ROUGE-1': 0.75721802,
+        'ROUGE-2': 0.496729027,
+        'ROUGE-L': 0.304021823,
+        'Suggested length': 1024,
+    },
+    'mesolitica/finetune-summarization-t5-base-standard-bahasa-cased': {
+        'Size (MB)': 892,
+        'ROUGE-1': 0.7132268255,
+        'ROUGE-2': 0.470135011,
+        'ROUGE-L': 0.366797009,
+        'Suggested length': 1024,
+    },
+    'mesolitica/finetune-summarization-ms-t5-small-standard-bahasa-cased': {
+        'Size (MB)': 242,
+        'ROUGE-1': 0.742572468,
+        'ROUGE-2': 0.50196339,
+        'ROUGE-L': 0.3741226432,
+        'Suggested length': 1024,
+    },
+    'mesolitica/finetune-summarization-ms-t5-base-standard-bahasa-cased': {
+        'Size (MB)': 892,
+        'ROUGE-1': 0.728116529,
+        'ROUGE-2': 0.49656772621,
+        'ROUGE-L': 0.376577199,
+        'Suggested length': 1024,
+    },
+}
+
+
+def _describe():
+    logger.info('tested on translated validation set CNN Daily Mail, https://huggingface.co/datasets/mesolitica/translated-cnn-dailymail')
+    logger.info('tested on translated test set Xwikis, https://huggingface.co/datasets/mesolitica/translated-xwikis')
 
 
 def available_transformer():
     """
     List available transformer models.
     """
-    logger.info('tested on translated 12k CNN + DailyNews test set at https://github.com/huseinzol05/malay-dataset/tree/master/summarization')
+    warnings.warn(
+        '`malaya.summarization.abstractive.available_transformer` is deprecated, use `malaya.summarization.abstractive.available_huggingface` instead', DeprecationWarning)
 
+    _describe()
     return describe_availability(_transformer_availability)
+
+
+def available_huggingface():
+    """
+    List available huggingface models.
+    """
+
+    _describe()
+    return describe_availability(_huggingface_availability)
 
 
 @check_type
@@ -87,16 +104,7 @@ def transformer(model: str = 'small-t5', quantized: bool = False, **kwargs):
     Parameters
     ----------
     model: str, optional (default='small-t5')
-        Model architecture supported. Allowed values:
-
-        * ``'t5'`` - T5 BASE parameters.
-        * ``'small-t5'`` - T5 SMALL parameters.
-        * ``'tiny-t5'`` - T5 TINY parameters.
-        * ``'pegasus'`` - Pegasus BASE parameters.
-        * ``'small-pegasus'`` - Pegasus SMALL parameters.
-        * ``'bigbird'`` - BigBird + Pegasus BASE parameters.
-        * ``'small-bigbird'`` - BigBird + Pegasus SMALL parameters.
-
+        Check available models at `malaya.summarization.abstractive.available_transformer()`.
     quantized: bool, optional (default=False)
         if True, will load 8-bit quantized model.
         Quantized model not necessary faster, totally depends on the machine.
@@ -110,6 +118,8 @@ def transformer(model: str = 'small-t5', quantized: bool = False, **kwargs):
         * if `bigbird` in model, will return `malaya.model.bigbird.Summarization`.
         * if `pegasus` in model, will return `malaya.model.pegasus.Summarization`.
     """
+    warnings.warn(
+        '`malaya.summarization.abstractive.transformer` is deprecated, use `malaya.summarization.abstractive.huggingface` instead', DeprecationWarning)
 
     model = model.lower()
     if model not in _transformer_availability:
@@ -144,3 +154,30 @@ def transformer(model: str = 'small-t5', quantized: bool = False, **kwargs):
             quantized=quantized,
             **kwargs,
         )
+
+
+def huggingface(
+    model: str = 'mesolitica/finetune-summarization-t5-small-standard-bahasa-cased',
+    force_check: bool = True,
+    **kwargs,
+):
+    """
+    Load HuggingFace model to abstractive summarization.
+
+    Parameters
+    ----------
+    model: str, optional (default='mesolitica/finetune-summarization-t5-small-standard-bahasa-cased')
+        Check available models at `malaya.summarization.abstractive.available_huggingface()`.
+    force_check: bool, optional (default=True)
+        Force check model one of malaya model.
+        Set to False if you have your own huggingface model.
+
+    Returns
+    -------
+    result: malaya.torch_model.huggingface.Summarization
+    """
+    if model not in _huggingface_availability and force_check:
+        raise ValueError(
+            'model not supported, please check supported models from `malaya.summarization.abstractive.available_huggingface()`.'
+        )
+    return load_huggingface.load_summarization(model=model, initial_text='ringkasan: ', **kwargs)

@@ -40,4 +40,8 @@ crawl-dbp*
 dbp.ipynb
 unique-words.json
 *.normalized
+*.normalized.jsonl*
 normalized-twitter.ipynb
+synonym*.json
+filtered-dumping-wiki.txt
+gsd-ud-dev.conllu.txt

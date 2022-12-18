@@ -8,8 +8,8 @@
 
 from malaya_boilerplate.utils import get_home
 
-version = '4.9'
-bump_version = '4.9.2'
+version = '5.0'
+bump_version = '5.0'
 __version__ = bump_version
 
 package = 'malaya'
@@ -17,24 +17,26 @@ url = 'https://f000.backblazeb2.com/file/malaya-model/'
 __home__, _ = get_home(package=package, package_version=version)
 
 from . import alignment
+from . import augmentation
 from . import dictionary
+from . import generator
+from . import keyword
+from . import normalizer
+from . import similarity
 from . import spelling_correction
 from . import summarization
+from . import topic_model
 from . import translation
 from . import utils
 from . import zero_shot
 
-from . import augmentation
 from . import cluster
 from . import constituency
 from . import coref
 from . import dependency
 from . import emotion
 from . import entity
-from . import generator
 from . import jawi_rumi
-from . import keyword_extraction
-from . import knowledge_graph
 from . import language_detection
 from . import language_model
 from . import lexicon
@@ -50,7 +52,6 @@ from . import relevancy
 from . import rumi_jawi
 from . import segmentation
 from . import sentiment
-from . import similarity
 from . import stack
 from . import stem
 from . import subjectivity

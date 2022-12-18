@@ -92,7 +92,7 @@ class LDA2Vec:
                     1, trainable=False, dtype=tf.float32
                 )
 
-                n_topics = self.doc_embedding.get_shape()[1].value
+                n_topics = num_topics
                 log_proportions = tf.nn.log_softmax(self.doc_embedding)
                 if alpha is None:
                     alpha = 1.0 / n_topics

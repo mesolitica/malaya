@@ -13,12 +13,23 @@ from malaya.text.tatabahasa import (
 from malaya.text.rules import normalized_chars
 from malaya.text.unicode.emoji import emoji
 from malaya.text.regex import _expressions
+import logging
+
+logger = logging.getLogger(__name__)
+
+available_bs4 = True
+try:
+    from bs4 import BeautifulSoup
+except Exception as e:
+    logger.warning('bs4 is not installed, `malaya.text.function.remove_html_tags` will use regex')
+    available_bs4 = False
+
 
 STOPWORDS = set(stopwords + stopword_tatabahasa + stopwords_calon)
 STOPWORD_CALON = set(stopwords_calon)
 VOWELS = 'aeiou'
 PHONES = ['sh', 'ch', 'ph', 'sz', 'cz', 'sch', 'rz', 'dz']
-PUNCTUATION = '!"#$%&\'()*+,./:;<=>?@[\]^_`{|}~'
+PUNCTUATION = '!"#$%&\'()*+,./:;<=>?@[\\]^_`{|}~'
 NUMBERS = '1234567890'
 
 alphabets = '([A-Za-z])'
@@ -191,7 +202,7 @@ def translation_textcleaning(string):
 
 def split_nya(string):
     string = re.sub(f'([{PUNCTUATION}])', r' \1 ', string)
-    string = re.sub('\s{2,}', ' ', string)
+    string = re.sub('\\s{2,}', ' ', string)
     result = []
     for word in string.split():
         if word.endswith('nya'):
@@ -209,7 +220,7 @@ def transformer_textcleaning(string, space_after_punct=False):
     string = ' '.join(
         [make_cleaning(w, normalized_chars) for w in string.split()]
     )
-    string = re.sub('\(dot\)', '.', string)
+    string = re.sub('\\(dot\\)', '.', string)
     string = (
         re.sub(re.findall(r'\<a(.*?)\>', string)[0], '', string)
         if (len(re.findall(r'\<a (.*?)\>', string)) > 0)
@@ -224,7 +235,7 @@ def transformer_textcleaning(string, space_after_punct=False):
     string = ' '.join(string)
     if space_after_punct:
         string = re.sub(f'([{PUNCTUATION}])', r' \1 ', string)
-        string = re.sub('\s{2,}', ' ', string)
+        string = re.sub('\\s{2,}', ' ', string)
     return string
 
 
@@ -500,7 +511,7 @@ def separate_dataset(trainset):
     return datastring, datatarget
 
 
-def print_topics_modelling(
+def print_topics_modeling(
     topics, feature_names, sorting, n_words=20, return_df=True
 ):
     if return_df:
@@ -645,6 +656,20 @@ def split_into_sentences(text, minimum_length=5):
     return sentences
 
 
+def maxlen_slide(string, maxlen=128):
+    splitted = split_into_sentences(string)
+    r, temp = [], []
+    for s in splitted:
+        temp.append(s)
+        if len(' '.join(temp).split()) > maxlen:
+            r.append(' '.join(temp))
+            temp = []
+
+    if len(temp):
+        r.append(' '.join(temp))
+    return r
+
+
 def tag_chunk(seq):
     results = []
     last_no, last_label, tokens = 0, None, []
@@ -679,3 +704,56 @@ def tag_chunk(seq):
         results.append(tag)
 
     return results
+
+
+def remove_repeat_fullstop(string):
+    return ' '.join([unidecode(k.strip()) for k in string.split('.') if len(k.strip())])
+
+
+def remove_parenthesis(string, substring, lower_case=True):
+    removed = []
+    for r in re.finditer(r'\([^()]*\)', string):
+        span = r.span()
+        subs = string[span[0]: span[1]]
+        if substring in (subs.lower() if lower_case else subs):
+            removed.append(span)
+
+    if len(removed):
+        selected = [string[:removed[0][0]]]
+        for i in range(0, len(removed) - 1, 2):
+            selected.append(string[removed[i][1]: removed[i + 1][0]])
+
+        selected.append(string[removed[-1][1]:])
+        return re.sub(r'[ ]+', ' ', ' '.join(selected)).strip()
+    else:
+        return string
+
+
+def remove_empty_parenthesis(string, min_length_inside=2, **kwargs):
+    removed = []
+    for r in re.finditer(r'\([^()]*\)', string):
+        span = r.span()
+        subs = string[span[0]: span[1]]
+        subs = re.sub(r'[ ]+', ' ', subs.replace('(', '').replace(')', '')).strip()
+        if len(subs) < min_length_inside:
+            removed.append(span)
+
+    if len(removed):
+        selected = [string[:removed[0][0]]]
+        for i in range(0, len(removed) - 1, 2):
+            selected.append(string[removed[i][1]: removed[i + 1][0]])
+
+        selected.append(string[removed[-1][1]:])
+        return re.sub(r'[ ]+', ' ', ' '.join(selected)).strip()
+    else:
+        return string
+
+
+def remove_html_tags(string):
+    if available_bs4:
+        soup = BeautifulSoup(string, 'lxml')
+        string = soup.text
+    else:
+        string = re.sub('<[^<]+?>', ' ', string)
+
+    return re.sub(r'[ ]+', ' ', string).strip()

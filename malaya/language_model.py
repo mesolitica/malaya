@@ -179,7 +179,7 @@ def gpt2(model: str = 'mesolitica/gpt2-117m-bahasa-cased', force_check: bool = T
         raise ValueError(
             'model not supported, please check supported models from `malaya.language_model.available_gpt2()`.'
         )
-    model = GPT2LM.from_pretrained(model)
+    model = GPT2LM.from_pretrained(model, **kwargs)
     model.load_tokenizer()
     return model
 
@@ -217,7 +217,7 @@ def mlm(model: str = 'malay-huggingface/bert-tiny-bahasa-cased', force_check: bo
     else:
         raise ValueError(f'cannot determined model class for {model}, only supported BERT, ALBERT and RoBERTa for now.')
 
-    tokenizer = AutoTokenizer.from_pretrained(model, use_fast=False)
-    model = model_class.from_pretrained(model)
+    tokenizer = AutoTokenizer.from_pretrained(model, use_fast=False, **kwargs)
+    model = model_class.from_pretrained(model, **kwargs)
 
     return MLMScorer(model, tokenizer)
