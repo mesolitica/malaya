@@ -13,6 +13,7 @@ from malaya.supervised import huggingface as load_huggingface
 from malaya.function import describe_availability
 from herpetologist import check_type
 import logging
+import warnings
 
 logger = logging.getLogger(__name__)
 
@@ -243,6 +244,8 @@ def available_transformer(version: str = 'v2'):
         * ``'v2'`` - Trained on bigger dataset, better version.
     """
 
+    warnings.warn(
+        '`malaya.dependency.available_transformer` is deprecated, use `malaya.dependency.available_huggingface` instead', DeprecationWarning)
     _describe()
     return describe_availability(_transformer_availability[_validate_version(version)])
 
@@ -283,7 +286,8 @@ def transformer(version: str = 'v2', model: str = 'xlnet', quantized: bool = Fal
         * if `bert` in model, will return `malaya.model.bert.DependencyBERT`.
         * if `xlnet` in model, will return `malaya.model.xlnet.DependencyXLNET`.
     """
-
+    warnings.warn(
+        '`malaya.dependency.transformer` is deprecated, use `malaya.dependency.huggingface` instead', DeprecationWarning)
     logger.warning(
         '`malaya.dependency.transformer` trained on indonesian dataset and augmented dataset, not an actual malay dataset.')
 

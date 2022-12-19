@@ -81,7 +81,7 @@ def load_tatabahasa(model, initial_text, **kwargs):
 def load_normalizer(
     model,
     initial_text,
-    corrector,
+    normalizer,
     segmenter=None,
     text_scorer=None,
     **kwargs,
@@ -89,7 +89,7 @@ def load_normalizer(
     return Normalizer(
         model,
         initial_text,
-        corrector,
+        normalizer,
         segmenter=segmenter,
         text_scorer=text_scorer,
         **kwargs,

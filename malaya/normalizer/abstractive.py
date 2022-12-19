@@ -8,20 +8,20 @@ logger = logging.getLogger(__name__)
 _huggingface_availability = {
     'mesolitica/finetune-noisy-translation-t5-tiny-bahasa-cased-v2': {
         'Size (MB)': 139,
-        'BLEU': 41.625536185056305,
-        'SacreBLEU Verbose': '73.4/50.1/35.7/25.7 (BP = 0.971 ratio = 0.972 hyp_len = 21400 ref_len = 22027)',
+        'BLEU': 60.0009672168891,
+        'SacreBLEU Verbose': '77.9/63.9/54.6/47.7 (BP = 1.000 ratio = 1.036 hyp_len = 110970 ref_len = 107150)',
         'Suggested length': 256,
     },
     'mesolitica/finetune-noisy-translation-t5-small-bahasa-cased-v4': {
         'Size (MB)': 242,
-        'BLEU': 41.625536185056305,
-        'SacreBLEU Verbose': '73.4/50.1/35.7/25.7 (BP = 0.971 ratio = 0.972 hyp_len = 21400 ref_len = 22027)',
+        'BLEU': 64.06258219941243,
+        'SacreBLEU Verbose': '80.1/67.7/59.1/52.5 (BP = 1.000 ratio = 1.042 hyp_len = 111635 ref_len = 107150)',
         'Suggested length': 256,
     },
     'mesolitica/finetune-noisy-translation-t5-base-bahasa-cased-v2': {
         'Size (MB)': 892,
-        'BLEU': 41.625536185056305,
-        'SacreBLEU Verbose': '73.4/50.1/35.7/25.7 (BP = 0.971 ratio = 0.972 hyp_len = 21400 ref_len = 22027)',
+        'BLEU': 64.583819005204,
+        'SacreBLEU Verbose': '80.2/68.1/59.8/53.2 (BP = 1.000 ratio = 1.048 hyp_len = 112260 ref_len = 107150)',
         'Suggested length': 256,
     },
 }
@@ -65,10 +65,12 @@ def huggingface(
     kenlm_model: str, optional (default='bahasa-wiki-news')
         the model trained on `malaya.language_model.kenlm(model = 'bahasa-wiki-news')`,
         but you can use any kenlm model from `malaya.language_model.available_kenlm`.
+        Also you can pass as None to skip spelling correction but still apply rules normalizer.
         This parameter will be ignored if `use_rules_normalizer=False`.
     stem_model: str, optional (default='noisy')
         the model trained on `malaya.stem.deep_model(model = 'noisy'),
         but you can use any stemmer model from `malaya.stem.available_model`.
+        Also you can pass as None to skip stemming but still apply rules normalizer.
         This parameter will be ignored if `use_rules_normalizer=False`.
     segmenter: Callable, optional (default=None)
         segmenter function to segment text, read more at https://malaya.readthedocs.io/en/stable/load-normalizer.html#Use-segmenter
@@ -97,10 +99,17 @@ def huggingface(
 
         from malaya.language_model import kenlm
         from malaya.stem import deep_model
-        from malaya.spelling_correction.probability import load_spelling
+        from malaya.spelling_correction.probability import load as load_spelling
+        from malaya.normalizer.rules import load as load_normalizer
 
-        lm = kenlm(model=kenlm_model)
-        stemmer = deep_model(model=stem_model)
+        if isinstance(kenlm_model, str):
+            lm = kenlm(model=kenlm_model)
+        else:
+            lm = None
+        if isinstance(stem_model, str):
+            stemmer = deep_model(model=stem_model)
+        else:
+            stemmer = None
         corrector = load_spelling(
             language_model=lm,
             replace_augmentation=replace_augmentation,
@@ -108,13 +117,14 @@ def huggingface(
             maxlen=maxlen_speller,
             minlen=minlen_speller,
         )
+        normalizer = load_normalizer(corrector, stemmer, date=False)
     else:
-        corrector = None
+        normalizer = None
 
     return load_huggingface.load_normalizer(
         model=model,
         initial_text='terjemah pasar Melayu ke Melayu: ',
-        corrector=corrector,
+        normalizer=normalizer,
         segmenter=segmenter,
         text_scorer=text_scorer,
         **kwargs,

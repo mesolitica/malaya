@@ -794,7 +794,7 @@ class Normalizer(Generator):
         self,
         model,
         initial_text,
-        corrector,
+        normalizer,
         segmenter=None,
         text_scorer=None,
         **kwargs,
@@ -805,7 +805,7 @@ class Normalizer(Generator):
             initial_text=initial_text,
             **kwargs,
         )
-        self.corrector = corrector
+        self.normalizer = normalizer
         self.segmenter = segmenter
         self.text_scorer = text_scorer
 
@@ -830,8 +830,24 @@ class Normalizer(Generator):
         -------
         result: List[str]
         """
-        if self.corrector is not None:
-            pass
+        if self.normalizer is not None:
+            for i in range(len(strings)):
+                t = strings[i]
+                try:
+                    normalized = self.normalizer.normalize(
+                        t, normalize_hingga=False, normalize_cardinal=False,
+                        normalize_ordinal=False, normalize_pada_hari_bulan=False,
+                        normalize_fraction=False, normalize_money=False, normalize_date=False,
+                        normalize_time=False, normalize_ic=False, normalize_units=False,
+                        normalize_url=False, normalize_percent=False, normalize_telephone=False,
+                        text_scorer=self.text_scorer, segmenter=self.segmenter,
+                        not_a_word_threshold=1e-9,
+                    )['normalize']
+                    logger.debug(f'input: {t}, normalized: {normalized}')
+                    strings[i] = normalized
+                except Exception as e:
+                    logger.warning(f'input: {t}, exception {e}')
+                    logger.warning(f'input: {t}, `self.normalizer` exception, skip to normalize.')
 
         return super().generate(strings, **kwargs)
 

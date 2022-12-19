@@ -1,9 +1,12 @@
-Original script, https://github.com/huggingface/transformers/blob/v4.21.2/examples/pytorch/translation/run_translation.py
+# HuggingFace T5
 
-```
-shuf train-noisy.json > train-noisy-shuffled.json
-shuf test-noisy.json > test-noisy-shuffled.json
-```
+## how-to
+
+1. Run prepare dataset, [prepare-data.ipynb](prepare-data.ipynb).
+
+2. Run training script,
+
+Original script, https://github.com/huggingface/transformers/blob/v4.21.2/examples/pytorch/translation/run_translation.py
 
 BASE model,
 ```
