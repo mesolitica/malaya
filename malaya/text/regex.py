@@ -48,7 +48,7 @@ _fd2 = '(?:{})'.format(
 
 _date = '(?:' + '(?:' + _fd1 + '|' + _fd2 + ')' + '|' + _short_date + ')'
 _time = r'(?:(?:\d+)?\.?\d+\s*(?:AM|PM|am|pm|a\.m\.|p\.m\.|pagi|pgi|morning|tengahari|tngahari|petang|ptg|malam|jam|hours|hour|hrs))|(?:(?:[0-2]?[0-9]|[2][0-3]):(?:[0-5][0-9])(?::(?:[0-5][0-9]))?(?: ?(?:AM|PM|am|pm|a\.m\.|p\.m\.|pagi|pgi|morning|tengahari|tngahari|petang|ptg|malam|hours|hrs|jam))?)'
-_today_time = r'(?:(?:pkul|pukul|kul)\s*(?:(?:([01]?\d|2[0-3]):)?([0-5]?\d):)([0-5]?\d))|(?:(?:pkul|pukul|kul)\s*(?:\d+)?\.?\d+)'
+_today_time = r'(?:(?:pkul|pukul|kul)\s*(?:[0-2]?[0-9]|[2][0-3]):(?:[0-5][0-9])(?::(?:[0-5][0-9])))|(?:(?:pkul|pukul|kul)\s*(?:\d+)?\.?\d+)'
 _past_date_string = '(?:\\s|\\d+)\\s*(?:minggu|bulan|tahun|hari|thun|hri|mnggu|jam|minit|saat)\\s*(?:lalu|lepas|lps)\\b'
 _now_date_string = '(?:sekarang|skrg|jam|tahun|thun|saat|minit) (?:ini|ni)\\b'
 _yesterday_tomorrow_date_string = (
@@ -64,7 +64,7 @@ _money = r"(?:(?:[$€£¢]|RM|rm)\s*\d+(?:[\.,']\d+)?\s*(?:[Rr]ibu|[Jj]uta|[MmK
 _temperature = "-?\\d+(?:[\\.,']\\d+)?\\s*(?:K|Kelvin|kelvin|Kvin|F|f|Farenheit|farenheit|C|c|Celcius|celcius|clcius|celsius)\\b"
 _distance = "-?\\d+(?:[\\.,']\\d+)?\\s*(?:kaki|mtrs|metres|meters|feet|km|m|cm|feet|feets|miles|batu|inch|inches|feets)\\b"
 _volume = "-?\\d+(?:[\\.,']\\d+)?\\s*(?:ml|ML|l|L|mililiter|Mililiter|millilitre|liter|litre|litres|liters|gallon|gallons|galon)\\b"
-_duration = '\\d+\\s*(?:jam|minit|hari|minggu|tahun|hours|hour)\\b|(?:sejam|sehari|setahun|sesaat|seminit)\\b'
+_duration = '\\d+\\s*(?:jam|minit|hari|minggu|tahun|hours|hour|saat|second)\\b|(?:sejam|sehari|setahun|sesaat|seminit)\\b'
 _weight = "\\d+(?:[\\.,']\\d+)?\\s*(?:kg|kilo|kilogram|g|gram|KG)\\b"
 
 _left_datetime = '(%s) (%s)' % (_time, _date)

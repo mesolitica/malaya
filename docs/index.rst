@@ -163,6 +163,7 @@ Contents:
    :maxdepth: 2
    :caption: Tagging Module
 
+   load-general-malaya-entities
    load-entities
    load-pos
 

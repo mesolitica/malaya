@@ -1085,7 +1085,8 @@ rules_compound_normalizer = {
     'b . m': 'bahasa melayu',
     'bt live': 'buat live',
     'tu ha': 'tu ,',
-    'la boh': 'la ya'
+    'la boh': 'la ya',
+    'stu pihak': 'satu pihak',
 }
 
 rules_normalizer = {
@@ -1306,7 +1307,6 @@ rules_normalizer = {
     'cargo': 'kargo',
     'cctv': 'kamera litar tertutup',
     'celako': 'celaka',
-    'cer': 'cerita',
     'cheap': 'murah',
     'check': 'semak',
     'ciput': 'sedikit',
@@ -4494,6 +4494,10 @@ rules_normalizer = {
     'kelate': 'kelantan',
     'yb': 'Yang Bahagia',
     'xbole': 'tak boleh',
+    'pakwe': 'teman lelaki',
+    'makwe': 'teman perempuan',
+    'kawen': 'kahwin',
+    'kahwen': 'kahwin',
 }
 
 rules_normalizer_rev = {v: k for k, v in rules_normalizer.items()}

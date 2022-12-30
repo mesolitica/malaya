@@ -312,7 +312,7 @@ def normalizer_textcleaning(string):
 
 
 def remove_newlines(string):
-    string = string.replace('\n', ' ')
+    string = unidecode(string).replace('\n', ' ')
     string = re.sub(r'[ ]+', ' ', string).strip()
     return string
 

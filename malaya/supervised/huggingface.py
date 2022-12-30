@@ -8,7 +8,7 @@ from malaya.torch_model.huggingface import (
     ZeroShotClassification,
     ZeroShotNER,
     ExtractiveQA,
-    ExtractiveQAFlan,
+    AbstractiveQA,
     Transformer,
     IsiPentingGenerator,
     Tatabahasa,
@@ -60,10 +60,11 @@ def load_zeroshot_ner(model, **kwargs):
 
 
 def load_extractive_qa(model, **kwargs):
-    if 'flan' in model:
-        return ExtractiveQAFlan(model=model, **kwargs)
-    else:
-        return ExtractiveQA(model=model, **kwargs)
+    return ExtractiveQA(model=model, flan_mode='flan' in model, **kwargs)
+
+
+def load_abstractive_qa(model, **kwargs):
+    return AbstractiveQA(model=model, **kwargs)
 
 
 def load_transformer(model, **kwargs):

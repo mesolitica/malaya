@@ -200,10 +200,11 @@ hot_ice_beverage = {
     'susu',
     'sirap',
     'kosong',
+    'nescafe',
 }
 
-hot_ice_beverage_regex = '(?:\\s*|ice|hot|cold|ais|panas|sejuk)\\s*(?:susu|teh|kosong|soya|kopi|neslo|milo|sirap|coffee|tea)\\s*(?:o|\\s*)\\s*(?:ice|sejuk|hot|panas|cold|ais|\\s*)\\s*(?:tarik|pull|)\\b'
-fruit_juice_regex = '(?:juice|jus)\\s*(?:durian|kelapa|manggis|strawberry|nanas|langsat|nangka|cempedak|kedondong|pisang|laici|betik|tembikai|jambu|ciku|nenas|mangga|orange|watermelon|rambutan|strawberri|apple|guava|epal|oren|mango|longan|asam|belimbing|carrot|limau)|(?:durian|kelapa|manggis|strawberry|nanas|langsat|nangka|cempedak|kedondong|pisang|laici|betik|tembikai|jambu|ciku|nenas|mangga|orange|watermelon|rambutan|strawberri|apple|guava|epal|oren|mango|longan|asam|belimbing|carrot|limau)\\s*(?:juice|jus)\\b'
+hot_ice_beverage_regex = '(?:\\s*|ice|hot|cold|ais|panas|sejuk|beng)\\s*(?:susu|teh|kosong|soya|kopi|neslo|milo|sirap|coffee|tea|nescafe)\\s*(?:o|\\s*)\\s*(?:ice|sejuk|hot|panas|cold|ais|beng||\\s*)\\s*(?:tarik|pull|)\\b'
+fruit_juice_regex = '(?:juice|jus)\\s*(?:durian|nyok|kelapa|manggis|strawberry|nanas|langsat|nangka|cempedak|kedondong|pisang|laici|betik|tembikai|jambu|ciku|nenas|mangga|orange|watermelon|rambutan|strawberri|apple|guava|epal|oren|mango|longan|asam|belimbing|carrot|limau)|(?:durian|nyok|kelapa|manggis|strawberry|nanas|langsat|nangka|cempedak|kedondong|pisang|laici|betik|tembikai|jambu|ciku|nenas|mangga|orange|watermelon|rambutan|strawberri|apple|guava|epal|oren|mango|longan|asam|belimbing|carrot|limau)\\s*(?:juice|jus)\\b'
 
 
 unique_beverage = {

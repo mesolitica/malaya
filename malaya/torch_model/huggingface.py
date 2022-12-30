@@ -10,6 +10,8 @@ from transformers import (
     AlbertTokenizer,
     XLNetTokenizer,
 )
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 from malaya.text.bpe import (
     merge_sentencepiece_tokens_tagging,
     merge_sentencepiece_tokens,
@@ -22,6 +24,7 @@ from malaya.text.function import (
     remove_repeat_fullstop,
     remove_newlines,
     remove_html_tags as f_remove_html_tags,
+    STOPWORDS,
 )
 from malaya.function.parse_dependency import DependencyGraph
 from malaya.text.rouge import postprocess_summary, find_kata_encik
@@ -40,6 +43,8 @@ import re
 import logging
 
 logger = logging.getLogger(__name__)
+
+MAPPING_LANG = {'ms': 'Malay', 'en': 'Inggeris'}
 
 
 class Base:
@@ -416,6 +421,84 @@ class Aligment(Generator):
 
 
 class ExtractiveQA(Generator):
+    def __init__(self, model, flan_mode=False, **kwargs):
+        Generator.__init__(
+            self,
+            model=model,
+            initial_text='',
+            **kwargs,
+        )
+        self.flan_mode = flan_mode
+
+    def predict(
+        self,
+        paragraph_text: str,
+        question_texts: List[str],
+        validate_answers: bool = True,
+        validate_questions: bool = False,
+        minimum_threshold_question: float = 0.05,
+        **kwargs,
+    ):
+        """
+        Predict extractive answers from questions given a paragraph.
+
+        Parameters
+        ----------
+        paragraph_text: str
+        question_texts: List[str]
+            List of questions, results really depends on case sensitive questions.
+        validate_answers: bool, optional (default=True)
+            if True, will check the answer is inside the paragraph.
+        validate_questions: bool, optional (default=False)
+            if True, validate the question is subset of the paragraph using `sklearn.feature_extraction.text.CountVectorizer`
+        minimum_threshold_question: float, optional (default=0.05)
+            minimum score from `cosine_similarity`, only useful if `validate_questions = True`.
+        **kwargs: vector arguments pass to huggingface `generate` method.
+            Read more at https://huggingface.co/docs/transformers/main_classes/text_generation
+
+        Returns
+        -------
+        result: List[str]
+        """
+
+        text = remove_newlines(paragraph_text)
+        strings, questions = [], []
+        for q in question_texts:
+            q_ = remove_newlines(q)
+            if self.flan_mode:
+                s = f'read the following context and answer the question given: context: {text} question: {q_}'
+            else:
+                s = f'ekstrak jawapan: {text} soalan: {q_}'
+            strings.append(s)
+            questions.append(q_)
+
+        if validate_questions:
+            tf = CountVectorizer(
+                stop_words=STOPWORDS,
+                token_pattern='[A-Za-z0-9\\-()]+',
+                ngram_range=(1, 2)
+            ).fit([text])
+            v = tf.transform([text])
+            scores = cosine_similarity(tf.transform(questions), v)[:, 0]
+        else:
+            scores = [1.0] * len(questions)
+
+        r = super().generate(strings, **kwargs)
+        if validate_answers:
+            r = [r_.strip() if r_ in text else 'tiada jawapan' for r_ in r]
+
+        results = []
+        for no, r_ in enumerate(r):
+            if scores[no // (len(r) // len(scores))] >= minimum_threshold_question:
+                a = r_
+            else:
+                a = 'tiada jawapan'
+            results.append(a)
+
+        return results
+
+
+class AbstractiveQA(Generator):
     def __init__(self, model, **kwargs):
         Generator.__init__(
             self,
@@ -428,16 +511,19 @@ class ExtractiveQA(Generator):
         self,
         paragraph_text: str,
         question_texts: List[str],
+        langs: List[str],
         **kwargs,
     ):
         """
-        Predict Span from questions given a paragraph.
+        Predict abstractive answers from questions given a paragraph.
 
         Parameters
         ----------
         paragraph_text: str
         question_texts: List[str]
             List of questions, results really depends on case sensitive questions.
+        langs: List[str]
+            Must same length as `question_texts`. Only accept `ms` or `en` only, case insensitive.
         **kwargs: vector arguments pass to huggingface `generate` method.
             Read more at https://huggingface.co/docs/transformers/main_classes/text_generation
 
@@ -446,16 +532,29 @@ class ExtractiveQA(Generator):
         result: List[str]
         """
 
+        if len(question_texts) != len(langs):
+            raise ValueError('length of `langs` must be same as length of `question_texts`')
+
+        langs_ = []
+
+        for no, l in enumerate(langs):
+            l_ = MAPPING_LANG.get(l.lower())
+            if l_ is None:
+                raise ValueError(f'langs[{no}] should only `ms` or `en`.')
+            langs_.append(l_)
+
         text = remove_newlines(paragraph_text)
         strings = []
-        for q in question_texts:
-            s = f'konteks: {text} soalan: {remove_newlines(q)}'
+        for no, q in enumerate(question_texts):
+            q_ = remove_newlines(q)
+            s = f'abstrak jawapan {langs_[no]}: {text} soalan: {q_}'
             strings.append(s)
 
-        return super().generate(strings, **kwargs)
+        r = super().generate(strings, **kwargs)
+        return r
 
 
-class ExtractiveQAFlan(Generator):
+class GenerateQuestion(Generator):
     def __init__(self, model, **kwargs):
         Generator.__init__(
             self,
@@ -466,18 +565,21 @@ class ExtractiveQAFlan(Generator):
 
     def predict(
         self,
-        paragraph_text: str,
-        question_texts: List[str],
+        paragraph_texts: List[str],
+        answer_texts: List[str],
+        langs: List[str],
         **kwargs,
     ):
         """
-        Predict Span from questions given a paragraph.
+        Generate questions from answers given paragraphs.
 
         Parameters
         ----------
-        paragraph_text: str
-        question_texts: List[str]
-            List of questions, results really depends on case sensitive questions.
+        paragraph_text: List[str]
+        answer_texts: List[str]
+            List of answers, can be extract or abstract.
+        langs: List[str]
+            Must same length as `answer_texts`. Only accept `ms` or `en` only, case insensitive.
         **kwargs: vector arguments pass to huggingface `generate` method.
             Read more at https://huggingface.co/docs/transformers/main_classes/text_generation
 
@@ -485,14 +587,26 @@ class ExtractiveQAFlan(Generator):
         -------
         result: List[str]
         """
+        if len(answer_texts) != len(langs):
+            raise ValueError('length of `langs` must be same as length of `answer_texts`')
 
-        text = remove_newlines(paragraph_text)
+        langs_ = []
+
+        for no, l in enumerate(langs):
+            l_ = MAPPING_LANG.get(l.lower())
+            if l_ is None:
+                raise ValueError(f'langs[{no}] should only `ms` or `en`.')
+            langs_.append(l_)
+
         strings = []
-        for q in question_texts:
-            s = f'read the following context and answer the question given: context: {text} question: {remove_newlines(q)}'
+        for no, a in enumerate(answer_texts):
+            a_ = remove_newlines(a)
+            text = remove_newlines(paragraph_texts[no])
+            s = f'bina soalan {langs_[no]}: jawapan: {a_}'
             strings.append(s)
 
-        return super().generate(strings, **kwargs)
+        r = super().generate(strings, **kwargs)
+        return r
 
 
 class Transformer(Base):
