@@ -451,6 +451,7 @@ class ExtractiveQA(Generator):
             if True, will check the answer is inside the paragraph.
         validate_questions: bool, optional (default=False)
             if True, validate the question is subset of the paragraph using `sklearn.feature_extraction.text.CountVectorizer`
+            it is only useful if `paragraph_text` and `question_texts` are the same language.
         minimum_threshold_question: float, optional (default=0.05)
             minimum score from `cosine_similarity`, only useful if `validate_questions = True`.
         **kwargs: vector arguments pass to huggingface `generate` method.
