@@ -92,6 +92,59 @@ class Generator(Base):
         else:
             return self.tokenizer.batch_decode(outputs, skip_special_tokens=True)
 
+    def alignment(
+        self,
+        source: str,
+        target: str,
+    ):
+        """
+        align texts using cross attention and `dtw-python`.
+
+        Parameters
+        ----------
+        source: List[str]
+        target: List[str]
+
+        Returns
+        -------
+        result: Dict
+        """
+
+        try:
+            from dtw import dtw
+        except Exception as e:
+            raise ModuleNotFoundError(
+                'dtw-python not installed. Please install it by `pip install dtw-python` and try again.'
+            )
+
+        cuda = next(self.model.parameters()).is_cuda
+        input_ids = [{'input_ids': self.tokenizer.encode(f'{self._initial_text}{s}', return_tensors='pt')[
+            0]} for s in source]
+
+        padded = self.tokenizer.pad(input_ids, padding='longest')
+        labels = self.tokenizer(target, padding=True, return_tensors='pt')['input_ids']
+        padded['labels'] = labels
+        for k in padded.keys():
+            padded[k] = to_tensor_cuda(padded[k], cuda)
+
+        with torch.no_grad():
+            o = model(**padded, output_attentions=True, return_dict=True)
+
+        weights = torch.cat(o['cross_attentions'])
+        weights = weights_.cpu()
+        weights = torch.tensor(weights_).softmax(dim=-1)
+        w = weights / weights_.norm(dim=-2, keepdim=True)
+        matrix = w.mean(axis=(0, 1)).T
+        alignment = dtw(np.ascontiguousarray(-matrix.double().numpy()))
+
+        alignment_x = alignment.index2s
+        alignment_y = alignment.index1s
+        return {
+            'alignment': matrix,
+            'alignment_x': alignment_x,
+            'alignment_y': alignment_y,
+        }
+
 
 class Prefix(Base):
     def __init__(self, model, **kwargs):

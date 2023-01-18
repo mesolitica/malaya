@@ -116,6 +116,16 @@ class DependencyGraph(object):
         index = self.nodes[node_index]['address']
         return [c for c in children if c > index]
 
+    def traverse(self, node_index):
+        result = []
+        n = self.nodes[node_index]
+        w = (n['word'], node_index)
+        result.append(w)
+        for k, v in n['deps'].items():
+            l = self.traverse(v[0])
+            result.append(l)
+        return r
+
     def traverse_ancestor(self, node_index, labels,
                           rejected_words=['itu', 'yang', 'mereka', 'ini', 'juga', 'dan'],
                           initial_label=[]):

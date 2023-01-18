@@ -127,7 +127,7 @@ def deep_model(quantized: bool = False, **kwargs):
 
 def substring_rules(model, **kwargs):
     """
-    detect EN, MS and OTHER languages in a string.
+    detect EN, MS, MANDARIN and OTHER languages in a string.
 
     EN words detection are using `pyenchant` from https://pyenchant.github.io/pyenchant/ and
     user language detection model.

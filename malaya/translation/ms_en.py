@@ -120,27 +120,6 @@ _huggingface_availability = {
         'SacreBLEU-chrF++-FLORES200': 65.44,
         'Suggested length': 256,
     },
-    'mesolitica/finetune-noisy-translation-t5-tiny-bahasa-cased': {
-        'Size (MB)': 139,
-        'BLEU': 39.72513374635353,
-        'SacreBLEU Verbose': '69.8/46.2/32.8/23.6 (BP = 0.999 ratio = 0.999 hyp_len = 92913 ref_len = 92985)',
-        'SacreBLEU-chrF++-FLORES200': None,
-        'Suggested length': 256,
-    },
-    'mesolitica/finetune-noisy-translation-t5-small-bahasa-cased': {
-        'Size (MB)': 242,
-        'BLEU': 41.83407099646298,
-        'SacreBLEU Verbose': '71.7/48.7/35.4/26.0 (BP = 0.989 ratio = 0.989 hyp_len = 91952 ref_len = 92985)',
-        'SacreBLEU-chrF++-FLORES200': None,
-        'Suggested length': 256,
-    },
-    'mesolitica/finetune-noisy-translation-t5-base-bahasa-cased': {
-        'Size (MB)': 892,
-        'BLEU': 43.432723192596406,
-        'SacreBLEU Verbose': '71.8/49.8/36.6/27.2 (BP = 1.000 ratio = 1.000 hyp_len = 92982 ref_len = 92985)',
-        'SacreBLEU-chrF++-FLORES200': None,
-        'Suggested length': 256,
-    },
     'mesolitica/finetune-noisy-translation-t5-tiny-bahasa-cased-v2': {
         'Size (MB)': 139,
         'BLEU': 60.0009672168891,

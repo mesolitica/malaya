@@ -183,6 +183,10 @@ def _normalize_money(
         return word
 
 
+def _is_mandarin_char(s):
+    return re.match(r'[\u4e00-\u9fff]+', s) is not None
+
+
 def _is_number_regex(s):
     if re.match('^\\d+?\\.\\d+?$', s) is None:
         return s.isdigit()

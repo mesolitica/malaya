@@ -13,6 +13,8 @@ from malaya.text.tatabahasa import (
 from malaya.text.rules import normalized_chars
 from malaya.text.unicode.emoji import emoji
 from malaya.text.regex import _expressions
+from malaya.text.ngram import ngrams
+from difflib import SequenceMatcher as SM
 import logging
 
 logger = logging.getLogger(__name__)
@@ -757,3 +759,44 @@ def remove_html_tags(string):
         string = re.sub('<[^<]+?>', ' ', string)
 
     return re.sub(r'[ ]+', ' ', string).strip()
+
+
+def get_similar_substrings(needle, hay, additional_length_ratio=0.1, right_slide=3):
+    """
+    https://stackoverflow.com/a/31433394/7389343
+    """
+    needle_length = len(needle.split())
+    max_sim_val = 0
+    max_sim_string = ''
+
+    for ngram in ngrams(hay.split(), needle_length + int(additional_length_ratio * needle_length)):
+        hay_ngram = ' '.join(ngram)
+        similarity = SM(None, hay_ngram, needle).ratio()
+        if similarity > max_sim_val:
+            max_sim_val = similarity
+            max_sim_string = hay_ngram
+
+    right_slided = ' '.join(query.split()[-right_slide:])
+    rfind = max_sim_string.rfind(right_slided)
+    if rfind >= 0:
+        max_sim_string = max_sim_string[:rfind + len(right_slided)]
+    return max_sim_val, max_sim_string
+
+
+def fuzzy_substring_search(major: str, minor: str, errs: int = 10):
+    """
+    Find the closest matching fuzzy substring.
+    https://stackoverflow.com/a/73298537/7389343
+    """
+    import regex
+    errs_ = 0
+    s = regex.search(f"({minor}){{e<={errs_}}}", major)
+    while s is None and errs_ <= errs:
+        errs_ += 1
+        s = regex.search(f"({minor}){{e<={errs_}}}", major)
+
+    if s is not None:
+        span = s.spans()[0]
+        return major[span[0]: span[1]]
+    else:
+        return None

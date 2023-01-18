@@ -21,7 +21,16 @@ from malaya.function import validator
 from malaya.graph.pagerank import pagerank
 from malaya.function import describe_availability
 from herpetologist import check_type
+from typing import List
 import warnings
+
+
+def _calculate_count(strings):
+    vocab = defaultdict(int)
+    for k in strings:
+        results = [(m.start(0), m.end(0)) for m in re.finditer(r'\b' + k, string, flags=re.IGNORECASE)]
+        vocab[k] = len(results)
+    return vocab
 
 
 def _auto_ngram(string, stopwords):
@@ -54,6 +63,7 @@ def _base(string, vectorizer, **kwargs):
 @check_type
 def rake(
     string: str,
+    vocab: List[str] = None,
     model=None,
     vectorizer=None,
     top_k: int = 5,
@@ -67,8 +77,11 @@ def rake(
     Parameters
     ----------
     string: str
+    vocab: List[str], optional (default=None)
+        List of important substrings.
+        This will override `vectorizer` parameter.
     model: Object, optional (default=None)
-        Transformer model or any model has `attention` method.
+        model must has `attention` method.
     vectorizer: Object, optional (default=None)
         Prefer `sklearn.feature_extraction.text.CountVectorizer` or,
         `malaya.text.vectorizer.SkipGramCountVectorizer`.
@@ -113,11 +126,17 @@ def rake(
     else:
         d = None
 
-    if auto_ngram:
-        vocab = _auto_ngram(string, stopwords)
+    if vocab:
+        vocab = [v for v in vocab if v in string]
+        vocab = _calculate_count(vocab)
     else:
-        vocab = _base(string, vectorizer=vectorizer, **kwargs)
+        if auto_ngram:
+            vocab = _auto_ngram(string, stopwords)
+        else:
+            vocab = _base(string, vectorizer=vectorizer, **kwargs)
+
     phrase_list = list(vocab.keys())
+
     scores = rake_function.calculate_word_scores(phrase_list, attentions=d)
     keywordcandidates = rake_function.generate_candidate_keyword_scores(
         phrase_list, scores
@@ -138,6 +157,7 @@ def rake(
 @check_type
 def textrank(
     string: str,
+    vocab: List[str] = None,
     model=None,
     vectorizer=None,
     top_k: int = 5,
@@ -151,8 +171,11 @@ def textrank(
     Parameters
     ----------
     string: str
+    vocab: List[str], optional (default=None)
+        List of important substrings.
+        This will override `vectorizer` parameter.
     model: Object, optional (default='None')
-        model has `fit_transform` or `vectorize` method.
+        model must has `fit_transform` or `vectorize` method.
     vectorizer: Object, optional (default=None)
         Prefer `sklearn.feature_extraction.text.CountVectorizer` or,
         `malaya.text.vectorizer.SkipGramCountVectorizer`.
@@ -188,15 +211,21 @@ def textrank(
     if auto_ngram and not len(stopwords):
         raise ValueError('insert stopwords if auto_ngram')
 
-    if auto_ngram:
-        vocab = _auto_ngram(string, stopwords)
+    if vocab:
+        vocab = [v for v in vocab if v in string]
+        vocab = _calculate_count(vocab)
     else:
-        vocab = _base(string, vectorizer=vectorizer, **kwargs)
+        if auto_ngram:
+            vocab = _auto_ngram(string, stopwords)
+        else:
+            vocab = _base(string, vectorizer=vectorizer, **kwargs)
+
+    phrase_list = list(vocab.keys())
 
     if hasattr(model, 'fit_transform'):
-        vectors = model.fit_transform(list(vocab.keys()))
+        vectors = model.fit_transform(phrase_list)
     if hasattr(model, 'vectorize'):
-        vectors = model.vectorize(list(vocab.keys()))
+        vectors = model.vectorize(phrase_list)
     similar = cosine_similarity(vectors, vectors)
     similar[similar >= 0.99999] = 0
     scores = pagerank(similar, **kwargs)
@@ -217,6 +246,7 @@ def textrank(
 def attention(
     string: str,
     model,
+    vocab: List[str] = None,
     vectorizer=None,
     top_k: int = 5,
     atleast: int = 1,
@@ -230,7 +260,10 @@ def attention(
     ----------
     string: str
     model: Object
-        Transformer model or any model has `attention` method.
+        model must has `attention` method.
+    vocab: List[str], optional (default=None)
+        List of important substrings.
+        This will override `vectorizer` parameter.
     vectorizer: Object, optional (default=None)
         Prefer `sklearn.feature_extraction.text.CountVectorizer` or,
         `malaya.text.vectorizer.SkipGramCountVectorizer`.
@@ -266,10 +299,14 @@ def attention(
 
     string = transformer_textcleaning(string)
 
-    if auto_ngram:
-        vocab = _auto_ngram(string, stopwords)
+    if vocab:
+        vocab = [v for v in vocab if v in string]
+        vocab = _calculate_count(vocab)
     else:
-        vocab = _base(string, vectorizer=vectorizer, **kwargs)
+        if auto_ngram:
+            vocab = _auto_ngram(string, stopwords)
+        else:
+            vocab = _base(string, vectorizer=vectorizer, **kwargs)
 
     attention = model.attention([string])[0]
     d = defaultdict(float)
@@ -297,6 +334,7 @@ def attention(
 def similarity(
     string: str,
     model,
+    vocab: List[str] = None,
     vectorizer=None,
     top_k: int = 5,
     atleast: int = 1,
@@ -345,10 +383,14 @@ def similarity(
 
     string = transformer_textcleaning(string)
 
-    if auto_ngram:
-        vocab = _auto_ngram(string, stopwords)
+    if vocab:
+        vocab = [v for v in vocab if v in string]
+        vocab = _calculate_count(vocab)
     else:
-        vocab = _base(string, vectorizer=vectorizer, **kwargs)
+        if auto_ngram:
+            vocab = _auto_ngram(string, stopwords)
+        else:
+            vocab = _base(string, vectorizer=vectorizer, **kwargs)
 
     words = list(vocab.keys())
     vectors_keywords = model.vectorize(words)
