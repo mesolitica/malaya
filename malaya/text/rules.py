@@ -4498,6 +4498,8 @@ rules_normalizer = {
     'makwe': 'teman perempuan',
     'kawen': 'kahwin',
     'kahwen': 'kahwin',
+    'macik2': 'makcik-makcik',
+    'pacik2': 'pakcik-pakcik'
 }
 
 rules_normalizer_rev = {v: k for k, v in rules_normalizer.items()}

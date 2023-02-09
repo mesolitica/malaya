@@ -23,7 +23,8 @@ import warnings
 MALAYA_USE_HUGGINGFACE = os.environ.get('MALAYA_USE_HUGGINGFACE', 'true').lower() == 'true'
 
 if not MALAYA_USE_HUGGINGFACE:
-    warnings.warn('os environment `MALAYA_USE_HUGGINGFACE=false` is deprecated', DeprecationWarning)
+    warnings.warn(
+        'os environment `MALAYA_USE_HUGGINGFACE=false` is deprecated, BackBlaze backend no longer maintain after 5.0.1', DeprecationWarning)
 
 
 def check_file(file, s3_file=None, use_huggingface=True, **kwargs):

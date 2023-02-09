@@ -1,11 +1,10 @@
 import tensorflow as tf
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 from malaya.text.rouge import postprocess_summary
 from malaya.text.function import summarization_textcleaning
 from malaya.model.abstract import Seq2Seq
 from herpetologist import check_type
 from typing import List
-
-pad_sequences = tf.keras.preprocessing.sequence.pad_sequences
 
 
 class Summarization(Seq2Seq):

@@ -1,5 +1,6 @@
 import tensorflow as tf
 import numpy as np
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 from malaya.function.activation import add_neutral as neutral
 from malaya.function.activation import softmax
 from malaya.text.function import (
@@ -12,8 +13,6 @@ from malaya.text.bpe import bert_tokenization
 from malaya.model.abstract import Base, Classification, Seq2Seq
 from herpetologist import check_type
 from typing import List
-
-pad_sequences = tf.keras.preprocessing.sequence.pad_sequences
 
 
 class BigBird(Base):

@@ -85,41 +85,6 @@ _transformer_availability = {
 }
 
 _huggingface_availability = {
-    'mesolitica/finetune-translation-t5-super-super-tiny-standard-bahasa-cased': {
-        'Size (MB)': 23.3,
-        'BLEU': 30.216143755278946,
-        'SacreBLEU Verbose': '64.9/38.1/24.1/15.3 (BP = 0.978 ratio = 0.978 hyp_len = 23057 ref_len = 23570)',
-        'SacreBLEU-chrF++-FLORES200': 56.46,
-        'Suggested length': 256,
-    },
-    'mesolitica/finetune-translation-t5-super-tiny-standard-bahasa-cased': {
-        'Size (MB)': 50.7,
-        'BLEU': 34.10561487832948,
-        'SacreBLEU Verbose': '67.3/41.6/27.8/18.7 (BP = 0.982 ratio = 0.982 hyp_len = 23139 ref_len = 23570)',
-        'SacreBLEU-chrF++-FLORES200': 59.18,
-        'Suggested length': 256,
-    },
-    'mesolitica/finetune-translation-t5-tiny-standard-bahasa-cased': {
-        'Size (MB)': 139,
-        'BLEU': 37.26048464066508,
-        'SacreBLEU Verbose': '68.3/44.1/30.5/21.4 (BP = 0.995 ratio = 0.995 hyp_len = 23457 ref_len = 23570)',
-        'SacreBLEU-chrF++-FLORES200': 61.29,
-        'Suggested length': 256,
-    },
-    'mesolitica/finetune-translation-t5-small-standard-bahasa-cased': {
-        'Size (MB)': 242,
-        'BLEU': 42.01021763049599,
-        'SacreBLEU Verbose': '71.7/49.0/35.6/26.1 (BP = 0.989 ratio = 0.989 hyp_len = 23302 ref_len = 23570)',
-        'SacreBLEU-chrF++-FLORES200': 64.67,
-        'Suggested length': 256,
-    },
-    'mesolitica/finetune-translation-t5-base-standard-bahasa-cased': {
-        'Size (MB)': 892,
-        'BLEU': 43.40885318934906,
-        'SacreBLEU Verbose': '72.3/50.5/37.1/27.7 (BP = 0.987 ratio = 0.987 hyp_len = 23258 ref_len = 23570)',
-        'SacreBLEU-chrF++-FLORES200': 65.44,
-        'Suggested length': 256,
-    },
     'mesolitica/finetune-noisy-translation-t5-tiny-bahasa-cased-v2': {
         'Size (MB)': 139,
         'BLEU': 60.0009672168891,
@@ -141,7 +106,13 @@ _huggingface_availability = {
         'SacreBLEU-chrF++-FLORES200': None,
         'Suggested length': 256,
     },
-
+    'mesolitica/finetune-translation-t5-small-standard-bahasa-cased-v2': {
+        'Size (MB)': 242,
+        'BLEU': 43.93729753370648,
+        'SacreBLEU Verbose': '74.9/52.2/37.9/27.7 (BP = 0.976 ratio = 0.977 hyp_len = 21510 ref_len = 22027)',
+        'SacreBLEU-chrF++-FLORES200': 67.43,
+        'Suggested length': 1024,
+    },
 }
 
 

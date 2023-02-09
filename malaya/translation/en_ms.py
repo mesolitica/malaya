@@ -87,41 +87,6 @@ _transformer_availability = {
 }
 
 _huggingface_availability = {
-    'mesolitica/finetune-translation-t5-super-super-tiny-standard-bahasa-cased': {
-        'Size (MB)': 23.3,
-        'BLEU': 36.29074311583665,
-        'SacreBLEU Verbose': '71.2/46.0/30.9/21.0 (BP = 0.950 ratio = 0.951 hyp_len = 20958 ref_len = 22027)',
-        'SacreBLEU-chrF++-FLORES200': 61.89,
-        'Suggested length': 256,
-    },
-    'mesolitica/finetune-translation-t5-super-tiny-standard-bahasa-cased': {
-        'Size (MB)': 50.7,
-        'BLEU': 39.18834189893951,
-        'SacreBLEU Verbose': '72.6/48.3/33.5/23.6 (BP = 0.960 ratio = 0.961 hyp_len = 21172 ref_len = 22027)',
-        'SacreBLEU-chrF++-FLORES200': 64.03,
-        'Suggested length': 256,
-    },
-    'mesolitica/finetune-translation-t5-tiny-standard-bahasa-cased': {
-        'Size (MB)': 139,
-        'BLEU': 41.625536185056305,
-        'SacreBLEU Verbose': '73.4/50.1/35.7/25.7 (BP = 0.971 ratio = 0.972 hyp_len = 21400 ref_len = 22027)',
-        'SacreBLEU-chrF++-FLORES200': 65.70,
-        'Suggested length': 256,
-    },
-    'mesolitica/finetune-translation-t5-small-standard-bahasa-cased': {
-        'Size (MB)': 242,
-        'BLEU': 43.93729753370648,
-        'SacreBLEU Verbose': '74.9/52.2/37.9/27.7 (BP = 0.976 ratio = 0.977 hyp_len = 21510 ref_len = 22027)',
-        'SacreBLEU-chrF++-FLORES200': 67.43,
-        'Suggested length': 256,
-    },
-    'mesolitica/finetune-translation-t5-base-standard-bahasa-cased': {
-        'Size (MB)': 892,
-        'BLEU': 44.17355862158963,
-        'SacreBLEU Verbose': '74.7/52.3/38.0/28.0 (BP = 0.979 ratio = 0.979 hyp_len = 21569 ref_len = 22027)',
-        'SacreBLEU-chrF++-FLORES200': 67.60,
-        'Suggested length': 256,
-    },
     'mesolitica/finetune-noisy-translation-t5-tiny-bahasa-cased-v2': {
         'Size (MB)': 139,
         'BLEU': 60.0009672168891,
@@ -148,7 +113,7 @@ _huggingface_availability = {
         'BLEU': 43.93729753370648,
         'SacreBLEU Verbose': '74.9/52.2/37.9/27.7 (BP = 0.976 ratio = 0.977 hyp_len = 21510 ref_len = 22027)',
         'SacreBLEU-chrF++-FLORES200': 67.43,
-        'Suggested length': 256,
+        'Suggested length': 1024,
     },
 }
 

@@ -131,8 +131,8 @@ class Generator(Base):
             o = model(**padded, output_attentions=True, return_dict=True)
 
         weights = torch.cat(o['cross_attentions'])
-        weights = weights_.cpu()
-        weights = torch.tensor(weights_).softmax(dim=-1)
+        weights = weights.cpu()
+        weights = torch.tensor(weights).softmax(dim=-1)
         w = weights / weights_.norm(dim=-2, keepdim=True)
         matrix = w.mean(axis=(0, 1)).T
         alignment = dtw(np.ascontiguousarray(-matrix.double().numpy()))
