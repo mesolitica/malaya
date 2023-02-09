@@ -1,9 +1,15 @@
 from malaya.function import get_device
 from malaya.graph import fast_pagerank as load_fast_pagerank
 from scipy import sparse
-from networkx import nx
 import numpy as np
 import logging
+
+try:
+    import networkx as nx
+except:
+    from networkx import nx
+
+logger = logging.getLogger(__name__)
 
 
 def pagerank(array, fast_pagerank=True, retry=5, **kwargs):
@@ -19,7 +25,7 @@ def pagerank(array, fast_pagerank=True, retry=5, **kwargs):
             msg = (
                 'cugraph not installed. Please install it from https://github.com/rapidsai/cugraph. \n'
                 'Will calculate pagerank using networkx CPU version.')
-            logging.warning(msg)
+            logger.warning(msg)
             cpu = True
 
     else:
@@ -40,7 +46,7 @@ def pagerank(array, fast_pagerank=True, retry=5, **kwargs):
                     fail = False
                     break
                 except Exception as e:
-                    logging.warning(e)
+                    logger.warning(e)
 
     if fail:
         raise Exception(

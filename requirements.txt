@@ -5,10 +5,10 @@ unidecode
 numpy
 scipy
 ftfy
-networkx<=2.5.1
+networkx>=2.8.8
 sentencepiece
 tqdm
 herpetologist
-malaya-boilerplate>=0.0.23
+malaya-boilerplate>=0.0.24rc2
 regex
 transformers

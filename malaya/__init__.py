@@ -9,7 +9,7 @@
 from malaya_boilerplate.utils import get_home
 
 version = '5.0'
-bump_version = '5.0'
+bump_version = '5.0.1'
 __version__ = bump_version
 
 package = 'malaya'

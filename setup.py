@@ -15,8 +15,8 @@ with open('requirements.txt') as fopen:
 setuptools.setup(
     name=__packagename__,
     packages=setuptools.find_packages(),
-    version='5.0',
-    python_requires='>=3.6.*',
+    version='5.0.1',
+    python_requires='>=3.6',
     description='Natural-Language-Toolkit for bahasa Malaysia, powered by Tensorflow and PyTorch.',
     long_description=readme(),
     author='huseinzol05',

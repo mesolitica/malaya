@@ -255,12 +255,10 @@ def cluster_scatter(
 
     try:
         import matplotlib.pyplot as plt
-        import seaborn as sns
 
-        sns.set()
     except BaseException:
         raise ModuleNotFoundError(
-            'matplotlib and seaborn not installed. Please install it and try again.'
+            'matplotlib not installed. Please install it and try again.'
         )
 
     if cleaning:
@@ -401,13 +399,11 @@ def cluster_dendogram(
 
     try:
         import matplotlib.pyplot as plt
-        import seaborn as sns
         from scipy.cluster.hierarchy import ward, dendrogram
 
-        sns.set()
     except BaseException:
         raise ModuleNotFoundError(
-            'matplotlib and seaborn not installed. Please install it and try again.'
+            'matplotlib not installed. Please install it and try again.'
         )
 
     corpus = random.sample(corpus, k=int(random_samples * len(corpus)))
@@ -539,15 +535,13 @@ def cluster_graph(
 
     try:
         import matplotlib.pyplot as plt
-        import seaborn as sns
         import networkx as nx
         import networkx.drawing.layout as nxlayout
         import pandas as pd
 
-        sns.set()
     except BaseException:
         raise ModuleNotFoundError(
-            'matplotlib, seaborn, networkx not installed. Please install it and try again.'
+            'matplotlib, networkx not installed. Please install it and try again.'
         )
 
     if cleaning is not None:
@@ -729,16 +723,14 @@ def cluster_entity_linking(
 
     try:
         import matplotlib.pyplot as plt
-        import seaborn as sns
         import networkx as nx
         import networkx.drawing.layout as nxlayout
         import pandas as pd
         from fuzzywuzzy import fuzz
 
-        sns.set()
     except BaseException:
         raise ModuleNotFoundError(
-            'matplotlib, seaborn, networkx, fuzzywuzzy not installed. Please install it and try again.'
+            'matplotlib, networkx, fuzzywuzzy not installed. Please install it and try again.'
         )
 
     if isinstance(corpus, str):
