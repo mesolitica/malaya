@@ -194,6 +194,10 @@ Contents:
    load-translation-en-ms
    load-translation-en-ms-huggingface
    load-translation-noisy-en-ms-huggingface
+   load-translation-ind-ms-huggingface
+   load-translation-jav-ms-huggingface
+   load-translation-ms-ind-huggingface
+   load-translation-ms-jav-huggingface
 
 .. toctree::
    :maxdepth: 2

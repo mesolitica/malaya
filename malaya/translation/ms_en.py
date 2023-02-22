@@ -85,14 +85,35 @@ _transformer_availability = {
 }
 
 _huggingface_availability = {
-    'mesolitica/finetune-noisy-translation-t5-tiny-bahasa-cased-v2': {
+    'mesolitica/finetune-translation-t5-tiny-standard-bahasa-cased-v2': {
+        'Size (MB)': 139,
+        'BLEU': 37.26048464066508,
+        'SacreBLEU Verbose': '68.3/44.1/30.5/21.4 (BP = 0.995 ratio = 0.995 hyp_len = 23457 ref_len = 23570)',
+        'SacreBLEU-chrF++-FLORES200': 61.29,
+        'Suggested length': 256,
+    },
+    'mesolitica/finetune-translation-t5-small-standard-bahasa-cased-v2': {
+        'Size (MB)': 242,
+        'BLEU': 42.01021763049599,
+        'SacreBLEU Verbose': '71.7/49.0/35.6/26.1 (BP = 0.989 ratio = 0.989 hyp_len = 23302 ref_len = 23570)',
+        'SacreBLEU-chrF++-FLORES200': 64.67,
+        'Suggested length': 256,
+    },
+    'mesolitica/finetune-translation-t5-base-standard-bahasa-cased-v2': {
+        'Size (MB)': 892,
+        'BLEU': 43.40885318934906,
+        'SacreBLEU Verbose': '72.3/50.5/37.1/27.7 (BP = 0.987 ratio = 0.987 hyp_len = 23258 ref_len = 23570)',
+        'SacreBLEU-chrF++-FLORES200': 65.44,
+        'Suggested length': 256,
+    },
+    'mesolitica/finetune-noisy-translation-t5-tiny-bahasa-cased-v3': {
         'Size (MB)': 139,
         'BLEU': 60.0009672168891,
         'SacreBLEU Verbose': '77.9/63.9/54.6/47.7 (BP = 1.000 ratio = 1.036 hyp_len = 110970 ref_len = 107150)',
         'SacreBLEU-chrF++-FLORES200': None,
         'Suggested length': 256,
     },
-    'mesolitica/finetune-noisy-translation-t5-small-bahasa-cased-v4': {
+    'mesolitica/finetune-noisy-translation-t5-small-bahasa-cased-v3': {
         'Size (MB)': 242,
         'BLEU': 64.06258219941243,
         'SacreBLEU Verbose': '80.1/67.7/59.1/52.5 (BP = 1.000 ratio = 1.042 hyp_len = 111635 ref_len = 107150)',
@@ -106,13 +127,7 @@ _huggingface_availability = {
         'SacreBLEU-chrF++-FLORES200': None,
         'Suggested length': 256,
     },
-    'mesolitica/finetune-translation-t5-small-standard-bahasa-cased-v2': {
-        'Size (MB)': 242,
-        'BLEU': 43.93729753370648,
-        'SacreBLEU Verbose': '74.9/52.2/37.9/27.7 (BP = 0.976 ratio = 0.977 hyp_len = 21510 ref_len = 22027)',
-        'SacreBLEU-chrF++-FLORES200': 67.43,
-        'Suggested length': 1024,
-    },
+
 }
 
 
@@ -126,7 +141,9 @@ def available_transformer():
     List available transformer models.
     """
 
-    warnings.warn('`malaya.translation.ms_en.available_transformer` is deprecated, use `malaya.translation.ms_en.available_huggingface` instead', DeprecationWarning)
+    warnings.warn(
+        '`malaya.translation.ms_en.available_transformer` is deprecated, use `malaya.translation.ms_en.available_huggingface` instead',
+        DeprecationWarning)
 
     _describe()
     return describe_availability(_transformer_availability)
@@ -163,7 +180,8 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
         * else, return `malaya.model.tf.Translation`.
     """
     warnings.warn(
-        '`malaya.translation.ms_en.transformer` is deprecated, use `malaya.translation.ms_en.huggingface` instead', DeprecationWarning)
+        '`malaya.translation.ms_en.transformer` is deprecated, use `malaya.translation.ms_en.huggingface` instead',
+        DeprecationWarning)
 
     model = model.lower()
     if model not in _transformer_availability:
@@ -194,7 +212,7 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
 
 @check_type
 def huggingface(
-    model: str = 'mesolitica/finetune-translation-t5-small-standard-bahasa-cased',
+    model: str = 'mesolitica/finetune-translation-t5-small-standard-bahasa-cased-v2',
     force_check: bool = True,
     **kwargs,
 ):
@@ -203,7 +221,7 @@ def huggingface(
 
     Parameters
     ----------
-    model: str, optional (default='mesolitica/finetune-translation-t5-small-standard-bahasa-cased')
+    model: str, optional (default='mesolitica/finetune-translation-t5-small-standard-bahasa-cased-v2')
         Check available models at `malaya.translation.ms_en.available_huggingface()`.
     force_check: bool, optional (default=True)
         Force check model one of malaya model.
@@ -217,7 +235,8 @@ def huggingface(
         raise ValueError(
             'model not supported, please check supported models from `malaya.translation.ms_en.available_huggingface()`.'
         )
-    return load_huggingface.load_generator(model=model, initial_text='terjemah Melayu ke Inggeris: ', **kwargs)
+    return load_huggingface.load_generator(
+        model=model, initial_text='terjemah Melayu ke Inggeris: ', **kwargs)
 
 
 def dictionary(**kwargs):

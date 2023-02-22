@@ -72,7 +72,11 @@ Features
 -  **Extractive Summarization**, Extractive interface using Transformer-Bahasa and Doc2Vec.
 -  **Topic Modeling**, provide Transformer-Bahasa, LDA2Vec, LDA, NMF, LSA interface and easy BERTopic integration.
 -  **EN-MS Translation**, provide English to standard Malay using T5-Bahasa.
+-  **IND-MS Translation**, provide Indonesian to standard Malay using T5-Bahasa.
+-  **JAV-MS Translation**, provide Javanese to standard Malay using T5-Bahasa.
 -  **MS-EN Translation**, provide standard Malay to English using T5-Bahasa.
+-  **MS-IND Translation**, provide standard Malay to Indonesian using T5-Bahasa.
+-  **MS-JAV Translation**, provide standard Malay to Javanese using T5-Bahasa.
 -  **Zero-shot classification**, provide Zero-shot classification interface using Transformer-Bahasa to recognize texts without any labeled training data.
 -  **Zero-shot Entity Recognition**, provide Zero-shot entity tagging interface using Transformer-Bahasa to extract entities.
 -  **Constituency Parsing**, breaking a text into sub-phrases using finetuned Transformer-Bahasa.  

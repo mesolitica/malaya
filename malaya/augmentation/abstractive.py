@@ -6,13 +6,13 @@ import logging
 logger = logging.getLogger(__name__)
 
 _huggingface_availability = {
-    'mesolitica/finetune-noisy-translation-t5-tiny-bahasa-cased-v2': {
+    'mesolitica/finetune-noisy-translation-t5-tiny-bahasa-cased-v3': {
         'Size (MB)': 139,
         'BLEU': 60.0009672168891,
         'SacreBLEU Verbose': '77.9/63.9/54.6/47.7 (BP = 1.000 ratio = 1.036 hyp_len = 110970 ref_len = 107150)',
         'Suggested length': 256,
     },
-    'mesolitica/finetune-noisy-translation-t5-small-bahasa-cased-v4': {
+    'mesolitica/finetune-noisy-translation-t5-small-bahasa-cased-v3': {
         'Size (MB)': 242,
         'BLEU': 64.06258219941243,
         'SacreBLEU Verbose': '80.1/67.7/59.1/52.5 (BP = 1.000 ratio = 1.042 hyp_len = 111635 ref_len = 107150)',
@@ -32,12 +32,13 @@ def available_huggingface():
     List available huggingface models.
     """
 
-    logger.info('tested on noisy twitter google translation, https://huggingface.co/datasets/mesolitica/augmentation-test-set')
+    logger.info(
+        'tested on noisy twitter google translation, https://huggingface.co/datasets/mesolitica/augmentation-test-set')
     return describe_availability(_huggingface_availability)
 
 
 def huggingface(
-    model: str = 'mesolitica/finetune-noisy-translation-t5-small-bahasa-cased-v4',
+    model: str = 'mesolitica/finetune-noisy-translation-t5-small-bahasa-cased-v3',
     lang: str = 'ms',
     force_check: bool = True,
     **kwargs,
@@ -47,7 +48,7 @@ def huggingface(
 
     Parameters
     ----------
-    model: str, optional (default='mesolitica/finetune-noisy-translation-t5-small-bahasa-cased-v4')
+    model: str, optional (default='mesolitica/finetune-noisy-translation-t5-small-bahasa-cased-v3')
         Check available models at `malaya.augmentation.abstractive.available_huggingface()`.
     lang: str, optional (default='ms')
         Input language, only accept `ms` or `en`.

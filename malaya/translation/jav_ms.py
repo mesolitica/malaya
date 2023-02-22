@@ -15,24 +15,24 @@ NLLB Metrics, https://github.com/facebookresearch/fairseq/tree/nllb#multilingual
 _huggingface_availability = {
     'mesolitica/finetune-translation-austronesian-t5-tiny-standard-bahasa-cased': {
         'Size (MB)': 139,
-        'BLEU': 41.625536185056305,
-        'SacreBLEU Verbose': '73.4/50.1/35.7/25.7 (BP = 0.971 ratio = 0.972 hyp_len = 21400 ref_len = 22027)',
-        'SacreBLEU-chrF++-FLORES200': 65.70,
-        'Suggested length': 256,
+        'BLEU': 23.797627841793492,
+        'SacreBLEU Verbose': '58.2/31.1/18.1/10.8 (BP = 0.977 ratio = 0.977 hyp_len = 21521 ref_len = 22027)',
+        'SacreBLEU-chrF++-FLORES200': 50.65,
+        'Suggested length': 512,
     },
     'mesolitica/finetune-translation-austronesian-t5-small-standard-bahasa-cased': {
         'Size (MB)': 242,
-        'BLEU': 43.93729753370648,
-        'SacreBLEU Verbose': '74.9/52.2/37.9/27.7 (BP = 0.976 ratio = 0.977 hyp_len = 21510 ref_len = 22027)',
-        'SacreBLEU-chrF++-FLORES200': 67.43,
-        'Suggested length': 256,
+        'BLEU': 25.24437731940083,
+        'SacreBLEU Verbose': '57.7/31.9/19.0/11.6 (BP = 1.000 ratio = 1.022 hyp_len = 22516 ref_len = 22027)',
+        'SacreBLEU-chrF++-FLORES200': 52.58,
+        'Suggested length': 512,
     },
     'mesolitica/finetune-translation-austronesian-t5-base-standard-bahasa-cased': {
         'Size (MB)': 892,
-        'BLEU': 44.17355862158963,
-        'SacreBLEU Verbose': '74.7/52.3/38.0/28.0 (BP = 0.979 ratio = 0.979 hyp_len = 21569 ref_len = 22027)',
-        'SacreBLEU-chrF++-FLORES200': 67.60,
-        'Suggested length': 256,
+        'BLEU': 25.772896570805038,
+        'SacreBLEU Verbose': '58.9/32.6/19.6/12.1 (BP = 0.992 ratio = 0.992 hyp_len = 21851 ref_len = 22027)',
+        'SacreBLEU-chrF++-FLORES200': 52.21,
+        'Suggested length': 512,
     },
 }
 
@@ -47,7 +47,11 @@ def available_huggingface():
 
 
 @check_type
-def huggingface(model: str = 'mesolitica/finetune-translation-austronesian-t5-small-standard-bahasa-cased', **kwargs):
+def huggingface(
+    model: str = 'mesolitica/finetune-translation-austronesian-t5-small-standard-bahasa-cased',
+    force_check: bool = True,
+    **kwargs,
+):
     """
     Load HuggingFace model to translate JAV-to-MS.
 
@@ -60,8 +64,9 @@ def huggingface(model: str = 'mesolitica/finetune-translation-austronesian-t5-sm
     -------
     result: malaya.torch_model.huggingface.Generator
     """
-    if model not in _huggingface_availability:
+    if model not in _huggingface_availability and force_check:
         raise ValueError(
             'model not supported, please check supported models from `malaya.translation.jav_ms.available_huggingface()`.'
         )
-    return load_huggingface.load_generator(model=model, initial_text='terjemah Jawa ke Melayu: ', **kwargs)
+    return load_huggingface.load_generator(
+        model=model, initial_text='terjemah Jawa ke Melayu: ', **kwargs)

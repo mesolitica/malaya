@@ -10,13 +10,13 @@ Original script, https://github.com/huggingface/transformers/blob/v4.21.2/exampl
 
 BASE model,
 ```
-CUDA_VISIBLE_DEVICES=0 \
+CUDA_VISIBLE_DEVICES=1 \
 WANDB_DISABLED=true \
 python3 run_t5.py \
 --model_name_or_path mesolitica/t5-base-standard-bahasa-cased \
---num_train_epochs 10 \
+--num_train_epochs 5 \
 --logging_steps 100 \
---eval_steps 100000 \
+--eval_steps 10000 \
 --save_steps 10000 \
 --evaluation_strategy steps \
 --save_total_limit 3 \
@@ -25,25 +25,27 @@ python3 run_t5.py \
 --source_lang src \
 --target_lang tgt \
 --train_file shuffled-train-austronesian.json \
---validation_file shuffled-test-austronesian-10k.json \
+--validation_file shuffled-test-austronesian.json \
 --output_dir finetune-t5-base-standard-bahasa-cased-austronesian \
---per_device_train_batch_size=24 \
+--per_device_train_batch_size=16 \
 --per_device_eval_batch_size=4 \
 --predict_with_generate \
 --ignore_data_skip \
---max_source_length 256 \
---max_target_length 256 \
---fp16
+--max_source_length 512 \
+--max_target_length 512 \
+--learning_rate 2e-4 \
+--gradient_checkpointing true
 ```
 
 SMALL model,
 ```
+CUDA_VISIBLE_DEVICES=1 \
 WANDB_DISABLED=true \
 python3 run_t5.py \
 --model_name_or_path mesolitica/t5-small-standard-bahasa-cased \
---num_train_epochs 10 \
+--num_train_epochs 5 \
 --logging_steps 100 \
---eval_steps 100000 \
+--eval_steps 10000 \
 --save_steps 10000 \
 --evaluation_strategy steps \
 --save_total_limit 3 \
@@ -52,15 +54,16 @@ python3 run_t5.py \
 --source_lang src \
 --target_lang tgt \
 --train_file shuffled-train-austronesian.json \
---validation_file shuffled-test-austronesian-10k.json \
+--validation_file shuffled-test-austronesian.json \
 --output_dir finetune-t5-small-standard-bahasa-cased-austronesian \
---per_device_train_batch_size=32 \
+--per_device_train_batch_size=24 \
 --per_device_eval_batch_size=4 \
 --predict_with_generate \
 --ignore_data_skip \
---max_source_length 256 \
---max_target_length 256 \
---fp16
+--max_source_length 512 \
+--max_target_length 512 \
+--learning_rate 2e-4 \
+--gradient_checkpointing true
 ```
 
 TINY model,
@@ -68,9 +71,9 @@ TINY model,
 WANDB_DISABLED=true \
 python3 run_t5.py \
 --model_name_or_path mesolitica/t5-tiny-standard-bahasa-cased \
---num_train_epochs 10 \
+--num_train_epochs 5 \
 --logging_steps 100 \
---eval_steps 100000 \
+--eval_steps 10000 \
 --save_steps 10000 \
 --evaluation_strategy steps \
 --save_total_limit 3 \
@@ -79,15 +82,15 @@ python3 run_t5.py \
 --source_lang src \
 --target_lang tgt \
 --train_file shuffled-train-austronesian.json \
---validation_file shuffled-test-austronesian-10k.json \
+--validation_file shuffled-test-austronesian.json \
 --output_dir finetune-t5-tiny-standard-bahasa-cased-austronesian \
---per_device_train_batch_size=64 \
+--per_device_train_batch_size=32 \
 --per_device_eval_batch_size=4 \
 --predict_with_generate \
 --ignore_data_skip \
---max_source_length 256 \
---max_target_length 256 \
---fp16
+--max_source_length 512 \
+--max_target_length 512 \
+--gradient_checkpointing true
 ```
 
 ## download
