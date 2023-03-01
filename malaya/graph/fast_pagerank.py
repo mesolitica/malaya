@@ -2,12 +2,19 @@
 
 import scipy as sp
 import scipy.sparse as sprs
-import scipy.spatial
-import scipy.sparse.linalg
 
 
-def pagerank(A, p=0.85, personalize=None, reverse=False):
-    """ Calculates PageRank given a csr graph
+def pagerank(
+    A,
+    p=0.85,
+    personalize=None,
+    reverse=False,
+    solver=sprs.linalg.gmres,
+    **kwargs,
+):
+    """
+    Calculates PageRank given a csr graph
+
     Inputs:
     -------
     G: a csr graph.
@@ -16,6 +23,7 @@ def pagerank(A, p=0.85, personalize=None, reverse=False):
                 containing probability distributions.
                 It will be normalized automatically
     reverse: If true, returns the reversed-PageRank
+
     outputs
     -------
     PageRank Scores for the nodes
@@ -38,7 +46,12 @@ def pagerank(A, p=0.85, personalize=None, reverse=False):
     s = (personalize / personalize.sum()) * n
 
     I = sprs.eye(n)
-    x = sprs.linalg.spsolve((I - p * A.T @ D_1), s)
+    x = solver((I - p * A.T @ D_1), s)
+    if isinstance(x, tuple):
+        if x[1] != 0:
+            raise ValueError(
+                'pagerank not able to converge, might want to change `solver` function.')
+        x = x[0]
 
     x = x / x.sum()
     return x

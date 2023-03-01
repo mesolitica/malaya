@@ -1,5 +1,6 @@
 import re
 import operator
+import numpy as np
 from collections import defaultdict
 from sklearn.metrics.pairwise import cosine_similarity
 from malaya.text import rake as rake_function
@@ -28,7 +29,8 @@ import warnings
 def _calculate_count(strings):
     vocab = defaultdict(int)
     for k in strings:
-        results = [(m.start(0), m.end(0)) for m in re.finditer(r'\b' + k, string, flags=re.IGNORECASE)]
+        results = [(m.start(0), m.end(0))
+                   for m in re.finditer(r'\b' + k, string, flags=re.IGNORECASE)]
         vocab[k] = len(results)
     return vocab
 
@@ -227,7 +229,7 @@ def textrank(
     if hasattr(model, 'vectorize'):
         vectors = model.vectorize(phrase_list)
     similar = cosine_similarity(vectors, vectors)
-    similar[similar >= 0.99999] = 0
+    similar[np.diag_indices(len(similar))] = 0.0
     scores = pagerank(similar, **kwargs)
     total = sum(scores)
     ranked_sentences = sorted(
