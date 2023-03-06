@@ -1,5 +1,4 @@
 dateparser
-sklearn
 scikit-learn
 requests
 unidecode
