@@ -56,8 +56,9 @@ Features
 -  **Age Detection**, detect age in speech using Finetuned Speaker Vector.
 -  **Speaker Diarization**, diarizing speakers using Pretrained Speaker Vector.
 -  **Emotion Detection**, detect emotions in speech using Finetuned Speaker Vector.
--  **Force Alignment**, generate a time-aligned transcription of an audio file using RNNT and CTC.
+-  **Force Alignment**, generate a time-aligned transcription of an audio file using RNNT, Wav2Vec2 CTC and Whisper Seq2Seq.
 -  **Gender Detection**, detect genders in speech using Finetuned Speaker Vector.
+-  **Clean speech Detection**, detect clean speech using Finetuned Speaker Vector.
 -  **Language Detection**, detect hyperlocal languages in speech using Finetuned Speaker Vector.
 -  **Language Model**, using KenLM, Masked language model using BERT and RoBERTa, and GPT2 to do ASR decoder scoring.
 -  **Multispeaker Separation**, Multispeaker separation using FastSep on 8k Wav.
@@ -67,13 +68,14 @@ Features
 -  **Speaker Vector**, calculate similarity between speakers using Pretrained Speaker Vector.
 -  **Speech Enhancement**, enhance voice activities using Waveform UNET.
 -  **SpeechSplit Conversion**, detailed speaking style conversion by disentangling speech into content, timbre, rhythm and pitch using PyWorld and PySPTK.
--  **Speech-to-Text**, End-to-End Speech to Text for Malay, Mixed (Malay, Singlish and Mandarin) and Singlish using RNNT, Wav2Vec2, HuBERT and BEST-RQ CTC.
+-  **Speech-to-Text**, End-to-End Speech to Text for Malay, Mixed (Malay, Singlish) and Singlish using RNNT, Wav2Vec2 CTC and Whisper Seq2Seq.
 -  **Super Resolution**, Super Resolution 4x for Waveform using ResNet UNET and Neural Vocoder.
 -  **Text-to-Speech**, Text to Speech for Malay and Singlish using Tacotron2, FastSpeech2, FastPitch, GlowTTS, LightSpeech and VITS.
 -  **Vocoder**, convert Mel to Waveform using MelGAN, Multiband MelGAN and Universal MelGAN Vocoder.
 -  **Voice Activity Detection**, detect voice activities using Finetuned Speaker Vector.
--  **Voice Conversion**, Many-to-One, One-to-Many, Many-to-Many, and Zero-shot Voice Conversion.
+-  **Voice Conversion**, Many-to-One and Zero-shot Voice Conversion.
 -  **Hybrid 8-bit Quantization**, provide hybrid 8-bit quantization for all models to reduce inference time up to 2x and model size up to 4x.
+-  **Real time interface**, provide PyAudio and TorchAudio streaming interface to do real time inference.
 
 Pretrained Models
 ------------------
@@ -111,6 +113,9 @@ Malaya-Speech also released pretrained models, simply check at `malaya-speech/pr
 -  **BEST-RQ**, Self-supervised learning with random-projection quantizer for speech recognition, https://arxiv.org/pdf/2202.01855.pdf
 -  **LightSpeech**, Lightweight and Fast Text to Speech with Neural Architecture Search, https://arxiv.org/abs/2102.04040
 -  **VITS**, Conditional Variational Autoencoder with Adversarial Learning for End-to-End Text-to-Speech, https://arxiv.org/abs/2106.06103
+-  **Squeezeformer**, An Efficient Transformer for Automatic Speech Recognition, https://arxiv.org/abs/2206.00888
+-  **Whisper**, Robust Speech Recognition via Large-Scale Weak Supervision, https://cdn.openai.com/papers/whisper.pdf
+-  **Emformer**, Efficient Memory Transformer Based Acoustic Model For Low Latency Streaming Speech Recognition, https://arxiv.org/abs/2010.10759
 
 References
 -----------
