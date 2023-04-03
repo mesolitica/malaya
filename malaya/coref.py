@@ -9,14 +9,11 @@ from herpetologist import check_type
 import numpy as np
 from typing import List, Callable
 
-# Kakak mempunyai kucing. Dia menyayanginya. Dia -> Kakak, nya -> kucing
-# Husein Zolkepli suka makan ayam. Dia pun suka makan daging. Dia -> Husein Zolkepli
-
 
 def _combined(r):
     results, last = [], []
     for i in r:
-        if type(i) == tuple:
+        if isinstance(i, tuple):
             last.append(i)
         else:
             for no, k in enumerate(last):
@@ -32,16 +29,22 @@ def _combined(r):
 
 
 @check_type
-def parse_from_dependency(models, string: str,
-                          references: List[str] = ['dia', 'itu', 'ini', 'saya', 'awak', 'kamu', 'kita', 'kami', 'mereka'],
-                          rejected_references: List[str] = ['saya', 'awak', 'kamu', 'kita', 'kami', 'mereka', 'nya'],
-                          acceptable_subjects: List[str] = ['flat', 'subj', 'nsubj', 'csubj', 'obj'],
-                          acceptable_nested_subjects: List[str] = ['compound', 'flat'],
-                          split_nya: bool = True,
-                          aggregate: Callable = np.mean,
-                          top_k: int = 20):
+def parse_from_dependency(
+    models,
+    string: str,
+    references: List[str] = ['dia', 'itu', 'ini', 'saya', 'awak', 'kamu', 'kita', 'kami', 'mereka'],
+    rejected_references: List[str] = ['saya', 'awak', 'kamu', 'kita', 'kami', 'mereka', 'nya'],
+    acceptable_subjects: List[str] = ['flat', 'subj', 'nsubj', 'csubj', 'obj'],
+    acceptable_nested_subjects: List[str] = ['compound', 'flat'],
+    split_nya: bool = True,
+    aggregate: Callable = np.mean,
+    top_k: int = 20,
+):
     """
     Apply Coreference Resolution using stacks of dependency models.
+
+    Kakak mempunyai kucing. Dia menyayanginya. Dia -> Kakak, nya -> kucing
+    Husein Zolkepli suka makan ayam. Dia pun suka makan daging. Dia -> Husein Zolkepli
 
     Parameters
     ----------
@@ -74,7 +77,8 @@ def parse_from_dependency(models, string: str,
 
     for m in range(len(models)):
         if type(models[m]) not in [DependencyBERT, DependencyXLNET]:
-            raise ValueError('model must one of [malaya.model.bert.DependencyBERT, malaya.model.xlnet.DependencyXLNET]')
+            raise ValueError(
+                'model must one of [malaya.model.bert.DependencyBERT, malaya.model.xlnet.DependencyXLNET]')
 
     if split_nya:
         string = _split_nya(string)
@@ -100,7 +104,8 @@ def parse_from_dependency(models, string: str,
                     s_ = d_object.traverse_children(i, [n_s], initial_label=[s])
                     s_ = _combined(s_)
                     r.extend(s_)
-                r = [i for i in r if i.lower() not in references and not i.lower() in rejected_references]
+                r = [i for i in r if i.lower() not in references and not i.lower()
+                     in rejected_references]
                 rs.extend(r)
     rs = cluster_words(rs, lowercase=True)
 

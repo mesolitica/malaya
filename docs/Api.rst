@@ -155,6 +155,18 @@ malaya.summarization.extractive
 .. automodule:: malaya.summarization.extractive
     :members:
 
+malaya.text_to_kg.e2e
+---------------------------------
+
+.. automodule:: malaya.text_to_kg.e2e
+    :members:
+
+malaya.text_to_kg.parser
+---------------------------------
+
+.. automodule:: malaya.text_to_kg.parser
+    :members:
+
 malaya.topic_model.decomposition
 ---------------------------------
 
@@ -244,6 +256,13 @@ malaya.jawi_rumi
 
 .. automodule:: malaya.jawi_rumi
     :members:
+
+malaya.kg_to_text
+-------------------------
+
+.. automodule:: malaya.kg_to_text
+    :members:
+
 
 malaya.language_detection
 -------------------------

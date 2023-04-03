@@ -8,4 +8,3 @@
 
 from . import abstractive
 from . import extractive
-from . import generate_question

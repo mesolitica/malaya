@@ -19,7 +19,6 @@ from malaya.text.bpe import (
     merge_bpe_tokens,
 )
 from malaya.text.function import (
-    summarization_textcleaning,
     upperfirst,
     remove_repeat_fullstop,
     remove_newlines,
@@ -34,9 +33,10 @@ from malaya.function.activation import softmax
 from malaya.parser.conll import CoNLL
 from malaya.parser.alg import eisner, mst
 from malaya.supervised.settings import dependency as dependency_settings
+from malaya.graph.triplet import dict_to_list, rebel_format, parse_rebel
 from collections import defaultdict
 from herpetologist import check_type
-from typing import List, Callable
+from typing import List, Callable, Dict
 import numpy as np
 import torch
 import re
@@ -52,7 +52,8 @@ class Base:
         return self.model.cuda(**kwargs)
 
     def save_pretrained(self, *args, **kwargs):
-        return self.model.save_pretrained(*args, **kwargs), self.tokenizer.save_pretrained(*args, **kwargs)
+        return self.model.save_pretrained(
+            *args, **kwargs), self.tokenizer.save_pretrained(*args, **kwargs)
 
 
 class Generator(Base):
@@ -62,7 +63,7 @@ class Generator(Base):
         self._initial_text = initial_text
 
     @check_type
-    def generate(self, strings: List[str], return_generate=False, **kwargs):
+    def generate(self, strings: List[str], return_generate=False, prefix=None, **kwargs):
         """
         Generate texts from the input.
 
@@ -77,12 +78,17 @@ class Generator(Base):
         result: List[str]
         """
 
-        logger.debug(f'generate, initial_text: {self._initial_text}')
+        if isinstance(prefix, str):
+            _initial_text = prefix
+        else:
+            _initial_text = self._initial_text
+
+        logger.debug(f'generate, initial_text: {_initial_text}')
         logger.debug(f'generate, strings: {strings}')
 
         cuda = next(self.model.parameters()).is_cuda
-        input_ids = [{'input_ids': self.tokenizer.encode(f'{self._initial_text}{s}', return_tensors='pt')[
-            0]} for s in strings]
+        input_ids = [{'input_ids': self.tokenizer.encode(
+            f'{_initial_text}{s}', return_tensors='pt')[0]} for s in strings]
         padded = self.tokenizer.pad(input_ids, padding='longest')
         for k in padded.keys():
             padded[k] = to_tensor_cuda(padded[k], cuda)
@@ -118,8 +124,8 @@ class Generator(Base):
             )
 
         cuda = next(self.model.parameters()).is_cuda
-        input_ids = [{'input_ids': self.tokenizer.encode(f'{self._initial_text}{s}', return_tensors='pt')[
-            0]} for s in source]
+        input_ids = [{'input_ids': self.tokenizer.encode(
+            f'{self._initial_text}{s}', return_tensors='pt')[0]} for s in source]
 
         padded = self.tokenizer.pad(input_ids, padding='longest')
         labels = self.tokenizer(target, padding=True, return_tensors='pt')['input_ids']
@@ -128,12 +134,12 @@ class Generator(Base):
             padded[k] = to_tensor_cuda(padded[k], cuda)
 
         with torch.no_grad():
-            o = model(**padded, output_attentions=True, return_dict=True)
+            o = self.model(**padded, output_attentions=True, return_dict=True)
 
         weights = torch.cat(o['cross_attentions'])
         weights = weights.cpu()
         weights = torch.tensor(weights).softmax(dim=-1)
-        w = weights / weights_.norm(dim=-2, keepdim=True)
+        w = weights / weights.norm(dim=-2, keepdim=True)
         matrix = w.mean(axis=(0, 1)).T
         alignment = dtw(np.ascontiguousarray(-matrix.double().numpy()))
 
@@ -285,7 +291,8 @@ class Similarity(Base):
             s = f'ayat1: {s1} ayat2: {s2}'
             strings.append(s)
 
-        input_ids = [{'input_ids': self.tokenizer.encode(s, return_tensors='pt')[0]} for s in strings]
+        input_ids = [{'input_ids': self.tokenizer.encode(
+            s, return_tensors='pt')[0]} for s in strings]
         padded = self.tokenizer.pad(input_ids, padding='longest')
         for k in padded.keys():
             padded[k] = to_tensor_cuda(padded[k], cuda)
@@ -450,7 +457,10 @@ class Aligment(Generator):
 
     def align(self):
         s = 'The Normans (Norman: Nourmands; French: Normands; Latin: Normanni) were the people who in the 10th and 11th centuries gave their name to Normandy, a region in France. They were descended from Norse ("Norman" comes from "Norseman") raiders and pirates from Denmark, Iceland and Norway who, under their leader Rollo, agreed to swear fealty to King Charles III of West Francia. Through generations of assimilation and mixing with the native Frankish and Roman-Gaulish populations, their descendants would gradually merge with the Carolingian-based cultures of West Francia. The distinct cultural and ethnic identity of the Normans emerged initially in the first half of the 10th century, and it continued to evolve over the succeeding centuries.'
-        input_ids = {'input_ids': tokenizer.encode(f'terjemah Inggeris ke Melayu: {s}', return_tensors='pt')}
+        input_ids = {
+            'input_ids': tokenizer.encode(
+                f'terjemah Inggeris ke Melayu: {s}',
+                return_tensors='pt')}
         outputs = model.generate(**input_ids, max_length=256)
         outputs = tokenizer.batch_decode(outputs, skip_special_tokens=True)
         decoder_input_ids = tokenizer.encode(outputs[0], return_tensors='pt')
@@ -693,7 +703,8 @@ class Transformer(Base):
 
     def forward(self, strings):
         cuda = next(self.model.parameters()).is_cuda
-        input_ids = [{'input_ids': self.tokenizer.encode(s, return_tensors='pt')[0]} for s in strings]
+        input_ids = [{'input_ids': self.tokenizer.encode(
+            s, return_tensors='pt')[0]} for s in strings]
         padded = self.tokenizer.pad(input_ids, padding='longest')
         for k in padded.keys():
             padded[k] = to_tensor_cuda(padded[k], cuda)
@@ -702,7 +713,8 @@ class Transformer(Base):
             return self.model.embed(**padded, return_dict=True, output_attentions=True,
                                     output_hidden_states=True), padded
         else:
-            return self.model(**padded, return_dict=True, output_attentions=True, output_hidden_states=True), padded
+            return self.model(**padded, return_dict=True, output_attentions=True,
+                              output_hidden_states=True), padded
 
     def _method(self, layers, method, dim=0):
         method = method.lower()
@@ -1146,8 +1158,8 @@ class Dependency(Base):
                 for k in c:
                     new_score[k] = np.mean(c[k], axis=0)
 
-                new_index = f_tree(torch.Tensor(new_score).unsqueeze(0),
-                                   torch.Tensor([0] + [1] * (len(new_score) - 1)).int().unsqueeze(0))[0].tolist()
+                new_index = f_tree(torch.Tensor(new_score).unsqueeze(0), torch.Tensor(
+                    [0] + [1] * (len(new_score) - 1)).int().unsqueeze(0))[0].tolist()
 
                 arcs = [0]
                 for i in range(len(text)):
@@ -1161,9 +1173,11 @@ class Dependency(Base):
         depend = to_numpy(arc_preds[0, 1:])
         tagging = [dependency_settings['idx2tag'][i] for i in tagging]
 
-        tagging = merge_sentencepiece_tokens_tagging(seq, tagging, rejected=self.tokenizer.all_special_tokens)
+        tagging = merge_sentencepiece_tokens_tagging(
+            seq, tagging, rejected=self.tokenizer.all_special_tokens)
         tagging = list(zip(*tagging))
-        indexing = merge_sentencepiece_tokens_tagging(seq, depend, rejected=self.tokenizer.all_special_tokens)
+        indexing = merge_sentencepiece_tokens_tagging(
+            seq, depend, rejected=self.tokenizer.all_special_tokens)
         indexing = list(zip(*indexing))
 
         result, indexing_ = [], []
@@ -1182,3 +1196,141 @@ class Dependency(Base):
             )
         d = DependencyGraph('\n'.join(result), top_relation_label='root')
         return d, tagging, indexing_
+
+
+class TexttoKG(Generator):
+    def __init__(self, model, **kwargs):
+        Generator.__init__(
+            self,
+            model=model,
+            initial_text='teks ke grafik pengetahuan: ',
+            **kwargs,
+        )
+
+    def generate(self, strings: List[Dict], got_networkx: bool = True, **kwargs):
+        """
+        Generate list of knowledge graphs from the input.
+
+        Parameters
+        ----------
+        strings : List[str]
+        got_networkx: bool, optional (default=True)
+            If True, will generate networkx.MultiDiGraph.
+        **kwargs: vector arguments pass to huggingface `generate` method.
+            Read more at https://huggingface.co/docs/transformers/main_classes/text_generation
+
+        Returns
+        -------
+        result: List[List[Dict]]
+        """
+        if got_networkx:
+            try:
+                import pandas as pd
+                import networkx as nx
+            except BaseException:
+                logger.warning(
+                    'pandas and networkx not installed. Please install it by `pip install pandas networkx` and try again. Will skip to generate networkx.MultiDiGraph'
+                )
+                got_networkx = False
+
+        outputs_ = super().generate(strings, **kwargs)
+        outputs = [parse_rebel(o) for o in outputs_]
+
+        for no in range(len(outputs)):
+            if got_networkx:
+                try:
+                    df = pd.DataFrame(outputs[no])
+                    G = nx.from_pandas_edgelist(
+                        df,
+                        source='head',
+                        target='tail',
+                        edge_attr='type',
+                        create_using=nx.MultiDiGraph(),
+                    )
+                except Exception as e:
+                    logger.warning(e)
+                    G = None
+            else:
+                G = None
+
+            outputs[no] = {'G': G, 'triple': outputs[no], 'rebel': outputs_[no]}
+        return outputs
+
+
+class KGtoText(Generator):
+    def __init__(self, model, **kwargs):
+        Generator.__init__(
+            self,
+            model=model,
+            initial_text='grafik pengetahuan ke teks: ',
+            **kwargs,
+        )
+
+    def generate(self, kgs: List[List[Dict]], **kwargs):
+        """
+        Generate a text from list of knowledge graph dictionary.
+
+        Parameters
+        ----------
+        kg: List[List[Dict]]
+            list of list of {'head', 'type', 'tail'}
+        **kwargs: vector arguments pass to huggingface `generate` method.
+            Read more at https://huggingface.co/docs/transformers/main_classes/text_generation
+
+        Returns
+        -------
+        result: List[str]
+        """
+        for kg in kgs:
+            for no, k in enumerate(kg):
+                if 'head' not in k and 'type' not in k and 'tail' not in k:
+                    raise ValueError('a dict must have `head`, `type` and `tail` properties.')
+                elif not len(k['head']):
+                    raise ValueError(f'`head` length must > 0 for knowledge graph index {no}')
+                elif not len(k['type']):
+                    raise ValueError(f'`head` length must > 0 for knowledge graph index {no}')
+                elif not len(k['tail']):
+                    raise ValueError(f'`head` length must > 0 for knowledge graph index {no}')
+
+        rebels = [rebel_format(dict_to_list(kg)) for kg in kgs]
+        return super().generate(rebels, **kwargs)
+
+
+class Translation(Generator):
+    def __init__(self, model, from_lang, to_lang, **kwargs):
+        Generator.__init__(
+            self,
+            model=model,
+            initial_text='',
+            **kwargs,
+        )
+        self.from_lang = from_lang
+        self.to_lang = to_lang
+
+        self.map_lang = {
+            'en': 'Inggeris',
+            'jav': 'Jawa',
+            'ms': 'Melayu',
+            'ind': 'Indonesia'
+        }
+
+    def generate(self, strings: List[str], from_lang: str = None, to_lang: str = 'ms', **kwargs):
+        if from_lang is None and None not in self.from_lang:
+            raise ValueError('this model does not support None `from_lang`')
+
+        if from_lang not in self.from_lang:
+            raise ValueError(f'this model does not support `{from_lang}` for `from_lang`')
+
+        if to_lang not in self.to_lang:
+            raise ValueError(f'this model does not support `{to_lang}` for `to_lang`')
+
+        if from_lang is None:
+            from_lang = ''
+        else:
+            from_lang = ' ' + self.map_lang[from_lang]
+
+        to_lang = self.map_lang[to_lang]
+
+        prefix = f'terjemah{from_lang} ke {to_lang}: '
+        results = super().generate(strings, prefix=prefix, **kwargs)
+        return results

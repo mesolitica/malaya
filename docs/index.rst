@@ -17,7 +17,6 @@ Contents:
    :caption: Getting Started
 
    speech-toolkit
-   knowledge-graph-toolkit
    installation
    mock-tensorflow
    Dataset
@@ -230,6 +229,19 @@ Contents:
    load-abstractive-keyword-huggingface
    load-keyword-extractive
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Text to Knowledge Graph
+
+   e2e-text-to-kg
+   dependency-parser-text-to-kg
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Knowledge Graph to Text
+
+   kg-to-text
+   
 .. toctree::
    :maxdepth: 2
    :caption: Misc Module

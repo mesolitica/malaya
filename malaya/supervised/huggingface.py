@@ -15,6 +15,9 @@ from malaya.torch_model.huggingface import (
     Normalizer,
     Keyword,
     Dependency,
+    TexttoKG,
+    KGtoText,
+    Translation,
 )
 from transformers import TFAutoModel, AutoTokenizer
 from transformers import AutoTokenizer
@@ -103,3 +106,15 @@ def load_keyword(model, **kwargs):
 
 def load_dependency(model, **kwargs):
     return Dependency(model, **kwargs)
+
+
+def load_ttkg(model, **kwargs):
+    return TexttoKG(model=model, **kwargs)
+
+
+def load_kgtt(model, **kwargs):
+    return KGtoText(model=model, **kwargs)
+
+
+def load_translation(model, from_lang, to_lang, **kwargs):
+    return Translation(model=model, from_lang=from_lang, to_lang=to_lang, **kwargs)

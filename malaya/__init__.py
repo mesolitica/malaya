@@ -25,6 +25,7 @@ from . import normalizer
 from . import similarity
 from . import spelling_correction
 from . import summarization
+from . import text_to_kg
 from . import topic_model
 from . import translation
 from . import utils
@@ -37,6 +38,7 @@ from . import dependency
 from . import emotion
 from . import entity
 from . import jawi_rumi
+from . import kg_to_text
 from . import language_detection
 from . import language_model
 from . import lexicon

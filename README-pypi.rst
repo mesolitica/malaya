@@ -51,9 +51,14 @@ Features
 -  **Spelling Correction**, using local Malaysia NLP researches hybrid with Transformer-Bahasa to auto-correct any malay words and NeuSpell using T5-Bahasa.
 -  **Abstractive Summarization**, provide abstractive summarization using T5-Bahasa.
 -  **Extractive Summarization**, Extractive interface using Transformer-Bahasa and Doc2Vec.
+-  **Text to Knowledge Graph**, Generate knowledge graph from human sentences.
 -  **Topic Modeling**, provide Transformer-Bahasa, LDA2Vec, LDA, NMF, LSA interface and easy BERTopic integration.
 -  **EN-MS Translation**, provide English to standard Malay using T5-Bahasa.
+-  **IND-MS Translation**, provide Indonesian to standard Malay using T5-Bahasa.
+-  **JAV-MS Translation**, provide Javanese to standard Malay using T5-Bahasa.
 -  **MS-EN Translation**, provide standard Malay to English using T5-Bahasa.
+-  **MS-IND Translation**, provide standard Malay to Indonesian using T5-Bahasa.
+-  **MS-JAV Translation**, provide standard Malay to Javanese using T5-Bahasa.
 -  **Zero-shot classification**, provide Zero-shot classification interface using Transformer-Bahasa to recognize texts without any labeled training data.
 -  **Zero-shot Entity Recognition**, provide Zero-shot entity tagging interface using Transformer-Bahasa to extract entities.
 -  **Constituency Parsing**, breaking a text into sub-phrases using finetuned Transformer-Bahasa.  
@@ -62,6 +67,7 @@ Features
 -  **Emotion Analysis**, detect and recognize 6 different emotions of texts using finetuned Transformer-Bahasa.
 -  **Entity Recognition**, seeks to locate and classify named entities mentioned in text using finetuned Transformer-Bahasa.
 -  **Jawi-to-Rumi**, convert from Jawi to Rumi using Transformer.
+-  **Knowledge Graph to Text**, Generate human sentences from a knowledge graph.
 -  **Language Detection**, using Fast-text and Sparse Deep learning Model to classify Malay (formal and social media), Indonesia (formal and social media), Rojak language and Manglish.
 -  **Language Model**, using KenLM, Masked language model using BERT, ALBERT and RoBERTa, and GPT2 to do text scoring.
 -  **NSFW Detection**, detect NSFW text using rules based and subwords Naive Bayes.
