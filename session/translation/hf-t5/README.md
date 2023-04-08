@@ -42,7 +42,7 @@ SMALL model,
 WANDB_DISABLED=true \
 python3 run_t5.py \
 --model_name_or_path mesolitica/t5-small-standard-bahasa-cased \
---num_train_epochs 5 \
+--num_train_epochs 3 \
 --logging_steps 100 \
 --eval_steps 10000 \
 --save_steps 10000 \
@@ -52,7 +52,7 @@ python3 run_t5.py \
 --do_eval \
 --source_lang src \
 --target_lang tgt \
---train_file shuffled-train.json \
+--train_file shuffled-train-join.json \
 --validation_file shuffled-test.json \
 --output_dir finetune-t5-small-standard-bahasa-cased-1024 \
 --per_device_train_batch_size=24 \

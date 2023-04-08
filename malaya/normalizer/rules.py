@@ -318,7 +318,7 @@ class Normalizer:
             function to segmentize word.
             If provide, it will expand a word, apaitu -> apa itu
         text_scorer: Callable, optional (default=None)
-            function to validate upper word. 
+            function to validate upper word.
             If lower case score is higher or equal than upper case score, will choose lower case.
         text_scorer_window: int, optional (default=2)
             size of lookback and lookforward to validate upper word.
@@ -447,7 +447,13 @@ class Normalizer:
                 if normalize_url:
                     word = word.replace('://', ' ').replace('.', ' dot ')
                     word = put_spacing_num(word)
-                    word = word.replace('https', 'HTTPS').replace('http', 'HTTP').replace('www', 'WWW')
+                    word = word.replace(
+                        'https',
+                        'HTTPS').replace(
+                        'http',
+                        'HTTP').replace(
+                        'www',
+                        'WWW')
                 result.append(word)
                 index += 1
                 continue
@@ -651,7 +657,8 @@ class Normalizer:
                 index += 1
                 continue
 
-            if len(word) > 2 and normalize_text and check_english_func is not None and not check_english_func(word):
+            if len(word) > 2 and normalize_text and check_english_func is not None and not check_english_func(
+                    word):
                 s = f'index: {index}, word: {word}, condition len(word) > 2 and norm text'
                 logger.debug(s)
                 if word[-2] in consonants and word[-1] == 'e':
@@ -939,24 +946,6 @@ class Normalizer:
                 index += 1
                 continue
 
-            if len(re.findall(_expressions['number'], word)):
-                s = f'index: {index}, word: {word}, condition is number'
-                logger.debug(s)
-                result.append(word)
-                index += 1
-                continue
-
-            if re.findall(_expressions['number_with_shortform'], word_lower):
-                s = f'index: {index}, word: {word_lower}, condition is number_with_shortform'
-                logger.debug(s)
-                if normalize_cardinal:
-                    w = normalize_numbers_with_shortform(word_lower)
-                else:
-                    w = word
-                result.append(w)
-                index += 1
-                continue
-
             if normalize_cardinal:
                 cardinal_ = cardinal(word)
                 if cardinal_ != word:
@@ -974,6 +963,24 @@ class Normalizer:
                     result.append(normalized_ke)
                     index += 1
                     continue
+
+            if len(re.findall(_expressions['number'], word)):
+                s = f'index: {index}, word: {word}, condition is number'
+                logger.debug(s)
+                result.append(word)
+                index += 1
+                continue
+
+            if re.findall(_expressions['number_with_shortform'], word_lower):
+                s = f'index: {index}, word: {word_lower}, condition is number_with_shortform'
+                logger.debug(s)
+                if normalize_cardinal:
+                    w = normalize_numbers_with_shortform(word_lower)
+                else:
+                    w = word
+                result.append(w)
+                index += 1
+                continue
 
             if segmenter is not None:
                 s = f'index: {index}, word: {word}, condition to segment'
@@ -1044,7 +1051,8 @@ class Normalizer:
                     selected = word
 
                 selected = repeat_word(selected, repeat)
-                spelling_correction_condition[len(result)] = [repeat, result_string, end_result_string]
+                spelling_correction_condition[len(result)] = [
+                    repeat, result_string, end_result_string]
                 result.append(result_string + selected + end_result_string)
 
             index += 1
@@ -1075,17 +1083,20 @@ class Normalizer:
             for no_r, r in enumerate(result_langs):
                 s = f'index: {no_r}, label: {r}, word: {splitted[no_r]}, queue: {new_result}'
                 logger.debug(s)
-                if r in acceptable_language_detection and not is_laugh(splitted[no_r]) and not is_mengeluh(splitted[no_r]):
+                if r in acceptable_language_detection and not is_laugh(
+                        splitted[no_r]) and not is_mengeluh(splitted[no_r]):
                     temp.append(splitted[no_r])
                     temp_lang.append(r)
                 else:
                     if len(temp):
                         if 'EN' in temp_lang:
-                            logger.debug(f'condition len(temp) and EN in temp_lang, {temp}, {temp_lang}')
+                            logger.debug(
+                                f'condition len(temp) and EN in temp_lang, {temp}, {temp_lang}')
                             translated = translator(' '.join(temp))
                             new_result.extend(translated.split())
                         else:
-                            logger.debug(f'condition len(temp) and EN not in temp_lang, {temp}, {temp_lang}')
+                            logger.debug(
+                                f'condition len(temp) and EN not in temp_lang, {temp}, {temp_lang}')
                             new_result.extend(temp)
                         temp = []
                         temp_lang = []
@@ -1097,7 +1108,8 @@ class Normalizer:
                     translated = translator(' '.join(temp))
                     new_result.extend(translated.split())
                 else:
-                    logger.debug(f'condition len(temp) and EN not in temp_lang, {temp}, {temp_lang}')
+                    logger.debug(
+                        f'condition len(temp) and EN not in temp_lang, {temp}, {temp_lang}')
                     new_result.extend(temp)
 
             result = ' '.join(new_result)
