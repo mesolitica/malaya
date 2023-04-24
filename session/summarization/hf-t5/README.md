@@ -125,8 +125,6 @@ python3 run_t5.py \
 --gradient_checkpointing true
 ```
 
-
-
 BASE MS model,
 ```
 CUDA_VISIBLE_DEVICES=1 \
