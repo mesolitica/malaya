@@ -35,7 +35,6 @@ from malaya.parser.alg import eisner, mst
 from malaya.supervised.settings import dependency as dependency_settings
 from malaya.graph.triplet import dict_to_list, rebel_format, parse_rebel
 from collections import defaultdict
-from herpetologist import check_type
 from typing import List, Callable, Dict
 import numpy as np
 import torch
@@ -62,7 +61,6 @@ class Generator(Base):
         self.model = base_model.from_pretrained(model, **kwargs)
         self._initial_text = initial_text
 
-    @check_type
     def generate(self, strings: List[str], return_generate=False, prefix=None, **kwargs):
         """
         Generate texts from the input.
@@ -157,7 +155,6 @@ class Prefix(Base):
         self.tokenizer = AutoTokenizer.from_pretrained(model, **kwargs)
         self.model = AutoModelForCausalLM.from_pretrained(model, **kwargs)
 
-    @check_type
     def generate(self, string, **kwargs):
         """
         Generate texts from the input.
@@ -189,7 +186,6 @@ class Paraphrase(Generator):
             **kwargs,
         )
 
-    @check_type
     def generate(
         self,
         strings: List[str],
@@ -228,7 +224,6 @@ class Summarization(Generator):
             **kwargs,
         )
 
-    @check_type
     def generate(
         self,
         strings: List[str],
@@ -300,7 +295,6 @@ class Similarity(Base):
         outputs = self.model(**padded, return_dict=True)
         return outputs
 
-    @check_type
     def predict_proba(self, strings_left: List[str], strings_right: List[str]):
         """
         calculate similarity for two different batch of texts.
@@ -862,7 +856,6 @@ class IsiPentingGenerator(Generator):
             'karangan',
         ]
 
-    @check_type
     def generate(
         self,
         strings: List[str],
@@ -922,7 +915,6 @@ class Tatabahasa(Generator):
             **kwargs,
         )
 
-    @check_type
     def generate(
         self,
         strings: List[str],
@@ -989,7 +981,6 @@ class Normalizer(Generator):
         self.segmenter = segmenter
         self.text_scorer = text_scorer
 
-    @check_type
     def generate(
         self,
         strings: List[str],
@@ -1041,7 +1032,6 @@ class Keyword(Generator):
             **kwargs,
         )
 
-    @check_type
     def generate(
         self,
         strings: List[str],
@@ -1078,7 +1068,6 @@ class Dependency(Base):
         self.tokenizer = AutoTokenizer.from_pretrained(model, **kwargs)
         self.model = T5Diaparser.from_pretrained(model, **kwargs)
 
-    @check_type
     def predict(
         self,
         string: str,

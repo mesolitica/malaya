@@ -1,6 +1,5 @@
 import tensorflow as tf
 from malaya.function import describe_availability
-from herpetologist import check_type
 from malaya.supervised import gpt2 as gpt2_load
 from malaya.supervised import huggingface as load_huggingface
 import logging
@@ -9,7 +8,6 @@ import warnings
 logger = logging.getLogger(__name__)
 
 
-@check_type
 def babble_tf(
     string: str,
     model,
@@ -114,7 +112,8 @@ def available_transformer():
     List available gpt2 generator models.
     """
     warnings.warn(
-        '`malaya.generator.prefix.available_transformer` is deprecated, use `malaya.generator.prefix.available_huggingface` instead', DeprecationWarning)
+        '`malaya.generator.prefix.available_transformer` is deprecated, use `malaya.generator.prefix.available_huggingface` instead',
+        DeprecationWarning)
 
     _describe()
     return describe_availability(_transformer_availability)
@@ -129,7 +128,6 @@ def available_huggingface():
     return describe_availability(_huggingface_availability)
 
 
-@check_type
 def transformer(model: str = '345M', quantized: bool = False, **kwargs):
     """
     Load GPT2 model to generate a string given a prefix string.
@@ -148,7 +146,8 @@ def transformer(model: str = '345M', quantized: bool = False, **kwargs):
     """
 
     warnings.warn(
-        '`malaya.generator.prefix.transformer` is deprecated, use `malaya.generator.prefix.huggingface` instead', DeprecationWarning)
+        '`malaya.generator.prefix.transformer` is deprecated, use `malaya.generator.prefix.huggingface` instead',
+        DeprecationWarning)
 
     model = model.upper()
     if model not in _transformer_availability:

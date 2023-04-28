@@ -1,6 +1,5 @@
 from malaya.supervised import huggingface as load_huggingface
 from malaya.function import describe_availability
-from herpetologist import check_type
 import logging
 
 logger = logging.getLogger(__name__)

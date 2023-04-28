@@ -10,7 +10,6 @@ from malaya.model.xlnet import SiameseXLNET
 from malaya.path import MODEL_VOCAB, MODEL_BPE
 from malaya.function import describe_availability
 from malaya.supervised import huggingface as load_huggingface
-from herpetologist import check_type
 import logging
 import warnings
 
@@ -101,7 +100,8 @@ _huggingface_availability = {
 
 
 def _describe():
-    logger.info('tested on matched dev set translated MNLI, https://huggingface.co/datasets/mesolitica/translated-MNLI')
+    logger.info(
+        'tested on matched dev set translated MNLI, https://huggingface.co/datasets/mesolitica/translated-MNLI')
 
 
 def available_transformer():
@@ -110,7 +110,8 @@ def available_transformer():
     """
 
     warnings.warn(
-        '`malaya.similarity.semantic.available_transformer` is deprecated, use `malaya.similarity.semantic.available_huggingface` instead', DeprecationWarning)
+        '`malaya.similarity.semantic.available_transformer` is deprecated, use `malaya.similarity.semantic.available_huggingface` instead',
+        DeprecationWarning)
     _describe()
     logger.warning('test set been leaked during training session.')
 
@@ -177,7 +178,6 @@ def _transformer(
     )
 
 
-@check_type
 def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
     """
     Load Transformer similarity model.
@@ -200,7 +200,8 @@ def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
     """
 
     warnings.warn(
-        '`malaya.similarity.semantic.transformer` is deprecated, use `malaya.similarity.semantic.huggingface` instead', DeprecationWarning)
+        '`malaya.similarity.semantic.transformer` is deprecated, use `malaya.similarity.semantic.huggingface` instead',
+        DeprecationWarning)
 
     return _transformer(
         model=model,

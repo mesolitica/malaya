@@ -1,9 +1,7 @@
 from malaya.model.tf import TrueCase
 from malaya.supervised import transformer as load_transformer
 from malaya.supervised import huggingface as load_huggingface
-from malaya.supervised import t5 as t5_load
 from malaya.model.t5 import TrueCase as T5_TrueCase
-from herpetologist import check_type
 from malaya.function import describe_availability
 import numpy as np
 import logging
@@ -24,30 +22,7 @@ _transformer_availability = {
         'CER': 0.0146193,
         'Suggested length': 256,
     },
-    'super-tiny-t5': {
-        'Size (MB)': 81.8,
-        'Quantized Size (MB)': 27.1,
-        'CER': 0.0254679,
-        'Suggested length': 256,
-    },
-    'super-super-tiny-t5': {
-        'Size (MB)': 39.6,
-        'Quantized Size (MB)': 12,
-        'CER': 0.02533658,
-        'Suggested length': 256,
-    },
-    '3x-super-tiny-t5': {
-        'Size (MB)': 18.3,
-        'Quantized Size (MB)': 4.46,
-        'CER': 0.0487372,
-        'Suggested length': 256,
-    },
-    '3x-super-tiny-t5-4k': {
-        'Size (MB)': 5.03,
-        'Quantized Size (MB)': 2.99,
-        'CER': 0.0798906,
-        'Suggested length': 256,
-    }
+
 }
 
 _huggingface_availability = {
@@ -124,7 +99,9 @@ class TrueCase_LM:
             scores, strings = [], []
             for w in words:
                 string_ = left_hand + [w] + right_hand
-                score = self._language_model.score(' '.join(string_), bos=index == 0, eos=index == (len(splitted) - 1))
+                score = self._language_model.score(
+                    ' '.join(string_), bos=index == 0, eos=index == (
+                        len(splitted) - 1))
                 scores.append(score)
                 strings.append(string_)
 
@@ -137,7 +114,8 @@ class TrueCase_LM:
 
 
 def _describe():
-    logger.info('tested on generated dataset at https://f000.backblazeb2.com/file/malay-dataset/true-case/test-set-true-case.json')
+    logger.info(
+        'tested on generated dataset at https://f000.backblazeb2.com/file/malay-dataset/true-case/test-set-true-case.json')
 
 
 def available_transformer():
@@ -146,7 +124,8 @@ def available_transformer():
     """
 
     warnings.warn(
-        '`malaya.true_case.available_transformer` is deprecated, use `malaya.true_case.available_huggingface` instead', DeprecationWarning)
+        '`malaya.true_case.available_transformer` is deprecated, use `malaya.true_case.available_huggingface` instead',
+        DeprecationWarning)
 
     _describe()
     return describe_availability(_transformer_availability)
@@ -161,7 +140,6 @@ def available_huggingface():
     return describe_availability(_huggingface_availability)
 
 
-@check_type
 def transformer(model: str = 'base', quantized: bool = False, **kwargs):
     """
     Load transformer encoder-decoder model to True Case.
@@ -180,7 +158,8 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
     """
 
     warnings.warn(
-        '`malaya.true_case.transformer` is deprecated, use `malaya.true_case.huggingface` instead', DeprecationWarning)
+        '`malaya.true_case.transformer` is deprecated, use `malaya.true_case.huggingface` instead',
+        DeprecationWarning)
 
     model = model.lower()
     if model not in _transformer_availability:
@@ -188,26 +167,16 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
             'model not supported, please check supported models from `malaya.true_case.available_transformer()`.'
         )
 
-    if 't5' in model:
-        return t5_load.load(
-            module='true-case',
-            model=model,
-            model_class=T5_TrueCase,
-            quantized=quantized,
-            **kwargs,
-        )
-    else:
-        return load_transformer.load(
-            module='true-case',
-            model=model,
-            encoder='yttm',
-            model_class=TrueCase,
-            quantized=quantized,
-            **kwargs,
-        )
+    return load_transformer.load(
+        module='true-case',
+        model=model,
+        encoder='yttm',
+        model_class=TrueCase,
+        quantized=quantized,
+        **kwargs,
+    )
 
 
-@check_type
 def huggingface(
     model: str = 'mesolitica/finetune-true-case-t5-tiny-standard-bahasa-cased',
     force_check: bool = True,

@@ -7,63 +7,50 @@ from malaya.torch_model.mask_lm import (
     MLMScorer,
 )
 from transformers import AutoTokenizer
-from herpetologist import check_type
 
 _kenlm_availability = {
-    'bahasa-wiki': {
-        'Size (MB)': 70.5,
-        'LM order': 3,
-        'Description': 'MS wikipedia.',
-        'Command': [
-            './lmplz --text text.txt --arpa out.arpa -o 3 --prune 0 1 1',
-            './build_binary -q 8 -b 7 -a 256 trie out.arpa out.trie.klm',
-        ],
-    },
-    'bahasa-news': {
-        'Size (MB)': 107,
-        'LM order': 3,
-        'Description': 'local news.',
-        'Command': [
-            './lmplz --text text.txt --arpa out.arpa -o 3 --prune 0 1 1',
-            './build_binary -q 8 -b 7 -a 256 trie out.arpa out.trie.klm',
-        ],
-    },
-    'bahasa-wiki-news': {
-        'Size (MB)': 165,
-        'LM order': 3,
-        'Description': 'MS wikipedia + local news.',
-        'Command': [
-            './lmplz --text text.txt --arpa out.arpa -o 3 --prune 0 1 1',
-            './build_binary -q 8 -b 7 -a 256 trie out.arpa out.trie.klm',
-        ],
-    },
-    'bahasa-wiki-news-iium-stt': {
-        'Size (MB)': 416,
-        'LM order': 3,
-        'Description': 'MS wikipedia + local news + IIUM + STT',
-        'Command': [
-            './lmplz --text text.txt --arpa out.arpa -o 3 --prune 0 1 1',
-            './build_binary -q 8 -b 7 -a 256 trie out.arpa out.trie.klm',
-        ],
-    },
-    'dump-combined': {
-        'Size (MB)': 310,
-        'LM order': 3,
-        'Description': 'Academia + News + IIUM + Parliament + Watpadd + Wikipedia + Common Crawl + training set from https://github.com/huseinzol05/malaya-speech/tree/master/pretrained-model/prepare-stt',
-        'Command': [
-            './lmplz --text text.txt --arpa out.arpa -o 3 --prune 0 1 1',
-            './build_binary -q 8 -b 7 -a 256 trie out.arpa out.trie.klm',
-        ],
-    },
-    'redape-community': {
-        'Size (MB)': 887.1,
-        'LM order': 4,
-        'Description': 'Mirror for https://github.com/redapesolutions/suara-kami-community',
-        'Command': [
-            './lmplz --text text.txt --arpa out.arpa -o 4 --prune 0 1 1 1',
-            './build_binary -q 8 -b 7 -a 256 trie out.arpa out.trie.klm',
-        ],
-    },
+    'bahasa-wiki': {'Size (MB)': 70.5,
+                    'LM order': 3,
+                    'Description': 'MS wikipedia.',
+                    'Command': ['./lmplz --text text.txt --arpa out.arpa -o 3 --prune 0 1 1',
+                                './build_binary -q 8 -b 7 -a 256 trie out.arpa out.trie.klm',
+                                ],
+                    },
+    'bahasa-news': {'Size (MB)': 107,
+                    'LM order': 3,
+                    'Description': 'local news.',
+                    'Command': ['./lmplz --text text.txt --arpa out.arpa -o 3 --prune 0 1 1',
+                                './build_binary -q 8 -b 7 -a 256 trie out.arpa out.trie.klm',
+                                ],
+                    },
+    'bahasa-wiki-news': {'Size (MB)': 165,
+                         'LM order': 3,
+                         'Description': 'MS wikipedia + local news.',
+                         'Command': ['./lmplz --text text.txt --arpa out.arpa -o 3 --prune 0 1 1',
+                                     './build_binary -q 8 -b 7 -a 256 trie out.arpa out.trie.klm',
+                                     ],
+                         },
+    'bahasa-wiki-news-iium-stt': {'Size (MB)': 416,
+                                  'LM order': 3,
+                                  'Description': 'MS wikipedia + local news + IIUM + STT',
+                                  'Command': ['./lmplz --text text.txt --arpa out.arpa -o 3 --prune 0 1 1',
+                                              './build_binary -q 8 -b 7 -a 256 trie out.arpa out.trie.klm',
+                                              ],
+                                  },
+    'dump-combined': {'Size (MB)': 310,
+                      'LM order': 3,
+                      'Description': 'Academia + News + IIUM + Parliament + Watpadd + Wikipedia + Common Crawl + training set from https://github.com/huseinzol05/malaya-speech/tree/master/pretrained-model/prepare-stt',
+                      'Command': ['./lmplz --text text.txt --arpa out.arpa -o 3 --prune 0 1 1',
+                                  './build_binary -q 8 -b 7 -a 256 trie out.arpa out.trie.klm',
+                                  ],
+                      },
+    'redape-community': {'Size (MB)': 887.1,
+                         'LM order': 4,
+                         'Description': 'Mirror for https://github.com/redapesolutions/suara-kami-community',
+                         'Command': ['./lmplz --text text.txt --arpa out.arpa -o 4 --prune 0 1 1 1',
+                                     './build_binary -q 8 -b 7 -a 256 trie out.arpa out.trie.klm',
+                                     ],
+                         },
 }
 
 _gpt2_availability = {
@@ -118,7 +105,6 @@ def available_mlm():
     return describe_availability(_mlm_availability)
 
 
-@check_type
 def kenlm(model: str = 'dump-combined', **kwargs):
     """
     Load KenLM language model.
@@ -134,7 +120,7 @@ def kenlm(model: str = 'dump-combined', **kwargs):
 
     try:
         import kenlm
-    except:
+    except BaseException:
         raise ModuleNotFoundError(
             'kenlm not installed. Please install it by `pip install pypi-kenlm` and try again.'
         )
@@ -157,7 +143,6 @@ def kenlm(model: str = 'dump-combined', **kwargs):
     return kenlm.Model(path['model'])
 
 
-@check_type
 def gpt2(model: str = 'mesolitica/gpt2-117m-bahasa-cased', force_check: bool = True, **kwargs):
     """
     Load GPT2 language model.
@@ -184,8 +169,10 @@ def gpt2(model: str = 'mesolitica/gpt2-117m-bahasa-cased', force_check: bool = T
     return model
 
 
-@check_type
-def mlm(model: str = 'malay-huggingface/bert-tiny-bahasa-cased', force_check: bool = True, **kwargs):
+def mlm(
+        model: str = 'malay-huggingface/bert-tiny-bahasa-cased',
+        force_check: bool = True,
+        **kwargs):
     """
     Load Masked language model.
 
@@ -215,7 +202,8 @@ def mlm(model: str = 'malay-huggingface/bert-tiny-bahasa-cased', force_check: bo
     elif 'roberta' in splitted:
         model_class = RobertaForMaskedLMOptimized
     else:
-        raise ValueError(f'cannot determined model class for {model}, only supported BERT, ALBERT and RoBERTa for now.')
+        raise ValueError(
+            f'cannot determined model class for {model}, only supported BERT, ALBERT and RoBERTa for now.')
 
     tokenizer = AutoTokenizer.from_pretrained(model, use_fast=False, **kwargs)
     model = model_class.from_pretrained(model, **kwargs)

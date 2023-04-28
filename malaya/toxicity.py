@@ -1,7 +1,6 @@
 from malaya.supervised import classification
 from malaya.path import PATH_TOXIC, S3_PATH_TOXIC
 from malaya.function import describe_availability
-from herpetologist import check_type
 import logging
 
 logger = logging.getLogger(__name__)
@@ -124,7 +123,6 @@ def multinomial(**kwargs):
     )
 
 
-@check_type
 def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
     """
     Load Transformer toxicity model.

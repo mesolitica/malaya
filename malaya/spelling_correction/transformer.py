@@ -14,7 +14,6 @@ from malaya.text.rules import rules_normalizer
 from malaya.spelling_correction.probability import Spell
 from malaya.function import describe_availability
 from typing import List
-from herpetologist import check_type
 import numpy as np
 import logging
 
@@ -107,7 +106,6 @@ class Transformer(Spell):
         probs.sort(key=lambda x: x[1])
         return probs[0][0]
 
-    @check_type
     def correct(
         self,
         word: str,
@@ -175,12 +173,12 @@ class Transformer(Spell):
             string = left_hand + [word] + right_hand
             index = len(left_hand)
 
-            logger.debug(f'left hand side: {left_hand}, right hand side: {right_hand}, index: {index}, word: {word}')
+            logger.debug(
+                f'left hand side: {left_hand}, right hand side: {right_hand}, index: {index}, word: {word}')
 
             word = self._correct(word, string, index, batch_size=batch_size)
         return word
 
-    @check_type
     def correct_text(
         self,
         text: str,
@@ -227,7 +225,6 @@ class Transformer(Spell):
 
         return ' '.join(splitted)
 
-    @check_type
     def correct_word(
         self,
         word: str,
@@ -301,12 +298,12 @@ def available_transformer():
     List available transformer models.
     """
 
-    logger.info('tested on 10k generated dataset at https://github.com/huseinzol05/malaya/tree/master/session/spelling-correction/t5')
+    logger.info(
+        'tested on 10k generated dataset at https://github.com/huseinzol05/malaya/tree/master/session/spelling-correction/t5')
 
     return describe_availability(_transformer_availability)
 
 
-@check_type
 def transformer(model: str = 'small-t5', quantized: bool = False, **kwargs):
     """
     Load a Transformer Spell Corrector.
@@ -342,7 +339,6 @@ def transformer(model: str = 'small-t5', quantized: bool = False, **kwargs):
     )
 
 
-@check_type
 def encoder(
     model,
     sentence_piece: bool = False,

@@ -1,6 +1,5 @@
 from malaya.supervised import tag
 from malaya.text.entity import EntityRegex
-from herpetologist import check_type
 from malaya.function import describe_availability
 import logging
 
@@ -257,12 +256,12 @@ def available_transformer_ontonotes5():
     """
     List available transformer Entity Tagging models trained on Ontonotes 5 Bahasa.
     """
-    logger.info('test set at https://github.com/huseinzol05/malay-dataset/tree/master/tagging/entities-OntoNotes5')
+    logger.info(
+        'test set at https://github.com/huseinzol05/malay-dataset/tree/master/tagging/entities-OntoNotes5')
 
     return describe_availability(_transformer_ontonotes5_availability)
 
 
-@check_type
 def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
     """
     Load Transformer Entity Tagging model trained on Malaya Entity, transfer learning Transformer + CRF.
@@ -295,7 +294,6 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
     )
 
 
-@check_type
 def transformer_ontonotes5(
     model: str = 'xlnet', quantized: bool = False, **kwargs
 ):

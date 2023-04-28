@@ -20,7 +20,6 @@ from malaya.path import PATH_ALBERT, S3_PATH_ALBERT
 from collections import defaultdict
 import numpy as np
 import os
-from herpetologist import check_type
 from typing import List
 
 albert_num_layers = {'albert': 12, 'tiny-albert': 4}
@@ -161,7 +160,6 @@ class Model:
             feed_dict={self.X: s_tokens, self.MASK: s_masks},
         )
 
-    @check_type
     def vectorize(self, strings: List[str], **kwargs):
         """
         Vectorize string inputs.
@@ -191,7 +189,6 @@ class Model:
         )
         return attentions, s_tokens, batch_masks
 
-    @check_type
     def attention(self, strings: List[str], method: str = 'last', **kwargs):
         """
         Get attention string inputs.
@@ -240,7 +237,6 @@ class Model:
             )
         return output
 
-    @check_type
     def visualize_attention(self, string: str):
         """
         Visualize attention.
@@ -269,7 +265,6 @@ class Model:
         _attention(results)
 
 
-@check_type
 def load(model: str = 'albert', **kwargs):
     """
     Load albert model.

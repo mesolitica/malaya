@@ -61,7 +61,6 @@ from malaya.text.rules import rules_normalizer, rules_normalizer_rev
 from malaya.cluster import cluster_words
 from malaya.function import validator
 from malaya.preprocessing import Tokenizer, demoji
-from herpetologist import check_type
 from typing import Callable, List
 import logging
 
@@ -205,7 +204,6 @@ class Normalizer:
             k.lower(): re.compile(_expressions[k]) for k, v in _expressions.items()
         }
 
-    @check_type
     def normalize(
         self,
         string: str,

@@ -42,6 +42,7 @@ from . import kg_to_text
 from . import language_detection
 from . import language_model
 from . import lexicon
+from . import llm
 from . import normalize
 from . import nsfw
 from . import num2word

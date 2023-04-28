@@ -7,7 +7,6 @@ from malaya.text.function import (
     get_stopwords,
 )
 from malaya.function import validator
-from herpetologist import check_type
 from typing import List, Tuple
 
 import numpy as np
@@ -44,7 +43,6 @@ _accepted_entities = [
 ]
 
 
-@check_type
 def cluster_words(list_words: List[str], lowercase: bool = False):
     """
     cluster similar words based on structure, eg, ['mahathir mohamad', 'mahathir'] = ['mahathir mohamad'].
@@ -84,7 +82,6 @@ def cluster_words(list_words: List[str], lowercase: bool = False):
     return list(set(results))
 
 
-@check_type
 def cluster_pos(result: List[Tuple[str, str]]):
     """
     cluster similar POS.
@@ -122,7 +119,6 @@ def cluster_pos(result: List[Tuple[str, str]]):
     return output
 
 
-@check_type
 def cluster_entities(result: List[Tuple[str, str]]):
     """
     cluster similar Entities.
@@ -159,7 +155,6 @@ def cluster_entities(result: List[Tuple[str, str]]):
     return output
 
 
-@check_type
 def cluster_tagging(result: List[Tuple[str, str]]):
     """
     cluster any tagging results, as long the data passed `[(string, label), (string, label)]`.
@@ -194,7 +189,6 @@ def cluster_tagging(result: List[Tuple[str, str]]):
     return output
 
 
-@check_type
 def cluster_scatter(
     corpus: List[str],
     vectorizer,
@@ -343,7 +337,6 @@ def cluster_scatter(
     }
 
 
-@check_type
 def cluster_dendogram(
     corpus: List[str],
     vectorizer,
@@ -471,7 +464,6 @@ def cluster_dendogram(
     return {'linkage_matrix': linkage_matrix, 'titles': titles}
 
 
-@check_type
 def cluster_graph(
     corpus: List[str],
     vectorizer,

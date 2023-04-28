@@ -5,7 +5,6 @@ from malaya.stack import voting_stack
 from malaya.cluster import cluster_words
 from malaya.model.bert import DependencyBERT
 from malaya.model.xlnet import DependencyXLNET
-from herpetologist import check_type
 import numpy as np
 from typing import List, Callable
 
@@ -28,7 +27,6 @@ def _combined(r):
     return results_
 
 
-@check_type
 def parse_from_dependency(
     models,
     string: str,

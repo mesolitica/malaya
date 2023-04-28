@@ -11,7 +11,6 @@ from malaya.model.bert import DependencyBERT
 from malaya.path import MODEL_VOCAB, MODEL_BPE
 from malaya.supervised import huggingface as load_huggingface
 from malaya.function import describe_availability
-from herpetologist import check_type
 import logging
 import warnings
 
@@ -175,7 +174,8 @@ def _validate_version(version):
 
 
 def _describe():
-    logger.info('tested on test set at https://github.com/huseinzol05/malay-dataset/tree/master/parsing/dependency')
+    logger.info(
+        'tested on test set at https://github.com/huseinzol05/malay-dataset/tree/master/parsing/dependency')
 
 
 def describe():
@@ -245,7 +245,8 @@ def available_transformer(version: str = 'v2'):
     """
 
     warnings.warn(
-        '`malaya.dependency.available_transformer` is deprecated, use `malaya.dependency.available_huggingface` instead', DeprecationWarning)
+        '`malaya.dependency.available_transformer` is deprecated, use `malaya.dependency.available_huggingface` instead',
+        DeprecationWarning)
     _describe()
     return describe_availability(_transformer_availability[_validate_version(version)])
 
@@ -259,7 +260,6 @@ def available_huggingface():
     return describe_availability(_huggingface_availability)
 
 
-@check_type
 def transformer(version: str = 'v2', model: str = 'xlnet', quantized: bool = False, **kwargs):
     """
     Load Transformer Dependency Parsing model, transfer learning Transformer + biaffine attention.
@@ -287,7 +287,8 @@ def transformer(version: str = 'v2', model: str = 'xlnet', quantized: bool = Fal
         * if `xlnet` in model, will return `malaya.model.xlnet.DependencyXLNET`.
     """
     warnings.warn(
-        '`malaya.dependency.transformer` is deprecated, use `malaya.dependency.huggingface` instead', DeprecationWarning)
+        '`malaya.dependency.transformer` is deprecated, use `malaya.dependency.huggingface` instead',
+        DeprecationWarning)
     logger.warning(
         '`malaya.dependency.transformer` trained on indonesian dataset and augmented dataset, not an actual malay dataset.')
 

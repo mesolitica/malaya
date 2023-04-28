@@ -1,7 +1,6 @@
 from malaya.supervised import t5 as t5_load
 from malaya.model.t5 import Paraphrase as T5_Paraphrase
 from malaya.supervised import huggingface as load_huggingface
-from herpetologist import check_type
 from malaya.function import describe_availability
 import logging
 import warnings
@@ -56,7 +55,8 @@ _huggingface_availability = {
 
 def _describe():
     logger.info('tested on MRPC validation set, https://huggingface.co/datasets/mesolitica/translated-MRPC')
-    logger.info('tested on ParaSCI ARXIV test set, https://huggingface.co/datasets/mesolitica/translated-paraSCI')
+    logger.info(
+        'tested on ParaSCI ARXIV test set, https://huggingface.co/datasets/mesolitica/translated-paraSCI')
 
 
 def available_transformer():
@@ -65,7 +65,8 @@ def available_transformer():
     """
 
     warnings.warn(
-        '`malaya.paraphrase.available_transformer` is deprecated, use `malaya.paraphrase.available_huggingface` instead', DeprecationWarning)
+        '`malaya.paraphrase.available_transformer` is deprecated, use `malaya.paraphrase.available_huggingface` instead',
+        DeprecationWarning)
 
     _describe()
     return describe_availability(_transformer_availability)
@@ -80,7 +81,6 @@ def available_huggingface():
     return describe_availability(_huggingface_availability)
 
 
-@check_type
 def transformer(model: str = 'small-t5', quantized: bool = False, **kwargs):
     """
     Load Malaya transformer encoder-decoder model to paraphrase.
@@ -101,7 +101,8 @@ def transformer(model: str = 'small-t5', quantized: bool = False, **kwargs):
         * if `t5` in model, will return `malaya.model.t5.Paraphrase`.
     """
     warnings.warn(
-        '`malaya.paraphrase.transformer` is deprecated, use `malaya.paraphrase.huggingface` instead', DeprecationWarning)
+        '`malaya.paraphrase.transformer` is deprecated, use `malaya.paraphrase.huggingface` instead',
+        DeprecationWarning)
 
     model = model.lower()
     if model not in _transformer_availability:

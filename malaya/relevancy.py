@@ -1,5 +1,4 @@
 from malaya.supervised import classification
-from herpetologist import check_type
 from malaya.function import describe_availability
 import logging
 
@@ -101,7 +100,6 @@ def available_transformer():
     return describe_availability(_transformer_availability)
 
 
-@check_type
 def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
     """
     Load Transformer relevancy model.

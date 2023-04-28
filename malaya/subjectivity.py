@@ -1,6 +1,5 @@
 from malaya.supervised import classification
 from malaya.path import PATH_SUBJECTIVE, S3_PATH_SUBJECTIVE
-from herpetologist import check_type
 from malaya.function import describe_availability
 import logging
 
@@ -99,7 +98,6 @@ def multinomial(**kwargs):
     )
 
 
-@check_type
 def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
     """
     Load Transformer subjectivity model.

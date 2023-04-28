@@ -22,7 +22,6 @@ import collections
 import re
 import os
 import numpy as np
-from herpetologist import check_type
 from typing import List
 
 
@@ -116,7 +115,6 @@ class Model:
                     g.get_tensor_by_name('%s:0' % (a)) for a in attentions
                 ]
 
-    @check_type
     def vectorize(self, strings: List[str], **kwargs):
         """
         Vectorize string inputs.
@@ -158,7 +156,6 @@ class Model:
         )
         return attentions, s_tokens, input_masks
 
-    @check_type
     def attention(self, strings: List[str], method: str = 'last', **kwargs):
         """
         Get attention string inputs.
@@ -208,7 +205,6 @@ class Model:
             )
         return output
 
-    @check_type
     def visualize_attention(self, string: str):
         """
         Visualize attention.
@@ -237,7 +233,6 @@ class Model:
         _attention(results)
 
 
-@check_type
 def load(model: str = 'xlnet', pool_mode: str = 'last', **kwargs):
     """
     Load xlnet model.

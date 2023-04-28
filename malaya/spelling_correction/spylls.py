@@ -6,7 +6,6 @@ from malaya.dictionary import is_english, is_malay
 from malaya.text.rules import rules_normalizer
 from malaya.text.tatabahasa import stopword_tatabahasa
 from malaya.spelling_correction.probability import Spell
-from herpetologist import check_type
 from typing import List
 
 
@@ -14,7 +13,6 @@ class Spylls(Spell):
     def __init__(self, dictionary):
         self._dictionary = dictionary
 
-    @check_type
     def correct(self, word: str):
         """
         Correct a word within a text, returning the corrected word.
@@ -43,7 +41,6 @@ class Spylls(Spell):
             else:
                 return word
 
-    @check_type
     def edit_candidates(self, word: str):
         """
         Generate candidates given a word.
@@ -59,7 +56,6 @@ class Spylls(Spell):
         return list(self._dictionary.suggest(word))
 
 
-@check_type
 def load(model: str = 'libreoffice-pejam', **kwargs):
     """
     Load a spylls Spell Corrector for Malay.

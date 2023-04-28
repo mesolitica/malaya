@@ -1,7 +1,6 @@
 import re
 from malaya.text.tatabahasa import tatabahasa_dict, hujung, permulaan
 from malaya.supervised import tag
-from herpetologist import check_type
 from malaya.function import describe_availability
 import logging
 
@@ -128,7 +127,6 @@ def _naive_POS_word(word):
         return ('', word)
 
 
-@check_type
 def naive(string: str):
     """
     Recognize POS in a string using Regex.
@@ -148,7 +146,6 @@ def naive(string: str):
     return results
 
 
-@check_type
 def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
     """
     Load Transformer POS Tagging model, transfer learning Transformer + CRF.

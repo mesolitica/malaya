@@ -1,10 +1,7 @@
-from malaya.supervised import t5 as t5_load
 from malaya.supervised import transformer as load_transformer
 from malaya.model.tf import Tatabahasa
-from malaya.model.t5 import Tatabahasa as T5_Tatabahasa
 from malaya.supervised import huggingface as load_huggingface
 from malaya.function import describe_availability
-from herpetologist import check_type
 import logging
 import warnings
 
@@ -159,7 +156,8 @@ def describe_tagging():
 
 
 def _describe():
-    logger.info('tested on 5k generated dataset at https://f000.backblazeb2.com/file/malay-dataset/tatabahasa/test-set-tatabahasa.pkl')
+    logger.info(
+        'tested on 5k generated dataset at https://f000.backblazeb2.com/file/malay-dataset/tatabahasa/test-set-tatabahasa.pkl')
 
 
 def available_transformer():
@@ -183,7 +181,6 @@ def available_huggingface():
     return describe_availability(_huggingface_availability)
 
 
-@check_type
 def transformer(model: str = 'base', quantized: bool = False, **kwargs):
     """
     Load Malaya transformer encoder-decoder + tagging model to correct a `kesalahan tatabahasa` text.
@@ -220,7 +217,6 @@ def transformer(model: str = 'base', quantized: bool = False, **kwargs):
     )
 
 
-@check_type
 def huggingface(
     model: str = 'mesolitica/finetune-tatabahasa-t5-small-standard-bahasa-cased',
     force_check: bool = True,
@@ -245,4 +241,5 @@ def huggingface(
         raise ValueError(
             'model not supported, please check supported models from `malaya.tatabahasa.available_huggingface()`.'
         )
-    return load_huggingface.load_tatabahasa(model=model, initial_text='kesalahan tatabahasa:', **kwargs)
+    return load_huggingface.load_tatabahasa(
+        model=model, initial_text='kesalahan tatabahasa:', **kwargs)

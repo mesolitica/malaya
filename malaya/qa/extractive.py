@@ -1,6 +1,5 @@
 from malaya.supervised import qa
 from malaya.supervised import huggingface as load_huggingface
-from herpetologist import check_type
 from malaya.function import describe_availability
 import logging
 import warnings
@@ -94,7 +93,8 @@ def available_transformer():
     """
 
     warnings.warn(
-        '`malaya.qa.extractive.available_transformer` is deprecated, use `malaya.qa.extractive.available_huggingface` instead', DeprecationWarning)
+        '`malaya.qa.extractive.available_transformer` is deprecated, use `malaya.qa.extractive.available_huggingface` instead',
+        DeprecationWarning)
 
     _describe()
     return describe_availability(_transformer_availability)
@@ -110,7 +110,6 @@ def available_huggingface():
     return describe_availability(_huggingface_availability)
 
 
-@check_type
 def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
     """
     Load Transformer Span model trained on SQUAD V2 dataset.
@@ -129,7 +128,8 @@ def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
     """
 
     warnings.warn(
-        '`malaya.qa.extractive.transformer` is deprecated, use `malaya.qa.extractive.huggingface` instead', DeprecationWarning)
+        '`malaya.qa.extractive.transformer` is deprecated, use `malaya.qa.extractive.huggingface` instead',
+        DeprecationWarning)
 
     model = model.lower()
     if model not in _transformer_availability:

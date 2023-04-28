@@ -93,86 +93,23 @@ chrF2++ = 60.27
 }
 
 _huggingface_availability = {
-    'mesolitica/finetune-translation-t5-tiny-standard-bahasa-cased-v2': {
-        'Size (MB)': 139,
-        'BLEU': 41.625536185056305,
-        'SacreBLEU Verbose': '73.4/50.1/35.7/25.7 (BP = 0.971 ratio = 0.972 hyp_len = 21400 ref_len = 22027)',
-        'SacreBLEU-chrF++-FLORES200': 65.70,
-        'Suggested length': 1024,
-        'from lang': ['en', 'ms'],
-        'to lang': ['ms', 'ms'],
-    },
-    'mesolitica/finetune-translation-t5-small-standard-bahasa-cased-v2': {
+    'mesolitica/translation-t5-small-standard-bahasa-cased': {
         'Size (MB)': 242,
         'BLEU': 43.93729753370648,
         'SacreBLEU Verbose': '74.9/52.2/37.9/27.7 (BP = 0.976 ratio = 0.977 hyp_len = 21510 ref_len = 22027)',
         'SacreBLEU-chrF++-FLORES200': 67.43,
         'Suggested length': 1024,
-        'from lang': ['en', 'ms'],
-        'to lang': ['ms', 'ms'],
+        'from lang': ['en', 'ms', 'ind', 'jav', 'bjn'],
+        'to lang': ['en', 'ms'],
     },
-    'mesolitica/finetune-translation-t5-base-standard-bahasa-cased-v2': {
-        'Size (MB)': 892,
-        'BLEU': 44.17355862158963,
-        'SacreBLEU Verbose': '74.7/52.3/38.0/28.0 (BP = 0.979 ratio = 0.979 hyp_len = 21569 ref_len = 22027)',
-        'SacreBLEU-chrF++-FLORES200': 67.60,
-        'Suggested length': 1024,
-        'from lang': ['en', 'ms'],
-        'to lang': ['ms', 'ms'],
-    },
-    'mesolitica/finetune-noisy-translation-t5-tiny-bahasa-cased-v4': {
-        'Size (MB)': 139,
-        'BLEU': 60.0009672168891,
-        'SacreBLEU Verbose': '77.9/63.9/54.6/47.7 (BP = 1.000 ratio = 1.036 hyp_len = 110970 ref_len = 107150)',
-        'SacreBLEU-chrF++-FLORES200': None,
-        'Suggested length': 1024,
-        'from lang': [None, 'en', 'ms'],
-        'to lang': ['ms', 'ms'],
-    },
-    'mesolitica/finetune-noisy-translation-t5-small-bahasa-cased-v4': {
+    'mesolitica/translation-t5-base-standard-bahasa-cased': {
         'Size (MB)': 242,
-        'BLEU': 64.06258219941243,
-        'SacreBLEU Verbose': '80.1/67.7/59.1/52.5 (BP = 1.000 ratio = 1.042 hyp_len = 111635 ref_len = 107150)',
-        'SacreBLEU-chrF++-FLORES200': None,
+        'BLEU': 43.93729753370648,
+        'SacreBLEU Verbose': '74.9/52.2/37.9/27.7 (BP = 0.976 ratio = 0.977 hyp_len = 21510 ref_len = 22027)',
+        'SacreBLEU-chrF++-FLORES200': 67.43,
         'Suggested length': 1024,
-        'from lang': [None, 'en', 'ms'],
-        'to lang': ['ms', 'ms'],
-    },
-    'mesolitica/finetune-noisy-translation-t5-base-bahasa-cased-v2': {
-        'Size (MB)': 892,
-        'BLEU': 64.583819005204,
-        'SacreBLEU Verbose': '80.2/68.1/59.8/53.2 (BP = 1.000 ratio = 1.048 hyp_len = 112260 ref_len = 107150)',
-        'SacreBLEU-chrF++-FLORES200': None,
-        'Suggested length': 1024,
-        'from lang': ['en', 'ms'],
-        'to lang': ['ms', 'ms'],
-    },
-    'mesolitica/finetune-translation-austronesian-t5-tiny-standard-bahasa-cased': {
-        'Size (MB)': 139,
-        'BLEU': 30.277470707798773,
-        'SacreBLEU Verbose': '64.2/38.0/24.1/15.6 (BP = 0.978 ratio = 0.978 hyp_len = 21542 ref_len = 22027)',
-        'SacreBLEU-chrF++-FLORES200': 57.38,
-        'Suggested length': 512,
-        'from lang': ['ind', 'jav', 'ms'],
-        'to lang': ['ind', 'jav', 'ms'],
-    },
-    'mesolitica/finetune-translation-austronesian-t5-small-standard-bahasa-cased': {
-        'Size (MB)': 242,
-        'BLEU': 30.24358980824753,
-        'SacreBLEU Verbose': '61.1/36.9/23.8/15.6 (BP = 1.000 ratio = 1.052 hyp_len = 23174 ref_len = 22027)',
-        'SacreBLEU-chrF++-FLORES200': 58.43,
-        'Suggested length': 512,
-        'from lang': ['ind', 'jav', 'ms'],
-        'to lang': ['ind', 'jav', 'ms'],
-    },
-    'mesolitica/finetune-translation-austronesian-t5-base-standard-bahasa-cased': {
-        'Size (MB)': 892,
-        'BLEU': 31.494673032706213,
-        'SacreBLEU Verbose': '64.1/38.8/25.1/16.5 (BP = 0.989 ratio = 0.990 hyp_len = 21796 ref_len = 22027)',
-        'SacreBLEU-chrF++-FLORES200': 58.10,
-        'Suggested length': 512,
-        'from lang': ['ind', 'jav', 'ms'],
-        'to lang': ['ind', 'jav', 'ms'],
+        'from lang': ['en', 'ms', 'ind', 'jav', 'bjn'],
+        'to lang': ['en', 'ms'],
     },
 }
 
@@ -234,7 +171,6 @@ def huggingface(
         )
     return load_huggingface.load_translation(
         model=model,
-        from_lang=_huggingface_availability[model]['from lang'],
         to_lang=_huggingface_availability[model]['to lang'],
         **kwargs,
     )

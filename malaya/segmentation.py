@@ -10,7 +10,6 @@ from malaya.supervised import huggingface as load_huggingface
 from malaya.function import check_file
 from malaya.supervised import t5 as t5_load
 from malaya.model.t5 import Segmentation as T5_Segmentation
-from herpetologist import check_type
 from typing import List
 from malaya.function import describe_availability
 import logging
@@ -167,7 +166,6 @@ class Segmenter:
         else:
             return self.case_split.sub(r' \1', word)
 
-    @check_type
     def segment(self, strings: List[str]):
         """
         Segment strings.
@@ -222,7 +220,8 @@ def available_transformer():
     """
 
     warnings.warn(
-        '`malaya.segmentation.available_transformer` is deprecated, use `malaya.segmentation.available_huggingface` instead', DeprecationWarning)
+        '`malaya.segmentation.available_transformer` is deprecated, use `malaya.segmentation.available_huggingface` instead',
+        DeprecationWarning)
 
     _describe()
     return describe_availability(_transformer_availability)
@@ -237,7 +236,6 @@ def available_huggingface():
     return describe_availability(_huggingface_availability)
 
 
-@check_type
 def transformer(model: str = 'small', quantized: bool = False, **kwargs):
     """
     Load transformer encoder-decoder model to segmentation.
@@ -256,7 +254,8 @@ def transformer(model: str = 'small', quantized: bool = False, **kwargs):
     """
 
     warnings.warn(
-        '`malaya.segmentation.transformer` is deprecated, use `malaya.segmentation.huggingface` instead', DeprecationWarning)
+        '`malaya.segmentation.transformer` is deprecated, use `malaya.segmentation.huggingface` instead',
+        DeprecationWarning)
 
     model = model.lower()
     if model not in _transformer_availability:
@@ -283,7 +282,6 @@ def transformer(model: str = 'small', quantized: bool = False, **kwargs):
         )
 
 
-@check_type
 def huggingface(
     model: str = 'mesolitica/finetune-segmentation-t5-tiny-standard-bahasa-cased',
     force_check: bool = True,

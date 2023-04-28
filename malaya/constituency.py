@@ -9,7 +9,6 @@ from malaya.model.tf import Constituency
 from malaya.path import MODEL_VOCAB, MODEL_BPE
 from malaya.supervised import settings
 from malaya.function import describe_availability
-from herpetologist import check_type
 import logging
 
 logger = logging.getLogger(__name__)
@@ -82,7 +81,6 @@ def available_transformer():
     return describe_availability(_transformer_availability)
 
 
-@check_type
 def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
     """
     Load Transformer Constituency Parsing model, transfer learning Transformer + self attentive parsing.

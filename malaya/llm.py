@@ -1,10 +1,25 @@
 from malaya.supervised import huggingface as load_huggingface
-from malaya.function import describe_availability, check_file
+from malaya.function import describe_availability
 import logging
 
 logger = logging.getLogger(__name__)
 
 _huggingface_availability = {
+    'mesolitica/gptj6b-finetune': {
+        'base model': 'EleutherAI/gpt-j-6b',
+        'Size (GB)': 24.2,
+        'sharded': False,
+    },
+    'mesolitica/pythia-6.9b-finetune': {
+        'base model': 'EleutherAI/pythia-6.9b',
+        'Size (GB)': 13.85,
+        'sharded': True,
+    },
+    'mesolitica/pythia-2.8b-finetune': {
+        'base model': 'EleutherAI/pythia-2.8b',
+        'Size (GB)': 5.68,
+        'sharded': True,
+    }
 }
 
 
@@ -17,16 +32,16 @@ def available_huggingface():
 
 
 def huggingface(
-    model: str = 'mesolitica/llama-7b',
+    model: str = 'mesolitica/pythia-2.8b-finetune',
     force_check: bool = True,
     **kwargs,
 ):
     """
-    Load HuggingFace model to translate.
+    Load LLM HuggingFace model.
 
     Parameters
     ----------
-    model: str, optional (default='mesolitica/llama-7b')
+    model: str, optional (default='mesolitica/pythia-2.8b-finetune')
         Check available models at `malaya.llm.available_huggingface()`.
     force_check: bool, optional (default=True)
         Force check model one of malaya model.
@@ -40,4 +55,9 @@ def huggingface(
         raise ValueError(
             'model not supported, please check supported models from `malaya.llm.available_huggingface()`.'
         )
+
+    if not _huggingface_availability[model]['sharded']:
+        logger.warning(
+            f'`{model}` is not sharded, this can caused OOM during loading the machine, make sure you have enough memory to load it at the first place.')
+
     return load_huggingface.load_llm

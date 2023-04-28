@@ -1,4 +1,3 @@
-from herpetologist import check_type
 from malaya.supervised import huggingface as load_huggingface
 from malaya.function import describe_availability
 import logging

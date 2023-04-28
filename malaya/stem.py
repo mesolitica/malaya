@@ -10,7 +10,6 @@ from malaya.supervised.t2t import load_lstm_yttm
 from malaya.preprocessing import Tokenizer
 from malaya.function import describe_availability
 from malaya.path import STEMMER_VOCAB
-from herpetologist import check_type
 import logging
 
 logger = logging.getLogger(__name__)
@@ -35,7 +34,6 @@ def _classification_textcleaning_stemmer(string, stemmer):
 class Base:
     _tokenizer = Tokenizer().tokenize
 
-    @check_type
     def stem(self, string: str, **kwargs):
         result = []
         tokenized = self._tokenizer(string)
@@ -70,7 +68,6 @@ class Sastrawi(Base):
     def __init__(self, factory):
         self.sastrawi_stemmer = factory.create_stemmer()
 
-    @check_type
     def stem_word(self, word: str, **kwargs):
         """
         Stem a word using Sastrawi, this also include lemmatization.
@@ -85,7 +82,6 @@ class Sastrawi(Base):
         """
         return self.sastrawi_stemmer.stem(word)
 
-    @check_type
     def stem(self, string: str):
         """
         Stem a string using Sastrawi, this also include lemmatization.
@@ -134,7 +130,6 @@ class Naive(Base):
             word = word_temp
         return word
 
-    @check_type
     def stem(self, string: str):
         """
         Stem a string using Regex pattern.
@@ -160,7 +155,6 @@ class DeepStemmer(Abstract, Base):
         self._sess = sess
         self._bpe = bpe
 
-    @check_type
     def greedy_decoder(self, string: str):
         """
         Stem a string, this also include lemmatization using greedy decoder.
@@ -176,7 +170,6 @@ class DeepStemmer(Abstract, Base):
 
         return self.stem(string, beam_search=False)
 
-    @check_type
     def beam_decoder(self, string: str):
         """
         Stem a string, this also include lemmatization using beam decoder.
@@ -244,7 +237,6 @@ class DeepStemmer(Abstract, Base):
 
         return predicted
 
-    @check_type
     def stem(self, string: str, beam_search: bool = False):
         """
         Stem a string, this also include lemmatization.
@@ -289,7 +281,6 @@ def available_deep_model():
     return describe_availability(_availability)
 
 
-@check_type
 def naive():
     """
     Load stemming model using startswith and endswith naively using regex patterns.
@@ -302,7 +293,6 @@ def naive():
     return Naive()
 
 
-@check_type
 def sastrawi():
     """
     Load stemming model using Sastrawi, this also include lemmatization.
@@ -321,7 +311,6 @@ def sastrawi():
     return Sastrawi(StemmerFactory())
 
 
-@check_type
 def deep_model(model: str = 'base', quantized: bool = False, **kwargs):
     """
     Load LSTM + Bahdanau Attention stemming model, BPE level (YouTokenToMe 1000 vocab size).

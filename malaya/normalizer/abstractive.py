@@ -12,7 +12,7 @@ _huggingface_availability = {
         'SacreBLEU Verbose': '77.9/63.9/54.6/47.7 (BP = 1.000 ratio = 1.036 hyp_len = 110970 ref_len = 107150)',
         'Suggested length': 256,
     },
-    'mesolitica/finetune-noisy-translation-t5-small-bahasa-cased-v4': {
+    'mesolitica/finetune-noisy-translation-t5-small-bahasa-cased-v3': {
         'Size (MB)': 242,
         'BLEU': 64.06258219941243,
         'SacreBLEU Verbose': '80.1/67.7/59.1/52.5 (BP = 1.000 ratio = 1.042 hyp_len = 111635 ref_len = 107150)',
@@ -32,14 +32,15 @@ def available_huggingface():
     List available huggingface models.
     """
 
-    logger.info('tested on noisy twitter google translation, https://huggingface.co/datasets/mesolitica/augmentation-test-set')
+    logger.info(
+        'tested on noisy twitter google translation, https://huggingface.co/datasets/mesolitica/augmentation-test-set')
     return describe_availability(_huggingface_availability)
 
 
 def huggingface(
-    model: str = 'mesolitica/finetune-noisy-translation-t5-small-bahasa-cased-v4',
+    model: str = 'mesolitica/finetune-noisy-translation-t5-small-bahasa-cased-v3',
     force_check: bool = True,
-    use_rules_normalizer: bool = True,
+    use_rules_normalizer: bool = False,
     kenlm_model: str = 'bahasa-wiki-news',
     stem_model: str = 'noisy',
     segmenter: Callable = None,
@@ -61,7 +62,7 @@ def huggingface(
     force_check: bool, optional (default=True)
         Force check model one of malaya model.
         Set to False if you have your own huggingface model.
-    use_rules_normalizer: bool, optional(default=True)
+    use_rules_normalizer: bool, optional(default=False)
     kenlm_model: str, optional (default='bahasa-wiki-news')
         the model trained on `malaya.language_model.kenlm(model = 'bahasa-wiki-news')`,
         but you can use any kenlm model from `malaya.language_model.available_kenlm`.
@@ -116,14 +117,20 @@ def huggingface(
             stemmer=stemmer,
             maxlen=maxlen_speller,
             minlen=minlen_speller,
+            **kwargs,
         )
-        normalizer = load_normalizer(corrector, stemmer, date=False)
+        normalizer = load_normalizer(corrector, stemmer, date=False, **kwargs)
     else:
         normalizer = None
 
+    if model not in _huggingface_availability and force_check:
+        raise ValueError(
+            'model not supported, please check supported models from `malaya.normalizer.abstractive.available_huggingface()`.'
+        )
+
     return load_huggingface.load_normalizer(
         model=model,
-        initial_text='terjemah pasar Melayu ke Melayu: ',
+        initial_text='terjemah ke Melayu: ',
         normalizer=normalizer,
         segmenter=segmenter,
         text_scorer=text_scorer,

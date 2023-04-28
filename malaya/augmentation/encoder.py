@@ -4,12 +4,9 @@ import numpy as np
 import re
 import string as string_function
 from tensorflow.keras.preprocessing.sequence import pad_sequences
-from malaya.augmentation.base import _make_upper, _replace
-from malaya.text.tatabahasa import consonants, vowels
+from malaya.augmentation.base import _make_upper
 from malaya.text.function import is_emoji
 from malaya.text.regex import _expressions, _money, _date
-from herpetologist import check_type
-from typing import Callable, Dict, List
 import warnings
 
 
@@ -25,7 +22,6 @@ def to_ids(string, tokenizer):
     return masked_ids, masked_ids.index(tokenizer.vocab['[MASK]'])
 
 
-@check_type
 def wordvector(
     string: str,
     wordvector,
@@ -114,7 +110,6 @@ def wordvector(
     return augmented
 
 
-@check_type
 def transformer(
     string: str,
     model,

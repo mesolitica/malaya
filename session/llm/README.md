@@ -44,6 +44,12 @@ CUDA_VISIBLE_DEVICES='1' python3 gptneox.py --output_dir='./lora-gptneox-v5' --s
 ```
 
 ```bash
-CUDA_VISIBLE_DEVICES='1' python3 gptneox.py --output_dir='./lora-gptneox-v6' --save_steps=100 --lora_r=16 --lora_dropout=0.05 --cutoff_len=1536 --data_files='shuf-combined-v3.jsonl' \
+CUDA_VISIBLE_DEVICES='1' python3 gptneox.py --output_dir='./lora-gptneox-v5' --save_steps=100 --lora_r=16 --lora_dropout=0.05 --cutoff_len=1536 --data_files='shuf-combined-v4.jsonl' \
+--lora_target_modules='[query_key_value, xxx]' --base_model='EleutherAI/pythia-2.8b' \
+--resume_from_checkpoint='./lora-gptneox-v5/checkpoint-3800'
+```
+
+```bash
+CUDA_VISIBLE_DEVICES='0' python3 gptneox.py --output_dir='./lora-gptneox-v6' --save_steps=100 --lora_r=16 --lora_dropout=0.05 --cutoff_len=1536 --data_files='shuf-combined-v4.jsonl' \
 --lora_target_modules='[query_key_value, xxx]' --base_model='EleutherAI/pythia-6.9b'
 ```

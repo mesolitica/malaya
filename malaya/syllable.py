@@ -2,11 +2,10 @@ import re
 import logging
 from malaya.supervised.t2t import load_lstm_yttm
 from malaya.model.abstract import Abstract
-from malaya.text.function import PUNCTUATION, case_of, is_emoji
+from malaya.text.function import PUNCTUATION, is_emoji
 from malaya.text.regex import _expressions, _money, _date
 from malaya.path import SYLLABLE_VOCAB
 from malaya.function import describe_availability
-from herpetologist import check_type
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +33,6 @@ def replace_same_length(l, r):
 
 
 class Base:
-    @check_type
     def tokenize(self, string: str, **kwargs):
         word = string
         if (
@@ -174,7 +172,6 @@ class Tokenizer(Base):
         letters, arrange = self.split_letters(string)
         return self.split_syllables_from_letters(letters, arrange)
 
-    @check_type
     def tokenize(self, string: str):
         """
         Tokenize string into multiple strings using syllable patterns.
@@ -233,7 +230,6 @@ class DeepSyllable(Abstract, Base):
             predicted = r_[1]
         return predicted.split('.')
 
-    @check_type
     def tokenize(self, string, beam_search: bool = False):
         """
         Tokenize string into multiple strings using deep learning.
@@ -286,7 +282,6 @@ def rules(**kwargs):
     return Tokenizer()
 
 
-@check_type
 def deep_model(model: str = 'base', quantized: bool = False, **kwargs):
     """
     Load LSTM + Bahdanau Attention syllable tokenizer model, BPE level (YouTokenToMe 300 vocab size).

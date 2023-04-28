@@ -8,7 +8,6 @@ from malaya.function import check_file
 from malaya.path import PATH_WORDVECTOR, S3_PATH_WORDVECTOR
 from malaya.function import get_device, generate_session
 from malaya.text.calculator import Calculator
-from herpetologist import check_type
 from typing import List, Tuple
 import logging
 
@@ -51,7 +50,6 @@ def available_wordvector():
     return describe_availability(_wordvector_availability)
 
 
-@check_type
 def load(model: str = 'wikipedia', **kwargs):
     """
     Return malaya.wordvector.WordVector object.
@@ -80,7 +78,6 @@ def load(model: str = 'wikipedia', **kwargs):
 
 
 class WordVector:
-    @check_type
     def __init__(self, embed_matrix, dictionary: dict, **kwargs):
         """
         Parameters
@@ -116,7 +113,6 @@ class WordVector:
                 )
                 self._sess = generate_session(_graph, **kwargs)
 
-    @check_type
     def get_vector_by_name(
         self, word: str, soft: bool = False, topn_soft: int = 5
     ):
@@ -153,7 +149,6 @@ class WordVector:
                 )
         return self._embed_matrix[self._dictionary[word]]
 
-    @check_type
     def tree_plot(
         self, labels, figsize: Tuple[int, int] = (7, 7), annotate: bool = True
     ):
@@ -218,7 +213,6 @@ class WordVector:
         plt.show()
         return embed, labelled
 
-    @check_type
     def scatter_plot(
         self,
         labels,
@@ -372,7 +366,6 @@ class WordVector:
                 )
         return words
 
-    @check_type
     def batch_calculator(
         self,
         equations: List[str],
@@ -400,7 +393,6 @@ class WordVector:
             return_similarity=return_similarity,
         )
 
-    @check_type
     def calculator(
         self,
         equation: str,
@@ -447,7 +439,6 @@ class WordVector:
                 word_list.append(self._reverse_dictionary[i])
             return word_list
 
-    @check_type
     def batch_n_closest(
         self,
         words: List[str],
@@ -499,7 +490,6 @@ class WordVector:
             return_similarity=return_similarity,
         )
 
-    @check_type
     def n_closest(
         self,
         word: str,
@@ -557,7 +547,6 @@ class WordVector:
         sorted_indices = np.argsort(dist_array)
         return sorted_indices[:num]
 
-    @check_type
     def analogy(
         self, a: str, b: str, c: str, num: int = 1, metric: str = 'cosine'
     ):
@@ -593,7 +582,6 @@ class WordVector:
             d_word_list.append(self._reverse_dictionary[i])
         return d_word_list
 
-    @check_type
     def project_2d(self, start: int, end: int):
         """
         project word2vec into 2d dimension.
@@ -608,6 +596,13 @@ class WordVector:
         embed_2d: TSNE decomposition
         word_list: words in between `start` and `end`.
         """
+        try:
+            from sklearn.manifold import TSNE
+        except BaseException:
+            raise ModuleNotFoundError(
+                'sklearn not installed. Please install it and try again.'
+            )
+
         tsne = TSNE(n_components=2)
         embed_2d = tsne.fit_transform(self._embed_matrix[start:end, :])
         word_list = []
@@ -615,7 +610,6 @@ class WordVector:
             word_list.append(self._reverse_dictionary[i])
         return embed_2d, word_list
 
-    @check_type
     def network(
         self,
         word: str,
@@ -678,7 +672,7 @@ class WordVector:
             else:
                 accepted_list.append(centre)
 
-            closest = n_closest(
+            closest = self.n_closest(
                 centre, num_closest=num_closest, return_similarity=False
             )
 

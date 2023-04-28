@@ -1,6 +1,5 @@
 from malaya.model.bert import ZeroshotBERT
 from malaya.model.xlnet import ZeroshotXLNET
-from herpetologist import check_type
 from malaya.similarity.semantic import (
     _transformer_availability,
     _huggingface_availability,
@@ -18,7 +17,8 @@ def available_transformer():
     """
 
     warnings.warn(
-        '`malaya.zero_shot.classification.available_transformer` is deprecated, use `malaya.zero_shot.classification.available_huggingface` instead', DeprecationWarning)
+        '`malaya.zero_shot.classification.available_transformer` is deprecated, use `malaya.zero_shot.classification.available_huggingface` instead',
+        DeprecationWarning)
 
     _describe()
     return describe_availability(_transformer_availability)
@@ -33,7 +33,6 @@ def available_huggingface():
     return describe_availability(_huggingface_availability)
 
 
-@check_type
 def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
     """
     Load Transformer zero-shot model.
@@ -56,7 +55,8 @@ def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
     """
 
     warnings.warn(
-        '`malaya.zero_shot.classification.transformer` is deprecated, use `malaya.zero_shot.classification.huggingface` instead', DeprecationWarning)
+        '`malaya.zero_shot.classification.transformer` is deprecated, use `malaya.zero_shot.classification.huggingface` instead',
+        DeprecationWarning)
 
     return _transformer(
         model=model,

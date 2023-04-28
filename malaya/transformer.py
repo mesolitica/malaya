@@ -1,5 +1,4 @@
 import tensorflow as tf
-from herpetologist import check_type
 from malaya.function import describe_availability
 from malaya.supervised import huggingface as load_huggingface
 import logging
@@ -88,7 +87,8 @@ def available_transformer():
     """
 
     warnings.warn(
-        '`malaya.transformer.available_transformer` is deprecated, use `malaya.transformer.available_huggingface` instead', DeprecationWarning)
+        '`malaya.transformer.available_transformer` is deprecated, use `malaya.transformer.available_huggingface` instead',
+        DeprecationWarning)
 
     return describe_availability(_transformer_availability)
 
@@ -101,7 +101,6 @@ def available_huggingface():
     return describe_availability(_huggingface_availability)
 
 
-@check_type
 def load(model: str = 'electra', pool_mode: str = 'last', **kwargs):
     """
     Load transformer model.
@@ -129,7 +128,9 @@ def load(model: str = 'electra', pool_mode: str = 'last', **kwargs):
         * if `electra` in model, will return `malaya.transformers.electra.Model`.
     """
 
-    warnings.warn('`malaya.transformer.load` is deprecated, use `malaya.transformer.huggingface` instead', DeprecationWarning)
+    warnings.warn(
+        '`malaya.transformer.load` is deprecated, use `malaya.transformer.huggingface` instead',
+        DeprecationWarning)
 
     model = model.lower()
     pool_mode = pool_mode.lower()

@@ -15,8 +15,6 @@ from malaya.path import (
     LANGUAGE_DETECTION_BOW,
     LANGUAGE_DETECTION_VOCAB,
 )
-from herpetologist import check_type
-from malaya.function import describe_availability
 import logging
 
 logger = logging.getLogger(__name__)
@@ -33,11 +31,11 @@ lang_labels = {
 label = list(lang_labels.values())
 
 
-@check_type
 def fasttext(quantized: bool = True, **kwargs):
     """
     Load Fasttext language detection model.
     Original size is 353MB, Quantized size 31.1MB.
+
 
     Parameters
     ----------
@@ -65,12 +63,11 @@ def fasttext(quantized: bool = True, **kwargs):
     )
     try:
         model_fasttext = fasttext.load_model(path['model'])
-    except:
+    except BaseException:
         raise Exception(f'failed to load fasttext model, please try clear the cache and try again')
     return LanguageDetection(model_fasttext, lang_labels)
 
 
-@check_type
 def deep_model(quantized: bool = False, **kwargs):
     """
     Load deep learning language detection model.

@@ -20,7 +20,6 @@ from malaya.text.bpe import (
 from collections import defaultdict
 import numpy as np
 import os
-from herpetologist import check_type
 from typing import List
 
 bert_num_layers = {'bert': 12, 'tiny-bert': 4}
@@ -150,7 +149,6 @@ class Model:
             feed_dict={self.X: s_tokens, self.MASK: s_masks},
         )
 
-    @check_type
     def vectorize(self, strings: List[str], **kwargs):
         """
         Vectorize string inputs.
@@ -180,7 +178,6 @@ class Model:
         )
         return attentions, s_tokens, batch_masks
 
-    @check_type
     def attention(self, strings: List[str], method: str = 'last', **kwargs):
         """
         Get attention string inputs.
@@ -229,7 +226,6 @@ class Model:
             )
         return output
 
-    @check_type
     def visualize_attention(self, string: str):
         """
         Visualize attention.
@@ -258,7 +254,6 @@ class Model:
         _attention(results)
 
 
-@check_type
 def load(model: str = 'base', **kwargs):
     """
     Load bert model.

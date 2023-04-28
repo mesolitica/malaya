@@ -1,8 +1,6 @@
 from malaya.supervised import transformer as load_transformer
 from malaya.model.tf import RumiJawi
 from malaya.function import describe_availability
-from herpetologist import check_type
-from typing import List
 import logging
 
 logger = logging.getLogger(__name__)
@@ -29,7 +27,8 @@ def available_transformer():
     """
     List available transformer models.
     """
-    logger.info('tested on first 10k Rumi-Jawi test set, dataset at https://huggingface.co/datasets/mesolitica/rumi-jawi')
+    logger.info(
+        'tested on first 10k Rumi-Jawi test set, dataset at https://huggingface.co/datasets/mesolitica/rumi-jawi')
 
     return describe_availability(_transformer_availability)
 

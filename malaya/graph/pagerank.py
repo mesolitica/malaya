@@ -2,11 +2,6 @@ from malaya.graph import fast_pagerank as load_fast_pagerank
 from scipy import sparse
 import logging
 
-try:
-    import networkx as nx
-except BaseException:
-    from networkx import nx
-
 logger = logging.getLogger(__name__)
 
 
@@ -21,6 +16,11 @@ def pagerank(array, fast_pagerank=True, retry=5, **kwargs):
         fail = False
 
     else:
+        try:
+            import networkx as nx
+        except BaseException:
+            from networkx import nx
+
         nx_graph = nx.from_numpy_array(array)
         for _ in range(retry):
             try:

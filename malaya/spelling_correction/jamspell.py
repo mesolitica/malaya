@@ -6,7 +6,6 @@ from malaya.text.tatabahasa import stopword_tatabahasa
 from malaya.text.rules import rules_normalizer
 from malaya.path import PATH_NGRAM, S3_PATH_NGRAM
 from malaya.function import check_file, describe_availability
-from herpetologist import check_type
 from typing import List
 
 """
@@ -34,7 +33,6 @@ class JamSpell:
     def __init__(self, corrector):
         self._corrector = corrector
 
-    @check_type
     def correct(self, word: str, string: List[str], index: int = -1):
         """
         Correct a word within a text, returning the corrected word.
@@ -91,7 +89,6 @@ class JamSpell:
         """
         return self.correct_word(match.group(), string=string, index=index)
 
-    @check_type
     def correct_text(self, text: str):
         """
         Correct all the words within a text, returning the corrected text.

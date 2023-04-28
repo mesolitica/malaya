@@ -2,11 +2,8 @@ from malaya.supervised import t2t
 from malaya.supervised.settings import phoneme_left, phoneme_right
 from malaya.supervised.settings import phoneme_ipa_left, phoneme_ipa_right
 from malaya.text.function import phoneme_textcleaning
-from herpetologist import check_type
-from typing import List
 
 
-@check_type
 def deep_model_dbp(quantized: bool = False, **kwargs):
     """
     Load LSTM + Bahdanau Attention phonetic model,
@@ -38,7 +35,7 @@ def deep_model_dbp(quantized: bool = False, **kwargs):
 def deep_model_ipa(quantized: bool = False, **kwargs):
     """
     Load LSTM + Bahdanau Attention phonetic model,
-    256 filter size, 2 layers, character level. 
+    256 filter size, 2 layers, character level.
     Original data from https://github.com/open-dict-data/ipa-dict/blob/master/data/ma.txt
 
     Original size 10.4MB, quantized size 2.77MB .

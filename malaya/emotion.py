@@ -1,6 +1,5 @@
 from malaya.supervised import classification
 from malaya.path import PATH_EMOTION, S3_PATH_EMOTION
-from herpetologist import check_type
 from malaya.function import describe_availability
 import logging
 
@@ -124,7 +123,6 @@ def multinomial(**kwargs):
     )
 
 
-@check_type
 def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
     """
     Load Transformer emotion model.

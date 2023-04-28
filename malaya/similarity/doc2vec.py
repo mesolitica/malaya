@@ -6,7 +6,6 @@ from sklearn.metrics.pairwise import (
     euclidean_distances,
     manhattan_distances,
 )
-from herpetologist import check_type
 from typing import List, Tuple, Callable
 
 similarity_functions = {
@@ -53,7 +52,6 @@ class VectorizerSimilarity:
         else:
             return 1 / (similar + 1)
 
-    @check_type
     def predict_proba(
         self,
         left_strings: List[str],
@@ -82,7 +80,6 @@ class VectorizerSimilarity:
             left_strings, right_strings, similarity=similarity
         ).diagonal()
 
-    @check_type
     def heatmap(
         self,
         strings: List[str],
@@ -146,7 +143,6 @@ class Doc2VecSimilarity:
         self._jarowinkler = JaroWinkler()
         self._tokenizer = Tokenizer().tokenize
 
-    @check_type
     def _predict(
         self,
         left_strings: List[str],
@@ -245,7 +241,6 @@ class Doc2VecSimilarity:
         else:
             return 1 / (similar + 1)
 
-    @check_type
     def predict_proba(
         self,
         left_strings: List[str],
@@ -284,7 +279,6 @@ class Doc2VecSimilarity:
             soft=soft,
         ).diagonal()
 
-    @check_type
     def heatmap(
         self,
         strings: List[str],
