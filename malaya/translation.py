@@ -98,8 +98,8 @@ _huggingface_availability = {
         'BLEU': 43.93729753370648,
         'SacreBLEU Verbose': '74.9/52.2/37.9/27.7 (BP = 0.976 ratio = 0.977 hyp_len = 21510 ref_len = 22027)',
         'SacreBLEU-chrF++-FLORES200': 67.43,
-        'Suggested length': 1024,
-        'from lang': ['en', 'ms', 'ind', 'jav', 'bjn'],
+        'Suggested length': 2048,
+        'from lang': ['en', 'ms', 'ind', 'jav', 'bjn', 'manglish'],
         'to lang': ['en', 'ms'],
     },
     'mesolitica/translation-t5-base-standard-bahasa-cased': {
@@ -107,8 +107,8 @@ _huggingface_availability = {
         'BLEU': 43.93729753370648,
         'SacreBLEU Verbose': '74.9/52.2/37.9/27.7 (BP = 0.976 ratio = 0.977 hyp_len = 21510 ref_len = 22027)',
         'SacreBLEU-chrF++-FLORES200': 67.43,
-        'Suggested length': 1024,
-        'from lang': ['en', 'ms', 'ind', 'jav', 'bjn'],
+        'Suggested length': 2048,
+        'from lang': ['en', 'ms', 'ind', 'jav', 'bjn', 'manglish'],
         'to lang': ['en', 'ms'],
     },
 }

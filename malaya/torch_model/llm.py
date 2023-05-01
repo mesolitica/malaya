@@ -1,7 +1,8 @@
 import torch
-import logging
 from malaya.function.streaming import Iteratorize, Stream
+from malaya.text.prompt import template_alpaca as template
 from transformers import GenerationConfig, AutoTokenizer, AutoModelForCausalLM, StoppingCriteriaList
+import logging
 
 logger = logging.getLogger(__name__)
 
@@ -21,19 +22,12 @@ def validate_peft():
         )
 
 
-template = {
-    'description': 'Template used by Alpaca-LoRA.',
-    'prompt_input': 'Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\n{instruction}\n\n### Input:\n{input}\n\n### Response:\n',
-    'prompt_no_input': 'Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\n{instruction}\n\n### Response:\n',
-    'response_split': '### Response:',
-}
-
-
 class LLM:
-    def __init__(self, base_model, model):
-        validate_peft()
+    def __init__(self, base_model, model, lora=True, **kwargs):
+        if lora:
+            validate_peft()
 
-        self.tokenizer = AutoTokenizer.from_pretrained(base_model)
+        self.tokenizer = AutoTokenizer.from_pretrained(base_model, **kwargs)
 
         if torch.cuda.is_available():
             self.device = 'cuda'
@@ -41,33 +35,26 @@ class LLM:
             self.device = 'cpu'
 
         if self.device == 'cuda':
-
-            self.model = AutoModelForCausalLM.from_pretrained(
-                base_model,
-                load_in_8bit=False,
-                torch_dtype=torch.float16,
-                device_map='auto',
-            )
-
-            self.model = PeftModel.from_pretrained(
-                self.model,
-                model,
-                torch_dtype=torch.float16,
-            )
-
-            self.model.half()
-
+            device_map = 'auto'
+            torch_dtype = torch.float16
         else:
-            self.model = AutoModelForCausalLM.from_pretrained(
-                base_model,
-                device_map={'': self.device},
-                low_cpu_mem_usage=True,
-            )
+            device_map = {'': self.device}
+            torch_dtype = 'auto'
 
+        self.model = AutoModelForCausalLM.from_pretrained(
+            base_model if lora else model,
+            torch_dtype=torch_dtype,
+            device_map=device_map,
+            low_cpu_mem_usage=True,
+            **kwargs,
+        )
+
+        if lora:
             self.model = PeftModel.from_pretrained(
                 self.model,
                 model,
-                device_map={'': self.device},
+                torch_dtype=torch.float16,
+                **kwargs,
             )
 
         if 'gpt-j' in base_model:
@@ -77,6 +64,9 @@ class LLM:
             self.model.config.eos_token_id = self.tokenizer.eos_token_id = 0
         else:
             raise ValueError('only support `gpt-j` and `pythia` right now.')
+
+        if self.device == 'cuda':
+            self.model.half()
 
         _ = self.model.eval()
 
@@ -88,15 +78,27 @@ class LLM:
 
     def generate(
         self,
-        query,
-        temperature=0.7,
-        top_p=0.75,
-        top_k=40,
-        num_beams=4,
-        max_new_tokens=128,
+        query: str,
+        temperature: float = 0.7,
+        top_p: float = 0.75,
+        top_k: int = 40,
+        num_beams: int = 4,
+        max_new_tokens: int = 128,
         **kwargs,
     ):
         """
+        Generate respond from user input.
+
+        Parameters
+        ----------
+        query: str
+            User input.
+        **kwargs: vector arguments pass to huggingface `generate` method.
+            Read more at https://huggingface.co/docs/transformers/main_classes/text_generation
+
+        Returns
+        -------
+        result: str
         """
         input_ids = self._get_input(query=query)
 
@@ -118,15 +120,27 @@ class LLM:
 
     def generate_stream(
         self,
-        query,
-        temperature=0.7,
-        top_p=0.75,
-        top_k=40,
-        num_beams=4,
-        max_new_tokens=128,
+        query: str,
+        temperature: float = 0.7,
+        top_p: float = 0.75,
+        top_k: int = 40,
+        num_beams: int = 4,
+        max_new_tokens: int = 128,
         **kwargs,
     ):
         """
+        Generate respond from user input in streaming mode.
+
+        Parameters
+        ----------
+        query: str
+            User input.
+        **kwargs: vector arguments pass to huggingface `generate` method.
+            Read more at https://huggingface.co/docs/transformers/main_classes/text_generation
+
+        Returns
+        -------
+        result: str
         """
         input_ids = self._get_input(query=query)
         generation_config = GenerationConfig(
@@ -134,6 +148,7 @@ class LLM:
             top_p=top_p,
             top_k=top_k,
             num_beams=num_beams,
+            **kwargs,
         )
 
         generate_params = {

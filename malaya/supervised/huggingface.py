@@ -19,6 +19,7 @@ from malaya.torch_model.huggingface import (
     KGtoText,
     Translation,
 )
+from malaya.torch_model.llm import LLM
 from transformers import TFAutoModel, AutoTokenizer
 from transformers import AutoTokenizer
 from malaya_boilerplate.utils import check_tf2
@@ -118,3 +119,7 @@ def load_kgtt(model, **kwargs):
 
 def load_translation(model, from_lang, to_lang, **kwargs):
     return Translation(model=model, from_lang=from_lang, to_lang=to_lang, **kwargs)
+
+
+def load_llm(base_model, model, lora, **kwargs):
+    return LLM(base_model=base_model, model=model, lora=lora, **kwargs)

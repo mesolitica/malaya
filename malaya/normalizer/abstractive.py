@@ -128,9 +128,14 @@ def huggingface(
             'model not supported, please check supported models from `malaya.normalizer.abstractive.available_huggingface()`.'
         )
 
+    if 'mesolitica/finetune-translation' in model:
+        initial_text = 'terjemah ke Melayu: '
+    else:
+        initial_text = 'terjemah pasar Melayu ke Melayu: ',
+
     return load_huggingface.load_normalizer(
         model=model,
-        initial_text='terjemah ke Melayu: ',
+        initial_text=initial_text,
         normalizer=normalizer,
         segmenter=segmenter,
         text_scorer=text_scorer,

@@ -4,11 +4,6 @@ Original implementation at https://github.com/nikitakit/self-attentive-parser. W
 
 **This directory is very lack of comments, able to understand Tensorflow, Tensorflow estimator and Tensorflow Dataset are really helpful**.
 
-## Table of contents
-  * [prepare dataset](#prepare-dataset)
-  * [training pretrained models](#training-pretrained-models)
-  * [test and export the models](#test-and-export-the-models)
-
 ## prepare dataset
 
 1. Get the dataset at https://github.com/huseinzol05/Malay-Dataset/tree/master/parsing/constituency

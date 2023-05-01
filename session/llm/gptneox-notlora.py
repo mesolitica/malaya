@@ -26,7 +26,7 @@ def main(
     lora_target_modules=[
         "query_key_value"
     ],
-    cutoff_len=1024,
+    cutoff_len=1536,
     batch_size=64,
     micro_batch_size=4,
     learning_rate: float = 3e-4,
@@ -51,8 +51,6 @@ def main(
 
     model = GPTNeoXForCausalLM.from_pretrained(
         base_model,
-        load_in_8bit=True,
-        torch_dtype=torch.float16,
         device_map=device_map,
         offload_folder="offload",
         offload_state_dict=True,
@@ -63,19 +61,6 @@ def main(
     tokenizer.pad_token_id = 1
     tokenizer.eos_token_id = 0
     tokenizer.padding_side = "left"
-
-    model = prepare_model_for_int8_training(model)
-    config = LoraConfig(
-        r=lora_r,
-        lora_alpha=lora_alpha,
-        target_modules=lora_target_modules,
-        lora_dropout=lora_dropout,
-        bias="none",
-        task_type="CAUSAL_LM",
-    )
-    model = get_peft_model(model, config)
-
-    print(model.print_trainable_parameters())
 
     def tokenize(prompt, add_eos_token=True):
         # there's probably a way to do this with the tokenizer settings
@@ -155,13 +140,6 @@ def main(
         ),
     )
     model.config.use_cache = False
-
-    old_state_dict = model.state_dict
-    model.state_dict = (
-        lambda self, *_, **__: get_peft_model_state_dict(
-            self, old_state_dict()
-        )
-    ).__get__(model, type(model))
 
     trainer.train(resume_from_checkpoint=resume_from_checkpoint)
 
