@@ -105,7 +105,6 @@ Contents:
    load-num2word
    load-word2num
    load-coreference-resolution
-   load-normalizer-abstractive
    load-normalizer
 
 .. toctree::
@@ -187,16 +186,8 @@ Contents:
    :maxdepth: 2
    :caption: Translation Module
 
-   load-translation-ms-en
-   load-translation-ms-en-huggingface
-   load-translation-noisy-ms-en-huggingface
-   load-translation-en-ms
-   load-translation-en-ms-huggingface
-   load-translation-noisy-en-ms-huggingface
-   load-translation-ind-ms-huggingface
-   load-translation-jav-ms-huggingface
-   load-translation-ms-ind-huggingface
-   load-translation-ms-jav-huggingface
+   load-translation-huggingface
+   load-noisy-translation-huggingface
 
 .. toctree::
    :maxdepth: 2

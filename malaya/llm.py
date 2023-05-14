@@ -17,12 +17,6 @@ _huggingface_availability = {
         'sharded': True,
         'lora': True,
     },
-    'mesolitica/pythia-1.4b-finetune': {
-        'base model': 'EleutherAI/pythia-1.4b',
-        'Size (GB)': 2.93,
-        'sharded': True,
-        'lora': False,
-    },
     'mesolitica/pythia-1b-finetune': {
         'base model': 'EleutherAI/pythia-1b',
         'Size (GB)': 2.09,

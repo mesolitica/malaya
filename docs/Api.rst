@@ -9,18 +9,6 @@ malaya
 .. automodule:: malaya
     :members:
 
-malaya.alignment.en_ms
-------------------------
-
-.. automodule:: malaya.alignment.en_ms
-    :members:
-
-malaya.alignment.ms_en
-------------------------
-
-.. automodule:: malaya.alignment.ms_en
-    :members:
-
 malaya.augmentation.abstractive
 --------------------------------
 
@@ -67,12 +55,6 @@ malaya.keyword.extractive
 --------------------------
 
 .. automodule:: malaya.keyword.extractive
-    :members:
-
-malaya.normalizer.abstractive
-------------------------------
-
-.. automodule:: malaya.normalizer.abstractive
     :members:
 
 malaya.normalizer.rules
@@ -191,18 +173,6 @@ malaya.topic_model.transformer
 .. autoclass:: malaya.topic_model.transformer.AttentionTopic()
     :members:
 
-malaya.translation.en_ms
--------------------------
-
-.. automodule:: malaya.translation.en_ms
-    :members:
-
-malaya.translation.ms_en
--------------------------
-
-.. automodule:: malaya.translation.ms_en
-    :members:
-
 malaya.zero_shot.classification
 --------------------------------
 
@@ -213,6 +183,12 @@ malaya.zero_shot.entity
 --------------------------------
 
 .. automodule:: malaya.zero_shot.entity
+    :members:
+
+malaya.alignment
+-----------------
+
+.. automodule:: malaya.alignment
     :members:
 
 malaya.cluster
@@ -420,6 +396,12 @@ malaya.transformer
 .. automodule:: malaya.transformer
     :members:
 
+malaya.translation
+-------------------------
+
+.. automodule:: malaya.translation
+    :members:
+
 malaya.true_case
 -------------------------
 
@@ -472,18 +454,6 @@ malaya.model.bert
     :members:
 
 .. autoclass:: malaya.model.bert.ZeroshotBERT()
-    :members:
-
-malaya.model.bigbird
-----------------------------------
-
-.. autoclass:: malaya.model.bigbird.MulticlassBigBird()
-    :members:
-
-.. autoclass:: malaya.model.bigbird.Translation()
-    :members:
-
-.. autoclass:: malaya.model.bigbird.Summarization()
     :members:
 
 malaya.model.extractive_summarization
@@ -549,9 +519,6 @@ malaya.model.tf
 ----------------------------------
 
 .. autoclass:: malaya.model.tf.DeepLang()
-    :members:
-
-.. autoclass:: malaya.model.tf.Translation()
     :members:
 
 .. autoclass:: malaya.model.tf.Constituency()
@@ -641,9 +608,6 @@ malaya.torch_model.huggingface
 .. autoclass:: malaya.torch_model.huggingface.ExtractiveQA()
     :members:
 
-.. autoclass:: malaya.torch_model.huggingface.ExtractiveQAFlan()
-    :members:
-
 .. autoclass:: malaya.torch_model.huggingface.Transformer()
     :members:
 
@@ -659,6 +623,8 @@ malaya.torch_model.huggingface
 .. autoclass:: malaya.torch_model.huggingface.Keyword()
     :members:
 
+.. autoclass:: malaya.torch_model.huggingface.Translation()
+    :members:
 
 malaya.torch_model.mask_lm
 ----------------------------------

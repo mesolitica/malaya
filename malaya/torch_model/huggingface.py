@@ -56,8 +56,15 @@ class Base:
 
 
 class Generator(Base):
-    def __init__(self, model, initial_text, base_model=AutoModelForSeq2SeqLM, **kwargs):
-        self.tokenizer = AutoTokenizer.from_pretrained(model, **kwargs)
+    def __init__(
+        self,
+        model,
+        initial_text,
+        base_model=AutoModelForSeq2SeqLM,
+        use_fast=True,
+        **kwargs
+    ):
+        self.tokenizer = AutoTokenizer.from_pretrained(model, use_fast=use_fast, **kwargs)
         self.model = base_model.from_pretrained(model, **kwargs)
         self._initial_text = initial_text
 
@@ -87,7 +94,7 @@ class Generator(Base):
         cuda = next(self.model.parameters()).is_cuda
         input_ids = [{'input_ids': self.tokenizer.encode(
             f'{_initial_text}{s}', return_tensors='pt')[0]} for s in strings]
-        padded = self.tokenizer.pad(input_ids, padding='longest')
+        padded = self.tokenizer.pad(input_ids, padding='longest', return_tensors='pt')
         for k in padded.keys():
             padded[k] = to_tensor_cuda(padded[k], cuda)
         outputs = self.model.generate(**padded, **kwargs)
@@ -452,21 +459,21 @@ class Aligment(Generator):
     def align(self):
         s = 'The Normans (Norman: Nourmands; French: Normands; Latin: Normanni) were the people who in the 10th and 11th centuries gave their name to Normandy, a region in France. They were descended from Norse ("Norman" comes from "Norseman") raiders and pirates from Denmark, Iceland and Norway who, under their leader Rollo, agreed to swear fealty to King Charles III of West Francia. Through generations of assimilation and mixing with the native Frankish and Roman-Gaulish populations, their descendants would gradually merge with the Carolingian-based cultures of West Francia. The distinct cultural and ethnic identity of the Normans emerged initially in the first half of the 10th century, and it continued to evolve over the succeeding centuries.'
         input_ids = {
-            'input_ids': tokenizer.encode(
+            'input_ids': self.tokenizer.encode(
                 f'terjemah Inggeris ke Melayu: {s}',
                 return_tensors='pt')}
-        outputs = model.generate(**input_ids, max_length=256)
-        outputs = tokenizer.batch_decode(outputs, skip_special_tokens=True)
-        decoder_input_ids = tokenizer.encode(outputs[0], return_tensors='pt')
-        o = model.forward(**input_ids, decoder_input_ids=decoder_input_ids, output_attentions=True)
+        outputs = self.model.generate(**input_ids, max_length=256)
+        outputs = self.tokenizer.batch_decode(outputs, skip_special_tokens=True)
+        decoder_input_ids = self.tokenizer.encode(outputs[0], return_tensors='pt')
+        o = self.model.forward(**input_ids, decoder_input_ids=decoder_input_ids, output_attentions=True)
         c = []
         for a in o['cross_attentions']:
             c.append(a.detach().numpy())
 
         n = np.mean(np.mean(c, axis=0)[0], axis=0)
-        s_t = tokenizer.tokenize(f'terjemah Inggeris ke Melayu: {s}')
-        t_t = tokenizer.tokenize(outputs[0])
-        rejected = tokenizer.all_special_tokens
+        s_t = self.tokenizer.tokenize(f'terjemah Inggeris ke Melayu: {s}')
+        t_t = self.tokenizer.tokenize(outputs[0])
+        rejected = self.tokenizer.all_special_tokens
 
         a = merge_sentencepiece_tokens_tagging(s_t, np.argmax(n.T, axis=1).tolist())
 
@@ -1286,11 +1293,12 @@ class KGtoText(Generator):
 
 
 class Translation(Generator):
-    def __init__(self, model, from_lang, to_lang, **kwargs):
+    def __init__(self, model, from_lang, to_lang, old_model, **kwargs):
         Generator.__init__(
             self,
             model=model,
             initial_text='',
+            use_fast=True if old_model else False,
             **kwargs,
         )
         self.from_lang = from_lang
@@ -1299,16 +1307,40 @@ class Translation(Generator):
         self.map_lang = {
             'en': 'Inggeris',
             'jav': 'Jawa',
+            'bjn': 'Banjarese',
             'ms': 'Melayu',
-            'ind': 'Indonesia'
+            'ind': 'Indonesia',
+            'pasar ms': 'pasar Melayu',
+            'manglish': 'Manglish',
         }
 
-    def generate(self, strings: List[str], from_lang: str = None, to_lang: str = 'ms', **kwargs):
-        if from_lang is None and None not in self.from_lang:
-            raise ValueError('this model does not support None `from_lang`')
+        self.all_special_ids = [0, 1, 2]
+        self.old_model = old_model
 
-        if from_lang not in self.from_lang:
-            raise ValueError(f'this model does not support `{from_lang}` for `from_lang`')
+    def generate(self, strings: List[str], from_lang: str = None, to_lang: str = 'ms', **kwargs):
+        """
+        Generate texts from the input.
+
+        Parameters
+        ----------
+        strings : List[str]
+        from_lang: str, optional (default=None)
+            old model required `from_lang` parameter to make it works properly,
+            while new model not required.
+        to_lang: str, optional (default='ms')
+            target language to translate.
+        **kwargs: vector arguments pass to huggingface `generate` method.
+            Read more at https://huggingface.co/docs/transformers/main_classes/text_generation
+
+        Returns
+        -------
+        result: List[str]
+        """
+        if self.old_model:
+            if from_lang is None:
+                raise ValueError('this model required `from_lang` parameter.')
+            if from_lang not in self.from_lang:
+                raise ValueError(f'this model does not support `{from_lang}` for `from_lang`')
 
         if to_lang not in self.to_lang:
             raise ValueError(f'this model does not support `{to_lang}` for `to_lang`')
@@ -1321,5 +1353,12 @@ class Translation(Generator):
         to_lang = self.map_lang[to_lang]
 
         prefix = f'terjemah{from_lang} ke {to_lang}: '
-        results = super().generate(strings, prefix=prefix, **kwargs)
+        if self.old_model:
+            results = super().generate(strings, prefix=prefix, **kwargs)
+        else:
+            results = super().generate(strings, prefix=prefix, return_generate=True, **kwargs)
+            results = self.tokenizer.batch_decode(
+                [[i for i in o if i not in self.all_special_ids] for o in results],
+                spaces_between_special_tokens=False,
+            )
         return results

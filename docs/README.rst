@@ -54,7 +54,7 @@ Documentation at https://malaya.readthedocs.io/en/latest/
 Features
 --------
 
--  **Alignment**, translation word alignment using Eflomal and pretrained Transformer models.
+-  **Alignment**, translation word alignment using Eflomal.
 -  **Abstractive text augmentation**, augment any text into social media text structure using T5-Bahasa.
 -  **Encoder text augmentation**, augment any text Wordvector or Transformer-Bahasa word replacement technique.
 -  **Rules based text augmentation**, augment any text using dictionary of synonym and rules based.
@@ -72,12 +72,7 @@ Features
 -  **Extractive Summarization**, Extractive interface using Transformer-Bahasa and Doc2Vec.
 -  **Text to Knowledge Graph**, Generate knowledge graph from human sentences.
 -  **Topic Modeling**, provide Transformer-Bahasa, LDA2Vec, LDA, NMF, LSA interface and easy BERTopic integration.
--  **EN-MS Translation**, provide English to standard Malay using T5-Bahasa.
--  **IND-MS Translation**, provide Indonesian to standard Malay using T5-Bahasa.
--  **JAV-MS Translation**, provide Javanese to standard Malay using T5-Bahasa.
--  **MS-EN Translation**, provide standard Malay to English using T5-Bahasa.
--  **MS-IND Translation**, provide standard Malay to Indonesian using T5-Bahasa.
--  **MS-JAV Translation**, provide standard Malay to Javanese using T5-Bahasa.
+-  **End-to-End Translation**, provide multilanguages translation including local languages to English or Malay using T5-Bahasa.
 -  **Zero-shot classification**, provide Zero-shot classification interface using Transformer-Bahasa to recognize texts without any labeled training data.
 -  **Zero-shot Entity Recognition**, provide Zero-shot entity tagging interface using Transformer-Bahasa to extract entities.
 -  **Constituency Parsing**, breaking a text into sub-phrases using finetuned Transformer-Bahasa.  

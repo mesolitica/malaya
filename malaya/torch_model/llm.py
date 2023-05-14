@@ -6,26 +6,9 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-peft_available = False
-try:
-    from peft import PeftModel
-
-    peft_available = True
-except Exception as e:
-    logger.warning('`peft` is not available, not able to load any LLM models.')
-
-
-def validate_peft():
-    if not peft_available:
-        raise ModuleNotFoundError(
-            'peft not installed. Please install it by `pip install git+https://github.com/huggingface/peft` and try again.'
-        )
-
 
 class LLM:
     def __init__(self, base_model, model, lora=True, **kwargs):
-        if lora:
-            validate_peft()
 
         self.tokenizer = AutoTokenizer.from_pretrained(base_model, **kwargs)
 
@@ -50,6 +33,14 @@ class LLM:
         )
 
         if lora:
+            try:
+                from peft import PeftModel
+
+            except Exception as e:
+                raise ModuleNotFoundError(
+                    'peft not installed. Please install it by `pip install peft` and try again.'
+                )
+
             self.model = PeftModel.from_pretrained(
                 self.model,
                 model,
@@ -79,11 +70,12 @@ class LLM:
     def generate(
         self,
         query: str,
-        temperature: float = 0.7,
+        temperature: float = 0.9,
         top_p: float = 0.75,
         top_k: int = 40,
         num_beams: int = 4,
         max_new_tokens: int = 128,
+        do_sample=True,
         **kwargs,
     ):
         """
@@ -112,6 +104,7 @@ class LLM:
                 top_p=top_p,
                 top_k=top_k,
                 num_beams=num_beams,
+                do_sample=do_sample,
                 **kwargs,
             )
             s = generation_output.sequences[0]
@@ -121,11 +114,12 @@ class LLM:
     def generate_stream(
         self,
         query: str,
-        temperature: float = 0.7,
+        temperature: float = 0.9,
         top_p: float = 0.75,
         top_k: int = 40,
         num_beams: int = 4,
         max_new_tokens: int = 128,
+        do_sample: bool = True,
         **kwargs,
     ):
         """
@@ -148,6 +142,7 @@ class LLM:
             top_p=top_p,
             top_k=top_k,
             num_beams=num_beams,
+            do_sample=do_sample,
             **kwargs,
         )
 

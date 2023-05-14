@@ -1,6 +1,7 @@
-from malaya.supervised import huggingface as load_huggingface
 from malaya.function import describe_availability, check_file
+from malaya.augmentation.abstractive import _huggingface
 from malaya.path import PATH_PREPROCESSING, S3_PATH_PREPROCESSING
+from typing import List
 import json
 import logging
 
@@ -93,23 +94,83 @@ chrF2++ = 60.27
 }
 
 _huggingface_availability = {
+    'mesolitica/finetune-noisy-translation-t5-tiny-bahasa-cased-v3': {
+        'Size (MB)': 139,
+        'Suggested length': 1024,
+        'en-ms chrF2++': 43.93729753370648,
+        'ms-en chrF2++': 43.93729753370648,
+        'pasar ms-ms chrF2++': 43.93729753370648,
+        'pasar ms-en chrF2++': 43.93729753370648,
+        'from lang': ['en', 'ms', 'pasar ms'],
+        'to lang': ['ms', 'en'],
+        'old model': True,
+    },
+    'mesolitica/finetune-noisy-translation-t5-small-bahasa-cased-v3': {
+        'Size (MB)': 242,
+        'Suggested length': 1024,
+        'en-ms chrF2++': 43.93729753370648,
+        'ms-en chrF2++': 43.93729753370648,
+        'pasar ms-ms chrF2++': 43.93729753370648,
+        'pasar ms-en chrF2++': 43.93729753370648,
+        'from lang': ['en', 'ms', 'pasar ms'],
+        'to lang': ['ms', 'en'],
+        'old model': True,
+    },
+    'mesolitica/finetune-noisy-translation-t5-base-bahasa-cased-v3': {
+        'Size (MB)': 892,
+        'Suggested length': 1024,
+        'en-ms chrF2++': 43.93729753370648,
+        'ms-en chrF2++': 43.93729753370648,
+        'pasar ms-ms chrF2++': 43.93729753370648,
+        'pasar ms-en chrF2++': 43.93729753370648,
+        'from lang': ['en', 'ms', 'pasar ms'],
+        'to lang': ['ms', 'en'],
+        'old model': True,
+    },
+    'mesolitica/translation-t5-tiny-standard-bahasa-cased': {
+        'Size (MB)': 139,
+        'en-ms chrF2++': 43.93729753370648,
+        'ms-en chrF2++': 43.93729753370648,
+        'ind-ms chrF2++': 43.93729753370648,
+        'jav-ms chrF2++': 43.93729753370648,
+        'pasar ms-ms chrF2++': 43.93729753370648,
+        'pasar ms-en chrF2++': 43.93729753370648,
+        'manglish-ms chrF2++': 43.93729753370648,
+        'manglish-en chrF2++': 43.93729753370648,
+        'Suggested length': 1536,
+        'from lang': ['en', 'ms', 'ind', 'jav', 'bjn', 'manglish', 'pasar ms'],
+        'to lang': ['en', 'ms'],
+        'old model': False,
+    },
     'mesolitica/translation-t5-small-standard-bahasa-cased': {
         'Size (MB)': 242,
-        'BLEU': 43.93729753370648,
-        'SacreBLEU Verbose': '74.9/52.2/37.9/27.7 (BP = 0.976 ratio = 0.977 hyp_len = 21510 ref_len = 22027)',
-        'SacreBLEU-chrF++-FLORES200': 67.43,
-        'Suggested length': 2048,
-        'from lang': ['en', 'ms', 'ind', 'jav', 'bjn', 'manglish'],
+        'en-ms chrF2++': 43.93729753370648,
+        'ms-en chrF2++': 43.93729753370648,
+        'ind-ms chrF2++': 43.93729753370648,
+        'jav-ms chrF2++': 43.93729753370648,
+        'pasar ms-ms chrF2++': 43.93729753370648,
+        'pasar ms-en chrF2++': 43.93729753370648,
+        'manglish-ms chrF2++': 43.93729753370648,
+        'manglish-en chrF2++': 43.93729753370648,
+        'Suggested length': 1536,
+        'from lang': ['en', 'ms', 'ind', 'jav', 'bjn', 'manglish', 'pasar ms'],
         'to lang': ['en', 'ms'],
+        'old model': False,
     },
     'mesolitica/translation-t5-base-standard-bahasa-cased': {
-        'Size (MB)': 242,
-        'BLEU': 43.93729753370648,
-        'SacreBLEU Verbose': '74.9/52.2/37.9/27.7 (BP = 0.976 ratio = 0.977 hyp_len = 21510 ref_len = 22027)',
-        'SacreBLEU-chrF++-FLORES200': 67.43,
-        'Suggested length': 2048,
-        'from lang': ['en', 'ms', 'ind', 'jav', 'bjn', 'manglish'],
+        'Size (MB)': 892,
+        'en-ms chrF2++': 43.93729753370648,
+        'ms-en chrF2++': 43.93729753370648,
+        'ind-ms chrF2++': 43.93729753370648,
+        'jav-ms chrF2++': 43.93729753370648,
+        'pasar ms-ms chrF2++': 43.93729753370648,
+        'pasar ms-en chrF2++': 43.93729753370648,
+        'manglish-ms chrF2++': 43.93729753370648,
+        'manglish-en chrF2++': 43.93729753370648,
+        'Suggested length': 1536,
+        'from lang': ['en', 'ms', 'ind', 'jav', 'bjn', 'manglish', 'pasar ms'],
         'to lang': ['en', 'ms'],
+        'old model': False,
     },
 }
 
@@ -120,7 +181,11 @@ def available_huggingface():
     """
 
     logger.info(
-        'tested on FLORES200 EN-MS pair `dev` set, https://github.com/facebookresearch/flores/tree/main/flores200')
+        'tested on FLORES200 pair `dev` set, https://github.com/huseinzol05/malay-dataset/tree/master/translation/flores200-eval')
+    logger.info(
+        'tested on noisy test set, https://github.com/huseinzol05/malay-dataset/tree/master/translation/noisy-eval')
+    logger.info('check out NLLB 200 metrics from `malaya.translation.nllb_metrics`.')
+    logger.info('check out Google Translate metrics from `malaya.translation.google_translate_metrics`.')
     return describe_availability(_huggingface_availability)
 
 
@@ -146,8 +211,11 @@ def dictionary(**kwargs):
 
 
 def huggingface(
-    model: str = 'mesolitica/finetune-translation-t5-small-standard-bahasa-cased-v2',
+    model: str = 'mesolitica/translation-t5-small-standard-bahasa-cased',
     force_check: bool = True,
+    from_lang: List[str] = None,
+    to_lang: List[str] = None,
+    old_model: bool = False,
     **kwargs,
 ):
     """
@@ -155,7 +223,7 @@ def huggingface(
 
     Parameters
     ----------
-    model: str, optional (default='mesolitica/finetune-translation-t5-small-standard-bahasa-cased-v2')
+    model: str, optional (default='mesolitica/translation-t5-small-standard-bahasa-cased')
         Check available models at `malaya.translation.available_huggingface()`.
     force_check: bool, optional (default=True)
         Force check model one of malaya model.
@@ -165,12 +233,13 @@ def huggingface(
     -------
     result: malaya.torch_model.huggingface.Translation
     """
-    if model not in _huggingface_availability and force_check:
-        raise ValueError(
-            'model not supported, please check supported models from `malaya.translation.available_huggingface()`.'
-        )
-    return load_huggingface.load_translation(
+    return _huggingface(
+        availability=_huggingface_availability,
         model=model,
-        to_lang=_huggingface_availability[model]['to lang'],
+        force_check=force_check,
+        from_lang=from_lang,
+        to_lang=to_lang,
+        old_model=old_model,
+        path=__name__,
         **kwargs,
     )

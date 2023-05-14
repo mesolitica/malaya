@@ -75,11 +75,23 @@ def main(
     )
     model = get_peft_model(model, config)
 
+    if resume_from_checkpoint:
+        checkpoint_name = os.path.join(
+            resume_from_checkpoint, "pytorch_model.bin"
+        )
+        if not os.path.exists(checkpoint_name):
+            checkpoint_name = os.path.join(resume_from_checkpoint, "adapter_model.bin")
+            resume_from_checkpoint = False
+        if os.path.exists(checkpoint_name):
+            print(f"Restarting from {checkpoint_name}")
+            adapters_weights = torch.load(checkpoint_name)
+            set_peft_model_state_dict(model, adapters_weights)
+        else:
+            print(f"Checkpoint {checkpoint_name} not found")
+
     print(model.print_trainable_parameters())
 
     def tokenize(prompt, add_eos_token=True):
-        # there's probably a way to do this with the tokenizer settings
-        # but again, gotta move fast
         result = tokenizer(
             prompt,
             truncation=True,

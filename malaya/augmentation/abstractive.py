@@ -1,5 +1,6 @@
-from malaya.supervised import huggingface as load_huggingface
 from malaya.function import describe_availability
+from malaya.supervised import huggingface as load_huggingface
+from typing import List
 import logging
 
 logger = logging.getLogger(__name__)
@@ -7,21 +8,63 @@ logger = logging.getLogger(__name__)
 _huggingface_availability = {
     'mesolitica/finetune-noisy-translation-t5-tiny-bahasa-cased-v3': {
         'Size (MB)': 139,
-        'BLEU': 60.0009672168891,
-        'SacreBLEU Verbose': '77.9/63.9/54.6/47.7 (BP = 1.000 ratio = 1.036 hyp_len = 110970 ref_len = 107150)',
-        'Suggested length': 256,
+        'Suggested length': 1024,
+        'ms-pasar ms chrF2++': 43.93729753370648,
+        'en-pasar ms chrF2++': 43.93729753370648,
+        'from lang': ['en', 'ms'],
+        'to lang': ['pasar ms'],
+        'old model': True,
     },
     'mesolitica/finetune-noisy-translation-t5-small-bahasa-cased-v3': {
         'Size (MB)': 242,
-        'BLEU': 64.06258219941243,
-        'SacreBLEU Verbose': '80.1/67.7/59.1/52.5 (BP = 1.000 ratio = 1.042 hyp_len = 111635 ref_len = 107150)',
-        'Suggested length': 256,
+        'Suggested length': 1024,
+        'ms-pasar ms chrF2++': 43.93729753370648,
+        'en-pasar ms chrF2++': 43.93729753370648,
+        'from lang': ['en', 'ms'],
+        'to lang': ['pasar ms'],
+        'old model': True,
     },
-    'mesolitica/finetune-noisy-translation-t5-base-bahasa-cased-v2': {
+    'mesolitica/finetune-noisy-translation-t5-base-bahasa-cased-v3': {
         'Size (MB)': 892,
-        'BLEU': 64.583819005204,
-        'SacreBLEU Verbose': '80.2/68.1/59.8/53.2 (BP = 1.000 ratio = 1.048 hyp_len = 112260 ref_len = 107150)',
-        'Suggested length': 256,
+        'Suggested length': 1024,
+        'ms-pasar ms chrF2++': 43.93729753370648,
+        'en-pasar ms chrF2++': 43.93729753370648,
+        'from lang': ['en', 'ms'],
+        'to lang': ['pasar ms'],
+        'old model': True,
+    },
+    'mesolitica/translation-t5-tiny-standard-bahasa-cased': {
+        'Size (MB)': 139,
+        'Suggested length': 1536,
+        'ms-pasar ms chrF2++': 43.93729753370648,
+        'en-pasar ms chrF2++': 43.93729753370648,
+        'ms-manglish chrF2++': 43.93729753370648,
+        'en-manglish chrF2++': 43.93729753370648,
+        'from lang': ['en', 'ms', 'ind', 'jav', 'bjn'],
+        'to lang': ['manglish', 'pasar ms'],
+        'old model': False,
+    },
+    'mesolitica/translation-t5-small-standard-bahasa-cased': {
+        'Size (MB)': 242,
+        'Suggested length': 1536,
+        'ms-pasar ms chrF2++': 43.93729753370648,
+        'en-pasar ms chrF2++': 43.93729753370648,
+        'ms-manglish chrF2++': 43.93729753370648,
+        'en-manglish chrF2++': 43.93729753370648,
+        'from lang': ['en', 'ms', 'ind', 'jav', 'bjn'],
+        'to lang': ['manglish', 'pasar ms'],
+        'old model': False,
+    },
+    'mesolitica/translation-t5-base-standard-bahasa-cased': {
+        'Size (MB)': 892,
+        'Suggested length': 1536,
+        'ms-pasar ms chrF2++': 43.93729753370648,
+        'en-pasar ms chrF2++': 43.93729753370648,
+        'ms-manglish chrF2++': 43.93729753370648,
+        'en-manglish chrF2++': 43.93729753370648,
+        'from lang': ['en', 'ms', 'ind', 'jav', 'bjn'],
+        'to lang': ['manglish', 'pasar ms'],
+        'old model': False,
     },
 }
 
@@ -36,10 +79,41 @@ def available_huggingface():
     return describe_availability(_huggingface_availability)
 
 
-def huggingface(
-    model: str = 'mesolitica/finetune-noisy-translation-t5-small-bahasa-cased-v3',
-    lang: str = 'ms',
+def _huggingface(
+    availability,
+    model: str = 'mesolitica/translation-t5-small-standard-bahasa-cased',
     force_check: bool = True,
+    from_lang: List[str] = None,
+    to_lang: List[str] = None,
+    old_model: bool = False,
+    path=__name__,
+    **kwargs,
+):
+    if model not in availability:
+        if force_check:
+            raise ValueError(
+                f'model not supported, please check supported models from `{path}.available_huggingface()`.'
+            )
+
+    else:
+        from_lang = from_lang or availability[model].get('from lang')
+        to_lang = to_lang or availability[model].get('to lang')
+        old_model = old_model or 'mesolitica/finetune' in model
+
+    return load_huggingface.load_translation(
+        model=model,
+        from_lang=from_lang,
+        to_lang=to_lang,
+        old_model=old_model,
+        **kwargs,
+    )
+
+def huggingface(
+    model: str = 'mesolitica/translation-t5-small-standard-bahasa-cased',
+    force_check: bool = True,
+    from_lang: List[str] = None,
+    to_lang: List[str] = None,
+    old_model: bool = False,
     **kwargs,
 ):
     """
@@ -47,28 +121,23 @@ def huggingface(
 
     Parameters
     ----------
-    model: str, optional (default='mesolitica/finetune-noisy-translation-t5-small-bahasa-cased-v3')
-        Check available models at `malaya.augmentation.abstractive.available_huggingface()`.
-    lang: str, optional (default='ms')
-        Input language, only accept `ms` or `en`.
+    model: str, optional (default='mesolitica/translation-t5-small-standard-bahasa-cased')
+        Check available models at `malaya.translation.available_huggingface()`.
     force_check: bool, optional (default=True)
         Force check model one of malaya model.
         Set to False if you have your own huggingface model.
 
     Returns
     -------
-    result: malaya.torch_model.huggingface.Generator
+    result: malaya.torch_model.huggingface.Translation
     """
-    map_lang = {'en': 'Inggeris', 'ms': 'Melayu'}
-    lang = lang.lower()
-    if lang not in map_lang:
-        raise ValueError('`lang` only accept `en` or `ms`.')
-
-    if model not in _huggingface_availability and force_check:
-        raise ValueError(
-            'model not supported, please check supported models from `malaya.augmentation.abstractive.available_huggingface()`.'
-        )
-    return load_huggingface.load_generator(
+    return _huggingface(
+        availability=_huggingface_availability,
         model=model,
-        initial_text=f'terjemah {map_lang[lang]} ke pasar Melayu: ',
-        **kwargs)
+        force_check=force_check,
+        from_lang=from_lang,
+        to_lang=to_lang,
+        old_model=old_model,
+        path=__name__,
+        **kwargs,
+    )
