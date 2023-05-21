@@ -776,7 +776,7 @@ def get_similar_substrings(needle, hay, additional_length_ratio=0.1, right_slide
             max_sim_val = similarity
             max_sim_string = hay_ngram
 
-    right_slided = ' '.join(query.split()[-right_slide:])
+    right_slided = ' '.join(hay.split()[-right_slide:])
     rfind = max_sim_string.rfind(right_slided)
     if rfind >= 0:
         max_sim_string = max_sim_string[:rfind + len(right_slided)]

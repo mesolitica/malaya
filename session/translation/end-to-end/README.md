@@ -1,6 +1,6 @@
 # HuggingFace T5
 
-## how-to
+## how-to T5
 
 1. Run prepare dataset, [prepare-data.ipynb](prepare-data.ipynb).
 
@@ -91,4 +91,16 @@ python3 run_t5.py \
 --learning_rate 5e-5 \
 --gradient_checkpointing true \
 --ignore_data_skip False
+```
+
+## how-to causal
+
+1. Run prepare dataset, [prepare-data.ipynb](prepare-data.ipynb).
+
+2. Run training script,
+
+```bash
+CUDA_VISIBLE_DEVICES='0' python3 causal.py --output_dir='./gptneox-pythia-160m' \
+--save_steps=1000 --data_files='test.json' --base_model='EleutherAI/pythia-160m' \
+--resume_from_checkpoint=True --learning_rate=2e-5
 ```

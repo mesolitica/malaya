@@ -9,8 +9,8 @@ _huggingface_availability = {
     'mesolitica/finetune-noisy-translation-t5-tiny-bahasa-cased-v3': {
         'Size (MB)': 139,
         'Suggested length': 1024,
-        'ms-pasar ms chrF2++': 43.93729753370648,
-        'en-pasar ms chrF2++': 43.93729753370648,
+        'ms-pasar ms chrF2++': 52.16,
+        'en-pasar ms chrF2++': 49.97,
         'from lang': ['en', 'ms'],
         'to lang': ['pasar ms'],
         'old model': True,
@@ -18,8 +18,8 @@ _huggingface_availability = {
     'mesolitica/finetune-noisy-translation-t5-small-bahasa-cased-v3': {
         'Size (MB)': 242,
         'Suggested length': 1024,
-        'ms-pasar ms chrF2++': 43.93729753370648,
-        'en-pasar ms chrF2++': 43.93729753370648,
+        'ms-pasar ms chrF2++': 51.62,
+        'en-pasar ms chrF2++': 50.30,
         'from lang': ['en', 'ms'],
         'to lang': ['pasar ms'],
         'old model': True,
@@ -27,8 +27,8 @@ _huggingface_availability = {
     'mesolitica/finetune-noisy-translation-t5-base-bahasa-cased-v3': {
         'Size (MB)': 892,
         'Suggested length': 1024,
-        'ms-pasar ms chrF2++': 43.93729753370648,
-        'en-pasar ms chrF2++': 43.93729753370648,
+        'ms-pasar ms chrF2++': 51.06,
+        'en-pasar ms chrF2++': 50.63,
         'from lang': ['en', 'ms'],
         'to lang': ['pasar ms'],
         'old model': True,
@@ -36,10 +36,10 @@ _huggingface_availability = {
     'mesolitica/translation-t5-tiny-standard-bahasa-cased': {
         'Size (MB)': 139,
         'Suggested length': 1536,
-        'ms-pasar ms chrF2++': 43.93729753370648,
-        'en-pasar ms chrF2++': 43.93729753370648,
-        'ms-manglish chrF2++': 43.93729753370648,
-        'en-manglish chrF2++': 43.93729753370648,
+        'ms-pasar ms chrF2++': 49.01,
+        'en-pasar ms chrF2++': 45.29,
+        'ms-manglish chrF2++': 37.55,
+        'en-manglish chrF2++': 44.32,
         'from lang': ['en', 'ms', 'ind', 'jav', 'bjn'],
         'to lang': ['manglish', 'pasar ms'],
         'old model': False,
@@ -47,10 +47,10 @@ _huggingface_availability = {
     'mesolitica/translation-t5-small-standard-bahasa-cased': {
         'Size (MB)': 242,
         'Suggested length': 1536,
-        'ms-pasar ms chrF2++': 43.93729753370648,
-        'en-pasar ms chrF2++': 43.93729753370648,
-        'ms-manglish chrF2++': 43.93729753370648,
-        'en-manglish chrF2++': 43.93729753370648,
+        'ms-pasar ms chrF2++': 50.82,
+        'en-pasar ms chrF2++': 49.28,
+        'ms-manglish chrF2++': 38.13,
+        'en-manglish chrF2++': 44.12,
         'from lang': ['en', 'ms', 'ind', 'jav', 'bjn'],
         'to lang': ['manglish', 'pasar ms'],
         'old model': False,
@@ -58,10 +58,10 @@ _huggingface_availability = {
     'mesolitica/translation-t5-base-standard-bahasa-cased': {
         'Size (MB)': 892,
         'Suggested length': 1536,
-        'ms-pasar ms chrF2++': 43.93729753370648,
-        'en-pasar ms chrF2++': 43.93729753370648,
-        'ms-manglish chrF2++': 43.93729753370648,
-        'en-manglish chrF2++': 43.93729753370648,
+        'ms-pasar ms chrF2++': 52.53,
+        'en-pasar ms chrF2++': 51.60,
+        'ms-manglish chrF2++': 39.07,
+        'en-manglish chrF2++': 44.06,
         'from lang': ['en', 'ms', 'ind', 'jav', 'bjn'],
         'to lang': ['manglish', 'pasar ms'],
         'old model': False,
@@ -107,6 +107,7 @@ def _huggingface(
         old_model=old_model,
         **kwargs,
     )
+
 
 def huggingface(
     model: str = 'mesolitica/translation-t5-small-standard-bahasa-cased',

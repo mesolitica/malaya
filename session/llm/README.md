@@ -60,8 +60,8 @@ CUDA_VISIBLE_DEVICES='1' python3 gptneox.py --output_dir='./lora-gptneox-v7' --s
 
 ```bash
 CUDA_VISIBLE_DEVICES='0' python3 gptneox-notlora.py --output_dir='./gptneox-pythia-1b' \
---save_steps=1000 --data_files='shuf-combined-v4.jsonl' --base_model='EleutherAI/pythia-1b' \
---resume_from_checkpoint=True
+--save_steps=200 --data_files='shuf-combined-v4.jsonl' --base_model='EleutherAI/pythia-1b' \
+--learning_rate=2e-5 --resume_from_checkpoint=True
 ```
 
 ```bash

@@ -97,10 +97,10 @@ _huggingface_availability = {
     'mesolitica/finetune-noisy-translation-t5-tiny-bahasa-cased-v3': {
         'Size (MB)': 139,
         'Suggested length': 1024,
-        'en-ms chrF2++': 43.93729753370648,
-        'ms-en chrF2++': 43.93729753370648,
-        'pasar ms-ms chrF2++': 43.93729753370648,
-        'pasar ms-en chrF2++': 43.93729753370648,
+        'en-ms chrF2++': 60.65,
+        'ms-en chrF2++': 60.34,
+        'pasar ms-ms chrF2++': 52.29,
+        'pasar ms-en chrF2++': 51.25,
         'from lang': ['en', 'ms', 'pasar ms'],
         'to lang': ['ms', 'en'],
         'old model': True,
@@ -108,10 +108,10 @@ _huggingface_availability = {
     'mesolitica/finetune-noisy-translation-t5-small-bahasa-cased-v3': {
         'Size (MB)': 242,
         'Suggested length': 1024,
-        'en-ms chrF2++': 43.93729753370648,
-        'ms-en chrF2++': 43.93729753370648,
-        'pasar ms-ms chrF2++': 43.93729753370648,
-        'pasar ms-en chrF2++': 43.93729753370648,
+        'en-ms chrF2++': 61.73,
+        'ms-en chrF2++': 61.70,
+        'pasar ms-ms chrF2++': 52.38,
+        'pasar ms-en chrF2++': 36.41,
         'from lang': ['en', 'ms', 'pasar ms'],
         'to lang': ['ms', 'en'],
         'old model': True,
@@ -119,55 +119,55 @@ _huggingface_availability = {
     'mesolitica/finetune-noisy-translation-t5-base-bahasa-cased-v3': {
         'Size (MB)': 892,
         'Suggested length': 1024,
-        'en-ms chrF2++': 43.93729753370648,
-        'ms-en chrF2++': 43.93729753370648,
-        'pasar ms-ms chrF2++': 43.93729753370648,
-        'pasar ms-en chrF2++': 43.93729753370648,
+        'en-ms chrF2++': 65.54,
+        'ms-en chrF2++': 62.96,
+        'pasar ms-ms chrF2++': 51.62,
+        'pasar ms-en chrF2++': 53.85,
         'from lang': ['en', 'ms', 'pasar ms'],
         'to lang': ['ms', 'en'],
         'old model': True,
     },
     'mesolitica/translation-t5-tiny-standard-bahasa-cased': {
         'Size (MB)': 139,
-        'en-ms chrF2++': 43.93729753370648,
-        'ms-en chrF2++': 43.93729753370648,
-        'ind-ms chrF2++': 43.93729753370648,
-        'jav-ms chrF2++': 43.93729753370648,
-        'pasar ms-ms chrF2++': 43.93729753370648,
-        'pasar ms-en chrF2++': 43.93729753370648,
-        'manglish-ms chrF2++': 43.93729753370648,
-        'manglish-en chrF2++': 43.93729753370648,
         'Suggested length': 1536,
+        'en-ms chrF2++': 65.91,
+        'ms-en chrF2++': 61.30,
+        'ind-ms chrF2++': 58.15,
+        'jav-ms chrF2++': 49.33,
+        'pasar ms-ms chrF2++': 58.46,
+        'pasar ms-en chrF2++': 55.76,
+        'manglish-ms chrF2++': 51.04,
+        'manglish-en chrF2++': 52.20,
         'from lang': ['en', 'ms', 'ind', 'jav', 'bjn', 'manglish', 'pasar ms'],
         'to lang': ['en', 'ms'],
         'old model': False,
     },
     'mesolitica/translation-t5-small-standard-bahasa-cased': {
         'Size (MB)': 242,
-        'en-ms chrF2++': 43.93729753370648,
-        'ms-en chrF2++': 43.93729753370648,
-        'ind-ms chrF2++': 43.93729753370648,
-        'jav-ms chrF2++': 43.93729753370648,
-        'pasar ms-ms chrF2++': 43.93729753370648,
-        'pasar ms-en chrF2++': 43.93729753370648,
-        'manglish-ms chrF2++': 43.93729753370648,
-        'manglish-en chrF2++': 43.93729753370648,
         'Suggested length': 1536,
+        'en-ms chrF2++': 67.11,
+        'ms-en chrF2++': 63.61,
+        'ind-ms chrF2++': 58.57,
+        'jav-ms chrF2++': 51.98,
+        'pasar ms-ms chrF2++': 61.96,
+        'pasar ms-en chrF2++': 60.28,
+        'manglish-ms chrF2++': 52.57,
+        'manglish-en chrF2++': 53.28,
         'from lang': ['en', 'ms', 'ind', 'jav', 'bjn', 'manglish', 'pasar ms'],
         'to lang': ['en', 'ms'],
         'old model': False,
     },
     'mesolitica/translation-t5-base-standard-bahasa-cased': {
         'Size (MB)': 892,
-        'en-ms chrF2++': 43.93729753370648,
-        'ms-en chrF2++': 43.93729753370648,
-        'ind-ms chrF2++': 43.93729753370648,
-        'jav-ms chrF2++': 43.93729753370648,
-        'pasar ms-ms chrF2++': 43.93729753370648,
-        'pasar ms-en chrF2++': 43.93729753370648,
-        'manglish-ms chrF2++': 43.93729753370648,
-        'manglish-en chrF2++': 43.93729753370648,
         'Suggested length': 1536,
+        'en-ms chrF2++': 67.35,
+        'ms-en chrF2++': 63.77,
+        'ind-ms chrF2++': 58.24,
+        'jav-ms chrF2++': 51.50,
+        'pasar ms-ms chrF2++': 62.52,
+        'pasar ms-en chrF2++': 60.44,
+        'manglish-ms chrF2++': 53.43,
+        'manglish-en chrF2++': 54.93,
         'from lang': ['en', 'ms', 'ind', 'jav', 'bjn', 'manglish', 'pasar ms'],
         'to lang': ['en', 'ms'],
         'old model': False,
@@ -189,24 +189,33 @@ def available_huggingface():
     return describe_availability(_huggingface_availability)
 
 
-def dictionary(**kwargs):
+def dictionary(language: str = 'EN-MS', **kwargs):
     """
-    Load dictionary {EN: MS} .
+    Load word dictionary, based on google translate.
+
+    Parameters
+    ----------
+    language: str, optional (default='EN-MS')
+        Available languages are:
+            * `EN-MS`
+            * `ID-MS`
 
     Returns
     -------
     result: Dict[str, str]
     """
+    language = language.upper()
     path = check_file(
-        PATH_PREPROCESSING['english-malay'],
-        S3_PATH_PREPROCESSING['english-malay'],
+        PATH_PREPROCESSING[language],
+        S3_PATH_PREPROCESSING[language],
         **kwargs,
     )
     try:
         with open(path['model']) as fopen:
             translator = json.load(fopen)
     except BaseException:
-        raise Exception('failed to load EN-MS vocab, please try clear cache or rerun again.')
+        raise Exception(
+            f'failed to load {language} word dictionary, please try clear cache or rerun again.')
     return translator
 
 

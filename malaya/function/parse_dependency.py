@@ -415,10 +415,13 @@ class DependencyGraph(object):
                 'networkx not installed. Please install it and try again.'
             )
 
-        nx_nodelist = list(range(1, len(self.nodes)))
-        nx_edgelist = [
-            (n, self._hd(n), self._rel(n)) for n in nx_nodelist if self._hd(n)
-        ]
+        nx_nodelist = list(range(0, len(self.nodes)))
+        nx_edgelist = []
+        for n in nx_nodelist:
+            _hd = self._hd(n)
+            if isinstance(_hd, int) and _hd > -1:
+                nx_edgelist.append((n, self._hd(n), self._rel(n)))
+
         self.nx_labels = {}
         for n in nx_nodelist:
             self.nx_labels[n] = self.nodes[n]['word']
