@@ -128,7 +128,7 @@ def kenlm(model: str = 'dump-combined', **kwargs):
     model = model.lower()
     if model not in _kenlm_availability:
         raise ValueError(
-            'model not supported, please check supported models from `malaya.kenlm.available_models()`.'
+            'model not supported, please check supported models from `malaya.language_model.available_kenlm()`.'
         )
 
     path = check_file(
@@ -191,7 +191,7 @@ def mlm(
 
     if model not in _mlm_availability and force_check:
         raise ValueError(
-            'model not supported, please check supported models from `malaya.language.available_mlm()`.'
+            'model not supported, please check supported models from `malaya.language_model.available_mlm()`.'
         )
 
     splitted = model.lower().replace('/', '-').split('-')

@@ -1,6 +1,6 @@
 from malaya.function import describe_availability, check_file
 from malaya.augmentation.abstractive import _huggingface
-from malaya.path import PATH_PREPROCESSING, S3_PATH_PREPROCESSING
+from malaya_boilerplate.huggingface import download_files
 from typing import List
 import json
 import logging
@@ -145,14 +145,14 @@ _huggingface_availability = {
     'mesolitica/translation-t5-small-standard-bahasa-cased': {
         'Size (MB)': 242,
         'Suggested length': 1536,
-        'en-ms chrF2++': 67.11,
-        'ms-en chrF2++': 63.61,
-        'ind-ms chrF2++': 58.57,
-        'jav-ms chrF2++': 51.98,
-        'pasar ms-ms chrF2++': 61.96,
-        'pasar ms-en chrF2++': 60.28,
-        'manglish-ms chrF2++': 52.57,
-        'manglish-en chrF2++': 53.28,
+        'en-ms chrF2++': 67.37,
+        'ms-en chrF2++': 63.79,
+        'ind-ms chrF2++': 58.09,
+        'jav-ms chrF2++': 52.11,
+        'pasar ms-ms chrF2++': 62.49,
+        'pasar ms-en chrF2++': 60.77,
+        'manglish-ms chrF2++': 52.84,
+        'manglish-en chrF2++': 53.65,
         'from lang': ['en', 'ms', 'ind', 'jav', 'bjn', 'manglish', 'pasar ms'],
         'to lang': ['en', 'ms'],
         'old model': False,
@@ -160,19 +160,34 @@ _huggingface_availability = {
     'mesolitica/translation-t5-base-standard-bahasa-cased': {
         'Size (MB)': 892,
         'Suggested length': 1536,
-        'en-ms chrF2++': 67.35,
-        'ms-en chrF2++': 63.77,
-        'ind-ms chrF2++': 58.24,
-        'jav-ms chrF2++': 51.50,
-        'pasar ms-ms chrF2++': 62.52,
-        'pasar ms-en chrF2++': 60.44,
-        'manglish-ms chrF2++': 53.43,
-        'manglish-en chrF2++': 54.93,
+        'en-ms chrF2++': 67.62,
+        'ms-en chrF2++': 64.41,
+        'ind-ms chrF2++': 59.25,
+        'jav-ms chrF2++': 52.86,
+        'pasar ms-ms chrF2++': 62.99,
+        'pasar ms-en chrF2++': 62.06,
+        'manglish-ms chrF2++': 54.40,
+        'manglish-en chrF2++': 54.14,
         'from lang': ['en', 'ms', 'ind', 'jav', 'bjn', 'manglish', 'pasar ms'],
         'to lang': ['en', 'ms'],
         'old model': False,
     },
 }
+
+_word_availability = {
+    'mesolitica/en-ms': {
+        'Size (MB)': 1,
+        'total words': 1,
+    },
+    'mesolitica/id-ms': {
+        'Size (MB)': 1,
+        'total words': 1,
+    }
+}
+
+
+def available_word():
+    return describe_availability(_word_availability)
 
 
 def available_huggingface():
@@ -189,33 +204,29 @@ def available_huggingface():
     return describe_availability(_huggingface_availability)
 
 
-def dictionary(language: str = 'EN-MS', **kwargs):
+def word(model: str = 'mesolitica/en-ms', **kwargs):
     """
     Load word dictionary, based on google translate.
 
     Parameters
     ----------
-    language: str, optional (default='EN-MS')
-        Available languages are:
-            * `EN-MS`
-            * `ID-MS`
+    language: model, optional (default='mesolitica/en-ms')
+        Check available models at `malaya.translation.available_word()`.
 
     Returns
     -------
     result: Dict[str, str]
     """
-    language = language.upper()
-    path = check_file(
-        PATH_PREPROCESSING[language],
-        S3_PATH_PREPROCESSING[language],
-        **kwargs,
-    )
-    try:
-        with open(path['model']) as fopen:
-            translator = json.load(fopen)
-    except BaseException:
-        raise Exception(
-            f'failed to load {language} word dictionary, please try clear cache or rerun again.')
+    if model not in _word_availability:
+        raise ValueError(
+            'model not supported, please check supported models from `malaya.translation.available_word()`.'
+        )
+
+    s3_file = {'model': 'dictionary.json'}
+    path = download_files(model, s3_file, **kwargs)
+
+    with open(path['model']) as fopen:
+        translator = json.load(fopen)
     return translator
 
 

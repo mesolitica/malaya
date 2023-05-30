@@ -5,13 +5,13 @@ from malaya.function import (
     generate_session,
     nodes_session,
 )
+from malaya_boilerplate.huggingface import download_files
+from malaya.function import describe_availability
 from malaya.model.ml import LanguageDetection
 from malaya.model.tf import DeepLang
 from malaya.model.rules import LanguageDict
 from malaya.text.bpe import YTTMEncoder
 from malaya.path import (
-    PATH_LANG_DETECTION,
-    S3_PATH_LANG_DETECTION,
     LANGUAGE_DETECTION_BOW,
     LANGUAGE_DETECTION_VOCAB,
 )
@@ -19,7 +19,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-lang_labels = {
+lang_labels_v1 = {
     0: 'eng',
     1: 'ind',
     2: 'malay',
@@ -28,17 +28,54 @@ lang_labels = {
     5: 'rojak',
 }
 
-label = list(lang_labels.values())
+lang_labels_v2 = {
+    0: 'eng',
+    1: 'ind',
+    2: 'malay',
+    3: 'mandarin',
+    4: 'manglish',
+    5: 'other',
+    6: 'rojak',
+}
+
+label_v1 = list(lang_labels_v1.values())
+label_v2 = list(lang_labels_v2.values())
+
+_fasttext_availability = {
+    'mesolitica/fasttext-language-detection-v1': {
+        'Size (MB)': 353,
+        'Quantized Size (MB)': 31.1,
+        'Label': lang_labels_v1,
+    },
+    'mesolitica/fasttext-language-detection-v2': {
+        'Size (MB)': 425.6,
+        'Quantized Size (MB)': 111,
+        'Label': lang_labels_v2,
+    }
+}
 
 
-def fasttext(quantized: bool = True, **kwargs):
+def available_fasttext():
+    """
+    List available fasttext language detection..
+    """
+
+    logger.info('trained on 90% dataset, tested on another 10% test set, dataset at https://github.com/huseinzol05/malaya/blob/master/session/relevancy/download-data.ipynb')
+
+    return describe_availability(_fasttext_availability)
+
+
+def fasttext(
+    model: str = 'mesolitica/fasttext-language-detection-v2',
+    quantized: bool = True,
+    **kwargs,
+):
     """
     Load Fasttext language detection model.
-    Original size is 353MB, Quantized size 31.1MB.
-
 
     Parameters
     ----------
+    model: str, optional (default='mesolitica/fasttext-language-detection-v2')
     quantized: bool, optional (default=True)
         if True, load quantized fasttext model. Else, load original fasttext model.
 
@@ -53,19 +90,26 @@ def fasttext(quantized: bool = True, **kwargs):
         raise ModuleNotFoundError(
             'fasttext not installed. Please install it by `pip install fasttext` and try again.'
         )
-    if quantized:
-        model = 'fasttext-quantized'
-    else:
-        model = 'fasttext-original'
 
-    path = check_file(
-        PATH_LANG_DETECTION[model], S3_PATH_LANG_DETECTION[model], **kwargs
-    )
+    if model not in _fasttext_availability:
+        raise ValueError(
+            'model not supported, please check supported models from `malaya.language_detection.available_fasttext()`.'
+        )
+
+    if quantized:
+        filename = 'fasttext.ftz'
+    else:
+        filename = 'fasttext.bin'
+
+    s3_file = {'model': filename}
+    path = download_files(model, s3_file, **kwargs)
+
     try:
         model_fasttext = fasttext.load_model(path['model'])
     except BaseException:
         raise Exception(f'failed to load fasttext model, please try clear the cache and try again')
-    return LanguageDetection(model_fasttext, lang_labels)
+
+    return LanguageDetection(model_fasttext, _fasttext_availability[model]['Label'])
 
 
 def deep_model(quantized: bool = False, **kwargs):
@@ -118,7 +162,7 @@ def deep_model(quantized: bool = False, **kwargs):
         sess=generate_session(graph=g, **kwargs),
         vectorizer=vector,
         bpe=bpe,
-        label=lang_labels,
+        label=lang_labels_v1,
     )
 
 
