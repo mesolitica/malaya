@@ -45,3 +45,10 @@ normalized-twitter.ipynb
 synonym*.json
 filtered-dumping-wiki.txt
 gsd-ud-dev.conllu.txt
+pretrained-model/language-detection-v2/*.jsonl
+pretrained-model/language-detection-v2/*.json
+pretrained-model/language-detection-v2/r-*
+pretrained-model/language-detection-v2/*.txt
+*wget-log
+pretrained-model/prepare-llm/*/*.json
+pretrained-model/prepare-llm/*.json
