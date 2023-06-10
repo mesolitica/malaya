@@ -9,7 +9,6 @@ class Generator:
         self._tokenizer = tokenizer
         self._initial_text = initial_text
 
-    @check_type
     def generate(self, strings: List[str], **kwargs):
         """
         Generate texts from the input.
@@ -23,8 +22,8 @@ class Generator:
         -------
         result: List[str]
         """
-        input_ids = [{'input_ids': self._tokenizer.encode(f'{self._initial_text}{s}', return_tensors='tf')[
-            0]} for s in strings]
+        input_ids = [{'input_ids': self._tokenizer.encode(
+            f'{self._initial_text}{s}', return_tensors='tf')[0]} for s in strings]
         padded = self._tokenizer.pad(input_ids, padding='longest')
         outputs = self._model.generate(**padded, **kwargs)
         results = []

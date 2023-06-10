@@ -1,7 +1,8 @@
 from malaya.function import describe_availability, check_file
 from malaya.augmentation.abstractive import _huggingface
 from malaya_boilerplate.huggingface import download_files
-from typing import List
+from malaya.model.alignment import Eflomal
+from typing import Callable, List
 import json
 import logging
 
@@ -93,6 +94,26 @@ chrF2++ = 60.27
 """
 }
 
+_eflomal_availability = {
+    'mesolitica/eflomal-ms-en': {
+        'Size (MB)': 240,
+    },
+    'mesolitica/eflomal-en-ms': {
+        'Size (MB)': 301,
+    },
+}
+
+_word_availability = {
+    'mesolitica/en-ms': {
+        'Size (MB)': 1,
+        'total words': 1,
+    },
+    'mesolitica/id-ms': {
+        'Size (MB)': 1,
+        'total words': 1,
+    }
+}
+
 _huggingface_availability = {
     'mesolitica/finetune-noisy-translation-t5-tiny-bahasa-cased-v3': {
         'Size (MB)': 139,
@@ -174,17 +195,6 @@ _huggingface_availability = {
     },
 }
 
-_word_availability = {
-    'mesolitica/en-ms': {
-        'Size (MB)': 1,
-        'total words': 1,
-    },
-    'mesolitica/id-ms': {
-        'Size (MB)': 1,
-        'total words': 1,
-    }
-}
-
 
 def available_word():
     return describe_availability(_word_availability)
@@ -204,13 +214,45 @@ def available_huggingface():
     return describe_availability(_huggingface_availability)
 
 
+def eflomal(
+    model: str = 'mesolitica/eflomal-ms-en',
+    preprocessing_func: Callable = None,
+    **kwargs,
+):
+    """
+    load https://github.com/robertostling/eflomal word alignment.
+
+    Parameters
+    ----------
+    model, optional (default='mesolitica/eflomal-ms-en')
+        Check available models at `malaya.translation.available_eflomal()`.
+    preprocessing_func: Callable, optional (default=None)
+        preprocessing function to call during loading prior file.
+        Using `malaya.text.function.replace_punct` able to reduce ~30% of memory usage.
+
+    Returns
+    -------
+    result: malaya.model.alignment.Eflomal
+    """
+
+    if model not in _eflomal_availability:
+        raise ValueError(
+            'model not supported, please check supported models from `malaya.translation.available_eflomal()`.'
+        )
+
+    s3_file = {'model': 'model.priors'}
+    path = download_files(model, s3_file, **kwargs)
+
+    return Eflomal(preprocessing_func=preprocessing_func, priors_filename=path['model'])
+
+
 def word(model: str = 'mesolitica/en-ms', **kwargs):
     """
     Load word dictionary, based on google translate.
 
     Parameters
     ----------
-    language: model, optional (default='mesolitica/en-ms')
+    model, optional (default='mesolitica/en-ms')
         Check available models at `malaya.translation.available_word()`.
 
     Returns

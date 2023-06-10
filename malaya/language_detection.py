@@ -29,13 +29,16 @@ lang_labels_v1 = {
 }
 
 lang_labels_v2 = {
-    0: 'eng',
-    1: 'ind',
-    2: 'malay',
-    3: 'mandarin',
-    4: 'manglish',
-    5: 'other',
-    6: 'rojak',
+    0: 'standard-english',
+    1: 'local-english',
+    2: 'manglish',
+    3: 'standard-indonesian',
+    4: 'socialmedia-indonesian',
+    5: 'standard-malay',
+    6: 'local-malay',
+    7: 'standard-mandarin',
+    8: 'local-mandarin',
+    9: 'other',
 }
 
 label_v1 = list(lang_labels_v1.values())
@@ -45,11 +48,25 @@ _fasttext_availability = {
     'mesolitica/fasttext-language-detection-v1': {
         'Size (MB)': 353,
         'Quantized Size (MB)': 31.1,
+        'dim': 16,
         'Label': lang_labels_v1,
     },
     'mesolitica/fasttext-language-detection-v2': {
-        'Size (MB)': 425.6,
-        'Quantized Size (MB)': 111,
+        'Size (MB)': 1330,
+        'Quantized Size (MB)': 127,
+        'dim': 16,
+        'Label': lang_labels_v2,
+    },
+    'mesolitica/fasttext-language-detection-v3': {
+        'Size (MB)': 1660,
+        'Quantized Size (MB)': 135,
+        'dim': 24,
+        'Label': lang_labels_v2,
+    },
+    'mesolitica/fasttext-language-detection-auto': {
+        'Size (MB)': 5150,
+        'Quantized Size (MB)': 162,
+        'dim': 101,
         'Label': lang_labels_v2,
     }
 }

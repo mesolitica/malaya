@@ -146,7 +146,6 @@ class MulticlassFastFormer(FastFormer, Classification):
             label=label,
         )
 
-    @check_type
     def vectorize(self, strings: List[str], method: str = 'first'):
         """
         vectorize list of strings.
@@ -169,7 +168,6 @@ class MulticlassFastFormer(FastFormer, Classification):
 
         return self._vectorize(strings=strings, method=method)
 
-    @check_type
     def predict(self, strings: List[str]):
         """
         classify list of strings.
@@ -185,7 +183,6 @@ class MulticlassFastFormer(FastFormer, Classification):
 
         return self._predict(strings=strings)
 
-    @check_type
     def predict_proba(self, strings: List[str]):
         """
         classify list of strings and return probability.
@@ -222,7 +219,6 @@ class BinaryFastFormer(FastFormer, Classification):
             label=label,
         )
 
-    @check_type
     def vectorize(self, strings: List[str], method: str = 'first'):
         """
         vectorize list of strings.
@@ -245,7 +241,6 @@ class BinaryFastFormer(FastFormer, Classification):
 
         return self._vectorize(strings=strings, method=method)
 
-    @check_type
     def predict(self, strings: List[str], add_neutral: bool = True):
         """
         classify list of strings.
@@ -263,7 +258,6 @@ class BinaryFastFormer(FastFormer, Classification):
 
         return self._predict(strings=strings, add_neutral=add_neutral)
 
-    @check_type
     def predict_proba(self, strings: List[str], add_neutral: bool = True):
         """
         classify list of strings and return probability.
@@ -303,7 +297,6 @@ class SigmoidFastFormer(FastFormer, Classification):
             multilabels=True,
         )
 
-    @check_type
     def vectorize(self, strings: List[str], method: str = 'first'):
         """
         vectorize list of strings.
@@ -326,7 +319,6 @@ class SigmoidFastFormer(FastFormer, Classification):
 
         return self._vectorize(strings=strings, method=method)
 
-    @check_type
     def predict(self, strings: List[str]):
         """
         classify list of strings.
@@ -342,7 +334,6 @@ class SigmoidFastFormer(FastFormer, Classification):
 
         return self._predict(strings=strings)
 
-    @check_type
     def predict_proba(self, strings: List[str]):
         """
         classify list of strings and return probability.
@@ -389,7 +380,6 @@ class TaggingFastFormer(Base, Tagging):
             )
         return parsed_sequence, input_mask, bert_sequence
 
-    @check_type
     def vectorize(self, string: str):
         """
         vectorize a string.
@@ -417,7 +407,6 @@ class TaggingFastFormer(Base, Tagging):
             vectorize=True,
         )
 
-    @check_type
     def analyze(self, string: str):
         """
         Analyze a string.
@@ -433,7 +422,6 @@ class TaggingFastFormer(Base, Tagging):
         predicted = self.predict(string)
         return tag_chunk(predicted)
 
-    @check_type
     def predict(self, string: str):
         """
         Tag a string.

@@ -248,7 +248,6 @@ class BinaryXLNET(XLNET, Classification):
             label=label,
         )
 
-    @check_type
     def vectorize(self, strings: List[str], method: str = 'first'):
         """
         vectorize list of strings.
@@ -271,7 +270,6 @@ class BinaryXLNET(XLNET, Classification):
 
         return self._vectorize(strings=strings, method=method)
 
-    @check_type
     def predict(self, strings: List[str], add_neutral: bool = True):
         """
         classify list of strings.
@@ -289,7 +287,6 @@ class BinaryXLNET(XLNET, Classification):
 
         return self._predict(strings=strings, add_neutral=add_neutral)
 
-    @check_type
     def predict_proba(self, strings: List[str], add_neutral: bool = True):
         """
         classify list of strings and return probability.
@@ -307,7 +304,6 @@ class BinaryXLNET(XLNET, Classification):
 
         return self._predict_proba(strings=strings, add_neutral=add_neutral)
 
-    @check_type
     def predict_words(
         self,
         string: str,
@@ -368,7 +364,6 @@ class MulticlassXLNET(XLNET, Classification):
             label=label,
         )
 
-    @check_type
     def vectorize(self, strings: List[str], method: str = 'first'):
         """
         vectorize list of strings.
@@ -391,7 +386,6 @@ class MulticlassXLNET(XLNET, Classification):
 
         return self._vectorize(strings=strings, method=method)
 
-    @check_type
     def predict(self, strings: List[str]):
         """
         classify list of strings.
@@ -407,7 +401,6 @@ class MulticlassXLNET(XLNET, Classification):
 
         return self._predict(strings=strings)
 
-    @check_type
     def predict_proba(self, strings: List[str]):
         """
         classify list of strings and return probability.
@@ -423,7 +416,6 @@ class MulticlassXLNET(XLNET, Classification):
 
         return self._predict_proba(strings=strings)
 
-    @check_type
     def predict_words(
         self,
         string: str,
@@ -483,7 +475,6 @@ class SigmoidXLNET(XLNET, Classification):
             multilabels=True,
         )
 
-    @check_type
     def vectorize(self, strings: List[str], method: str = 'first'):
         """
         vectorize list of strings.
@@ -506,7 +497,6 @@ class SigmoidXLNET(XLNET, Classification):
 
         return self._vectorize(strings=strings, method=method)
 
-    @check_type
     def predict(self, strings: List[str]):
         """
         classify list of strings.
@@ -522,7 +512,6 @@ class SigmoidXLNET(XLNET, Classification):
 
         return self._predict(strings=strings)
 
-    @check_type
     def predict_proba(self, strings: List[str]):
         """
         classify list of strings and return probability.
@@ -538,7 +527,6 @@ class SigmoidXLNET(XLNET, Classification):
 
         return self._predict_proba(strings=strings)
 
-    @check_type
     def predict_words(
         self,
         string: str,
@@ -609,7 +597,6 @@ class SiameseXLNET(Base):
         )
         return softmax(r['logits'], axis=-1)
 
-    @check_type
     def vectorize(self, strings: List[str]):
         """
         Vectorize list of strings.
@@ -634,7 +621,6 @@ class SiameseXLNET(Base):
         )
         return r['vectorizer']
 
-    @check_type
     def predict_proba(self, strings_left: List[str], strings_right: List[str]):
         """
         calculate similarity for two different batch of texts.
@@ -674,7 +660,6 @@ class SiameseXLNET(Base):
         results = np.reshape(results, (len(strings), len(strings)))
         return results
 
-    @check_type
     def heatmap(
         self,
         strings: List[str],
@@ -755,7 +740,6 @@ class TaggingXLNET(Base, Tagging):
         s_tokens = s_tokens[0]
         return input_ids, input_masks, segment_ids, s_tokens
 
-    @check_type
     def vectorize(self, string: str):
         """
         vectorize a string.
@@ -783,7 +767,6 @@ class TaggingXLNET(Base, Tagging):
             model='xlnet',
         )
 
-    @check_type
     def analyze(self, string: str):
         """
         Analyze a string.
@@ -799,7 +782,6 @@ class TaggingXLNET(Base, Tagging):
         predicted = self.predict(string)
         return tag_chunk(predicted)
 
-    @check_type
     def predict(self, string: str):
         """
         Tag a string.
@@ -843,7 +825,6 @@ class DependencyXLNET(Base):
         self._idx2tag = {int(v): k for k, v in self._tag2idx.items()}
         self._minus = minus
 
-    @check_type
     def vectorize(self, string: str):
         """
         vectorize a string.
@@ -874,7 +855,6 @@ class DependencyXLNET(Base):
             model='xlnet',
         )
 
-    @check_type
     def predict(self, string: str):
         """
         Tag a string.
@@ -982,7 +962,6 @@ class ZeroshotXLNET(Base):
             results.append(result)
         return results
 
-    @check_type
     def vectorize(
         self, strings: List[str], labels: List[str], method: str = 'first'
     ):
@@ -1044,7 +1023,6 @@ class ZeroshotXLNET(Base):
             ]
         return combined, v
 
-    @check_type
     def predict_proba(self, strings: List[str], labels: List[str]):
         """
         classify list of strings and return probability.
@@ -1113,7 +1091,6 @@ class KeyphraseXLNET(Base):
         )
         return softmax(r['logits'], axis=-1)
 
-    @check_type
     def vectorize(self, strings: List[str]):
         """
         Vectorize list of strings.
@@ -1136,7 +1113,6 @@ class KeyphraseXLNET(Base):
         )
         return r['xlnet/summary']
 
-    @check_type
     def predict_proba(self, strings_left: List[str], strings_right: List[str]):
         """
         calculate similarity for two different batch of texts.

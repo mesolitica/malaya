@@ -141,7 +141,6 @@ class SKLearn:
             cluster_words(top_words),
         )
 
-    @check_type
     def word_level(
         self,
         corpus,
@@ -183,7 +182,6 @@ class SKLearn:
             'score': splitted,
         }
 
-    @check_type
     def sentence_level(
         self,
         corpus,

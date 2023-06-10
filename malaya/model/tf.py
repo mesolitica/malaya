@@ -77,7 +77,6 @@ class DeepLang(Classification):
         probs = softmax(r['logits'], axis=-1)
         return probs
 
-    @check_type
     def predict(self, strings: List[str]):
         """
         classify list of strings.
@@ -98,7 +97,6 @@ class DeepLang(Classification):
             dicts.append(self._label[prob])
         return dicts
 
-    @check_type
     def predict_proba(self, strings: List[str]):
         """
         classify list of strings and return probability.
@@ -159,7 +157,6 @@ class Constituency(Abstract):
             chart = charts_val[snum, :chart_size, :chart_size, :]
         return s, tags_val[0], chart_decoder.decode(chart)
 
-    @check_type
     def vectorize(self, string: str):
         """
         vectorize a string.
@@ -201,7 +198,6 @@ class Constituency(Abstract):
             model=self._mode,
         )
 
-    @check_type
     def parse_nltk_tree(self, string: str):
         """
         Parse a string into NLTK Tree, to make it useful, make sure you already installed tktinker.
@@ -256,7 +252,6 @@ class Constituency(Abstract):
         tree.score = score
         return tree
 
-    @check_type
     def parse_tree(self, string):
         """
         Parse a string into string treebank format.
@@ -576,7 +571,7 @@ class Translation(T2T, Seq2Seq):
 
     def beam_decoder(self, strings: List[str], beam_size: int = 3, temperature: float = 0.5):
         """
-        translate list of strings using beam decoder. 
+        translate list of strings using beam decoder.
         Currently only `noisy` models supported `beam_size` and `temperature` parameters.
 
         Parameters
@@ -602,7 +597,6 @@ class TrueCase(T2T, Seq2Seq):
             encoder=encoder,
         )
 
-    @check_type
     def greedy_decoder(self, strings: List[str]):
         """
         True case strings using greedy decoder.
@@ -618,7 +612,6 @@ class TrueCase(T2T, Seq2Seq):
         """
         return self._greedy_decoder(strings)
 
-    @check_type
     def beam_decoder(self, strings: List[str]):
         """
         True case strings using beam decoder, beam width size 3, alpha 0.5 .
@@ -645,7 +638,6 @@ class Segmentation(T2T, Seq2Seq):
             encoder=encoder,
         )
 
-    @check_type
     def greedy_decoder(self, strings: List[str]):
         """
         Segment strings using greedy decoder.
@@ -661,7 +653,6 @@ class Segmentation(T2T, Seq2Seq):
         """
         return self._greedy_decoder(strings)
 
-    @check_type
     def beam_decoder(self, strings: List[str]):
         """
         Segment strings using beam decoder, beam width size 3, alpha 0.5 .
@@ -719,7 +710,6 @@ class Tatabahasa(Seq2Seq):
             results.append(list(zip(merged[0], merged[1])))
         return results
 
-    @check_type
     def greedy_decoder(self, strings: List[str]):
         """
         Fix kesalahan tatatabahasa.
@@ -755,7 +745,6 @@ class SQUAD(Abstract):
         self._mode = mode
         self._length = length
 
-    @check_type
     def predict(
         self,
         paragraph_text: str,
@@ -879,7 +868,6 @@ class SQUAD(Abstract):
             )
         return results
 
-    @check_type
     def vectorize(self, strings: List[str], method: str = 'first'):
         """
         vectorize list of strings.
@@ -974,7 +962,6 @@ class KnowledgeGraph(T2T, Seq2Seq):
 
         return outputs
 
-    @check_type
     def greedy_decoder(self, strings: List[str], get_networkx: bool = True):
         """
         Generate triples knowledge graph using greedy decoder.
@@ -994,7 +981,6 @@ class KnowledgeGraph(T2T, Seq2Seq):
             self._greedy_decoder(strings), get_networkx=get_networkx
         )
 
-    @check_type
     def beam_decoder(self, strings: List[str], get_networkx: bool = True):
         """
         Generate triples knowledge graph using beam decoder.
@@ -1023,7 +1009,6 @@ class GPT2(T2T, Abstract):
             encoder=encoder,
         )
 
-    @check_type
     def generate(self, string: str,
                  maxlen: int = 256,
                  n_samples: int = 1,
@@ -1084,7 +1069,6 @@ class Seq2SeqLSTM(Abstract):
         self._cleaning = cleaning
         self._rev_right_dict = {v: k for k, v in self._right_dict.items()}
 
-    @check_type
     def greedy_decoder(self, strings: List[str]):
         """
         Convert to target strings using greedy decoder.
@@ -1099,7 +1083,6 @@ class Seq2SeqLSTM(Abstract):
         """
         return self.predict(strings, beam_search=False)
 
-    @check_type
     def beam_decoder(self, strings: List[str]):
         """
         Convert to target strings using beam decoder.
@@ -1114,7 +1097,6 @@ class Seq2SeqLSTM(Abstract):
         """
         return self.predict(strings, beam_search=True)
 
-    @check_type
     def predict(self, strings: List[str], beam_search: bool = False):
         """
         Convert to target strings.
@@ -1134,7 +1116,8 @@ class Seq2SeqLSTM(Abstract):
         else:
             output = 'greedy'
 
-        batch = [[self._left_dict[c] for c in self._cleaning(string, self._left_dict)] + [1] for string in strings]
+        batch = [[self._left_dict[c]
+                  for c in self._cleaning(string, self._left_dict)] + [1] for string in strings]
         batch = pad_sentence_batch(batch, 0)[0]
         r = self._execute(
             inputs=[batch],
@@ -1157,7 +1140,8 @@ class TransformerChar:
         self._rev_left_dict = {v: k for k, v in self._left_dict.items()}
 
     def _predict(self, strings, beam_search=True):
-        encoded = [[self._left_dict[c] for c in self._cleaning(string, self._left_dict)] + [1] for string in strings]
+        encoded = [[self._left_dict[c]
+                    for c in self._cleaning(string, self._left_dict)] + [1] for string in strings]
         batch_x = pad_sentence_batch(encoded, 0)[0]
 
         if beam_search:
@@ -1175,7 +1159,6 @@ class TransformerChar:
 
         return results
 
-    @check_type
     def greedy_decoder(self, strings: List[str]):
         """
         Convert strings using greedy decoder.
@@ -1190,7 +1173,6 @@ class TransformerChar:
         """
         return self._predict(strings=strings, beam_search=False)
 
-    @check_type
     def beam_decoder(self, strings: List[str]):
         """
         Convert strings using beam decoder, beam width size 3, alpha 0.5 .
@@ -1216,7 +1198,6 @@ class Seq2SeqLSTM_Split(Abstract):
         self._cleaning = cleaning
         self._rev_right_dict = {v: k for k, v in self._right_dict.items()}
 
-    @check_type
     def greedy_decoder(self, strings: List[str]):
         """
         Convert to target strings using greedy decoder.
@@ -1231,7 +1212,6 @@ class Seq2SeqLSTM_Split(Abstract):
         """
         return self.predict(strings, beam_search=False)
 
-    @check_type
     def beam_decoder(self, strings: List[str]):
         """
         Convert to target strings using beam decoder.
@@ -1246,7 +1226,6 @@ class Seq2SeqLSTM_Split(Abstract):
         """
         return self.predict(strings, beam_search=True)
 
-    @check_type
     def predict(self, strings: List[str], beam_search: bool = False):
         """
         Convert to target strings.
@@ -1278,7 +1257,8 @@ class Seq2SeqLSTM_Split(Abstract):
                 k += 1
             replaced_me.append(replaced_me_)
 
-        batch = [[self._left_dict[c] for c in self._cleaning(string, self._left_dict)] + [1] for string in splitted]
+        batch = [[self._left_dict[c]
+                  for c in self._cleaning(string, self._left_dict)] + [1] for string in splitted]
         batch = pad_sentence_batch(batch, 0)[0]
         r = self._execute(
             inputs=[batch],
@@ -1303,7 +1283,6 @@ class JawiRumi(T2T, Seq2Seq):
             encoder=encoder,
         )
 
-    @check_type
     def greedy_decoder(self, strings: List[str]):
         """
         Convert list of jawi strings to rumi strings.
@@ -1347,7 +1326,6 @@ class RumiJawi(T2T, Seq2Seq):
             encoder=encoder,
         )
 
-    @check_type
     def greedy_decoder(self, strings: List[str]):
         """
         Convert list of jawi strings to rumi strings.

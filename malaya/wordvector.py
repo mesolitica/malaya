@@ -18,26 +18,37 @@ _wordvector_availability = {
         'Size (MB)': 200.2,
         'Vocab size': 195466,
         'lowercase': True,
-        'Description': 'pretrained on cleaned Malay news size 256',
+        'Description': 'pretrained on cleaned Malay news',
+        'dimension': 256,
     },
     'wikipedia': {
         'Size (MB)': 781.7,
         'Vocab size': 763350,
         'lowercase': True,
-        'Description': 'pretrained on Malay wikipedia word2vec size 256',
+        'Description': 'pretrained on Malay wikipedia',
+        'dimension': 256,
     },
     'socialmedia': {
         'Size (MB)': 1300,
         'Vocab size': 1294638,
         'lowercase': True,
-        'Description': 'pretrained on cleaned Malay twitter and Malay instagram size 256',
+        'Description': 'pretrained on cleaned Malay twitter and Malay instagram',
+        'dimension': 256,
     },
     'combine': {
         'Size (MB)': 1900,
         'Vocab size': 1903143,
         'lowercase': True,
-        'Description': 'pretrained on cleaned Malay news + Malay social media + Malay wikipedia size 256',
+        'Description': 'pretrained on cleaned Malay news + Malay social media + Malay wikipedia',
+        'dimension': 256,
     },
+    'socialmedia-v2': {
+        'Size (MB)': 1300,
+        'Vocab size': 1294638,
+        'lowercase': True,
+        'Description': 'pretrained on twitter + lowyat + carigold + b.cari.com.my + facebook + IIUM Confession + Common Crawl',
+        'dimension': 256,
+    }
 }
 
 
@@ -516,7 +527,7 @@ class WordVector:
         word_list: list of nearest words
         """
         if return_similarity:
-            nn = NearestNeighbors(num_closest + 1, metric=metric).fit(
+            nn = NearestNeighbors(n_neighbors=num_closest + 1, metric=metric).fit(
                 self._embed_matrix
             )
             distances, idx = nn.kneighbors(

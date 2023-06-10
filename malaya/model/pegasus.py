@@ -45,7 +45,6 @@ class Summarization(Seq2Seq):
 
         return results
 
-    @check_type
     def greedy_decoder(
         self,
         strings: List[str],
@@ -76,7 +75,6 @@ class Summarization(Seq2Seq):
             **kwargs,
         )
 
-    @check_type
     def nucleus_decoder(
         self,
         strings: List[str],

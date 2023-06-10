@@ -124,7 +124,7 @@ class DependencyGraph(object):
         for k, v in n['deps'].items():
             l = self.traverse(v[0])
             result.append(l)
-        return r
+        return result
 
     def traverse_ancestor(self, node_index, labels,
                           rejected_words=['itu', 'yang', 'mereka', 'ini', 'juga', 'dan'],

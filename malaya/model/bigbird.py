@@ -127,7 +127,6 @@ class MulticlassBigBird(BigBird, Classification):
             label=label,
         )
 
-    @check_type
     def vectorize(self, strings: List[str], method: str = 'first'):
         """
         vectorize list of strings.
@@ -150,7 +149,6 @@ class MulticlassBigBird(BigBird, Classification):
 
         return self._vectorize(strings=strings, method=method)
 
-    @check_type
     def predict(self, strings: List[str]):
         """
         classify list of strings.
@@ -166,7 +164,6 @@ class MulticlassBigBird(BigBird, Classification):
 
         return self._predict(strings=strings)
 
-    @check_type
     def predict_proba(self, strings: List[str]):
         """
         classify list of strings and return probability.
@@ -268,7 +265,6 @@ class Summarization(Seq2Seq):
 
         return results
 
-    @check_type
     def greedy_decoder(
         self,
         strings: List[str],
@@ -299,7 +295,6 @@ class Summarization(Seq2Seq):
             **kwargs,
         )
 
-    @check_type
     def nucleus_decoder(
         self,
         strings: List[str],

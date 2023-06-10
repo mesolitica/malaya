@@ -133,7 +133,6 @@ class MulticlassFNet(FNet, Classification):
             label=label,
         )
 
-    @check_type
     def vectorize(self, strings: List[str], method: str = 'first'):
         """
         vectorize list of strings.
@@ -156,7 +155,6 @@ class MulticlassFNet(FNet, Classification):
 
         return self._vectorize(strings=strings, method=method)
 
-    @check_type
     def predict(self, strings: List[str]):
         """
         classify list of strings.
@@ -172,7 +170,6 @@ class MulticlassFNet(FNet, Classification):
 
         return self._predict(strings=strings)
 
-    @check_type
     def predict_proba(self, strings: List[str]):
         """
         classify list of strings and return probability.
@@ -209,7 +206,6 @@ class BinaryFNet(FNet, Classification):
             label=label,
         )
 
-    @check_type
     def vectorize(self, strings: List[str], method: str = 'first'):
         """
         vectorize list of strings.
@@ -232,7 +228,6 @@ class BinaryFNet(FNet, Classification):
 
         return self._vectorize(strings=strings, method=method)
 
-    @check_type
     def predict(self, strings: List[str], add_neutral: bool = True):
         """
         classify list of strings.
@@ -250,7 +245,6 @@ class BinaryFNet(FNet, Classification):
 
         return self._predict(strings=strings, add_neutral=add_neutral)
 
-    @check_type
     def predict_proba(self, strings: List[str], add_neutral: bool = True):
         """
         classify list of strings and return probability.

@@ -30,7 +30,6 @@ from . import translation
 from . import utils
 from . import zero_shot
 
-from . import alignment
 from . import cluster
 from . import constituency
 from . import coref

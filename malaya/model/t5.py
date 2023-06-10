@@ -37,12 +37,13 @@ class Summarization(T5, Seq2Seq):
         )
 
     def _summarize(self, strings, postprocess, **kwargs):
-        summaries = self._predict([f'ringkasan: {summarization_textcleaning(string)}' for string in strings])
+        summaries = self._predict(
+            [f'ringkasan: {summarization_textcleaning(string)}' for string in strings])
         if postprocess:
-            summaries = [postprocess_summary(strings[no], summary, **kwargs) for no, summary in enumerate(summaries)]
+            summaries = [postprocess_summary(strings[no], summary, **kwargs)
+                         for no, summary in enumerate(summaries)]
         return summaries
 
-    @check_type
     def greedy_decoder(
         self,
         strings: List[str],
@@ -76,7 +77,6 @@ class Generator(T5, Seq2Seq):
             tokenizer=tokenizer
         )
 
-    @check_type
     def greedy_decoder(self, strings: List[str]):
         """
         generate a long text given a isi penting.
@@ -110,7 +110,6 @@ class Paraphrase(T5, Seq2Seq):
             tokenizer=tokenizer
         )
 
-    @check_type
     def greedy_decoder(self, strings: List[str]):
         """
         paraphrase strings.
@@ -123,7 +122,8 @@ class Paraphrase(T5, Seq2Seq):
         -------
         result: List[str]
         """
-        paraphrases = self._predict([f'parafrasa: {summarization_textcleaning(string)}' for string in strings])
+        paraphrases = self._predict(
+            [f'parafrasa: {summarization_textcleaning(string)}' for string in strings])
         return [upperfirst(paraphrase) for paraphrase in paraphrases]
 
 
@@ -137,7 +137,6 @@ class KnowledgeGraph(T5, Seq2Seq):
             tokenizer=tokenizer
         )
 
-    @check_type
     def greedy_decoder(
         self,
         strings: List[str],
@@ -167,7 +166,8 @@ class KnowledgeGraph(T5, Seq2Seq):
                 )
                 get_networkx = False
 
-        results = self._predict([f'grafik pengetahuan: {summarization_textcleaning(string)}' for string in strings])
+        results = self._predict(
+            [f'grafik pengetahuan: {summarization_textcleaning(string)}' for string in strings])
 
         outputs = []
         for result in results:
@@ -199,7 +199,6 @@ class Spell(T5, Seq2Seq):
         )
         self._word_tokenizer = word_tokenizer
 
-    @check_type
     def greedy_decoder(self, strings: List[str]):
         """
         spelling correction for strings.
@@ -213,7 +212,8 @@ class Spell(T5, Seq2Seq):
         result: List[str]
         """
 
-        return self._predict([f"betulkan ejaan: {' '.join(self._word_tokenizer(string))}" for string in strings])
+        return self._predict(
+            [f"betulkan ejaan: {' '.join(self._word_tokenizer(string))}" for string in strings])
 
 
 class Segmentation(T5, Seq2Seq):
@@ -226,7 +226,6 @@ class Segmentation(T5, Seq2Seq):
             tokenizer=tokenizer
         )
 
-    @check_type
     def greedy_decoder(self, strings: List[str]):
         """
         text segmentation.
@@ -253,7 +252,6 @@ class CommonGen(T5, Seq2Seq):
             tokenizer=tokenizer
         )
 
-    @check_type
     def greedy_decoder(self, strings: List[str]):
         """
         text generator given keywords.
@@ -280,7 +278,6 @@ class TrueCase(T5, Seq2Seq):
             tokenizer=tokenizer
         )
 
-    @check_type
     def greedy_decoder(self, strings: List[str]):
         """
         true case text + segmentation.
@@ -308,7 +305,6 @@ class Tatabahasa(T5, Seq2Seq):
         )
         self._word_tokenizer = word_tokenizer
 
-    @check_type
     def greedy_decoder(self, strings: List[str]):
         """
         fix kesalahan tatabahasa.

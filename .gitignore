@@ -52,3 +52,10 @@ pretrained-model/language-detection-v2/*.txt
 *wget-log
 pretrained-model/prepare-llm/*/*.json
 pretrained-model/prepare-llm/*.json
+pretrained-model/prepare-llm/*.jsonl
+pretrained-model/prepare-llm/*.ftz
+pretrained-model/language-detection-v2/*.csv
+pretrained-model/language-detection-v2/*.tsv
+pretrained-model/language-detection-v2/*.dedup
+pretrained-model/language-detection-v2/*.bin
+pretrained-model/language-detection-v2/*.ftz
