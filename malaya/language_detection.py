@@ -48,6 +48,24 @@ weighted avg    0.97769   0.97779   0.97760   4729650
    macro avg    0.94363   0.96515   0.95375   4729650
 weighted avg    0.97111   0.97002   0.97028   4729650
 """,
+    'mesolitica/fasttext-language-detection-v2': """
+                        precision    recall  f1-score   support
+
+         local-english    0.88328   0.87926   0.88127     50429
+           local-malay    0.93159   0.92648   0.92903     59877
+        local-mandarin    0.62000   0.95044   0.75045     49820
+              manglish    0.98494   0.98157   0.98325     49648
+                 other    0.99168   0.92850   0.95905     64350
+socialmedia-indonesian    0.97626   0.95390   0.96495     75140
+      standard-english    0.86918   0.88018   0.87465     49776
+   standard-indonesian    0.99695   0.99713   0.99704     50148
+        standard-malay    0.92292   0.94851   0.93554     50049
+     standard-mandarin    0.90855   0.53587   0.67413     53709
+
+              accuracy                        0.89953    552946
+             macro avg    0.90853   0.89818   0.89494    552946
+          weighted avg    0.91425   0.89953   0.89893    552946
+""",
     'mesolitica/fasttext-language-detection-ms-id': """
                         precision    recall  f1-score   support
 
