@@ -123,6 +123,12 @@ lang_labels_ms_id = {
     4: 'other',
 }
 
+lang_labels_bahasa_en = {
+    0: 'bahasa',
+    1: 'english',
+    2: 'other',
+}
+
 lang_labels_en = {
     0: 'standard-english',
     1: 'local-english',
@@ -133,6 +139,7 @@ lang_labels_en = {
 label_v1 = list(lang_labels_v1.values())
 label_v2 = list(lang_labels_v2.values())
 label_ms_id = list(lang_labels_ms_id.values())
+label_bahasa_en = list(lang_labels_bahasa_en.values())
 label_en = list(lang_labels_en.values())
 
 _fasttext_availability = {
@@ -153,6 +160,12 @@ _fasttext_availability = {
         'Quantized Size (MB)': 62.5,
         'dim': 16,
         'Label': label_ms_id,
+    },
+    'mesolitica/fasttext-language-detection-bahasa-en': {
+        'Size (MB)': 537,
+        'Quantized Size (MB)': 62.5,
+        'dim': 16,
+        'Label': label_bahasa_en,
     },
     'mesolitica/fasttext-language-detection-en': {
         'Size (MB)': 383,
