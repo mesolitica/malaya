@@ -171,14 +171,14 @@ _fasttext_availability = {
         'Size (MB)': 383,
         'Quantized Size (MB)': 42.3,
         'dim': 16,
-        'Label': label_ms_id,
+        'Label': label_en,
     }
 }
 
 
 def available_fasttext():
     """
-    List available fasttext language detection..
+    List available fasttext language detection.
     """
 
     logger.info('trained on 90% dataset, tested on another 10% test set, dataset at https://github.com/huseinzol05/malaya/blob/master/session/relevancy/download-data.ipynb')
