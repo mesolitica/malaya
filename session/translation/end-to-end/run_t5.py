@@ -50,7 +50,7 @@ from transformers import (
 from transformers.trainer_utils import get_last_checkpoint
 from transformers.utils import check_min_version, send_example_telemetry
 from transformers.utils.versions import require_version
-
+from tokenizers import AddedToken
 
 # Will error if the minimal version of Transformers is not installed. Remove at your own risks.
 # check_min_version("4.23.0.dev0")
@@ -345,6 +345,8 @@ def main():
         revision=model_args.model_revision,
         use_auth_token=True if model_args.use_auth_token else None,
     )
+    tokenizer.add_special_tokens(
+        {"additional_special_tokens": [AddedToken('\n'), AddedToken('\t'), AddedToken(' ')]})
     model = AutoModelForSeq2SeqLM.from_pretrained(
         model_args.model_name_or_path,
         from_tf=bool(".ckpt" in model_args.model_name_or_path),
@@ -356,6 +358,7 @@ def main():
     model.config.use_cache = False
 
     model.resize_token_embeddings(len(tokenizer))
+    print(model)
 
     # Set decoder_start_token_id
     if model.config.decoder_start_token_id is None and isinstance(
@@ -510,35 +513,11 @@ def main():
             pad_to_multiple_of=8 if training_args.fp16 else None,
         )
 
-    # Metric
-    metric = evaluate.load("sacrebleu")
-
     def postprocess_text(preds, labels):
         preds = [pred.strip() for pred in preds]
         labels = [[label.strip()] for label in labels]
 
         return preds, labels
-
-    def compute_metrics(eval_preds):
-        preds, labels = eval_preds
-        if isinstance(preds, tuple):
-            preds = preds[0]
-        decoded_preds = tokenizer.batch_decode(preds, skip_special_tokens=True)
-        if data_args.ignore_pad_token_for_loss:
-            # Replace -100 in the labels as we can't decode them.
-            labels = np.where(labels != -100, labels, tokenizer.pad_token_id)
-        decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=True)
-
-        # Some simple post-processing
-        decoded_preds, decoded_labels = postprocess_text(decoded_preds, decoded_labels)
-
-        result = metric.compute(predictions=decoded_preds, references=decoded_labels)
-        result = {"bleu": result["score"]}
-
-        prediction_lens = [np.count_nonzero(pred != tokenizer.pad_token_id) for pred in preds]
-        result["gen_len"] = np.mean(prediction_lens)
-        result = {k: round(v, 4) for k, v in result.items()}
-        return result
 
     # Initialize our Trainer
     trainer = Seq2SeqTrainer(
@@ -548,7 +527,7 @@ def main():
         eval_dataset=eval_dataset if training_args.do_eval else None,
         tokenizer=tokenizer,
         data_collator=data_collator,
-        compute_metrics=compute_metrics if training_args.predict_with_generate else None,
+        compute_metrics=None,
     )
 
     # Training
