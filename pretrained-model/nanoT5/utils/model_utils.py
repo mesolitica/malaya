@@ -25,10 +25,7 @@ def get_model(args, config):
         'local_t5': MyT5,
     }[args.model.klass]
 
-    if args.model.checkpoint_path:
-        model = klass(config)
-        model.load_state_dict(torch.load(args.model.checkpoint_path))
-    elif args.model.random_init:
+    if args.model.random_init:
         model = klass(config)
     else:
         assert klass == T5ForConditionalGeneration, 'To load HFs weights you need to use HF model'
@@ -187,7 +184,7 @@ def get_optimizer(model, args):
     return optimizer
 
 
-def get_lr_scheduler(optimizer, args, logger):
+def get_lr_scheduler(optimizer, args):
     if args.optim.lr_scheduler == 'cosine':
         from torch.optim.lr_scheduler import (
             SequentialLR,
@@ -221,9 +218,6 @@ def get_lr_scheduler(optimizer, args, logger):
             LinearLR,
             LambdaLR,
         )
-
-        msg = "You are using T5 legacy LR Schedule, it's independent from the optim.base_lr"
-        logger.log_message(msg)
 
         num_steps_optimizer1 = math.ceil(args.optim.total_steps * 0.9)
         iters_left_for_optimizer2 = args.optim.total_steps - num_steps_optimizer1

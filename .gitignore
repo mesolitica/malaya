@@ -61,6 +61,7 @@ pretrained-model/language-detection-v2/*.bin
 pretrained-model/language-detection-v2/*.ftz
 pretrained-model/nanoT5/fb-dedup.jsonl
 pretrained-model/nanoT5/combine.jsonl
+pretrained-model/nanoT5/combine-others.jsonl
 pretrained-model/nanoT5/logs
 pretrained-model/nanoT5/out-base-1.1
 pretrained-model/nanoT5/out-small-1.1

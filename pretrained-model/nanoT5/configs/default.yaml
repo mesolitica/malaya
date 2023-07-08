@@ -9,6 +9,7 @@ precision: "bf16"
 eval_only: false
 predict_only: false
 seed: 2137
+model_directory: "model"
 
 model:
   klass: local_t5
@@ -17,7 +18,7 @@ model:
     dropout_rate: 0.0
   add_config:
     is_bf16: false
-  checkpoint_path: ""
+  checkpoint_path: null
   random_init: true
   compile: false # Pytorch 2.0
 
@@ -66,4 +67,4 @@ hydra:
   job:
     chdir: True
   run:
-    dir: ./logs/${now:%Y-%m-%d}/${now:%H-%M-%S}
+    dir: ./logs
