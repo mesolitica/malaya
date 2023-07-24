@@ -21,6 +21,7 @@ model:
   checkpoint_path: null
   random_init: true
   compile: false # Pytorch 2.0
+  flash_attention: false
 
 data:
   input_length: 512
@@ -32,6 +33,7 @@ data:
     test: "file"
   train_batches: 1000
   test_batches: 10
+  type: "iterate"
 
 optim:
   name: adamwscale

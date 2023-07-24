@@ -16,36 +16,56 @@ Originally from https://github.com/PiotrNawrot/nanoT5
 - BASE,
 
 ```bash
-python3 train_lightning.py \
+CUDA_VISIBLE_DEVICES=0 python3 train_lightning.py \
 optim.name=adamwscale \
-optim.batch_size=128 \
+optim.batch_size=144 \
 optim.lr_scheduler=cosine \
-optim.grad_acc=4 \
-model.name="/home/ubuntu/server2/dev/malaya/pretrained-model/nanoT5/out-base-1.1" \
+optim.grad_acc=6 \
+model.name="/home/husein/dev/malaya/pretrained-model/nanoT5/out-base-1.1" \
 model.random_init=false \
-data.filename.train="/home/ubuntu/server2/dev/malaya/pretrained-model/nanoT5/combine-others.jsonl" \
-data.filename.test="/home/ubuntu/server2/dev/malaya/pretrained-model/nanoT5/combine-others.jsonl" \
+data.filename.train="/home/husein/dev/malaya/pretrained-model/nanoT5/combine.jsonl" \
+data.filename.test="/home/husein/dev/malaya/pretrained-model/nanoT5/combine.jsonl" \
 checkpoint.every_steps=5000 \
 optim.total_steps=500000 \
 model.klass="hf_t5" \
-model_directory="base"
+model_directory="base" \
+model.compile=true
 ```
 
 - SMALL,
+
+```bash
+CUDA_VISIBLE_DEVICES=1 python3 train_lightning.py \
+optim.name=adamwscale \
+optim.batch_size=128 \
+optim.lr_scheduler=cosine \
+optim.grad_acc=2 \
+model.name="/home/husein/dev/malaya/pretrained-model/nanoT5/out-small-1.1" \
+model.random_init=false \
+data.filename.train="/home/husein/dev/malaya/pretrained-model/nanoT5/combine.jsonl" \
+data.filename.test="/home/husein/dev/malaya/pretrained-model/nanoT5/combine.jsonl" \
+checkpoint.every_steps=5000 \
+optim.total_steps=500000 \
+model.klass="hf_t5" \
+model_directory="small-v2" \
+model.compile=true
+```
+
+- TINY,
 
 ```bash
 python3 train_lightning.py \
 optim.name=adamwscale \
 optim.batch_size=128 \
 optim.lr_scheduler=cosine \
-optim.grad_acc=4 \
-model.name="/home/ubuntu/server2/dev/malaya/pretrained-model/nanoT5/out-small-1.1" \
+optim.grad_acc=2 \
+model.name="/home/ubuntu/server2/dev/malaya/pretrained-model/nanoT5/out-tiny-1.1" \
 model.random_init=false \
 data.filename.train="/home/ubuntu/server2/dev/malaya/pretrained-model/nanoT5/combine-others.jsonl" \
 data.filename.test="/home/ubuntu/server2/dev/malaya/pretrained-model/nanoT5/combine-others.jsonl" \
-checkpoint.every_steps=5000 \
+checkpoint.every_steps=10000 \
 optim.total_steps=500000 \
 model.klass="hf_t5" \
-model_directory="small" \
-model.checkpoint_path="/home/ubuntu/server2/dev/malaya/pretrained-model/nanoT5/logs/2023-07-08/08-31-20/small/model-epoch\=00-step\=20000.ckpt"
+model_directory="tiny" \
+model.compile=true
 ```

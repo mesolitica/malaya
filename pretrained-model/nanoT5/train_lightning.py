@@ -1,4 +1,3 @@
-from accelerate import Accelerator
 from omegaconf import open_dict
 import hydra
 import torch
@@ -8,6 +7,7 @@ from transformers.trainer_utils import get_last_checkpoint
 from pytorch_lightning import LightningModule
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.callbacks import LearningRateMonitor
+from transformers import get_cosine_schedule_with_warmup
 import pytorch_lightning as pl
 from utils import (
     setup_basics,
@@ -27,27 +27,42 @@ class Module(LightningModule):
     def __init__(self, args, config):
         super().__init__()
         self.model = get_model(args, config)
+        if args.model.flash_attention:
+            from optimum.bettertransformer import BetterTransformer
+            self.model = BetterTransformer.transform(self.model)
         if args.model.compile:
             self.model = torch.compile(self.model)
-        self.optimizer = get_optimizer(self.model, args)
-        self.lr_scheduler = get_lr_scheduler(self.optimizer, args)
+        self.args = args
 
     def configure_optimizers(self):
+        self.optimizer = get_optimizer(self.model, self.args)
+        self.lr_scheduler = get_lr_scheduler(self.optimizer, self.args)
+        scheduler = {"scheduler": self.lr_scheduler, "interval": "step", "frequency": 1}
         return (
             [self.optimizer],
-            [self.lr_scheduler],
+            [scheduler],
         )
 
     def training_step(self, batch, batch_idx):
         outputs = self.model(**batch)
         loss = outputs.loss
         self.log(
-            f"Losses/train_loss",
+            "Losses/train_loss",
             loss,
             on_step=True,
             on_epoch=True,
             prog_bar=True,
-            logger=True)
+            logger=True,
+        )
+        weights_l2 = sum(p.detach().norm(2).item() ** 2 for p in self.model.parameters()) ** 0.5
+        self.log(
+            'weights_l2',
+            weights_l2,
+            on_step=True,
+            on_epoch=True,
+            prog_bar=True,
+            logger=True,
+        )
 
         return loss
 
@@ -71,6 +86,7 @@ def main(args):
     num_gpus = torch.cuda.device_count()
     trainer = pl.Trainer(
         max_steps=args.optim.total_steps,
+        gradient_clip_val=args.optim.grad_clip,
         accelerator='gpu',
         devices=num_gpus,
         limit_val_batches=100,

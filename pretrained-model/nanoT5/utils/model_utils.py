@@ -16,7 +16,7 @@ from .copied_utils import (
     DataCollatorForNI,
 )
 from .t5_model import MyT5
-from .data_utils import Dataset
+from .data_utils import Dataset, DatasetFixed
 
 
 def get_model(args, config):
@@ -84,7 +84,12 @@ def process_dataset(args, tokenizer):
                 args.data.before_mask_input_length = before_mask_input_length
                 args.data.target_length = target_length
 
-            dataset = Dataset(args.data.filename.get(split), tokenizer, before_mask_input_length)
+            if args.data.type == 'iterate':
+                data_class = Dataset
+            else:
+                data_class = DatasetFixed
+
+            dataset = data_class(args.data.filename.get(split), tokenizer, before_mask_input_length)
             final_datasets[split] = dataset
     else:
         raise NotImplementedError
