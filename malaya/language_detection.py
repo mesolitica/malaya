@@ -159,19 +159,19 @@ _fasttext_availability = {
         'Size (MB)': 537,
         'Quantized Size (MB)': 62.5,
         'dim': 16,
-        'Label': label_ms_id,
+        'Label': lang_labels_ms_id,
     },
     'mesolitica/fasttext-language-detection-bahasa-en': {
         'Size (MB)': 537,
         'Quantized Size (MB)': 62.5,
         'dim': 16,
-        'Label': label_bahasa_en,
+        'Label': lang_labels_bahasa_en,
     },
     'mesolitica/fasttext-language-detection-en': {
         'Size (MB)': 383,
         'Quantized Size (MB)': 42.3,
         'dim': 16,
-        'Label': label_en,
+        'Label': lang_labels_en,
     }
 }
 
