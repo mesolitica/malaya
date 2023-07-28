@@ -1,0 +1,6 @@
+accelerate==0.21.0
+peft==0.4.0
+bitsandbytes==0.40.2
+git+https://github.com/huggingface/transformers.git
+trl==0.4.7
+tokenizers==0.13.3

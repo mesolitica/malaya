@@ -5,6 +5,13 @@ template_alpaca = {
     'response_split': '### Response:',
 }
 
+template_malaya = {
+    'description': 'Template used by Malaya.',
+    'prompt_input': 'Di bawah ialah arahan yang menerangkan tugasan, termasuk dengan input yang menyediakan konteks lanjut. Tulis jawapan yang sesuai dengan arahan tersebut.\n\n### Arahan:\n{instruction}\n\n### Input:\n{input}\n\n### Jawapan:\n',
+    'prompt_no_input': 'Di bawah ialah arahan yang menerangkan tugasan. Tulis jawapan yang sesuai dengan arahan tersebut.\n\n### Arahan:\n{instruction}\n\n### Jawapan:\n',
+    'response_split': '### Jawapan:',
+}
+
 
 prompt = {
     'constituency': 'tukar ayat ini kepada constituency parsing: {sentence}',

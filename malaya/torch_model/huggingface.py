@@ -47,6 +47,12 @@ MAPPING_LANG = {'ms': 'Malay', 'en': 'Inggeris'}
 
 
 class Base:
+    def compile(self):
+        self.model = torch.compile(self.model)
+
+    def eval(self, **kwargs):
+        return self.model.eval(**kwargs)
+
     def cuda(self, **kwargs):
         return self.model.cuda(**kwargs)
 
@@ -465,7 +471,10 @@ class Aligment(Generator):
         outputs = self.model.generate(**input_ids, max_length=256)
         outputs = self.tokenizer.batch_decode(outputs, skip_special_tokens=True)
         decoder_input_ids = self.tokenizer.encode(outputs[0], return_tensors='pt')
-        o = self.model.forward(**input_ids, decoder_input_ids=decoder_input_ids, output_attentions=True)
+        o = self.model.forward(
+            **input_ids,
+            decoder_input_ids=decoder_input_ids,
+            output_attentions=True)
         c = []
         for a in o['cross_attentions']:
             c.append(a.detach().numpy())

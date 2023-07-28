@@ -54,10 +54,16 @@ class Module(LightningModule):
             prog_bar=True,
             logger=True,
         )
-        weights_l2 = sum(p.detach().norm(2).item() ** 2 for p in self.model.parameters()) ** 0.5
+
+        total_norm = 0
+        parameters = [p for p in self.model.parameters() if p.grad is not None and p.requires_grad]
+        for p in parameters:
+            param_norm = p.grad.detach().data.norm(2)
+            total_norm += param_norm.item() ** 2
+        total_norm = total_norm ** 0.5
         self.log(
-            'weights_l2',
-            weights_l2,
+            "total_norm",
+            total_norm,
             on_step=True,
             on_epoch=True,
             prog_bar=True,

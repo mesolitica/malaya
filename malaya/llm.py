@@ -5,24 +5,20 @@ import logging
 logger = logging.getLogger(__name__)
 
 _huggingface_availability = {
-    'mesolitica/pythia-6.9b-finetune-lora': {
-        'base model': 'EleutherAI/pythia-6.9b',
+    'mesolitica/Llama-2-7b-finetune-qlora': {
+        'base model': 'https://huggingface.co/meta-llama/Llama-2-7b-hf',
         'Size (GB)': 13.85,
-        'sharded': True,
+        'sharded': False,
         'lora': True,
+        'context length': 512,
     },
-    'mesolitica/pythia-2.8b-finetune-lora': {
-        'base model': 'EleutherAI/pythia-2.8b',
-        'Size (GB)': 5.68,
-        'sharded': True,
+    'mesolitica/Llama-2-7b-finetune-qlora': {
+        'base model': 'https://huggingface.co/meta-llama/Llama-2-7b-hf',
+        'Size (GB)': 13.85,
+        'sharded': False,
         'lora': True,
+        'context length': 1024,
     },
-    'mesolitica/pythia-1b-finetune': {
-        'base model': 'EleutherAI/pythia-1b',
-        'Size (GB)': 2.09,
-        'sharded': True,
-        'lora': False,
-    }
 }
 
 
@@ -35,7 +31,7 @@ def available_huggingface():
 
 
 def huggingface(
-    model: str = 'mesolitica/pythia-2.8b-finetune',
+    model: str = 'mesolitica//Llama-2-7b-finetune-qlora',
     force_check: bool = True,
     proceed_non_shard: bool = False,
     **kwargs,
@@ -45,7 +41,7 @@ def huggingface(
 
     Parameters
     ----------
-    model: str, optional (default='mesolitica/pythia-2.8b-finetune-lora')
+    model: str, optional (default='mesolitica//Llama-2-7b-finetune-qlora')
         Check available models at `malaya.llm.available_huggingface()`.
     force_check: bool, optional (default=True)
         Force check model one of malaya model.
