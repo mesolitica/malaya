@@ -21,6 +21,7 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 import torch
+import random
 from datasets import load_dataset
 from peft import LoraConfig
 from transformers import (
@@ -68,6 +69,7 @@ class ScriptArguments:
     lora_dropout: Optional[float] = field(default=0.1)
     lora_r: Optional[int] = field(default=64)
     max_seq_length: Optional[int] = field(default=512)
+    checkpoint_dir: Optional[str] = field(default=None)
     model_name: Optional[str] = field(
         default="meta-llama/Llama-2-7b-hf",
         metadata={
@@ -146,7 +148,6 @@ class ScriptArguments:
         metadata={
             "help": "The output directory where the model predictions and checkpoints will be written."},
     )
-    checkpoint_dir: Optional[str] = field(default=None)
 
 
 parser = HfArgumentParser(ScriptArguments)
@@ -221,12 +222,19 @@ model.config.use_cache = False
 
 
 def generate_and_tokenize_prompt(row):
-    if row['prompt_input'] is not None:
-        text = row['prompt_input'].format(instruction=row['input'])
-        o = row['output']
-        text = f'{text}{o}'
+    if row['output'] is not None:
+        if row['prompt_input'] is not None and random.random() < 0.5:
+            text = row['prompt_input'].format(instruction=row['input'])
+            o = row['output']
+            text = f'{text}{o}'
+        else:
+            prompt = '\n\n### Jawapan:\n'
+            text = row['input']
+            o = row['output']
+            text = f'{text}{prompt}{o}'
     else:
         text = row['input']
+
     return {'text': text}
 
 

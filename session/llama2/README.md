@@ -47,7 +47,7 @@ WANDB_DISABLED=true python3 main-lora.py \
 --save_steps 500
 ```
 
-#### 1024 context lnegth
+#### 1024 context length
 
 ```
 LD_LIBRARY_PATH=/home/husein/.local/lib/python3.8/site-packages/torch/lib \
@@ -61,4 +61,20 @@ WANDB_DISABLED=true CUDA_VISIBLE_DEVICES=1 python3 main-lora.py \
 --save_steps 500 \
 --max_seq_length 1024 \
 --output_dir "./results-1024"
+```
+
+#### 1536 context length
+
+```
+LD_LIBRARY_PATH=/home/husein/.local/lib/python3.8/site-packages/torch/lib \
+WANDB_DISABLED=true CUDA_VISIBLE_DEVICES=1 python3 main-lora.py \
+--logging_steps 1 \
+--dataset_name "/home/ubuntu/server2/dev/malaya/session/llama2/shuf-combine-1536.jsonl" \
+--max_steps 100000 \
+--bf16 --bnb_4bit_compute_dtype bfloat16 \
+--per_device_train_batch_size 6 \
+--gradient_accumulation_steps 2 \
+--save_steps 500 \
+--max_seq_length 1536 \
+--output_dir "./results-1536"
 ```

@@ -71,4 +71,5 @@ pretrained-model/nanoT5/out-tiny-1.1
 pretrained-model/nanoT5/out-large-1.1
 session/llama2/results
 session/llama2/results-1024
+session/llama2/results-1536
 session/llama2/shuf-*.jsonl
