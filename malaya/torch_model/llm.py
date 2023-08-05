@@ -5,6 +5,7 @@ Mostly borrowed from https://huggingface.co/spaces/huggingface-projects/llama-2-
 import torch
 from threading import Thread
 from malaya.text.prompt import template_alpaca, template_malaya
+from malaya_boilerplate.converter import ctranslate2_generator
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import logging
 
@@ -19,9 +20,10 @@ except BaseException:
 
 
 class LLM:
-    def __init__(self, model, **kwargs):
+    def __init__(self, model, use_ctranslate2=False, **kwargs):
 
         self.tokenizer = AutoTokenizer.from_pretrained(model, **kwargs)
+        self.use_ctranslate2 = use_ctranslate2
 
         if torch.cuda.is_available():
             self.device = 'cuda'

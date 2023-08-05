@@ -235,6 +235,12 @@ Contents:
    
 .. toctree::
    :maxdepth: 2
+   :caption: Conventer
+
+   huggingface-t5-ctranslate2
+
+.. toctree::
+   :maxdepth: 2
    :caption: Misc Module
    
    load-lexicon

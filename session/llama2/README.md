@@ -28,7 +28,8 @@ ln -s ~/.local/lib/python3.8/site-packages/torch/lib/libcudart-d0da41ae.so.11.0 
 - Malaysia Parliament QA instructions.
 - Local Twitter Sentiment instructions.
 - Translation instructions.
-- Malay News instructions.
+- Malay News QA instructions.
+- GPT4ALL v1.3 instructions.
 - Language Model on malay texts.
 
 ## how-to
@@ -51,7 +52,7 @@ WANDB_DISABLED=true python3 main-lora.py \
 
 ```
 LD_LIBRARY_PATH=/home/husein/.local/lib/python3.8/site-packages/torch/lib \
-WANDB_DISABLED=true CUDA_VISIBLE_DEVICES=1 python3 main-lora.py \
+WANDB_DISABLED=true CUDA_VISIBLE_DEVICES=0 python3 main-lora.py \
 --logging_steps 1 \
 --dataset_name "/home/husein/dev/malaya/session/llama2/shuf-combine-1024.jsonl" \
 --max_steps 100000 \
@@ -60,7 +61,8 @@ WANDB_DISABLED=true CUDA_VISIBLE_DEVICES=1 python3 main-lora.py \
 --gradient_accumulation_steps 4 \
 --save_steps 500 \
 --max_seq_length 1024 \
---output_dir "./results-1024"
+--output_dir "./results-1024" \
+--checkpoint_dir "./results-1024/checkpoint-42500"
 ```
 
 #### 1536 context length

@@ -103,6 +103,7 @@ Features
 -  **True Case**, provide true casing utility using T5-Bahasa.
 -  **Word2Num**, convert from cardinal or ordinal representation to numbers.
 -  **Word2Vec**, provide pretrained malay wikipedia and malay news Word2Vec, with easy interface and visualization.
+-  **Model Quantization**, provide model quantization for T5 and Llama2 using ctranslate2.
 
 Pretrained Models
 ------------------

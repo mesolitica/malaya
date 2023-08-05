@@ -29,6 +29,7 @@ from malaya.function.parse_dependency import DependencyGraph
 from malaya.text.rouge import postprocess_summary, find_kata_encik
 from malaya.torch_model.t5 import T5ForSequenceClassification, T5Tagging, T5Diaparser
 from malaya_boilerplate.torch_utils import to_tensor_cuda, to_numpy
+from malaya_boilerplate.converter import ctranslate2_translator
 from malaya.function.activation import softmax
 from malaya.parser.conll import CoNLL
 from malaya.parser.alg import eisner, mst
@@ -48,15 +49,23 @@ MAPPING_LANG = {'ms': 'Malay', 'en': 'Inggeris'}
 
 class Base:
     def compile(self):
+        if self.use_ctranslate2:
+            raise ValueError('`compile` method not able to use for ctranslate2 model.')
         self.model = torch.compile(self.model)
 
     def eval(self, **kwargs):
+        if self.use_ctranslate2:
+            raise ValueError('`eval` method not able to use for ctranslate2 model.')
         return self.model.eval(**kwargs)
 
     def cuda(self, **kwargs):
+        if self.use_ctranslate2:
+            raise ValueError('`cuda` method not able to use for ctranslate2 model.')
         return self.model.cuda(**kwargs)
 
     def save_pretrained(self, *args, **kwargs):
+        if self.use_ctranslate2:
+            raise ValueError('`save_pretrained` method not able to use for ctranslate2 model.')
         return self.model.save_pretrained(
             *args, **kwargs), self.tokenizer.save_pretrained(*args, **kwargs)
 
@@ -67,11 +76,20 @@ class Generator(Base):
         model,
         initial_text,
         base_model=AutoModelForSeq2SeqLM,
+        use_ctranslate2=False,
         use_fast=True,
         **kwargs
     ):
         self.tokenizer = AutoTokenizer.from_pretrained(model, use_fast=use_fast, **kwargs)
-        self.model = base_model.from_pretrained(model, **kwargs)
+        self.use_ctranslate2 = use_ctranslate2
+
+        if self.use_ctranslate2:
+            if base_model != AutoModelForSeq2SeqLM:
+                raise ValueError('`base_model` must `AutoModelForSeq2SeqLM` if `use_ctranslate2`.')
+
+            self.model = ctranslate2_translator(model=model, **kwargs)
+        else:
+            self.model = base_model.from_pretrained(model, **kwargs)
         self._initial_text = initial_text
 
     def generate(self, strings: List[str], return_generate=False, prefix=None, **kwargs):
@@ -83,6 +101,9 @@ class Generator(Base):
         strings : List[str]
         **kwargs: vector arguments pass to huggingface `generate` method.
             Read more at https://huggingface.co/docs/transformers/main_classes/text_generation
+
+            If you are using `use_ctranslate2`, vector arguments pass to ctranslate2 `translate_batch` method.
+            Read more at https://opennmt.net/CTranslate2/python/ctranslate2.Translator.html?highlight=translate_batch#ctranslate2.Translator.translate_batch
 
         Returns
         -------
@@ -97,13 +118,23 @@ class Generator(Base):
         logger.debug(f'generate, initial_text: {_initial_text}')
         logger.debug(f'generate, strings: {strings}')
 
-        cuda = next(self.model.parameters()).is_cuda
-        input_ids = [{'input_ids': self.tokenizer.encode(
-            f'{_initial_text}{s}', return_tensors='pt')[0]} for s in strings]
-        padded = self.tokenizer.pad(input_ids, padding='longest', return_tensors='pt')
-        for k in padded.keys():
-            padded[k] = to_tensor_cuda(padded[k], cuda)
-        outputs = self.model.generate(**padded, **kwargs)
+        if self.use_ctranslate2:
+            tokens = [self.tokenizer.convert_ids_to_tokens(
+                self.tokenizer.encode(f'{_initial_text}{s}')) for s in strings]
+            results = self.model.translate_batch(tokens, **kwargs)
+            outputs = []
+            for o in results:
+                o = o.hypotheses[0]
+                o = self.tokenizer.convert_tokens_to_ids(o)
+                outputs.append(o)
+        else:
+            cuda = next(self.model.parameters()).is_cuda
+            input_ids = [{'input_ids': self.tokenizer.encode(
+                f'{_initial_text}{s}', return_tensors='pt')[0]} for s in strings]
+            padded = self.tokenizer.pad(input_ids, padding='longest', return_tensors='pt')
+            for k in padded.keys():
+                padded[k] = to_tensor_cuda(padded[k], cuda)
+            outputs = self.model.generate(**padded, **kwargs)
         if return_generate:
             return outputs
         else:
@@ -126,6 +157,8 @@ class Generator(Base):
         -------
         result: Dict
         """
+        if self.use_ctranslate2:
+            raise ValueError('`alignment` method not able to use for ctranslate2 model.')
 
         try:
             from dtw import dtw
@@ -1340,6 +1373,9 @@ class Translation(Generator):
             target language to translate.
         **kwargs: vector arguments pass to huggingface `generate` method.
             Read more at https://huggingface.co/docs/transformers/main_classes/text_generation
+
+            If you are using `use_ctranslate2`, vector arguments pass to ctranslate2 `translate_batch` method.
+            Read more at https://opennmt.net/CTranslate2/python/ctranslate2.Translator.html?highlight=translate_batch#ctranslate2.Translator.translate_batch
 
         Returns
         -------
