@@ -235,7 +235,7 @@ Contents:
    
 .. toctree::
    :maxdepth: 2
-   :caption: Conventer
+   :caption: Converter
 
    huggingface-t5-ctranslate2
 
