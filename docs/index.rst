@@ -80,6 +80,13 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
+   :caption: Large Language Model Module
+
+   load-llm-huggingface
+   load-llm-huggingface-gradio
+
+.. toctree::
+   :maxdepth: 2
    :caption: Spelling Correction Module
 
    load-spelling-correction-jamspell

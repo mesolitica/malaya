@@ -124,9 +124,8 @@ class Generator(Base):
             results = self.model.translate_batch(tokens, **kwargs)
             outputs = []
             for o in results:
-                o = o.hypotheses[0]
-                o = self.tokenizer.convert_tokens_to_ids(o)
-                outputs.append(o)
+                for h in o.hypotheses:
+                    outputs.append(self.tokenizer.convert_tokens_to_ids(h))
         else:
             cuda = next(self.model.parameters()).is_cuda
             input_ids = [{'input_ids': self.tokenizer.encode(

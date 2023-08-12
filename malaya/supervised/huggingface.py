@@ -121,5 +121,5 @@ def load_translation(model, from_lang, to_lang, **kwargs):
     return Translation(model=model, from_lang=from_lang, to_lang=to_lang, **kwargs)
 
 
-def load_llm(base_model, model, lora, **kwargs):
-    return LLM(base_model=base_model, model=model, lora=lora, **kwargs)
+def load_llm(model, **kwargs):
+    return LLM(model=model, **kwargs)

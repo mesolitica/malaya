@@ -84,6 +84,7 @@ Features
 -  **Knowledge Graph to Text**, Generate human sentences from a knowledge graph.
 -  **Language Detection**, using Fast-text and Sparse Deep learning Model to classify Malay (formal and social media), Indonesia (formal and social media), Rojak language and Manglish.
 -  **Language Model**, using KenLM, Masked language model using BERT, ALBERT and RoBERTa, and GPT2 to do text scoring.
+-  **Large Language Model**, finetuned Llama2 on augmented Malay instruction datasets.
 -  **NSFW Detection**, detect NSFW text using rules based and subwords Naive Bayes.
 -  **Num2Word**, convert from numbers to cardinal or ordinal representation.
 -  **Paraphrase**, provide Abstractive Paraphrase using T5-Bahasa and Transformer-Bahasa.
@@ -125,6 +126,7 @@ Malaya also released Bahasa pretrained models, simply check at `Malaya/pretraine
 - **FNet**, FNet: Mixing Tokens with Fourier Transforms, https://arxiv.org/abs/2105.03824
 - **Fastformer**, Fastformer: Additive Attention Can Be All You Need, https://arxiv.org/abs/2108.09084
 - **MLM Scoring**, Masked Language Model Scoring, https://arxiv.org/abs/1910.14659
+- **Llama2**, Llama 2: Open Foundation and Fine-Tuned Chat Models, https://arxiv.org/abs/2307.09288
 
 References
 -----------
@@ -145,7 +147,9 @@ If you use our software for research, please cite:
 Acknowledgement
 ----------------
 
-Thanks to `KeyReply <https://www.keyreply.com/>`_ for private V100s cloud and `Mesolitica <https://mesolitica.com/>`_ for private RTXs cloud to train Malaya models,
+Thanks to,
+
+1. `KeyReply <https://www.keyreply.com/>`_ for private V100s cloud.
 
 .. raw:: html
 
@@ -153,19 +157,33 @@ Thanks to `KeyReply <https://www.keyreply.com/>`_ for private V100s cloud and `M
         <img alt="logo" width="20%" src="https://image4.owler.com/logo/keyreply_owler_20191024_163259_original.png">
     </a>
 
+
+2. `Mesolitica <https://mesolitica.com/>`_ for private RTXs cloud.
+
 .. raw:: html
 
     <a href="#readme">
         <img alt="logo" width="20%" src="https://i1.wp.com/mesolitica.com/wp-content/uploads/2019/06/Mesolitica_Logo_Only.png?fit=857%2C532&ssl=1">
     </a>
 
-Also, thanks to `Tensorflow Research Cloud <https://www.tensorflow.org/tfrc>`_ for free TPUs access.
+
+3. `Nvidia <https://www.nvidia.com/en-us/>`_ for Azure credit.
+
+.. raw:: html
+
+    <a href="#readme">
+        <img alt="logo" width="20%" src="https://www.nvidia.com/content/dam/en-zz/Solutions/about-nvidia/logo-and-brand/01-nvidia-logo-horiz-500x200-2c50-d@2x.png">
+    </a>
+
+
+4. `Tensorflow Research Cloud <https://www.tensorflow.org/tfrc>`_ for free TPUs access.
 
 .. raw:: html
 
     <a href="https://www.tensorflow.org/tfrc">
         <img alt="logo" width="20%" src="https://2.bp.blogspot.com/-xojf3dn8Ngc/WRubNXxUZJI/AAAAAAAAB1A/0W7o1hR_n20QcWyXHXDI1OTo7vXBR8f7QCLcB/s400/image2.png">
     </a>
+
 
 Contributing
 ----------------

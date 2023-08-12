@@ -258,6 +258,12 @@ malaya.lexicon
 .. automodule:: malaya.lexicon
     :members:
 
+malaya.llm
+-------------------------
+
+.. automodule:: malaya.llm
+    :members:
+
 malaya.nsfw
 -------------------------
 
@@ -624,6 +630,12 @@ malaya.torch_model.huggingface
     :members:
 
 .. autoclass:: malaya.torch_model.huggingface.Translation()
+    :members:
+
+malaya.torch_model.llm
+----------------------------------
+
+.. autoclass:: malaya.torch_model.llm.LLM()
     :members:
 
 malaya.torch_model.mask_lm

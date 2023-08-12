@@ -32,7 +32,7 @@ from transformers import (
     AutoTokenizer,
     TrainingArguments,
 )
-
+from transformers.trainer_utils import get_last_checkpoint
 from trl import SFTTrainer
 
 # This example fine-tunes Llama v2 model on Guanace dataset
@@ -69,7 +69,6 @@ class ScriptArguments:
     lora_dropout: Optional[float] = field(default=0.1)
     lora_r: Optional[int] = field(default=64)
     max_seq_length: Optional[int] = field(default=512)
-    checkpoint_dir: Optional[str] = field(default=None)
     model_name: Optional[str] = field(
         default="meta-llama/Llama-2-7b-hf",
         metadata={
@@ -195,7 +194,7 @@ def create_and_prepare_model(args):
     )
 
     tokenizer = AutoTokenizer.from_pretrained(script_args.model_name, trust_remote_code=True)
-    tokenizer.pad_token = tokenizer.eos_token
+    tokenizer.pad_token = tokenizer.unk_token
 
     return model, peft_config, tokenizer
 
@@ -222,19 +221,7 @@ model.config.use_cache = False
 
 
 def generate_and_tokenize_prompt(row):
-    if row['output'] is not None:
-        if row['prompt_input'] is not None and random.random() < 0.5:
-            text = row['prompt_input'].format(instruction=row['input'])
-            o = row['output']
-            text = f'{text}{o}'
-        else:
-            prompt = '\n\n### Jawapan:\n'
-            text = row['input']
-            o = row['output']
-            text = f'{text}{prompt}{o}'
-    else:
-        text = row['input']
-
+    text = f"#User: {row['input']}\n#Bot: {row['output']}{tokenizer.eos_token}"
     return {'text': text}
 
 
@@ -256,8 +243,10 @@ trainer = SFTTrainer(
     packing=script_args.packing,
 )
 
-if script_args.checkpoint_dir:
-    trainer.train(resume_from_checkpoint=script_args.checkpoint_dir)
+last_checkpoint = get_last_checkpoint(script_args.output_dir)
+
+if last_checkpoint:
+    trainer.train(resume_from_checkpoint=last_checkpoint)
 else:
     trainer.train()
 

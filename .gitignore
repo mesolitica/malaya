@@ -73,3 +73,5 @@ session/llama2/results
 session/llama2/results-1024
 session/llama2/results-1536
 session/llama2/shuf-*.jsonl
+session/llama2/ctranslate2
+session/llama2/example.jsonl

@@ -35,7 +35,7 @@ Documentation at https://malaya.readthedocs.io/en/latest/
 Features
 --------
 
--  **Alignment**, translation word alignment using Eflomal and pretrained Transformer models.
+-  **Alignment**, translation word alignment using Eflomal.
 -  **Abstractive text augmentation**, augment any text into social media text structure using T5-Bahasa.
 -  **Encoder text augmentation**, augment any text Wordvector or Transformer-Bahasa word replacement technique.
 -  **Rules based text augmentation**, augment any text using dictionary of synonym and rules based.
@@ -53,12 +53,7 @@ Features
 -  **Extractive Summarization**, Extractive interface using Transformer-Bahasa and Doc2Vec.
 -  **Text to Knowledge Graph**, Generate knowledge graph from human sentences.
 -  **Topic Modeling**, provide Transformer-Bahasa, LDA2Vec, LDA, NMF, LSA interface and easy BERTopic integration.
--  **EN-MS Translation**, provide English to standard Malay using T5-Bahasa.
--  **IND-MS Translation**, provide Indonesian to standard Malay using T5-Bahasa.
--  **JAV-MS Translation**, provide Javanese to standard Malay using T5-Bahasa.
--  **MS-EN Translation**, provide standard Malay to English using T5-Bahasa.
--  **MS-IND Translation**, provide standard Malay to Indonesian using T5-Bahasa.
--  **MS-JAV Translation**, provide standard Malay to Javanese using T5-Bahasa.
+-  **End-to-End Translation**, provide multilanguages translation including local languages to English or Malay using T5-Bahasa.
 -  **Zero-shot classification**, provide Zero-shot classification interface using Transformer-Bahasa to recognize texts without any labeled training data.
 -  **Zero-shot Entity Recognition**, provide Zero-shot entity tagging interface using Transformer-Bahasa to extract entities.
 -  **Constituency Parsing**, breaking a text into sub-phrases using finetuned Transformer-Bahasa.  
@@ -70,6 +65,7 @@ Features
 -  **Knowledge Graph to Text**, Generate human sentences from a knowledge graph.
 -  **Language Detection**, using Fast-text and Sparse Deep learning Model to classify Malay (formal and social media), Indonesia (formal and social media), Rojak language and Manglish.
 -  **Language Model**, using KenLM, Masked language model using BERT, ALBERT and RoBERTa, and GPT2 to do text scoring.
+-  **Large Language Model**, finetuned Llama2 on augmented Malay instruction datasets.
 -  **NSFW Detection**, detect NSFW text using rules based and subwords Naive Bayes.
 -  **Num2Word**, convert from numbers to cardinal or ordinal representation.
 -  **Paraphrase**, provide Abstractive Paraphrase using T5-Bahasa and Transformer-Bahasa.
@@ -89,6 +85,7 @@ Features
 -  **True Case**, provide true casing utility using T5-Bahasa.
 -  **Word2Num**, convert from cardinal or ordinal representation to numbers.
 -  **Word2Vec**, provide pretrained malay wikipedia and malay news Word2Vec, with easy interface and visualization.
+-  **Model Quantization**, provide model quantization for T5 and Llama2 using ctranslate2.
 
 Pretrained Models
 ------------------
@@ -110,6 +107,7 @@ Malaya also released Bahasa pretrained models, simply check at `Malaya/pretraine
 - **FNet**, FNet: Mixing Tokens with Fourier Transforms, https://arxiv.org/abs/2105.03824
 - **Fastformer**, Fastformer: Additive Attention Can Be All You Need, https://arxiv.org/abs/2108.09084
 - **MLM Scoring**, Masked Language Model Scoring, https://arxiv.org/abs/1910.14659
+- **Llama2**, Llama 2: Open Foundation and Fine-Tuned Chat Models, https://arxiv.org/abs/2307.09288
 
 References
 -----------
