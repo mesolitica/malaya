@@ -3,6 +3,7 @@ from threading import Thread
 from malaya.text.prompt import template_alpaca, template_malaya
 from malaya_boilerplate.converter import ctranslate2_generator
 from transformers import AutoModelForCausalLM, AutoTokenizer
+from typing import List, Dict
 import logging
 
 logger = logging.getLogger(__name__)
@@ -14,7 +15,14 @@ except BaseException:
 
 
 class LLM:
-    def __init__(self, model, use_ctranslate2=False, torch_dtype=None, **kwargs):
+    def __init__(
+        self,
+        model,
+        use_ctranslate2=False,
+        use_mlc_llm=False,
+        torch_dtype=None,
+        **kwargs,
+    ):
 
         self.tokenizer = AutoTokenizer.from_pretrained(model, **kwargs)
         self.use_ctranslate2 = use_ctranslate2
@@ -52,8 +60,51 @@ class LLM:
 
             _ = self.model.eval()
 
-    def _get_input(self, query):
-        prompt = f'#User: {query}\n#Bot: '
+    def _get_input(
+        self,
+        query,
+        keys={'role', 'content'},
+        roles={'system', 'user', 'assistant'},
+    ):
+        """
+        We follow exactly Llama2 chatbot tokens.
+        https://github.com/facebookresearch/llama/blob/main/llama/generation.py
+        """
+        if not len(query):
+            raise ValueError('`query` must length as least 2.')
+
+        for i in range(len(query)):
+            for k in keys:
+                if k not in query[i]:
+                    raise ValueError(f'{i} message does not have `{k}` key.')
+
+            if query[i]['role'] not in roles:
+                raise ValueError(f'Only accept `{roles}` for {i} message role.')
+
+        if query[0]['role'] != 'system':
+            raise ValueError('first message of `query` must `system` role.')
+        if query[-1]['role'] != 'user':
+            raise ValueError('last message of `query` must `user` role.')
+
+        system = query[0]['content']
+        user_query = query[-1]['content']
+
+        users, assistants = [], []
+        for q in query[1:-1]:
+            if q['role'] == 'user':
+                users.append(q['content'])
+            elif q['role'] == 'assistant':
+                assistants.append(q['content'])
+
+        if len(users) != len(assistants):
+            raise ValueError(
+                'model only support `system, `user` and `assistant` roles, starting with `system`, then `user` and alternating (u/a/u/a/u...)')
+
+        texts = [f'<s>[INST] <<SYS>>\n{system}\n<</SYS>>\n\n']
+        for u, a in zip(users, assistants):
+            texts.append(f'{u.strip()} [/INST] {a.strip()} </s><s>[INST] ')
+        texts.append(f'{user_query.strip()} [/INST]')
+        prompt = ''.join(texts)
         logger.debug(f'prompt: {prompt}')
         if self.use_ctranslate2:
             return self.tokenizer.tokenize(prompt)
@@ -63,8 +114,7 @@ class LLM:
 
     def generate(
         self,
-        query: str,
-        split_by='\n#Bot:',
+        query: List[Dict[str, str]],
         **kwargs,
     ):
         """
@@ -72,8 +122,17 @@ class LLM:
 
         Parameters
         ----------
-        query: str
-            User input.
+        query: List[Dict[str, str]]
+            [
+                {
+                    'role': 'system',
+                    'content': 'anda adalah AI yang berguna',
+                },
+                {
+                    'role': 'user',
+                    'content': 'makanan apa yang sedap?',
+                }
+            ]
 
         **kwargs: vector arguments pass to huggingface `generate` method.
             Read more at https://huggingface.co/docs/transformers/main_classes/text_generation
@@ -105,7 +164,7 @@ class LLM:
 
     def generate_stream(
         self,
-        query: str,
+        query: List[Dict[str, str]],
         **kwargs,
     ):
         """

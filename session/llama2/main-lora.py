@@ -50,6 +50,14 @@ from trl import SFTTrainer
 # For models that have `config.pretraining_tp > 1` install:
 # pip install git+https://github.com/huggingface/transformers.git
 
+system_prompts = [
+    'You are an AI assistant',
+    'Anda adalah pembantu AI',
+    'Anda adalah pembantu AI yang berguna',
+    'You are a helpful assistant',
+    'Anda seorang pembantu yang berguna',
+]
+
 
 @dataclass
 class ScriptArguments:
@@ -221,8 +229,26 @@ model.config.use_cache = False
 
 
 def generate_and_tokenize_prompt(row):
-    text = f"#User: {row['input']}\n#Bot: {row['output']}{tokenizer.eos_token}"
-    return {'text': text}
+    system_prompt = random.choice(system_prompts)
+    texts = [f'<s>[INST] <<SYS>>\n{system_prompt}\n<</SYS>>\n\n']
+
+    if '<bot>:' in row['input'] and row['output'] is None:
+        inputs, outputs = [], []
+        splitted = row['input'].split('<bot>:')
+        for i in range(len(splitted) - 1):
+            if i == 0:
+                human = splitted[i].replace('<manusia>:', '')
+            else:
+                human = splitted[i].split('<manusia>:')[1]
+            bot = splitted[i + 1].split('<manusia>:')[0]
+            inputs.append(human)
+            outputs.append(bot)
+    else:
+        inputs = [row['input']]
+        outputs = [row['output']]
+    for input, output in zip(inputs, outputs):
+        texts.append(f'{input} [/INST] {output} </s><s>[INST] ')
+    return {'text': ''.join(texts)}
 
 
 dataset = load_dataset("json", data_files=script_args.dataset_name, split="train")

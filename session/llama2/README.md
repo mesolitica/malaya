@@ -23,40 +23,13 @@ But before that, do not forget to symlink because `bitsandbytes` required `libcu
 ln -s ~/.local/lib/python3.8/site-packages/torch/lib/libcudart-d0da41ae.so.11.0 ~/.local/lib/python3.8/site-packages/torch/lib/libcudart.so
 ```
 
-3. Prepare dataset, https://github.com/huseinzol05/malaysian-dataset/tree/master/llm/instruction,
+## LORA Instruction
 
-- Malaysia Parliament QA instructions.
-- Local Twitter Sentiment instructions.
-- Translation instructions.
-- Reverse translation instructions
-- Malay News QA instructions.
-- GPT4ALL v1.3 instructions.
-- OpenOrca instructions.
-- Code Instructions instructions.
+Prepare dataset, https://github.com/huseinzol05/malaysian-dataset/tree/master/llm/instruction
 
-## how-to
+### 7B, 1536 context length
 
-### 7B
-
-#### 1024 context length
-
-```
-LD_LIBRARY_PATH=/home/husein/.local/lib/python3.8/site-packages/torch/lib \
-WANDB_DISABLED=true CUDA_VISIBLE_DEVICES=1 python3 main-lora.py \
---logging_steps 1 \
---dataset_name "/home/husein/dev/malaya/session/llama2/shuf-combine-1024.jsonl" \
---max_steps 100000 \
---bf16 --bnb_4bit_compute_dtype bfloat16 \
---per_device_train_batch_size 8 \
---gradient_accumulation_steps 4 \
---save_steps 500 \
---max_seq_length 1024 \
---output_dir "./results-1024"
-```
-
-#### 1536 context length
-
-```
+```bash
 LD_LIBRARY_PATH=/home/husein/.local/lib/python3.8/site-packages/torch/lib \
 WANDB_DISABLED=true CUDA_VISIBLE_DEVICES=0 python3 main-lora.py \
 --logging_steps 1 \
@@ -67,5 +40,120 @@ WANDB_DISABLED=true CUDA_VISIBLE_DEVICES=0 python3 main-lora.py \
 --gradient_accumulation_steps 2 \
 --save_steps 500 \
 --max_seq_length 1536 \
---output_dir "./results-1536"
+--output_dir "./results-1536-v2"
+```
+
+### 7B, 1024 context length, packing
+
+```bash
+LD_LIBRARY_PATH=/home/husein/.local/lib/python3.8/site-packages/torch/lib \
+WANDB_DISABLED=true CUDA_VISIBLE_DEVICES=1 python3 main-lora.py \
+--logging_steps 1 \
+--dataset_name "/home/husein/dev/malaya/session/llama2/shuf-combine-1536.jsonl" \
+--max_steps 500000 \
+--bf16 --bnb_4bit_compute_dtype bfloat16 \
+--per_device_train_batch_size 8 \
+--gradient_accumulation_steps 4 \
+--save_steps 500 \
+--max_seq_length 1024 \
+--output_dir "./results-1024-packing" \
+--packing true \
+--group_by_length false
+```
+
+## Full Parameter Finetuning
+
+### 7B FSDP
+
+```bash
+python3 lightning_fsdp.py \
+--model_name_or_path meta-llama/Llama-2-7b-hf \
+--gradient_accumulation_steps 2 \
+--block_size 1024 \
+--train_file "test.jsonl" \
+--trust_remote_code true \
+--checkpointing_steps 100 \
+--max_train_steps 100000 \
+--output_dir "fpf-7b"
+```
+
+### 7B DeepSpeed3
+
+```bash
+python3 lightning_deepspeed3.py \
+--model_name_or_path meta-llama/Llama-2-7b-hf \
+--gradient_accumulation_steps 2 \
+--block_size 1024 \
+--train_file "test.jsonl" \
+--trust_remote_code true \
+--checkpointing_steps 100 \
+--max_train_steps 100000 \
+--output_dir "fpf-7b" \
+--per_device_train_batch_size 2
+```
+
+#### Check memory usage
+
+```bash
+python3 -c 'from transformers import AutoModelForCausalLM; \
+import torch; \
+from deepspeed.runtime.zero.stage3 import estimate_zero3_model_states_mem_needs_all_live; \
+model = AutoModelForCausalLM.from_pretrained("meta-llama/Llama-2-7b-hf", torch_dtype=torch.bfloat16); \
+estimate_zero3_model_states_mem_needs_all_live(model, num_gpus_per_node=1, num_nodes=1)'
+```
+
+```text
+HW: Setup with 1 node, 1 GPU per node.
+SW: Model with 6738M total params, 131M largest layer params.
+  per CPU  |  per GPU |   Options
+  169.44GB |   0.49GB | offload_param=cpu , offload_optimizer=cpu , zero_init=1
+  169.44GB |   0.49GB | offload_param=cpu , offload_optimizer=cpu , zero_init=0
+  150.62GB |  13.04GB | offload_param=none, offload_optimizer=cpu , zero_init=1
+  150.62GB |  13.04GB | offload_param=none, offload_optimizer=cpu , zero_init=0
+    0.73GB | 113.45GB | offload_param=none, offload_optimizer=none, zero_init=1
+   37.65GB | 113.45GB | offload_param=none, offload_optimizer=none, zero_init=0
+```
+
+```bash
+python3 -c 'from transformers import AutoModelForCausalLM; \
+import torch; \
+from deepspeed.runtime.zero.stage3 import estimate_zero3_model_states_mem_needs_all_live; \
+model = AutoModelForCausalLM.from_pretrained("meta-llama/Llama-2-7b-hf", torch_dtype=torch.bfloat16); \
+estimate_zero3_model_states_mem_needs_all_live(model, num_gpus_per_node=4, num_nodes=1)'
+```
+
+```text
+Estimated memory needed for params, optim states and gradients for a:
+HW: Setup with 1 node, 4 GPUs per node.
+SW: Model with 6738M total params, 131M largest layer params.
+  per CPU  |  per GPU |   Options
+  169.44GB |   0.49GB | offload_param=cpu , offload_optimizer=cpu , zero_init=1
+  169.44GB |   0.49GB | offload_param=cpu , offload_optimizer=cpu , zero_init=0
+  150.62GB |   3.63GB | offload_param=none, offload_optimizer=cpu , zero_init=1
+  150.62GB |   3.63GB | offload_param=none, offload_optimizer=cpu , zero_init=0
+    2.93GB |  28.73GB | offload_param=none, offload_optimizer=none, zero_init=1
+  150.62GB |  28.73GB | offload_param=none, offload_optimizer=none, zero_init=0
+```
+
+### 13B DeepSpeed3
+
+#### Check memory usage
+
+```bash
+python3 -c 'from transformers import AutoModelForCausalLM; \
+import torch; \
+from deepspeed.runtime.zero.stage3 import estimate_zero3_model_states_mem_needs_all_live; \
+model = AutoModelForCausalLM.from_pretrained("meta-llama/Llama-2-13b-hf", torch_dtype=torch.bfloat16); \
+estimate_zero3_model_states_mem_needs_all_live(model, num_gpus_per_node=4, num_nodes=1)'
+```
+
+```text
+SW: Model with 13015M total params, 163M largest layer params.
+  per CPU  |  per GPU |   Options
+  327.29GB |   0.61GB | offload_param=cpu , offload_optimizer=cpu , zero_init=1
+  327.29GB |   0.61GB | offload_param=cpu , offload_optimizer=cpu , zero_init=0
+  290.93GB |   6.67GB | offload_param=none, offload_optimizer=cpu , zero_init=1
+  290.93GB |   6.67GB | offload_param=none, offload_optimizer=cpu , zero_init=0
+    3.66GB |  55.16GB | offload_param=none, offload_optimizer=none, zero_init=1
+  290.93GB |  55.16GB | offload_param=none, offload_optimizer=none, zero_init=0
 ```

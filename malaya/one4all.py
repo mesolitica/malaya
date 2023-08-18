@@ -5,10 +5,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 _huggingface_availability = {
-    'mesolitica/nanot5-tiny-malaysian-cased-one4all': {
-        'Size (MB)': 358,
-        'Suggested length': 1536,
-    },
     'mesolitica/nanot5-small-malaysian-cased-one4all': {
         'Size (MB)': 358,
         'Suggested length': 1536,
