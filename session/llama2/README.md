@@ -47,18 +47,16 @@ WANDB_DISABLED=true CUDA_VISIBLE_DEVICES=0 python3 main-lora.py \
 
 ```bash
 LD_LIBRARY_PATH=/home/husein/.local/lib/python3.8/site-packages/torch/lib \
-WANDB_DISABLED=true CUDA_VISIBLE_DEVICES=1 python3 main-lora.py \
+WANDB_DISABLED=true CUDA_VISIBLE_DEVICES=1 python3 main-lora-packing.py \
 --logging_steps 1 \
 --dataset_name "/home/husein/dev/malaya/session/llama2/shuf-combine-1536.jsonl" \
 --max_steps 500000 \
 --bf16 --bnb_4bit_compute_dtype bfloat16 \
---per_device_train_batch_size 8 \
---gradient_accumulation_steps 4 \
+--per_device_train_batch_size 6 \
+--gradient_accumulation_steps 2 \
 --save_steps 500 \
---max_seq_length 1024 \
---output_dir "./results-1024-packing" \
---packing true \
---group_by_length false
+--max_seq_length 1536 \
+--output_dir "./results-1024-packing"
 ```
 
 ## Full Parameter Finetuning
