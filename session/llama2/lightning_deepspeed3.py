@@ -1,10 +1,12 @@
 import os
 os.environ['REDIS_PORT'] = '6379'
-os.system('sudo apt install ninja-build -y')
+import logging
+logging.basicConfig(level=logging.DEBUG)
 
 import argparse
 import torch
 import time
+from glob import glob
 from torch.utils.data import DataLoader
 from itertools import chain
 from datasets import load_dataset
@@ -22,7 +24,7 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.callbacks import LearningRateMonitor
 from pytorch_lightning.strategies import DeepSpeedStrategy
 import pytorch_lightning as pl
-from deepspeed.ops.adam import DeepSpeedCPUAdam
+from deepspeed.ops.adam import DeepSpeedCPUAdam, FusedAdam
 
 
 def prepare_dataset(args):
@@ -39,6 +41,8 @@ def prepare_dataset(args):
         split='train'
     )
 
+    filename = os.path.split(args.train_file)[1]
+
     def tokenize_function(examples):
         return tokenizer(examples[text_column_name])
 
@@ -47,7 +51,8 @@ def prepare_dataset(args):
         tokenize_function,
         batched=True,
         remove_columns=column_names,
-        desc="Running tokenizer on dataset",
+        load_from_cache_file=True,
+        cache_file_name=f'./{filename}-tokenized-{block_size}'
     )
 
     def group_texts(examples):
@@ -64,7 +69,8 @@ def prepare_dataset(args):
     lm_datasets = tokenized_datasets.map(
         group_texts,
         batched=True,
-        desc=f"Grouping texts in chunks of {block_size}",
+        load_from_cache_file=True,
+        cache_file_name=f'./{filename}-grouped-{block_size}'
     )
 
     return DataLoader(
@@ -88,7 +94,12 @@ class Module(LightningModule):
         self.args = args
 
     def configure_optimizers(self):
-        self.optimizer = DeepSpeedCPUAdam(
+        if self.args.offload_optimizer:
+            optimizer = DeepSpeedCPUAdam
+        else:
+            optimizer = FusedAdam
+
+        self.optimizer = optimizer(
             self.parameters(),
             lr=self.args.learning_rate,
             weight_decay=self.args.weight_decay)
@@ -146,7 +157,7 @@ def parse_args():
     parser.add_argument(
         "--precision",
         type=str,
-        default='bf16',
+        default='bf16-mixed',
         help="precision",
     )
     parser.add_argument(
@@ -237,6 +248,12 @@ def parse_args():
             "It is an option to create the model as an empty shell, then only materialize its parameters when the pretrained weights are loaded."
             "If passed, LLM loading time and RAM consumption will be benefited."),
     )
+    parser.add_argument(
+        "--offload_optimizer",
+        type=bool,
+        default=True,
+        help='offload optimizer',
+    )
     args = parser.parse_args()
 
     return args
@@ -254,10 +271,11 @@ def main():
         mode='max',
         dirpath=args.output_dir,
         every_n_train_steps=args.checkpointing_steps,
-        filename='model-{epoch:02d}-{step}',
+        filename='model-{step}',
     )
     num_gpus = torch.cuda.device_count()
 
+    wandb_logger = WandbLogger()
     trainer = pl.Trainer(
         max_steps=args.max_train_steps,
         gradient_clip_val=args.grad_clip,
@@ -269,15 +287,26 @@ def main():
         callbacks=[checkpoint_callback, lr_monitor],
         strategy=DeepSpeedStrategy(
             stage=3,
-            offload_optimizer=True,
+            offload_optimizer=args.offload_optimizer,
             offload_parameters=True,
         ),
+        logger=wandb_logger,
     )
+
+    files = glob(os.path.join(args.output_dir, '*.ckpt'))
+    files = sorted(files, key=lambda x: x.split('=')[1].replace('.ckpt', ''), reverse=True)
+    if len(files):
+        ckpt_path = files[0]
+    else:
+        ckpt_path = None
+
+    print('ckpt_path', ckpt_path)
 
     trainer.fit(
         model=model,
         train_dataloaders=train_dataloader,
         val_dataloaders=None,
+        ckpt_path=ckpt_path,
     )
 
 
