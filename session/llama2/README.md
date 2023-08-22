@@ -54,10 +54,12 @@ GPU2    SYS     SYS      X      NV12    48-71   2
 GPU3    SYS     SYS     NV12     X      72-95   3
 ```
 
-- When you use Kubernetes, /dev/shm default to 64 MB, and this caused bus error for NCCL. this issue happened on AWS p5 and Azure NC, so to solve it, scale it up, eg, https://github.com/malaysia-ai/jupyter-gpu/blob/main/jupyter4.yaml#L98
+- When you use Kubernetes, `/dev/shm` default to 64 MB, and this caused bus error for NCCL. this issue happened on AWS p5 and Azure NC A100 v4-series, so to solve it, scale it up, eg, https://github.com/malaysia-ai/jupyter-gpu/blob/main/aks/jupyter4.yaml#L99
 - Always perform NCCL test, https://github.com/NVIDIA/nccl-tests,
 
 ```bash
+git clone https://github.com/NVIDIA/nccl-tests && cd nccl-tests
+make
 ./build/all_gather_perf -g 4
 ```
 
@@ -78,53 +80,55 @@ GPU3    SYS     SYS     NV12     X      72-95   3
 # Avg bus bandwidth    : 25.905
 ```
 
-### 7B, 1024 Context length
+Good to go!
+
+### 7B, 2048 Context length
 
 ```bash
-~/.local/bin/deepspeed run_clm.py \
+WANDB_PROJECT=fpf-Llama-2-7b-hf ~/.local/bin/deepspeed run_clm.py \
 --deepspeed ds_config_zero3.json \
 --model_name_or_path meta-llama/Llama-2-7b-hf \
---per_device_train_batch_size 2 \
---gradient_accumulation_steps 2 \
+--per_device_train_batch_size 16 \
+--gradient_accumulation_steps 1 \
 --output_dir fpf-7b \
---fp16 \
+--bf16 \
 --do_train \
 --do_eval false \
 --num_train_epochs 1 \
---train_file "1m-combine.json" \
---validation_file "1k-fix-combine.json" \
+--train_file "combine.jsonl" \
 --logging_steps 1 \
 --learning_rate 5e-5 \
---block_size 1024 \
---save_steps 1000 \
---save_total_limit 3 \
---streaming
+--block_size 2048 \
+--save_steps 500 \
+--save_total_limit 2 \
+--gradient_checkpointing true
 ```
 
-https://wandb.ai/mesolitica/huggingface?workspace=user-husein-mesolitica
+https://wandb.ai/mesolitica/fpf-Llama-2-7b-hf?workspace=user-husein-mesolitica
 
-### 13B, 1024 Context length
+### 13B, 2048 Context length
 
 ```bash
 WANDB_PROJECT=fpf-Llama-2-13b-hf ~/.local/bin/deepspeed run_clm.py \
 --deepspeed ds_config_zero3.json \
 --model_name_or_path meta-llama/Llama-2-13b-hf \
---per_device_train_batch_size 2 \
---gradient_accumulation_steps 2 \
+--per_device_train_batch_size 12 \
+--gradient_accumulation_steps 1 \
 --output_dir fpf-13b \
---fp16 \
+--bf16 \
 --do_train \
 --do_eval false \
 --num_train_epochs 1 \
---train_file "1m-combine.json" \
---validation_file "1k-fix-combine.json" \
+--train_file "combine.jsonl" \
 --logging_steps 1 \
 --learning_rate 5e-5 \
---block_size 1024 \
---save_steps 1000 \
---save_total_limit 3 \
---streaming
+--block_size 2048 \
+--save_steps 500 \
+--save_total_limit 2 \
+--gradient_checkpointing true
 ```
+
+https://wandb.ai/mesolitica/fpf-Llama-2-13b-hf?workspace=user-husein-mesolitica
 
 ## Check memory usage DeepSpeed 3
 

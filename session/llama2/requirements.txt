@@ -11,3 +11,4 @@ lightning-utilities==0.9.0
 pytorch-lightning==2.0.7
 wandb==0.15.8
 evaluate==0.4.0
+scipy==1.11.2
