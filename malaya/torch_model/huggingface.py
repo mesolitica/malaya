@@ -49,22 +49,22 @@ MAPPING_LANG = {'ms': 'Malay', 'en': 'Inggeris'}
 
 class Base:
     def compile(self):
-        if self.use_ctranslate2:
+        if hasattr(self, 'use_ctranslate2') and self.use_ctranslate2:
             raise ValueError('`compile` method not able to use for ctranslate2 model.')
         self.model = torch.compile(self.model)
 
     def eval(self, **kwargs):
-        if self.use_ctranslate2:
+        if hasattr(self, 'use_ctranslate2') and self.use_ctranslate2:
             raise ValueError('`eval` method not able to use for ctranslate2 model.')
         return self.model.eval(**kwargs)
 
     def cuda(self, **kwargs):
-        if self.use_ctranslate2:
+        if hasattr(self, 'use_ctranslate2') and self.use_ctranslate2:
             raise ValueError('`cuda` method not able to use for ctranslate2 model.')
         return self.model.cuda(**kwargs)
 
     def save_pretrained(self, *args, **kwargs):
-        if self.use_ctranslate2:
+        if hasattr(self, 'use_ctranslate2') and self.use_ctranslate2:
             raise ValueError('`save_pretrained` method not able to use for ctranslate2 model.')
         return self.model.save_pretrained(
             *args, **kwargs), self.tokenizer.save_pretrained(*args, **kwargs)

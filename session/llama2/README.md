@@ -23,11 +23,22 @@ But before that, do not forget to symlink because `bitsandbytes` required `libcu
 ln -s ~/.local/lib/python3.8/site-packages/torch/lib/libcudart-d0da41ae.so.11.0 ~/.local/lib/python3.8/site-packages/torch/lib/libcudart.so
 ```
 
-3. Install apex with specific options,
+### Apex
+
+1. Install apex with specific options,
 
 ```bash
 git clone https://github.com/NVIDIA/apex && cd apex
 python3 setup.py install --user --cpp_ext --cuda_ext
+```
+
+### Flash Attention 2
+
+1. Install dependencies,
+
+```bash
+pip3 install flash-attn --no-build-isolation
+pip3 install git+https://github.com/HazyResearch/flash-attention.git#subdirectory=csrc/rotary
 ```
 
 ## Full Parameter Finetuning
@@ -99,12 +110,37 @@ WANDB_PROJECT=fpf-Llama-2-7b-hf ~/.local/bin/deepspeed run_clm.py \
 --logging_steps 1 \
 --learning_rate 5e-5 \
 --block_size 2048 \
---save_steps 500 \
+--save_steps 200 \
 --save_total_limit 2 \
 --gradient_checkpointing true
 ```
 
 https://wandb.ai/mesolitica/fpf-Llama-2-7b-hf?workspace=user-husein-mesolitica
+
+### 7B, 16384 Context length
+
+```bash
+WANDB_PROJECT=fpf-Llama-2-7b-16k-hf ~/.local/bin/deepspeed run_clm.py \
+--deepspeed ds_config_zero3.json \
+--model_name_or_path meta-llama/Llama-2-7b-hf \
+--per_device_train_batch_size 6 \
+--gradient_accumulation_steps 1 \
+--output_dir fpf-7b-16k \
+--bf16 \
+--do_train \
+--do_eval false \
+--num_train_epochs 10 \
+--train_file "combine.jsonl" \
+--logging_steps 1 \
+--learning_rate 5e-5 \
+--block_size 16384 \
+--save_steps 200 \
+--save_total_limit 2 \
+--gradient_checkpointing true \
+--use_flash_attention2 true
+```
+
+https://wandb.ai/mesolitica/fpf-Llama-2-7b-16k-hf?workspace=user-husein-mesolitica
 
 ### 13B, 2048 Context length
 
@@ -123,12 +159,35 @@ WANDB_PROJECT=fpf-Llama-2-13b-hf ~/.local/bin/deepspeed run_clm.py \
 --logging_steps 1 \
 --learning_rate 5e-5 \
 --block_size 2048 \
---save_steps 500 \
+--save_steps 200 \
 --save_total_limit 2 \
 --gradient_checkpointing true
 ```
 
 https://wandb.ai/mesolitica/fpf-Llama-2-13b-hf?workspace=user-husein-mesolitica
+
+### 7B, 16384 Context length
+
+```bash
+WANDB_PROJECT=fpf-Llama-2-7b-16k-hf ~/.local/bin/deepspeed run_clm.py \
+--deepspeed ds_config_zero3.json \
+--model_name_or_path meta-llama/Llama-2-16b-hf \
+--per_device_train_batch_size 3 \
+--gradient_accumulation_steps 1 \
+--output_dir fpf-13b-16k \
+--bf16 \
+--do_train \
+--do_eval false \
+--num_train_epochs 10 \
+--train_file "combine.jsonl" \
+--logging_steps 1 \
+--learning_rate 5e-5 \
+--block_size 16384 \
+--save_steps 200 \
+--save_total_limit 2 \
+--gradient_checkpointing true \
+--use_flash_attention2 true
+```
 
 ## Check memory usage DeepSpeed 3
 

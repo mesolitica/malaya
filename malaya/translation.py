@@ -193,6 +193,12 @@ _huggingface_availability = {
         'to lang': ['en', 'ms'],
         'old model': False,
     },
+    'mesolitica/translation-nanot5-small-code-cased': {
+        'Suggested length': 2048,
+        'from lang': ['en', 'ms'],
+        'to lang': ['en', 'ms'],
+        'old model': False,
+    }
 }
 
 

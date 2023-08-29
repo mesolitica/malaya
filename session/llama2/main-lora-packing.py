@@ -157,11 +157,6 @@ class ScriptArguments:
     )
 
 
-parser = HfArgumentParser(ScriptArguments)
-script_args = parser.parse_args_into_dataclasses()[0]
-print(script_args)
-
-
 def create_and_prepare_model(args):
     compute_dtype = getattr(torch, args.bnb_4bit_compute_dtype)
 
@@ -179,14 +174,9 @@ def create_and_prepare_model(args):
             print("Your GPU supports bfloat16, you can accelerate training with the argument --bf16")
             print("=" * 80)
 
-    # Load the entire model on the GPU 0
-    # switch to `device_map = "auto"` for multi-GPU
-    device_map = {"": 0}
-
     model = AutoModelForCausalLM.from_pretrained(
         args.model_name,
         quantization_config=bnb_config,
-        device_map=device_map,
         use_auth_token=True
     )
 
@@ -205,27 +195,6 @@ def create_and_prepare_model(args):
     tokenizer.pad_token = tokenizer.unk_token
 
     return model, peft_config, tokenizer
-
-
-training_arguments = TrainingArguments(
-    output_dir=script_args.output_dir,
-    per_device_train_batch_size=script_args.per_device_train_batch_size,
-    gradient_accumulation_steps=script_args.gradient_accumulation_steps,
-    optim=script_args.optim,
-    save_steps=script_args.save_steps,
-    logging_steps=script_args.logging_steps,
-    learning_rate=script_args.learning_rate,
-    fp16=script_args.fp16,
-    bf16=script_args.bf16,
-    max_grad_norm=script_args.max_grad_norm,
-    max_steps=script_args.max_steps,
-    warmup_ratio=script_args.warmup_ratio,
-    group_by_length=False,
-    lr_scheduler_type=script_args.lr_scheduler_type,
-)
-
-model, peft_config, tokenizer = create_and_prepare_model(script_args)
-model.config.use_cache = False
 
 
 def generate_and_tokenize_prompt(row):
@@ -251,13 +220,6 @@ def generate_and_tokenize_prompt(row):
     return tokenizer(''.join(texts))
 
 
-dataset = load_dataset("json", data_files=script_args.dataset_name, split="train")
-dataset = dataset.map(generate_and_tokenize_prompt)
-dataset = dataset.remove_columns(['prompt_input', 'input', 'output'])
-
-max_seq_length = script_args.max_seq_length
-
-
 def group_texts(examples):
     concatenated_examples = {k: list(chain(*examples[k])) for k in examples.keys()}
     total_length = len(concatenated_examples[list(examples.keys())[0]])
@@ -268,12 +230,6 @@ def group_texts(examples):
     }
     result["labels"] = result["input_ids"].copy()
     return result
-
-
-lm_datasets = dataset.map(
-    group_texts,
-    batched=True,
-)
 
 
 class Dataset(torch.utils.data.Dataset):
@@ -287,41 +243,64 @@ class Dataset(torch.utils.data.Dataset):
         return len(self.lm_datasets)
 
 
-clm_dataset = Dataset(lm_datasets)
+def main():
+    parser = HfArgumentParser(ScriptArguments)
+    script_args = parser.parse_args_into_dataclasses()[0]
+    print(script_args)
 
-tokenizer.padding_side = "right"
+    training_arguments = TrainingArguments(
+        output_dir=script_args.output_dir,
+        per_device_train_batch_size=script_args.per_device_train_batch_size,
+        gradient_accumulation_steps=script_args.gradient_accumulation_steps,
+        optim=script_args.optim,
+        save_steps=script_args.save_steps,
+        logging_steps=script_args.logging_steps,
+        learning_rate=script_args.learning_rate,
+        fp16=script_args.fp16,
+        bf16=script_args.bf16,
+        max_grad_norm=script_args.max_grad_norm,
+        max_steps=script_args.max_steps,
+        warmup_ratio=script_args.warmup_ratio,
+        group_by_length=False,
+        lr_scheduler_type=script_args.lr_scheduler_type,
+        gradient_checkpointing=script_args.gradient_checkpointing,
+    )
 
-trainer = SFTTrainer(
-    model=model,
-    train_dataset=clm_dataset,
-    peft_config=peft_config,
-    dataset_text_field="text",
-    max_seq_length=max_seq_length,
-    tokenizer=tokenizer,
-    args=training_arguments,
-    packing=script_args.packing,
-)
+    model, peft_config, tokenizer = create_and_prepare_model(script_args)
+    model.config.use_cache = False
 
-last_checkpoint = get_last_checkpoint(script_args.output_dir)
+    dataset = load_dataset("json", data_files=script_args.dataset_name, split="train")
+    dataset = dataset.map(generate_and_tokenize_prompt)
+    dataset = dataset.remove_columns(['prompt_input', 'input', 'output'])
 
-if last_checkpoint:
-    trainer.train(resume_from_checkpoint=last_checkpoint)
-else:
-    trainer.train()
+    max_seq_length = script_args.max_seq_length
 
-if script_args.merge_and_push:
-    output_dir = os.path.join(script_args.output_dir, "final_checkpoints")
-    trainer.model.save_pretrained(output_dir)
+    lm_datasets = dataset.map(
+        group_texts,
+        batched=True,
+    )
 
-    # Free memory for merging weights
-    del model
-    torch.cuda.empty_cache()
+    clm_dataset = Dataset(lm_datasets)
+    tokenizer.padding_side = "right"
 
-    from peft import AutoPeftModelForCausalLM
+    trainer = SFTTrainer(
+        model=model,
+        train_dataset=clm_dataset,
+        peft_config=peft_config,
+        dataset_text_field="text",
+        max_seq_length=max_seq_length,
+        tokenizer=tokenizer,
+        args=training_arguments,
+        packing=script_args.packing,
+    )
 
-    model = AutoPeftModelForCausalLM.from_pretrained(
-        output_dir, device_map="auto", torch_dtype=torch.bfloat16)
-    model = model.merge_and_unload()
+    last_checkpoint = get_last_checkpoint(script_args.output_dir)
 
-    output_merged_dir = os.path.join(script_args.output_dir, "final_merged_checkpoint")
-    model.save_pretrained(output_merged_dir, safe_serialization=True)
+    if last_checkpoint:
+        trainer.train(resume_from_checkpoint=last_checkpoint)
+    else:
+        trainer.train()
+
+
+if __name__ == "__main__":
+    main()

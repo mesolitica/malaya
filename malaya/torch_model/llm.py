@@ -20,44 +20,19 @@ class LLM:
         model,
         use_ctranslate2=False,
         use_mlc_llm=False,
-        torch_dtype=None,
         **kwargs,
     ):
 
         self.tokenizer = AutoTokenizer.from_pretrained(model, **kwargs)
         self.use_ctranslate2 = use_ctranslate2
+        self.use_mlc_llm = use_mlc_llm
 
         if self.use_ctranslate2:
             self.model = ctranslate2_generator(model, **kwargs)
+        elif self.use_mlc_llm:
+            pass
         else:
-            if torch.cuda.is_available():
-                self.device = 'cuda'
-            else:
-                logger.warning('This model is running on CPU, this will consume a lot memory.')
-                self.device = 'cpu'
-
-            if self.device == 'cuda':
-                device_map = 'auto'
-                major, _ = torch.cuda.get_device_capability()
-                if torch_dtype is None:
-                    if major >= 8:
-                        logger.info('compute capability is >= 8, able to use bloat16.')
-                        torch_dtype = torch.bfloat16
-                    else:
-                        torch_dtype = torch.float16
-            else:
-                device_map = {'': self.device}
-                if torch_dtype is None:
-                    torch_dtype = 'auto'
-
-            self.model = AutoModelForCausalLM.from_pretrained(
-                model,
-                torch_dtype=torch_dtype,
-                device_map=device_map,
-                low_cpu_mem_usage=True,
-                **kwargs,
-            )
-
+            self.model = AutoModelForCausalLM.from_pretrained(model, **kwargs)
             _ = self.model.eval()
 
     def _get_input(

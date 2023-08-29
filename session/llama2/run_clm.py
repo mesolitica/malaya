@@ -86,6 +86,9 @@ class ModelArguments:
             "help": "If training from scratch, pass a model type from the list: " +
             ", ".join(MODEL_TYPES)},
     )
+    use_flash_attention2: bool = field(
+        default=False, metadata={
+            "help": "use flash attention2"}, )
     config_overrides: Optional[str] = field(
         default=None, metadata={
             "help": (
@@ -362,7 +365,17 @@ def main():
             if model_args.torch_dtype in ["auto", None]
             else getattr(torch, model_args.torch_dtype)
         )
-        model = AutoModelForCausalLM.from_pretrained(
+        if model_args.use_flash_attention2:
+            from llama_patch import replace_attn_with_flash_attn
+            replace_attn_with_flash_attn()
+
+        #     from modeling_flash_llama import LlamaForCausalLM
+        #     selected_model = LlamaForCausalLM
+        # else:
+
+        selected_model = AutoModelForCausalLM
+
+        model = selected_model.from_pretrained(
             model_args.model_name_or_path,
             from_tf=bool(".ckpt" in model_args.model_name_or_path),
             config=config,
