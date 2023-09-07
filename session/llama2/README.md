@@ -166,13 +166,13 @@ WANDB_PROJECT=fpf-Llama-2-13b-hf ~/.local/bin/deepspeed run_clm.py \
 
 https://wandb.ai/mesolitica/fpf-Llama-2-13b-hf?workspace=user-husein-mesolitica
 
-### 7B, 16384 Context length
+### 13B, 16384 Context length
 
 ```bash
-WANDB_PROJECT=fpf-Llama-2-7b-16k-hf ~/.local/bin/deepspeed run_clm.py \
+WANDB_PROJECT=fpf-Llama-2-13b-16k-hf ~/.local/bin/deepspeed run_clm.py \
 --deepspeed ds_config_zero3.json \
---model_name_or_path meta-llama/Llama-2-16b-hf \
---per_device_train_batch_size 3 \
+--model_name_or_path meta-llama/Llama-2-13b-hf \
+--per_device_train_batch_size 5 \
 --gradient_accumulation_steps 1 \
 --output_dir fpf-13b-16k \
 --bf16 \
@@ -188,6 +188,8 @@ WANDB_PROJECT=fpf-Llama-2-7b-16k-hf ~/.local/bin/deepspeed run_clm.py \
 --gradient_checkpointing true \
 --use_flash_attention2 true
 ```
+
+https://wandb.ai/mesolitica/fpf-Llama-2-13b-16k-hf?workspace=user-husein-mesolitica
 
 ## Check memory usage DeepSpeed 3
 
@@ -239,34 +241,58 @@ SW: Model with 13015M total params, 163M largest layer params.
 
 Dataset prepared at https://github.com/huseinzol05/malaysian-dataset/tree/master/llm/instruction
 
-### 7B, 1536 context length
+**16384 context length trained on A100**.
+
+### 7B, 16384 context length, flash attention 2
 
 ```bash
-LD_LIBRARY_PATH=/home/husein/.local/lib/python3.8/site-packages/torch/lib \
-WANDB_DISABLED=true CUDA_VISIBLE_DEVICES=0 python3 main-lora.py \
+WANDB_PROJECT=qlora-7b-instructions-16k-nonpack \
+python3 main-lora.py \
+--model_name "mesolitica/llama-7b-hf-16384-fpf" \
+--output_dir "./results-16384" \
+--dataset_name "shuf-combine-1536.jsonl" \
+--max_seq_length 16384 \
+--group_by_length true \
+--bnb_4bit_compute_dtype bfloat16 \
+--save_steps 1000 \
 --logging_steps 1 \
---dataset_name "/home/husein/dev/malaya/session/llama2/shuf-combine-1536.jsonl" \
---max_steps 500000 \
---bf16 --bnb_4bit_compute_dtype bfloat16 \
---per_device_train_batch_size 6 \
---gradient_accumulation_steps 2 \
---save_steps 500 \
---max_seq_length 1536 \
---output_dir "./results-1536-v2"
+--max_steps 50000 \
+--bf16 \
+--learning_rate 2e-4 \
+--optim "paged_adamw_32bit" \
+--lr_scheduler_type "linear" \
+--warmup_ratio 0.03 \
+--max_grad_norm 0.3 \
+--per_device_train_batch_size 4 \
+--gradient_accumulation_steps 1 \
+--gradient_checkpointing true \
+--use_flash_attention2 true
 ```
 
-### 7B, 1536 context length, packing
+### 13B, 16384 context length, flash attention 2
 
 ```bash
-LD_LIBRARY_PATH=/home/husein/.local/lib/python3.8/site-packages/torch/lib \
-WANDB_DISABLED=true CUDA_VISIBLE_DEVICES=1 python3 main-lora-packing.py \
+WANDB_PROJECT=qlora-13b-instructions-16k-nonpack \
+~/.local/bin/deepspeed main-lora.py \
+--deepspeed ds_config_zero2.json \
+--model_name "mesolitica/llama-13b-hf-16384-fpf" \
+--output_dir "./results-13b-16384" \
+--dataset_name "shuf-combine-1536.jsonl" \
+--max_seq_length 16384 \
+--group_by_length true \
+--bnb_4bit_compute_dtype bfloat16 \
+--save_steps 1000 \
+--save_total_limit 2 \
 --logging_steps 1 \
---dataset_name "/home/husein/dev/malaya/session/llama2/shuf-combine-1536.jsonl" \
---max_steps 500000 \
---bf16 --bnb_4bit_compute_dtype bfloat16 \
---per_device_train_batch_size 6 \
---gradient_accumulation_steps 2 \
---save_steps 500 \
---max_seq_length 1536 \
---output_dir "./results-1024-packing"
+--max_steps 50000 \
+--bf16 \
+--learning_rate 2e-4 \
+--optim "paged_adamw_32bit" \
+--lr_scheduler_type "linear" \
+--warmup_ratio 0.03 \
+--max_grad_norm 0.3 \
+--per_device_train_batch_size 4 \
+--gradient_accumulation_steps 1 \
+--gradient_checkpointing true \
+--use_flash_attention2 true
 ```

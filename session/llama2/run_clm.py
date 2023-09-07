@@ -325,12 +325,19 @@ def main():
     # The .from_pretrained methods guarantee that only one local process can concurrently
     # download model & vocab.
 
+    max_position_embeddings = 4096
+
+    if data_args.block_size is not None and data_args.block_size > max_position_embeddings:
+        max_position_embeddings = data_args.block_size
+
     config_kwargs = {
         "cache_dir": model_args.cache_dir,
         "revision": model_args.model_revision,
         "token": model_args.token,
         "trust_remote_code": model_args.trust_remote_code,
+        'max_position_embeddings': max_position_embeddings,
     }
+
     if model_args.config_name:
         config = AutoConfig.from_pretrained(model_args.config_name, **config_kwargs)
     elif model_args.model_name_or_path:

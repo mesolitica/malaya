@@ -194,8 +194,18 @@ _huggingface_availability = {
         'old model': False,
     },
     'mesolitica/translation-nanot5-small-code-cased': {
+        'Size (MB)': 358,
         'Suggested length': 2048,
         'from lang': ['en', 'ms'],
+        'en-ms chrF2++': 67.62,
+        'ms-en chrF2++': 64.41,
+        'ind-ms chrF2++': 59.25,
+        'jav-ms chrF2++': 52.86,
+        'pasar ms-ms chrF2++': 62.99,
+        'pasar ms-en chrF2++': 62.06,
+        'manglish-ms chrF2++': 54.40,
+        'manglish-en chrF2++': 54.14,
+        'from lang': ['en', 'ms', 'ind', 'jav', 'bjn', 'manglish', 'pasar ms', 'mandarin', 'pasar mandarin'],
         'to lang': ['en', 'ms'],
         'old model': False,
     }

@@ -1,7 +1,5 @@
 import torch
 from threading import Thread
-from malaya.text.prompt import template_alpaca, template_malaya
-from malaya_boilerplate.converter import ctranslate2_generator
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from typing import List, Dict
 import logging
@@ -20,20 +18,28 @@ class LLM:
         model,
         use_ctranslate2=False,
         use_mlc_llm=False,
+        use_flash_attention2=False,
         **kwargs,
     ):
 
         self.tokenizer = AutoTokenizer.from_pretrained(model, **kwargs)
         self.use_ctranslate2 = use_ctranslate2
         self.use_mlc_llm = use_mlc_llm
+        self.use_flash_attention2 = use_flash_attention2
 
         if self.use_ctranslate2:
+            from malaya_boilerplate.converter import ctranslate2_generator
+
             self.model = ctranslate2_generator(model, **kwargs)
         elif self.use_mlc_llm:
             pass
         else:
+            if self.use_flash_attention2:
+                from malaya_boilerplate.patcher import flash_attention2_llama
+
+                flash_attention2_llama.replace_attn_with_flash_attn()
+
             self.model = AutoModelForCausalLM.from_pretrained(model, **kwargs)
-            _ = self.model.eval()
 
     def _get_input(
         self,
@@ -85,7 +91,7 @@ class LLM:
             return self.tokenizer.tokenize(prompt)
         else:
             inputs = self.tokenizer(prompt, add_special_tokens=False, return_tensors='pt')
-            return inputs['input_ids'].to(self.device)
+            return inputs['input_ids'].to(self.model.device)
 
     def generate(
         self,

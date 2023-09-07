@@ -1,15 +1,37 @@
 from transformers.models.bart.modeling_bart import shift_tokens_right
-from transformers.modeling_outputs import Seq2SeqSequenceClassifierOutput
-from transformers import T5Model, T5Config, T5ForConditionalGeneration
+from transformers.modeling_outputs import (
+    Seq2SeqSequenceClassifierOutput,
+    SequenceClassifierOutput
+)
+from transformers import (
+    T5Model,
+    T5Config,
+    T5ForConditionalGeneration,
+    T5EncoderModel
+)
+from transformers.file_utils import ModelOutput
 from malaya.torch_model.dependency_modules import MLP, Biaffine
 from typing import List, Optional, Tuple, Union
 from torch.nn import BCEWithLogitsLoss, CrossEntropyLoss, MSELoss
+from torch import nn, Tensor
+from dataclasses import dataclass
 from torch import nn
+from typing import Dict
 import torch
 
 
+@dataclass
+class EncoderOutput(ModelOutput):
+    q_reps = None
+    p_reps = None
+    loss = None
+    scores = None
+
+
 class BartClassificationHead(nn.Module):
-    """Head for sentence-level classification tasks."""
+    """
+    Head for sentence-level classification tasks.
+    """
 
     def __init__(
         self,
@@ -63,8 +85,10 @@ class T5ForSequenceClassification(T5Model):
         return_dict: Optional[bool] = None,
     ):
 
-        decoder_input_ids = shift_tokens_right(input_ids,
-                                               self.config.pad_token_id, self.config.decoder_start_token_id)
+        decoder_input_ids = shift_tokens_right(
+            input_ids,
+            self.config.pad_token_id,
+            self.config.decoder_start_token_id)
         outputs = super().forward(
             input_ids,
             attention_mask=attention_mask,
@@ -87,9 +111,8 @@ class T5ForSequenceClassification(T5Model):
 
         if len(torch.unique_consecutive(eos_mask.sum(1))) > 1:
             raise ValueError("All examples must have the same number of <eos> tokens.")
-        sentence_representation = hidden_states[eos_mask, :].view(hidden_states.size(0), -1, hidden_states.size(-1))[
-            :, -1, :
-        ]
+        sentence_representation = hidden_states[eos_mask, :].view(
+            hidden_states.size(0), -1, hidden_states.size(-1))[:, -1, :]
         logits = self.classification_head(sentence_representation)
 
         loss = None
@@ -132,8 +155,10 @@ class T5ForSequenceClassification(T5Model):
         return_dict: Optional[bool] = None,
     ):
 
-        decoder_input_ids = shift_tokens_right(input_ids,
-                                               self.config.pad_token_id, self.config.decoder_start_token_id)
+        decoder_input_ids = shift_tokens_right(
+            input_ids,
+            self.config.pad_token_id,
+            self.config.decoder_start_token_id)
         outputs = super().forward(
             input_ids,
             attention_mask=attention_mask,
@@ -156,9 +181,8 @@ class T5ForSequenceClassification(T5Model):
 
         if len(torch.unique_consecutive(eos_mask.sum(1))) > 1:
             raise ValueError("All examples must have the same number of <eos> tokens.")
-        sentence_representation = hidden_states[eos_mask, :].view(hidden_states.size(0), -1, hidden_states.size(-1))[
-            :, -1, :
-        ]
+        sentence_representation = hidden_states[eos_mask, :].view(
+            hidden_states.size(0), -1, hidden_states.size(-1))[:, -1, :]
         logits = self.classification_head.dense(sentence_representation)
 
         return Seq2SeqSequenceClassifierOutput(
@@ -348,3 +372,119 @@ class T5Diaparser(T5ForConditionalGeneration):
             outputs['loss'] = arc_loss + rel_loss
 
         return outputs
+
+
+class T5Embedding(T5EncoderModel):
+    def __init__(self, config: T5Config, **kwargs):
+        super().__init__(config, **kwargs)
+
+        self.cross_entropy = nn.CrossEntropyLoss(reduction='mean')
+
+    def forward(
+        self,
+        input_ids=None,
+        attention_mask=None,
+        head_mask=None,
+        inputs_embeds=None,
+        output_attentions=None,
+        output_hidden_states=None,
+        return_dict=None,
+    ):
+        outputs = super().forward(
+            input_ids,
+            attention_mask=attention_mask,
+            head_mask=head_mask,
+            inputs_embeds=inputs_embeds,
+            output_attentions=output_attentions,
+            output_hidden_states=output_hidden_states,
+            return_dict=return_dict
+        )
+        return outputs
+
+    def sentence_embedding(self, hidden_state, mask):
+        if self.config.sentence_pooling_method == 'mean':
+            s = torch.sum(hidden_state * mask.unsqueeze(-1).float(), dim=1)
+            d = mask.sum(axis=1, keepdim=True).float()
+            return s / d
+        elif self.config.sentence_pooling_method == 'cls':
+            return hidden_state[:, 0]
+
+    def encode(self, features):
+        if features is None:
+            return None
+        psg_out = self(**features, return_dict=True)
+        p_reps = self.sentence_embedding(psg_out.last_hidden_state, features['attention_mask'])
+        if self.config.normalized:
+            p_reps = torch.nn.functional.normalize(p_reps, dim=-1)
+        return p_reps.contiguous()
+
+    def compute_similarity(self, q_reps, p_reps):
+        if len(p_reps.size()) == 2:
+            return torch.matmul(q_reps, p_reps.transpose(0, 1))
+        return torch.matmul(q_reps, p_reps.transpose(-2, -1))
+
+    def compute_loss(self, scores, target):
+        return self.cross_entropy(scores, target)
+
+    def forward(self, query: Dict[str, Tensor] = None,
+                passage: Dict[str, Tensor] = None, teacher_score: Tensor = None):
+        q_reps = self.encode(query)
+        p_reps = self.encode(passage)
+
+        if self.training:
+            if self.negatives_cross_device:
+                q_reps = self._dist_gather_tensor(q_reps)
+                p_reps = self._dist_gather_tensor(p_reps)
+
+            scores = self.compute_similarity(q_reps, p_reps)
+            scores = scores / self.temperature
+            scores = scores.view(q_reps.size(0), -1)
+
+            target = torch.arange(scores.size(0), device=scores.device, dtype=torch.long)
+            target = target * (p_reps.size(0) // q_reps.size(0))
+            loss = self.compute_loss(scores, target)
+
+        else:
+            scores = self.compute_similarity(q_reps, p_reps)
+            loss = None
+        return EncoderOutput(
+            loss=loss,
+            scores=scores,
+            q_reps=q_reps,
+            p_reps=p_reps,
+        )
+
+
+class T5ForSequenceClassification(T5EncoderModel):
+    def __init__(self, config: T5Config, **kwargs):
+        super().__init__(config, **kwargs)
+
+        self.num_labels = self.config.num_labels
+        self.cross_entropy = nn.CrossEntropyLoss(reduction='mean')
+        classifier_dropout = (
+            self.config.classifier_dropout if self.config.classifier_dropout is not None else self.config.hidden_dropout_prob)
+        self.dropout = nn.Dropout(classifier_dropout)
+        self.classifier = nn.Linear(self.config.hidden_size, self.config.num_labels)
+
+        # Initialize weights and apply final processing
+        self.post_init()
+
+    def forward(
+        self,
+        input_ids=None,
+        attention_mask=None,
+        head_mask=None,
+        inputs_embeds=None,
+        output_attentions=None,
+        output_hidden_states=None,
+        return_dict=None,
+    ):
+        outputs = super().forward(
+            input_ids,
+            attention_mask=attention_mask,
+            head_mask=head_mask,
+            inputs_embeds=inputs_embeds,
+            output_attentions=output_attentions,
+            output_hidden_states=output_hidden_states,
+            return_dict=return_dict
+        )

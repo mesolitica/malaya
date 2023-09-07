@@ -23,7 +23,7 @@ from typing import Optional
 import torch
 import random
 from datasets import load_dataset
-from peft import LoraConfig
+from peft import LoraConfig, prepare_model_for_kbit_training, get_peft_model
 from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
@@ -65,14 +65,6 @@ class ScriptArguments:
     These arguments vary depending on how many GPUs you have, what their capacity and features are, and what size model you want to train.
     """
 
-    local_rank: Optional[int] = field(default=-1, metadata={"help": "Used for multi-gpu"})
-
-    per_device_train_batch_size: Optional[int] = field(default=8)
-    per_device_eval_batch_size: Optional[int] = field(default=1)
-    gradient_accumulation_steps: Optional[int] = field(default=4)
-    learning_rate: Optional[float] = field(default=2e-4)
-    max_grad_norm: Optional[float] = field(default=0.3)
-    weight_decay: Optional[int] = field(default=0.001)
     lora_alpha: Optional[int] = field(default=16)
     lora_dropout: Optional[float] = field(default=0.1)
     lora_r: Optional[int] = field(default=64)
@@ -103,76 +95,31 @@ class ScriptArguments:
         default="nf4",
         metadata={"help": "Quantization type fp4 or nf4"},
     )
-    num_train_epochs: Optional[int] = field(
-        default=1,
-        metadata={"help": "The number of training epochs for the reward model."},
-    )
-    fp16: Optional[bool] = field(
-        default=False,
-        metadata={"help": "Enables fp16 training."},
-    )
-    bf16: Optional[bool] = field(
-        default=False,
-        metadata={"help": "Enables bf16 training."},
-    )
     packing: Optional[bool] = field(
         default=False,
         metadata={"help": "Use packing dataset creating."},
     )
-    gradient_checkpointing: Optional[bool] = field(
-        default=True,
-        metadata={"help": "Enables gradient checkpointing."},
-    )
-    optim: Optional[str] = field(
-        default="paged_adamw_32bit",
-        metadata={"help": "The optimizer to use."},
-    )
-    lr_scheduler_type: str = field(
-        default="constant",
-        metadata={
-            "help": "Learning rate schedule. Constant a bit better than cosine, and has advantage for analysis"},
-    )
-    max_steps: int = field(
-        default=10000, metadata={
-            "help": "How many optimizer update steps to take"})
-    warmup_ratio: float = field(
-        default=0.03, metadata={
-            "help": "Fraction of steps to do a warmup for"})
-    group_by_length: bool = field(
-        default=True,
-        metadata={
-            "help": "Group sequences into batches with same length. Saves memory and speeds up training considerably."
-        },
-    )
-    save_steps: int = field(default=10, metadata={"help": "Save checkpoint every X updates steps."})
-    logging_steps: int = field(default=10, metadata={"help": "Log every X updates steps."})
-    merge_and_push: Optional[bool] = field(
-        default=False,
-        metadata={"help": "Merge and push weights after training"},
-    )
-    output_dir: str = field(
-        default="./results",
-        metadata={
-            "help": "The output directory where the model predictions and checkpoints will be written."},
-    )
+    use_flash_attention2: bool = field(
+        default=False, metadata={
+            "help": "use flash attention2"}, )
 
 
-parser = HfArgumentParser(ScriptArguments)
-script_args = parser.parse_args_into_dataclasses()[0]
-print(script_args)
+def main():
+    parser = HfArgumentParser((ScriptArguments, TrainingArguments))
+    script_args = parser.parse_args_into_dataclasses()[0]
+    script_args, training_args = parser.parse_args_into_dataclasses()
+    print(script_args, training_args)
 
-
-def create_and_prepare_model(args):
-    compute_dtype = getattr(torch, args.bnb_4bit_compute_dtype)
+    compute_dtype = getattr(torch, script_args.bnb_4bit_compute_dtype)
 
     bnb_config = BitsAndBytesConfig(
-        load_in_4bit=args.use_4bit,
-        bnb_4bit_quant_type=args.bnb_4bit_quant_type,
+        load_in_4bit=script_args.use_4bit,
+        bnb_4bit_quant_type=script_args.bnb_4bit_quant_type,
         bnb_4bit_compute_dtype=compute_dtype,
-        bnb_4bit_use_double_quant=args.use_nested_quant,
+        bnb_4bit_use_double_quant=script_args.use_nested_quant,
     )
 
-    if compute_dtype == torch.float16 and args.use_4bit:
+    if compute_dtype == torch.float16 and script_args.use_4bit:
         major, _ = torch.cuda.get_device_capability()
         if major >= 8:
             print("=" * 80)
@@ -183,11 +130,16 @@ def create_and_prepare_model(args):
     # switch to `device_map = "auto"` for multi-GPU
     device_map = {"": 0}
 
+    if script_args.use_flash_attention2:
+        from llama_patch import replace_attn_with_flash_attn
+        replace_attn_with_flash_attn()
+
     model = AutoModelForCausalLM.from_pretrained(
-        args.model_name,
+        script_args.model_name,
         quantization_config=bnb_config,
-        device_map=device_map,
-        use_auth_token=True
+        use_auth_token=True,
+        use_cache=False,
+        device_map="auto"
     )
 
     # check: https://github.com/huggingface/transformers/pull/24906
@@ -200,95 +152,62 @@ def create_and_prepare_model(args):
         bias="none",
         task_type="CAUSAL_LM",
     )
+    model = prepare_model_for_kbit_training(model)
+    model = get_peft_model(model, peft_config)
+
+    if script_args.use_flash_attention2:
+        from llama_patch import upcast_layer_for_flash_attention
+        model = upcast_layer_for_flash_attention(model, compute_dtype)
 
     tokenizer = AutoTokenizer.from_pretrained(script_args.model_name, trust_remote_code=True)
     tokenizer.pad_token = tokenizer.unk_token
+    tokenizer.padding_side = "right"
+    model.config.use_cache = False
 
-    return model, peft_config, tokenizer
+    def generate_and_tokenize_prompt(row):
+        system_prompt = random.choice(system_prompts)
+        texts = [f'<s>[INST] <<SYS>>\n{system_prompt}\n<</SYS>>\n\n']
 
+        if '<bot>:' in row['input'] and row['output'] is None:
+            inputs, outputs = [], []
+            splitted = row['input'].split('<bot>:')
+            for i in range(len(splitted) - 1):
+                if i == 0:
+                    human = splitted[i].replace('<manusia>:', '')
+                else:
+                    human = splitted[i].split('<manusia>:')[1]
+                bot = splitted[i + 1].split('<manusia>:')[0]
+                inputs.append(human.strip())
+                outputs.append(bot.strip())
+        else:
+            inputs = [row['input']]
+            outputs = [row['output']]
+        for input, output in zip(inputs, outputs):
+            texts.append(f'{input} [/INST] {output} </s><s>[INST] ')
+        return {'text': ''.join(texts)}
 
-training_arguments = TrainingArguments(
-    output_dir=script_args.output_dir,
-    per_device_train_batch_size=script_args.per_device_train_batch_size,
-    gradient_accumulation_steps=script_args.gradient_accumulation_steps,
-    optim=script_args.optim,
-    save_steps=script_args.save_steps,
-    logging_steps=script_args.logging_steps,
-    learning_rate=script_args.learning_rate,
-    fp16=script_args.fp16,
-    bf16=script_args.bf16,
-    max_grad_norm=script_args.max_grad_norm,
-    max_steps=script_args.max_steps,
-    warmup_ratio=script_args.warmup_ratio,
-    group_by_length=script_args.group_by_length,
-    lr_scheduler_type=script_args.lr_scheduler_type,
-)
+    dataset = load_dataset("json", data_files=script_args.dataset_name, split="train")
+    dataset = dataset.map(generate_and_tokenize_prompt)
+    dataset = dataset.remove_columns(['prompt_input', 'input', 'output'])
 
-model, peft_config, tokenizer = create_and_prepare_model(script_args)
-model.config.use_cache = False
+    trainer = SFTTrainer(
+        model=model,
+        train_dataset=dataset,
+        peft_config=peft_config,
+        dataset_text_field="text",
+        max_seq_length=script_args.max_seq_length,
+        tokenizer=tokenizer,
+        args=training_args,
+        packing=script_args.packing,
+    )
 
+    last_checkpoint = get_last_checkpoint(training_args.output_dir)
 
-def generate_and_tokenize_prompt(row):
-    system_prompt = random.choice(system_prompts)
-    texts = [f'<s>[INST] <<SYS>>\n{system_prompt}\n<</SYS>>\n\n']
-
-    if '<bot>:' in row['input'] and row['output'] is None:
-        inputs, outputs = [], []
-        splitted = row['input'].split('<bot>:')
-        for i in range(len(splitted) - 1):
-            if i == 0:
-                human = splitted[i].replace('<manusia>:', '')
-            else:
-                human = splitted[i].split('<manusia>:')[1]
-            bot = splitted[i + 1].split('<manusia>:')[0]
-            inputs.append(human)
-            outputs.append(bot)
+    if last_checkpoint:
+        trainer.train(resume_from_checkpoint=last_checkpoint)
     else:
-        inputs = [row['input']]
-        outputs = [row['output']]
-    for input, output in zip(inputs, outputs):
-        texts.append(f'{input} [/INST] {output} </s><s>[INST] ')
-    return {'text': ''.join(texts)}
+        trainer.train()
 
 
-dataset = load_dataset("json", data_files=script_args.dataset_name, split="train")
-dataset = dataset.map(generate_and_tokenize_prompt)
-dataset = dataset.remove_columns(['prompt_input', 'input', 'output'])
-
-# Fix weird overflow issue with fp16 training
-tokenizer.padding_side = "right"
-
-trainer = SFTTrainer(
-    model=model,
-    train_dataset=dataset,
-    peft_config=peft_config,
-    dataset_text_field="text",
-    max_seq_length=script_args.max_seq_length,
-    tokenizer=tokenizer,
-    args=training_arguments,
-    packing=script_args.packing,
-)
-
-last_checkpoint = get_last_checkpoint(script_args.output_dir)
-
-if last_checkpoint:
-    trainer.train(resume_from_checkpoint=last_checkpoint)
-else:
-    trainer.train()
-
-if script_args.merge_and_push:
-    output_dir = os.path.join(script_args.output_dir, "final_checkpoints")
-    trainer.model.save_pretrained(output_dir)
-
-    # Free memory for merging weights
-    del model
-    torch.cuda.empty_cache()
-
-    from peft import AutoPeftModelForCausalLM
-
-    model = AutoPeftModelForCausalLM.from_pretrained(
-        output_dir, device_map="auto", torch_dtype=torch.bfloat16)
-    model = model.merge_and_unload()
-
-    output_merged_dir = os.path.join(script_args.output_dir, "final_merged_checkpoint")
-    model.save_pretrained(output_merged_dir, safe_serialization=True)
+if __name__ == "__main__":
+    main()

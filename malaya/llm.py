@@ -5,26 +5,20 @@ import logging
 logger = logging.getLogger(__name__)
 
 _huggingface_availability = {
-    'mesolitica/llama-7b-hf-1536-ms-qlora': {
-        'base model': 'https://huggingface.co/meta-llama/Llama-2-7b-hf',
+    'mesolitica/llama2-7b-ft-instruct-2048-packing-forum': {
+        'base model': 'https://huggingface.co/mesolitica/llama-7b-hf-16384-fpf',
         'Size (GB)': 13.85,
-        'context length': 1536,
-        'packing': False,
+        'context length': 2048,
+        'packing': True,
         'trained on': [
-            'https://huggingface.co/datasets/mesolitica/google-translate-oasst1',
-            'https://huggingface.co/datasets/mesolitica/chatgpt-code-context',
             'https://huggingface.co/datasets/mesolitica/google-translate-OIG',
-            'https://huggingface.co/datasets/mesolitica/google-translate-NSText2SQL',
-            'https://huggingface.co/datasets/mesolitica/chatgpt-msa-common-crawl-qa',
-            'https://huggingface.co/datasets/mesolitica/chatgpt-malaysia-hansard-qa',
-            'https://huggingface.co/datasets/mesolitica/chatgpt-gpt4all/blob/main/translated-gpt4all-code.json',
-            'https://huggingface.co/datasets/mesolitica/google-translate-vicuna-sharegpt',
+            'https://huggingface.co/datasets/mesolitica/google-translate-sharegpt',
         ]
     },
-    'mesolitica/llama-7b-hf-1536-ms-qlora-packing': {
-        'base model': 'https://huggingface.co/meta-llama/Llama-2-7b-hf',
+    'mesolitica/llama2-7b-ft-instruct-16384-packing': {
+        'base model': 'https://huggingface.co/mesolitica/llama-7b-hf-16384-fpf',
         'Size (GB)': 13.85,
-        'context length': 1536,
+        'context length': 16384,
         'packing': True,
         'trained on': [
             'https://huggingface.co/datasets/mesolitica/google-translate-oasst1',
@@ -33,8 +27,22 @@ _huggingface_availability = {
             'https://huggingface.co/datasets/mesolitica/google-translate-NSText2SQL',
             'https://huggingface.co/datasets/mesolitica/chatgpt-msa-common-crawl-qa',
             'https://huggingface.co/datasets/mesolitica/chatgpt-malaysia-hansard-qa',
-            'https://huggingface.co/datasets/mesolitica/chatgpt-gpt4all/blob/main/translated-gpt4all-code.json',
-            'https://huggingface.co/datasets/mesolitica/google-translate-vicuna-sharegpt',
+            'https://huggingface.co/datasets/mesolitica/google-translate-sharegpt',
+        ]
+    },
+    'malaysia-ai/llama2-13b-ft-instruct-2048-packing': {
+        'base model': 'https://huggingface.co/meta-llama/Llama-2-13b-hf',
+        'Size (GB)': 26.03,
+        'context length': 2048,
+        'packing': True,
+        'trained on': [
+            'https://huggingface.co/datasets/mesolitica/google-translate-oasst1',
+            'https://huggingface.co/datasets/mesolitica/chatgpt-code-context',
+            'https://huggingface.co/datasets/mesolitica/google-translate-OIG',
+            'https://huggingface.co/datasets/mesolitica/google-translate-NSText2SQL',
+            'https://huggingface.co/datasets/mesolitica/chatgpt-msa-common-crawl-qa',
+            'https://huggingface.co/datasets/mesolitica/chatgpt-malaysia-hansard-qa',
+            'https://huggingface.co/datasets/mesolitica/google-translate-sharegpt',
         ]
     },
 }
@@ -49,7 +57,7 @@ def available_huggingface():
 
 
 def huggingface(
-    model: str = 'mesolitica/llama-7b-hf-1024-ms-qlora',
+    model: str = 'mesolitica/llama2-7b-ft-instruct-16384-packing',
     force_check: bool = True,
     **kwargs,
 ):
@@ -58,7 +66,7 @@ def huggingface(
 
     Parameters
     ----------
-    model: str, optional (default='mesolitica/llama-7b-hf-1024-ms-qlora')
+    model: str, optional (default='mesolitica/llama2-7b-ft-instruct-16384-packing')
         Check available models at `malaya.llm.available_huggingface()`.
     force_check: bool, optional (default=True)
         Force check model one of malaya model.

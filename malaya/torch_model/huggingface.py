@@ -28,8 +28,7 @@ from malaya.text.function import (
 from malaya.function.parse_dependency import DependencyGraph
 from malaya.text.rouge import postprocess_summary, find_kata_encik
 from malaya.torch_model.t5 import T5ForSequenceClassification, T5Tagging, T5Diaparser
-from malaya_boilerplate.torch_utils import to_tensor_cuda, to_numpy
-from malaya_boilerplate.converter import ctranslate2_translator
+from malaya_boilerplate.torch_utils import to_numpy
 from malaya.function.activation import softmax
 from malaya.parser.conll import CoNLL
 from malaya.parser.alg import eisner, mst
@@ -49,22 +48,22 @@ MAPPING_LANG = {'ms': 'Malay', 'en': 'Inggeris'}
 
 class Base:
     def compile(self):
-        if hasattr(self, 'use_ctranslate2') and self.use_ctranslate2:
+        if getattr(self, 'use_ctranslate2', False):
             raise ValueError('`compile` method not able to use for ctranslate2 model.')
         self.model = torch.compile(self.model)
 
     def eval(self, **kwargs):
-        if hasattr(self, 'use_ctranslate2') and self.use_ctranslate2:
+        if getattr(self, 'use_ctranslate2', False):
             raise ValueError('`eval` method not able to use for ctranslate2 model.')
         return self.model.eval(**kwargs)
 
     def cuda(self, **kwargs):
-        if hasattr(self, 'use_ctranslate2') and self.use_ctranslate2:
+        if getattr(self, 'use_ctranslate2', False):
             raise ValueError('`cuda` method not able to use for ctranslate2 model.')
         return self.model.cuda(**kwargs)
 
     def save_pretrained(self, *args, **kwargs):
-        if hasattr(self, 'use_ctranslate2') and self.use_ctranslate2:
+        if getattr(self, 'use_ctranslate2', False):
             raise ValueError('`save_pretrained` method not able to use for ctranslate2 model.')
         return self.model.save_pretrained(
             *args, **kwargs), self.tokenizer.save_pretrained(*args, **kwargs)
@@ -81,15 +80,19 @@ class Generator(Base):
         **kwargs
     ):
         self.tokenizer = AutoTokenizer.from_pretrained(model, use_fast=use_fast, **kwargs)
+        self.is_gpt2tokenizer = 'GPT2Tokenizer' in str(type(self.tokenizer))
         self.use_ctranslate2 = use_ctranslate2
 
         if self.use_ctranslate2:
             if base_model != AutoModelForSeq2SeqLM:
                 raise ValueError('`base_model` must `AutoModelForSeq2SeqLM` if `use_ctranslate2`.')
 
+            from malaya_boilerplate.converter import ctranslate2_translator
+
             self.model = ctranslate2_translator(model=model, **kwargs)
         else:
             self.model = base_model.from_pretrained(model, **kwargs)
+
         self._initial_text = initial_text
 
     def generate(self, strings: List[str], return_generate=False, prefix=None, **kwargs):
@@ -118,9 +121,16 @@ class Generator(Base):
         logger.debug(f'generate, initial_text: {_initial_text}')
         logger.debug(f'generate, strings: {strings}')
 
+        combined = []
+        for s in strings:
+            s = f'{_initial_text}{s}'
+            if self.is_gpt2tokenizer:
+                s += self.tokenizer.eos_token
+            combined.append(s)
+
         if self.use_ctranslate2:
             tokens = [self.tokenizer.convert_ids_to_tokens(
-                self.tokenizer.encode(f'{_initial_text}{s}')) for s in strings]
+                self.tokenizer.encode(s)) for s in combined]
             results = self.model.translate_batch(tokens, **kwargs)
             outputs = []
             for o in results:
@@ -129,10 +139,10 @@ class Generator(Base):
         else:
             cuda = next(self.model.parameters()).is_cuda
             input_ids = [{'input_ids': self.tokenizer.encode(
-                f'{_initial_text}{s}', return_tensors='pt')[0]} for s in strings]
+                s, return_tensors='pt')[0]} for s in combined]
             padded = self.tokenizer.pad(input_ids, padding='longest', return_tensors='pt')
             for k in padded.keys():
-                padded[k] = to_tensor_cuda(padded[k], cuda)
+                padded[k] = padded[k].to(self.model.device)
             outputs = self.model.generate(**padded, **kwargs)
         if return_generate:
             return outputs
@@ -166,7 +176,6 @@ class Generator(Base):
                 'dtw-python not installed. Please install it by `pip install dtw-python` and try again.'
             )
 
-        cuda = next(self.model.parameters()).is_cuda
         input_ids = [{'input_ids': self.tokenizer.encode(
             f'{self._initial_text}{s}', return_tensors='pt')[0]} for s in source]
 
@@ -174,7 +183,7 @@ class Generator(Base):
         labels = self.tokenizer(target, padding=True, return_tensors='pt')['input_ids']
         padded['labels'] = labels
         for k in padded.keys():
-            padded[k] = to_tensor_cuda(padded[k], cuda)
+            padded[k] = padded[k].to(self.model.device)
 
         with torch.no_grad():
             o = self.model(**padded, output_attentions=True, return_dict=True)
@@ -217,7 +226,7 @@ class Prefix(Base):
         cuda = next(self.model.parameters()).is_cuda
         padded = {'input_ids': self.tokenizer.encode(string, return_tensors='pt')}
         for k in padded.keys():
-            padded[k] = to_tensor_cuda(padded[k], cuda)
+            padded[k] = padded[k].to(self.model.device)
         outputs = self.model.generate(**padded, **kwargs)
         return self.tokenizer.batch_decode(outputs, skip_special_tokens=True)
 
@@ -335,7 +344,7 @@ class Similarity(Base):
             s, return_tensors='pt')[0]} for s in strings]
         padded = self.tokenizer.pad(input_ids, padding='longest')
         for k in padded.keys():
-            padded[k] = to_tensor_cuda(padded[k], cuda)
+            padded[k] = padded[k].to(self.model.device)
 
         outputs = self.model(**padded, return_dict=True)
         return outputs
@@ -749,7 +758,7 @@ class Transformer(Base):
             s, return_tensors='pt')[0]} for s in strings]
         padded = self.tokenizer.pad(input_ids, padding='longest')
         for k in padded.keys():
-            padded[k] = to_tensor_cuda(padded[k], cuda)
+            padded[k] = padded[k].to(self.model.device)
 
         if self._t5:
             return self.model.embed(**padded, return_dict=True, output_attentions=True,
@@ -1162,7 +1171,7 @@ class Dependency(Base):
             return_tensors='pt',
         )
         for k in padded.keys():
-            padded[k] = to_tensor_cuda(padded[k], cuda)
+            padded[k] = padded[k].to(self.model.device)
 
         o = self.model(**padded)
 
@@ -1353,6 +1362,7 @@ class Translation(Generator):
             'ind': 'Indonesia',
             'pasar ms': 'pasar Melayu',
             'manglish': 'Manglish',
+            'pasar mandarin': 'pasar Mandarin',
         }
 
         self.all_special_ids = [0, 1, 2]
@@ -1397,7 +1407,7 @@ class Translation(Generator):
         to_lang = self.map_lang[to_lang]
 
         prefix = f'terjemah{from_lang} ke {to_lang}: '
-        if self.old_model:
+        if self.old_model or self.is_gpt2tokenizer:
             results = super().generate(strings, prefix=prefix, **kwargs)
         else:
             results = super().generate(strings, prefix=prefix, return_generate=True, **kwargs)
