@@ -161,6 +161,8 @@ def main():
 
     tokenizer = AutoTokenizer.from_pretrained(script_args.model_name, trust_remote_code=True)
     tokenizer.pad_token = tokenizer.unk_token
+    tokenizer.add_bos_token = False
+    tokenizer.add_eos_token = False
     tokenizer.padding_side = "right"
     model.config.use_cache = False
 

@@ -142,6 +142,33 @@ WANDB_PROJECT=fpf-Llama-2-7b-16k-hf ~/.local/bin/deepspeed run_clm.py \
 
 https://wandb.ai/mesolitica/fpf-Llama-2-7b-16k-hf?workspace=user-husein-mesolitica
 
+### 7B, 32768 Context length
+
+```bash
+WANDB_PROJECT=fpf-Llama-2-7b-32k-hf ~/.local/bin/deepspeed run_clm.py \
+--deepspeed ds_config_zero3.json \
+--model_name_or_path mesolitica/llama-7b-hf-16384-fpf \
+--per_device_train_batch_size 3 \
+--gradient_accumulation_steps 1 \
+--output_dir fpf-7b-32k \
+--bf16 \
+--do_train \
+--do_eval false \
+--num_train_epochs 1 \
+--train_file "combine-v2.jsonl" \
+--logging_steps 1 \
+--learning_rate 2e-5 \
+--lr_scheduler_type "linear" \
+--max_grad_norm 0.5 \
+--block_size 32768 \
+--save_steps 100 \
+--save_total_limit 2 \
+--gradient_checkpointing true \
+--use_flash_attention2 true
+```
+
+https://wandb.ai/mesolitica/fpf-Llama-2-7b-32k-hf?workspace=user-husein-mesolitica
+
 ### 13B, 2048 Context length
 
 ```bash
@@ -190,6 +217,33 @@ WANDB_PROJECT=fpf-Llama-2-13b-16k-hf ~/.local/bin/deepspeed run_clm.py \
 ```
 
 https://wandb.ai/mesolitica/fpf-Llama-2-13b-16k-hf?workspace=user-husein-mesolitica
+
+### 13B, 32768 context length
+
+```bash
+WANDB_PROJECT=fpf-Llama-2-13b-32k-hf ~/.local/bin/deepspeed run_clm.py \
+--deepspeed ds_config_zero3.json \
+--model_name_or_path mesolitica/llama-13b-hf-16384-fpf \
+--per_device_train_batch_size 2 \
+--gradient_accumulation_steps 1 \
+--output_dir fpf-13b-32k \
+--bf16 \
+--do_train \
+--do_eval false \
+--num_train_epochs 1 \
+--train_file "combine-v2.jsonl" \
+--logging_steps 1 \
+--learning_rate 2e-5 \
+--lr_scheduler_type "linear" \
+--max_grad_norm 0.5 \
+--block_size 32768 \
+--save_steps 50 \
+--save_total_limit 2 \
+--gradient_checkpointing true \
+--use_flash_attention2 true
+```
+
+https://wandb.ai/mesolitica/fpf-Llama-2-13b-32k-hf?workspace=user-husein-mesolitica
 
 ## Check memory usage DeepSpeed 3
 
@@ -246,17 +300,18 @@ Dataset prepared at https://github.com/huseinzol05/malaysian-dataset/tree/master
 ### 7B, 16384 context length, flash attention 2
 
 ```bash
-WANDB_PROJECT=qlora-7b-instructions-16k-nonpack \
+WANDB_PROJECT=qlora-7b-instructions-16k-improve \
 python3 main-lora.py \
---model_name "mesolitica/llama-7b-hf-16384-fpf" \
---output_dir "./results-16384" \
---dataset_name "shuf-combine-1536.jsonl" \
+--model_name "mesolitica/llama-7b-hf-32768-fpf" \
+--output_dir "./results-7b-16384-improve" \
+--dataset_name "shuf-combine-1536-v2.jsonl" \
 --max_seq_length 16384 \
 --group_by_length true \
 --bnb_4bit_compute_dtype bfloat16 \
 --save_steps 1000 \
+--save_total_limit 2 \
 --logging_steps 1 \
---max_steps 50000 \
+--max_steps 100000 \
 --bf16 \
 --learning_rate 2e-4 \
 --optim "paged_adamw_32bit" \
@@ -271,20 +326,22 @@ python3 main-lora.py \
 
 ### 13B, 16384 context length, flash attention 2
 
+**required deepspeed**.
+
 ```bash
-WANDB_PROJECT=qlora-13b-instructions-16k-nonpack \
+WANDB_PROJECT=qlora-13b-instructions-16k-improve \
 ~/.local/bin/deepspeed main-lora.py \
 --deepspeed ds_config_zero2.json \
---model_name "mesolitica/llama-13b-hf-16384-fpf" \
---output_dir "./results-13b-16384" \
---dataset_name "shuf-combine-1536.jsonl" \
+--model_name "mesolitica/llama-13b-hf-32768-fpf" \
+--output_dir "./results-13b-16384-improve" \
+--dataset_name "shuf-combine-1536-v2.jsonl" \
 --max_seq_length 16384 \
 --group_by_length true \
 --bnb_4bit_compute_dtype bfloat16 \
---save_steps 1000 \
+--save_steps 100 \
 --save_total_limit 2 \
 --logging_steps 1 \
---max_steps 50000 \
+--max_steps 200000 \
 --bf16 \
 --learning_rate 2e-4 \
 --optim "paged_adamw_32bit" \

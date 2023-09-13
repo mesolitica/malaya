@@ -1362,6 +1362,7 @@ class Translation(Generator):
             'ind': 'Indonesia',
             'pasar ms': 'pasar Melayu',
             'manglish': 'Manglish',
+            'mandarin': 'Mandarin',
             'pasar mandarin': 'pasar Mandarin',
         }
 
