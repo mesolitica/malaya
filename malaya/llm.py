@@ -5,44 +5,24 @@ import logging
 logger = logging.getLogger(__name__)
 
 _huggingface_availability = {
-    'mesolitica/llama2-7b-ft-instruct-2048-packing-forum': {
-        'base model': 'https://huggingface.co/mesolitica/llama-7b-hf-16384-fpf',
+    'mesolitica/llama2-7b-lora-instruct-32768-no-alignment': {
+        'base model': 'https://huggingface.co/mesolitica/llama-7b-hf-32768-fpf',
         'Size (GB)': 13.85,
-        'context length': 2048,
-        'packing': True,
+        'context length': 32768,
         'trained on': [
-            'https://huggingface.co/datasets/mesolitica/google-translate-OIG',
-            'https://huggingface.co/datasets/mesolitica/google-translate-sharegpt',
-        ]
-    },
-    'mesolitica/llama2-7b-ft-instruct-16384-packing': {
-        'base model': 'https://huggingface.co/mesolitica/llama-7b-hf-16384-fpf',
-        'Size (GB)': 13.85,
-        'context length': 16384,
-        'packing': True,
-        'trained on': [
-            'https://huggingface.co/datasets/mesolitica/google-translate-oasst1',
-            'https://huggingface.co/datasets/mesolitica/chatgpt-code-context',
-            'https://huggingface.co/datasets/mesolitica/google-translate-OIG',
-            'https://huggingface.co/datasets/mesolitica/google-translate-NSText2SQL',
+            'https://huggingface.co/datasets/mesolitica/google-translate-ultrachat',
             'https://huggingface.co/datasets/mesolitica/chatgpt-msa-common-crawl-qa',
             'https://huggingface.co/datasets/mesolitica/chatgpt-malaysia-hansard-qa',
-            'https://huggingface.co/datasets/mesolitica/google-translate-sharegpt',
         ]
     },
-    'malaysia-ai/llama2-13b-ft-instruct-2048-packing': {
-        'base model': 'https://huggingface.co/meta-llama/Llama-2-13b-hf',
-        'Size (GB)': 26.03,
-        'context length': 2048,
-        'packing': True,
+    'mesolitica/llama2-13b-lora-instruct-32768-no-alignment': {
+        'base model': 'https://huggingface.co/mesolitica/llama-13b-hf-32768-fpf',
+        'Size (GB)': 13.85,
+        'context length': 32768,
         'trained on': [
-            'https://huggingface.co/datasets/mesolitica/google-translate-oasst1',
-            'https://huggingface.co/datasets/mesolitica/chatgpt-code-context',
-            'https://huggingface.co/datasets/mesolitica/google-translate-OIG',
-            'https://huggingface.co/datasets/mesolitica/google-translate-NSText2SQL',
+            'https://huggingface.co/datasets/mesolitica/google-translate-ultrachat',
             'https://huggingface.co/datasets/mesolitica/chatgpt-msa-common-crawl-qa',
             'https://huggingface.co/datasets/mesolitica/chatgpt-malaysia-hansard-qa',
-            'https://huggingface.co/datasets/mesolitica/google-translate-sharegpt',
         ]
     },
 }

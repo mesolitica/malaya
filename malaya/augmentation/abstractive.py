@@ -6,33 +6,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 _huggingface_availability = {
-    'mesolitica/finetune-noisy-translation-t5-tiny-bahasa-cased-v3': {
-        'Size (MB)': 139,
-        'Suggested length': 1024,
-        'ms-pasar ms chrF2++': 52.16,
-        'en-pasar ms chrF2++': 49.97,
-        'from lang': ['en', 'ms'],
-        'to lang': ['pasar ms'],
-        'old model': True,
-    },
-    'mesolitica/finetune-noisy-translation-t5-small-bahasa-cased-v3': {
-        'Size (MB)': 242,
-        'Suggested length': 1024,
-        'ms-pasar ms chrF2++': 51.62,
-        'en-pasar ms chrF2++': 50.30,
-        'from lang': ['en', 'ms'],
-        'to lang': ['pasar ms'],
-        'old model': True,
-    },
-    'mesolitica/finetune-noisy-translation-t5-base-bahasa-cased-v3': {
-        'Size (MB)': 892,
-        'Suggested length': 1024,
-        'ms-pasar ms chrF2++': 51.06,
-        'en-pasar ms chrF2++': 50.63,
-        'from lang': ['en', 'ms'],
-        'to lang': ['pasar ms'],
-        'old model': True,
-    },
     'mesolitica/translation-t5-tiny-standard-bahasa-cased': {
         'Size (MB)': 139,
         'Suggested length': 1536,
@@ -79,42 +52,9 @@ def available_huggingface():
     return describe_availability(_huggingface_availability)
 
 
-def _huggingface(
-    availability,
-    model: str = 'mesolitica/translation-t5-small-standard-bahasa-cased',
-    force_check: bool = True,
-    from_lang: List[str] = None,
-    to_lang: List[str] = None,
-    old_model: bool = False,
-    path=__name__,
-    **kwargs,
-):
-    if model not in availability:
-        if force_check:
-            raise ValueError(
-                f'model not supported, please check supported models from `{path}.available_huggingface()`.'
-            )
-
-    else:
-        from_lang = from_lang or availability[model].get('from lang')
-        to_lang = to_lang or availability[model].get('to lang')
-        old_model = old_model or 'mesolitica/finetune' in model
-
-    return load_huggingface.load_translation(
-        model=model,
-        from_lang=from_lang,
-        to_lang=to_lang,
-        old_model=old_model,
-        **kwargs,
-    )
-
-
 def huggingface(
     model: str = 'mesolitica/translation-t5-small-standard-bahasa-cased',
     force_check: bool = True,
-    from_lang: List[str] = None,
-    to_lang: List[str] = None,
-    old_model: bool = False,
     **kwargs,
 ):
     """

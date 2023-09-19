@@ -81,43 +81,6 @@ def available_huggingface():
     return describe_availability(_huggingface_availability)
 
 
-def transformer(model: str = 'small-t5', quantized: bool = False, **kwargs):
-    """
-    Load Malaya transformer encoder-decoder model to paraphrase.
-
-    Parameters
-    ----------
-    model: str, optional (default='small-t5')
-        Check available models at `malaya.paraphrase.available_transformer()`.
-    quantized: bool, optional (default=False)
-        if True, will load 8-bit quantized model.
-        Quantized model not necessary faster, totally depends on the machine.
-
-    Returns
-    -------
-    result: model
-        List of model classes:
-
-        * if `t5` in model, will return `malaya.model.t5.Paraphrase`.
-    """
-    warnings.warn(
-        '`malaya.paraphrase.transformer` is deprecated, use `malaya.paraphrase.huggingface` instead',
-        DeprecationWarning)
-
-    model = model.lower()
-    if model not in _transformer_availability:
-        raise ValueError(
-            'model not supported, please check supported models from `malaya.paraphrase.available_transformer()`.'
-        )
-    return t5_load.load(
-        module='paraphrase-v2',
-        model=model,
-        model_class=T5_Paraphrase,
-        quantized=quantized,
-        **kwargs,
-    )
-
-
 def huggingface(
     model: str = 'mesolitica/finetune-paraphrase-t5-small-standard-bahasa-cased',
     force_check: bool = True,

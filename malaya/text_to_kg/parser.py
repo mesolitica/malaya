@@ -61,7 +61,6 @@ def from_dependency(
 ):
     """
     Generate knowledge graphs from dependency parsing model.
-    This function been properly curated on top of `malaya.dependency.transformer(version = 'v1')`.
 
     Parameters
     ----------

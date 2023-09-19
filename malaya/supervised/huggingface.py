@@ -6,13 +6,10 @@ from malaya.torch_model.huggingface import (
     Summarization,
     Similarity,
     ZeroShotClassification,
-    ZeroShotNER,
     ExtractiveQA,
-    AbstractiveQA,
     Transformer,
     IsiPentingGenerator,
     Tatabahasa,
-    Normalizer,
     Keyword,
     Dependency,
     TexttoKG,
@@ -83,24 +80,6 @@ def load_tatabahasa(model, initial_text, **kwargs):
     return Tatabahasa(model, initial_text, **kwargs)
 
 
-def load_normalizer(
-    model,
-    initial_text,
-    normalizer,
-    segmenter=None,
-    text_scorer=None,
-    **kwargs,
-):
-    return Normalizer(
-        model,
-        initial_text,
-        normalizer,
-        segmenter=segmenter,
-        text_scorer=text_scorer,
-        **kwargs,
-    )
-
-
 def load_keyword(model, **kwargs):
     return Keyword(model, **kwargs)
 
@@ -117,9 +96,29 @@ def load_kgtt(model, **kwargs):
     return KGtoText(model=model, **kwargs)
 
 
-def load_translation(model, from_lang, to_lang, **kwargs):
-    return Translation(model=model, from_lang=from_lang, to_lang=to_lang, **kwargs)
+def load_translation(model, **kwargs):
+    return Translation(model=model, **kwargs)
 
 
 def load_llm(model, **kwargs):
     return LLM(model=model, **kwargs)
+
+
+def load(
+    model,
+    class_model,
+    availability,
+    force_check: bool = True,
+    path: str = __name__,
+    **kwargs,
+):
+    if model not in availability:
+        if force_check:
+            raise ValueError(
+                f'model not supported, please check supported models from `{path}.available_huggingface()`.'
+            )
+
+    return class_model(
+        model=model,
+        **kwargs,
+    )

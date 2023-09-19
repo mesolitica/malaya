@@ -106,7 +106,6 @@ class ScriptArguments:
 
 def main():
     parser = HfArgumentParser((ScriptArguments, TrainingArguments))
-    script_args = parser.parse_args_into_dataclasses()[0]
     script_args, training_args = parser.parse_args_into_dataclasses()
     print(script_args, training_args)
 

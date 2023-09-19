@@ -1,5 +1,6 @@
-from malaya.function import describe_availability, check_file
-from malaya.augmentation.abstractive import _huggingface
+from malaya.function import describe_availability
+from malaya.supervised.huggingface import load
+from malaya.torch_model.huggingface import Translation
 from malaya_boilerplate.huggingface import download_files
 from malaya.model.alignment import Eflomal
 from typing import Callable, List
@@ -115,39 +116,6 @@ _word_availability = {
 }
 
 _huggingface_availability = {
-    'mesolitica/finetune-noisy-translation-t5-tiny-bahasa-cased-v3': {
-        'Size (MB)': 139,
-        'Suggested length': 1024,
-        'en-ms chrF2++': 60.65,
-        'ms-en chrF2++': 60.34,
-        'pasar ms-ms chrF2++': 52.29,
-        'pasar ms-en chrF2++': 51.25,
-        'from lang': ['en', 'ms', 'pasar ms'],
-        'to lang': ['ms', 'en'],
-        'old model': True,
-    },
-    'mesolitica/finetune-noisy-translation-t5-small-bahasa-cased-v3': {
-        'Size (MB)': 242,
-        'Suggested length': 1024,
-        'en-ms chrF2++': 61.73,
-        'ms-en chrF2++': 61.70,
-        'pasar ms-ms chrF2++': 52.38,
-        'pasar ms-en chrF2++': 36.41,
-        'from lang': ['en', 'ms', 'pasar ms'],
-        'to lang': ['ms', 'en'],
-        'old model': True,
-    },
-    'mesolitica/finetune-noisy-translation-t5-base-bahasa-cased-v3': {
-        'Size (MB)': 892,
-        'Suggested length': 1024,
-        'en-ms chrF2++': 65.54,
-        'ms-en chrF2++': 62.96,
-        'pasar ms-ms chrF2++': 51.62,
-        'pasar ms-en chrF2++': 53.85,
-        'from lang': ['en', 'ms', 'pasar ms'],
-        'to lang': ['ms', 'en'],
-        'old model': True,
-    },
     'mesolitica/translation-t5-tiny-standard-bahasa-cased': {
         'Size (MB)': 139,
         'Suggested length': 1536,
@@ -161,7 +129,6 @@ _huggingface_availability = {
         'manglish-en chrF2++': 52.20,
         'from lang': ['en', 'ms', 'ind', 'jav', 'bjn', 'manglish', 'pasar ms'],
         'to lang': ['en', 'ms'],
-        'old model': False,
     },
     'mesolitica/translation-t5-small-standard-bahasa-cased': {
         'Size (MB)': 242,
@@ -176,11 +143,11 @@ _huggingface_availability = {
         'manglish-en chrF2++': 53.65,
         'from lang': ['en', 'ms', 'ind', 'jav', 'bjn', 'manglish', 'pasar ms'],
         'to lang': ['en', 'ms'],
-        'old model': False,
     },
-    'mesolitica/translation-t5-base-standard-bahasa-cased': {
-        'Size (MB)': 892,
-        'Suggested length': 1536,
+    'mesolitica/translation-nanot5-tiny-code-cased': {
+        'Size (MB)': 358,
+        'Suggested length': 2048,
+        'from lang': ['en', 'ms'],
         'en-ms chrF2++': 67.62,
         'ms-en chrF2++': 64.41,
         'ind-ms chrF2++': 59.25,
@@ -189,9 +156,8 @@ _huggingface_availability = {
         'pasar ms-en chrF2++': 62.06,
         'manglish-ms chrF2++': 54.40,
         'manglish-en chrF2++': 54.14,
-        'from lang': ['en', 'ms', 'ind', 'jav', 'bjn', 'manglish', 'pasar ms'],
+        'from lang': ['en', 'ms', 'ind', 'jav', 'bjn', 'manglish', 'pasar ms', 'mandarin', 'pasar mandarin'],
         'to lang': ['en', 'ms'],
-        'old model': False,
     },
     'mesolitica/translation-nanot5-small-code-cased': {
         'Size (MB)': 358,
@@ -207,8 +173,22 @@ _huggingface_availability = {
         'manglish-en chrF2++': 54.14,
         'from lang': ['en', 'ms', 'ind', 'jav', 'bjn', 'manglish', 'pasar ms', 'mandarin', 'pasar mandarin'],
         'to lang': ['en', 'ms'],
-        'old model': False,
-    }
+    },
+    'mesolitica/translation-nanot5-base-code-cased': {
+        'Size (MB)': 892,
+        'Suggested length': 1536,
+        'en-ms chrF2++': 67.62,
+        'ms-en chrF2++': 64.41,
+        'ind-ms chrF2++': 59.25,
+        'jav-ms chrF2++': 52.86,
+        'pasar ms-ms chrF2++': 62.99,
+        'pasar ms-en chrF2++': 62.06,
+        'manglish-ms chrF2++': 54.40,
+        'manglish-en chrF2++': 54.14,
+        'from lang': ['en', 'ms', 'ind', 'jav', 'bjn', 'manglish', 'pasar ms'],
+        'to lang': ['en', 'ms'],
+    },
+
 }
 
 
@@ -289,11 +269,8 @@ def word(model: str = 'mesolitica/en-ms', **kwargs):
 
 
 def huggingface(
-    model: str = 'mesolitica/translation-t5-small-standard-bahasa-cased',
+    model: str = 'mesolitica/translation-nanot5-small-code-cased',
     force_check: bool = True,
-    from_lang: List[str] = None,
-    to_lang: List[str] = None,
-    old_model: bool = False,
     **kwargs,
 ):
     """
@@ -301,7 +278,7 @@ def huggingface(
 
     Parameters
     ----------
-    model: str, optional (default='mesolitica/translation-t5-small-standard-bahasa-cased')
+    model: str, optional (default='mesolitica/translation-nanot5-small-code-cased')
         Check available models at `malaya.translation.available_huggingface()`.
     force_check: bool, optional (default=True)
         Force check model one of malaya model.
@@ -311,13 +288,11 @@ def huggingface(
     -------
     result: malaya.torch_model.huggingface.Translation
     """
-    return _huggingface(
-        availability=_huggingface_availability,
+    return load(
         model=model,
+        class_model=Translation,
+        availability=_huggingface_availability,
         force_check=force_check,
-        from_lang=from_lang,
-        to_lang=to_lang,
-        old_model=old_model,
         path=__name__,
         **kwargs,
     )

@@ -14,7 +14,7 @@ CUDA_VISIBLE_DEVICES='0' \
 WANDB_DISABLED=true \
 python3 run_t5_v2.py \
 --model_name_or_path mesolitica/nanot5-base-malaysian-cased \
---num_train_epochs 3 \
+--num_train_epochs 2 \
 --logging_steps 100 \
 --eval_steps 1000000000 \
 --save_steps 10000 \
@@ -43,7 +43,7 @@ CUDA_VISIBLE_DEVICES='1' \
 WANDB_DISABLED=true \
 python3 run_t5_v2.py \
 --model_name_or_path mesolitica/nanot5-small-malaysian-cased \
---num_train_epochs 3 \
+--num_train_epochs 2 \
 --logging_steps 100 \
 --eval_steps 1000000000 \
 --save_steps 10000 \
@@ -72,7 +72,7 @@ CUDA_VISIBLE_DEVICES='1' \
 WANDB_DISABLED=true \
 python3 run_t5_v2.py \
 --model_name_or_path mesolitica/nanot5-tiny-malaysian-cased \
---num_train_epochs 3 \
+--num_train_epochs 2 \
 --logging_steps 100 \
 --eval_steps 1000000000 \
 --save_steps 10000 \

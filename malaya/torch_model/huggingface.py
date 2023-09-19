@@ -25,6 +25,7 @@ from malaya.text.function import (
     remove_html_tags as f_remove_html_tags,
     STOPWORDS,
 )
+from malaya_boilerplate.converter import ctranslate2_translator
 from malaya.function.parse_dependency import DependencyGraph
 from malaya.text.rouge import postprocess_summary, find_kata_encik
 from malaya.torch_model.t5 import T5ForSequenceClassification, T5Tagging, T5Diaparser
@@ -87,8 +88,6 @@ class Generator(Base):
             if base_model != AutoModelForSeq2SeqLM:
                 raise ValueError('`base_model` must `AutoModelForSeq2SeqLM` if `use_ctranslate2`.')
 
-            from malaya_boilerplate.converter import ctranslate2_translator
-
             self.model = ctranslate2_translator(model=model, **kwargs)
         else:
             self.model = base_model.from_pretrained(model, **kwargs)
@@ -144,6 +143,7 @@ class Generator(Base):
             for k in padded.keys():
                 padded[k] = padded[k].to(self.model.device)
             outputs = self.model.generate(**padded, **kwargs)
+
         if return_generate:
             return outputs
         else:
@@ -232,11 +232,11 @@ class Prefix(Base):
 
 
 class Paraphrase(Generator):
-    def __init__(self, model, initial_text, **kwargs):
+    def __init__(self, model, **kwargs):
         Generator.__init__(
             self,
             model=model,
-            initial_text=initial_text,
+            initial_text='parafrasa: ',
             **kwargs,
         )
 
@@ -270,11 +270,11 @@ class Paraphrase(Generator):
 
 
 class Summarization(Generator):
-    def __init__(self, model, initial_text, **kwargs):
+    def __init__(self, model, **kwargs):
         Generator.__init__(
             self,
             model=model,
-            initial_text=initial_text,
+            initial_text='ringkasan: ',
             **kwargs,
         )
 
@@ -439,7 +439,7 @@ class ZeroShotClassification(Similarity):
         return results
 
 
-class ZeroShotNER(Generator):
+class ExtractiveQA(Generator):
     def __init__(self, model, **kwargs):
         Generator.__init__(
             self,
@@ -447,102 +447,7 @@ class ZeroShotNER(Generator):
             initial_text='',
             **kwargs,
         )
-        self._q = 'Ekstrak <entity> dari teks: '
-        self._placeholder = '<entity>'
-
-    def predict(
-        self,
-        string: str,
-        tags: List[str],
-        minimum_length: int = 2,
-        **kwargs,
-    ):
-        """
-        classify entities in a string.
-
-        Parameters
-        ----------
-        strings: str
-            We assumed the string input been properly tokenized.
-        tags: List[str]
-        minimum_length: int, optional (default=2)
-            minimum length of string for an entity.
-        **kwargs: vector arguments pass to huggingface `generate` method.
-            Read more at https://huggingface.co/docs/transformers/main_classes/text_generation
-
-        Returns
-        -------
-        list: Dict[str, List[str]]
-        """
-
-        strings = []
-        for t in tags:
-            q = self._q.replace(self._placeholder, t)
-            s = f'{q}{string}'
-            strings.append(s)
-
-        logger.debug(strings)
-
-        outputs = super().generate(strings, **kwargs)
-        entities = defaultdict(list)
-        for no, t in enumerate(tags):
-            e = outputs[no].split(' dan ')
-            e = [e_ for e_ in e if len(e_) >= minimum_length and e_ != 'tiada' and e_ !=
-                 'tiada jawapan' and e_ in string]
-            e = list(set(e))
-            entities[t].extend(e)
-
-        return dict(entities)
-
-
-class Aligment(Generator):
-    def __init__(self, model, initial_text):
-        Generator.__init__(
-            self,
-            model=model,
-            initial_text=initial_text,
-        )
-
-    def align(self):
-        s = 'The Normans (Norman: Nourmands; French: Normands; Latin: Normanni) were the people who in the 10th and 11th centuries gave their name to Normandy, a region in France. They were descended from Norse ("Norman" comes from "Norseman") raiders and pirates from Denmark, Iceland and Norway who, under their leader Rollo, agreed to swear fealty to King Charles III of West Francia. Through generations of assimilation and mixing with the native Frankish and Roman-Gaulish populations, their descendants would gradually merge with the Carolingian-based cultures of West Francia. The distinct cultural and ethnic identity of the Normans emerged initially in the first half of the 10th century, and it continued to evolve over the succeeding centuries.'
-        input_ids = {
-            'input_ids': self.tokenizer.encode(
-                f'terjemah Inggeris ke Melayu: {s}',
-                return_tensors='pt')}
-        outputs = self.model.generate(**input_ids, max_length=256)
-        outputs = self.tokenizer.batch_decode(outputs, skip_special_tokens=True)
-        decoder_input_ids = self.tokenizer.encode(outputs[0], return_tensors='pt')
-        o = self.model.forward(
-            **input_ids,
-            decoder_input_ids=decoder_input_ids,
-            output_attentions=True)
-        c = []
-        for a in o['cross_attentions']:
-            c.append(a.detach().numpy())
-
-        n = np.mean(np.mean(c, axis=0)[0], axis=0)
-        s_t = self.tokenizer.tokenize(f'terjemah Inggeris ke Melayu: {s}')
-        t_t = self.tokenizer.tokenize(outputs[0])
-        rejected = self.tokenizer.all_special_tokens
-
-        a = merge_sentencepiece_tokens_tagging(s_t, np.argmax(n.T, axis=1).tolist())
-
-        prefix = 'terjemah Inggeris ke Melayu:'.split()
-        f = []
-        for no in range(len(a[0])):
-            if a[0][no] not in prefix:
-                f.append((a[0][no], t_t[a[1][no]]))
-
-
-class ExtractiveQA(Generator):
-    def __init__(self, model, flan_mode=False, **kwargs):
-        Generator.__init__(
-            self,
-            model=model,
-            initial_text='',
-            **kwargs,
-        )
-        self.flan_mode = flan_mode
+        self.flan_mode = 'flan' in model
 
     def predict(
         self,
@@ -613,117 +518,6 @@ class ExtractiveQA(Generator):
         return results
 
 
-class AbstractiveQA(Generator):
-    def __init__(self, model, **kwargs):
-        Generator.__init__(
-            self,
-            model=model,
-            initial_text='',
-            **kwargs,
-        )
-
-    def predict(
-        self,
-        paragraph_text: str,
-        question_texts: List[str],
-        langs: List[str],
-        **kwargs,
-    ):
-        """
-        Predict abstractive answers from questions given a paragraph.
-
-        Parameters
-        ----------
-        paragraph_text: str
-        question_texts: List[str]
-            List of questions, results really depends on case sensitive questions.
-        langs: List[str]
-            Must same length as `question_texts`. Only accept `ms` or `en` only, case insensitive.
-        **kwargs: vector arguments pass to huggingface `generate` method.
-            Read more at https://huggingface.co/docs/transformers/main_classes/text_generation
-
-        Returns
-        -------
-        result: List[str]
-        """
-
-        if len(question_texts) != len(langs):
-            raise ValueError('length of `langs` must be same as length of `question_texts`')
-
-        langs_ = []
-
-        for no, l in enumerate(langs):
-            l_ = MAPPING_LANG.get(l.lower())
-            if l_ is None:
-                raise ValueError(f'langs[{no}] should only `ms` or `en`.')
-            langs_.append(l_)
-
-        text = remove_newlines(paragraph_text)
-        strings = []
-        for no, q in enumerate(question_texts):
-            q_ = remove_newlines(q)
-            s = f'abstrak jawapan {langs_[no]}: {text} soalan: {q_}'
-            strings.append(s)
-
-        r = super().generate(strings, **kwargs)
-        return r
-
-
-class GenerateQuestion(Generator):
-    def __init__(self, model, **kwargs):
-        Generator.__init__(
-            self,
-            model=model,
-            initial_text='',
-            **kwargs,
-        )
-
-    def predict(
-        self,
-        paragraph_texts: List[str],
-        answer_texts: List[str],
-        langs: List[str],
-        **kwargs,
-    ):
-        """
-        Generate questions from answers given paragraphs.
-
-        Parameters
-        ----------
-        paragraph_text: List[str]
-        answer_texts: List[str]
-            List of answers, can be extract or abstract.
-        langs: List[str]
-            Must same length as `answer_texts`. Only accept `ms` or `en` only, case insensitive.
-        **kwargs: vector arguments pass to huggingface `generate` method.
-            Read more at https://huggingface.co/docs/transformers/main_classes/text_generation
-
-        Returns
-        -------
-        result: List[str]
-        """
-        if len(answer_texts) != len(langs):
-            raise ValueError('length of `langs` must be same as length of `answer_texts`')
-
-        langs_ = []
-
-        for no, l in enumerate(langs):
-            l_ = MAPPING_LANG.get(l.lower())
-            if l_ is None:
-                raise ValueError(f'langs[{no}] should only `ms` or `en`.')
-            langs_.append(l_)
-
-        strings = []
-        for no, a in enumerate(answer_texts):
-            a_ = remove_newlines(a)
-            text = remove_newlines(paragraph_texts[no])
-            s = f'bina soalan {langs_[no]}: jawapan: {a_}'
-            strings.append(s)
-
-        r = super().generate(strings, **kwargs)
-        return r
-
-
 class Transformer(Base):
     def __init__(
         self,
@@ -745,12 +539,7 @@ class Transformer(Base):
             raise ValueError(
                 'currently `malaya.transformer.load_huggingface` only supported `bpe`, `wordpiece` and `sentencepiece` tokenizer')
 
-        self._t5 = False
-        if 't5' in model:
-            self.model = T5ForSequenceClassification.from_pretrained(model, **kwargs)
-            self._t5 = True
-        else:
-            self.model = AutoModelForMaskedLM.from_pretrained(model, **kwargs)
+        self.model = AutoModelForMaskedLM.from_pretrained(model, **kwargs)
 
     def forward(self, strings):
         cuda = next(self.model.parameters()).is_cuda
@@ -760,12 +549,8 @@ class Transformer(Base):
         for k in padded.keys():
             padded[k] = padded[k].to(self.model.device)
 
-        if self._t5:
-            return self.model.embed(**padded, return_dict=True, output_attentions=True,
-                                    output_hidden_states=True), padded
-        else:
-            return self.model(**padded, return_dict=True, output_attentions=True,
-                              output_hidden_states=True), padded
+        return self.model(**padded, return_dict=True, output_attentions=True,
+                          output_hidden_states=True), padded
 
     def _method(self, layers, method, dim=0):
         method = method.lower()
@@ -819,20 +604,11 @@ class Transformer(Base):
         result: np.array
         """
 
-        if self._t5:
-            logits = self.forward(strings=strings)[0].logits
-            if t5_head_logits:
-                logits = logits[1]
-            else:
-                logits = logits[0]
-            return to_numpy(logits)
-
-        else:
-            hidden_states = self.forward(strings=strings)[0].hidden_states
-            stacked = torch.stack(hidden_states)
-            layer = self._method(stacked, method)
-            layer = layer.transpose(0, 1)
-            return to_numpy(self._method(layer, method_token))
+        hidden_states = self.forward(strings=strings)[0].hidden_states
+        stacked = torch.stack(hidden_states)
+        layer = self._method(stacked, method)
+        layer = layer.transpose(0, 1)
+        return to_numpy(self._method(layer, method_token))
 
     def attention(
         self,
@@ -875,10 +651,7 @@ class Transformer(Base):
         """
 
         forward = self.forward(strings=strings)
-        if self._t5:
-            attentions = getattr(forward[0], t5_attention)
-        else:
-            attentions = forward[0].attentions
+        attentions = forward[0].attentions
         stacked = torch.stack(attentions)
         layer = self._method(stacked, method)
         layer = layer.transpose(0, 2).transpose(1, 2)
@@ -1018,68 +791,6 @@ class Tatabahasa(Generator):
         return results
 
 
-class Normalizer(Generator):
-    def __init__(
-        self,
-        model,
-        initial_text,
-        normalizer,
-        segmenter=None,
-        text_scorer=None,
-        **kwargs,
-    ):
-        Generator.__init__(
-            self,
-            model=model,
-            initial_text=initial_text,
-            **kwargs,
-        )
-        self.normalizer = normalizer
-        self.segmenter = segmenter
-        self.text_scorer = text_scorer
-
-    def generate(
-        self,
-        strings: List[str],
-        **kwargs,
-    ):
-        """
-        abstractive text normalization.
-
-        Parameters
-        ----------
-        strings : List[str]
-        **kwargs: vector arguments pass to huggingface `generate` method.
-            Read more at https://huggingface.co/docs/transformers/main_classes/text_generation
-
-            Also vector arguments pass to `malaya.normalizer.rules.Normalizer.normalize`
-
-        Returns
-        -------
-        result: List[str]
-        """
-        if self.normalizer is not None:
-            for i in range(len(strings)):
-                t = strings[i]
-                try:
-                    normalized = self.normalizer.normalize(
-                        t, normalize_hingga=False, normalize_cardinal=False,
-                        normalize_ordinal=False, normalize_pada_hari_bulan=False,
-                        normalize_fraction=False, normalize_money=False, normalize_date=False,
-                        normalize_time=False, normalize_ic=False, normalize_units=False,
-                        normalize_url=False, normalize_percent=False, normalize_telephone=False,
-                        text_scorer=self.text_scorer, segmenter=self.segmenter,
-                        not_a_word_threshold=1e-9,
-                    )['normalize']
-                    logger.debug(f'input: {t}, normalized: {normalized}')
-                    strings[i] = normalized
-                except Exception as e:
-                    logger.warning(f'input: {t}, exception {e}')
-                    logger.warning(f'input: {t}, `self.normalizer` exception, skip to normalize.')
-
-        return super().generate(strings, **kwargs)
-
-
 class Keyword(Generator):
     def __init__(self, model, **kwargs):
         Generator.__init__(
@@ -1125,29 +836,7 @@ class Dependency(Base):
         self.tokenizer = AutoTokenizer.from_pretrained(model, **kwargs)
         self.model = T5Diaparser.from_pretrained(model, **kwargs)
 
-    def predict(
-        self,
-        string: str,
-        validate_tree: bool = False,
-        f_tree: Callable = eisner,
-    ):
-        """
-        Tag a string. We assumed the string input been properly tokenized.
-
-        Parameters
-        ----------
-        string: str
-        validate_tree: bool, optional (default=False)
-            validate arcs is a valid tree using `malaya.parser.conll.CoNLL.istree`.
-            Originally from https://github.com/Unipisa/diaparser
-        f_tree: Callable, optional (default=malaya.parser.alg.eisner)
-            if arcs is not a tree, use approximate function to fix arcs.
-            Originally from https://github.com/Unipisa/diaparser
-
-        Returns
-        -------
-        result: Tuple
-        """
+    def forward(self, string):
         cuda = next(self.model.parameters()).is_cuda
 
         texts, indices = [1], [0]
@@ -1173,8 +862,36 @@ class Dependency(Base):
         for k in padded.keys():
             padded[k] = padded[k].to(self.model.device)
 
-        o = self.model(**padded)
+        return self.model(**padded), padded
 
+    def vectorize(self, string):
+        return self.forward(string=string)[0].decoder_hidden_states
+
+    def predict(
+        self,
+        string: str,
+        validate_tree: bool = False,
+        f_tree: Callable = eisner,
+    ):
+        """
+        Tag a string. We assumed the string input been properly tokenized.
+
+        Parameters
+        ----------
+        string: str
+        validate_tree: bool, optional (default=False)
+            validate arcs is a valid tree using `malaya.parser.conll.CoNLL.istree`.
+            Originally from https://github.com/Unipisa/diaparser
+        f_tree: Callable, optional (default=malaya.parser.alg.eisner)
+            if arcs is not a tree, use approximate function to fix arcs.
+            Originally from https://github.com/Unipisa/diaparser
+
+        Returns
+        -------
+        result: Tuple
+        """
+
+        o, padded = self.forward(string=string)
         seq = padded['input_ids'][0, 1:]
         seq = self.tokenizer.convert_ids_to_tokens(seq)
         arc_preds = o.s_arc.argmax(axis=-1)
@@ -1343,16 +1060,13 @@ class KGtoText(Generator):
 
 
 class Translation(Generator):
-    def __init__(self, model, from_lang, to_lang, old_model, **kwargs):
+    def __init__(self, model, **kwargs):
         Generator.__init__(
             self,
             model=model,
             initial_text='',
-            use_fast=True if old_model else False,
             **kwargs,
         )
-        self.from_lang = from_lang
-        self.to_lang = to_lang
 
         self.map_lang = {
             'en': 'Inggeris',
@@ -1369,16 +1083,13 @@ class Translation(Generator):
         self.all_special_ids = [0, 1, 2]
         self.old_model = old_model
 
-    def generate(self, strings: List[str], from_lang: str = None, to_lang: str = 'ms', **kwargs):
+    def generate(self, strings: List[str], to_lang: str = 'ms', **kwargs):
         """
         Generate texts from the input.
 
         Parameters
         ----------
         strings : List[str]
-        from_lang: str, optional (default=None)
-            old model required `from_lang` parameter to make it works properly,
-            while new model not required.
         to_lang: str, optional (default='ms')
             target language to translate.
         **kwargs: vector arguments pass to huggingface `generate` method.
@@ -1391,23 +1102,13 @@ class Translation(Generator):
         -------
         result: List[str]
         """
-        if self.old_model:
-            if from_lang is None:
-                raise ValueError('this model required `from_lang` parameter.')
-            if from_lang not in self.from_lang:
-                raise ValueError(f'this model does not support `{from_lang}` for `from_lang`')
 
         if to_lang not in self.to_lang:
             raise ValueError(f'this model does not support `{to_lang}` for `to_lang`')
 
-        if from_lang is None:
-            from_lang = ''
-        else:
-            from_lang = ' ' + self.map_lang[from_lang]
-
         to_lang = self.map_lang[to_lang]
 
-        prefix = f'terjemah{from_lang} ke {to_lang}: '
+        prefix = f'terjemah ke {to_lang}: '
         if self.old_model or self.is_gpt2tokenizer:
             results = super().generate(strings, prefix=prefix, **kwargs)
         else:
