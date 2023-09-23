@@ -7,4 +7,3 @@
 # For license information, see https://github.com/huseinzol05/malaya-graph/blob/master/LICENSE
 
 from . import e2e
-from . import parser

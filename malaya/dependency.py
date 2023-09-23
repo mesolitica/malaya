@@ -1,8 +1,7 @@
 from malaya.function.parse_dependency import DependencyGraph
-from malaya.supervised import huggingface as load_huggingface
-from malaya.function import describe_availability
+from malaya.supervised.huggingface import load
+from malaya.torch_model.huggingface import Dependency
 import logging
-import warnings
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +41,7 @@ label = {
     'csubj:pass': 32,
 }
 
-_huggingface_availability = {
+available_huggingface = {
     'mesolitica/finetune-dependency-t5-tiny-standard-bahasa-cased': {
         'Size (MB)': 143,
         'Arc Accuracy': 0.8506069089930276,
@@ -63,45 +62,37 @@ _huggingface_availability = {
     },
 }
 
+describe = [
+    {'Tag': 'acl', 'Description': 'clausal modifier of noun'},
+    {'Tag': 'advcl', 'Description': 'adverbial clause modifier'},
+    {'Tag': 'advmod', 'Description': 'adverbial modifier'},
+    {'Tag': 'amod', 'Description': 'adjectival modifier'},
+    {'Tag': 'appos', 'Description': 'appositional modifier'},
+    {'Tag': 'aux', 'Description': 'auxiliary'},
+    {'Tag': 'case', 'Description': 'case marking'},
+    {'Tag': 'ccomp', 'Description': 'clausal complement'},
+    {'Tag': 'compound', 'Description': 'compound'},
+    {'Tag': 'compound:plur', 'Description': 'plural compound'},
+    {'Tag': 'conj', 'Description': 'conjunct'},
+    {'Tag': 'cop', 'Description': 'cop'},
+    {'Tag': 'csubj', 'Description': 'clausal subject'},
+    {'Tag': 'dep', 'Description': 'dependent'},
+    {'Tag': 'det', 'Description': 'determiner'},
+    {'Tag': 'fixed', 'Description': 'multi-word expression'},
+    {'Tag': 'flat', 'Description': 'name'},
+    {'Tag': 'iobj', 'Description': 'indirect object'},
+    {'Tag': 'mark', 'Description': 'marker'},
+    {'Tag': 'nmod', 'Description': 'nominal modifier'},
+    {'Tag': 'nsubj', 'Description': 'nominal subject'},
+    {'Tag': 'obj', 'Description': 'direct object'},
+    {'Tag': 'parataxis', 'Description': 'parataxis'},
+    {'Tag': 'root', 'Description': 'root'},
+    {'Tag': 'xcomp', 'Description': 'open clausal complement'},
+]
 
-def describe():
-    """
-    Describe Dependency supported.
-    """
-
-    d = [
-        {'Tag': 'acl', 'Description': 'clausal modifier of noun'},
-        {'Tag': 'advcl', 'Description': 'adverbial clause modifier'},
-        {'Tag': 'advmod', 'Description': 'adverbial modifier'},
-        {'Tag': 'amod', 'Description': 'adjectival modifier'},
-        {'Tag': 'appos', 'Description': 'appositional modifier'},
-        {'Tag': 'aux', 'Description': 'auxiliary'},
-        {'Tag': 'case', 'Description': 'case marking'},
-        {'Tag': 'ccomp', 'Description': 'clausal complement'},
-        {'Tag': 'compound', 'Description': 'compound'},
-        {'Tag': 'compound:plur', 'Description': 'plural compound'},
-        {'Tag': 'conj', 'Description': 'conjunct'},
-        {'Tag': 'cop', 'Description': 'cop'},
-        {'Tag': 'csubj', 'Description': 'clausal subject'},
-        {'Tag': 'dep', 'Description': 'dependent'},
-        {'Tag': 'det', 'Description': 'determiner'},
-        {'Tag': 'fixed', 'Description': 'multi-word expression'},
-        {'Tag': 'flat', 'Description': 'name'},
-        {'Tag': 'iobj', 'Description': 'indirect object'},
-        {'Tag': 'mark', 'Description': 'marker'},
-        {'Tag': 'nmod', 'Description': 'nominal modifier'},
-        {'Tag': 'nsubj', 'Description': 'nominal subject'},
-        {'Tag': 'obj', 'Description': 'direct object'},
-        {'Tag': 'parataxis', 'Description': 'parataxis'},
-        {'Tag': 'root', 'Description': 'root'},
-        {'Tag': 'xcomp', 'Description': 'open clausal complement'},
-    ]
-
-    return describe_availability(
-        d,
-        transpose=False,
-        text='you can read more from https://universaldependencies.org/treebanks/id_pud/index.html',
-    )
+info = """
+tested on test set at https://github.com/huseinzol05/malay-dataset/tree/master/parsing/dependency
+""".strip()
 
 
 def dependency_graph(tagging, indexing):
@@ -115,16 +106,6 @@ def dependency_graph(tagging, indexing):
             % (i + 1, tagging[i][0], int(indexing[i][1]), tagging[i][1])
         )
     return DependencyGraph('\n'.join(result), top_relation_label='root')
-
-
-def available_huggingface():
-    """
-    List available huggingface models.
-    """
-
-    logger.info(
-        'tested on test set at https://github.com/huseinzol05/malay-dataset/tree/master/parsing/dependency')
-    return describe_availability(_huggingface_availability)
 
 
 def huggingface(
@@ -150,4 +131,11 @@ def huggingface(
     logger.warning(
         '`malaya.dependency.huggingface` trained on indonesian dataset and augmented dataset, not an actual malay dataset.')
 
-    return load_huggingface.load_dependency(model=model, **kwargs)
+    return load(
+        model=model,
+        class_model=Dependency,
+        available_huggingface=available_huggingface,
+        force_check=force_check,
+        path=__name__,
+        **kwargs,
+    )

@@ -1,11 +1,8 @@
 import re
 import logging
-from malaya.supervised.t2t import load_lstm_yttm
-from malaya.model.abstract import Abstract
 from malaya.text.function import PUNCTUATION, is_emoji
 from malaya.text.regex import _expressions, _money, _date
 from malaya.path import SYLLABLE_VOCAB
-from malaya.function import describe_availability
 
 logger = logging.getLogger(__name__)
 
@@ -193,59 +190,6 @@ class Tokenizer(Base):
         result: List[str]
         """
         return super().tokenize(string)
-
-
-class DeepSyllable(Abstract, Base):
-    def __init__(
-        self, input_nodes, output_nodes, sess, bpe, **kwargs,
-    ):
-        self._input_nodes = input_nodes
-        self._output_nodes = output_nodes
-        self._sess = sess
-        self._bpe = bpe
-
-    def tokenize_word(self, string: str, beam_search: bool = False, **kwargs):
-
-        batch = self._bpe.bpe.encode([string], output_type=self._bpe.mode)
-        batch = [i + [1] for i in batch]
-        if beam_search:
-            output = 'beam'
-        else:
-            output = 'greedy'
-
-        r = self._execute(
-            inputs=[batch],
-            input_labels=['Placeholder'],
-            output_labels=[output],
-        )
-        output = r[output].tolist()[0]
-        predicted = (
-            self._bpe.bpe.decode(output)[0]
-            .replace('<EOS>', '')
-            .replace('<PAD>', '')
-        )
-
-        r_ = replace_same_length(string, predicted)
-        if r_[0]:
-            predicted = r_[1]
-        return predicted.split('.')
-
-    def tokenize(self, string, beam_search: bool = False):
-        """
-        Tokenize string into multiple strings using deep learning.
-
-        Parameters
-        ----------
-        string : str
-        beam_search : bool, (optional=False)
-            If True, use beam search decoder, else use greedy decoder.
-
-        Returns
-        -------
-        result: List[str]
-        """
-
-        return super().tokenize(string, beam_search=beam_search)
 
 
 _availability = {

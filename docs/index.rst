@@ -18,7 +18,6 @@ Contents:
 
    speech-toolkit
    installation
-   mock-tensorflow
    Dataset
    running-on-windows
    Contributing
@@ -27,7 +26,6 @@ Contents:
    :maxdepth: 2
    :caption: GPU Environment
 
-   gpu-environment-tensorflow
    gpu-environment-pytorch
    different-precision-pytorch
 

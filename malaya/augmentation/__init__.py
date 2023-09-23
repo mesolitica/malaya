@@ -8,5 +8,4 @@
 
 from . import base
 from . import abstractive
-from . import encoder
 from . import rules

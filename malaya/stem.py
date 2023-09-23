@@ -5,10 +5,7 @@ from malaya.text.rules import rules_normalizer
 from malaya.dictionary import is_english
 from malaya.text.function import PUNCTUATION, case_of, is_emoji
 from malaya.text.regex import _expressions, _money, _date
-from malaya.model.abstract import Abstract
-from malaya.supervised.t2t import load_lstm_yttm
 from malaya.preprocessing import Tokenizer
-from malaya.function import describe_availability
 from malaya.path import STEMMER_VOCAB
 import logging
 
@@ -144,115 +141,6 @@ class Naive(Base):
         """
 
         return super().stem(string)
-
-
-class DeepStemmer(Abstract, Base):
-    def __init__(
-        self, input_nodes, output_nodes, sess, bpe, **kwargs,
-    ):
-        self._input_nodes = input_nodes
-        self._output_nodes = output_nodes
-        self._sess = sess
-        self._bpe = bpe
-
-    def greedy_decoder(self, string: str):
-        """
-        Stem a string, this also include lemmatization using greedy decoder.
-
-        Parameters
-        ----------
-        string : str
-
-        Returns
-        -------
-        result: str
-        """
-
-        return self.stem(string, beam_search=False)
-
-    def beam_decoder(self, string: str):
-        """
-        Stem a string, this also include lemmatization using beam decoder.
-
-        Parameters
-        ----------
-        string : str
-
-        Returns
-        -------
-        result: str
-        """
-
-        return self.stem(string, beam_search=True)
-
-    def predict(self, string: str, beam_search: bool = False):
-        """
-        Stem a string, this also include lemmatization.
-
-        Parameters
-        ----------
-        string : str
-        beam_search : bool, (optional=False)
-            If True, use beam search decoder, else use greedy decoder.
-
-        Returns
-        -------
-        result: str
-        """
-
-        return self.stem(string=string, beam_search=beam_search)
-
-    def stem_word(self, word, beam_search=False, **kwargs):
-        """
-        Stem a word, this also include lemmatization.
-
-        Parameters
-        ----------
-        string : str
-
-        Returns
-        -------
-        result: str
-        """
-
-        batch = self._bpe.bpe.encode([word], output_type=self._bpe.mode)
-        batch = [i + [1] for i in batch]
-
-        if beam_search:
-            output = 'beam'
-        else:
-            output = 'greedy'
-
-        r = self._execute(
-            inputs=[batch],
-            input_labels=['Placeholder'],
-            output_labels=[output],
-        )
-        output = r[output].tolist()[0]
-        predicted = (
-            self._bpe.bpe.decode(output)[0]
-            .replace('<EOS>', '')
-            .replace('<PAD>', '')
-        )
-
-        return predicted
-
-    def stem(self, string: str, beam_search: bool = False):
-        """
-        Stem a string, this also include lemmatization.
-
-        Parameters
-        ----------
-        string : str
-        beam_search : bool, (optional=False)
-            If True, use beam search decoder, else use greedy decoder.
-
-        Returns
-        -------
-        result: str
-        """
-
-        return super().stem(string, beam_search=beam_search)
 
 
 _availability = {

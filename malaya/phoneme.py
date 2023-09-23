@@ -1,4 +1,3 @@
-from malaya.supervised import t2t
 from malaya.supervised.settings import phoneme_left, phoneme_right
 from malaya.supervised.settings import phoneme_ipa_left, phoneme_ipa_right
 from malaya.text.function import phoneme_textcleaning

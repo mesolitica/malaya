@@ -23,12 +23,19 @@ from malaya.text.function import (
     remove_repeat_fullstop,
     remove_newlines,
     remove_html_tags as f_remove_html_tags,
+    pad_sentence_batch,
     STOPWORDS,
 )
 from malaya_boilerplate.converter import ctranslate2_translator
 from malaya.function.parse_dependency import DependencyGraph
 from malaya.text.rouge import postprocess_summary, find_kata_encik
-from malaya.torch_model.t5 import T5ForSequenceClassification, T5Tagging, T5Diaparser
+from malaya.torch_model.t5 import (
+    T5ForSequenceClassification,
+    T5Tagging,
+    T5Diaparser,
+    T5Constituency,
+)
+from malaya.torch_model.constituency_modules import BatchIndices
 from malaya_boilerplate.torch_utils import to_numpy
 from malaya.function.activation import softmax
 from malaya.parser.conll import CoNLL
@@ -74,7 +81,7 @@ class Generator(Base):
     def __init__(
         self,
         model,
-        initial_text,
+        initial_text='',
         base_model=AutoModelForSeq2SeqLM,
         use_ctranslate2=False,
         use_fast=True,
@@ -136,7 +143,6 @@ class Generator(Base):
                 for h in o.hypotheses:
                     outputs.append(self.tokenizer.convert_tokens_to_ids(h))
         else:
-            cuda = next(self.model.parameters()).is_cuda
             input_ids = [{'input_ids': self.tokenizer.encode(
                 s, return_tensors='pt')[0]} for s in combined]
             padded = self.tokenizer.pad(input_ids, padding='longest', return_tensors='pt')
@@ -223,7 +229,6 @@ class Prefix(Base):
         -------
         result: List[str]
         """
-        cuda = next(self.model.parameters()).is_cuda
         padded = {'input_ids': self.tokenizer.encode(string, return_tensors='pt')}
         for k in padded.keys():
             padded[k] = padded[k].to(self.model.device)
@@ -330,8 +335,6 @@ class Similarity(Base):
     def forward(self, strings_left: List[str], strings_right: List[str]):
         if len(strings_left) != len(strings_right):
             raise ValueError('len(strings_left) != len(strings_right)')
-
-        cuda = next(self.model.parameters()).is_cuda
 
         strings = []
         for i in range(len(strings_left)):
@@ -444,7 +447,6 @@ class ExtractiveQA(Generator):
         Generator.__init__(
             self,
             model=model,
-            initial_text='',
             **kwargs,
         )
         self.flan_mode = 'flan' in model
@@ -542,7 +544,6 @@ class Transformer(Base):
         self.model = AutoModelForMaskedLM.from_pretrained(model, **kwargs)
 
     def forward(self, strings):
-        cuda = next(self.model.parameters()).is_cuda
         input_ids = [{'input_ids': self.tokenizer.encode(
             s, return_tensors='pt')[0]} for s in strings]
         padded = self.tokenizer.pad(input_ids, padding='longest')
@@ -675,7 +676,6 @@ class IsiPentingGenerator(Generator):
         Generator.__init__(
             self,
             model=model,
-            initial_text='',
             **kwargs,
         )
         self._mode = [
@@ -736,11 +736,11 @@ class IsiPentingGenerator(Generator):
 
 
 class Tatabahasa(Generator):
-    def __init__(self, model, initial_text, **kwargs):
+    def __init__(self, model, **kwargs):
         Generator.__init__(
             self,
             model=model,
-            initial_text=initial_text,
+            initial_text='kesalahan tatabahasa:',
             base_model=T5Tagging,
             **kwargs,
         )
@@ -831,13 +831,109 @@ class Keyword(Generator):
         return outputs
 
 
+class Constituency(Base):
+    def __init__(self, model, **kwargs):
+        kwargs.pop('initial_text', None)
+        self.tokenizer = AutoTokenizer.from_pretrained(model, **kwargs)
+        self.model = T5Constituency.from_pretrained(model, **kwargs)
+        self.START = '<s>'
+        self.STOP = '</s>'
+        self.TAG_UNK = 'UNK'
+
+    def forward(self, string):
+        all_input_ids = []
+        all_word_start_mask = []
+        all_word_end_mask = []
+
+        string = [(None, w) for w in string.split()]
+        sentences = [string]
+
+        for snum, sentence in enumerate(sentences):
+
+            tokens = []
+            word_start_mask = []
+            word_end_mask = []
+            tokens.append(self.START)
+            word_start_mask.append(1)
+            word_end_mask.append(1)
+
+            cleaned_words = []
+            for _, word in sentence:
+                cleaned_words.append(word)
+
+            for word in cleaned_words:
+                word_tokens = self.tokenizer.tokenize(word)
+                for _ in range(len(word_tokens)):
+                    word_start_mask.append(0)
+                    word_end_mask.append(0)
+                word_start_mask[len(tokens)] = 1
+                word_end_mask[-1] = 1
+                tokens.extend(word_tokens)
+            tokens.append(self.STOP)
+            word_start_mask.append(1)
+            word_end_mask.append(1)
+
+            input_ids = self.tokenizer.convert_tokens_to_ids(tokens)
+            all_input_ids.append(input_ids)
+            all_word_start_mask.append(word_start_mask)
+            all_word_end_mask.append(word_end_mask)
+
+        padded = self.tokenizer.pad({
+            'input_ids': all_input_ids,
+        }, return_tensors='pt')
+        all_word_start_mask = torch.from_numpy(
+            np.array(pad_sentence_batch(all_word_start_mask, 0)[0]))
+        all_word_end_mask = torch.from_numpy(np.array(pad_sentence_batch(all_word_end_mask, 0)[0]))
+
+        padded['sentences'] = sentences
+        padded['all_word_start_mask'] = all_word_start_mask
+        padded['all_word_end_mask'] = all_word_end_mask
+
+        packed_len = sum([(len(sentence) + 2) for sentence in sentences])
+        i = 0
+        tag_idxs = np.zeros(packed_len, dtype=int)
+        batch_idxs = np.zeros(packed_len, dtype=int)
+        for snum, sentence in enumerate(sentences):
+            for (tag, word) in [(self.START, self.START)] + sentence + [(self.STOP, self.STOP)]:
+                tag_idxs[i] = 0
+                batch_idxs[i] = snum
+                i += 1
+
+        batch_idxs = BatchIndices(batch_idxs)
+        padded['batch_idxs'] = batch_idxs
+        tag_idxs = torch.from_numpy(tag_idxs)
+        padded['tag_idxs'] = tag_idxs
+
+        for k in padded.keys():
+            if isinstance(padded[k], torch.Tensor):
+                padded[k] = padded[k].to(self.model.device)
+
+        padded['batch_idxs'].batch_idxs_torch = padded['batch_idxs'].batch_idxs_torch.to(
+            self.model.device)
+
+        return self.model(**padded)[0][0]
+
+    def predict(self, string):
+        """
+        Parse a string into malaya.function.constituency.trees_newline.InternalParseNode.
+
+        Parameters
+        ----------
+        string : str
+
+        Returns
+        -------
+        result: malaya.function.constituency.trees_newline.InternalParseNode object
+        """
+        return self.forward(string=string)
+
+
 class Dependency(Base):
     def __init__(self, model, **kwargs):
         self.tokenizer = AutoTokenizer.from_pretrained(model, **kwargs)
         self.model = T5Diaparser.from_pretrained(model, **kwargs)
 
     def forward(self, string):
-        cuda = next(self.model.parameters()).is_cuda
 
         texts, indices = [1], [0]
         text = string.split()
@@ -1118,3 +1214,51 @@ class Translation(Generator):
                 spaces_between_special_tokens=False,
             )
         return results
+
+
+class Classification(Base):
+    def __init__(self, model, **kwargs):
+        self.tokenizer = AutoTokenizer.from_pretrained(model, **kwargs)
+        self.model = T5ForSequenceClassification.from_pretrained(model, **kwargs)
+
+    def forward(self, strings):
+        padded = self.tokenizer(strings, padding='longest', return_tensors='pt')
+        for k in padded.keys():
+            padded[k] = padded[k].to(self.model.device)
+
+        return to_numpy(self.model(**padded)[0])
+
+    def predict(self, strings):
+        """
+        classify list of strings.
+
+        Parameters
+        ----------
+        strings: List[str]
+
+        Returns
+        -------
+        result: List[str]
+        """
+        results = self.forward(strings=strings)
+        argmax = np.argmax(results, axis=1)
+        return [self.model.config.vocab[i] for i in argmax]
+
+    def predict_proba(self, strings):
+        """
+        classify list of strings and return probability.
+
+        Parameters
+        ----------
+        strings : List[str]
+
+        Returns
+        -------
+        result: List[dict[str, float]]
+        """
+        results = self.forward(strings=strings)
+        results = softmax(results, axis=1)
+        returns = []
+        for r in results:
+            returns.append({self.model.config.vocab[no]: float(r_) for no, r_ in enumerate(r)})
+        return returns

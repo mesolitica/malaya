@@ -1,4 +1,3 @@
-from malaya.function import describe_availability
 from malaya.supervised import huggingface as load_huggingface
 from typing import List
 import logging

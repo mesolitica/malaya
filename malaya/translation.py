@@ -1,13 +1,9 @@
-from malaya.function import describe_availability
 from malaya.supervised.huggingface import load
 from malaya.torch_model.huggingface import Translation
 from malaya_boilerplate.huggingface import download_files
 from malaya.model.alignment import Eflomal
 from typing import Callable, List
 import json
-import logging
-
-logger = logging.getLogger(__name__)
 
 nllb_metrics = {
     'en-ms': """
@@ -95,7 +91,7 @@ chrF2++ = 60.27
 """
 }
 
-_eflomal_availability = {
+available_eflomal = {
     'mesolitica/eflomal-ms-en': {
         'Size (MB)': 240,
     },
@@ -104,7 +100,7 @@ _eflomal_availability = {
     },
 }
 
-_word_availability = {
+available_word = {
     'mesolitica/en-ms': {
         'Size (MB)': 1,
         'total words': 1,
@@ -115,7 +111,7 @@ _word_availability = {
     }
 }
 
-_huggingface_availability = {
+available_huggingface = {
     'mesolitica/translation-t5-tiny-standard-bahasa-cased': {
         'Size (MB)': 139,
         'Suggested length': 1536,
@@ -144,10 +140,9 @@ _huggingface_availability = {
         'from lang': ['en', 'ms', 'ind', 'jav', 'bjn', 'manglish', 'pasar ms'],
         'to lang': ['en', 'ms'],
     },
-    'mesolitica/translation-nanot5-tiny-code-cased': {
-        'Size (MB)': 358,
+    'mesolitica/translation-nanot5-tiny-malaysian-cased': {
+        'Size (MB)': 205,
         'Suggested length': 2048,
-        'from lang': ['en', 'ms'],
         'en-ms chrF2++': 67.62,
         'ms-en chrF2++': 64.41,
         'ind-ms chrF2++': 59.25,
@@ -159,10 +154,9 @@ _huggingface_availability = {
         'from lang': ['en', 'ms', 'ind', 'jav', 'bjn', 'manglish', 'pasar ms', 'mandarin', 'pasar mandarin'],
         'to lang': ['en', 'ms'],
     },
-    'mesolitica/translation-nanot5-small-code-cased': {
+    'mesolitica/translation-nanot5-small-malaysian-cased': {
         'Size (MB)': 358,
         'Suggested length': 2048,
-        'from lang': ['en', 'ms'],
         'en-ms chrF2++': 67.62,
         'ms-en chrF2++': 64.41,
         'ind-ms chrF2++': 59.25,
@@ -174,9 +168,9 @@ _huggingface_availability = {
         'from lang': ['en', 'ms', 'ind', 'jav', 'bjn', 'manglish', 'pasar ms', 'mandarin', 'pasar mandarin'],
         'to lang': ['en', 'ms'],
     },
-    'mesolitica/translation-nanot5-base-code-cased': {
-        'Size (MB)': 892,
-        'Suggested length': 1536,
+    'mesolitica/translation-nanot5-base-malaysian-cased': {
+        'Size (MB)': 990,
+        'Suggested length': 2048,
         'en-ms chrF2++': 67.62,
         'ms-en chrF2++': 64.41,
         'ind-ms chrF2++': 59.25,
@@ -185,29 +179,18 @@ _huggingface_availability = {
         'pasar ms-en chrF2++': 62.06,
         'manglish-ms chrF2++': 54.40,
         'manglish-en chrF2++': 54.14,
-        'from lang': ['en', 'ms', 'ind', 'jav', 'bjn', 'manglish', 'pasar ms'],
+        'from lang': ['en', 'ms', 'ind', 'jav', 'bjn', 'manglish', 'pasar ms', 'mandarin', 'pasar mandarin'],
         'to lang': ['en', 'ms'],
     },
 
 }
 
-
-def available_word():
-    return describe_availability(_word_availability)
-
-
-def available_huggingface():
-    """
-    List available HuggingFace models.
-    """
-
-    logger.info(
-        'tested on FLORES200 pair `dev` set, https://github.com/huseinzol05/malay-dataset/tree/master/translation/flores200-eval')
-    logger.info(
-        'tested on noisy test set, https://github.com/huseinzol05/malay-dataset/tree/master/translation/noisy-eval')
-    logger.info('check out NLLB 200 metrics from `malaya.translation.nllb_metrics`.')
-    logger.info('check out Google Translate metrics from `malaya.translation.google_translate_metrics`.')
-    return describe_availability(_huggingface_availability)
+info = """
+1. tested on FLORES200 pair `dev` set, https://github.com/huseinzol05/malay-dataset/tree/master/translation/flores200-eval
+2. tested on noisy test set, https://github.com/huseinzol05/malay-dataset/tree/master/translation/noisy-eval
+3. check out NLLB 200 metrics from `malaya.translation.nllb_metrics`.
+4. check out Google Translate metrics from `malaya.translation.google_translate_metrics`.
+""".strip()
 
 
 def eflomal(
@@ -221,7 +204,7 @@ def eflomal(
     Parameters
     ----------
     model, optional (default='mesolitica/eflomal-ms-en')
-        Check available models at `malaya.translation.available_eflomal()`.
+        Check available models at `malaya.translation.available_eflomal`.
     preprocessing_func: Callable, optional (default=None)
         preprocessing function to call during loading prior file.
         Using `malaya.text.function.replace_punct` able to reduce ~30% of memory usage.
@@ -231,9 +214,9 @@ def eflomal(
     result: malaya.model.alignment.Eflomal
     """
 
-    if model not in _eflomal_availability:
+    if model not in available_eflomal:
         raise ValueError(
-            'model not supported, please check supported models from `malaya.translation.available_eflomal()`.'
+            'model not supported, please check supported models from `malaya.translation.available_eflomal`.'
         )
 
     s3_file = {'model': 'model.priors'}
@@ -249,7 +232,7 @@ def word(model: str = 'mesolitica/en-ms', **kwargs):
     Parameters
     ----------
     model, optional (default='mesolitica/en-ms')
-        Check available models at `malaya.translation.available_word()`.
+        Check available models at `malaya.translation.available_word`.
 
     Returns
     -------
@@ -257,7 +240,7 @@ def word(model: str = 'mesolitica/en-ms', **kwargs):
     """
     if model not in _word_availability:
         raise ValueError(
-            'model not supported, please check supported models from `malaya.translation.available_word()`.'
+            'model not supported, please check supported models from `malaya.translation.available_word`.'
         )
 
     s3_file = {'model': 'dictionary.json'}
@@ -279,7 +262,7 @@ def huggingface(
     Parameters
     ----------
     model: str, optional (default='mesolitica/translation-nanot5-small-code-cased')
-        Check available models at `malaya.translation.available_huggingface()`.
+        Check available models at `malaya.translation.available_huggingface`.
     force_check: bool, optional (default=True)
         Force check model one of malaya model.
         Set to False if you have your own huggingface model.
@@ -291,7 +274,7 @@ def huggingface(
     return load(
         model=model,
         class_model=Translation,
-        availability=_huggingface_availability,
+        available_huggingface=available_huggingface,
         force_check=force_check,
         path=__name__,
         **kwargs,

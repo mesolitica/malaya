@@ -5,7 +5,7 @@ from malaya.dictionary import is_english, is_malay
 from malaya.text.tatabahasa import stopword_tatabahasa
 from malaya.text.rules import rules_normalizer
 from malaya.path import PATH_NGRAM, S3_PATH_NGRAM
-from malaya.function import check_file, describe_availability
+from malaya.function import check_file
 from typing import List
 
 """
@@ -141,7 +141,7 @@ class JamSpell:
         return self._corrector.GetCandidates(string, index)
 
 
-_availability = {
+available_model = {
     'wiki+news': {
         'Size (MB)': 337,
     },
@@ -152,14 +152,6 @@ _availability = {
         'Size (MB)': 215,
     }
 }
-
-
-def available_model():
-    """
-    List available jamspell models.
-    """
-
-    return describe_availability(_availability)
 
 
 def load(model: str = 'wiki', **kwargs):
@@ -190,7 +182,7 @@ def load(model: str = 'wiki', **kwargs):
     model = model.lower()
     if model not in _availability:
         raise ValueError(
-            'model not supported, please check supported models from `malaya.spelling_correction.jamspell.available_model()`.'
+            'model not supported, please check supported models from `malaya.spelling_correction.jamspell.available_model`.'
         )
 
     path = check_file(PATH_NGRAM['jamspell'][model], S3_PATH_NGRAM['jamspell'][model], **kwargs)

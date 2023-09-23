@@ -1,20 +1,6 @@
-import pickle
-from malaya.function import (
-    check_file,
-    load_graph,
-    generate_session,
-    nodes_session,
-)
 from malaya_boilerplate.huggingface import download_files
-from malaya.function import describe_availability
 from malaya.model.ml import LanguageDetection
-from malaya.model.tf import DeepLang
 from malaya.model.rules import LanguageDict
-from malaya.text.bpe import YTTMEncoder
-from malaya.path import (
-    LANGUAGE_DETECTION_BOW,
-    LANGUAGE_DETECTION_VOCAB,
-)
 import logging
 
 logger = logging.getLogger(__name__)
@@ -231,60 +217,6 @@ def fasttext(
         raise Exception(f'failed to load fasttext model, please try clear the cache and try again')
 
     return LanguageDetection(model_fasttext, _fasttext_availability[model]['Label'])
-
-
-def deep_model(quantized: bool = False, **kwargs):
-    """
-    Load deep learning language detection model.
-    Original size is 51.2MB, Quantized size 12.8MB.
-
-    Parameters
-    ----------
-    quantized : bool, optional (default=False)
-        if True, will load 8-bit quantized model.
-        Quantized model not necessary faster, totally depends on the machine.
-
-    Returns
-    -------
-    result : malaya.model.tf.DeepLang class
-    """
-
-    path = check_file(
-        file='lang-32',
-        module='language-detection',
-        keys={
-            'model': 'model.pb',
-            'vector': LANGUAGE_DETECTION_BOW,
-            'bpe': LANGUAGE_DETECTION_VOCAB,
-        },
-        quantized=quantized,
-        **kwargs,
-    )
-    g = load_graph(path['model'], **kwargs)
-    bpe = YTTMEncoder(vocab_file=path['bpe'])
-
-    with open(path['vector'], 'rb') as fopen:
-        vector = pickle.load(fopen)
-
-    inputs = [
-        'X_Placeholder/shape',
-        'X_Placeholder/values',
-        'X_Placeholder/indices',
-        'W_Placeholder/shape',
-        'W_Placeholder/values',
-        'W_Placeholder/indices',
-    ]
-    outputs = ['logits']
-    input_nodes, output_nodes = nodes_session(g, inputs, outputs)
-
-    return DeepLang(
-        input_nodes=input_nodes,
-        output_nodes=output_nodes,
-        sess=generate_session(graph=g, **kwargs),
-        vectorizer=vector,
-        bpe=bpe,
-        label=lang_labels_v1,
-    )
 
 
 def substring_rules(model, **kwargs):

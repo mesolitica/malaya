@@ -1,6 +1,5 @@
 from malaya.supervised import classification
 from malaya.path import PATH_SENTIMENT, S3_PATH_SENTIMENT
-from malaya.function import describe_availability
 import logging
 
 logger = logging.getLogger(__name__)

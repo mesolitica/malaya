@@ -29,6 +29,7 @@ import torch
 from transformers import BertForMaskedLM, AlbertForMaskedLM, RobertaForMaskedLM
 from transformers.modeling_outputs import MaskedLMOutput
 from torch.nn import CrossEntropyLoss
+from transformers import AutoTokenizer
 from malaya_boilerplate.torch_utils import to_tensor_cuda, to_numpy
 
 
@@ -86,14 +87,16 @@ class BertForMaskedLMOptimized(BertForMaskedLM):
 
         sequence_output = outputs[0]
         if select_positions is not None:
-            sequence_output = sequence_output[[[i] for i in range(sequence_output.shape[0])], select_positions, :]
+            sequence_output = sequence_output[[[i] for i in range(
+                sequence_output.shape[0])], select_positions, :]
 
         prediction_scores = self.cls(sequence_output)
 
         masked_lm_loss = None
         if labels is not None:
             loss_fct = CrossEntropyLoss()  # -100 index = padding token
-            masked_lm_loss = loss_fct(prediction_scores.view(-1, self.config.vocab_size), labels.view(-1))
+            masked_lm_loss = loss_fct(
+                prediction_scores.view(-1, self.config.vocab_size), labels.view(-1))
 
         if not return_dict:
             output = (prediction_scores,) + outputs[2:]
@@ -156,14 +159,16 @@ class AlbertForMaskedLMOptimized(AlbertForMaskedLM):
         sequence_outputs = outputs[0]
 
         if select_positions is not None:
-            sequence_outputs = sequence_outputs[[[i] for i in range(sequence_outputs.shape[0])], select_positions, :]
+            sequence_outputs = sequence_outputs[[[i] for i in range(
+                sequence_outputs.shape[0])], select_positions, :]
 
         prediction_scores = self.predictions(sequence_outputs)
 
         masked_lm_loss = None
         if labels is not None:
             loss_fct = CrossEntropyLoss()
-            masked_lm_loss = loss_fct(prediction_scores.view(-1, self.config.vocab_size), labels.view(-1))
+            masked_lm_loss = loss_fct(
+                prediction_scores.view(-1, self.config.vocab_size), labels.view(-1))
 
         if not return_dict:
             output = (prediction_scores,) + outputs[2:]
@@ -231,14 +236,16 @@ class RobertaForMaskedLMOptimized(RobertaForMaskedLM):
 
         sequence_output = outputs[0]
         if select_positions is not None:
-            sequence_output = sequence_output[[[i] for i in range(sequence_output.shape[0])], select_positions, :]
+            sequence_output = sequence_output[[[i] for i in range(
+                sequence_output.shape[0])], select_positions, :]
 
         prediction_scores = self.lm_head(sequence_output)
 
         masked_lm_loss = None
         if labels is not None:
             loss_fct = CrossEntropyLoss()  # -100 index = padding token
-            masked_lm_loss = loss_fct(prediction_scores.view(-1, self.config.vocab_size), labels.view(-1))
+            masked_lm_loss = loss_fct(
+                prediction_scores.view(-1, self.config.vocab_size), labels.view(-1))
 
         if not return_dict:
             output = (prediction_scores,) + outputs[2:]
@@ -253,12 +260,22 @@ class RobertaForMaskedLMOptimized(RobertaForMaskedLM):
 
 
 class MLMScorer:
-    def __init__(self, model, tokenizer):
-        self._model = model
-        self._tokenizer = tokenizer
+    def __init__(self, model):
+        splitted = model.lower().replace('/', '-').split('-')
+        if 'bert' in splitted:
+            model_class = BertForMaskedLMOptimized
+        elif 'albert' in splitted:
+            model_class = AlbertForMaskedLMOptimized
+        elif 'roberta' in splitted:
+            model_class = RobertaForMaskedLMOptimized
+        else:
+            raise ValueError(
+                f'cannot determined model class for {model}, only supported BERT, ALBERT and RoBERTa for now.')
+        self.tokenizer = AutoTokenizer.from_pretrained(model, use_fast=False, **kwargs)
+        self.model = model_class.from_pretrained(model, **kwargs)
 
     def cuda(self):
-        return self._model.cuda()
+        return self.model.cuda()
 
     def _ids_to_masked(self, token_ids):
         token_ids_masked_list = []
@@ -305,7 +322,6 @@ class MLMScorer:
         -------
         result: float
         """
-        cuda = next(self._model.parameters()).is_cuda
         corpus = [string]
         dataset = self.corpus_to_dataset(corpus)
         sent_idxs = np.stack([d[0] for d in dataset], 0)
@@ -321,16 +337,19 @@ class MLMScorer:
             masked_positions = torch.tensor(masked_positions).reshape(-1, 1)
             token_masked_ids = torch.tensor(token_masked_ids).reshape(-1)
 
-            token_ids = to_tensor_cuda(token_ids, cuda)
-            valid_length = to_tensor_cuda(valid_length, cuda)
-            masked_positions = to_tensor_cuda(masked_positions, cuda)
-            token_masked_ids = to_tensor_cuda(token_masked_ids, cuda)
+            token_ids = token_ids.to(self.model.device)
+            valid_length = valid_length.to(self.model.device)
+            masked_positions = masked_positions.to(self.model.device)
+            token_masked_ids = token_masked_ids.to(self.model.device)
 
             split_size = token_ids.shape[0]
             alen = torch.arange(token_ids.shape[1], dtype=torch.long)
-            alen = to_tensor_cuda(alen, cuda)
+            alen = alen.to(self.model.device)
             mask = alen < valid_length[:, None]
-            out = self._model(input_ids=token_ids, attention_mask=mask, select_positions=masked_positions)
+            out = self._model(
+                input_ids=token_ids,
+                attention_mask=mask,
+                select_positions=masked_positions)
             out = out[0].squeeze()
             if len(out.shape) == 1:
                 out = out.unsqueeze(0)

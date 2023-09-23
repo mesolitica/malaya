@@ -1,32 +1,9 @@
-from malaya.supervised import transformer as load_transformer
-from malaya.model.tf import Tatabahasa
 from malaya.supervised import huggingface as load_huggingface
-from malaya.function import describe_availability
 import logging
 import warnings
 
 logger = logging.getLogger(__name__)
 
-_transformer_availability = {
-    'small': {
-        'Size (MB)': 397,
-        'Quantized Size (MB)': 100,
-        'exactly-match': 0.7891067538,
-        'f1': 0.96789741,
-        'exactly-match-tags': 0.88366013,
-        'f1-tags': 0.983178559,
-        'Suggested length': 256,
-    },
-    'base': {
-        'Size (MB)': 875,
-        'Quantized Size (MB)': 220,
-        'exactly-match': 0.880656788,
-        'f1': 0.978962508,
-        'exactly-match-tags': 0.9144973968,
-        'f1-tags': 0.9839226957,
-        'Suggested length': 256,
-    },
-}
 
 _huggingface_availability = {
     'mesolitica/finetune-tatabahasa-t5-tiny-standard-bahasa-cased': {
@@ -160,18 +137,6 @@ def _describe():
         'tested on 5k generated dataset at https://f000.backblazeb2.com/file/malay-dataset/tatabahasa/test-set-tatabahasa.pkl')
 
 
-def available_transformer():
-    """
-    List available transformer tagging models.
-    """
-    warnings.warn(
-        '`malaya.tatabahasa.available_transformer` is deprecated, use `malaya.tatabahasa.available_huggingface` instead',
-        DeprecationWarning)
-    _describe()
-
-    return describe_availability(_transformer_availability)
-
-
 def available_huggingface():
     """
     List available huggingface models.
@@ -179,42 +144,6 @@ def available_huggingface():
     _describe()
 
     return describe_availability(_huggingface_availability)
-
-
-def transformer(model: str = 'base', quantized: bool = False, **kwargs):
-    """
-    Load Malaya transformer encoder-decoder + tagging model to correct a `kesalahan tatabahasa` text.
-
-    Parameters
-    ----------
-    model: str, optional (default='base')
-        Check available models at `malaya.tatabahasa.available_transformer()`.
-    quantized: bool, optional (default=False)
-        if True, will load 8-bit quantized model.
-        Quantized model not necessary faster, totally depends on the machine.
-
-    Returns
-    -------
-    result: malaya.model.tf.Tatabahasa class
-    """
-
-    warnings.warn(
-        '`malaya.tatabahasa.transformer` is deprecated, use `malaya.tatabahasa.huggingface` instead',
-        DeprecationWarning)
-
-    model = model.lower()
-    if model not in _transformer_availability:
-        raise ValueError(
-            'model not supported, please check supported models from `malaya.tatabahasa.available_transformer()`.'
-        )
-
-    return load_transformer.load_tatabahasa(
-        module='kesalahan-tatabahasa',
-        model=model,
-        model_class=Tatabahasa,
-        quantized=quantized,
-        **kwargs
-    )
 
 
 def huggingface(
@@ -241,5 +170,3 @@ def huggingface(
         raise ValueError(
             'model not supported, please check supported models from `malaya.tatabahasa.available_huggingface()`.'
         )
-    return load_huggingface.load_tatabahasa(
-        model=model, initial_text='kesalahan tatabahasa:', **kwargs)

@@ -12,7 +12,12 @@ from transformers import (
 )
 from transformers.file_utils import ModelOutput
 from malaya.torch_model.dependency_modules import MLP, Biaffine
-from malaya.function import chart_helper, trees_newline as trees
+from malaya.torch_model.constituency_modules import (
+    Encoder,
+    LayerNormalization,
+    MultiLevelEmbedding
+)
+from malaya.function.constituency import chart_helper, trees_newline as trees
 from typing import List, Optional, Tuple, Union
 from torch.nn import BCEWithLogitsLoss, CrossEntropyLoss, MSELoss
 from torch import nn, Tensor
@@ -392,6 +397,28 @@ class T5ForTokenClassification(T5EncoderModel):
 
 
 class T5Constituency(T5EncoderModel):
+    emb_types = []
+
+    partitioned = True
+    num_layers_position_only = 0
+    num_layers = 8
+    d_model = 1024
+    num_heads = 8
+    d_kv = 64
+    d_ff = 2048
+    d_label_hidden = 250
+    d_tag_hidden = 250
+    attention_dropout = 0.2
+    embedding_dropout = 0.0
+    relu_dropout = 0.1
+    residual_dropout = 0.2
+    timing_dropout = 0.0
+    morpho_emb_dropout = 0.2
+    sentence_max_len = 1024
+
+    d_content = (d_model // 2) if partitioned else d_model
+    d_positional = (d_model // 2) if partitioned else None
+
     def __init__(self, config: T5Config, **kwargs):
         super().__init__(config, **kwargs)
 
@@ -399,11 +426,52 @@ class T5Constituency(T5EncoderModel):
         self.label_vocab_rev = {v: k for k, v in self.label_vocab.items()}
         self.tag_vocab = self.config.tag_vocab
         self.tag_vocab_rev = {v: k for k, v in self.tag_vocab.items()}
-        classifier_dropout = (
-            self.config.classifier_dropout if self.config.classifier_dropout is not None else self.config.hidden_dropout_prob)
-        self.dropout = nn.Dropout(classifier_dropout)
-        self.f_label = nn.Linear(self.config.hidden_size, self.config.num_labels - 1)
-        self.f_tag = nn.Linear(self.config.hidden_size, self.config.num_tags)
+
+        num_embeddings_map = {
+            'tags': len(self.tag_vocab),
+        }
+        emb_dropouts_map = {
+            'tags': 0.2,
+        }
+
+        self.f_label = nn.Sequential(
+            nn.Linear(self.d_model, self.d_label_hidden),
+            LayerNormalization(self.d_label_hidden),
+            nn.ReLU(),
+            nn.Linear(self.d_label_hidden, self.config.num_labels - 1),
+        )
+        self.f_tag = nn.Sequential(
+            nn.Linear(self.d_model, self.d_tag_hidden),
+            LayerNormalization(self.d_tag_hidden),
+            nn.ReLU(),
+            nn.Linear(self.d_tag_hidden, self.config.num_tags),
+        )
+
+        self.project_bert = nn.Linear(self.config.d_model, self.d_content, bias=False)
+
+        self.embedding = MultiLevelEmbedding(
+            [num_embeddings_map[emb_type] for emb_type in self.emb_types],
+            self.d_model,
+            d_positional=self.d_positional,
+            dropout=self.embedding_dropout,
+            timing_dropout=self.timing_dropout,
+            emb_dropouts_list=[emb_dropouts_map[emb_type] for emb_type in self.emb_types],
+            extra_content_dropout=self.morpho_emb_dropout,
+            max_len=self.sentence_max_len,
+        )
+
+        self.encoder_encoder = Encoder(
+            self.embedding,
+            num_layers=self.num_layers,
+            num_heads=self.num_heads,
+            d_kv=self.d_kv,
+            d_ff=self.d_ff,
+            d_positional=self.d_positional,
+            num_layers_position_only=self.num_layers_position_only,
+            relu_dropout=self.relu_dropout,
+            residual_dropout=self.residual_dropout,
+            attention_dropout=self.attention_dropout,
+        )
 
     def forward(
         self,
@@ -416,6 +484,7 @@ class T5Constituency(T5EncoderModel):
         return_dict=None,
         sentences=None,
         batch_idxs=None,
+        tag_idxs=None,
         gold_tag_idxs=None,
         all_word_start_mask=None,
         all_word_end_mask=None,
@@ -433,12 +502,27 @@ class T5Constituency(T5EncoderModel):
             output_hidden_states=output_hidden_states,
             return_dict=return_dict
         )
-        features = outputs.last_hidden_state * attention_mask.unsqueeze(-1).float()
-        fencepost_annotations_start = features.masked_select(
-            all_word_start_mask.to(torch.bool).unsqueeze(-1)).reshape(-1, features.shape[-1])
-        fencepost_annotations_end = features.masked_select(all_word_end_mask.to(
+        features = outputs.last_hidden_state
+        features_packed = features.masked_select(all_word_end_mask.to(
             torch.bool).unsqueeze(-1)).reshape(-1, features.shape[-1])
-        tag_annotations = fencepost_annotations_end
+        extra_content_annotations = self.project_bert(features_packed)
+
+        annotations, _ = self.encoder_encoder(
+            [], batch_idxs, extra_content_annotations=extra_content_annotations)
+
+        if self.partitioned:
+            annotations = torch.cat([
+                annotations[:, 0::2],
+                annotations[:, 1::2],
+            ], 1)
+        tag_annotations = annotations
+        fencepost_annotations = torch.cat([
+            annotations[:-1, :self.d_model//2],
+            annotations[1:, self.d_model//2:],
+        ], 1)
+        fencepost_annotations_start = fencepost_annotations
+        fencepost_annotations_end = fencepost_annotations
+
         tag_logits = self.f_tag(tag_annotations)
 
         fp_startpoints = batch_idxs.boundaries_np[:-1]
@@ -469,9 +553,10 @@ class T5Constituency(T5EncoderModel):
                     plabels.append(p_label)
                     glabels.append(g_label)
 
-            cells_i = torch.from_numpy(np.concatenate(pis + gis))
-            cells_j = torch.from_numpy(np.concatenate(pjs + gjs))
-            cells_label = torch.from_numpy(np.concatenate(plabels + glabels))
+            cells_i = torch.from_numpy(np.concatenate(pis + gis)).to(self.device)
+            cells_j = torch.from_numpy(np.concatenate(pjs + gjs)).to(self.device)
+            cells_label = torch.from_numpy(np.concatenate(plabels + glabels)).to(self.device)
+
             cells_label_scores = self.f_label(
                 fencepost_annotations_end[cells_j] -
                 fencepost_annotations_start[cells_i])

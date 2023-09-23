@@ -10,7 +10,6 @@ from malaya.text.ngram import ngrams as generate_ngrams
 from typing import List, Tuple
 
 from . import isi_penting
-from . import prefix
 
 
 def ngrams(

@@ -1,7 +1,5 @@
-from malaya.function import describe_availability
 from malaya.supervised import huggingface as load_huggingface
 import logging
-import warnings
 
 logger = logging.getLogger(__name__)
 

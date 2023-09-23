@@ -1,14 +1,7 @@
-from malaya.function import describe_availability, check_file
+from malaya.function import check_file
 from malaya.torch_model.gpt2_lm import LM as GPT2LM
-from malaya.torch_model.mask_lm import (
-    BertForMaskedLMOptimized,
-    AlbertForMaskedLMOptimized,
-    RobertaForMaskedLMOptimized,
-    MLMScorer,
-)
-from transformers import AutoTokenizer
 
-_kenlm_availability = {
+available_kenlm = {
     'bahasa-wiki': {'Size (MB)': 70.5,
                     'LM order': 3,
                     'Description': 'MS wikipedia.',
@@ -53,13 +46,13 @@ _kenlm_availability = {
                          },
 }
 
-_gpt2_availability = {
+available_gpt2 = {
     'mesolitica/gpt2-117m-bahasa-cased': {
         'Size (MB)': 454,
     },
 }
 
-_mlm_availability = {
+available_mlm = {
     'malay-huggingface/bert-base-bahasa-cased': {
         'Size (MB)': 310,
     },
@@ -79,30 +72,6 @@ _mlm_availability = {
         'Size (MB)': 66.1,
     },
 }
-
-
-def available_kenlm():
-    """
-    List available KenLM Language Model.
-    """
-
-    return describe_availability(_kenlm_availability)
-
-
-def available_gpt2():
-    """
-    List available GPT2 Language Model.
-    """
-
-    return describe_availability(_gpt2_availability)
-
-
-def available_mlm():
-    """
-    List available MLM Language Model.
-    """
-
-    return describe_availability(_mlm_availability)
 
 
 def kenlm(model: str = 'dump-combined', **kwargs):
@@ -126,9 +95,9 @@ def kenlm(model: str = 'dump-combined', **kwargs):
         )
 
     model = model.lower()
-    if model not in _kenlm_availability:
+    if model not in available_kenlm:
         raise ValueError(
-            'model not supported, please check supported models from `malaya.language_model.available_kenlm()`.'
+            'model not supported, please check supported models from `malaya.language_model.available_kenlm`.'
         )
 
     path = check_file(
@@ -143,7 +112,11 @@ def kenlm(model: str = 'dump-combined', **kwargs):
     return kenlm.Model(path['model'])
 
 
-def gpt2(model: str = 'mesolitica/gpt2-117m-bahasa-cased', force_check: bool = True, **kwargs):
+def gpt2(
+    model: str = 'mesolitica/gpt2-117m-bahasa-cased',
+    force_check: bool = True,
+    **kwargs,
+):
     """
     Load GPT2 language model.
 
@@ -160,9 +133,9 @@ def gpt2(model: str = 'mesolitica/gpt2-117m-bahasa-cased', force_check: bool = T
     result: malaya.torch_model.gpt2_lm.LM class
     """
 
-    if model not in _gpt2_availability and force_check:
+    if model not in available_gpt2 and force_check:
         raise ValueError(
-            'model not supported, please check supported models from `malaya.language_model.available_gpt2()`.'
+            'model not supported, please check supported models from `malaya.language_model.available_gpt2`.'
         )
     model = GPT2LM.from_pretrained(model, **kwargs)
     model.load_tokenizer()
@@ -170,9 +143,10 @@ def gpt2(model: str = 'mesolitica/gpt2-117m-bahasa-cased', force_check: bool = T
 
 
 def mlm(
-        model: str = 'malay-huggingface/bert-tiny-bahasa-cased',
-        force_check: bool = True,
-        **kwargs):
+    model: str = 'malay-huggingface/bert-tiny-bahasa-cased',
+    force_check: bool = True,
+    **kwargs
+):
     """
     Load Masked language model.
 
@@ -189,23 +163,9 @@ def mlm(
     result: malaya.torch_model.mask_lm.MLMScorer class
     """
 
-    if model not in _mlm_availability and force_check:
+    if model not in available_mlm and force_check:
         raise ValueError(
-            'model not supported, please check supported models from `malaya.language_model.available_mlm()`.'
+            'model not supported, please check supported models from `malaya.language_model.available_mlm`.'
         )
 
-    splitted = model.lower().replace('/', '-').split('-')
-    if 'bert' in splitted:
-        model_class = BertForMaskedLMOptimized
-    elif 'albert' in splitted:
-        model_class = AlbertForMaskedLMOptimized
-    elif 'roberta' in splitted:
-        model_class = RobertaForMaskedLMOptimized
-    else:
-        raise ValueError(
-            f'cannot determined model class for {model}, only supported BERT, ALBERT and RoBERTa for now.')
-
-    tokenizer = AutoTokenizer.from_pretrained(model, use_fast=False, **kwargs)
-    model = model_class.from_pretrained(model, **kwargs)
-
-    return MLMScorer(model, tokenizer)
+    return MLMScorer(model, **kwargs)

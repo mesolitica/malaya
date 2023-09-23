@@ -1,14 +1,3 @@
-from malaya.function import (
-    check_file,
-    load_graph,
-    generate_session,
-    nodes_session,
-)
-from malaya.text.bpe import SentencePieceTokenizer
-from malaya.model.bert import SiameseBERT
-from malaya.model.xlnet import SiameseXLNET
-from malaya.path import MODEL_VOCAB, MODEL_BPE
-from malaya.function import describe_availability
 from malaya.supervised import huggingface as load_huggingface
 import logging
 import warnings
@@ -16,60 +5,6 @@ import warnings
 logger = logging.getLogger(__name__)
 
 label = ['not similar', 'similar']
-
-_transformer_availability = {
-    'bert': {
-        'Size (MB)': 423.4,
-        'Quantized Size (MB)': 111,
-        'macro precision': 0.88315,
-        'macro recall': 0.88656,
-        'macro f1-score': 0.88405,
-    },
-    'tiny-bert': {
-        'Size (MB)': 56.6,
-        'Quantized Size (MB)': 15,
-        'macro precision': 0.87210,
-        'macro recall': 0.87546,
-        'macro f1-score': 0.87292,
-    },
-    'albert': {
-        'Size (MB)': 48.3,
-        'Quantized Size (MB)': 12.8,
-        'macro precision': 0.87164,
-        'macro recall': 0.87146,
-        'macro f1-score': 0.87155,
-    },
-    'tiny-albert': {
-        'Size (MB)': 21.9,
-        'Quantized Size (MB)': 6,
-        'macro precision': 0.82234,
-        'macro recall': 0.82383,
-        'macro f1-score': 0.82295,
-    },
-    'xlnet': {
-        'Size (MB)': 448.7,
-        'Quantized Size (MB)': 119,
-        'macro precision': 0.80866,
-        'macro recall': 0.76775,
-        'macro f1-score': 0.77112,
-    },
-    'alxlnet': {
-        'Size (MB)': 49.0,
-        'Quantized Size (MB)': 13.9,
-        'macro precision': 0.88756,
-        'macro recall': 0.88700,
-        'macro f1-score': 0.88727,
-    },
-}
-
-_vectorizer_mapping = {
-    'bert': 'import/bert/encoder/layer_11/output/LayerNorm/batchnorm/add_1:0',
-    'tiny-bert': 'import/bert/encoder/layer_3/output/LayerNorm/batchnorm/add_1:0',
-    'albert': 'import/bert/encoder/transformer/group_0_11/layer_11/inner_group_0/LayerNorm_1/batchnorm/add_1:0',
-    'tiny-albert': 'import/bert/encoder/transformer/group_0_3/layer_3/inner_group_0/LayerNorm_1/batchnorm/add_1:0',
-    'xlnet': 'import/model/transformer/layer_11/ff/LayerNorm/batchnorm/add_1:0',
-    'alxlnet': 'import/model/transformer/layer_shared_11/ff/LayerNorm/batchnorm/add_1:0',
-}
 
 _huggingface_availability = {
     'mesolitica/finetune-mnli-t5-super-tiny-standard-bahasa-cased': {

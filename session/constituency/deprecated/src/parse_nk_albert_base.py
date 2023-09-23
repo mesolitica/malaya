@@ -9,6 +9,7 @@ import torch.nn.init as init
 use_cuda = torch.cuda.is_available()
 if use_cuda:
     torch_t = torch.cuda
+
     def from_numpy(ndarray):
         return torch.from_numpy(ndarray).pin_memory().cuda(async=True)
 else:
@@ -55,16 +56,18 @@ BERT_TOKEN_MAPPING = {
     '„': '"',
     '‹': "'",
     '›': "'",
-    "\u2013": "--", # en dash
-    "\u2014": "--", # em dash
-    }
+    "\u2013": "--",  # en dash
+    "\u2014": "--",  # em dash
+}
 
 # %%
+
 
 class BatchIndices:
     """
     Batch indices container class (used to implement packed batches)
     """
+
     def __init__(self, batch_idxs_np):
         self.batch_idxs_np = batch_idxs_np
         # Note that the torch copy will be on GPU if use_cuda is set
@@ -79,6 +82,7 @@ class BatchIndices:
         self.max_len = int(np.max(self.boundaries_np[1:] - self.boundaries_np[:-1]))
 
 # %%
+
 
 class FeatureDropoutFunction(torch.autograd.function.InplaceFunction):
     @classmethod
@@ -115,12 +119,14 @@ class FeatureDropoutFunction(torch.autograd.function.InplaceFunction):
         else:
             return grad_output, None, None, None, None
 
+
 class FeatureDropout(nn.Module):
     """
     Feature-level dropout: takes an input of size len x num_features and drops
     each feature with probabibility p. A feature is dropped across the full
     portion of the input that corresponds to a single batch element.
     """
+
     def __init__(self, p=0.5, inplace=False):
         super().__init__()
         if p < 0 or p > 1:
@@ -133,6 +139,7 @@ class FeatureDropout(nn.Module):
         return FeatureDropoutFunction.apply(input, batch_idxs, self.p, self.training, self.inplace)
 
 # %%
+
 
 class LayerNormalization(nn.Module):
     def __init__(self, d_hid, eps=1e-3, affine=True):
@@ -166,6 +173,7 @@ class LayerNormalization(nn.Module):
 
 # %%
 
+
 class ScaledDotProductAttention(nn.Module):
     def __init__(self, d_model, attention_dropout=0.1):
         super(ScaledDotProductAttention, self).__init__()
@@ -182,9 +190,9 @@ class ScaledDotProductAttention(nn.Module):
 
         if attn_mask is not None:
             assert attn_mask.size() == attn.size(), \
-                    'Attention mask shape {} mismatch ' \
-                    'with Attention logit tensor shape ' \
-                    '{}.'.format(attn_mask.size(), attn.size())
+                'Attention mask shape {} mismatch ' \
+                'with Attention logit tensor shape ' \
+                '{}.'.format(attn_mask.size(), attn.size())
 
             attn.data.masked_fill_(attn_mask, -float('inf'))
 
@@ -200,12 +208,21 @@ class ScaledDotProductAttention(nn.Module):
 
 # %%
 
+
 class MultiHeadAttention(nn.Module):
     """
     Multi-head attention module
     """
 
-    def __init__(self, n_head, d_model, d_k, d_v, residual_dropout=0.1, attention_dropout=0.1, d_positional=None):
+    def __init__(
+            self,
+            n_head,
+            d_model,
+            d_k,
+            d_v,
+            residual_dropout=0.1,
+            attention_dropout=0.1,
+            d_positional=None):
         super(MultiHeadAttention, self).__init__()
 
         self.n_head = n_head
@@ -259,29 +276,30 @@ class MultiHeadAttention(nn.Module):
         self.residual_dropout = FeatureDropout(residual_dropout)
 
     def split_qkv_packed(self, inp, qk_inp=None):
-        v_inp_repeated = inp.repeat(self.n_head, 1).view(self.n_head, -1, inp.size(-1)) # n_head x len_inp x d_model
+        v_inp_repeated = inp.repeat(self.n_head, 1).view(
+            self.n_head, -1, inp.size(-1))  # n_head x len_inp x d_model
         if qk_inp is None:
             qk_inp_repeated = v_inp_repeated
         else:
             qk_inp_repeated = qk_inp.repeat(self.n_head, 1).view(self.n_head, -1, qk_inp.size(-1))
 
         if not self.partitioned:
-            q_s = torch.bmm(qk_inp_repeated, self.w_qs) # n_head x len_inp x d_k
-            k_s = torch.bmm(qk_inp_repeated, self.w_ks) # n_head x len_inp x d_k
-            v_s = torch.bmm(v_inp_repeated, self.w_vs) # n_head x len_inp x d_v
+            q_s = torch.bmm(qk_inp_repeated, self.w_qs)  # n_head x len_inp x d_k
+            k_s = torch.bmm(qk_inp_repeated, self.w_ks)  # n_head x len_inp x d_k
+            v_s = torch.bmm(v_inp_repeated, self.w_vs)  # n_head x len_inp x d_v
         else:
             q_s = torch.cat([
-                torch.bmm(qk_inp_repeated[:,:,:self.d_content], self.w_qs1),
-                torch.bmm(qk_inp_repeated[:,:,self.d_content:], self.w_qs2),
-                ], -1)
+                torch.bmm(qk_inp_repeated[:, :, :self.d_content], self.w_qs1),
+                torch.bmm(qk_inp_repeated[:, :, self.d_content:], self.w_qs2),
+            ], -1)
             k_s = torch.cat([
-                torch.bmm(qk_inp_repeated[:,:,:self.d_content], self.w_ks1),
-                torch.bmm(qk_inp_repeated[:,:,self.d_content:], self.w_ks2),
-                ], -1)
+                torch.bmm(qk_inp_repeated[:, :, :self.d_content], self.w_ks1),
+                torch.bmm(qk_inp_repeated[:, :, self.d_content:], self.w_ks2),
+            ], -1)
             v_s = torch.cat([
-                torch.bmm(v_inp_repeated[:,:,:self.d_content], self.w_vs1),
-                torch.bmm(v_inp_repeated[:,:,self.d_content:], self.w_vs2),
-                ], -1)
+                torch.bmm(v_inp_repeated[:, :, :self.d_content], self.w_vs1),
+                torch.bmm(v_inp_repeated[:, :, self.d_content:], self.w_vs2),
+            ], -1)
         return q_s, k_s, v_s
 
     def pad_and_rearrange(self, q_s, k_s, v_s, batch_idxs):
@@ -298,10 +316,11 @@ class MultiHeadAttention(nn.Module):
         v_padded = v_s.new_zeros((n_head, mb_size, len_padded, d_v))
         invalid_mask = q_s.new_ones((mb_size, len_padded), dtype=torch.bool)
 
-        for i, (start, end) in enumerate(zip(batch_idxs.boundaries_np[:-1], batch_idxs.boundaries_np[1:])):
-            q_padded[:,i,:end-start,:] = q_s[:,start:end,:]
-            k_padded[:,i,:end-start,:] = k_s[:,start:end,:]
-            v_padded[:,i,:end-start,:] = v_s[:,start:end,:]
+        for i, (start, end) in enumerate(
+                zip(batch_idxs.boundaries_np[:-1], batch_idxs.boundaries_np[1:])):
+            q_padded[:, i, :end-start, :] = q_s[:, start:end, :]
+            k_padded[:, i, :end-start, :] = k_s[:, start:end, :]
+            v_padded[:, i, :end-start, :] = v_s[:, start:end, :]
             invalid_mask[i, :end-start].fill_(False)
 
         return(
@@ -310,7 +329,7 @@ class MultiHeadAttention(nn.Module):
             v_padded.view(-1, len_padded, d_v),
             invalid_mask.unsqueeze(1).expand(mb_size, len_padded, len_padded).repeat(n_head, 1, 1),
             (~invalid_mask).repeat(n_head, 1),
-            )
+        )
 
     def combine_v(self, outputs):
         # Combine attention information from the different heads
@@ -325,14 +344,14 @@ class MultiHeadAttention(nn.Module):
             outputs = self.proj(outputs)
         else:
             d_v1 = self.d_v // 2
-            outputs1 = outputs[:,:,:d_v1]
-            outputs2 = outputs[:,:,d_v1:]
+            outputs1 = outputs[:, :, :d_v1]
+            outputs2 = outputs[:, :, d_v1:]
             outputs1 = torch.transpose(outputs1, 0, 1).contiguous().view(-1, n_head * d_v1)
             outputs2 = torch.transpose(outputs2, 0, 1).contiguous().view(-1, n_head * d_v1)
             outputs = torch.cat([
                 self.proj1(outputs1),
                 self.proj2(outputs2),
-                ], -1)
+            ], -1)
 
         return outputs
 
@@ -344,12 +363,13 @@ class MultiHeadAttention(nn.Module):
         q_s, k_s, v_s = self.split_qkv_packed(inp, qk_inp=qk_inp)
 
         # Switch to padded representation, perform attention, then switch back
-        q_padded, k_padded, v_padded, attn_mask, output_mask = self.pad_and_rearrange(q_s, k_s, v_s, batch_idxs)
+        q_padded, k_padded, v_padded, attn_mask, output_mask = self.pad_and_rearrange(
+            q_s, k_s, v_s, batch_idxs)
 
         outputs_padded, attns_padded = self.attention(
             q_padded, k_padded, v_padded,
             attn_mask=attn_mask,
-            )
+        )
         outputs = outputs_padded[output_mask]
         outputs = self.combine_v(outputs)
 
@@ -358,6 +378,7 @@ class MultiHeadAttention(nn.Module):
         return self.layer_norm(outputs + residual), attns_padded
 
 # %%
+
 
 class PositionwiseFeedForward(nn.Module):
     """
@@ -380,7 +401,6 @@ class PositionwiseFeedForward(nn.Module):
         self.residual_dropout = FeatureDropout(residual_dropout)
         self.relu = nn.ReLU()
 
-
     def forward(self, x, batch_idxs):
         residual = x
 
@@ -392,6 +412,7 @@ class PositionwiseFeedForward(nn.Module):
         return self.layer_norm(output + residual)
 
 # %%
+
 
 class PartitionedPositionwiseFeedForward(nn.Module):
     def __init__(self, d_hid, d_ff, d_positional, relu_dropout=0.1, residual_dropout=0.1):
@@ -429,18 +450,19 @@ class PartitionedPositionwiseFeedForward(nn.Module):
 
 # %%
 
+
 class MultiLevelEmbedding(nn.Module):
     def __init__(self,
-            num_embeddings_list,
-            d_embedding,
-            d_positional=None,
-            max_len=300,
-            normalize=True,
-            dropout=0.1,
-            timing_dropout=0.0,
-            emb_dropouts_list=None,
-            extra_content_dropout=None,
-            **kwargs):
+                 num_embeddings_list,
+                 d_embedding,
+                 d_positional=None,
+                 max_len=300,
+                 normalize=True,
+                 dropout=0.1,
+                 timing_dropout=0.0,
+                 emb_dropouts_list=None,
+                 extra_content_dropout=None,
+                 **kwargs):
         super().__init__()
 
         self.d_embedding = d_embedding
@@ -459,7 +481,8 @@ class MultiLevelEmbedding(nn.Module):
 
         embs = []
         emb_dropouts = []
-        for i, (num_embeddings, emb_dropout) in enumerate(zip(num_embeddings_list, emb_dropouts_list)):
+        for i, (num_embeddings, emb_dropout) in enumerate(
+                zip(num_embeddings_list, emb_dropouts_list)):
             emb = nn.Embedding(num_embeddings, self.d_content, **kwargs)
             embs.append(emb)
             emb_dropout = FeatureDropout(emb_dropout)
@@ -488,15 +511,17 @@ class MultiLevelEmbedding(nn.Module):
         content_annotations = [
             emb_dropout(emb(x), batch_idxs)
             for x, emb, emb_dropout in zip(xs, self.embs, self.emb_dropouts)
-            ]
+        ]
         content_annotations = sum(content_annotations)
         if extra_content_annotations is not None:
             if self.extra_content_dropout is not None:
-                content_annotations += self.extra_content_dropout(extra_content_annotations, batch_idxs)
+                content_annotations += self.extra_content_dropout(
+                    extra_content_annotations, batch_idxs)
             else:
                 content_annotations += extra_content_annotations
 
-        timing_signal = torch.cat([self.position_table[:seq_len,:] for seq_len in batch_idxs.seq_lens_np], dim=0)
+        timing_signal = torch.cat([self.position_table[:seq_len, :]
+                                  for seq_len in batch_idxs.seq_lens_np], dim=0)
         timing_signal = self.timing_dropout(timing_signal, batch_idxs)
 
         # Combine the content and timing signals
@@ -512,11 +537,12 @@ class MultiLevelEmbedding(nn.Module):
 
 # %%
 
+
 class CharacterLSTM(nn.Module):
     def __init__(self, num_embeddings, d_embedding, d_out,
-            char_dropout=0.0,
-            normalize=False,
-            **kwargs):
+                 char_dropout=0.0,
+                 normalize=False,
+                 **kwargs):
         super().__init__()
 
         self.d_embedding = d_embedding
@@ -525,7 +551,7 @@ class CharacterLSTM(nn.Module):
         self.lstm = nn.LSTM(self.d_embedding, self.d_out // 2, num_layers=1, bidirectional=True)
 
         self.emb = nn.Embedding(num_embeddings, self.d_embedding, **kwargs)
-        #TODO(nikita): feature-level dropout?
+        # TODO(nikita): feature-level dropout?
         self.char_dropout = nn.Dropout(char_dropout)
 
         if normalize:
@@ -542,7 +568,8 @@ class CharacterLSTM(nn.Module):
         chars_padded = from_numpy(chars_padded_np[decreasing_idxs_np])
         word_lens = from_numpy(word_lens_np[decreasing_idxs_np])
 
-        inp_sorted = nn.utils.rnn.pack_padded_sequence(chars_padded, word_lens_np[decreasing_idxs_np], batch_first=True)
+        inp_sorted = nn.utils.rnn.pack_padded_sequence(
+            chars_padded, word_lens_np[decreasing_idxs_np], batch_first=True)
         inp_sorted_emb = nn.utils.rnn.PackedSequence(
             self.char_dropout(self.emb(inp_sorted.data)),
             inp_sorted.batch_sizes)
@@ -558,30 +585,35 @@ class CharacterLSTM(nn.Module):
         return res
 
 # %%
+
+
 def get_elmo_class():
     # Avoid a hard dependency by only importing Elmo if it's being used
     from allennlp.modules.elmo import Elmo
     return Elmo
 
 # %%
+
+
 def get_bert(bert_model, bert_do_lower_case):
     # Avoid a hard dependency on BERT by only importing it if it's being used
     from transformers import AlbertTokenizer, AlbertModel
     model = AlbertModel.from_pretrained('huseinzol05/albert-base-bahasa-cased')
     tokenizer = AlbertTokenizer.from_pretrained(
         'huseinzol05/albert-base-bahasa-cased',
-        do_lower_case = False,
+        do_lower_case=False,
     )
     return tokenizer, model
 
 # %%
 
+
 class Encoder(nn.Module):
     def __init__(self, embedding,
-                    num_layers=1, num_heads=2, d_kv = 32, d_ff=1024,
-                    d_positional=None,
-                    num_layers_position_only=0,
-                    relu_dropout=0.1, residual_dropout=0.1, attention_dropout=0.1):
+                 num_layers=1, num_heads=2, d_kv=32, d_ff=1024,
+                 d_positional=None,
+                 num_layers_position_only=0,
+                 relu_dropout=0.1, residual_dropout=0.1, attention_dropout=0.1):
         super().__init__()
         # Don't assume ownership of the embedding as a submodule.
         # TODO(nikita): what's the right thing to do here?
@@ -592,11 +624,27 @@ class Encoder(nn.Module):
 
         self.stacks = []
         for i in range(num_layers):
-            attn = MultiHeadAttention(num_heads, d_model, d_k, d_v, residual_dropout=residual_dropout, attention_dropout=attention_dropout, d_positional=d_positional)
+            attn = MultiHeadAttention(
+                num_heads,
+                d_model,
+                d_k,
+                d_v,
+                residual_dropout=residual_dropout,
+                attention_dropout=attention_dropout,
+                d_positional=d_positional)
             if d_positional is None:
-                ff = PositionwiseFeedForward(d_model, d_ff, relu_dropout=relu_dropout, residual_dropout=residual_dropout)
+                ff = PositionwiseFeedForward(
+                    d_model,
+                    d_ff,
+                    relu_dropout=relu_dropout,
+                    residual_dropout=residual_dropout)
             else:
-                ff = PartitionedPositionwiseFeedForward(d_model, d_ff, d_positional, relu_dropout=relu_dropout, residual_dropout=residual_dropout)
+                ff = PartitionedPositionwiseFeedForward(
+                    d_model,
+                    d_ff,
+                    d_positional,
+                    relu_dropout=relu_dropout,
+                    residual_dropout=residual_dropout)
 
             self.add_module(f"attn_{i}", attn)
             self.add_module(f"ff_{i}", ff)
@@ -608,7 +656,8 @@ class Encoder(nn.Module):
 
     def forward(self, xs, batch_idxs, extra_content_annotations=None):
         emb = self.embedding_container[0]
-        res, timing_signal, batch_idxs = emb(xs, batch_idxs, extra_content_annotations=extra_content_annotations)
+        res, timing_signal, batch_idxs = emb(
+            xs, batch_idxs, extra_content_annotations=extra_content_annotations)
 
         for i, (attn, ff) in enumerate(self.stacks):
             if i >= self.num_layers_position_only:
@@ -620,6 +669,7 @@ class Encoder(nn.Module):
         return res, batch_idxs
 
 # %%
+
 
 class NKChartParser(nn.Module):
     # We never actually call forward() end-to-end as is typical for pytorch
@@ -697,7 +747,7 @@ class NKChartParser(nn.Module):
                 do_layer_norm=False,
                 keep_sentence_boundaries=True,
                 dropout=hparams.elmo_dropout,
-                )
+            )
             d_elmo_annotations = 1024
 
             # Don't train gamma parameter for ELMo - the projection can do any
@@ -708,7 +758,8 @@ class NKChartParser(nn.Module):
             # the projection trainable appears to improve parsing accuracy
             self.project_elmo = nn.Linear(d_elmo_annotations, self.d_content, bias=False)
         elif hparams.use_bert or hparams.use_bert_only:
-            self.bert_tokenizer, self.bert = get_bert(hparams.bert_model, hparams.bert_do_lower_case)
+            self.bert_tokenizer, self.bert = get_bert(
+                hparams.bert_model, hparams.bert_do_lower_case)
             if hparams.bert_transliterate:
                 from transliterate import TRANSLITERATIONS
                 self.bert_transliterate = TRANSLITERATIONS[hparams.bert_transliterate]
@@ -756,7 +807,7 @@ class NKChartParser(nn.Module):
             LayerNormalization(hparams.d_label_hidden),
             nn.ReLU(),
             nn.Linear(hparams.d_label_hidden, label_vocab.size - 1),
-            )
+        )
 
         if hparams.predict_tags:
             assert not hparams.use_tags, "use_tags and predict_tags are mutually exclusive"
@@ -765,7 +816,7 @@ class NKChartParser(nn.Module):
                 LayerNormalization(hparams.d_tag_hidden),
                 nn.ReLU(),
                 nn.Linear(hparams.d_tag_hidden, tag_vocab.size),
-                )
+            )
             self.tag_loss_scale = hparams.tag_loss_scale
         else:
             self.f_tag = None
@@ -805,7 +856,7 @@ class NKChartParser(nn.Module):
         if not hparams['use_elmo']:
             res.load_state_dict(model)
         else:
-            state = {k: v for k,v in res.state_dict().items() if k not in model}
+            state = {k: v for k, v in res.state_dict().items() if k not in model}
             state.update(model)
             res.load_state_dict(state)
         if use_cuda:
@@ -827,7 +878,8 @@ class NKChartParser(nn.Module):
         num_subbatches = 0
         subbatch_size = 1
         while lens_argsort:
-            if (subbatch_size == len(lens_argsort)) or (subbatch_size * lens[lens_argsort[subbatch_size]] > subbatch_max_tokens):
+            if (subbatch_size == len(lens_argsort)) or (subbatch_size * \
+                lens[lens_argsort[subbatch_size]] > subbatch_max_tokens):
                 yield [sentences[i] for i in lens_argsort[:subbatch_size]], [golds[i] for i in lens_argsort[:subbatch_size]]
                 lens_argsort = lens_argsort[subbatch_size:]
                 num_subbatches += 1
@@ -855,7 +907,9 @@ class NKChartParser(nn.Module):
         batch_idxs = np.zeros(packed_len, dtype=int)
         for snum, sentence in enumerate(sentences):
             for (tag, word) in [(START, START)] + sentence + [(STOP, STOP)]:
-                tag_idxs[i] = 0 if (not self.use_tags and self.f_tag is None) else self.tag_vocab.index_or_unk(tag, TAG_UNK)
+                tag_idxs[i] = 0 if (
+                    not self.use_tags and self.f_tag is None) else self.tag_vocab.index_or_unk(
+                    tag, TAG_UNK)
                 if word not in (START, STOP):
                     count = self.word_vocab.count(word)
                     if not count or (is_train and np.random.rand() < 1 / (1 + count)):
@@ -874,7 +928,7 @@ class NKChartParser(nn.Module):
         emb_idxs = [
             from_numpy(emb_idxs_map[emb_type])
             for emb_type in self.emb_types
-            ]
+        ]
 
         if is_train and self.f_tag is not None:
             gold_tag_idxs = from_numpy(emb_idxs_map['tags'])
@@ -882,7 +936,8 @@ class NKChartParser(nn.Module):
         extra_content_annotations = None
         if self.char_encoder is not None:
             assert isinstance(self.char_encoder, CharacterLSTM)
-            max_word_len = max([max([len(word) for tag, word in sentence]) for sentence in sentences])
+            max_word_len = max([max([len(word) for tag, word in sentence])
+                               for sentence in sentences])
             # Add 2 for start/stop tokens
             max_word_len = max(max_word_len, 3) + 2
             char_idxs_encoder = np.zeros((packed_len, max_word_len), dtype=int)
@@ -897,7 +952,7 @@ class NKChartParser(nn.Module):
                     if word in (START, STOP):
                         char_idxs_encoder[i, j:j+3] = self.char_vocab.index(
                             CHAR_START_SENTENCE if (word == START) else CHAR_STOP_SENTENCE
-                            )
+                        )
                         j += 3
                     else:
                         for char in word:
@@ -908,7 +963,8 @@ class NKChartParser(nn.Module):
                     i += 1
             assert i == packed_len
 
-            extra_content_annotations = self.char_encoder(char_idxs_encoder, word_lens_encoder, batch_idxs)
+            extra_content_annotations = self.char_encoder(
+                char_idxs_encoder, word_lens_encoder, batch_idxs)
         elif self.elmo is not None:
             # See https://github.com/allenai/allennlp/blob/c3c3549887a6b1fb0bc8abf77bc820a3ab97f788/allennlp/data/token_indexers/elmo_indexer.py#L61
             # ELMO_START_SENTENCE = 256
@@ -920,7 +976,8 @@ class NKChartParser(nn.Module):
             # Sentence start/stop tokens are added inside the ELMo module
             max_sentence_len = max([(len(sentence)) for sentence in sentences])
             max_word_len = 50
-            char_idxs_encoder = np.zeros((len(sentences), max_sentence_len, max_word_len), dtype=int)
+            char_idxs_encoder = np.zeros(
+                (len(sentences), max_sentence_len, max_word_len), dtype=int)
 
             for snum, sentence in enumerate(sentences):
                 for wordnum, (tag, word) in enumerate(sentence):
@@ -1011,19 +1068,23 @@ class NKChartParser(nn.Module):
 
             all_input_ids = from_numpy(np.ascontiguousarray(all_input_ids[:, :subword_max_len]))
             all_input_mask = from_numpy(np.ascontiguousarray(all_input_mask[:, :subword_max_len]))
-            all_word_start_mask = from_numpy(np.ascontiguousarray(all_word_start_mask[:, :subword_max_len]))
-            all_word_end_mask = from_numpy(np.ascontiguousarray(all_word_end_mask[:, :subword_max_len]))
+            all_word_start_mask = from_numpy(np.ascontiguousarray(
+                all_word_start_mask[:, :subword_max_len]))
+            all_word_end_mask = from_numpy(np.ascontiguousarray(
+                all_word_end_mask[:, :subword_max_len]))
             features, _ = self.bert(all_input_ids, attention_mask=all_input_mask)
             del _
 
             if self.encoder is not None:
-                features_packed = features.masked_select(all_word_end_mask.to(torch.bool).unsqueeze(-1)).reshape(-1, features.shape[-1])
+                features_packed = features.masked_select(all_word_end_mask.to(
+                    torch.bool).unsqueeze(-1)).reshape(-1, features.shape[-1])
 
                 # For now, just project the features from the last word piece in each word
                 extra_content_annotations = self.project_bert(features_packed)
 
         if self.encoder is not None:
-            annotations, _ = self.encoder(emb_idxs, batch_idxs, extra_content_annotations=extra_content_annotations)
+            annotations, _ = self.encoder(
+                emb_idxs, batch_idxs, extra_content_annotations=extra_content_annotations)
 
             if self.partitioned:
                 # Rearrange the annotations to ensure that the transition to
@@ -1040,21 +1101,24 @@ class NKChartParser(nn.Module):
             fencepost_annotations = torch.cat([
                 annotations[:-1, :self.d_model//2],
                 annotations[1:, self.d_model//2:],
-                ], 1)
+            ], 1)
             fencepost_annotations_start = fencepost_annotations
             fencepost_annotations_end = fencepost_annotations
         else:
             assert self.bert is not None
             features = self.project_bert(features)
-            fencepost_annotations_start = features.masked_select(all_word_start_mask.to(torch.bool).unsqueeze(-1)).reshape(-1, features.shape[-1])
-            fencepost_annotations_end = features.masked_select(all_word_end_mask.to(torch.bool).unsqueeze(-1)).reshape(-1, features.shape[-1])
+            fencepost_annotations_start = features.masked_select(
+                all_word_start_mask.to(torch.bool).unsqueeze(-1)).reshape(-1, features.shape[-1])
+            fencepost_annotations_end = features.masked_select(all_word_end_mask.to(
+                torch.bool).unsqueeze(-1)).reshape(-1, features.shape[-1])
             if self.f_tag is not None:
                 tag_annotations = fencepost_annotations_end
 
         if self.f_tag is not None:
             tag_logits = self.f_tag(tag_annotations)
             if is_train:
-                tag_loss = self.tag_loss_scale * nn.functional.cross_entropy(tag_logits, gold_tag_idxs, reduction='sum')
+                tag_loss = self.tag_loss_scale * \
+                    nn.functional.cross_entropy(tag_logits, gold_tag_idxs, reduction='sum')
 
         # Note that the subtraction above creates fenceposts at sentence
         # boundaries, which are not used by our parser. Hence subtract 1
@@ -1066,7 +1130,8 @@ class NKChartParser(nn.Module):
         if return_label_scores_charts:
             charts = []
             for i, (start, end) in enumerate(zip(fp_startpoints, fp_endpoints)):
-                chart = self.label_scores_from_annotations(fencepost_annotations_start[start:end,:], fencepost_annotations_end[start:end,:])
+                chart = self.label_scores_from_annotations(
+                    fencepost_annotations_start[start:end, :], fencepost_annotations_end[start:end, :])
                 charts.append(chart.cpu().data.numpy())
             return charts
 
@@ -1076,14 +1141,17 @@ class NKChartParser(nn.Module):
             if self.f_tag is not None:
                 # Note that tag_logits includes tag predictions for start/stop tokens
                 tag_idxs = torch.argmax(tag_logits, -1).cpu()
-                per_sentence_tag_idxs = torch.split_with_sizes(tag_idxs, [len(sentence) + 2 for sentence in sentences])
-                per_sentence_tags = [[self.tag_vocab.value(idx) for idx in idxs[1:-1]] for idxs in per_sentence_tag_idxs]
+                per_sentence_tag_idxs = torch.split_with_sizes(
+                    tag_idxs, [len(sentence) + 2 for sentence in sentences])
+                per_sentence_tags = [[self.tag_vocab.value(
+                    idx) for idx in idxs[1:-1]] for idxs in per_sentence_tag_idxs]
 
             for i, (start, end) in enumerate(zip(fp_startpoints, fp_endpoints)):
                 sentence = sentences[i]
                 if self.f_tag is not None:
                     sentence = list(zip(per_sentence_tags[i], [x[1] for x in sentence]))
-                tree, score = self.parse_from_annotations(fencepost_annotations_start[start:end,:], fencepost_annotations_end[start:end,:], sentence, golds[i])
+                tree, score = self.parse_from_annotations(
+                    fencepost_annotations_start[start:end, :], fencepost_annotations_end[start:end, :], sentence, golds[i])
                 trees.append(tree)
                 scores.append(score)
             return trees, scores
@@ -1106,7 +1174,8 @@ class NKChartParser(nn.Module):
         glabels = []
         with torch.no_grad():
             for i, (start, end) in enumerate(zip(fp_startpoints, fp_endpoints)):
-                p_i, p_j, p_label, p_augment, g_i, g_j, g_label = self.parse_from_annotations(fencepost_annotations_start[start:end,:], fencepost_annotations_end[start:end,:], sentences[i], golds[i])
+                p_i, p_j, p_label, p_augment, g_i, g_j, g_label = self.parse_from_annotations(
+                    fencepost_annotations_start[start:end, :], fencepost_annotations_end[start:end, :], sentences[i], golds[i])
                 paugment_total += p_augment
                 num_p += p_i.shape[0]
                 pis.append(p_i + start)
@@ -1120,11 +1189,13 @@ class NKChartParser(nn.Module):
         cells_j = from_numpy(np.concatenate(pjs + gjs))
         cells_label = from_numpy(np.concatenate(plabels + glabels))
 
-        cells_label_scores = self.f_label(fencepost_annotations_end[cells_j] - fencepost_annotations_start[cells_i])
+        cells_label_scores = self.f_label(
+            fencepost_annotations_end[cells_j] -
+            fencepost_annotations_start[cells_i])
         cells_label_scores = torch.cat([
-                    cells_label_scores.new_zeros((cells_label_scores.size(0), 1)),
-                    cells_label_scores
-                    ], 1)
+            cells_label_scores.new_zeros((cells_label_scores.size(0), 1)),
+            cells_label_scores
+        ], 1)
         cells_scores = torch.gather(cells_label_scores, 1, cells_label[:, None])
         loss = cells_scores[:num_p].sum() - cells_scores[num_p:].sum() + paugment_total
 
@@ -1140,15 +1211,19 @@ class NKChartParser(nn.Module):
                          - torch.unsqueeze(fencepost_annotations_start, 1))
 
         label_scores_chart = self.f_label(span_features)
-        label_scores_chart = torch.cat([
-            label_scores_chart.new_zeros((label_scores_chart.size(0), label_scores_chart.size(1), 1)),
-            label_scores_chart
-            ], 2)
+        label_scores_chart = torch.cat([label_scores_chart.new_zeros(
+            (label_scores_chart.size(0), label_scores_chart.size(1), 1)), label_scores_chart], 2)
         return label_scores_chart
 
-    def parse_from_annotations(self, fencepost_annotations_start, fencepost_annotations_end, sentence, gold=None):
+    def parse_from_annotations(
+            self,
+            fencepost_annotations_start,
+            fencepost_annotations_end,
+            sentence,
+            gold=None):
         is_train = gold is not None
-        label_scores_chart = self.label_scores_from_annotations(fencepost_annotations_start, fencepost_annotations_end)
+        label_scores_chart = self.label_scores_from_annotations(
+            fencepost_annotations_start, fencepost_annotations_end)
         label_scores_chart_np = label_scores_chart.cpu().data.numpy()
 
         if is_train:
@@ -1192,6 +1267,7 @@ class NKChartParser(nn.Module):
         score, p_i, p_j, p_label, _ = chart_helper.decode(force_gold, **decoder_args)
         last_splits = []
         idx = -1
+
         def make_tree():
             nonlocal idx
             idx += 1

@@ -1,7 +1,5 @@
 import re
 from malaya.text.tatabahasa import tatabahasa_dict, hujung, permulaan
-from malaya.supervised import tag
-from malaya.function import describe_availability
 import logging
 
 logger = logging.getLogger(__name__)

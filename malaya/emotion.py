@@ -1,109 +1,32 @@
 from malaya.supervised import classification
+from malaya.supervised.huggingface import load
+from malaya.torch_model.huggingface import Classification
 from malaya.path import PATH_EMOTION, S3_PATH_EMOTION
-from malaya.function import describe_availability
 import logging
 
 logger = logging.getLogger(__name__)
 
 label = ['anger', 'fear', 'happy', 'love', 'sadness', 'surprise']
-label_goemotions = [
-    'admiration',
-    'amusement',
-    'anger',
-    'annoyance',
-    'approval',
-    'caring',
-    'confusion',
-    'curiosity',
-    'desire',
-    'disappointment',
-    'disapproval',
-    'disgust',
-    'embarrassment',
-    'excitement',
-    'fear',
-    'gratitude',
-    'grief',
-    'joy',
-    'love',
-    'nervousness',
-    'optimism',
-    'pride',
-    'realization',
-    'relief',
-    'remorse',
-    'sadness',
-    'surprise',
-    'neutral'
-]
 
-_transformer_availability = {
-    'bert': {
-        'Size (MB)': 425.6,
-        'Quantized Size (MB)': 111,
-        'macro precision': 0.99786,
-        'macro recall': 0.99773,
-        'macro f1-score': 0.99779,
+available_huggingface = {
+    'mesolitica/emotion-analysis-nanot5-small-malaysian-cased': {
+        'Size (MB)': 167,
+        'macro precision': 0.97336,
+        'macro recall': 0.97370,
+        'macro f1-score': 0.97363,
     },
-    'tiny-bert': {
-        'Size (MB)': 57.4,
-        'Quantized Size (MB)': 15.4,
-        'macro precision': 0.99692,
-        'macro recall': 0.99696,
-        'macro f1-score': 0.99694,
-    },
-    'albert': {
-        'Size (MB)': 48.6,
-        'Quantized Size (MB)': 12.8,
-        'macro precision': 0.99740,
-        'macro recall': 0.99773,
-        'macro f1-score': 0.99757,
-    },
-    'tiny-albert': {
-        'Size (MB)': 22.4,
-        'Quantized Size (MB)': 5.98,
-        'macro precision': 0.99325,
-        'macro recall': 0.99378,
-        'macro f1-score': 0.99351,
-    },
-    'xlnet': {
-        'Size (MB)': 446.5,
-        'Quantized Size (MB)': 118,
-        'macro precision': 0.99773,
-        'macro recall': 0.99775,
-        'macro f1-score': 0.99774,
-    },
-    'alxlnet': {
-        'Size (MB)': 46.8,
-        'Quantized Size (MB)': 13.3,
-        'macro precision': 0.99663,
-        'macro recall': 0.99697,
-        'macro f1-score': 0.99680,
-    },
-    'fastformer': {
-        'Size (MB)': 446,
-        'Quantized Size (MB)': 113,
-        'macro precision': 0.99197,
-        'macro recall': 0.99194,
-        'macro f1-score': 0.99195,
-    },
-    'tiny-fastformer': {
-        'Size (MB)': 77.2,
-        'Quantized Size (MB)': 19.6,
-        'macro precision': 0.98926,
-        'macro recall': 0.98783,
-        'macro f1-score': 0.98853,
+    'mesolitica/emotion-analysis-nanot5-base-malaysian-cased': {
+        'Size (MB)': 439,
+        'macro precision': 0.98003,
+        'macro recall': 0.98311,
+        'macro f1-score': 0.98139,
     }
 }
 
-
-def available_transformer():
-    """
-    List available transformer emotion analysis models.
-    """
-    logger.info('trained on 80% dataset, tested on another 20% test set, dataset at https://github.com/huseinzol05/malay-dataset/tree/master/corpus/emotion')
-
-    return describe_availability(_transformer_availability)
+info = """
+Trained on https://github.com/huseinzol05/malaysian-dataset/tree/master/corpus/emotion
+Split 80% to train, 20% to test.
+""".strip()
 
 
 def multinomial(**kwargs):
@@ -123,37 +46,32 @@ def multinomial(**kwargs):
     )
 
 
-def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
+def huggingface(
+    model: str = 'mesolitica/emotion-analysis-nanot5-small-malaysian-cased',
+    force_check: bool = True,
+    **kwargs,
+):
     """
-    Load Transformer emotion model.
+    Load HuggingFace model to classify emotion.
 
     Parameters
     ----------
-    model: str, optional (default='bert')
-        Check available models at `malaya.emotion.available_transformer()`.
-    quantized: bool, optional (default=False)
-        if True, will load 8-bit quantized model.
-        Quantized model not necessary faster, totally depends on the machine.
+    model: str, optional (default='mesolitica/emotion-analysis-nanot5-small-malaysian-cased')
+        Check available models at `malaya.emotion.available_huggingface`.
+    force_check: bool, optional (default=True)
+        Force check model one of malaya model.
+        Set to False if you have your own huggingface model.
 
     Returns
     -------
-    result: model
-        List of model classes:
-
-        * if `bert` in model, will return `malaya.model.bert.MulticlassBERT`.
-        * if `xlnet` in model, will return `malaya.model.xlnet.MulticlassXLNET`.
-        * if `fastformer` in model, will return `malaya.model.fastformer.MulticlassFastFormer`.
+    result: malaya.torch_model.huggingface.Classification
     """
 
-    model = model.lower()
-    if model not in _transformer_availability:
-        raise ValueError(
-            'model not supported, please check supported models from `malaya.emotion.available_transformer()`.'
-        )
-    return classification.transformer(
-        module='emotion',
-        label=label,
+    return load(
         model=model,
-        quantized=quantized,
-        **kwargs
+        class_model=Classification,
+        available_huggingface=available_huggingface,
+        force_check=force_check,
+        path=__name__,
+        **kwargs,
     )

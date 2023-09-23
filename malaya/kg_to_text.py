@@ -1,10 +1,6 @@
-from malaya.supervised.huggingface import load_kgtt
-from malaya.function import describe_availability
-import logging
 
-logger = logging.getLogger(__name__)
 
-_huggingface_availability = {
+available_huggingface = {
     'mesolitica/finetune-ttkg-t5-tiny-standard-bahasa-cased': {
         'Size (MB)': 139,
         'BLEU': 61.06784273649806,

@@ -1,4 +1,3 @@
-from malaya.function import describe_availability
 from malaya.supervised.huggingface import load
 from malaya.torch_model.huggingface import ExtractiveQA
 import logging

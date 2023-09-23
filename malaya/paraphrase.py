@@ -1,35 +1,5 @@
-from malaya.supervised import t5 as t5_load
-from malaya.model.t5 import Paraphrase as T5_Paraphrase
 from malaya.supervised import huggingface as load_huggingface
-from malaya.function import describe_availability
 import logging
-import warnings
-
-logger = logging.getLogger(__name__)
-
-_transformer_availability = {
-    't5': {
-        'Size (MB)': 1250,
-        'Quantized Size (MB)': 481,
-        'BLEU': 35.86211127195363,
-        'SacreBLEU Verbose': '61.1/40.6/31.3/25.2 (BP = 0.959 ratio = 0.960 hyp_len = 96986 ref_len = 101064)',
-        'Suggested length': 256,
-    },
-    'small-t5': {
-        'Size (MB)': 355.6,
-        'Quantized Size (MB)': 195,
-        'BLEU': 37.24731076156855,
-        'SacreBLEU Verbose': '61.6/41.7/32.5/26.3 (BP = 0.968 ratio = 0.968 hyp_len = 97840 ref_len = 101064)',
-        'Suggested length': 256,
-    },
-    'tiny-t5': {
-        'Size (MB)': 208,
-        'Quantized Size (MB)': 103,
-        'BLEU': 13.253918978157994,
-        'SacreBLEU Verbose': '38.6/16.3/9.4/5.8 (BP = 0.973 ratio = 0.974 hyp_len = 98419 ref_len = 101064)',
-        'Suggested length': 256,
-    },
-}
 
 _huggingface_availability = {
     'mesolitica/finetune-paraphrase-t5-tiny-standard-bahasa-cased': {

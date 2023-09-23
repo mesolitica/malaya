@@ -1,31 +1,6 @@
-from malaya.model.tf import TrueCase
-from malaya.supervised import transformer as load_transformer
 from malaya.supervised import huggingface as load_huggingface
-from malaya.model.t5 import TrueCase as T5_TrueCase
-from malaya.function import describe_availability
-import numpy as np
-import logging
-import warnings
 
-logger = logging.getLogger(__name__)
-
-_transformer_availability = {
-    'small': {
-        'Size (MB)': 42.7,
-        'Quantized Size (MB)': 13.1,
-        'CER': 0.0246012,
-        'Suggested length': 256,
-    },
-    'base': {
-        'Size (MB)': 234,
-        'Quantized Size (MB)': 63.8,
-        'CER': 0.0146193,
-        'Suggested length': 256,
-    },
-
-}
-
-_huggingface_availability = {
+available_huggingface = {
     'mesolitica/finetune-true-case-t5-super-tiny-standard-bahasa-cased': {
         'Size (MB)': 51,
         'WER': 0.105094863,
@@ -46,135 +21,9 @@ _huggingface_availability = {
     },
 }
 
-
-class TrueCase_LM:
-    def __init__(self, language_model):
-        self._language_model = language_model
-
-    def true_case(
-        self,
-        string: str,
-        lookback: int = 3,
-        lookforward: int = 3,
-    ):
-        """
-        True case string input.
-
-        Parameters
-        ----------
-        string: str
-            Entire string, `word` must a word inside `string`.
-        lookback: int, optional (default=3)
-            N words on the left hand side.
-            if put -1, will take all words on the left hand side.
-            longer left hand side will take longer to compute.
-        lookforward: int, optional (default=3)
-            N words on the right hand side.
-            if put -1, will take all words on the right hand side.
-            longer right hand side will take longer to compute.
-
-        Returns
-        -------
-        result: str
-        """
-
-        splitted = string.split()
-        for index, word in enumerate(splitted):
-            if lookback == -1:
-                lookback_ = index
-            elif lookback > index:
-                lookback_ = index
-            else:
-                lookback_ = lookback
-
-            if lookforward == -1:
-                lookforward_ = 9999999
-            else:
-                lookforward_ = lookforward
-
-            left_hand = splitted[index - lookback_: index]
-            right_hand = splitted[index + 1: index + 1 + lookforward_]
-
-            words = [word, word.lower(), word.upper(), word.title()]
-            scores, strings = [], []
-            for w in words:
-                string_ = left_hand + [w] + right_hand
-                score = self._language_model.score(
-                    ' '.join(string_), bos=index == 0, eos=index == (
-                        len(splitted) - 1))
-                scores.append(score)
-                strings.append(string_)
-
-            s = f'index: {index}, word: {word}, words: {words}, strings: {strings}, scores: {scores}'
-            logger.debug(s)
-
-            splitted[index] = words[np.argmin(scores)]
-
-        return ' '.join(splitted)
-
-
-def _describe():
-    logger.info(
-        'tested on generated dataset at https://f000.backblazeb2.com/file/malay-dataset/true-case/test-set-true-case.json')
-
-
-def available_transformer():
-    """
-    List available transformer models.
-    """
-
-    warnings.warn(
-        '`malaya.true_case.available_transformer` is deprecated, use `malaya.true_case.available_huggingface` instead',
-        DeprecationWarning)
-
-    _describe()
-    return describe_availability(_transformer_availability)
-
-
-def available_huggingface():
-    """
-    List available huggingface models.
-    """
-
-    _describe()
-    return describe_availability(_huggingface_availability)
-
-
-def transformer(model: str = 'base', quantized: bool = False, **kwargs):
-    """
-    Load transformer encoder-decoder model to True Case.
-
-    Parameters
-    ----------
-    model: str, optional (default='base')
-        Check available models at `malaya.true_case.available_transformer()`.
-    quantized: bool, optional (default=False)
-        if True, will load 8-bit quantized model.
-        Quantized model not necessary faster, totally depends on the machine.
-
-    Returns
-    -------
-    result: malaya.model.tf.TrueCase class
-    """
-
-    warnings.warn(
-        '`malaya.true_case.transformer` is deprecated, use `malaya.true_case.huggingface` instead',
-        DeprecationWarning)
-
-    model = model.lower()
-    if model not in _transformer_availability:
-        raise ValueError(
-            'model not supported, please check supported models from `malaya.true_case.available_transformer()`.'
-        )
-
-    return load_transformer.load(
-        module='true-case',
-        model=model,
-        encoder='yttm',
-        model_class=TrueCase,
-        quantized=quantized,
-        **kwargs,
-    )
+info = """
+tested on generated dataset at https://f000.backblazeb2.com/file/malay-dataset/true-case/test-set-true-case.json
+""".strip()
 
 
 def huggingface(
@@ -197,24 +46,4 @@ def huggingface(
     -------
     result: malaya.torch_model.huggingface.Generator
     """
-    if model not in _huggingface_availability and force_check:
-        raise ValueError(
-            'model not supported, please check supported models from `malaya.true_case.available_huggingface()`.'
-        )
     return load_huggingface.load_generator(model=model, initial_text='kes benar: ', **kwargs)
-
-
-def probability(language_model):
-    """
-    Use language model to True Case.
-
-    Parameters
-    ----------
-    language_model: Callable
-        must an object with `score` method.
-
-    Returns
-    -------
-    result: malaya.true_case.TrueCase_LM class
-    """
-    return TrueCase_LM(language_model=language_model)

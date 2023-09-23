@@ -31,15 +31,13 @@ from . import utils
 from . import zero_shot
 
 from . import constituency
-from . import coref
 from . import dependency
 from . import emotion
 from . import entity
-from . import jawi_rumi
+from . import jawi
 from . import kg_to_text
 from . import language_detection
 from . import language_model
-from . import lexicon
 from . import llm
 from . import normalize
 from . import nsfw
@@ -49,18 +47,14 @@ from . import phoneme
 from . import pos
 from . import preprocessing
 from . import qa
-from . import relevancy
-from . import rumi_jawi
 from . import segmentation
 from . import sentiment
 from . import stack
 from . import stem
-from . import subjectivity
 from . import syllable
 from . import tatabahasa
 from . import tokenizer
 from . import topic_model
-from . import toxicity
 from . import transformer
 from . import true_case
 from . import word2num
