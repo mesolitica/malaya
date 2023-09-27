@@ -1,25 +1,32 @@
 from malaya.text.entity import EntityRegex
+from malaya.supervised.huggingface import load
+from malaya.torch_model.huggingface import Tagging
 
 label = {
-    'PAD': 0,
-    'X': 1,
-    'OTHER': 2,
-    'law': 3,
-    'location': 4,
-    'organization': 5,
-    'person': 6,
-    'quantity': 7,
-    'time': 8,
-    'event': 9,
+    'OTHER': 0,
+    'law': 1,
+    'location': 2,
+    'organization': 3,
+    'person': 4,
+    'quantity': 5,
+    'time': 6,
+    'event': 7,
 }
 
 available_huggingface = {
-    'bert': {
-        'Size (MB)': 425.4,
-        'Quantized Size (MB)': 111,
-        'macro precision': 0.99291,
-        'macro recall': 0.97864,
-        'macro f1-score': 0.98537,
+    'mesolitica/ner-nanot5-small-malaysian-cased': {
+        'Size (MB)': 167,
+        'overall_precision': 0.858053849787435,
+        'overall_recall': 0.8780876879199497,
+        'overall_f1': 0.8679551807344053,
+        'overall_accuracy': 0.9828597446341846
+    },
+    'mesolitica/ner-nanot5-base-malaysian-cased': {
+        'Size (MB)': 167,
+        'overall_precision': 0.9583735288442987,
+        'overall_recall': 0.9604582588098806,
+        'overall_f1': 0.9594147613414135,
+        'overall_accuracy': 0.9942963731787561
     },
 }
 
@@ -45,7 +52,7 @@ describe = [
 
 
 def huggingface(
-    model: str = 'mesolitica/ner-nanot5-base-malaysian-cased',
+    model: str = 'mesolitica/ner-nanot5-small-malaysian-cased',
     force_check: bool = True,
     **kwargs,
 ):
@@ -54,7 +61,7 @@ def huggingface(
 
     Parameters
     ----------
-    model: str, optional (default='mesolitica/ner-analysis-nanot5-base-malaysian-cased')
+    model: str, optional (default='mesolitica/ner-analysis-nanot5-small-malaysian-cased')
         Check available models at `malaya.entity.available_huggingface`.
     force_check: bool, optional (default=True)
         Force check model one of malaya model.

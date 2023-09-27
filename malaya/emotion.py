@@ -2,9 +2,6 @@ from malaya.supervised import classification
 from malaya.supervised.huggingface import load
 from malaya.torch_model.huggingface import Classification
 from malaya.path import PATH_EMOTION, S3_PATH_EMOTION
-import logging
-
-logger = logging.getLogger(__name__)
 
 label = ['anger', 'fear', 'happy', 'love', 'sadness', 'surprise']
 

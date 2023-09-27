@@ -31,6 +31,7 @@ from malaya.function.parse_dependency import DependencyGraph
 from malaya.text.rouge import postprocess_summary, find_kata_encik
 from malaya.torch_model.t5 import (
     T5ForSequenceClassification,
+    T5ForTokenClassification,
     T5Tagging,
     T5Diaparser,
     T5Constituency,
@@ -84,10 +85,14 @@ class Generator(Base):
         initial_text='',
         base_model=AutoModelForSeq2SeqLM,
         use_ctranslate2=False,
-        use_fast=True,
         **kwargs
     ):
-        self.tokenizer = AutoTokenizer.from_pretrained(model, use_fast=use_fast, **kwargs)
+
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            model,
+            use_fast=False,
+            **kwargs
+        )
         self.is_gpt2tokenizer = 'GPT2Tokenizer' in str(type(self.tokenizer))
         self.use_ctranslate2 = use_ctranslate2
 
@@ -1156,13 +1161,16 @@ class KGtoText(Generator):
 
 
 class Translation(Generator):
-    def __init__(self, model, **kwargs):
+    def __init__(self, model, from_lang=None, to_lang=None, **kwargs):
         Generator.__init__(
             self,
             model=model,
             initial_text='',
             **kwargs,
         )
+
+        self.from_lang = from_lang
+        self.to_lang = to_lang
 
         self.map_lang = {
             'en': 'Inggeris',
@@ -1177,7 +1185,6 @@ class Translation(Generator):
         }
 
         self.all_special_ids = [0, 1, 2]
-        self.old_model = old_model
 
     def generate(self, strings: List[str], to_lang: str = 'ms', **kwargs):
         """
@@ -1205,7 +1212,7 @@ class Translation(Generator):
         to_lang = self.map_lang[to_lang]
 
         prefix = f'terjemah ke {to_lang}: '
-        if self.old_model or self.is_gpt2tokenizer:
+        if self.is_gpt2tokenizer:
             results = super().generate(strings, prefix=prefix, **kwargs)
         else:
             results = super().generate(strings, prefix=prefix, return_generate=True, **kwargs)
@@ -1262,3 +1269,9 @@ class Classification(Base):
         for r in results:
             returns.append({self.model.config.vocab[no]: float(r_) for no, r_ in enumerate(r)})
         return returns
+
+
+class Tagging(Base):
+    def __init__(self, model, **kwargs):
+        self.tokenizer = AutoTokenizer.from_pretrained(model, **kwargs)
+        self.model = T5ForTokenClassification.from_pretrained(model, **kwargs)

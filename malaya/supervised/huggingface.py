@@ -13,5 +13,7 @@ def load(
 
     return class_model(
         model=model,
+        from_lang=available_huggingface[model].get('from lang'),
+        to_lang=available_huggingface[model].get('to lang'),
         **kwargs,
     )

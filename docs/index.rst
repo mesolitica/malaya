@@ -26,8 +26,8 @@ Contents:
    :maxdepth: 2
    :caption: GPU Environment
 
-   gpu-environment-pytorch
-   different-precision-pytorch
+   gpu-environment
+   different-precision
 
 .. toctree::
    :maxdepth: 2
@@ -37,14 +37,7 @@ Contents:
    load-transformer-huggingface
    load-wordvector
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Alignment Module
-
-   alignment-en-ms-eflomal
-   alignment-en-ms-huggingface
-   alignment-ms-en-eflomal
-   alignment-ms-en-huggingface
+   
 
 .. toctree::
    :maxdepth: 2
@@ -93,8 +86,6 @@ Contents:
    load-compare-lm-spelling-correction
    load-spelling-correction-spylls
    load-spelling-correction-symspell
-   load-spelling-correction-encoder-transformer
-   load-spelling-correction-transformer
 
 .. toctree::
    :maxdepth: 2
@@ -104,12 +95,9 @@ Contents:
    load-demoji
    load-stemmer
    load-true-case
-   load-true-case-huggingface
    load-segmentation
-   load-segmentation-huggingface
    load-num2word
    load-word2num
-   load-coreference-resolution
    load-normalizer
 
 .. toctree::
@@ -126,7 +114,6 @@ Contents:
    :caption: Kesalahan Tatabahasa Module
 
    load-tatabahasa-tagging
-   load-tatabahasa-tagging-huggingface
 
 .. toctree::
    :maxdepth: 2
@@ -150,10 +137,7 @@ Contents:
    load-language-detection
    language-detection-words
    load-nsfw
-   load-relevancy
    load-sentiment
-   load-subjectivity
-   load-toxic
 
 .. toctree::
    :maxdepth: 2
@@ -161,7 +145,6 @@ Contents:
 
    load-doc2vec-similarity
    load-semantic-similarity
-   load-semantic-similarity-huggingface
 
 .. toctree::
    :maxdepth: 2
@@ -176,7 +159,6 @@ Contents:
    :caption: Parsing Module
 
    load-dependency
-   load-dependency-huggingface
    load-constituency
 
 .. toctree::
@@ -185,7 +167,6 @@ Contents:
 
    load-extractive
    load-abstractive
-   load-abstractive-huggingface
 
 .. toctree::
    :maxdepth: 2
@@ -193,28 +174,26 @@ Contents:
 
    load-translation-huggingface
    load-noisy-translation-huggingface
+   alignment-en-ms-eflomal
+   alignment-ms-en-eflomal
 
 .. toctree::
    :maxdepth: 2
    :caption: Question Answer Module
 
    load-qa-extractive
-   load-qa-extractive-huggingface
 
 .. toctree::
    :maxdepth: 2
    :caption: Zeroshot Module
 
    load-zeroshot-classification
-   load-zeroshot-classification-huggingface
-   zeroshot-ner
 
 .. toctree::
    :maxdepth: 2
    :caption: Topic Modeling Module
 
    load-topic-model-decomposition
-   load-topic-model-lda2vec
    load-topic-model-transformer
    load-topic-model-bertopic
 
@@ -222,21 +201,16 @@ Contents:
    :maxdepth: 2
    :caption: Keyword Module
 
-   load-abstractive-keyword-huggingface
+   load-abstractive-keyword
    load-keyword-extractive
 
 .. toctree::
    :maxdepth: 2
-   :caption: Text to Knowledge Graph
+   :caption: Knowledge Graph
 
-   e2e-text-to-kg
-   dependency-parser-text-to-kg
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Knowledge Graph to Text
-
+   text-to-kg
    kg-to-text
+   
    
 .. toctree::
    :maxdepth: 2
@@ -248,16 +222,7 @@ Contents:
    :maxdepth: 2
    :caption: Misc Module
    
-   load-lexicon
-   load-clustering
    load-stack
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Bias
-
-   sentiment-bias-towards-countries
-   sentiment-bias-towards-politicians
 
 .. toctree::
    :maxdepth: 2
