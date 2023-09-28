@@ -293,17 +293,17 @@ SW: Model with 13015M total params, 163M largest layer params.
 
 ## Full Parameter Finetuning  smaller models
 
-### 500M, 32768 context length, flash attention 2
+### 600M, 32768 context length, flash attention 2
 
-500M derived from first 2 layers 7B model, [llama2-500m.ipynb](llama2-500m.ipynb),
+600M derived from first 2 layers 7B model,
 
 ```bash
-WANDB_PROJECT=fpf-Llama-2-500m-32k-hf ~/.local/bin/deepspeed run_clm.py \
+WANDB_PROJECT=fpf-Llama-2-600m-32k-hf ~/.local/bin/deepspeed run_clm.py \
 --deepspeed ds_config_zero3.json \
---model_name_or_path "./500m" \
+--model_name_or_path "./600m" \
 --per_device_train_batch_size 4 \
 --gradient_accumulation_steps 1 \
---output_dir fpf-500m-32k \
+--output_dir fpf-600m-32k \
 --bf16 \
 --do_train \
 --do_eval false \
@@ -322,7 +322,7 @@ WANDB_PROJECT=fpf-Llama-2-500m-32k-hf ~/.local/bin/deepspeed run_clm.py \
 
 ### 1B, 32768 context length, flash attention 2
 
-1B derived from first 4 layers 7B model, [llama2-1b.ipynb](llama2-1b.ipynb),
+1B derived from first 4 layers 7B model,
 
 ```bash
 WANDB_PROJECT=fpf-Llama-2-1b-32k-hf ~/.local/bin/deepspeed run_clm.py \
@@ -331,6 +331,33 @@ WANDB_PROJECT=fpf-Llama-2-1b-32k-hf ~/.local/bin/deepspeed run_clm.py \
 --per_device_train_batch_size 4 \
 --gradient_accumulation_steps 1 \
 --output_dir fpf-1b-32k \
+--bf16 \
+--do_train \
+--do_eval false \
+--num_train_epochs 1 \
+--train_file "combine-v2.jsonl" \
+--logging_steps 1 \
+--learning_rate 2e-5 \
+--lr_scheduler_type "linear" \
+--max_grad_norm 0.5 \
+--block_size 32768 \
+--save_steps 100 \
+--save_total_limit 2 \
+--gradient_checkpointing true \
+--use_flash_attention2 true
+```
+
+### 2B, 32768 context length, flash attention 2
+
+2B derived from first 5 layers 13B model,
+
+```bash
+WANDB_PROJECT=fpf-Llama-2-2b-32k-hf ~/.local/bin/deepspeed run_clm.py \
+--deepspeed ds_config_zero3.json \
+--model_name_or_path "./2b" \
+--per_device_train_batch_size 4 \
+--gradient_accumulation_steps 1 \
+--output_dir fpf-2b-32k \
 --bf16 \
 --do_train \
 --do_eval false \

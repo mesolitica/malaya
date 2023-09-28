@@ -128,7 +128,7 @@ label_ms_id = list(lang_labels_ms_id.values())
 label_bahasa_en = list(lang_labels_bahasa_en.values())
 label_en = list(lang_labels_en.values())
 
-_fasttext_availability = {
+available_fasttext = {
     'mesolitica/fasttext-language-detection-v1': {
         'Size (MB)': 353,
         'Quantized Size (MB)': 31.1,
@@ -161,15 +161,9 @@ _fasttext_availability = {
     }
 }
 
-
-def available_fasttext():
-    """
-    List available fasttext language detection.
-    """
-
-    logger.info('trained on 90% dataset, tested on another 10% test set, dataset at https://github.com/huseinzol05/malaya/blob/master/session/relevancy/download-data.ipynb')
-
-    return describe_availability(_fasttext_availability)
+info = """
+trained on 90% dataset, tested on another 10% test set, test dataset prepared at https://github.com/mesolitica/malaya/tree/5.1/pretrained-model/language-detection-v2
+"""
 
 
 def fasttext(
@@ -198,9 +192,9 @@ def fasttext(
             'fasttext not installed. Please install it by `pip install fasttext` and try again.'
         )
 
-    if model not in _fasttext_availability:
+    if model not in available_fasttext:
         raise ValueError(
-            'model not supported, please check supported models from `malaya.language_detection.available_fasttext()`.'
+            'model not supported, please check supported models from `malaya.language_detection.available_fasttext`.'
         )
 
     if quantized:
@@ -210,13 +204,8 @@ def fasttext(
 
     s3_file = {'model': filename}
     path = download_files(model, s3_file, **kwargs)
-
-    try:
-        model_fasttext = fasttext.load_model(path['model'])
-    except BaseException:
-        raise Exception(f'failed to load fasttext model, please try clear the cache and try again')
-
-    return LanguageDetection(model_fasttext, _fasttext_availability[model]['Label'])
+    model_fasttext = fasttext.load_model(path['model'])
+    return LanguageDetection(model_fasttext, available_fasttext[model]['Label'])
 
 
 def substring_rules(model, **kwargs):
@@ -230,7 +219,7 @@ def substring_rules(model, **kwargs):
     user language detection model.
 
     OTHER words detection are using any language detection classification model, such as,
-    `malaya.language_detection.fasttext` or `malaya.language_detection.deep_model`.
+    `malaya.language_detection.fasttext`.
 
     Parameters
     ----------
