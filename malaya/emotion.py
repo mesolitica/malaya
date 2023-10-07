@@ -6,17 +6,17 @@ from malaya.path import PATH_EMOTION, S3_PATH_EMOTION
 label = ['anger', 'fear', 'happy', 'love', 'sadness', 'surprise']
 
 available_huggingface = {
+    'mesolitica/emotion-analysis-nanot5-tiny-malaysian-cased': {
+        'Size (MB)': 93,
+        'macro precision': 0.96107,
+        'macro recall': 0.96270,
+        'macro f1-score': 0.96182,
+    },
     'mesolitica/emotion-analysis-nanot5-small-malaysian-cased': {
         'Size (MB)': 167,
-        'macro precision': 0.97336,
-        'macro recall': 0.97370,
-        'macro f1-score': 0.97363,
-    },
-    'mesolitica/emotion-analysis-nanot5-base-malaysian-cased': {
-        'Size (MB)': 439,
-        'macro precision': 0.98003,
-        'macro recall': 0.98311,
-        'macro f1-score': 0.98139,
+        'macro precision': 0.96814,
+        'macro recall': 0.97004,
+        'macro f1-score': 0.96905,
     }
 }
 

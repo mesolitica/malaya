@@ -1,7 +1,5 @@
-from malaya.supervised import huggingface as load_huggingface
-import logging
-
-logger = logging.getLogger(__name__)
+from malaya.supervised.huggingface import load
+from malaya.torch_model.huggingface import Generator
 
 
 available_huggingface = {
@@ -54,4 +52,11 @@ def huggingface(
         raise ValueError(
             'model not supported, please check supported models from `malaya.segmentation.available_huggingface`.'
         )
-    return load_huggingface.load_generator(model=model, initial_text='segmentasi: ', **kwargs)
+    return load(
+        model=model,
+        class_model=Generator,
+        available_huggingface=available_huggingface,
+        path=__name__,
+        initial_text='segmentasi: ',
+        **kwargs,
+    )

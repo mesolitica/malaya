@@ -45,6 +45,18 @@ NLLB Metrics, https://github.com/facebookresearch/fairseq/tree/nllb#multilingual
 1. NLLB-200, MOE, 54.5B, https://tinyurl.com/nllb200moe54bmetrics, zsm_Latn-jav_Latn, 49.5
 2. NLLB-200, Dense, 3.3B, 17.58 GB, https://tinyurl.com/nllb200dense3bmetrics, zsm_Latn-jav_Latn, None
 3. NLLB-200, Dense, 1.3B, 5.48 GB, https://tinyurl.com/nllb200dense1bmetrics, zsm_Latn-jav_Latn, None
+""",
+    'en-zho_Hans': """
+NLLB Metrics, https://github.com/facebookresearch/fairseq/tree/nllb#multilingual-translation-models:
+1. NLLB-200, MOE, 54.5B, https://tinyurl.com/nllb200moe54bmetrics, eng_Latn-zho_Hans,22.8
+2. NLLB-200, Dense, 3.3B, 17.58 GB, https://tinyurl.com/nllb200dense3bmetrics, eng_Latn-zho_Hans,22.3
+3. NLLB-200, Dense, 1.3B, 5.48 GB, https://tinyurl.com/nllb200dense1bmetrics, eng_Latn-zho_Hans,21.3
+""",
+    'zho_Hans-en': """
+NLLB Metrics, https://github.com/facebookresearch/fairseq/tree/nllb#multilingual-translation-models:
+1. NLLB-200, MOE, 54.5B, https://tinyurl.com/nllb200moe54bmetrics, zho_Hans-eng_Latn,54.7
+2. NLLB-200, Dense, 3.3B, 17.58 GB, https://tinyurl.com/nllb200dense3bmetrics, zho_Hans-eng_Latn,56.2
+3. NLLB-200, Dense, 1.3B, 5.48 GB, https://tinyurl.com/nllb200dense1bmetrics, zho_Hans-eng_Latn,54.7
 """
 }
 
@@ -140,9 +152,9 @@ available_huggingface = {
         'from lang': ['en', 'ms', 'ind', 'jav', 'bjn', 'manglish', 'pasar ms'],
         'to lang': ['en', 'ms'],
     },
-    'mesolitica/translation-nanot5-tiny-malaysian-cased': {
-        'Size (MB)': 205,
-        'Suggested length': 2048,
+    'mesolitica/translation-t5-base-standard-bahasa-cased': {
+        'Size (MB)': 892,
+        'Suggested length': 1536,
         'en-ms chrF2++': 67.62,
         'ms-en chrF2++': 64.41,
         'ind-ms chrF2++': 59.25,
@@ -151,34 +163,54 @@ available_huggingface = {
         'pasar ms-en chrF2++': 62.06,
         'manglish-ms chrF2++': 54.40,
         'manglish-en chrF2++': 54.14,
+        'from lang': ['en', 'ms', 'ind', 'jav', 'bjn', 'manglish', 'pasar ms'],
+        'to lang': ['en', 'ms'],
+    },
+    'mesolitica/translation-nanot5-tiny-malaysian-cased': {
+        'Size (MB)': 205,
+        'Suggested length': 2048,
+        'en-ms chrF2++': 63.61,
+        'ms-en chrF2++': 59.55,
+        'ind-ms chrF2++': 56.38,
+        'jav-ms chrF2++': 47.68,
+        'mandarin-ms chrF2++': 36.61,
+        'mandarin-en chrF2++': 39.78,
+        'pasar ms-ms chrF2++': 58.74,
+        'pasar ms-en chrF2++': 54.87,
+        'manglish-ms chrF2++': 50.76,
+        'manglish-en chrF2++': 53.16,
         'from lang': ['en', 'ms', 'ind', 'jav', 'bjn', 'manglish', 'pasar ms', 'mandarin', 'pasar mandarin'],
         'to lang': ['en', 'ms'],
     },
     'mesolitica/translation-nanot5-small-malaysian-cased': {
         'Size (MB)': 358,
         'Suggested length': 2048,
-        'en-ms chrF2++': 67.62,
-        'ms-en chrF2++': 64.41,
-        'ind-ms chrF2++': 59.25,
-        'jav-ms chrF2++': 52.86,
-        'pasar ms-ms chrF2++': 62.99,
-        'pasar ms-en chrF2++': 62.06,
-        'manglish-ms chrF2++': 54.40,
-        'manglish-en chrF2++': 54.14,
+        'en-ms chrF2++': 66.98,
+        'ms-en chrF2++': 63.52,
+        'ind-ms chrF2++': 58.10,
+        'jav-ms chrF2++': 51.55,
+        'mandarin-ms chrF2++': 46.09,
+        'mandarin-en chrF2++': 44.13,
+        'pasar ms-ms chrF2++': 63.20,
+        'pasar ms-en chrF2++': 59.78,
+        'manglish-ms chrF2++': 54.09,
+        'manglish-en chrF2++': 55.27,
         'from lang': ['en', 'ms', 'ind', 'jav', 'bjn', 'manglish', 'pasar ms', 'mandarin', 'pasar mandarin'],
         'to lang': ['en', 'ms'],
     },
     'mesolitica/translation-nanot5-base-malaysian-cased': {
         'Size (MB)': 990,
         'Suggested length': 2048,
-        'en-ms chrF2++': 67.62,
-        'ms-en chrF2++': 64.41,
-        'ind-ms chrF2++': 59.25,
-        'jav-ms chrF2++': 52.86,
-        'pasar ms-ms chrF2++': 62.99,
-        'pasar ms-en chrF2++': 62.06,
-        'manglish-ms chrF2++': 54.40,
-        'manglish-en chrF2++': 54.14,
+        'en-ms chrF2++': 67.87,
+        'ms-en chrF2++': 64.79,
+        'ind-ms chrF2++': 56.98,
+        'jav-ms chrF2++': 51.21,
+        'mandarin-ms chrF2++': 47.39,
+        'mandarin-en chrF2++': 48.78,
+        'pasar ms-ms chrF2++': 65.06,
+        'pasar ms-en chrF2++': 64.03,
+        'manglish-ms chrF2++': 57.91,
+        'manglish-en chrF2++': 55.66,
         'from lang': ['en', 'ms', 'ind', 'jav', 'bjn', 'manglish', 'pasar ms', 'mandarin', 'pasar mandarin'],
         'to lang': ['en', 'ms'],
     },
@@ -238,7 +270,7 @@ def word(model: str = 'mesolitica/en-ms', **kwargs):
     -------
     result: Dict[str, str]
     """
-    if model not in _word_availability:
+    if model not in available_word:
         raise ValueError(
             'model not supported, please check supported models from `malaya.translation.available_word`.'
         )
@@ -252,7 +284,7 @@ def word(model: str = 'mesolitica/en-ms', **kwargs):
 
 
 def huggingface(
-    model: str = 'mesolitica/translation-nanot5-small-code-cased',
+    model: str = 'mesolitica/translation-t5-small-standard-bahasa-cased',
     force_check: bool = True,
     **kwargs,
 ):
@@ -261,7 +293,7 @@ def huggingface(
 
     Parameters
     ----------
-    model: str, optional (default='mesolitica/translation-nanot5-small-code-cased')
+    model: str, optional (default='mesolitica/translation-t5-small-standard-bahasa-cased')
         Check available models at `malaya.translation.available_huggingface`.
     force_check: bool, optional (default=True)
         Force check model one of malaya model.
@@ -275,7 +307,6 @@ def huggingface(
         model=model,
         class_model=Translation,
         available_huggingface=available_huggingface,
-        force_check=force_check,
         path=__name__,
         **kwargs,
     )

@@ -24,6 +24,7 @@ from malaya.text.function import (
     remove_newlines,
     remove_html_tags as f_remove_html_tags,
     pad_sentence_batch,
+    tag_chunk,
     STOPWORDS,
 )
 from malaya_boilerplate.converter import ctranslate2_translator
@@ -35,7 +36,9 @@ from malaya.torch_model.t5 import (
     T5Tagging,
     T5Diaparser,
     T5Constituency,
+    T5Embedding,
 )
+from malaya.torch_model.llama2 import LlamaModelEmbedding
 from malaya.torch_model.constituency_modules import BatchIndices
 from malaya_boilerplate.torch_utils import to_numpy
 from malaya.function.activation import softmax
@@ -1101,6 +1104,7 @@ class TexttoKG(Generator):
         outputs = [parse_rebel(o) for o in outputs_]
 
         for no in range(len(outputs)):
+            G = None
             if got_networkx:
                 try:
                     df = pd.DataFrame(outputs[no])
@@ -1113,51 +1117,9 @@ class TexttoKG(Generator):
                     )
                 except Exception as e:
                     logger.warning(e)
-                    G = None
-            else:
-                G = None
 
             outputs[no] = {'G': G, 'triple': outputs[no], 'rebel': outputs_[no]}
         return outputs
-
-
-class KGtoText(Generator):
-    def __init__(self, model, **kwargs):
-        Generator.__init__(
-            self,
-            model=model,
-            initial_text='grafik pengetahuan ke teks: ',
-            **kwargs,
-        )
-
-    def generate(self, kgs: List[List[Dict]], **kwargs):
-        """
-        Generate a text from list of knowledge graph dictionary.
-
-        Parameters
-        ----------
-        kg: List[List[Dict]]
-            list of list of {'head', 'type', 'tail'}
-        **kwargs: vector arguments pass to huggingface `generate` method.
-            Read more at https://huggingface.co/docs/transformers/main_classes/text_generation
-
-        Returns
-        -------
-        result: List[str]
-        """
-        for kg in kgs:
-            for no, k in enumerate(kg):
-                if 'head' not in k and 'type' not in k and 'tail' not in k:
-                    raise ValueError('a dict must have `head`, `type` and `tail` properties.')
-                elif not len(k['head']):
-                    raise ValueError(f'`head` length must > 0 for knowledge graph index {no}')
-                elif not len(k['type']):
-                    raise ValueError(f'`head` length must > 0 for knowledge graph index {no}')
-                elif not len(k['tail']):
-                    raise ValueError(f'`head` length must > 0 for knowledge graph index {no}')
-
-        rebels = [rebel_format(dict_to_list(kg)) for kg in kgs]
-        return super().generate(rebels, **kwargs)
 
 
 class Translation(Generator):
@@ -1273,5 +1235,101 @@ class Classification(Base):
 
 class Tagging(Base):
     def __init__(self, model, **kwargs):
+
         self.tokenizer = AutoTokenizer.from_pretrained(model, **kwargs)
         self.model = T5ForTokenClassification.from_pretrained(model, **kwargs)
+
+        self.rev_vocab = {v: k for k, v in self.model.config.vocab.items()}
+
+    def forward(self, string: str):
+
+        tokens = string.split()
+        tokenized_inputs = self.tokenizer([tokens], truncation=True, is_split_into_words=True)
+        tags = [[1] * len(t) for t in [tokens]]
+
+        labels = []
+        for i, label in enumerate(tags):
+            word_ids = tokenized_inputs.word_ids(batch_index=i)
+            previous_word_idx = None
+            label_ids = []
+            for word_idx in word_ids:
+                if word_idx is None:
+                    label_ids.append(-100)
+                elif word_idx != previous_word_idx:
+                    label_ids.append(label[word_idx])
+                else:
+                    label_ids.append(-100)
+                previous_word_idx = word_idx
+            labels.append(label_ids)
+
+        indices = labels[0]
+        padded = tokenized_inputs
+
+        for k in padded.keys():
+            padded[k] = torch.from_numpy(np.array(padded[k])).to(self.model.device)
+
+        pred = self.model(**padded)[0]
+        predictions = to_numpy(pred)[0].argmax(axis=1)
+        filtered = [self.rev_vocab[int(predictions[i])]
+                    for i in range(len(predictions)) if indices[i] != -100]
+        filtered = [(tokens[i], filtered[i]) for i in range(len(filtered))]
+        return filtered
+
+    def predict(self, string: str):
+        """
+        Tag a string.
+
+        Parameters
+        ----------
+        string : str
+
+        Returns
+        -------
+        result: Tuple[str, str]
+        """
+
+        return self.forward(string=string)
+
+    def analyze(self, string: str):
+        """
+        Analyze a string.
+
+        Parameters
+        ----------
+        string : str
+
+        Returns
+        -------
+        result: {'words': List[str], 'tags': [{'text': 'text', 'type': 'location', 'score': 1.0, 'beginOffset': 0, 'endOffset': 1}]}
+        """
+        predicted = self.predict(string)
+        return tag_chunk(predicted)
+
+
+class Embedding(Base):
+    def __init__(self, model, **kwargs):
+        self.tokenizer = AutoTokenizer.from_pretrained(model, **kwargs)
+        self.is_t5 = 'nanot5' in model
+        if self.is_t5:
+            model_class = T5Embedding
+        else:
+            model_class = LlamaModelEmbedding
+        self.model = model_class.from_pretrained(model, **kwargs)
+
+    def encode(self, strings: List[str]):
+        """
+        Encode texts into embedding.
+
+        Parameters
+        ----------
+        strings: List[str]
+
+        Returns
+        -------
+        result: np.array
+        """
+        padded = tokenizer(strings, return_tensors='pt', padding=True)
+        for k in padded.keys():
+            padded[k] = padded[k].to(self.model.device)
+
+        return to_numpy(model.encode(padded))

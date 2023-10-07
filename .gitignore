@@ -69,6 +69,7 @@ pretrained-model/nanoT5/out-base-1.1
 pretrained-model/nanoT5/out-small-1.1
 pretrained-model/nanoT5/out-tiny-1.1
 pretrained-model/nanoT5/out-large-1.1
+pretrained-model/nanoT5/out-super-tiny-1.1
 session/llama2/results
 session/llama2/results-1024
 session/llama2/results-1536

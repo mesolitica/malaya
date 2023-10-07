@@ -5,21 +5,21 @@ import logging
 logger = logging.getLogger(__name__)
 
 available_huggingface = {
-    'mesolitica/constituency-parsing-nanot5-small-malaysian-cased': {
-        'Size (MB)': 273,
-        'Recall': 79.10,
-        'Precision': 80.63,
-        'FScore': 79.86,
-        'CompleteMatch': 20.10,
-        'TaggingAccuracy': 93.96,
+    'mesolitica/constituency-parsing-t5-small-standard-bahasa-cased': {
+        'Size (MB)': 247,
+        'Recall': 81.62,
+        'Precision': 83.32,
+        'FScore': 82.46,
+        'CompleteMatch': 22.40,
+        'TaggingAccuracy': 94.95,
     },
-    'mesolitica/constituency-parsing-nanot5-base-malaysian-cased': {
+    'mesolitica/constituency-parsing-t5-base-standard-bahasa-cased': {
         'Size (MB)': 545,
-        'Recall': 80.89,
-        'Precision': 81.87,
-        'FScore': 81.38,
-        'CompleteMatch': 23.90,
-        'TaggingAccuracy': 94.45,
+        'Recall': 82.23,
+        'Precision': 82.12,
+        'FScore': 82.18,
+        'CompleteMatch': 23.50,
+        'TaggingAccuracy': 94.69,
     }
 }
 

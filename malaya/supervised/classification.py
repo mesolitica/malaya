@@ -1,5 +1,6 @@
 from malaya.function import check_file
-from malaya.stem import _classification_textcleaning_stemmer, naive
+from malaya.text.function import classification_textcleaning_stemmer
+from malaya.stem import naive
 from malaya.text.bpe import (
     WordPieceTokenizer,
     YTTMEncoder,
@@ -20,7 +21,7 @@ def multinomial(path, s3_path, module, label, sigmoid=False, **kwargs):
     bpe = YTTMEncoder(vocab_file=path['bpe'])
 
     stemmer = naive()
-    cleaning = partial(_classification_textcleaning_stemmer, stemmer=stemmer)
+    cleaning = partial(classification_textcleaning_stemmer, stemmer=stemmer)
 
     if sigmoid:
         selected_model = MultilabelBayes

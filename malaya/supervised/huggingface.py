@@ -1,3 +1,11 @@
+import inspect
+
+additional_parameters = {
+    'from_lang': 'from lang',
+    'to_lang': 'to lang',
+}
+
+
 def load(
     model,
     class_model,
@@ -11,9 +19,12 @@ def load(
             f'model not supported, please check supported models from `{path}.available_huggingface`.'
         )
 
+    args = inspect.getargspec(class_model)
+    for k, v in additional_parameters.items():
+        if k in args.args:
+            kwargs[k] = available_huggingface[model].get(v)
+
     return class_model(
         model=model,
-        from_lang=available_huggingface[model].get('from lang'),
-        to_lang=available_huggingface[model].get('to lang'),
         **kwargs,
     )

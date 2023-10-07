@@ -30,10 +30,10 @@ import torch
 
 @dataclass
 class EncoderOutput(ModelOutput):
-    q_reps = None
-    p_reps = None
-    loss = None
-    scores = None
+    q_reps: Optional[Tensor] = None
+    p_reps: Optional[Tensor] = None
+    loss: Optional[Tensor] = None
+    scores: Optional[Tensor] = None
 
 
 class T5Tagging(T5ForConditionalGeneration):
@@ -217,6 +217,7 @@ class T5Embedding(T5EncoderModel):
         super().__init__(config, **kwargs)
 
         self.cross_entropy = nn.CrossEntropyLoss(reduction='mean')
+        self.dense_layer = nn.Linear(self.config.hidden_size, 1024)
 
     def sentence_embedding(self, hidden_state, mask):
         if self.config.sentence_pooling_method == 'mean':
@@ -230,7 +231,8 @@ class T5Embedding(T5EncoderModel):
         if features is None:
             return None
         psg_out = super().forward(**features, return_dict=True)
-        p_reps = self.sentence_embedding(psg_out.last_hidden_state, features['attention_mask'])
+        output = self.dense_layer(psg_out.last_hidden_state)
+        p_reps = self.sentence_embedding(output, features['attention_mask'])
         if self.config.normalized:
             p_reps = torch.nn.functional.normalize(p_reps, dim=-1)
         return p_reps.contiguous()
@@ -249,9 +251,6 @@ class T5Embedding(T5EncoderModel):
         p_reps = self.encode(passage)
 
         if self.training:
-            if self.negatives_cross_device:
-                q_reps = self._dist_gather_tensor(q_reps)
-                p_reps = self._dist_gather_tensor(p_reps)
 
             scores = self.compute_similarity(q_reps, p_reps)
             scores = scores / self.temperature

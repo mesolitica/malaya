@@ -1,7 +1,7 @@
-from malaya.supervised import huggingface as load_huggingface
-import logging
+from malaya.supervised.huggingface import load
+from malaya.torch_model.huggingface import Paraphrase
 
-_huggingface_availability = {
+available_huggingface = {
     'mesolitica/finetune-paraphrase-t5-tiny-standard-bahasa-cased': {
         'Size (MB)': 139,
         'BLEU': 36.92696648298233,
@@ -22,33 +22,10 @@ _huggingface_availability = {
     },
 }
 
-
-def _describe():
-    logger.info('tested on MRPC validation set, https://huggingface.co/datasets/mesolitica/translated-MRPC')
-    logger.info(
-        'tested on ParaSCI ARXIV test set, https://huggingface.co/datasets/mesolitica/translated-paraSCI')
-
-
-def available_transformer():
-    """
-    List available transformer models.
-    """
-
-    warnings.warn(
-        '`malaya.paraphrase.available_transformer` is deprecated, use `malaya.paraphrase.available_huggingface` instead',
-        DeprecationWarning)
-
-    _describe()
-    return describe_availability(_transformer_availability)
-
-
-def available_huggingface():
-    """
-    List available huggingface models.
-    """
-
-    _describe()
-    return describe_availability(_huggingface_availability)
+info = """
+tested on MRPC validation set, https://huggingface.co/datasets/mesolitica/translated-MRPC
+tested on ParaSCI ARXIV test set, https://huggingface.co/datasets/mesolitica/translated-paraSCI
+""".strip()
 
 
 def huggingface(
@@ -62,7 +39,7 @@ def huggingface(
     Parameters
     ----------
     model: str, optional (default='mesolitica/finetune-paraphrase-t5-small-standard-bahasa-cased')
-        Check available models at `malaya.paraphrase.available_huggingface()`.
+        Check available models at `malaya.paraphrase.available_huggingface`.
     force_check: bool, optional (default=True)
         Force check model one of malaya model.
         Set to False if you have your own huggingface model.
@@ -71,8 +48,16 @@ def huggingface(
     -------
     result: malaya.torch_model.huggingface.Paraphrase
     """
-    if model not in _huggingface_availability and force_check:
+    if model not in available_huggingface and force_check:
         raise ValueError(
-            'model not supported, please check supported models from `malaya.paraphrase.available_huggingface()`.'
+            'model not supported, please check supported models from `malaya.paraphrase.available_huggingface`.'
         )
-    return load_huggingface.load_paraphrase(model=model, initial_text='parafrasa: ', **kwargs)
+
+    return load(
+        model=model,
+        class_model=Paraphrase,
+        available_huggingface=available_huggingface,
+        force_check=force_check,
+        path=__name__,
+        **kwargs,
+    )

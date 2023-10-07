@@ -67,3 +67,23 @@ model.klass="hf_t5" \
 model_directory="tiny" \
 model.compile=true
 ```
+
+- SUPER TINY,
+
+```bash
+CUDA_VISIBLE_DEVICES=1 \
+python3 train_lightning.py \
+optim.name=adamwscale \
+optim.batch_size=192 \
+optim.lr_scheduler=cosine \
+optim.grad_acc=1 \
+model.name="/home/husein/dev/malaya/pretrained-model/nanoT5/out-super-tiny-1.1" \
+model.random_init=false \
+data.filename.train="/home/husein/dev/malaya/pretrained-model/nanoT5/combine.jsonl" \
+data.filename.test="/home/husein/dev/malaya/pretrained-model/nanoT5/combine.jsonl" \
+checkpoint.every_steps=10000 \
+optim.total_steps=500000 \
+model.klass="hf_t5" \
+model_directory="super-tiny" \
+model.compile=true
+```

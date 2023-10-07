@@ -10,7 +10,7 @@ from malaya.text.tatabahasa import (
     laughing,
     mengeluh,
 )
-from malaya.text.rules import normalized_chars
+from malaya.text.rules import normalized_chars, rules_normalizer
 from malaya.text.unicode.emoji import emoji
 from malaya.text.regex import _expressions
 from malaya.text.ngram import ngrams
@@ -800,3 +800,19 @@ def fuzzy_substring_search(major: str, minor: str, errs: int = 10):
         return major[span[0]: span[1]]
     else:
         return None
+
+
+def classification_textcleaning_stemmer(string, stemmer):
+    string = re.sub(
+        'http\\S+|www.\\S+',
+        '',
+        ' '.join(
+            [i for i in string.split() if i.find('#') < 0 and i.find('@') < 0]
+        ),
+    )
+    string = unidecode(string).replace('.', ' . ').replace(',', ' , ')
+    string = re.sub('[^A-Za-z ]+', ' ', string)
+    string = re.sub(r'[ ]+', ' ', string.lower()).strip()
+    string = [rules_normalizer.get(w, w) for w in string.split()]
+    string = [(stemmer.stem(word), word) for word in string]
+    return ' '.join([word[0] for word in string if len(word[0]) > 1])
