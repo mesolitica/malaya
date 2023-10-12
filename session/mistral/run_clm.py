@@ -370,10 +370,6 @@ def main():
             else getattr(torch, model_args.torch_dtype)
         )
 
-        #     from modeling_flash_llama import LlamaForCausalLM
-        #     selected_model = LlamaForCausalLM
-        # else:
-
         selected_model = AutoModelForCausalLM
 
         model = selected_model.from_pretrained(
@@ -386,6 +382,7 @@ def main():
             trust_remote_code=model_args.trust_remote_code,
             torch_dtype=torch_dtype,
             low_cpu_mem_usage=model_args.low_cpu_mem_usage,
+            use_flash_attention_2=True
         )
     else:
         model = AutoModelForCausalLM.from_config(
@@ -439,7 +436,7 @@ def main():
             batched=True,
             remove_columns=column_names,
             load_from_cache_file=True,
-            cache_file_name=f'./{data_args.train_file}-tokenized-1024',
+            cache_file_name=f'./{data_args.train_file}-tokenized',
             num_proc=20,
         )
 
