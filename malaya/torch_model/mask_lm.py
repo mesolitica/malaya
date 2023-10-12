@@ -260,7 +260,7 @@ class RobertaForMaskedLMOptimized(RobertaForMaskedLM):
 
 
 class MLMScorer:
-    def __init__(self, model):
+    def __init__(self, model, **kwargs):
         splitted = model.lower().replace('/', '-').split('-')
         if 'bert' in splitted:
             model_class = BertForMaskedLMOptimized
@@ -286,7 +286,7 @@ class MLMScorer:
         # We don't mask the [CLS], [SEP] for now for PLL
         mask_indices = mask_indices[1:-1]
 
-        mask_token_id = self._tokenizer._convert_token_to_id(self._tokenizer.mask_token)
+        mask_token_id = self.tokenizer._convert_token_to_id(self.tokenizer.mask_token)
         for mask_set in mask_indices:
             token_ids_masked = token_ids.copy()
             token_ids_masked[mask_set] = mask_token_id
@@ -298,7 +298,7 @@ class MLMScorer:
     def corpus_to_dataset(self, corpus):
         sents_expanded = []
         for sent_idx, sent in enumerate(corpus):
-            ids_original = np.array(self._tokenizer.encode(sent, add_special_tokens=True))
+            ids_original = np.array(self.tokenizer.encode(sent, add_special_tokens=True))
             ids_masked = self._ids_to_masked(ids_original)
             sents_expanded += [(
                 sent_idx,
@@ -346,7 +346,7 @@ class MLMScorer:
             alen = torch.arange(token_ids.shape[1], dtype=torch.long)
             alen = alen.to(self.model.device)
             mask = alen < valid_length[:, None]
-            out = self._model(
+            out = self.model(
                 input_ids=token_ids,
                 attention_mask=mask,
                 select_positions=masked_positions)

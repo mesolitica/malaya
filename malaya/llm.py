@@ -41,7 +41,7 @@ def huggingface(
     -------
     result: malaya.torch_model.huggingface.LLM
     """
-    if model not in _huggingface_availability and force_check:
+    if model not in available_huggingface and force_check:
         raise ValueError(
             'model not supported, please check supported models from `malaya.llm.available_huggingface`.'
         )

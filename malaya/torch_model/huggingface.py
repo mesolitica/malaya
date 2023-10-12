@@ -1144,6 +1144,8 @@ class Translation(Generator):
             'manglish': 'Manglish',
             'mandarin': 'Mandarin',
             'pasar mandarin': 'pasar Mandarin',
+            'jawi': 'Jawi',
+            'rumi': 'Rumi',
         }
 
         self.all_special_ids = [0, 1, 2]

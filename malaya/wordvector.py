@@ -61,8 +61,7 @@ def load(model: str = 'wikipedia', **kwargs):
     vector: np.array, 2D.
     """
 
-    model = model.lower()
-    if model not in _wordvector_availability:
+    if model not in available_wordvector:
         raise ValueError(
             'model not supported, please check supported models from `malaya.wordvector.available_wordvector`.'
         )

@@ -83,3 +83,13 @@ session/emotion/emotion-twitter-lexicon.json
 session/entities/*.json
 session/*/*/config.json
 session/*/*/*.bin
+tests/.hypothesis
+*.pt
+session/*/tokenizer
+session/*/*.zip*
+session/stemmer/*.txt
+session/stemmer/*.json
+session/syllable/*.json
+session/*/*.jsonl
+session/*/prepared.json
+session/*/explain-sentiment.json

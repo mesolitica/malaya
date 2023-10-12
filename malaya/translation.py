@@ -1,7 +1,6 @@
 from malaya.supervised.huggingface import load
 from malaya.torch_model.huggingface import Translation
 from malaya_boilerplate.huggingface import download_files
-from malaya.model.alignment import Eflomal
 from typing import Callable, List
 import json
 
@@ -103,23 +102,14 @@ chrF2++ = 60.27
 """
 }
 
-available_eflomal = {
-    'mesolitica/eflomal-ms-en': {
-        'Size (MB)': 240,
-    },
-    'mesolitica/eflomal-en-ms': {
-        'Size (MB)': 301,
-    },
-}
-
 available_word = {
-    'mesolitica/en-ms': {
-        'Size (MB)': 1,
-        'total words': 1,
+    'mesolitica/word-en-ms': {
+        'Size (MB)': 42.6,
+        'total words': 1599797,
     },
-    'mesolitica/id-ms': {
-        'Size (MB)': 1,
-        'total words': 1,
+    'mesolitica/word-id-ms': {
+        'Size (MB)': 53,
+        'total words': 1902607,
     }
 }
 
@@ -225,45 +215,13 @@ info = """
 """.strip()
 
 
-def eflomal(
-    model: str = 'mesolitica/eflomal-ms-en',
-    preprocessing_func: Callable = None,
-    **kwargs,
-):
-    """
-    load https://github.com/robertostling/eflomal word alignment.
-
-    Parameters
-    ----------
-    model, optional (default='mesolitica/eflomal-ms-en')
-        Check available models at `malaya.translation.available_eflomal`.
-    preprocessing_func: Callable, optional (default=None)
-        preprocessing function to call during loading prior file.
-        Using `malaya.text.function.replace_punct` able to reduce ~30% of memory usage.
-
-    Returns
-    -------
-    result: malaya.model.alignment.Eflomal
-    """
-
-    if model not in available_eflomal:
-        raise ValueError(
-            'model not supported, please check supported models from `malaya.translation.available_eflomal`.'
-        )
-
-    s3_file = {'model': 'model.priors'}
-    path = download_files(model, s3_file, **kwargs)
-
-    return Eflomal(preprocessing_func=preprocessing_func, priors_filename=path['model'])
-
-
-def word(model: str = 'mesolitica/en-ms', **kwargs):
+def word(model: str = 'mesolitica/word-en-ms', **kwargs):
     """
     Load word dictionary, based on google translate.
 
     Parameters
     ----------
-    model, optional (default='mesolitica/en-ms')
+    model, optional (default='mesolitica/word-en-ms')
         Check available models at `malaya.translation.available_word`.
 
     Returns

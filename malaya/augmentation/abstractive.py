@@ -1,10 +1,8 @@
-from malaya.supervised import huggingface as load_huggingface
+from malaya.supervised.huggingface import load
+from malaya.torch_model.huggingface import Translation
 from typing import List
-import logging
 
-logger = logging.getLogger(__name__)
-
-_huggingface_availability = {
+available_huggingface = {
     'mesolitica/translation-t5-tiny-standard-bahasa-cased': {
         'Size (MB)': 139,
         'Suggested length': 1536,
@@ -68,16 +66,6 @@ _huggingface_availability = {
 }
 
 
-def available_huggingface():
-    """
-    List available huggingface models.
-    """
-
-    logger.info(
-        'tested on noisy twitter google translation, https://huggingface.co/datasets/mesolitica/augmentation-test-set')
-    return describe_availability(_huggingface_availability)
-
-
 def huggingface(
     model: str = 'mesolitica/translation-t5-small-standard-bahasa-cased',
     force_check: bool = True,
@@ -89,7 +77,7 @@ def huggingface(
     Parameters
     ----------
     model: str, optional (default='mesolitica/translation-t5-small-standard-bahasa-cased')
-        Check available models at `malaya.translation.available_huggingface()`.
+        Check available models at `malaya.augmentation.abstractive.available_huggingface`.
     force_check: bool, optional (default=True)
         Force check model one of malaya model.
         Set to False if you have your own huggingface model.
@@ -98,13 +86,10 @@ def huggingface(
     -------
     result: malaya.torch_model.huggingface.Translation
     """
-    return _huggingface(
-        availability=_huggingface_availability,
+    return load(
         model=model,
-        force_check=force_check,
-        from_lang=from_lang,
-        to_lang=to_lang,
-        old_model=old_model,
+        class_model=Translation,
+        available_huggingface=available_huggingface,
         path=__name__,
         **kwargs,
     )

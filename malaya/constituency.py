@@ -29,7 +29,7 @@ Tested on https://github.com/aisingapore/seacorenlp-data/tree/main/id/constituen
 
 
 def huggingface(
-    model: str = 'mesolitica/constituency-parsing-nanot5-base-malaysian-cased',
+    model: str = 'mesolitica/constituency-parsing-t5-small-standard-bahasa-cased',
     force_check: bool = True,
     **kwargs,
 ):
@@ -38,7 +38,7 @@ def huggingface(
 
     Parameters
     ----------
-    model: str, optional (default='mmesolitica/constituency-parsing-nanot5-base-malaysian-cased')
+    model: str, optional (default='mesolitica/constituency-parsing-t5-small-standard-bahasa-cased')
         Check available models at `malaya.constituency.available_huggingface`.
     force_check: bool, optional (default=True)
         Force check model one of malaya model.

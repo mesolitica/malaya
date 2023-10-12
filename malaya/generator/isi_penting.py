@@ -1,7 +1,5 @@
-from malaya.supervised import huggingface as load_huggingface
-import logging
-
-logger = logging.getLogger(__name__)
+from malaya.supervised.huggingface import load
+from malaya.torch_model.huggingface import IsiPentingGenerator
 
 available_huggingface = {
     'mesolitica/finetune-isi-penting-generator-t5-small-standard-bahasa-cased': {
@@ -37,7 +35,7 @@ def huggingface(
     Parameters
     ----------
     model: str, optional (default='mesolitica/finetune-isi-penting-generator-t5-base-standard-bahasa-cased')
-        Check available models at `malaya.generator.isi_penting.available_huggingface()`.
+        Check available models at `malaya.generator.isi_penting.available_huggingface`.
     force_check: bool, optional (default=True)
         Force check model one of malaya model.
         Set to False if you have your own huggingface model.
@@ -46,8 +44,15 @@ def huggingface(
     -------
     result: malaya.torch_model.huggingface.IsiPentingGenerator
     """
-    if model not in _huggingface_availability and force_check:
+    if model not in available_huggingface and force_check:
         raise ValueError(
-            'model not supported, please check supported models from `malaya.generator.isi_penting.available_huggingface()`.'
+            'model not supported, please check supported models from `malaya.generator.isi_penting.available_huggingface`.'
         )
-    return load_huggingface.load_isi_penting(model=model, **kwargs)
+    return load(
+        model=model,
+        class_model=IsiPentingGenerator,
+        available_huggingface=available_huggingface,
+        force_check=force_check,
+        path=__name__,
+        **kwargs,
+    )

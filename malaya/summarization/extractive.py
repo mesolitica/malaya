@@ -1,4 +1,4 @@
-from malaya.model.extractive_summarization import SKLearn, Doc2Vec, Encoder
+from malaya.model.extractive_summarization import SKLearn, Encoder
 
 
 def encoder(vectorizer):
@@ -26,25 +26,6 @@ def encoder(vectorizer):
         )
 
     return Encoder(vectorizer)
-
-
-def doc2vec(wordvector):
-    """
-    Doc2Vec interface for summarization.
-
-    Parameters
-    ----------
-    wordvector : object
-        malaya.wordvector.WordVector object.
-        should have `get_vector_by_name` method.
-
-    Returns
-    -------
-    result: malaya.model.extractive_summarization.Doc2Vec
-    """
-    if not hasattr(wordvector, 'get_vector_by_name'):
-        raise ValueError('wordvector must have `get_vector_by_name` method')
-    return Doc2Vec(wordvector)
 
 
 def sklearn(model, vectorizer):

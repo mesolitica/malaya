@@ -1,7 +1,5 @@
-from malaya.supervised import huggingface as load_huggingface
-import logging
-
-logger = logging.getLogger(__name__)
+from malaya.supervised.huggingface import load
+from malaya.torch_model.huggingface import Transformer
 
 available_huggingface = {
     'mesolitica/roberta-base-bahasa-cased': {
@@ -52,4 +50,10 @@ def huggingface(
             'model not supported, please check supported models from `malaya.transformer.available_huggingface`.'
         )
 
-    return load_huggingface.load_transformer(model=model, **kwargs)
+    return load(
+        model=model,
+        class_model=Transformer,
+        available_huggingface=available_huggingface,
+        path=__name__,
+        **kwargs,
+    )

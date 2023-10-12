@@ -1,20 +1,10 @@
 import os
-
-os.environ['CUDA_VISIBLE_DEVICES'] = ''
-os.environ['MALAYA_USE_HUGGINGFACE'] = 'true'
-
 import sys
 import malaya
 import logging
 import re
 
 logging.basicConfig(level=logging.DEBUG)
-
-
-def cleaning(string):
-    string = string.replace('\n', ' ')
-    string = re.sub(r'[ ]+', ' ', string).strip()
-    return string
 
 
 string = """
@@ -43,14 +33,17 @@ Marzuki turut mempersoal kenyataan media yang dibuat beberapa pimpinan parti itu
 "Kenyataan media bukanlah keputusan rasmi. Walaupun kita buat 1,000 kenyataan sekali pun ia tetap tidak merubah keputusan yang sudah dibuat di dalam mesyuarat. Kita catat di dalam minit apa yang berlaku di dalam mesyuarat," katanya.
 """
 
-string = cleaning(string)
 
+def test_huggingface():
 
-def test_transformer():
-    models = malaya.summarization.abstractive.available_transformer()
-    for m in models.index:
+    cache_dir = os.path.join(os.getcwd(), 'cache')
+    print(cache_dir)
+
+    models = malaya.summarization.abstractive.available_huggingface
+    for m in models:
         print(m)
-        model = malaya.summarization.abstractive.transformer(model=m)
-        print(model.greedy_decoder([string]))
-        os.system('rm -f ~/.cache/huggingface/hub/*')
+        model = malaya.summarization.abstractive.huggingface(model=m, cache_dir=cache_dir)
+        print(model.generate([string], max_length=256))
         del model
+
+    os.system(f'rm -f {cache_dir}')

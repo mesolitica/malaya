@@ -1,4 +1,5 @@
-from malaya.supervised import huggingface as load_huggingface
+from malaya.supervised.huggingface import load
+from malaya.torch_model.huggingface import Generator
 
 available_huggingface = {
     'mesolitica/finetune-true-case-t5-super-tiny-standard-bahasa-cased': {
@@ -46,4 +47,15 @@ def huggingface(
     -------
     result: malaya.torch_model.huggingface.Generator
     """
-    return load_huggingface.load_generator(model=model, initial_text='kes benar: ', **kwargs)
+    if model not in available_huggingface and force_check:
+        raise ValueError(
+            'model not supported, please check supported models from `malaya.true_case.available_huggingface`.'
+        )
+    return load(
+        model=model,
+        class_model=Generator,
+        available_huggingface=available_huggingface,
+        path=__name__,
+        initial_text='kes benar: ',
+        **kwargs,
+    )
