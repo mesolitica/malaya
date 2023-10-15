@@ -180,7 +180,7 @@ def load(model: str = 'wiki', **kwargs):
         )
 
     model = model.lower()
-    if model not in _availability:
+    if model not in available_model:
         raise ValueError(
             'model not supported, please check supported models from `malaya.spelling_correction.jamspell.available_model`.'
         )

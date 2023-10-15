@@ -28,7 +28,7 @@ ln -s ~/.local/lib/python3.8/site-packages/torch/lib/libcudart-d0da41ae.so.11.0 
 1. Install dependencies,
 
 ```bash
-pip3 install flash-attn --no-build-isolation
+pip3 install flash-attn --no-build-isolation -U
 pip3 install git+https://github.com/HazyResearch/flash-attention.git#subdirectory=csrc/rotary
 ```
 

@@ -93,3 +93,5 @@ session/syllable/*.json
 session/*/*.jsonl
 session/*/prepared.json
 session/*/explain-sentiment.json
+countries.geojson
+popit-persons.json

@@ -1,11 +1,7 @@
 from malaya.supervised.huggingface import load
 from malaya.torch_model.huggingface import ExtractiveQA
-import logging
-import warnings
 
-logger = logging.getLogger(__name__)
-
-_huggingface_availability = {
+available_huggingface = {
     'mesolitica/finetune-qa-t5-tiny-standard-bahasa-cased': {
         'Size (MB)': 139,
         'exact-ms': 0.426955861,
@@ -29,15 +25,10 @@ _huggingface_availability = {
     },
 }
 
-
-def available_huggingface():
-    """
-    List available huggingface models.
-    """
-
-    logger.info('tested on translated SQUAD V2 Dev set, https://github.com/huseinzol05/malay-dataset/tree/master/question-answer/squad')
-    logger.info('tested on SQUAD V2 Dev set, https://rajpurkar.github.io/SQuAD-explorer/')
-    return describe_availability(_huggingface_availability)
+info = """
+tested on translated SQUAD V2 Dev set, https://github.com/huseinzol05/malay-dataset/tree/master/question-answer/squad
+tested on SQUAD V2 Dev set, https://rajpurkar.github.io/SQuAD-explorer/
+""".strip()
 
 
 def huggingface(
@@ -51,7 +42,7 @@ def huggingface(
     Parameters
     ----------
     model: str, optional (default='mesolitica/finetune-qa-t5-small-standard-bahasa-cased')
-        Check available models at `malaya.qa.extractive.available_huggingface()`.
+        Check available models at `malaya.qa.extractive.available_huggingface`.
     force_check: bool, optional (default=True)
         Force check model one of malaya model.
         Set to False if you have your own huggingface model.
@@ -63,7 +54,7 @@ def huggingface(
     return load(
         model=model,
         class_model=ExtractiveQA,
-        availability=_huggingface_availability,
+        available_huggingface=available_huggingface,
         force_check=force_check,
         path=__name__,
         **kwargs,

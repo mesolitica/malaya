@@ -149,7 +149,7 @@ def gpt2(
 
 
 def mlm(
-    model: str = 'malay-huggingface/bert-tiny-bahasa-cased',
+    model: str = 'mesolitica/bert-tiny-standard-bahasa-cased',
     force_check: bool = True,
     **kwargs
 ):
@@ -158,7 +158,7 @@ def mlm(
 
     Parameters
     ----------
-    model: str, optional (default='malay-huggingface/bert-tiny-bahasa-cased')
+    model: str, optional (default='mesolitica/bert-tiny-standard-bahasa-cased')
         Check available models at `malaya.language_model.available_mlm`.
     force_check: bool, optional (default=True)
         Force check model one of malaya model.

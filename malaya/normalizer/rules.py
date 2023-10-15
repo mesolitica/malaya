@@ -997,7 +997,11 @@ class Normalizer:
             for no_word, word in enumerate(words):
                 if self._stemmer is not None:
                     s = f'index: {index}, word: {word}, self._stemmer is not None'
-                    word, end_result_string = _remove_postfix(word, stemmer=self._stemmer)
+                    word, end_result_string = _remove_postfix(
+                        word,
+                        stemmer=self._stemmer,
+                        validate_word=False,
+                    )
                     if len(end_result_string) and end_result_string[0] in digits:
                         word = word + end_result_string[0]
                         end_result_string = end_result_string[1:]
