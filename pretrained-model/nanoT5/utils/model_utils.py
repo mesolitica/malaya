@@ -2,7 +2,6 @@ import torch
 import datasets
 from torch.utils.data import DataLoader
 from omegaconf import open_dict
-from datasets.iterable_dataset import IterableDataset
 from transformers import (
     AutoTokenizer,
     T5ForConditionalGeneration,
@@ -16,7 +15,6 @@ from .copied_utils import (
     DataCollatorForNI,
 )
 from .t5_model import MyT5
-from .data_utils import Dataset, DatasetFixed
 
 
 def get_model(args, config):
@@ -84,12 +82,21 @@ def process_dataset(args, tokenizer):
                 args.data.before_mask_input_length = before_mask_input_length
                 args.data.target_length = target_length
 
-            if args.data.type == 'iterate':
-                data_class = Dataset
-            else:
-                data_class = DatasetFixed
-
-            dataset = data_class(args.data.filename.get(split), tokenizer, before_mask_input_length)
+            filename = args.data.filename.get(split)
+            dataset = datasets.load_dataset(
+                'json', data_files=filename, split='train')
+            dataset = dataset.map(
+                tokenize_function,
+                batched=True,
+                fn_kwargs={
+                    'tokenizer': tokenizer,
+                    'in_length': before_mask_input_length,
+                },
+                remove_columns=['text'],
+                load_from_cache_file=True,
+                cache_file_name=f'{filename}-tokenized',
+                num_proc=args.data.num_workers,
+            )
             final_datasets[split] = dataset
     else:
         raise NotImplementedError

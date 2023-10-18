@@ -37,6 +37,43 @@ openai_metrics = {
 }
 
 available_huggingface = {
+    'mesolitica/nanot5-small-embedding': {
+        'Size (MB)': 2170,
+        'embedding size': 1024,
+        'Suggested length': 1024,
+        'b.cari.com.my': {
+            'positive score': 0.8928321128367129,
+            'negative score': 0.26488808270585834,
+            'top1': 0.22942090082094518,
+            'top3': 0.4919014865764367,
+            'top5': 0.5930774351009541,
+            'top10': 0.7248724206789439,
+        },
+        'c.cari.com.my': {
+            'positive score': 0.8928321128367129,
+            'negative score': 0.26488808270585834,
+            'top1': 0.22942090082094518,
+            'top3': 0.4919014865764367,
+            'top5': 0.5930774351009541,
+            'top10': 0.7248724206789439,
+        },
+        'malay-news': {
+            'positive score': 0.8928321128367129,
+            'negative score': 0.26488808270585834,
+            'top1': 0.22942090082094518,
+            'top3': 0.4919014865764367,
+            'top5': 0.5930774351009541,
+            'top10': 0.7248724206789439,
+        },
+        'twitter': {
+            'positive score': 0.8928321128367129,
+            'negative score': 0.26488808270585834,
+            'top1': 0.22942090082094518,
+            'top3': 0.4919014865764367,
+            'top5': 0.5930774351009541,
+            'top10': 0.7248724206789439,
+        },
+    },
     'mesolitica/nanot5-base-embedding': {
         'Size (MB)': 2170,
         'embedding size': 1024,

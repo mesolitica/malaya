@@ -33,7 +33,6 @@ data:
     test: "file"
   train_batches: 1000
   test_batches: 10
-  type: "iterate"
 
 optim:
   name: adamwscale

@@ -36,6 +36,30 @@ class EncoderOutput(ModelOutput):
     scores: Optional[Tensor] = None
 
 
+class BartClassificationHead(nn.Module):
+    """Head for sentence-level classification tasks."""
+
+    def __init__(
+        self,
+        input_dim: int,
+        inner_dim: int,
+        num_classes: int,
+        pooler_dropout: float,
+    ):
+        super().__init__()
+        self.dense = nn.Linear(input_dim, inner_dim)
+        self.dropout = nn.Dropout(p=pooler_dropout)
+        self.out_proj = nn.Linear(inner_dim, num_classes)
+
+    def forward(self, hidden_states: torch.Tensor) -> torch.Tensor:
+        hidden_states = self.dropout(hidden_states)
+        hidden_states = self.dense(hidden_states)
+        hidden_states = torch.tanh(hidden_states)
+        hidden_states = self.dropout(hidden_states)
+        hidden_states = self.out_proj(hidden_states)
+        return hidden_states
+
+
 class T5Tagging(T5ForConditionalGeneration):
     def __init__(self, config: T5Config, **kwargs):
         super().__init__(config, **kwargs)
@@ -658,3 +682,30 @@ class T5Constituency(T5EncoderModel):
 
         tree = make_tree()[0]
         return tree, score
+
+
+class T5CrossEncoder(T5ForSequenceClassification):
+    def __init__(self, config: T5Config, **kwargs):
+        super().__init__(config, **kwargs)
+
+        self.register_buffer(
+            'target_label',
+            torch.zeros(self.config.per_device_train_batch_size, dtype=torch.long)
+        )
+        self.cross_entropy = nn.CrossEntropyLoss(reduction='mean')
+
+    def forward(self, batch):
+        ranker_out = super().forward(**batch, return_dict=True)
+        logits = ranker_out.logits
+        if self.training:
+            scores = logits.view(
+                self.config.per_device_train_batch_size,
+                self.config.train_group_size
+            )
+            loss = self.cross_entropy(scores, self.target_label)
+            return SequenceClassifierOutput(
+                loss=loss,
+                **ranker_out,
+            )
+        else:
+            return ranker_out
