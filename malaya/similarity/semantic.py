@@ -57,11 +57,6 @@ def huggingface(
     result: malaya.torch_model.huggingface.Similarity
     """
 
-    if model not in available_huggingface and force_check:
-        raise ValueError(
-            'model not supported, please check supported models from `malaya.similarity.semantic.available_huggingface`.'
-        )
-
     return load(
         model=model,
         class_model=Similarity,

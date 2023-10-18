@@ -15,12 +15,6 @@ malaya.augmentation.abstractive
 .. automodule:: malaya.augmentation.abstractive
     :members:
 
-malaya.augmentation.encoder
---------------------------------
-
-.. automodule:: malaya.augmentation.encoder
-    :members:
-
 malaya.augmentation.rules
 --------------------------------
 
@@ -37,12 +31,6 @@ malaya.generator.isi_penting
 -----------------------------
 
 .. automodule:: malaya.generator.isi_penting
-    :members:
-
-malaya.generator.prefix
------------------------------
-
-.. automodule:: malaya.generator.prefix
     :members:
 
 malaya.keyword.abstractive
@@ -92,11 +80,17 @@ malaya.similarity.semantic
 malaya.spelling_correction.jamspell
 ---------------------------------------
 
+.. automodule:: malaya.spelling_correction.jamspell
+    :members:
+
 .. autoclass:: malaya.spelling_correction.jamspell.JamSpell()
     :members:
 
 malaya.spelling_correction.probability
 ---------------------------------------
+
+.. automodule:: malaya.spelling_correction.probability
+    :members:
 
 .. autoclass:: malaya.spelling_correction.probability.Spell()
     :members:
@@ -110,19 +104,19 @@ malaya.spelling_correction.probability
 malaya.spelling_correction.spylls
 ---------------------------------------
 
+.. automodule:: malaya.spelling_correction.spylls
+    :members:
+
 .. autoclass:: malaya.spelling_correction.spylls.Spylls()
     :members:
 
 malaya.spelling_correction.symspell
 ---------------------------------------
 
-.. autoclass:: malaya.spelling_correction.symspell.Symspell()
+.. automodule:: malaya.spelling_correction.symspell
     :members:
 
-malaya.spelling_correction.transformer
----------------------------------------
-
-.. autoclass:: malaya.spelling_correction.transformer.Transformer()
+.. autoclass:: malaya.spelling_correction.symspell.Symspell()
     :members:
 
 malaya.summarization.abstractive
@@ -137,18 +131,6 @@ malaya.summarization.extractive
 .. automodule:: malaya.summarization.extractive
     :members:
 
-malaya.text_to_kg.e2e
----------------------------------
-
-.. automodule:: malaya.text_to_kg.e2e
-    :members:
-
-malaya.text_to_kg.parser
----------------------------------
-
-.. automodule:: malaya.text_to_kg.parser
-    :members:
-
 malaya.topic_model.decomposition
 ---------------------------------
 
@@ -156,15 +138,6 @@ malaya.topic_model.decomposition
     :members:
 
 .. autoclass:: malaya.topic_model.decomposition.Topic()
-    :members:
-
-malaya.topic_model.lda2vec
----------------------------------
-
-.. automodule:: malaya.topic_model.lda2vec
-    :members:
-
-.. autoclass:: malaya.topic_model.lda2vec.DeepTopic()
     :members:
 
 malaya.topic_model.transformer
@@ -179,18 +152,6 @@ malaya.zero_shot.classification
 .. automodule:: malaya.zero_shot.classification
     :members:
 
-malaya.zero_shot.entity
---------------------------------
-
-.. automodule:: malaya.zero_shot.entity
-    :members:
-
-malaya.alignment
------------------
-
-.. automodule:: malaya.alignment
-    :members:
-
 malaya.cluster
 -----------------
 
@@ -203,16 +164,16 @@ malaya.constituency
 .. automodule:: malaya.constituency
     :members:
 
-malaya.coref
----------------------
-
-.. automodule:: malaya.coref
-    :members:
-
 malaya.dependency
 ------------------
 
 .. automodule:: malaya.dependency
+    :members:
+
+malaya.embedding
+------------------
+
+.. automodule:: malaya.embedding
     :members:
 
 malaya.emotion
@@ -227,18 +188,17 @@ malaya.entity
 .. automodule:: malaya.entity
     :members:
 
-malaya.jawi_rumi
--------------------------
+malaya.jawi
+-----------------------
 
-.. automodule:: malaya.jawi_rumi
+.. automodule:: malaya.jawi
     :members:
 
-malaya.kg_to_text
--------------------------
+malaya.knowledge_graph
+-----------------------
 
-.. automodule:: malaya.kg_to_text
+.. automodule:: malaya.knowledge_graph
     :members:
-
 
 malaya.language_detection
 -------------------------
@@ -250,12 +210,6 @@ malaya.language_model
 -------------------------
 
 .. automodule:: malaya.language_model
-    :members:
-
-malaya.lexicon
--------------------------
-
-.. automodule:: malaya.lexicon
     :members:
 
 malaya.llm
@@ -305,26 +259,11 @@ malaya.preprocessing
 
 .. autoclass:: malaya.preprocessing.Demoji()
     :members:
-
-malaya.relevancy
-------------------
-
-.. automodule:: malaya.relevancy
-    :members:
-
-malaya.rumi_jawi
-------------------
-
-.. automodule:: malaya.rumi_jawi
-    :members:
-
+    
 malaya.segmentation
 ---------------------
 
 .. automodule:: malaya.segmentation
-    :members:
-
-.. autoclass:: malaya.segmentation.Segmenter()
     :members:
 
 malaya.sentiment
@@ -345,31 +284,10 @@ malaya.stem
 .. automodule:: malaya.stem
     :members:
 
-.. autoclass:: malaya.stem.DeepStemmer()
-    :members:
-
-.. autoclass:: malaya.stem.Sastrawi()
-    :members:
-
-.. autoclass:: malaya.stem.Naive()
-    :members:
-
-malaya.subjectivity
---------------------
-
-.. automodule:: malaya.subjectivity
-    :members:
-
 malaya.syllable
 --------------------
 
 .. automodule:: malaya.syllable
-    :members:
-
-.. autoclass:: malaya.syllable.Tokenizer()
-    :members:
-
-.. autoclass:: malaya.syllable.DeepSyllable()
     :members:
 
 malaya.tatabahasa
@@ -388,12 +306,6 @@ malaya.tokenizer
     :members:
 
 .. autoclass:: malaya.tokenizer.SentenceTokenizer()
-    :members:
-
-malaya.toxicity
--------------------------
-
-.. automodule:: malaya.toxicity
     :members:
 
 malaya.transformer
@@ -426,42 +338,6 @@ malaya.wordvector
 .. automodule:: malaya.wordvector
     :members:
 
-.. autoclass:: malaya.wordvector.WordVector()
-    :members:
-
-malaya.model.alignment
--------------------------
-
-.. autoclass:: malaya.model.alignment.Eflomal()
-    :members:
-
-.. autoclass:: malaya.model.alignment.HuggingFace()
-    :members:
-
-malaya.model.bert
-----------------------------------
-
-.. autoclass:: malaya.model.bert.BinaryBERT()
-    :members:
-
-.. autoclass:: malaya.model.bert.MulticlassBERT()
-    :members:
-
-.. autoclass:: malaya.model.bert.SigmoidBERT()
-    :members:
-
-.. autoclass:: malaya.model.bert.SiameseBERT()
-    :members:
-
-.. autoclass:: malaya.model.bert.TaggingBERT()
-    :members:
-
-.. autoclass:: malaya.model.bert.DependencyBERT()
-    :members:
-
-.. autoclass:: malaya.model.bert.ZeroshotBERT()
-    :members:
-
 malaya.model.extractive_summarization
 --------------------------------------
 
@@ -472,13 +348,8 @@ malaya.model.extractive_summarization
     :members:
 
 .. autoclass:: malaya.model.extractive_summarization.Encoder()
-
-malaya.model.huggingface
----------------------------
-
-.. autoclass:: malaya.model.huggingface.Generator()
     :members:
-
+    
 malaya.model.ml
 ----------------------------------
 
@@ -491,94 +362,10 @@ malaya.model.ml
 .. autoclass:: malaya.model.ml.MultilabelBayes()
     :members:
 
-malaya.model.pegasus
-----------------------------------
-
-.. autoclass:: malaya.model.pegasus.Summarization()
-    :members:
-
 malaya.model.rules
 ----------------------------------
 
 .. autoclass:: malaya.model.rules.LanguageDict()
-    :members:
-
-malaya.model.t5
-----------------------------------
-
-.. autoclass:: malaya.model.t5.Summarization()
-    :members:
-
-.. autoclass:: malaya.model.t5.Generator()
-    :members:
-
-.. autoclass:: malaya.model.t5.Paraphrase()
-    :members:
-
-.. autoclass:: malaya.model.t5.Spell()
-    :members:
-
-.. autoclass:: malaya.model.t5.Segmentation()
-    :members:
-
-malaya.model.tf
-----------------------------------
-
-.. autoclass:: malaya.model.tf.DeepLang()
-    :members:
-
-.. autoclass:: malaya.model.tf.Constituency()
-    :members:
-
-.. autoclass:: malaya.model.tf.TrueCase()
-    :members:
-
-.. autoclass:: malaya.model.tf.Segmentation()
-    :members:
-
-.. autoclass:: malaya.model.tf.Paraphrase()
-    :members:
-    
-.. autoclass:: malaya.model.tf.Tatabahasa()
-    :members:
-
-.. autoclass:: malaya.model.tf.SQUAD()
-    :members:
-
-.. autoclass:: malaya.model.tf.GPT2()
-    :members:
-
-.. autoclass:: malaya.model.tf.Seq2SeqLSTM()
-    :members:
-
-.. autoclass:: malaya.model.tf.JawiRumi()
-    :members:
-
-.. autoclass:: malaya.model.tf.RumiJawi()
-    :members:
-
-malaya.model.xlnet
-----------------------------------
-
-.. autoclass:: malaya.model.xlnet.BinaryXLNET()
-    :members:
-
-.. autoclass:: malaya.model.xlnet.MulticlassXLNET()
-    :members:
-
-.. autoclass:: malaya.model.xlnet.SigmoidXLNET()
-    :members:
-
-.. autoclass:: malaya.model.xlnet.SiameseXLNET()
-    :members:
-
-.. autoclass:: malaya.model.xlnet.TaggingXLNET()
-    :members:
-
-.. autoclass:: malaya.model.xlnet.DependencyXLNET()
-    :members:
-
-.. autoclass:: malaya.model.xlnet.ZeroshotXLNET()
     :members:
 
 malaya.torch_model.gpt2_lm
@@ -608,9 +395,6 @@ malaya.torch_model.huggingface
 .. autoclass:: malaya.torch_model.huggingface.ZeroShotClassification()
     :members:
 
-.. autoclass:: malaya.torch_model.huggingface.ZeroShotNER()
-    :members:
-
 .. autoclass:: malaya.torch_model.huggingface.ExtractiveQA()
     :members:
 
@@ -623,13 +407,19 @@ malaya.torch_model.huggingface
 .. autoclass:: malaya.torch_model.huggingface.Tatabahasa()
     :members:
 
-.. autoclass:: malaya.torch_model.huggingface.Normalizer()
-    :members:
-
 .. autoclass:: malaya.torch_model.huggingface.Keyword()
     :members:
 
 .. autoclass:: malaya.torch_model.huggingface.Translation()
+    :members:
+
+.. autoclass:: malaya.torch_model.huggingface.Classification()
+    :members:
+
+.. autoclass:: malaya.torch_model.huggingface.Tagging()
+    :members:
+
+.. autoclass:: malaya.torch_model.huggingface.Embedding()
     :members:
 
 malaya.torch_model.llm
@@ -642,49 +432,4 @@ malaya.torch_model.mask_lm
 ----------------------------------
 
 .. autoclass:: malaya.torch_model.mask_lm.MLMScorer()
-    :members:
-
-malaya.transformers.albert
------------------------------
-
-.. automodule:: malaya.transformers.albert
-    :members:
-
-.. autoclass:: malaya.transformers.albert.Model()
-    :members:
-
-malaya.transformers.alxlnet
------------------------------
-
-.. automodule:: malaya.transformers.alxlnet
-    :members:
-
-.. autoclass:: malaya.transformers.alxlnet.Model()
-    :members:
-
-malaya.transformers.bert
------------------------------
-
-.. automodule:: malaya.transformers.bert
-    :members:
-
-.. autoclass:: malaya.transformers.bert.Model()
-    :members:
-
-malaya.transformers.electra
------------------------------
-
-.. automodule:: malaya.transformers.electra
-    :members:
-
-.. autoclass:: malaya.transformers.electra.Model()
-    :members:
-
-malaya.transformers.xlnet
------------------------------
-
-.. automodule:: malaya.transformers.xlnet
-    :members:
-
-.. autoclass:: malaya.transformers.xlnet.Model()
     :members:

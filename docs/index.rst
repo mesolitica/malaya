@@ -21,6 +21,7 @@ Contents:
    Dataset
    running-on-windows
    Contributing
+   Api
 
 .. toctree::
    :maxdepth: 2
@@ -34,10 +35,7 @@ Contents:
    :caption: Pre-trained model
 
    load-transformer
-   load-transformer-huggingface
    load-wordvector
-
-   
 
 .. toctree::
    :maxdepth: 2
@@ -71,21 +69,14 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
-   :caption: Large Language Model Module
-
-   load-llm-huggingface
-   load-llm-huggingface-gradio
-
-.. toctree::
-   :maxdepth: 2
    :caption: Spelling Correction Module
-
-   load-spelling-correction-jamspell
+   
    load-spelling-correction-probability
    load-spelling-correction-probability-lm
-   load-compare-lm-spelling-correction
+   load-spelling-correction-jamspell
    load-spelling-correction-spylls
    load-spelling-correction-symspell
+   load-compare-lm-spelling-correction
 
 .. toctree::
    :maxdepth: 2
@@ -106,8 +97,7 @@ Contents:
 
    load-phoneme
    load-phoneme-ipa
-   load-rumi-jawi
-   load-jawi-rumi
+   load-jawi
 
 .. toctree::
    :maxdepth: 2
@@ -119,15 +109,13 @@ Contents:
    :maxdepth: 2
    :caption: Generative Module
 
-   load-prefix-generator
-   load-isi-penting-generator
-   load-isi-penting-generator-huggingface-article-style
-   load-isi-penting-generator-huggingface-headline-news-style
-   load-isi-penting-generator-huggingface-karangan-style
-   load-isi-penting-generator-huggingface-news-style
-   load-isi-penting-generator-huggingface-product-description-style
+   load-isi-penting-generator-article-style
+   load-isi-penting-generator-headline-news-style
+   load-isi-penting-generator-karangan-style
+   load-isi-penting-generator-news-style
+   load-isi-penting-generator-product-description-style
    load-paraphrase
-   load-paraphrase-huggingface
+   load-llm
 
 .. toctree::
    :maxdepth: 2
@@ -143,8 +131,8 @@ Contents:
    :maxdepth: 2
    :caption: Similarity Module
 
-   load-doc2vec-similarity
-   load-semantic-similarity
+   load-similarity-doc2vec
+   load-similarity-semantic
 
 .. toctree::
    :maxdepth: 2
@@ -165,17 +153,15 @@ Contents:
    :maxdepth: 2
    :caption: Summarization Module
 
-   load-extractive
-   load-abstractive
+   load-summarization-extractive
+   load-summarization-abstractive
 
 .. toctree::
    :maxdepth: 2
    :caption: Translation Module
 
-   load-translation-huggingface
-   load-noisy-translation-huggingface
-   alignment-en-ms-eflomal
-   alignment-ms-en-eflomal
+   load-translation
+   load-noisy-translation
 
 .. toctree::
    :maxdepth: 2
@@ -201,7 +187,7 @@ Contents:
    :maxdepth: 2
    :caption: Keyword Module
 
-   load-abstractive-keyword
+   load-keyword-abstractive
    load-keyword-extractive
 
 .. toctree::
@@ -209,24 +195,17 @@ Contents:
    :caption: Knowledge Graph
 
    text-to-kg
-   kg-to-text
-   
    
 .. toctree::
    :maxdepth: 2
    :caption: Converter
 
-   huggingface-t5-ctranslate2
+   t5-ctranslate2
 
 .. toctree::
    :maxdepth: 2
    :caption: Misc Module
    
    load-stack
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Misc
-   
-   Api
-   Donation
+   sentiment-bias-towards-countries
+   sentiment-bias-towards-politicians

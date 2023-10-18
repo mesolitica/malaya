@@ -1,5 +1,6 @@
 from malaya.supervised.huggingface import load
 from malaya.torch_model.huggingface import ZeroShotClassification
+from malaya.similarity.semantic import available_huggingface
 
 
 def huggingface(
@@ -22,15 +23,6 @@ def huggingface(
     -------
     result: malaya.torch_model.huggingface.ZeroShotClassification
     """
-
-    if model not in available_huggingface and force_check:
-        raise ValueError(
-            'model not supported, please check supported models from `malaya.zero_shot.classification.available_huggingface`.'
-        )
-    if model not in available_huggingface and force_check:
-        raise ValueError(
-            'model not supported, please check supported models from `malaya.similarity.semantic.available_huggingface`.'
-        )
 
     return load(
         model=model,

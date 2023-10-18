@@ -103,11 +103,17 @@ def main(args):
         logger=wandb_logger,
     )
 
+    checkpoints = glob(os.path.join(args.model_directory, 'model-*'))
+    if len(checkpoints):
+        checkpoint = sorted(x, key=lambda x: int(x.split('-')[-1]), reverse=True)[0]
+    else:
+        checkpoint = None
+
     trainer.fit(
         model=model,
         train_dataloaders=train_dataloader,
         val_dataloaders=None,
-        ckpt_path=args.model.checkpoint_path,
+        ckpt_path=checkpoint,
     )
 
 
