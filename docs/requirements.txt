@@ -9,10 +9,7 @@ ftfy
 networkx
 sentencepiece
 tqdm
-youtokentome
-malaya
-malaya-boilerplate
-protobuf==3.13.0
+malaya-boilerplate==0.0.25rc3
 --extra-index-url https://download.pytorch.org/whl/torch_stable.html
 torch==2.1.0
 matplotlib
