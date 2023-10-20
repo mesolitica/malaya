@@ -12,7 +12,6 @@ from malaya.text.bpe import SentencePieceTokenizer
 from malaya.path import MODEL_VOCAB, MODEL_BPE
 from malaya.function import validator
 from malaya.graph.pagerank import pagerank
-from herpetologist import check_type
 from typing import List
 
 
@@ -52,7 +51,6 @@ def _base(string, vectorizer, **kwargs):
     return vocab
 
 
-@check_type
 def rake(
     string: str,
     vocab: List[str] = None,
@@ -146,7 +144,6 @@ def rake(
     return ranked_sentences[:top_k]
 
 
-@check_type
 def textrank(
     string: str,
     vocab: List[str] = None,
@@ -234,7 +231,6 @@ def textrank(
     return ranked_sentences[:top_k]
 
 
-@check_type
 def attention(
     string: str,
     model,
@@ -322,7 +318,6 @@ def attention(
     return ranked_sentences[:top_k]
 
 
-@check_type
 def similarity(
     string: str,
     model,

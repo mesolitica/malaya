@@ -99,7 +99,7 @@ WANDB_PROJECT=fpf-mistral-7b-hf ~/.local/bin/deepspeed run_clm.py \
 --num_train_epochs 1 \
 --train_file "combine-mistral.jsonl" \
 --logging_steps 1 \
---learning_rate 5e-5 \
+--learning_rate 2e-5 \
 --block_size 4096 \
 --save_steps 200 \
 --save_total_limit 2 \

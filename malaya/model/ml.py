@@ -4,7 +4,6 @@ from malaya.text.function import (
     language_detection_textcleaning,
 )
 from malaya.function.activation import add_neutral as neutral
-from herpetologist import check_type
 from typing import List
 
 

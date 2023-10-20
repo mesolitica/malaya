@@ -9,7 +9,6 @@ from malaya.text.function import (
 from malaya.cluster import cluster_words
 from malaya.graph.pagerank import pagerank
 from sklearn.metrics.pairwise import cosine_similarity
-from herpetologist import check_type
 from scipy.sparse import vstack
 
 
