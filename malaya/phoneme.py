@@ -1,60 +1,84 @@
-from malaya.supervised.settings import phoneme_left, phoneme_right
-from malaya.supervised.settings import phoneme_ipa_left, phoneme_ipa_right
-from malaya.text.function import phoneme_textcleaning
+
+from malaya.model.stem import Tokenizer
+from malaya.supervised.rnn import load
+from malaya.torch_model.rnn import Phoneme
+
+available_huggingface_dbp = {
+    'mesolitica/syllable-lstm': {
+        'Size (MB)': 35.2,
+        'hidden size': 512,
+        'CER': 0.011996584781229728,
+        'WER': 0.06915983606557377,
+    },
+}
+
+available_huggingface_ipa = {
+    'mesolitica/syllable-lstm': {
+        'Size (MB)': 35.2,
+        'hidden size': 512,
+        'CER': 0.011996584781229728,
+        'WER': 0.06915983606557377,
+    },
+}
 
 
-def deep_model_dbp(quantized: bool = False, **kwargs):
+def huggingface_dbp(
+    model: str = 'mesolitica/syllable-lstm',
+    force_check: bool = True,
+    **kwargs,
+):
     """
-    Load LSTM + Bahdanau Attention phonetic model,
-    256 filter size, 2 layers, character level.
-    original data from https://prpm.dbp.gov.my/ Glosari Dialek.
-
-    Original size 10.4MB, quantized size 2.77MB .
+    Load HuggingFace model for syllable tokenizer.
 
     Parameters
     ----------
-    quantized: bool, optional (default=False)
-        if True, will load 8-bit quantized model.
-        Quantized model not necessary faster, totally depends on the machine.
+    model: str, optional (default='mesolitica/syllable-lstm')
+        Check available models at `malaya.syllable.available_huggingface`.
+    force_check: bool, optional (default=True)
+        Force check model one of malaya model.
+        Set to False if you have your own huggingface model.
 
     Returns
     -------
-    result: malaya.model.tf.Seq2SeqLSTM class
+    result: malaya.torch_model.rnn.Syllable
     """
-    return t2t.load_lstm(
-        module='phoneme',
-        left_dict=phoneme_left,
-        right_dict=phoneme_right,
-        cleaning=phoneme_textcleaning,
-        quantized=quantized,
+
+    return load(
+        model=model,
+        class_model=Phoneme,
+        available_huggingface=available_huggingface_dbp,
+        force_check=force_check,
+        path=__name__,
         **kwargs,
     )
 
 
-def deep_model_ipa(quantized: bool = False, **kwargs):
+def huggingface_ipa(
+    model: str = 'mesolitica/syllable-lstm',
+    force_check: bool = True,
+    **kwargs,
+):
     """
-    Load LSTM + Bahdanau Attention phonetic model,
-    256 filter size, 2 layers, character level.
-    Original data from https://github.com/open-dict-data/ipa-dict/blob/master/data/ma.txt
-
-    Original size 10.4MB, quantized size 2.77MB .
+    Load HuggingFace model for syllable tokenizer.
 
     Parameters
     ----------
-    quantized: bool, optional (default=False)
-        if True, will load 8-bit quantized model.
-        Quantized model not necessary faster, totally depends on the machine.
+    model: str, optional (default='mesolitica/syllable-lstm')
+        Check available models at `malaya.syllable.available_huggingface`.
+    force_check: bool, optional (default=True)
+        Force check model one of malaya model.
+        Set to False if you have your own huggingface model.
 
     Returns
     -------
-    result: malaya.model.tf.Seq2SeqLSTM_Split class
+    result: malaya.torch_model.rnn.Syllable
     """
-    return t2t.load_lstm(
-        module='phoneme-ipa',
-        left_dict=phoneme_ipa_left,
-        right_dict=phoneme_ipa_right,
-        cleaning=phoneme_textcleaning,
-        split=True,
-        quantized=quantized,
+
+    return load(
+        model=model,
+        class_model=Phoneme,
+        available_huggingface=available_huggingface_ipa,
+        force_check=force_check,
+        path=__name__,
         **kwargs,
     )

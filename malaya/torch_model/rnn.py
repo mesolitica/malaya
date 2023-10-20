@@ -6,6 +6,7 @@ from malaya.model.stem import Base as BaseStem
 from malaya.model.syllable import Base as BaseSyllable
 from malaya.model.syllable import replace_same_length
 from malaya_boilerplate.torch_utils import to_numpy
+from malaya.text.function import phoneme_textcleaning
 
 SOS_token = 0
 
@@ -195,3 +196,23 @@ class Syllable(Model, BaseSyllable):
         """
 
         return super().tokenize(string)
+
+
+class Phoneme(Model):
+    def __init__(self, *args, **kwargs):
+        Model.__init__(self, *args, **kwargs)
+
+    def predict(self, strings):
+        """
+        Convert to target strings.
+
+        Parameters
+        ----------
+        strings : List[str]
+
+        Returns
+        -------
+        result: List[str]
+        """
+        strings = [phoneme_textcleaning(s) for s in strings]
+        return self.forward(strings)

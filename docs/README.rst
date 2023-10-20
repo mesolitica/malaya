@@ -17,7 +17,7 @@
 
 =========
 
-**Malaya** is a Natural-Language-Toolkit library for bahasa Malaysia, powered by Tensorflow and PyTorch.
+**Malaya** is a Natural-Language-Toolkit library for bahasa Malaysia, powered by PyTorch.
 
 Documentation
 --------------
@@ -31,9 +31,9 @@ Installing from the PyPI
 
     $ pip install malaya
 
-It will automatically install all dependencies except for Tensorflow and PyTorch. So you can choose your own Tensorflow CPU / GPU version and PyTorch CPU / GPU version.
+It will automatically install all dependencies except for PyTorch. So you can choose your own PyTorch CPU / GPU version.
 
-Only **Python >= 3.6.0**, **Tensorflow >= 1.15.0**, and **PyTorch >= 1.10** are supported.
+Only **Python >= 3.6.0**, and **PyTorch >= 1.10** are supported.
 
 If you are a Windows user, make sure read https://malaya.readthedocs.io/en/latest/running-on-windows.html
 
@@ -50,61 +50,6 @@ Install from `master` branch,
 We recommend to use **virtualenv** for development. 
 
 Documentation at https://malaya.readthedocs.io/en/latest/
-
-Features
---------
-
--  **Alignment**, translation word alignment using Eflomal.
--  **Abstractive text augmentation**, augment any text into social media text structure using T5-Bahasa.
--  **Encoder text augmentation**, augment any text Wordvector or Transformer-Bahasa word replacement technique.
--  **Rules based text augmentation**, augment any text using dictionary of synonym and rules based.
--  **Isi Penting Generator**, generate text from list of isi penting using T5-Bahasa.
--  **Prefix Generator**, generate text from prefix using GPT2-Bahasa.
--  **Abstractive Keyword**, provide abstractive keyword using T5-Bahasa.
--  **Extractive Keyword**, provide RAKE, TextRank and Attention Mechanism hybrid with Transformer-Bahasa.
--  **Abstractive Normalizer**, normalize any malay texts using T5-Bahasa.
--  **Rules based Normalizer**, using local Malaysia NLP researches hybrid with Transformer-Bahasa to normalize any malay texts.
--  **Extractive QA**, reading comprehension using T5-Bahasa and Flan-T5.
--  **Doc2Vec Similarity**, provide Word2Vec and Encoder interface for text similarity.
--  **Semantic Similarity**, provide semantic similarity using T5-Bahasa.
--  **Spelling Correction**, using local Malaysia NLP researches hybrid with Transformer-Bahasa to auto-correct any malay words and NeuSpell using T5-Bahasa.
--  **Abstractive Summarization**, provide abstractive summarization using T5-Bahasa.
--  **Extractive Summarization**, Extractive interface using Transformer-Bahasa and Doc2Vec.
--  **Text to Knowledge Graph**, Generate knowledge graph from human sentences.
--  **Topic Modeling**, provide Transformer-Bahasa, LDA2Vec, LDA, NMF, LSA interface and easy BERTopic integration.
--  **End-to-End Translation**, provide multilanguages translation including local languages to English or Malay using T5-Bahasa.
--  **Zero-shot classification**, provide Zero-shot classification interface using Transformer-Bahasa to recognize texts without any labeled training data.
--  **Zero-shot Entity Recognition**, provide Zero-shot entity tagging interface using Transformer-Bahasa to extract entities.
--  **Constituency Parsing**, breaking a text into sub-phrases using finetuned Transformer-Bahasa.  
--  **Coreference Resolution**, finding all expressions that refer to the same entity in a text using Dependency Parsing models.
--  **Dependency Parsing**, extracting a dependency parse of a sentence using finetuned Transformer-Bahasa and T5-Bahasa.
--  **Emotion Analysis**, detect and recognize 6 different emotions of texts using finetuned Transformer-Bahasa.
--  **Entity Recognition**, seeks to locate and classify named entities mentioned in text using finetuned Transformer-Bahasa.
--  **Jawi-to-Rumi**, convert from Jawi to Rumi using Transformer.
--  **Knowledge Graph to Text**, Generate human sentences from a knowledge graph.
--  **Language Detection**, using Fast-text and Sparse Deep learning Model to classify Malay (formal and social media), Indonesia (formal and social media), Rojak language and Manglish.
--  **Language Model**, using KenLM, Masked language model using BERT, ALBERT and RoBERTa, and GPT2 to do text scoring.
--  **Large Language Model**, finetuned Llama2 on augmented Malay instruction datasets.
--  **NSFW Detection**, detect NSFW text using rules based and subwords Naive Bayes.
--  **Num2Word**, convert from numbers to cardinal or ordinal representation.
--  **Paraphrase**, provide Abstractive Paraphrase using T5-Bahasa and Transformer-Bahasa.
--  **Grapheme-to-Phoneme**, convert from Grapheme to Phoneme DBP or IPA using LSTM Seq2Seq with attention state-of-art.
--  **Part-of-Speech Recognition**, grammatical tagging is the process of marking up a word in a text using finetuned Transformer-Bahasa.
--  **Relevancy Analysis**, detect and recognize relevancy of texts using finetuned Transformer-Bahasa.
--  **Rumi-to-Jawi**, convert from Rumi to Jawi using Transformer.
--  **Text Segmentation**, dividing written text into meaningful words using T5-Bahasa.
--  **Sentiment Analysis**, detect and recognize polarity of texts using finetuned Transformer-Bahasa.
--  **Text Similarity**, provide interface for lexical similarity deep semantic similarity using finetuned Transformer-Bahasa.
--  **Stemmer**, using BPE LSTM Seq2Seq with attention state-of-art to do Bahasa stemming including local language structure.
--  **Subjectivity Analysis**, detect and recognize self-opinion polarity of texts using finetuned Transformer-Bahasa.
--  **Kesalahan Tatabahasa**, Fix kesalahan tatabahasa using TransformerTag-Bahasa.
--  **Tokenizer**, provide word, sentence and syllable tokenizers.
--  **Toxicity Analysis**, detect and recognize 27 different toxicity patterns of texts using finetuned Transformer-Bahasa.
--  **Transformer**, provide easy interface to load Pretrained Language Malaya models.
--  **True Case**, provide true casing utility using T5-Bahasa.
--  **Word2Num**, convert from cardinal or ordinal representation to numbers.
--  **Word2Vec**, provide pretrained malay wikipedia and malay news Word2Vec, with easy interface and visualization.
--  **Model Quantization**, provide model quantization for T5 and Llama2 using ctranslate2.
 
 Pretrained Models
 ------------------
@@ -135,13 +80,13 @@ If you use our software for research, please cite:
 
 ::
 
-  @misc{Malaya, Natural-Language-Toolkit library for bahasa Malaysia, powered by Deep Learning Tensorflow,
+  @misc{Malaya, Natural-Language-Toolkit library for bahasa Malaysia, powered by PyTorch,
     author = {Husein, Zolkepli},
     title = {Malaya},
     year = {2018},
     publisher = {GitHub},
     journal = {GitHub repository},
-    howpublished = {\url{https://github.com/huseinzol05/malaya}}
+    howpublished = {\url{https://github.com/mesolitica/malaya}}
   }
 
 Acknowledgement
