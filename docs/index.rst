@@ -93,10 +93,8 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
-   :caption: Convert Module
+   :caption: Jawi Module
 
-   load-phoneme
-   load-phoneme-ipa
    load-jawi
 
 .. toctree::

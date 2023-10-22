@@ -54,6 +54,11 @@ from transformers.testing_utils import CaptureLogger
 from transformers.trainer_utils import get_last_checkpoint
 from transformers.utils import check_min_version, send_example_telemetry
 from transformers.utils.versions import require_version
+from streaming.base.format.mds.encodings import Encoding, _encodings
+from streaming import StreamingDataset
+from streaming.base.format.mds.encodings import Encoding, _encodings
+
+import numpy as np
 
 require_version(
     "datasets>=1.8.0",
@@ -214,18 +219,6 @@ class DataTrainingArguments:
         default=True, metadata={"help": "Whether to keep line breaks when using TXT files or not."}
     )
 
-    def __post_init__(self):
-        if self.streaming:
-            require_version("datasets>=2.0.0", "The streaming feature requires `datasets>=2.0.0`")
-
-        if self.dataset_name is None and self.train_file is None and self.validation_file is None:
-            raise ValueError("Need either a dataset name or a training/validation file.")
-        else:
-            if self.train_file is not None:
-                extension = self.train_file.split(".")[-1]
-                assert extension in ["csv", "json", "txt",
-                                     'jsonl'], "`train_file` should be a csv, a json or a txt file."
-
 
 def main():
     # See all possible arguments in src/transformers/training_args.py
@@ -297,31 +290,6 @@ def main():
     # Set seed before initializing model.
     set_seed(training_args.seed)
 
-    dataset_args = {}
-    extension = data_args.train_file.split(".")[-1]
-    if extension == "txt":
-        extension = "text"
-        dataset_args["keep_linebreaks"] = data_args.keep_linebreaks
-    if extension == 'jsonl':
-        extension = 'json'
-    raw_datasets = load_dataset(
-        extension,
-        data_files=data_args.train_file,
-        cache_dir=model_args.cache_dir,
-        token=model_args.token,
-        split='train',
-        **dataset_args,
-    )
-
-    # See more about loading any type of standard or custom dataset (from files, python dict, pandas DataFrame, etc) at
-    # https://huggingface.co/docs/datasets/loading_datasets.html.
-
-    # Load pretrained model and tokenizer
-    #
-    # Distributed training:
-    # The .from_pretrained methods guarantee that only one local process can concurrently
-    # download model & vocab.
-
     config_kwargs = {
         "cache_dir": model_args.cache_dir,
         "revision": model_args.model_revision,
@@ -384,95 +352,32 @@ def main():
         n_params = sum({p.data_ptr(): p.numel() for p in model.parameters()}.values())
         logger.info(f"Training new model from scratch - Total size={n_params/2**20:.2f}M params")
 
-    # We resize the embeddings only when necessary to avoid index errors. If you are creating a model from scratch
-    # on a small vocab and want a smaller embedding size, remove this test.
-    embedding_size = model.get_input_embeddings().weight.shape[0]
-    if len(tokenizer) > embedding_size:
-        model.resize_token_embeddings(len(tokenizer))
+    class Int32(Encoding):
+        def encode(self, obj) -> bytes:
+            return obj.tobytes()
 
-    # Preprocessing the datasets.
-    # First we tokenize all the texts.
-    column_names = list(raw_datasets.features)
-    text_column_name = "text" if "text" in column_names else column_names[0]
+        def decode(self, data: bytes):
+            return np.frombuffer(data, np.int32)
 
-    # since this will be pickled to avoid _LazyModule error in Hasher force
-    # logger loading before tokenize_function
-    tok_logger = transformers.utils.logging.get_logger("transformers.tokenization_utils_base")
+    _encodings['int32'] = Int32
 
-    if data_args.block_size is None:
-        block_size = tokenizer.model_max_length
-        if block_size > 1024:
-            logger.warning(
-                "The chosen tokenizer supports a `model_max_length` that is longer than the default `block_size` value"
-                " of 1024. If you would like to use a longer `block_size` up to `tokenizer.model_max_length` you can"
-                " override this default with `--block_size xxx`.")
-            block_size = 1024
-    else:
-        if data_args.block_size > tokenizer.model_max_length:
-            logger.warning(
-                f"The block_size passed ({data_args.block_size}) is larger than the maximum length for the model"
-                f"({tokenizer.model_max_length}). Using block_size={tokenizer.model_max_length}.")
-        block_size = min(data_args.block_size, tokenizer.model_max_length)
+    class DatasetFixed(torch.utils.data.Dataset):
+        def __init__(self, local):
+            self.dataset = StreamingDataset(local=local)
 
-    def tokenize_function(examples):
-        with CaptureLogger(tok_logger) as cl:
-            output = tokenizer(examples[text_column_name])
-        # clm input could be much much longer than block_size
-        if "Token indices sequence length is longer than the" in cl.out:
-            tok_logger.warning(
-                "^^^^^^^^^^^^^^^^ Please ignore the warning above - this long input will be chunked into smaller bits"
-                " before being passed to the model.")
-        return output
+        def __getitem__(self, idx):
+            data = self.dataset[idx]
+            data.pop('token_type_ids', None)
+            for k in data.keys():
+                data[k] = data[k].astype(np.int64)
+            return data
 
-    with training_args.main_process_first(desc="dataset map tokenization"):
-        tokenized_datasets = raw_datasets.map(
-            tokenize_function,
-            batched=True,
-            remove_columns=column_names,
-            load_from_cache_file=True,
-            cache_file_name=f'./{data_args.train_file}-tokenized',
-            num_proc=20,
-        )
+        def __len__(self):
+            return len(self.dataset)
 
-    # Main data processing function that will concatenate all texts from our
-    # dataset and generate chunks of block_size.
-    def group_texts(examples):
-        # Concatenate all texts.
-        concatenated_examples = {k: list(chain(*examples[k])) for k in examples.keys()}
-        total_length = len(concatenated_examples[list(examples.keys())[0]])
-        # We drop the small remainder, and if the total_length < block_size  we exclude this batch and return an empty dict.
-        # We could add padding if the model supported it instead of this drop, you
-        # can customize this part to your needs.
-        total_length = (total_length // block_size) * block_size
-        # Split by chunks of max_len.
-        result = {
-            k: [t[i: i + block_size] for i in range(0, total_length, block_size)]
-            for k, t in concatenated_examples.items()
-        }
-        result["labels"] = result["input_ids"].copy()
-        return result
+    train_dataset = DatasetFixed(local=data_args.train_file)
 
-    # Note that with `batched=True`, this map processes 1,000 texts together, so group_texts throws away a remainder
-    # for each of those groups of 1,000 texts. You can adjust that batch_size here but a higher value might be slower
-    # to preprocess.
-    #
-    # To speed up this part, we use multiprocessing. See the documentation of the map method for more information:
-    # https://huggingface.co/docs/datasets/package_reference/main_classes.html#datasets.Dataset.map
-
-    with training_args.main_process_first(desc="grouping texts together"):
-        lm_datasets = tokenized_datasets.map(
-            group_texts,
-            batched=True,
-            load_from_cache_file=True,
-            cache_file_name=f'./{data_args.train_file}-grouped-{block_size}',
-            num_proc=20,
-        )
-
-    if training_args.do_train:
-        train_dataset = lm_datasets
-        if data_args.max_train_samples is not None:
-            max_train_samples = min(len(train_dataset), data_args.max_train_samples)
-            train_dataset = train_dataset.select(range(max_train_samples))
+    print(train_dataset[0])
 
     # Initialize our Trainer
     trainer = Trainer(

@@ -72,6 +72,7 @@ Malaya also released Bahasa pretrained models, simply check at `Malaya/pretraine
 - **Fastformer**, Fastformer: Additive Attention Can Be All You Need, https://arxiv.org/abs/2108.09084
 - **MLM Scoring**, Masked Language Model Scoring, https://arxiv.org/abs/1910.14659
 - **Llama2**, Llama 2: Open Foundation and Fine-Tuned Chat Models, https://arxiv.org/abs/2307.09288
+- **Mistral**, Mistral 7B, https://arxiv.org/abs/2310.06825
 
 References
 -----------

@@ -8,30 +8,6 @@
 pip3 install -r requirements.txt
 ```
 
-2. When you installed PyTorch with CUDA, it bundled with specific CUDA version, so I suggest to use that CUDA for `bitsandbytes`, for an example,
-
-```python
-import os
-os.environ['LD_LIBRARY_PATH'] = '/home/husein/.local/lib/python3.8/site-packages/torch/lib'
-
-import bitsandbytes
-```
-
-But before that, do not forget to symlink because `bitsandbytes` required `libcudart.so`,
-
-```bash
-ln -s ~/.local/lib/python3.8/site-packages/torch/lib/libcudart-d0da41ae.so.11.0 ~/.local/lib/python3.8/site-packages/torch/lib/libcudart.so
-```
-
-### Apex
-
-1. Install apex with specific options,
-
-```bash
-git clone https://github.com/NVIDIA/apex && cd apex
-python3 setup.py install --user --cpp_ext --cuda_ext
-```
-
 ### Flash Attention 2
 
 1. Install dependencies,
@@ -43,7 +19,7 @@ pip3 install git+https://github.com/HazyResearch/flash-attention.git#subdirector
 
 ## Full Parameter Finetuning
 
-Dataset prepared at https://github.com/malaysia-ai/text-dataset-dedup#merge-and-prepare-to-huggingface-dataset
+Dataset prepared at https://github.com/malaysia-ai/text-dataset-dedup#llama2
 
 ### VM Spec
 

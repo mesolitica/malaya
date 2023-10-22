@@ -32,7 +32,7 @@ Look through the `Github issue`_ or `Malaya-project`_ for features. Any
 unassigned ``improvement`` issue is open to whoever wants to implement
 it.
 
-We use frozen graph Tensorflow, should able to freeze any Tensorflow (version 1.15 and above) or Keras models.
+We use Pytorch and heavily use HuggingFace Transformers as backend.
 
 Dataset
 -------
@@ -82,17 +82,17 @@ Feel free to help Malaya to write unit-tests, fork it!
 .. _Local development environment: #local-development-environment
 .. _Installation: #installation
 .. _Pull Request Guidelines: #pull-request-guidelines
-.. _Github issue: https://github.com/huseinzol05/Malaya/issues/new
-.. _Malaya-project: https://github.com/huseinzol05/Malaya/projects/1
-.. _Malaya-Dataset: https://github.com/huseinzol05/Malaya-Dataset
-.. _Fake news: https://github.com/huseinzol05/Malaya-Dataset#fake-news
+.. _Github issue: https://github.com/mesolitica/Malaya/issues/new
+.. _Malaya-project: https://github.com/mesolitica/Malaya/projects/1
+.. _Malaya-Dataset: https://github.com/mesolitica/Malaya-Dataset
+.. _Fake news: https://github.com/mesolitica/Malaya-Dataset#fake-news
 .. _syazanihussin: https://github.com/syazanihussin/FLUX/tree/master/data
-.. _Speech voice: https://github.com/huseinzol05/Malaya-Dataset#tolong-sebut
+.. _Speech voice: https://github.com/mesolitica/Malaya-Dataset#tolong-sebut
 .. _Khalil Nooh: https://www.linkedin.com/in/khalilnooh/
 .. _Mas Aisyah Ahmad: https://www.linkedin.com/in/mas-aisyah-ahmad-b46508a9/
-.. _Singlish text dump: https://github.com/huseinzol05/malaya-dataset#singlish-text
+.. _Singlish text dump: https://github.com/mesolitica/malaya-dataset#singlish-text
 .. _brytjy: https://github.com/brytjy
-.. _Singapore news: https://github.com/huseinzol05/malaya-dataset#singapore-news
-.. _unit tests here: https://github.com/huseinzol05/Malaya/tree/master/tests
+.. _Singapore news: https://github.com/mesolitica/malaya-dataset#singapore-news
+.. _unit tests here: https://github.com/mesolitica/Malaya/tree/master/tests
 .. _AutoPEP8: https://github.com/hhatto/autopep8
-.. _pyproject.toml: https://github.com/huseinzol05/malaya/blob/master/pyproject.toml
+.. _pyproject.toml: https://github.com/mesolitica/malaya/blob/master/pyproject.toml

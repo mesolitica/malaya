@@ -236,12 +236,6 @@ malaya.paraphrase
 .. automodule:: malaya.paraphrase
     :members:
 
-malaya.phoneme
-------------------
-
-.. automodule:: malaya.phoneme
-    :members:
-
 malaya.pos
 -----------------
 

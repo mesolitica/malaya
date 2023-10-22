@@ -7,6 +7,7 @@ from malaya.model.syllable import Base as BaseSyllable
 from malaya.model.syllable import replace_same_length
 from malaya_boilerplate.torch_utils import to_numpy
 from malaya.text.function import phoneme_textcleaning
+from malaya.supervised.settings import phoneme_ipa_left
 
 SOS_token = 0
 
@@ -214,5 +215,5 @@ class Phoneme(Model):
         -------
         result: List[str]
         """
-        strings = [phoneme_textcleaning(s) for s in strings]
+        strings = [phoneme_textcleaning(s, phoneme_ipa_left) for s in strings]
         return self.forward(strings)

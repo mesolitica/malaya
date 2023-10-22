@@ -42,7 +42,6 @@ from . import normalize
 from . import nsfw
 from . import num2word
 from . import paraphrase
-from . import phoneme
 from . import pos
 from . import preprocessing
 from . import qa
