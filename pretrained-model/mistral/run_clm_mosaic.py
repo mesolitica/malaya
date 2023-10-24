@@ -56,7 +56,6 @@ from transformers.utils import check_min_version, send_example_telemetry
 from transformers.utils.versions import require_version
 from streaming.base.format.mds.encodings import Encoding, _encodings
 from streaming import StreamingDataset
-from streaming.base.format.mds.encodings import Encoding, _encodings
 
 import numpy as np
 

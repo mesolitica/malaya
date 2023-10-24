@@ -101,6 +101,7 @@ def main(args):
         accumulate_grad_batches=args.optim.grad_acc,
         callbacks=[checkpoint_callback, lr_monitor],
         logger=wandb_logger,
+        strategy='ddp',
     )
 
     checkpoints = glob(os.path.join(args.model_directory, 'model-*'))

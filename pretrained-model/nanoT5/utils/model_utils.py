@@ -16,6 +16,36 @@ from .copied_utils import (
 )
 from .t5_model import MyT5
 
+from streaming.base.format.mds.encodings import Encoding, _encodings
+from streaming import StreamingDataset
+import numpy as np
+
+
+class Int32(Encoding):
+    def encode(self, obj) -> bytes:
+        return obj.tobytes()
+
+    def decode(self, data: bytes):
+        return np.frombuffer(data, np.int32)
+
+
+_encodings['int32'] = Int32
+
+
+class DatasetFixed(torch.utils.data.Dataset):
+    def __init__(self, local):
+        self.dataset = StreamingDataset(local=local)
+
+    def __getitem__(self, idx):
+        data = self.dataset[idx]
+        data.pop('token_type_ids', None)
+        for k in data.keys():
+            data[k] = data[k].astype(np.int64)
+        return data
+
+    def __len__(self):
+        return len(self.dataset)
+
 
 def get_model(args, config):
     klass = {
@@ -82,21 +112,7 @@ def process_dataset(args, tokenizer):
                 args.data.before_mask_input_length = before_mask_input_length
                 args.data.target_length = target_length
 
-            filename = args.data.filename.get(split)
-            dataset = datasets.load_dataset(
-                'json', data_files=filename, split='train')
-            dataset = dataset.map(
-                tokenize_function,
-                batched=True,
-                fn_kwargs={
-                    'tokenizer': tokenizer,
-                    'in_length': before_mask_input_length,
-                },
-                remove_columns=['text'],
-                load_from_cache_file=True,
-                cache_file_name=f'{filename}-tokenized',
-                num_proc=args.data.num_workers,
-            )
+            dataset = DatasetFixed(local=filename)
             final_datasets[split] = dataset
     else:
         raise NotImplementedError
