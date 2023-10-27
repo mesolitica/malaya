@@ -608,7 +608,6 @@ def split_into_sentences(text, minimum_length=5):
     text = text.replace('\x97', '\n')
     text = '. '.join([s for s in text.split('\n') if len(s)])
     text = text + '.'
-    text = unidecode(text)
     text = ' ' + text + '  '
     text = text.replace('\n', ' ')
     text = re.sub(prefixes, '\\1<prd>', text)

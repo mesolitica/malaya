@@ -112,6 +112,7 @@ def process_dataset(args, tokenizer):
                 args.data.before_mask_input_length = before_mask_input_length
                 args.data.target_length = target_length
 
+            filename = args.data.filename.get(split)
             dataset = DatasetFixed(local=filename)
             final_datasets[split] = dataset
     else:

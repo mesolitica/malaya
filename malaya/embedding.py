@@ -37,10 +37,10 @@ openai_metrics = {
 }
 
 available_huggingface = {
-    'mesolitica/nanot5-small-embedding': {
+    'mesolitica/malaysian-mistral-195M-embedding': {
         'Size (MB)': 2170,
-        'embedding size': 1024,
-        'Suggested length': 1024,
+        'embedding size': 768,
+        'Suggested length': 4096,
         'b.cari.com.my': {
             'positive score': 0.8928321128367129,
             'negative score': 0.26488808270585834,
@@ -74,10 +74,10 @@ available_huggingface = {
             'top10': 0.7248724206789439,
         },
     },
-    'mesolitica/nanot5-base-embedding': {
+    'mesolitica/malaysian-mistral-349M-embedding': {
         'Size (MB)': 2170,
-        'embedding size': 1024,
-        'Suggested length': 1024,
+        'embedding size': 768,
+        'Suggested length': 4096,
         'b.cari.com.my': {
             'positive score': 0.8928321128367129,
             'negative score': 0.26488808270585834,

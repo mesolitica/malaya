@@ -9,13 +9,6 @@ available_huggingface = {
         'CER': 0.02549779186652238,
         'WER': 0.05448552235248484,
     },
-    'mesolitica/stem-gru-bahdanau-1024': {
-        'Size (MB)': 83.7,
-        'vocab size': 1000,
-        'hidden size': 1024,
-        'CER': 0.07082863511793107,
-        'WER': 0.11684768403456935,
-    },
 }
 
 info = """

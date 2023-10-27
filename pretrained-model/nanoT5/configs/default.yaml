@@ -22,6 +22,7 @@ model:
   random_init: true
   compile: false # Pytorch 2.0
   flash_attention: false
+  gradient_checkpoint: false
 
 data:
   input_length: 512

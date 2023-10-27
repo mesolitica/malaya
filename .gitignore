@@ -95,3 +95,5 @@ session/*/prepared.json
 session/*/explain-sentiment.json
 countries.geojson
 popit-persons.json
+session/similarity/*/*.jsonl
+session/similarity/*/*.json

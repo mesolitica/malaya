@@ -7,7 +7,6 @@ from pytorch_lightning.loggers import WandbLogger
 from pytorch_lightning import LightningModule
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.callbacks import LearningRateMonitor
-from transformers import get_cosine_schedule_with_warmup
 import pytorch_lightning as pl
 from utils import (
     setup_basics,
@@ -21,12 +20,16 @@ from utils import (
     get_dataloaders,
     get_config,
 )
+from glob import glob
+import os
 
 
 class Module(LightningModule):
     def __init__(self, args, config):
         super().__init__()
         self.model = get_model(args, config)
+        if args.model.gradient_checkpoint:
+            self.model.gradient_checkpointing_enable()
         if args.model.flash_attention:
             from optimum.bettertransformer import BetterTransformer
             self.model = BetterTransformer.transform(self.model)
@@ -98,6 +101,7 @@ def main(args):
         devices=num_gpus,
         limit_val_batches=100,
         precision=args.precision,
+        log_every_n_steps=5,
         accumulate_grad_batches=args.optim.grad_acc,
         callbacks=[checkpoint_callback, lr_monitor],
         logger=wandb_logger,
