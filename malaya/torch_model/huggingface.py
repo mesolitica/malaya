@@ -156,6 +156,7 @@ class Generator(Base):
             padded = self.tokenizer.pad(input_ids, padding='longest', return_tensors='pt')
             for k in padded.keys():
                 padded[k] = padded[k].to(self.model.device)
+            padded.pop('token_type_ids', None)
             outputs = self.model.generate(**padded, **kwargs)
 
         if return_generate:
@@ -356,6 +357,7 @@ class Similarity(Base):
         padded = self.tokenizer.pad(input_ids, padding='longest')
         for k in padded.keys():
             padded[k] = padded[k].to(self.model.device)
+        padded.pop('token_type_ids', None)
 
         outputs = self.model(**padded, return_dict=True)
         return outputs
@@ -392,7 +394,7 @@ class ZeroShotClassification(Similarity):
         self,
         strings: List[str],
         labels: List[str],
-        prefix: str = 'ayat ini berkaitan tentang',
+        prefix: str = 'ayat ini berkaitan tentang ',
         multilabel: bool = True,
     ):
         """
@@ -402,7 +404,7 @@ class ZeroShotClassification(Similarity):
         ----------
         strings: List[str]
         labels: List[str]
-        prefix: str, optional (default='ayat ini berkaitan tentang')
+        prefix: str, optional (default='ayat ini berkaitan tentang ')
             prefix of labels to zero shot. Playing around with prefix can get better results.
         multilabel: bool, optional (default=True)
             probability of labels can be more than 1.0
@@ -416,7 +418,7 @@ class ZeroShotClassification(Similarity):
         for no, string in enumerate(strings):
             for label in labels:
                 strings_left.append(string)
-                text_label = f'{prefix} {label}'
+                text_label = f'{prefix}{label}'
                 text_label = re.sub(r'[ ]+', ' ', text_label).strip()
                 strings_right.append(text_label)
                 mapping[no].append(index)
@@ -1146,6 +1148,8 @@ class Translation(Generator):
             'pasar mandarin': 'pasar Mandarin',
             'jawi': 'Jawi',
             'rumi': 'Rumi',
+            'tamil': 'Tamil',
+            'punjabi': 'Punjabi',
         }
 
         self.all_special_ids = [0, 1, 2]
@@ -1196,6 +1200,7 @@ class Classification(Base):
         padded = self.tokenizer(strings, padding='longest', return_tensors='pt')
         for k in padded.keys():
             padded[k] = padded[k].to(self.model.device)
+        padded.pop('token_type_ids', None)
 
         return to_numpy(self.model(**padded)[0])
 
@@ -1333,5 +1338,7 @@ class Embedding(Base):
         padded = tokenizer(strings, return_tensors='pt', padding=True)
         for k in padded.keys():
             padded[k] = padded[k].to(self.model.device)
+
+        padded.pop('token_type_ids', None)
 
         return to_numpy(model.encode(padded))

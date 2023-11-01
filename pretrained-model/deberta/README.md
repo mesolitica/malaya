@@ -1,4 +1,4 @@
-# Pretrain Mistral
+# Pretrain DebertaV3
 
 ## prerequisites 
 
@@ -69,18 +69,18 @@ make
 
 Good to go!
 
-### 191M, 4096 Context length
+### SMALL
 
 ```bash
-bash run-191M.sh
+bash run-small.sh
 ```
 
-https://wandb.ai/mesolitica/mistral-158M?workspace=user-husein-mesolitica
+https://wandb.ai/mesolitica/deberta-small?workspace=user-husein-mesolitica
 
-### 349M, 4096 Context length
+### BASE
 
 ```bash
-bash run-349M.sh
+bash run-base.sh
 ```
 
-https://wandb.ai/mesolitica/mistral-349M?workspace=user-husein-mesolitica
+https://wandb.ai/mesolitica/deberta-base?workspace=user-husein-mesolitica

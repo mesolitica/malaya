@@ -8,20 +8,26 @@ Originally from https://github.com/PiotrNawrot/nanoT5
 
 2. Train,
 
-### Small
+### SMALL
 
 ```bash
 bash run-small.sh
 ```
 
-### Base
+https://wandb.ai/mesolitica/nanoT5-small?workspace=user-husein-mesolitica
+
+### BASE
 
 ```bash
 bash run-base.sh
 ```
 
-### Large
+https://wandb.ai/mesolitica/nanoT5-base?workspace=user-husein-mesolitica
+
+### LARGE
 
 ```
 bash run-large.sh
 ```
+
+https://wandb.ai/mesolitica/nanoT5-large?workspace=user-husein-mesolitica
