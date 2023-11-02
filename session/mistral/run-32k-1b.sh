@@ -1,0 +1,17 @@
+WANDB_PROJECT=fpf-mistral-1b-hf-32k ~/.local/bin/deepspeed run_clm.py \
+--deepspeed ds_config_zero3.json \
+--model_name_or_path 1b \
+--per_device_train_batch_size 3 \
+--gradient_accumulation_steps 1 \
+--output_dir fpf-7b-32k \
+--bf16 \
+--do_train \
+--do_eval false \
+--num_train_epochs 2 \
+--train_file "combine-mistral.jsonl" \
+--logging_steps 1 \
+--learning_rate 2e-5 \
+--block_size 32768 \
+--save_steps 200 \
+--save_total_limit 2 \
+--gradient_checkpointing true

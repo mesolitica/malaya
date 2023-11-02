@@ -17,7 +17,7 @@ pip3 install flash-attn --no-build-isolation -U
 pip3 install git+https://github.com/HazyResearch/flash-attention.git#subdirectory=csrc/rotary
 ```
 
-## Full Parameter Finetuning
+## Pretrain
 
 Dataset prepared at https://github.com/malaysia-ai/text-dataset-dedup#pretrain
 

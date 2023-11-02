@@ -1,4 +1,4 @@
-# Pretrain DebertaV3
+# DebertaV3
 
 ## prerequisites 
 
@@ -8,16 +8,7 @@
 pip3 install -r requirements.txt
 ```
 
-### Flash Attention 2
-
-1. Install dependencies,
-
-```bash
-pip3 install flash-attn --no-build-isolation -U
-pip3 install git+https://github.com/HazyResearch/flash-attention.git#subdirectory=csrc/rotary
-```
-
-## Full Parameter Finetuning
+## Pretrain
 
 Dataset prepared at https://github.com/malaysia-ai/text-dataset-dedup#pretrain
 
@@ -84,3 +75,17 @@ bash run-base.sh
 ```
 
 https://wandb.ai/mesolitica/deberta-base?workspace=user-husein-mesolitica
+
+### LARGE
+
+```bash
+bash run-large.sh
+```
+
+https://wandb.ai/mesolitica/deberta-large?workspace=user-husein-mesolitica
+
+
+## Contribution
+
+1. Thanks to https://github.com/aisyahrzk for preparing pretrain script.
+2. Thanks to https://github.com/KamarulAdha for preparing pretrain script.

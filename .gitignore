@@ -99,6 +99,8 @@ session/similarity/*/*.jsonl
 session/similarity/*/*.json
 session/similarity/*/*.json.nested
 session/similarity/*/*.zip
+session/similarity/*/*.csv
 session/similarity/*/*/*.json
 session/similarity/*/*/*.bin
+session/similarity/*/*/*.csv
 session/knowledge-graph/*/*.jsonl

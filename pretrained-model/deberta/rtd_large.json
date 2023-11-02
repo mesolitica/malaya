@@ -20,7 +20,7 @@
 	"attention_head_size": 64,
 	"num_hidden_layers": 24,
 	"type_vocab_size": 0,
-	"vocab_size": 128100
+	"vocab_size": 32001
 	},
 	"generator":{
 	"attention_probs_dropout_prob": 0.1,
@@ -42,6 +42,6 @@
 	"attention_head_size": 64,
 	"num_hidden_layers": 12,
 	"type_vocab_size": 0,
-	"vocab_size": 128100
+	"vocab_size": 32001
 	}
 }

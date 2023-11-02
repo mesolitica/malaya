@@ -84,3 +84,9 @@ bash run-32k.sh
 ```
 
 https://wandb.ai/mesolitica/fpf-mistral-7b-hf-32k?workspace=user-husein-mesolitica
+
+### Instructions, 7B, 16384 Context length
+
+```
+bash run-instructions-16k.sh
+```
