@@ -18,6 +18,22 @@ available_huggingface = {
             'https://huggingface.co/datasets/mesolitica/google-translate-ultrachat',
         ]
     },
+    'mesolitica/malaysian-mistral-7b-32k-instructions': {
+        'base model': 'https://huggingface.co/mesolitica/mistral-7b-32768-fpf',
+        'Size (GB)': 14.48,
+        'context length': 32768,
+        'trained on': [
+            'https://huggingface.co/datasets/mesolitica/google-translate-ultrachat',
+        ]
+    },
+    'mesolitica/malaysian-mistral-1.1b-32k-instructions': {
+        'base model': 'https://huggingface.co/mesolitica/mistral-1.1b-32768-fpf',
+        'Size (GB)': 2.27,
+        'context length': 32768,
+        'trained on': [
+            'https://huggingface.co/datasets/mesolitica/google-translate-ultrachat',
+        ]
+    },
 }
 
 

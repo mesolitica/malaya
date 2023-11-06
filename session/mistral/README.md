@@ -85,8 +85,22 @@ bash run-32k.sh
 
 https://wandb.ai/mesolitica/fpf-mistral-7b-hf-32k?workspace=user-husein-mesolitica
 
+### 1B, 32768 Context length
+
+1. Run [mistral-1b.ipynb](mistral-1b.ipynb).
+
+2. Run training,
+
+```bash
+bash run-32k-1b.sh
+```
+
+https://wandb.ai/mesolitica/fpf-mistral-1b-hf-32k?workspace=user-husein-mesolitica
+
 ### Instructions, 7B, 16384 Context length
 
 ```
 bash run-instructions-16k.sh
 ```
+
+https://wandb.ai/mesolitica/fpf-mistral-7b-hf-instructions-16k?workspace=user-husein-mesolitica

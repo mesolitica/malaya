@@ -1,9 +1,9 @@
-WANDB_PROJECT=fpf-mistral-7b-hf-instructions-16k ~/.local/bin/deepspeed run_clm_instructions.py \
+WANDB_PROJECT=fpf-mistral-1.1b-hf-instructions-16k ~/.local/bin/deepspeed run_clm_instructions.py \
 --deepspeed ds_config_zero3.json \
---model_name_or_path mesolitica/mistral-7b-32768-fpf \
---per_device_train_batch_size 6 \
---gradient_accumulation_steps 2 \
---output_dir fpf-7b-instructions-16k \
+--model_name_or_path mesolitica/mistral-1.1b-32768-fpf \
+--per_device_train_batch_size 12 \
+--gradient_accumulation_steps 1 \
+--output_dir fpf-1b-instructions-16k \
 --bf16 \
 --do_train \
 --do_eval false \
@@ -15,4 +15,4 @@ WANDB_PROJECT=fpf-mistral-7b-hf-instructions-16k ~/.local/bin/deepspeed run_clm_
 --save_steps 1000 \
 --save_total_limit 2 \
 --gradient_checkpointing true \
---neftune_noise_alpha 0.1
+--neftune_noise_alpha 5.0
