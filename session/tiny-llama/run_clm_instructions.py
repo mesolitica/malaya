@@ -37,6 +37,7 @@ import torch
 from datasets import load_dataset
 
 import transformers
+import random
 from transformers import (
     CONFIG_MAPPING,
     MODEL_FOR_CAUSAL_LM_MAPPING,
@@ -66,6 +67,14 @@ logger = logging.getLogger(__name__)
 
 MODEL_CONFIG_CLASSES = list(MODEL_FOR_CAUSAL_LM_MAPPING.keys())
 MODEL_TYPES = tuple(conf.model_type for conf in MODEL_CONFIG_CLASSES)
+
+system_prompts = [
+    'You are an AI assistant',
+    'Anda adalah pembantu AI',
+    'Anda adalah pembantu AI yang berguna',
+    'You are a helpful assistant',
+    'Anda seorang pembantu yang berguna',
+]
 
 
 @dataclass
@@ -313,6 +322,7 @@ def main():
         "revision": model_args.model_revision,
         "token": model_args.token,
         "trust_remote_code": model_args.trust_remote_code,
+        "max_position_embeddings": 32768
     }
 
     if model_args.config_name:
@@ -384,7 +394,11 @@ def main():
         model.resize_token_embeddings(len(tokenizer))
 
     def generate_and_tokenize_prompt(row):
-        texts = ['<s>']
+        if 'system_prompt' in row:
+            system_prompt = row['system_prompt']
+        else:
+            system_prompt = random.choice(system_prompts)
+        texts = [f'<s>[INST] <<SYS>>\n{system_prompt}\n<</SYS>>\n\n']
 
         if 'function_call' in row:
             t = row['function_call']
@@ -402,17 +416,14 @@ def main():
                     except BaseException:
                         continue
                 bot = splitted[i + 1].split('<manusia>:')[0]
-                inputs.append(human.strip())
-                outputs.append(bot.strip())
+                inputs.append(human)
+                outputs.append(bot)
         else:
             inputs = [row['input']]
             outputs = [row['output']]
-
-        for u, a in zip(inputs, outputs):
-            texts.append(f'[INST] {u.strip()} [/INST] {a.strip()}</s>')
-
-        prompt = ''.join(texts)
-        return {'text': prompt}
+        for input, output in zip(inputs, outputs):
+            texts.append(f'{input} [/INST] {output} </s><s>[INST] ')
+        return tokenizer(''.join(texts))
 
     def tokenize(element):
         outputs = tokenizer(

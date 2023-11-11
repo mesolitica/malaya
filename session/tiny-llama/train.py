@@ -47,8 +47,6 @@ from transformers import (
     Trainer,
     TrainingArguments,
     default_data_collator,
-    DataCollatorWithPadding,
-    DataCollatorForLanguageModeling,
     is_torch_tpu_available,
     set_seed,
 )
@@ -56,6 +54,11 @@ from transformers.testing_utils import CaptureLogger
 from transformers.trainer_utils import get_last_checkpoint
 from transformers.utils import check_min_version, send_example_telemetry
 from transformers.utils.versions import require_version
+from streaming.base.format.mds.encodings import Encoding, _encodings
+from streaming import StreamingDataset
+from streaming.base.format.mds.encodings import Encoding, _encodings
+
+import numpy as np
 
 require_version(
     "datasets>=1.8.0",
@@ -216,18 +219,6 @@ class DataTrainingArguments:
         default=True, metadata={"help": "Whether to keep line breaks when using TXT files or not."}
     )
 
-    def __post_init__(self):
-        if self.streaming:
-            require_version("datasets>=2.0.0", "The streaming feature requires `datasets>=2.0.0`")
-
-        if self.dataset_name is None and self.train_file is None and self.validation_file is None:
-            raise ValueError("Need either a dataset name or a training/validation file.")
-        else:
-            if self.train_file is not None:
-                extension = self.train_file.split(".")[-1]
-                assert extension in ["csv", "json", "txt",
-                                     'jsonl'], "`train_file` should be a csv, a json or a txt file."
-
 
 def main():
     # See all possible arguments in src/transformers/training_args.py
@@ -299,20 +290,12 @@ def main():
     # Set seed before initializing model.
     set_seed(training_args.seed)
 
-    # See more about loading any type of standard or custom dataset (from files, python dict, pandas DataFrame, etc) at
-    # https://huggingface.co/docs/datasets/loading_datasets.html.
-
-    # Load pretrained model and tokenizer
-    #
-    # Distributed training:
-    # The .from_pretrained methods guarantee that only one local process can concurrently
-    # download model & vocab.
-
     config_kwargs = {
         "cache_dir": model_args.cache_dir,
         "revision": model_args.model_revision,
         "token": model_args.token,
         "trust_remote_code": model_args.trust_remote_code,
+        "max_position_embeddings": 4096
     }
 
     if model_args.config_name:
@@ -326,6 +309,8 @@ def main():
             logger.info(f"Overriding config: {model_args.config_overrides}")
             config.update_from_string(model_args.config_overrides)
             logger.info(f"New config: {config}")
+
+    print(config)
 
     tokenizer_kwargs = {
         "cache_dir": model_args.cache_dir,
@@ -342,13 +327,6 @@ def main():
         raise ValueError(
             "You are instantiating a new tokenizer from scratch. This is not supported by this script."
             "You can do it from another script, save it, and load it from here, using --tokenizer_name.")
-
-    tokenizer.pad_token = tokenizer.unk_token
-    tokenizer.add_bos_token = False
-    tokenizer.add_eos_token = False
-    tokenizer.padding_side = "right"
-
-    block_size = data_args.block_size
 
     if model_args.model_name_or_path:
         torch_dtype = (
@@ -377,75 +355,43 @@ def main():
         n_params = sum({p.data_ptr(): p.numel() for p in model.parameters()}.values())
         logger.info(f"Training new model from scratch - Total size={n_params/2**20:.2f}M params")
 
-    # We resize the embeddings only when necessary to avoid index errors. If you are creating a model from scratch
-    # on a small vocab and want a smaller embedding size, remove this test.
-    embedding_size = model.get_input_embeddings().weight.shape[0]
-    if len(tokenizer) > embedding_size:
-        model.resize_token_embeddings(len(tokenizer))
+    class UInt16(Encoding):
+        def encode(self, obj) -> bytes:
+            return obj.tobytes()
 
-    def generate_and_tokenize_prompt(row):
-        texts = ['<s>']
+        def decode(self, data: bytes):
+            return np.frombuffer(data, np.uint16)
 
-        if 'function_call' in row:
-            t = row['function_call']
-            texts.append(f'\n[FUNCTIONCALL]\n{t}\n')
+    _encodings['uint16'] = UInt16
 
-        if '<bot>:' in row['input'] and row['output'] is None:
-            inputs, outputs = [], []
-            splitted = row['input'].split('<bot>:')
-            for i in range(len(splitted) - 1):
-                if i == 0:
-                    human = splitted[i].replace('<manusia>:', '')
-                else:
-                    try:
-                        human = splitted[i].split('<manusia>:')[1]
-                    except BaseException:
-                        continue
-                bot = splitted[i + 1].split('<manusia>:')[0]
-                inputs.append(human.strip())
-                outputs.append(bot.strip())
-        else:
-            inputs = [row['input']]
-            outputs = [row['output']]
+    class DatasetFixed(torch.utils.data.Dataset):
+        def __init__(self, local):
+            self.dataset = StreamingDataset(local=local)
 
-        for u, a in zip(inputs, outputs):
-            texts.append(f'[INST] {u.strip()} [/INST] {a.strip()}</s>')
+        def __getitem__(self, idx):
+            data = self.dataset[idx]
+            data['labels'] = data["input_ids"].copy()
+            data.pop('token_type_ids', None)
+            for k in data.keys():
+                data[k] = data[k].astype(np.int64)
+            return data
 
-        prompt = ''.join(texts)
-        return {'text': prompt}
+        def __len__(self):
+            return len(self.dataset)
 
-    def tokenize(element):
-        outputs = tokenizer(
-            element['text'],
-            truncation=True,
-            padding=False,
-            max_length=block_size,
-            return_overflowing_tokens=False,
-            return_length=False,
-        )
+    train_dataset = DatasetFixed(local=data_args.train_file)
 
-        return {"input_ids": outputs["input_ids"], "attention_mask": outputs["attention_mask"]}
+    # print(train_dataset[0])
 
-    dataset = load_dataset("json", data_files=data_args.train_file, split="train")
-    dataset = dataset.map(generate_and_tokenize_prompt)
-    dataset = dataset.remove_columns(['prompt_input', 'input', 'output'])
-    dataset = dataset.map(
-        tokenize,
-        batched=True,
-        remove_columns=dataset.column_names,
-        num_proc=None,
-        batch_size=1000,
-    )
-
-    data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
-
+    # Initialize our Trainer
     trainer = Trainer(
         model=model,
         args=training_args,
-        train_dataset=dataset,
+        train_dataset=train_dataset if training_args.do_train else None,
         eval_dataset=None,
         tokenizer=tokenizer,
-        data_collator=data_collator,
+        # Data collator will default to DataCollatorWithPadding, so we change it.
+        data_collator=default_data_collator,
         compute_metrics=None,
         preprocess_logits_for_metrics=None,
     )

@@ -104,3 +104,6 @@ session/similarity/*/*/*.json
 session/similarity/*/*/*.bin
 session/similarity/*/*/*.csv
 session/knowledge-graph/*/*.jsonl
+session/knowledge-graph/*/*.json
+session/knowledge-graph/*/*_cache
+session/knowledge-graph/*/nanot5-*
