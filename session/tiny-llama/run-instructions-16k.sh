@@ -1,7 +1,7 @@
 WANDB_PROJECT=fpf-tinyllama-1.1b-hf-instructions-16k-function-call ~/.local/bin/deepspeed run_clm_instructions.py \
 --deepspeed ds_config_zero3.json \
 --model_name_or_path mesolitica/tinyllama-1.1b-4096-fpf \
---per_device_train_batch_size 24 \
+--per_device_train_batch_size 12 \
 --gradient_accumulation_steps 2 \
 --output_dir fpf-1.1b-instructions-16k-call \
 --bf16 \

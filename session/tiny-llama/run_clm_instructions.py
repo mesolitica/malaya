@@ -422,8 +422,9 @@ def main():
             inputs = [row['input']]
             outputs = [row['output']]
         for input, output in zip(inputs, outputs):
-            texts.append(f'{input} [/INST] {output} </s><s>[INST] ')
-        return tokenizer(''.join(texts))
+            texts.append(f'{input.strip()} [/INST] {output.strip()} </s><s>[INST] ')
+        prompt = ''.join(texts)
+        return {'text': prompt}
 
     def tokenize(element):
         outputs = tokenizer(
