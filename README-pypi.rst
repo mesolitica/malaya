@@ -35,7 +35,7 @@ Documentation at https://malaya.readthedocs.io/en/latest/
 Pretrained Models
 ------------------
 
-Malaya also released Bahasa pretrained models, simply check at `Malaya/pretrained-model <https://github.com/huseinzol05/Malaya/tree/master/pretrained-model>`_
+Malaya also released Malaysian pretrained models, simply check at https://huggingface.co/mesolitica
 
 - **ALBERT**, a Lite BERT for Self-supervised Learning of Language Representations, https://arxiv.org/abs/1909.11942
 - **ALXLNET**, a Lite XLNET, no paper produced.

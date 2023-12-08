@@ -55,7 +55,7 @@ from transformers.trainer_utils import get_last_checkpoint
 from transformers.utils import check_min_version, send_example_telemetry
 from transformers.utils.versions import require_version
 from streaming.base.format.mds.encodings import Encoding, _encodings
-from streaming import StreamingDataset
+from streaming import LocalDataset
 from streaming.base.format.mds.encodings import Encoding, _encodings
 
 import numpy as np
@@ -295,7 +295,7 @@ def main():
         "revision": model_args.model_revision,
         "token": model_args.token,
         "trust_remote_code": model_args.trust_remote_code,
-        "max_position_embeddings": 4096
+        'max_position_embeddings': 32768,
     }
 
     if model_args.config_name:
@@ -309,8 +309,6 @@ def main():
             logger.info(f"Overriding config: {model_args.config_overrides}")
             config.update_from_string(model_args.config_overrides)
             logger.info(f"New config: {config}")
-
-    print(config)
 
     tokenizer_kwargs = {
         "cache_dir": model_args.cache_dir,
@@ -327,6 +325,33 @@ def main():
         raise ValueError(
             "You are instantiating a new tokenizer from scratch. This is not supported by this script."
             "You can do it from another script, save it, and load it from here, using --tokenizer_name.")
+
+    class UInt16(Encoding):
+        def encode(self, obj) -> bytes:
+            return obj.tobytes()
+
+        def decode(self, data: bytes):
+            return np.frombuffer(data, np.uint16)
+
+    _encodings['uint16'] = UInt16
+
+    class DatasetFixed(torch.utils.data.Dataset):
+        def __init__(self, local):
+            self.dataset = LocalDataset(local=local)
+
+        def __getitem__(self, idx):
+            data = self.dataset[idx]
+            data['labels'] = data["input_ids"].copy()
+            data.pop('token_type_ids', None)
+            for k in data.keys():
+                data[k] = data[k].astype(np.int64)
+            return data
+
+        def __len__(self):
+            return len(self.dataset)
+
+    train_dataset = DatasetFixed(local=data_args.train_file)
+    print(len(train_dataset))
 
     if model_args.model_name_or_path:
         torch_dtype = (
@@ -347,41 +372,13 @@ def main():
             trust_remote_code=model_args.trust_remote_code,
             torch_dtype=torch_dtype,
             low_cpu_mem_usage=model_args.low_cpu_mem_usage,
-            use_flash_attention_2=True
+            use_flash_attention_2=True,
         )
     else:
         model = AutoModelForCausalLM.from_config(
             config, trust_remote_code=model_args.trust_remote_code)
         n_params = sum({p.data_ptr(): p.numel() for p in model.parameters()}.values())
         logger.info(f"Training new model from scratch - Total size={n_params/2**20:.2f}M params")
-
-    class UInt16(Encoding):
-        def encode(self, obj) -> bytes:
-            return obj.tobytes()
-
-        def decode(self, data: bytes):
-            return np.frombuffer(data, np.uint16)
-
-    _encodings['uint16'] = UInt16
-
-    class DatasetFixed(torch.utils.data.Dataset):
-        def __init__(self, local):
-            self.dataset = StreamingDataset(local=local)
-
-        def __getitem__(self, idx):
-            data = self.dataset[idx]
-            data['labels'] = data["input_ids"].copy()
-            data.pop('token_type_ids', None)
-            for k in data.keys():
-                data[k] = data[k].astype(np.int64)
-            return data
-
-        def __len__(self):
-            return len(self.dataset)
-
-    train_dataset = DatasetFixed(local=data_args.train_file)
-
-    # print(train_dataset[0])
 
     # Initialize our Trainer
     trainer = Trainer(
@@ -396,39 +393,23 @@ def main():
         preprocess_logits_for_metrics=None,
     )
 
-    # Training
-    if training_args.do_train:
-        checkpoint = None
-        if training_args.resume_from_checkpoint is not None:
-            checkpoint = training_args.resume_from_checkpoint
-        elif last_checkpoint is not None:
-            checkpoint = last_checkpoint
-        train_result = trainer.train(resume_from_checkpoint=checkpoint)
-        trainer.save_model()  # Saves the tokenizer too for easy upload
+    print('len(trainer.train_dataset)', len(trainer.train_dataset))
 
-        metrics = train_result.metrics
-
-        max_train_samples = (
-            data_args.max_train_samples if data_args.max_train_samples is not None else len(train_dataset))
-        metrics["train_samples"] = min(max_train_samples, len(train_dataset))
-
-        trainer.log_metrics("train", metrics)
-        trainer.save_metrics("train", metrics)
+    checkpoint = None
+    if training_args.resume_from_checkpoint is not None:
+        checkpoint = training_args.resume_from_checkpoint
+    elif last_checkpoint is not None:
+        checkpoint = last_checkpoint
+    try:
+        trainer.train(resume_from_checkpoint=checkpoint)
+        trainer.save_model()
         trainer.save_state()
 
-    kwargs = {"finetuned_from": model_args.model_name_or_path, "tasks": "text-generation"}
-    if data_args.dataset_name is not None:
-        kwargs["dataset_tags"] = data_args.dataset_name
-        if data_args.dataset_config_name is not None:
-            kwargs["dataset_args"] = data_args.dataset_config_name
-            kwargs["dataset"] = f"{data_args.dataset_name} {data_args.dataset_config_name}"
-        else:
-            kwargs["dataset"] = data_args.dataset_name
-
-    if training_args.push_to_hub:
-        trainer.push_to_hub(**kwargs)
-    else:
-        trainer.create_model_card(**kwargs)
+    except Exception as e:
+        e = str(e)
+        print(e)
+        if checkpoint and ('checkpoint' in e or 'central directory' in e):
+            os.system(f'mv {checkpoint} {checkpoint}-temp')
 
 
 def _mp_fn(index):

@@ -1,7 +1,7 @@
 WANDB_PROJECT=fpf-llama2-13b-hf-instructions-32k-function-call ~/.local/bin/deepspeed run_clm_instructions.py \
 --deepspeed ds_config_zero3.json \
---model_name_or_path last-checkpoint \
---per_device_train_batch_size 2 \
+--model_name_or_path mesolitica/llama-13b-hf-32768-fpf \
+--per_device_train_batch_size 6 \
 --gradient_accumulation_steps 3 \
 --output_dir fpf-13b-instructions-16k-call \
 --bf16 \

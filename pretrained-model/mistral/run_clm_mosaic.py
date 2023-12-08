@@ -55,7 +55,7 @@ from transformers.trainer_utils import get_last_checkpoint
 from transformers.utils import check_min_version, send_example_telemetry
 from transformers.utils.versions import require_version
 from streaming.base.format.mds.encodings import Encoding, _encodings
-from streaming import StreamingDataset
+from streaming import LocalDataset
 
 import numpy as np
 
@@ -351,21 +351,23 @@ def main():
         n_params = sum({p.data_ptr(): p.numel() for p in model.parameters()}.values())
         logger.info(f"Training new model from scratch - Total size={n_params/2**20:.2f}M params")
 
-    class Int32(Encoding):
+    class UInt16(Encoding):
         def encode(self, obj) -> bytes:
             return obj.tobytes()
 
         def decode(self, data: bytes):
-            return np.frombuffer(data, np.int32)
+            return np.frombuffer(data, np.uint16)
 
-    _encodings['int32'] = Int32
+    _encodings['uint16'] = UInt16
 
     class DatasetFixed(torch.utils.data.Dataset):
         def __init__(self, local):
-            self.dataset = StreamingDataset(local=local)
+            self.dataset = LocalDataset(local=local)
 
         def __getitem__(self, idx):
             data = self.dataset[idx]
+            data['labels'] = data['input_ids'].copy()
+
             data.pop('token_type_ids', None)
             for k in data.keys():
                 data[k] = data[k].astype(np.int64)
@@ -391,39 +393,21 @@ def main():
         preprocess_logits_for_metrics=None,
     )
 
-    # Training
-    if training_args.do_train:
-        checkpoint = None
-        if training_args.resume_from_checkpoint is not None:
-            checkpoint = training_args.resume_from_checkpoint
-        elif last_checkpoint is not None:
-            checkpoint = last_checkpoint
-        train_result = trainer.train(resume_from_checkpoint=checkpoint)
-        trainer.save_model()  # Saves the tokenizer too for easy upload
-
-        metrics = train_result.metrics
-
-        max_train_samples = (
-            data_args.max_train_samples if data_args.max_train_samples is not None else len(train_dataset))
-        metrics["train_samples"] = min(max_train_samples, len(train_dataset))
-
-        trainer.log_metrics("train", metrics)
-        trainer.save_metrics("train", metrics)
+    checkpoint = None
+    if training_args.resume_from_checkpoint is not None:
+        checkpoint = training_args.resume_from_checkpoint
+    elif last_checkpoint is not None:
+        checkpoint = last_checkpoint
+    try:
+        trainer.train(resume_from_checkpoint=checkpoint)
+        trainer.save_model()
         trainer.save_state()
 
-    kwargs = {"finetuned_from": model_args.model_name_or_path, "tasks": "text-generation"}
-    if data_args.dataset_name is not None:
-        kwargs["dataset_tags"] = data_args.dataset_name
-        if data_args.dataset_config_name is not None:
-            kwargs["dataset_args"] = data_args.dataset_config_name
-            kwargs["dataset"] = f"{data_args.dataset_name} {data_args.dataset_config_name}"
-        else:
-            kwargs["dataset"] = data_args.dataset_name
-
-    if training_args.push_to_hub:
-        trainer.push_to_hub(**kwargs)
-    else:
-        trainer.create_model_card(**kwargs)
+    except Exception as e:
+        e = str(e)
+        print(e)
+        if checkpoint and 'checkpoint' in e:
+            os.system(f'mv {checkpoint} {checkpoint}-temp')
 
 
 def _mp_fn(index):
