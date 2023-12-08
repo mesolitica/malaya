@@ -615,7 +615,7 @@ def train_func(config):
         bf16=True,
         gradient_checkpointing=False,
         deepspeed=deepspeed,
-        save_total_limit=5,
+        save_total_limit=3,
         log_level='debug',
     )
 

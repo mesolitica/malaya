@@ -17,26 +17,6 @@ pip3 install flash-attn --no-build-isolation -U
 pip3 install git+https://github.com/HazyResearch/flash-attention.git#subdirectory=csrc/rotary
 ```
 
-## Pretrain
-
-Dataset prepared at https://github.com/malaysia-ai/text-dataset-dedup#pretrain
-
-### 191M, 4096 Context length
-
-```bash
-bash run-191M.sh
-```
-
-https://wandb.ai/mesolitica/mistral-158M?workspace=user-husein-mesolitica
-
-### 349M, 4096 Context length
-
-```bash
-bash run-349M.sh
-```
-
-https://wandb.ai/mesolitica/mistral-349M?workspace=user-husein-mesolitica
-
 ### 1.1B, 4096 Context length
 
 - Dataset gathered at https://github.com/malaysia-ai/dedup-text-dataset/tree/main/pretrain-llm
