@@ -17,6 +17,6 @@ pip3 install mamba-ssm
 bash run-1b.sh
 ```
 
-**Training script already hardcoded deepspeed Zero 3 config and other configs, it might only suitable to pretrain mistral from scratch**.
+**Training script already hardcoded deepspeed Zero 3 config and other configs, it might only suitable to pretrain mamba from scratch**.
 
 https://wandb.ai/mesolitica/pretrain-mamba-1.4b?workspace=user-husein-mesolitica
