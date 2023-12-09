@@ -604,7 +604,7 @@ def train_func(config):
     training_args = TrainingArguments(
         output_dir,
         per_device_train_batch_size=8,
-        gradient_accumulation_steps=4,
+        gradient_accumulation_steps=3,
         logging_steps=1,
         save_strategy='steps',
         save_steps=100,
