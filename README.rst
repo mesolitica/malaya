@@ -103,17 +103,7 @@ Thanks to,
         <img alt="logo" width="20%" src="https://image4.owler.com/logo/keyreply_owler_20191024_163259_original.png">
     </a>
 
-
-2. `Mesolitica <https://mesolitica.com/>`_ for private RTXs cloud.
-
-.. raw:: html
-
-    <a href="#readme">
-        <img alt="logo" width="20%" src="https://i1.wp.com/mesolitica.com/wp-content/uploads/2019/06/Mesolitica_Logo_Only.png?fit=857%2C532&ssl=1">
-    </a>
-
-
-3. `Nvidia <https://www.nvidia.com/en-us/>`_ for Azure credit.
+2. `Nvidia <https://www.nvidia.com/en-us/>`_ for Azure credit.
 
 .. raw:: html
 
@@ -122,7 +112,7 @@ Thanks to,
     </a>
 
 
-4. `Tensorflow Research Cloud <https://www.tensorflow.org/tfrc>`_ for free TPUs access.
+3. `Tensorflow Research Cloud <https://www.tensorflow.org/tfrc>`_ for free TPUs access.
 
 .. raw:: html
 

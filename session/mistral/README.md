@@ -56,3 +56,21 @@ bash run-instructions-16k.sh
 ```
 
 https://wandb.ai/mesolitica/fpf-mistral-7b-hf-instructions-16k?workspace=user-husein-mesolitica
+
+### MaLLaM 1.1B
+
+```bash
+bash run-instructions-20k-mallam-1.1b.sh
+```
+
+### MaLLaM 3B
+
+```bash
+bash run-instructions-20k-mallam-3b.sh
+```
+
+### MaLLaM 5B
+
+```bash
+bash run-instructions-20k-mallam-5b.sh
+```

@@ -219,18 +219,6 @@ class DataTrainingArguments:
         default=True, metadata={"help": "Whether to keep line breaks when using TXT files or not."}
     )
 
-    def __post_init__(self):
-        if self.streaming:
-            require_version("datasets>=2.0.0", "The streaming feature requires `datasets>=2.0.0`")
-
-        if self.dataset_name is None and self.train_file is None and self.validation_file is None:
-            raise ValueError("Need either a dataset name or a training/validation file.")
-        else:
-            if self.train_file is not None:
-                extension = self.train_file.split(".")[-1]
-                assert extension in ["csv", "json", "txt",
-                                     'jsonl'], "`train_file` should be a csv, a json or a txt file."
-
 
 def main():
     # See all possible arguments in src/transformers/training_args.py
@@ -346,7 +334,6 @@ def main():
             "You are instantiating a new tokenizer from scratch. This is not supported by this script."
             "You can do it from another script, save it, and load it from here, using --tokenizer_name.")
 
-    tokenizer.pad_token = tokenizer.unk_token
     tokenizer.add_bos_token = False
     tokenizer.add_eos_token = False
     tokenizer.padding_side = "right"

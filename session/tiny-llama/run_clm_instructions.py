@@ -57,6 +57,9 @@ from transformers.testing_utils import CaptureLogger
 from transformers.trainer_utils import get_last_checkpoint
 from transformers.utils import check_min_version, send_example_telemetry
 from transformers.utils.versions import require_version
+import streaming
+import json
+from streaming import LocalDataset
 
 require_version(
     "datasets>=1.8.0",
@@ -224,18 +227,6 @@ class DataTrainingArguments:
     keep_linebreaks: bool = field(
         default=True, metadata={"help": "Whether to keep line breaks when using TXT files or not."}
     )
-
-    def __post_init__(self):
-        if self.streaming:
-            require_version("datasets>=2.0.0", "The streaming feature requires `datasets>=2.0.0`")
-
-        if self.dataset_name is None and self.train_file is None and self.validation_file is None:
-            raise ValueError("Need either a dataset name or a training/validation file.")
-        else:
-            if self.train_file is not None:
-                extension = self.train_file.split(".")[-1]
-                assert extension in ["csv", "json", "txt",
-                                     'jsonl'], "`train_file` should be a csv, a json or a txt file."
 
 
 def main():
@@ -426,28 +417,29 @@ def main():
         prompt = ''.join(texts)
         return {'text': prompt}
 
-    def tokenize(element):
-        outputs = tokenizer(
-            element['text'],
-            truncation=True,
-            padding=False,
-            max_length=block_size,
-            return_overflowing_tokens=False,
-            return_length=False,
-        )
+    class DatasetFixed(torch.utils.data.Dataset):
+        def __init__(self, remote):
 
-        return {"input_ids": outputs["input_ids"], "attention_mask": outputs["attention_mask"]}
+            streaming.base.util.clean_stale_shared_memory()
+            self.dataset = LocalDataset(local=remote)
 
-    dataset = load_dataset("json", data_files=data_args.train_file, split="train")
-    dataset = dataset.map(generate_and_tokenize_prompt)
-    dataset = dataset.remove_columns(['prompt_input', 'input', 'output'])
-    dataset = dataset.map(
-        tokenize,
-        batched=True,
-        remove_columns=dataset.column_names,
-        num_proc=None,
-        batch_size=1000,
-    )
+        def __getitem__(self, idx):
+            row = json.loads(self.dataset[idx]['text'])
+            element = generate_and_tokenize_prompt(row)
+            outputs = tokenizer(
+                element['text'],
+                truncation=True,
+                padding=False,
+                max_length=block_size,
+                return_overflowing_tokens=False,
+                return_length=False,
+            )
+            return {"input_ids": outputs["input_ids"], "attention_mask": outputs["attention_mask"]}
+
+        def __len__(self):
+            return len(self.dataset)
+
+    dataset = DatasetFixed(data_args.train_file)
 
     data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 
