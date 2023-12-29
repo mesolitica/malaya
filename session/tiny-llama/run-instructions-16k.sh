@@ -1,4 +1,4 @@
-WANDB_PROJECT=fpf-tinyllama-1.1b-hf-instructions-16k-function-call \
+WANDB_PROJECT=fpf-tinyllama-1.1b-hf-instructions-16k \
 deepspeed run_clm_instructions.py \
 --deepspeed ds_config_zero3.json \
 --model_name_or_path mesolitica/tinyllama-1.1b-4096-fpf \
@@ -9,7 +9,7 @@ deepspeed run_clm_instructions.py \
 --do_train \
 --do_eval false \
 --num_train_epochs 3 \
---train_file 'mosaic-chat-instructions-partial-ultrachat-v2' \
+--train_file 'mosaic-chat-instructions-v3' \
 --logging_steps 1 \
 --learning_rate 2e-5 \
 --block_size 16384 \

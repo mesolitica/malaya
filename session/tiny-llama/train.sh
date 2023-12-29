@@ -1,8 +1,7 @@
-rm -rf /dev/shm/*
 WANDB_PROJECT="finetune-tinyllama-1.1B" \
-~/.local/bin/torchrun --nproc_per_node 4 \
+torchrun --nproc_per_node 4 \
 -m train \
---model_name_or_path TinyLlama/TinyLlama-1.1B-intermediate-step-955k-token-2T \
+--model_name_or_path TinyLlama/TinyLlama-1.1B-intermediate-step-1431k-3T \
 --per_device_train_batch_size 24 \
 --gradient_accumulation_steps 1 \
 --output_dir finetune-tinyllama \
@@ -10,7 +9,7 @@ WANDB_PROJECT="finetune-tinyllama-1.1B" \
 --do_train \
 --do_eval false \
 --num_train_epochs 2 \
---train_file "combine-all" \
+--train_file "/home/ubuntu/mosaic-tinyllama" \
 --logging_steps 1 \
 --learning_rate 2e-5 \
 --block_size 4096 \

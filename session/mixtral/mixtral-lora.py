@@ -27,6 +27,7 @@ import math
 import os
 import sys
 import warnings
+import dataclasses
 from dataclasses import dataclass, field
 from itertools import chain
 from typing import Optional
@@ -35,6 +36,7 @@ import datasets
 import evaluate
 import torch
 from datasets import load_dataset
+import inspect
 
 import transformers
 from transformers import (
@@ -51,6 +53,7 @@ from transformers import (
     DataCollatorForLanguageModeling,
     is_torch_tpu_available,
     set_seed,
+    BitsAndBytesConfig,
 )
 from transformers.testing_utils import CaptureLogger
 from transformers.trainer_utils import get_last_checkpoint
@@ -58,7 +61,11 @@ from transformers.utils import check_min_version, send_example_telemetry
 from transformers.utils.versions import require_version
 import streaming
 import json
+from peft import PeftConfig, PeftModel
+from peft import LoraConfig, prepare_model_for_kbit_training, get_peft_model
 from streaming import LocalDataset
+from accelerate import Accelerator
+from typing import List
 
 require_version(
     "datasets>=1.8.0",
@@ -154,6 +161,11 @@ class ModelArguments:
             )
         },
     )
+    lora_r: Optional[int] = field(default=64)
+    lora_alpha: Optional[int] = field(default=16)
+    lora_dropout: Optional[float] = field(default=0.1)
+    target_modules: Optional[List[str]] = field(
+        default=None, metadata={"help": "Target modules for LoRA adapters"})
 
     def __post_init__(self):
         if self.config_overrides is not None and (
@@ -220,6 +232,20 @@ class DataTrainingArguments:
     )
 
 
+def peft_module_casting_to_bf16(model):
+    from peft.tuners.tuners_utils import BaseTunerLayer
+
+    for name, module in model.named_modules():
+        if isinstance(module, BaseTunerLayer):
+            module = module.to(torch.bfloat16)
+        if "norm" in name:
+            module = module.to(torch.float32)
+        if any(x in name for x in ["lm_head", "embed_tokens", "wte", "wpe"]):
+            if hasattr(module, "weight"):
+                if module.weight.dtype == torch.float32:
+                    module = module.to(torch.bfloat16)
+
+
 def main():
     # See all possible arguments in src/transformers/training_args.py
     # or by passing the --help flag to this script.
@@ -233,6 +259,8 @@ def main():
             json_file=os.path.abspath(sys.argv[1]))
     else:
         model_args, data_args, training_args = parser.parse_args_into_dataclasses()
+
+    training_args.gradient_checkpointing_kwargs = {'use_reentrant': False}
 
     if model_args.use_auth_token is not None:
         warnings.warn(
@@ -341,38 +369,75 @@ def main():
 
     block_size = data_args.block_size
 
-    if model_args.model_name_or_path:
-        torch_dtype = (
-            model_args.torch_dtype
-            if model_args.torch_dtype in ["auto", None]
-            else getattr(torch, model_args.torch_dtype)
+    torch_dtype = (
+        model_args.torch_dtype
+        if model_args.torch_dtype in ["auto", None]
+        else getattr(torch, model_args.torch_dtype)
+    )
+    quantization_config = BitsAndBytesConfig(
+        load_in_4bit=True
+    )
+
+    device_map = {"": Accelerator().local_process_index}
+    peft_config = LoraConfig(
+        lora_alpha=model_args.lora_alpha,
+        lora_dropout=model_args.lora_dropout,
+        r=model_args.lora_r,
+        bias="none",
+        task_type="CAUSAL_LM",
+        target_modules=model_args.target_modules,
+    )
+
+    model = AutoModelForCausalLM.from_pretrained(
+        model_args.model_name_or_path,
+        torch_dtype=torch_dtype,
+        use_flash_attention_2=True,
+        quantization_config=quantization_config,
+        device_map=device_map,
+    )
+    print('is_loaded_in_4bit', model.is_loaded_in_4bit)
+
+    args = training_args
+
+    if not isinstance(model, PeftModel):
+        _support_gc_kwargs = hasattr(
+            args, "gradient_checkpointing_kwargs"
+        ) and "gradient_checkpointing_kwargs" in list(
+            inspect.signature(prepare_model_for_kbit_training).parameters
         )
+        gradient_checkpointing_kwargs = getattr(args, "gradient_checkpointing_kwargs", None) or {}
+        # gradient_checkpointing_kwargs['use_reentrant'] = False
+        if getattr(model, "is_loaded_in_8bit", False) or getattr(model, "is_loaded_in_4bit", False):
+            preprare_model_kwargs = {
+                "use_gradient_checkpointing": getattr(args, "gradient_checkpointing", False)
+            }
 
-        selected_model = AutoModelForCausalLM
+            if _support_gc_kwargs:
+                preprare_model_kwargs["gradient_checkpointing_kwargs"] = gradient_checkpointing_kwargs
 
-        model = selected_model.from_pretrained(
-            model_args.model_name_or_path,
-            from_tf=bool(".ckpt" in model_args.model_name_or_path),
-            config=config,
-            cache_dir=model_args.cache_dir,
-            revision=model_args.model_revision,
-            token=model_args.token,
-            trust_remote_code=model_args.trust_remote_code,
-            torch_dtype=torch_dtype,
-            low_cpu_mem_usage=model_args.low_cpu_mem_usage,
-            use_flash_attention_2=True
-        )
-    else:
-        model = AutoModelForCausalLM.from_config(
-            config, trust_remote_code=model_args.trust_remote_code)
-        n_params = sum({p.data_ptr(): p.numel() for p in model.parameters()}.values())
-        logger.info(f"Training new model from scratch - Total size={n_params/2**20:.2f}M params")
+            print('preprare_model_kwargs', preprare_model_kwargs)
 
-    # We resize the embeddings only when necessary to avoid index errors. If you are creating a model from scratch
-    # on a small vocab and want a smaller embedding size, remove this test.
-    embedding_size = model.get_input_embeddings().weight.shape[0]
-    if len(tokenizer) > embedding_size:
-        model.resize_token_embeddings(len(tokenizer))
+            model = prepare_model_for_kbit_training(model, **preprare_model_kwargs)
+
+            if args is not None:
+                args = dataclasses.replace(args, gradient_checkpointing=False)
+        elif getattr(args, "gradient_checkpointing", False) and (
+            "use_reentrant" not in gradient_checkpointing_kwargs
+            or gradient_checkpointing_kwargs["use_reentrant"]
+        ):
+            # For backward compatibility with older versions of transformers
+            if hasattr(model, "enable_input_require_grads"):
+                model.enable_input_require_grads()
+            else:
+
+                def make_inputs_require_grad(module, input, output):
+                    output.requires_grad_(True)
+
+                model.get_input_embeddings().register_forward_hook(make_inputs_require_grad)
+
+        model = get_peft_model(model, peft_config)
+        if args.bf16 and getattr(model, "is_loaded_in_4bit", False):
+            peft_module_casting_to_bf16(model)
 
     def generate_and_tokenize_prompt(row):
         texts = ['<s>']
