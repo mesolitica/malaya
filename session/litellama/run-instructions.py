@@ -37,6 +37,7 @@ import torch
 from datasets import load_dataset
 
 import transformers
+import random
 from transformers import (
     CONFIG_MAPPING,
     MODEL_FOR_CAUSAL_LM_MAPPING,
@@ -304,6 +305,7 @@ def main():
         "revision": model_args.model_revision,
         "token": model_args.token,
         "trust_remote_code": model_args.trust_remote_code,
+        "max_position_embeddings": 32768
     }
 
     if model_args.config_name:
@@ -334,6 +336,7 @@ def main():
             "You are instantiating a new tokenizer from scratch. This is not supported by this script."
             "You can do it from another script, save it, and load it from here, using --tokenizer_name.")
 
+    tokenizer.pad_token = tokenizer.unk_token
     tokenizer.add_bos_token = False
     tokenizer.add_eos_token = False
     tokenizer.padding_side = "right"
@@ -375,11 +378,6 @@ def main():
         model.resize_token_embeddings(len(tokenizer))
 
     def generate_and_tokenize_prompt(row):
-        texts = ['<s>']
-
-        if 'function_call' in row:
-            t = row['function_call']
-            texts.append(f'\n[FUNCTIONCALL]\n{t}\n')
 
         if '<bot>:' in row['input'] and row['output'] is None:
             inputs, outputs = [], []
@@ -393,8 +391,8 @@ def main():
                     except BaseException:
                         continue
                 bot = splitted[i + 1].split('<manusia>:')[0]
-                inputs.append(human.strip())
-                outputs.append(bot.strip())
+                inputs.append(human)
+                outputs.append(bot)
         else:
             inputs = [row['input']]
             outputs = [row['output']]
@@ -405,7 +403,6 @@ def main():
                 {'role': 'user', 'content': input.strip()},
                 {'role': 'assistant', 'content': output.strip()},
             ])
-
         prompt = tokenizer.apply_chat_template(chat, tokenize=False)
         return {'text': prompt}
 
@@ -446,21 +443,39 @@ def main():
         preprocess_logits_for_metrics=None,
     )
 
-    checkpoint = None
-    if training_args.resume_from_checkpoint is not None:
-        checkpoint = training_args.resume_from_checkpoint
-    elif last_checkpoint is not None:
-        checkpoint = last_checkpoint
-    try:
-        trainer.train(resume_from_checkpoint=checkpoint)
-        trainer.save_model()
+    # Training
+    if training_args.do_train:
+        checkpoint = None
+        if training_args.resume_from_checkpoint is not None:
+            checkpoint = training_args.resume_from_checkpoint
+        elif last_checkpoint is not None:
+            checkpoint = last_checkpoint
+        train_result = trainer.train(resume_from_checkpoint=checkpoint)
+        trainer.save_model()  # Saves the tokenizer too for easy upload
+
+        metrics = train_result.metrics
+
+        max_train_samples = (
+            data_args.max_train_samples if data_args.max_train_samples is not None else len(train_dataset))
+        metrics["train_samples"] = min(max_train_samples, len(train_dataset))
+
+        trainer.log_metrics("train", metrics)
+        trainer.save_metrics("train", metrics)
         trainer.save_state()
 
-    except Exception as e:
-        e = str(e)
-        print(e)
-        if checkpoint and ('checkpoint' in e or 'central directory' in e):
-            os.system(f'mv {checkpoint} {checkpoint}-temp')
+    kwargs = {"finetuned_from": model_args.model_name_or_path, "tasks": "text-generation"}
+    if data_args.dataset_name is not None:
+        kwargs["dataset_tags"] = data_args.dataset_name
+        if data_args.dataset_config_name is not None:
+            kwargs["dataset_args"] = data_args.dataset_config_name
+            kwargs["dataset"] = f"{data_args.dataset_name} {data_args.dataset_config_name}"
+        else:
+            kwargs["dataset"] = data_args.dataset_name
+
+    if training_args.push_to_hub:
+        trainer.push_to_hub(**kwargs)
+    else:
+        trainer.create_model_card(**kwargs)
 
 
 def _mp_fn(index):

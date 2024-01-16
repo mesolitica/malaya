@@ -47,8 +47,6 @@ from transformers import (
     Trainer,
     TrainingArguments,
     default_data_collator,
-    DataCollatorWithPadding,
-    DataCollatorForLanguageModeling,
     is_torch_tpu_available,
     set_seed,
 )
@@ -56,9 +54,11 @@ from transformers.testing_utils import CaptureLogger
 from transformers.trainer_utils import get_last_checkpoint
 from transformers.utils import check_min_version, send_example_telemetry
 from transformers.utils.versions import require_version
-import streaming
-import json
+from streaming.base.format.mds.encodings import Encoding, _encodings
 from streaming import LocalDataset
+from streaming.base.format.mds.encodings import Encoding, _encodings
+
+import numpy as np
 
 require_version(
     "datasets>=1.8.0",
@@ -290,20 +290,12 @@ def main():
     # Set seed before initializing model.
     set_seed(training_args.seed)
 
-    # See more about loading any type of standard or custom dataset (from files, python dict, pandas DataFrame, etc) at
-    # https://huggingface.co/docs/datasets/loading_datasets.html.
-
-    # Load pretrained model and tokenizer
-    #
-    # Distributed training:
-    # The .from_pretrained methods guarantee that only one local process can concurrently
-    # download model & vocab.
-
     config_kwargs = {
         "cache_dir": model_args.cache_dir,
         "revision": model_args.model_revision,
         "token": model_args.token,
         "trust_remote_code": model_args.trust_remote_code,
+        'max_position_embeddings': 32768,
     }
 
     if model_args.config_name:
@@ -334,12 +326,36 @@ def main():
             "You are instantiating a new tokenizer from scratch. This is not supported by this script."
             "You can do it from another script, save it, and load it from here, using --tokenizer_name.")
 
-    tokenizer.add_bos_token = False
-    tokenizer.add_eos_token = False
-    tokenizer.padding_side = "right"
-    tokenizer.chat_template = "{{ bos_token }}{% for message in messages %}{% if (message['role'] == 'user') != (loop.index0 % 2 == 0) %}{{ raise_exception('Conversation roles must alternate user/assistant/user/assistant/...') }}{% endif %}{% if message['role'] == 'user' %}{{ '[INST] ' + message['content'] + ' [/INST]' }}{% elif message['role'] == 'assistant' %}{{ message['content'] + eos_token}}{% else %}{{ raise_exception('Only user and assistant roles are supported!') }}{% endif %}{% endfor %}"
+    tokenizer.model_max_length = 32768
+    special_tokens_dict = {"eos_token": "</s>", "bos_token": '<s>'}
+    num_added_toks = tokenizer.add_special_tokens(special_tokens_dict)
 
-    block_size = data_args.block_size
+    class UInt16(Encoding):
+        def encode(self, obj) -> bytes:
+            return obj.tobytes()
+
+        def decode(self, data: bytes):
+            return np.frombuffer(data, np.uint16)
+
+    _encodings['uint16'] = UInt16
+
+    class DatasetFixed(torch.utils.data.Dataset):
+        def __init__(self, local):
+            self.dataset = LocalDataset(local=local)
+
+        def __getitem__(self, idx):
+            data = self.dataset[idx]
+            data['labels'] = data["input_ids"].copy()
+            data.pop('token_type_ids', None)
+            for k in data.keys():
+                data[k] = data[k].astype(np.int64)
+            return data
+
+        def __len__(self):
+            return len(self.dataset)
+
+    train_dataset = DatasetFixed(local=data_args.train_file)
+    print(len(train_dataset))
 
     if model_args.model_name_or_path:
         torch_dtype = (
@@ -360,7 +376,7 @@ def main():
             trust_remote_code=model_args.trust_remote_code,
             torch_dtype=torch_dtype,
             low_cpu_mem_usage=model_args.low_cpu_mem_usage,
-            use_flash_attention_2=True
+            use_flash_attention_2=True,
         )
     else:
         model = AutoModelForCausalLM.from_config(
@@ -368,83 +384,20 @@ def main():
         n_params = sum({p.data_ptr(): p.numel() for p in model.parameters()}.values())
         logger.info(f"Training new model from scratch - Total size={n_params/2**20:.2f}M params")
 
-    # We resize the embeddings only when necessary to avoid index errors. If you are creating a model from scratch
-    # on a small vocab and want a smaller embedding size, remove this test.
-    embedding_size = model.get_input_embeddings().weight.shape[0]
-    if len(tokenizer) > embedding_size:
-        model.resize_token_embeddings(len(tokenizer))
-
-    def generate_and_tokenize_prompt(row):
-        texts = ['<s>']
-
-        if 'function_call' in row:
-            t = row['function_call']
-            texts.append(f'\n[FUNCTIONCALL]\n{t}\n')
-
-        if '<bot>:' in row['input'] and row['output'] is None:
-            inputs, outputs = [], []
-            splitted = row['input'].split('<bot>:')
-            for i in range(len(splitted) - 1):
-                if i == 0:
-                    human = splitted[i].replace('<manusia>:', '')
-                else:
-                    try:
-                        human = splitted[i].split('<manusia>:')[1]
-                    except BaseException:
-                        continue
-                bot = splitted[i + 1].split('<manusia>:')[0]
-                inputs.append(human.strip())
-                outputs.append(bot.strip())
-        else:
-            inputs = [row['input']]
-            outputs = [row['output']]
-
-        chat = []
-        for input, output in zip(inputs, outputs):
-            chat.extend([
-                {'role': 'user', 'content': input.strip()},
-                {'role': 'assistant', 'content': output.strip()},
-            ])
-
-        prompt = tokenizer.apply_chat_template(chat, tokenize=False)
-        return {'text': prompt}
-
-    class DatasetFixed(torch.utils.data.Dataset):
-        def __init__(self, remote):
-
-            streaming.base.util.clean_stale_shared_memory()
-            self.dataset = LocalDataset(local=remote)
-
-        def __getitem__(self, idx):
-            row = json.loads(self.dataset[idx]['text'])
-            element = generate_and_tokenize_prompt(row)
-            outputs = tokenizer(
-                element['text'],
-                truncation=True,
-                padding=False,
-                max_length=block_size,
-                return_overflowing_tokens=False,
-                return_length=False,
-            )
-            return {"input_ids": outputs["input_ids"], "attention_mask": outputs["attention_mask"]}
-
-        def __len__(self):
-            return len(self.dataset)
-
-    dataset = DatasetFixed(data_args.train_file)
-
-    data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
-
+    # Initialize our Trainer
     trainer = Trainer(
         model=model,
         args=training_args,
-        train_dataset=dataset,
+        train_dataset=train_dataset if training_args.do_train else None,
         eval_dataset=None,
         tokenizer=tokenizer,
-        data_collator=data_collator,
+        # Data collator will default to DataCollatorWithPadding, so we change it.
+        data_collator=default_data_collator,
         compute_metrics=None,
         preprocess_logits_for_metrics=None,
     )
+
+    print('len(trainer.train_dataset)', len(trainer.train_dataset))
 
     checkpoint = None
     if training_args.resume_from_checkpoint is not None:

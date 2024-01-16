@@ -2,37 +2,25 @@ from malaya.supervised.huggingface import load
 from malaya.torch_model.llm import LLM
 
 available_huggingface = {
-    'mesolitica/malaysian-llama2-7b-32k-instructions': {
-        'base model': 'https://huggingface.co/mesolitica/llama-7b-hf-32768-fpf',
-        'Size (GB)': 13.85,
-        'context length': 32768,
-        'trained on': [
-            'https://huggingface.co/datasets/mesolitica/google-translate-ultrachat',
-        ]
+    'mesolitica/mallam-1.1b-20k-instructions-v2': {
+        'base model': 'https://huggingface.co/mesolitica/mallam-1.1B-4096',
+        'Size (GB)': 2.25,
+        'context length': 20480,
     },
-    'mesolitica/malaysian-llama2-13b-32k-instructions': {
-        'base model': 'https://huggingface.co/mesolitica/llama-13b-hf-32768-fpf',
-        'Size (GB)': 26.03,
-        'context length': 32768,
-        'trained on': [
-            'https://huggingface.co/datasets/mesolitica/google-translate-ultrachat',
-        ]
+    'mesolitica/mallam-5b-20k-instructions-v2': {
+        'base model': 'https://huggingface.co/mesolitica/mallam-5B-4096',
+        'Size (GB)': 10.0,
+        'context length': 20480,
     },
-    'mesolitica/malaysian-mistral-7b-32k-instructions': {
-        'base model': 'https://huggingface.co/mesolitica/mistral-7b-32768-fpf',
-        'Size (GB)': 14.48,
-        'context length': 32768,
-        'trained on': [
-            'https://huggingface.co/datasets/mesolitica/google-translate-ultrachat',
-        ]
+    'mesolitica/malaysian-tinyllama-1.1b-16k-instructions-v2': {
+        'base model': 'https://huggingface.co/mesolitica/mallam-5B-4096',
+        'Size (GB)': 2.2,
+        'context length': 16384,
     },
-    'mesolitica/malaysian-mistral-1.1b-32k-instructions': {
-        'base model': 'https://huggingface.co/mesolitica/mistral-1.1b-32768-fpf',
-        'Size (GB)': 2.27,
-        'context length': 32768,
-        'trained on': [
-            'https://huggingface.co/datasets/mesolitica/google-translate-ultrachat',
-        ]
+    'mesolitica/malaysian-mistral-7b-32k-instructions-v3': {
+        'base model': 'https://huggingface.co/mesolitica/mallam-5B-4096',
+        'Size (GB)': 2.25,
+        'context length': 20480,
     },
 }
 

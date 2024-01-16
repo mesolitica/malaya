@@ -107,3 +107,4 @@ session/knowledge-graph/*/*.jsonl
 session/knowledge-graph/*/*.json
 session/knowledge-graph/*/*_cache
 session/knowledge-graph/*/nanot5-*
+*wandb

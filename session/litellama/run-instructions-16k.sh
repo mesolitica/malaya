@@ -1,10 +1,10 @@
-WANDB_PROJECT=fpf-tinyllama-1.1b-hf-instructions-16k-rag \
+WANDB_PROJECT=fpf-LiteLlama-460M-4096-fpf-16k-rag \
 deepspeed run-instructions.py \
 --deepspeed ds_config_zero3.json \
---model_name_or_path mesolitica/tinyllama-1.1b-4096-fpf \
+--model_name_or_path mesolitica/LiteLlama-460M-4096-fpf \
 --per_device_train_batch_size 6 \
 --gradient_accumulation_steps 6 \
---output_dir fpf-1.1b-instructions-16k-call \
+--output_dir fpf-460m-instructions-16k-call \
 --bf16 \
 --do_train \
 --do_eval false \

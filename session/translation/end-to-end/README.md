@@ -38,59 +38,50 @@ python3 run_t5.py \
 
 SMALL model,
 ```
-CUDA_VISIBLE_DEVICES='1' \
-WANDB_DISABLED=true \
-python3 run_t5.py \
+WANDB_PROJECT="translation-t5-small" \
+torchrun \
+--nproc_per_node 2 \
+-m run_t5 \
 --model_name_or_path mesolitica/t5-small-standard-bahasa-cased \
 --num_train_epochs 3 \
---logging_steps 100 \
 --eval_steps 1000000000 \
---save_steps 10000 \
---evaluation_strategy steps \
+--logging_steps 10 \
+--save_steps 2000 \
 --save_total_limit 3 \
 --do_train \
---do_eval \
---source_lang src \
---target_lang tgt \
---train_file shuffled-train.json \
---validation_file test.json \
+--train_file mosaic \
 --output_dir finetune-t5-small-standard-bahasa-cased \
 --per_device_train_batch_size=16 \
 --per_device_eval_batch_size=4 \
---predict_with_generate \
 --max_source_length 1536 \
 --max_target_length 1536 \
 --learning_rate 2e-4 \
---gradient_checkpointing true
+--gradient_checkpointing true \
+--bf16
 ```
 
 TINY model,
 ```
-CUDA_VISIBLE_DEVICES='0' \
-WANDB_DISABLED=true \
-python3 run_t5.py \
+WANDB_PROJECT="translation-t5-small" \
+torchrun \
+--nproc_per_node 2 \
+-m run_t5 \
 --model_name_or_path mesolitica/t5-tiny-standard-bahasa-cased \
 --num_train_epochs 3 \
---logging_steps 100 \
 --eval_steps 1000000000 \
---save_steps 10000 \
---evaluation_strategy steps \
+--logging_steps 10 \
+--save_steps 2000 \
 --save_total_limit 3 \
 --do_train \
---do_eval \
---source_lang src \
---target_lang tgt \
---train_file shuffled-train.json \
---validation_file test.json \
+--train_file mosaic \
 --output_dir finetune-t5-tiny-standard-bahasa-cased \
---per_device_train_batch_size=12 \
+--per_device_train_batch_size=16 \
 --per_device_eval_batch_size=4 \
---predict_with_generate \
 --max_source_length 1536 \
 --max_target_length 1536 \
 --learning_rate 5e-5 \
 --gradient_checkpointing true \
---ignore_data_skip False
+--bf16
 ```
 
 ## nanoT5
