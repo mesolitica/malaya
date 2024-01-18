@@ -156,6 +156,20 @@ available_huggingface = {
         'from lang': ['en', 'ms', 'ind', 'jav', 'bjn', 'manglish', 'pasar ms'],
         'to lang': ['en', 'ms'],
     },
+    'mesolitica/translation-t5-small-standard-bahasa-cased-code': {
+        'Size (MB)': 242,
+        'Suggested length': 2048,
+        'en-ms chrF2++': 67.37,
+        'ms-en chrF2++': 63.79,
+        'ind-ms chrF2++': 58.09,
+        'jav-ms chrF2++': 52.11,
+        'pasar ms-ms chrF2++': 62.49,
+        'pasar ms-en chrF2++': 60.77,
+        'manglish-ms chrF2++': 52.84,
+        'manglish-en chrF2++': 53.65,
+        'from lang': ['en', 'ms', 'ind', 'jav', 'bjn'],
+        'to lang': ['en', 'ms'],
+    },
     'mesolitica/translation-nanot5-tiny-malaysian-cased': {
         'Size (MB)': 205,
         'Suggested length': 2048,
@@ -265,6 +279,7 @@ def huggingface(
         model=model,
         class_model=Translation,
         available_huggingface=available_huggingface,
+        force_check=force_check,
         path=__name__,
         **kwargs,
     )
