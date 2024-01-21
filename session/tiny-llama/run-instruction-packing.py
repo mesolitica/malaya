@@ -37,6 +37,7 @@ import torch
 from datasets import load_dataset
 
 import transformers
+import random
 from transformers import (
     CONFIG_MAPPING,
     MODEL_FOR_CAUSAL_LM_MAPPING,
@@ -47,6 +48,8 @@ from transformers import (
     Trainer,
     TrainingArguments,
     default_data_collator,
+    DataCollatorWithPadding,
+    DataCollatorForLanguageModeling,
     is_torch_tpu_available,
     set_seed,
 )
@@ -54,10 +57,11 @@ from transformers.testing_utils import CaptureLogger
 from transformers.trainer_utils import get_last_checkpoint
 from transformers.utils import check_min_version, send_example_telemetry
 from transformers.utils.versions import require_version
+import streaming
+import json
+import numpy as np
 from streaming import LocalDataset
 from streaming.base.format.mds.encodings import Encoding, _encodings
-
-import numpy as np
 
 require_version(
     "datasets>=1.8.0",
@@ -289,12 +293,21 @@ def main():
     # Set seed before initializing model.
     set_seed(training_args.seed)
 
+    # See more about loading any type of standard or custom dataset (from files, python dict, pandas DataFrame, etc) at
+    # https://huggingface.co/docs/datasets/loading_datasets.html.
+
+    # Load pretrained model and tokenizer
+    #
+    # Distributed training:
+    # The .from_pretrained methods guarantee that only one local process can concurrently
+    # download model & vocab.
+
     config_kwargs = {
         "cache_dir": model_args.cache_dir,
         "revision": model_args.model_revision,
         "token": model_args.token,
         "trust_remote_code": model_args.trust_remote_code,
-        'max_position_embeddings': 32768,
+        "max_position_embeddings": 32768
     }
 
     if model_args.config_name:
@@ -325,6 +338,47 @@ def main():
             "You are instantiating a new tokenizer from scratch. This is not supported by this script."
             "You can do it from another script, save it, and load it from here, using --tokenizer_name.")
 
+    tokenizer.pad_token = tokenizer.unk_token
+    tokenizer.add_bos_token = False
+    tokenizer.add_eos_token = False
+    tokenizer.padding_side = "right"
+    tokenizer.chat_template = "{{ bos_token }}{% for message in messages %}{% if (message['role'] == 'user') != (loop.index0 % 2 == 0) %}{{ raise_exception('Conversation roles must alternate user/assistant/user/assistant/...') }}{% endif %}{% if message['role'] == 'user' %}{{ '[INST] ' + message['content'] + ' [/INST]' }}{% elif message['role'] == 'assistant' %}{{ message['content'] + eos_token}}{% else %}{{ raise_exception('Only user and assistant roles are supported!') }}{% endif %}{% endfor %}"
+
+    block_size = data_args.block_size
+
+    if model_args.model_name_or_path:
+        torch_dtype = (
+            model_args.torch_dtype
+            if model_args.torch_dtype in ["auto", None]
+            else getattr(torch, model_args.torch_dtype)
+        )
+
+        selected_model = AutoModelForCausalLM
+
+        model = selected_model.from_pretrained(
+            model_args.model_name_or_path,
+            from_tf=bool(".ckpt" in model_args.model_name_or_path),
+            config=config,
+            cache_dir=model_args.cache_dir,
+            revision=model_args.model_revision,
+            token=model_args.token,
+            trust_remote_code=model_args.trust_remote_code,
+            torch_dtype=torch_dtype,
+            low_cpu_mem_usage=model_args.low_cpu_mem_usage,
+            use_flash_attention_2=True
+        )
+    else:
+        model = AutoModelForCausalLM.from_config(
+            config, trust_remote_code=model_args.trust_remote_code)
+        n_params = sum({p.data_ptr(): p.numel() for p in model.parameters()}.values())
+        logger.info(f"Training new model from scratch - Total size={n_params/2**20:.2f}M params")
+
+    # We resize the embeddings only when necessary to avoid index errors. If you are creating a model from scratch
+    # on a small vocab and want a smaller embedding size, remove this test.
+    embedding_size = model.get_input_embeddings().weight.shape[0]
+    if len(tokenizer) > embedding_size:
+        model.resize_token_embeddings(len(tokenizer))
+
     class UInt16(Encoding):
         def encode(self, obj) -> bytes:
             return obj.tobytes()
@@ -349,66 +403,52 @@ def main():
         def __len__(self):
             return len(self.dataset)
 
-    train_dataset = DatasetFixed(local=data_args.train_file)
-    print(len(train_dataset))
+    dataset = DatasetFixed(data_args.train_file)
 
-    if model_args.model_name_or_path:
-        torch_dtype = (
-            model_args.torch_dtype
-            if model_args.torch_dtype in ["auto", None]
-            else getattr(torch, model_args.torch_dtype)
-        )
-
-        selected_model = AutoModelForCausalLM
-
-        model = selected_model.from_pretrained(
-            model_args.model_name_or_path,
-            from_tf=bool(".ckpt" in model_args.model_name_or_path),
-            config=config,
-            cache_dir=model_args.cache_dir,
-            revision=model_args.model_revision,
-            token=model_args.token,
-            trust_remote_code=model_args.trust_remote_code,
-            torch_dtype=torch_dtype,
-            low_cpu_mem_usage=model_args.low_cpu_mem_usage,
-            use_flash_attention_2=True,
-        )
-    else:
-        model = AutoModelForCausalLM.from_config(
-            config, trust_remote_code=model_args.trust_remote_code)
-        n_params = sum({p.data_ptr(): p.numel() for p in model.parameters()}.values())
-        logger.info(f"Training new model from scratch - Total size={n_params/2**20:.2f}M params")
-
-    # Initialize our Trainer
     trainer = Trainer(
         model=model,
         args=training_args,
-        train_dataset=train_dataset if training_args.do_train else None,
+        train_dataset=dataset,
         eval_dataset=None,
         tokenizer=tokenizer,
-        # Data collator will default to DataCollatorWithPadding, so we change it.
         data_collator=default_data_collator,
         compute_metrics=None,
         preprocess_logits_for_metrics=None,
     )
 
-    print('len(trainer.train_dataset)', len(trainer.train_dataset))
+    # Training
+    if training_args.do_train:
+        checkpoint = None
+        if training_args.resume_from_checkpoint is not None:
+            checkpoint = training_args.resume_from_checkpoint
+        elif last_checkpoint is not None:
+            checkpoint = last_checkpoint
+        train_result = trainer.train(resume_from_checkpoint=checkpoint)
+        trainer.save_model()  # Saves the tokenizer too for easy upload
 
-    checkpoint = None
-    if training_args.resume_from_checkpoint is not None:
-        checkpoint = training_args.resume_from_checkpoint
-    elif last_checkpoint is not None:
-        checkpoint = last_checkpoint
-    try:
-        trainer.train(resume_from_checkpoint=checkpoint)
-        trainer.save_model()
+        metrics = train_result.metrics
+
+        max_train_samples = (
+            data_args.max_train_samples if data_args.max_train_samples is not None else len(train_dataset))
+        metrics["train_samples"] = min(max_train_samples, len(train_dataset))
+
+        trainer.log_metrics("train", metrics)
+        trainer.save_metrics("train", metrics)
         trainer.save_state()
 
-    except Exception as e:
-        e = str(e)
-        print(e)
-        if checkpoint and ('checkpoint' in e or 'central directory' in e):
-            os.system(f'mv {checkpoint} {checkpoint}-temp')
+    kwargs = {"finetuned_from": model_args.model_name_or_path, "tasks": "text-generation"}
+    if data_args.dataset_name is not None:
+        kwargs["dataset_tags"] = data_args.dataset_name
+        if data_args.dataset_config_name is not None:
+            kwargs["dataset_args"] = data_args.dataset_config_name
+            kwargs["dataset"] = f"{data_args.dataset_name} {data_args.dataset_config_name}"
+        else:
+            kwargs["dataset"] = data_args.dataset_name
+
+    if training_args.push_to_hub:
+        trainer.push_to_hub(**kwargs)
+    else:
+        trainer.create_model_card(**kwargs)
 
 
 def _mp_fn(index):
