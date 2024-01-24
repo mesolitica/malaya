@@ -33,10 +33,4 @@ setuptools.setup(
             'Operating System :: OS Independent',
             'Topic :: Text Processing',
     ],
-    package_data={
-        'malaya': [
-            'function/web/*.html',
-            'function/web/static/*.js',
-            'function/web/static/*.css',
-        ]},
 )
