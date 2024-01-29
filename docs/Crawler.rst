@@ -1,7 +1,7 @@
 Crawler
 ============
 
-There is no official compiled package for the Crawler inside Malaya, but it's included in the repository.
+There is no official compiled package for the web crawler inside Malaya, but it's included in the repository itself.
 
 From Source
 -----------
@@ -9,15 +9,15 @@ From Source
 The crawler is actively developed on
 `Github <https://github.com/huseinzol05/Malaya/tree/master/crawl>`__.
 
-You need to clone the public repo:
+You'll need to clone the public repository:
 
 .. code:: bash
 
     git clone https://github.com/huseinzol05/malaya
 
-You need to install dependencies before able to use the crawler.
+Next, install all dependencies before using the crawler.
 
-For ubuntu / debian based:
+For Ubuntu / Debian based systems:
 
 .. code:: bash
 
@@ -34,16 +34,16 @@ For Mac OS:
     pip3 install bs4 newspaper3k fake_useragent unidecode
     curl https://raw.githubusercontent.com/codelucas/newspaper/master/download_corpora.py | python3
 
-And start the crawler:
+Once you're ready, start the crawler with:
 
 .. code:: bash
 
     python3 crawl/main.py -i "isu mahathir" -s 2009 -e 2019 -l 10
 
-Get Help
---------
+Getting Help
+------------
 
-You can check help from the crawler:
+You can check the help page from the installed crawler itself:
 
 .. code:: bash
 
@@ -62,8 +62,8 @@ You can check help from the crawler:
       -p SLEEP, --sleep SLEEP     seconds to sleep for every 10 articles
       -m MALAYA, --malaya MALAYA  boolean to use Malaya
 
-How to start
-------------
+Example Usage
+-------------
 
 .. code:: bash
 
@@ -71,7 +71,7 @@ How to start
 
 The data will be saved later inside ``crawl/`` in ``.json``
 
-Example result return:
+The above example will return the following result:
 
 .. code:: json
 
@@ -98,28 +98,28 @@ Example result return:
   }
 
 Parameters
------------
+----------
 
 **issue** : *(string)*
 
-An issue or search you want to crawl, if your search is a sentence, you need to include double quote, ``"isu terkini"``.
+An issue or search you want to crawl the web for, if your search is a sentence, you need to use double quotes, ``"isu terkini"``.
 
 **start**: *(int)*
 
-Year start of news to start, eg, ``2009``.
+Only get news starting from the specified start year, e.g, ``2009``.
 
 **end**: *(int)*
 
-Year end of news to end, eg, ``2020``.
+Only get news not later than the specified end year, e.g, ``2020``.
 
 **limit**: *(int)*
 
-Limit of news want to crawl, eg, if put ``100`` only get more or less than ``100``.
+Limit of news you want to crawl for, e.g, putting ``100`` will only get you more or less than ``100`` news.
 
 **sleep**: *(int)*
 
-Seconds to let the crawler sleeps to prevent IP block, eg ``10`` represents 10 seconds.
+Seconds to let the crawler sleep to prevent getting your IP blocked, time specified is interpreted in seconds.
 
 **malaya**: *(bool)*
 
-Boolean to use Malaya, if ``False``, ``summary`` and ``language`` will not returned, but not required Malaya to be install in local machine.
+Boolean value to toggle Malaya usage, if ``False``, ``summary`` and ``language`` will not be returned in the generated .json file, this does not require Malaya to be installed on the local machine.
