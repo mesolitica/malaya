@@ -1,12 +1,12 @@
 We use a translator to translate from a validated English dataset to a
 Bahasa dataset.
 
-Everyone agree that Google Translate is the best online translator in
-this world, but the problem here, to subscribe the API from Google Cloud
-is really insane expensive.
+Everyone agrees that Google Translate is the best online translator in
+the world, but the problem here is that to subscribe to the translation API from Google Cloud
+is insanely expensive.
 
-Good thing about https://translate.google.com/, it open for public
-internet! So we just code a headless browser using Selenium with
+Good thing about https://translate.google.com/, is that it is open to the public
+internet! So we just need to code a headless browser using Selenium with
 PhantomJS as the backbone, that’s all!
 
 You can check the source code here,
@@ -63,10 +63,9 @@ https://cloud.google.com/translate/docs/languages
 
 1.23 seconds, it took a very long time to translate a single sentence.
 What if you have 100k of sentences? It will cost you around 123000
-seconds! insane to wait!
+seconds! Insane to wait!
 
-So, we provide multihreading translator, concurrently translate multi
-sentences.
+So, we provide multihreading support so that you can concurrently translate multiple sentences.
 
 Translate batch of strings
 --------------------------
@@ -107,12 +106,11 @@ Translate batch of strings
 
 
 See, we predicted 3 sentences at almost wall time. You can increase the
-``batch_size`` to any size you want, limit is your spec now, this method
-will never make Google blocked your IP. Malaya already tested it more
-than 300k of sentences.
+``batch_size`` to any size you want, the only limit is your machine specs now, this method
+will never trigger Google to block your IP as Malaya had already tested it with more
+than 300k sentences.
 
-Remember, 1 translator took a quite toll, here I spawned 10 translators,
-look from my ``top``,
+Remember, 1 translator took quite a toll, here I spawned 10 translators, and below is the result of the ``top`` command:
 
 .. code:: text
 
@@ -128,7 +126,7 @@ look from my ``top``,
    14420 husein    20   0 3202472 422448  43064 S  17.6  2.6   5:26.78 phantomjs
    14581 husein    20   0 3181132 401892  43056 S  16.3  2.5   5:33.48 phantomjs
 
-1 translator cost me around,
+1 translator costed me around:
 
 .. code:: text
 
@@ -154,4 +152,4 @@ My machine specifications,
    /0/100/1/0                  display        GM206 [GeForce GTX 960]
    /0/100/1/0.1                multimedia     NVIDIA Corporation
 
-**So, beware of your machine!**
+**So, beware of the CPU usage for your machine!**
