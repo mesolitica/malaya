@@ -1,5 +1,5 @@
-How Malaya gathered corpus?
-============================
+How did Malaya gather its corpus?
+=================================
 
 .. note::
 
