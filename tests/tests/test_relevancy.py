@@ -14,7 +14,7 @@ text = 'Jabatan Penjara Malaysia diperuntukkan RM20 juta laksana program pembang
 
 def test_transformer():
     models = malaya.relevancy.available_transformer()
-    for m in models.index:
+    for m in models.keys():
         print(m)
         model = malaya.relevancy.transformer(model=m, gpu_limit=0.3)
         print(model.predict_proba([text]))

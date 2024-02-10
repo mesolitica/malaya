@@ -20,7 +20,7 @@ labels = ['makan', 'makanan', 'novel', 'buku', 'kerajaan', 'food delivery',
 
 def test_transformer():
     models = malaya.zero_shot.classification.available_transformer()
-    for m in models.index:
+    for m in models.keys():
         print(m)
         model = malaya.zero_shot.classification.transformer(model=m, gpu_limit=0.3)
         model.predict_proba([string], labels=['najib razak', 'mahathir', 'kerajaan', 'PRU', 'anarki'])

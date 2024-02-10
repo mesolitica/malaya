@@ -15,7 +15,7 @@ string1 = 'memperkenalkan Husein, dia sangat comel, berumur 25 tahun, bangsa mel
 
 def test_transformer():
     models = malaya.entity.available_transformer()
-    for m in models.index:
+    for m in models.keys():
         print(m)
         model = malaya.entity.transformer(model=m)
         print(model.predict(string))
@@ -27,7 +27,7 @@ def test_transformer():
 
 def test_transformer_ontonotes5():
     models = malaya.entity.available_transformer_ontonotes5()
-    for m in models.index:
+    for m in models.keys():
         print(m)
         model = malaya.entity.transformer_ontonotes5(model=m)
         print(model.predict(string))

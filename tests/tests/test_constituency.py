@@ -11,10 +11,9 @@ logging.basicConfig(level=logging.DEBUG)
 
 string = 'Dr Mahathir menasihati mereka supaya berhenti berehat dan tidur sebentar sekiranya mengantuk ketika memandu.'
 
-
 def test_transformer():
     models = malaya.constituency.available_transformer()
-    for m in models.index:
+    for m in models.keys():
         print(m)
         model = malaya.constituency.transformer(model=m, gpu_limit=0.3)
         print(model.parse_tree(string))

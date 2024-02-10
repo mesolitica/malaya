@@ -19,7 +19,7 @@ def test_multinomial():
 
 def test_transformer():
     models = malaya.toxicity.available_transformer()
-    for m in models.index:
+    for m in models.keys():
         print(m)
         model = malaya.toxicity.transformer(model=m, gpu_limit=0.3)
         print(model.predict_proba([text]))
