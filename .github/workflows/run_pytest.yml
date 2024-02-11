@@ -1,7 +1,6 @@
-on:
-  pull_request:
-    branches:
-    - master
+name: Run Unit Tests via Pytest  
+  
+on: [push]
 
 jobs:  
   build:  
