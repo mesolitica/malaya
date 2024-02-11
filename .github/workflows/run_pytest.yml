@@ -18,8 +18,8 @@ jobs:
       - name: Install dependencies  
         run: |  
           python3 -m pip install --upgrade pip
-          pip3 install malaya tensorflow tensorflow-text
+          pip3 install malaya tensorflow tensorflow-text torch
           pip3 install pytest pytest-cov pytest-codecov gitpython
       - name: Test with pytest  
         run: |  
-          pytest tests --cov --cov-report term --cov-report html
+          pytest tests/tests --cov --cov-report term --cov-report html
