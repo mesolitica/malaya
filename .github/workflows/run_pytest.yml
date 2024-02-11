@@ -18,7 +18,7 @@ jobs:
       - name: Install dependencies  
         run: |  
           python3 -m pip install --upgrade pip  
-          python3 install pytest pytest-cov pytest-codecov gitpython
+          pip3 install pytest pytest-cov pytest-codecov gitpython
           if [ -f requirements.txt ]; then pip3 install -r requirements.txt; fi  
       - name: Test with pytest  
         run: |  
