@@ -1,6 +1,7 @@
 # https://github.com/asajadi/fast-pagerank/blob/master/fast_pagerank/fast_pagerank.py
 
 import scipy as sp
+from scipy import integrate
 import scipy.sparse as sprs
 
 
