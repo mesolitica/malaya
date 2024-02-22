@@ -5,7 +5,7 @@ unidecode
 numpy
 scipy
 ftfy
-networkx>=2.8.8
+networkx
 sentencepiece
 tqdm
 herpetologist
