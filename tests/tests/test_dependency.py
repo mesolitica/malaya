@@ -14,7 +14,7 @@ string = 'Dr Mahathir menasihati mereka supaya berhenti berehat dan tidur sebent
 
 def test_transformer_v2():
     models = malaya.dependency.available_transformer()
-    for m in models.index:
+    for m in models.keys():
         print(m)
         model = malaya.dependency.transformer(model=m, gpu_limit=0.3)
         d_object, tagging, indexing = model.predict(string)
@@ -24,7 +24,7 @@ def test_transformer_v2():
 
 def test_transformer_v1():
     models = malaya.dependency.available_transformer(version='v1')
-    for m in models.index:
+    for m in models.keys():
         print(m)
         model = malaya.dependency.transformer(version='v1', model=m, gpu_limit=0.3)
         d_object, tagging, indexing = model.predict(string)

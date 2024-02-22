@@ -14,7 +14,7 @@ string = "Beliau yang juga saksi pendakwaan kesembilan berkata, ia bagi mengelak
 
 def test_transformer():
     models = malaya.paraphrase.available_transformer()
-    for m in models.index:
+    for m in models.keys():
         print(m)
         model = malaya.paraphrase.transformer(model=m)
         print(model.greedy_decoder([string]))

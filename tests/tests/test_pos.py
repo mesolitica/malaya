@@ -15,7 +15,7 @@ string1 = 'memperkenalkan Husein, dia sangat comel, berumur 25 tahun, bangsa mel
 
 def test_transformer():
     models = malaya.pos.available_transformer()
-    for m in models.index:
+    for m in models.keys():
         print(m)
         model = malaya.pos.transformer(model=m)
         print(model.predict(string))

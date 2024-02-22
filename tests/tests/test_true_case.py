@@ -14,7 +14,7 @@ string1 = 'jom makan di us makanan di sana sedap'
 
 def test_transformer():
     models = malaya.true_case.available_transformer()
-    for m in models.index:
+    for m in models.keys():
         print(m)
         model = malaya.true_case.transformer(model=m)
         print(model.greedy_decoder([string1]))

@@ -14,7 +14,7 @@ random_string1 = 'saya lapar'
 
 def test_transformer():
     models = malaya.translation.ms_en.available_transformer()
-    for m in models.index:
+    for m in models.keys():
         print(m)
         model = malaya.translation.ms_en.transformer(model=m, gpu_limit=0.3)
         print(model.greedy_decoder([random_string1]))

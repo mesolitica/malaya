@@ -48,7 +48,7 @@ string = cleaning(string)
 
 def test_transformer():
     models = malaya.summarization.abstractive.available_transformer()
-    for m in models.index:
+    for m in models.keys():
         print(m)
         model = malaya.summarization.abstractive.transformer(model=m)
         print(model.greedy_decoder([string]))

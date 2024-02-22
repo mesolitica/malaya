@@ -14,7 +14,7 @@ string1 = 'jom makan di us makanan di sana sedap'
 
 def test_transformer():
     models = malaya.segmentation.available_transformer()
-    for m in models.index:
+    for m in models.keys():
         print(m)
         model = malaya.segmentation.transformer(model=m)
         print(model.greedy_decoder([string1]))
