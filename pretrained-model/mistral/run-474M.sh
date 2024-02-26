@@ -1,11 +1,11 @@
-WANDB_PROJECT=mistral-349M \
-~/.local/bin/torchrun --nproc_per_node 4 \
+WANDB_PROJECT=mistral-474M \
+~/.local/bin/torchrun --nproc_per_node 8 \
 -m run_clm_mosaic \
 --tokenizer_name malaysia-ai/bpe-tokenizer \
---model_name_or_path huseinzol05/dummy-mistral-349M \
---per_device_train_batch_size 36 \
+--model_name_or_path huseinzol05/dummy-mistral-474M \
+--per_device_train_batch_size 24 \
 --gradient_accumulation_steps 1 \
---output_dir pretrain-mistral-349M \
+--output_dir pretrain-mistral-474M \
 --bf16 \
 --torch_dtype "bfloat16" \
 --do_train \

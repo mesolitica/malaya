@@ -1,22 +1,22 @@
-WANDB_PROJECT=mistral-349M \
-~/.local/bin/torchrun --nproc_per_node 4 \
+WANDB_PROJECT=mistral-64M \
+torchrun --nproc_per_node 4 \
 -m run_clm_mosaic \
 --tokenizer_name malaysia-ai/bpe-tokenizer \
---model_name_or_path huseinzol05/dummy-mistral-349M \
---per_device_train_batch_size 36 \
+--model_name_or_path huseinzol05/dummy-mistral-64M \
+--per_device_train_batch_size 48 \
 --gradient_accumulation_steps 1 \
---output_dir pretrain-mistral-349M \
+--output_dir pretrain-mistral-64M \
 --bf16 \
 --torch_dtype "bfloat16" \
 --do_train \
 --do_eval false \
 --num_train_epochs 10 \
---train_file "/home/ubuntu/mosaic-dedup-text-dataset-filtered" \
+--train_file "/home/ubuntu/share/combine-dedup-text-dataset-filtered" \
 --logging_steps 1 \
 --learning_rate 2e-4 \
 --weight_decay 1e-1 \
 --block_size 4096 \
 --save_steps 200 \
 --save_total_limit 3 \
---warmup_steps 1000 \
+--warmup_steps 200 \
 --gradient_checkpointing true
