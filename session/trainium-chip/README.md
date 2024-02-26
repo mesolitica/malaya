@@ -222,6 +222,20 @@ Compiler status PASS
 .................................................................................................................................................................................................................................................................................................................................................................................................................................................
 ```
 
+```
+top - 16:24:10 up 28 min,  0 users,  load average: 411.70, 385.17, 262.78
+Tasks:  40 total,   5 running,  31 sleeping,   0 stopped,   4 zombie
+%Cpu(s): 61.7 us, 36.8 sy,  0.0 ni,  1.5 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+MiB Mem : 507854.0 total,  28532.0 free, 478752.4 used,    569.6 buff/cache
+MiB Swap:      0.0 total,      0.0 free,      0.0 used.  26710.2 avail Mem
+
+    PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND
+  89985 ubuntu    20   0  132.5g 113.5g  10732 R  3569  22.9 325:34.06 walrus_driver
+  89707 ubuntu    20   0  130.7g 113.4g   8368 R  3263  22.9 385:12.86 walrus_driver
+  89745 ubuntu    20   0  130.4g 113.0g   9532 R  3216  22.8 377:49.40 walrus_driver
+  89367 ubuntu    20   0  123.7g 118.3g   9304 R  2513  23.9 452:15.62 walrus_driver
+```
+
 ```bash
 MALLOC_ARENA_MAX=64 torchrun --nproc_per_node=32 run_clm.py \
  --model_id mesolitica/tinyllama-1.1b-4096-fpf \
