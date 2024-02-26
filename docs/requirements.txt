@@ -1,5 +1,4 @@
 dateparser
-sklearn
 scikit-learn
 requests
 unidecode
@@ -19,7 +18,7 @@ malaya-boilerplate
 protobuf==3.13.0
 --extra-index-url https://download.pytorch.org/whl/torch_stable.html
 torch==1.12.1
-malaya-boilerplate==0.0.23rc1
+malaya-boilerplate==0.0.24rc2
 matplotlib
 transformers
 nbconvert==5.6.1
