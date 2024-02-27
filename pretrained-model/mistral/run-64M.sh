@@ -11,7 +11,7 @@ torchrun --nproc_per_node 4 \
 --do_train \
 --do_eval false \
 --num_train_epochs 10 \
---train_file "/home/ubuntu/share/combine-dedup-text-dataset-filtered" \
+--train_file "/home/ubuntu/mosaic-small-clm" \
 --logging_steps 1 \
 --learning_rate 2e-4 \
 --weight_decay 1e-1 \
