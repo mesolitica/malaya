@@ -298,7 +298,6 @@ def main():
         "revision": model_args.model_revision,
         "token": model_args.token,
         "trust_remote_code": model_args.trust_remote_code,
-        "max_position_embeddings": 32768
     }
 
     if model_args.config_name:
@@ -333,7 +332,6 @@ def main():
     tokenizer.add_bos_token = False
     tokenizer.add_eos_token = False
     tokenizer.padding_side = "right"
-    tokenizer.chat_template = "{{ bos_token }}{% for message in messages %}{% if (message['role'] == 'user') != (loop.index0 % 2 == 0) %}{{ raise_exception('Conversation roles must alternate user/assistant/user/assistant/...') }}{% endif %}{% if message['role'] == 'user' %}{{ '[INST] ' + message['content'] + ' [/INST]' }}{% elif message['role'] == 'assistant' %}{{ message['content'] + eos_token}}{% else %}{{ raise_exception('Only user and assistant roles are supported!') }}{% endif %}{% endfor %}"
 
     block_size = data_args.block_size
 
@@ -370,14 +368,14 @@ def main():
     if len(tokenizer) > embedding_size:
         model.resize_token_embeddings(len(tokenizer))
 
-    class UInt16(Encoding):
+    class UInt32(Encoding):
         def encode(self, obj) -> bytes:
             return obj.tobytes()
 
         def decode(self, data: bytes):
-            return np.frombuffer(data, np.uint16)
+            return np.frombuffer(data, np.uint32)
 
-    _encodings['uint16'] = UInt16
+    _encodings['uint32'] = UInt32
 
     class DatasetFixed(torch.utils.data.Dataset):
         def __init__(self, local):

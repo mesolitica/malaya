@@ -1,6 +1,6 @@
 WANDB_PROJECT=fpf-tinyllama-1.1b-hf-instructions-16k-v2 \
 deepspeed run-instruction-packing.py \
---deepspeed ds_config_zero2.json \
+--deepspeed ds_config_zero3.json \
 --model_name_or_path mesolitica/tinyllama-1.1b-4096-fpf \
 --per_device_train_batch_size 8 \
 --gradient_accumulation_steps 1 \
