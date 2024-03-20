@@ -1,9 +1,9 @@
-WANDB_PROJECT="dpo-malaysian-mistral-7b-32k-instructions-v4" \
-torchrun --nproc_per_node 8 \
--m dpo \
---model_name_or_path=mesolitica/malaysian-mistral-7b-32k-instructions-v4 \
---per_device_train_batch_size 4 \
---gradient_accumulation_steps 2 \
+WANDB_PROJECT="dpo-mallam-small" \
+~/.local/bin/deepspeed dpo.py \
+--deepspeed ds_config_zero2.json \
+--model_name_or_path=mesolitica/mallam-small-32768-fpf-v2 \
+--per_device_train_batch_size 2 \
+--gradient_accumulation_steps 1 \
 --learning_rate 5e-6 \
 --warmup_ratio 0.1 \
 --bf16 \
@@ -15,7 +15,7 @@ torchrun --nproc_per_node 8 \
 --save_total_limit 3 \
 --gradient_checkpointing true \
 --output_dir="dpo-mistral" \
---max_length 8192 \
+--max_length 16384 \
 --max_prompt_length 1024 \
 --log_level "info" \
 --torch_dtype "bfloat16"

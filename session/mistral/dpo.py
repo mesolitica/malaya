@@ -18,6 +18,7 @@ from typing import Dict, Optional
 
 import torch
 import os
+from accelerate import Accelerator
 from datasets import Dataset, load_dataset
 from transformers import AutoModelForCausalLM, AutoTokenizer, HfArgumentParser, TrainingArguments
 from transformers.trainer_utils import get_last_checkpoint
@@ -36,7 +37,7 @@ class ScriptArguments:
             )
         },
     )
-    beta: float = field(default=0.1, metadata={"help": "the beta parameter for DPO loss"})
+    beta: float = field(default=0.01, metadata={"help": "the beta parameter for DPO loss"})
     max_length: int = field(default=512, metadata={"help": "max length of each sample"})
     max_prompt_length: int = field(
         default=128, metadata={
@@ -60,14 +61,6 @@ class ScriptArguments:
                 "float32"],
         },
     )
-
-
-def extract_anthropic_prompt(prompt_and_response):
-    """Extract the anthropic prompt from a prompt and response pair."""
-    search_term = "\n\nAssistant:"
-    search_term_idx = prompt_and_response.rfind(search_term)
-    assert search_term_idx != -1, f"Prompt and response does not contain '{search_term}'"
-    return prompt_and_response[: search_term_idx + len(search_term)]
 
 
 def get_hh(
@@ -123,7 +116,7 @@ if __name__ == "__main__":
     model_kwargs = dict(
         use_flash_attention_2=True,
         torch_dtype=torch_dtype,
-        quantization_config=quantization_config,
+        # quantization_config=quantization_config,
         device_map=None,
     )
     model = AutoModelForCausalLM.from_pretrained(args.model_name_or_path, **model_kwargs)
@@ -139,6 +132,9 @@ if __name__ == "__main__":
     )
 
     tokenizer = AutoTokenizer.from_pretrained(args.model_name_or_path)
+    tokenizer.pad_token = tokenizer.unk_token
+    tokenizer.add_bos_token = False
+    tokenizer.add_eos_token = False
 
     if args.ignore_bias_buffers:
         # torch distributed hack
@@ -149,7 +145,6 @@ if __name__ == "__main__":
     train_dataset = get_hh("train", tokenizer)
     trainer = DPOTrainer(
         model,
-        model_ref,
         args=training_args,
         beta=args.beta,
         train_dataset=train_dataset,
@@ -160,6 +155,7 @@ if __name__ == "__main__":
         generate_during_eval=None,
         peft_config=peft_config,
     )
+    trainer.ref_model = Accelerator().prepare(trainer.ref_model)
 
     last_checkpoint = None
     if os.path.isdir(
@@ -171,13 +167,6 @@ if __name__ == "__main__":
         checkpoint = training_args.resume_from_checkpoint
     elif last_checkpoint is not None:
         checkpoint = last_checkpoint
-    try:
-        trainer.train(resume_from_checkpoint=checkpoint)
-        trainer.save_model()
-        trainer.save_state()
-
-    except Exception as e:
-        e = str(e)
-        print(e)
-        if checkpoint and ('checkpoint' in e or 'central directory' in e):
-            os.system(f'mv {checkpoint} {checkpoint}-temp')
+    trainer.train(resume_from_checkpoint=checkpoint)
+    trainer.save_model()
+    trainer.save_state()
