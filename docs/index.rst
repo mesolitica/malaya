@@ -106,7 +106,6 @@ Contents:
    load-isi-penting-generator-news-style
    load-isi-penting-generator-product-description-style
    load-paraphrase
-   load-llm
 
 .. toctree::
    :maxdepth: 2

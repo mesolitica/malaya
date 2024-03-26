@@ -419,12 +419,6 @@ malaya.torch_model.huggingface
 .. autoclass:: malaya.torch_model.huggingface.Reranker()
     :members:
 
-malaya.torch_model.llm
-----------------------------------
-
-.. autoclass:: malaya.torch_model.llm.LLM()
-    :members:
-
 malaya.torch_model.mask_lm
 ----------------------------------
 

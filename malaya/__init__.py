@@ -39,7 +39,6 @@ from . import jawi
 from . import knowledge_graph
 from . import language_detection
 from . import language_model
-from . import llm
 from . import normalize
 from . import nsfw
 from . import num2word
