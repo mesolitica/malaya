@@ -67,32 +67,26 @@ def get_hh(
         split: str,
         tokenizer,
         silent: bool = False,
-        cache_dir: Optional[str] = None) -> Dataset:
-    """Load the Anthropic Helpful-Harmless dataset from Hugging Face and convert it to the necessary format.
-
-    The dataset is converted to a dictionary with the following structure:
-    {
-        'prompt': List[str],
-        'chosen': List[str],
-        'rejected': List[str],
-    }
-
-    Prompts should be structured as follows:
-      \n\nHuman: <prompt>\n\nAssistant:
-    Multiple turns are allowed, but the prompt should always start with \n\nHuman: and end with \n\nAssistant:.
-    """
+        cache_dir=None
+):
     dataset = load_dataset(
-        "mesolitica/DPO-filtered-aya_dataset-zsm",
+        "mesolitica/DPO-combine",
         split=split,
         cache_dir=cache_dir)
 
-    def split_prompt_and_responses(sample) -> Dict[str, str]:
+    def split_prompt_and_responses(sample):
         prompt = tokenizer.apply_chat_template(
             [{'role': 'user', 'content': sample['prompt']}], tokenize=False)
+        chosen = tokenizer.apply_chat_template(
+            [{'role': 'user', 'content': sample['prompt']},
+             {'role': 'assistant', 'content': sample['chosen']}], tokenize=False)
+        rejected = tokenizer.apply_chat_template(
+            [{'role': 'user', 'content': sample['prompt']},
+             {'role': 'assistant', 'content': sample['rejected']}], tokenize=False)
         return {
             "prompt": prompt,
-            "chosen": sample["chosen"] + tokenizer.eos_token,
-            "rejected": sample["rejected"] + tokenizer.eos_token,
+            "chosen": chosen,
+            "rejected": rejected,
         }
 
     return dataset.map(split_prompt_and_responses)
@@ -116,15 +110,15 @@ if __name__ == "__main__":
     model_kwargs = dict(
         use_flash_attention_2=True,
         torch_dtype=torch_dtype,
-        # quantization_config=quantization_config,
+        quantization_config=quantization_config,
         device_map=None,
     )
     model = AutoModelForCausalLM.from_pretrained(args.model_name_or_path, **model_kwargs)
     model_ref = None
 
     peft_config = LoraConfig(
-        r=128,
-        lora_alpha=128,
+        r=16,
+        lora_alpha=16,
         lora_dropout=0.05,
         bias="none",
         task_type="CAUSAL_LM",
@@ -132,7 +126,8 @@ if __name__ == "__main__":
     )
 
     tokenizer = AutoTokenizer.from_pretrained(args.model_name_or_path)
-    tokenizer.pad_token = tokenizer.unk_token
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.unk_token
     tokenizer.add_bos_token = False
     tokenizer.add_eos_token = False
 
