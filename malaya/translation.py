@@ -1,10 +1,8 @@
-from malaya.supervised import huggingface as load_huggingface
-from malaya.function import describe_availability, check_file
-from malaya.path import PATH_PREPROCESSING, S3_PATH_PREPROCESSING
+from malaya.supervised.huggingface import load
+from malaya.torch_model.huggingface import Translation
+from malaya_boilerplate.huggingface import download_files
+from typing import Callable, List
 import json
-import logging
-
-logger = logging.getLogger(__name__)
 
 nllb_metrics = {
     'en-ms': """
@@ -46,6 +44,18 @@ NLLB Metrics, https://github.com/facebookresearch/fairseq/tree/nllb#multilingual
 1. NLLB-200, MOE, 54.5B, https://tinyurl.com/nllb200moe54bmetrics, zsm_Latn-jav_Latn, 49.5
 2. NLLB-200, Dense, 3.3B, 17.58 GB, https://tinyurl.com/nllb200dense3bmetrics, zsm_Latn-jav_Latn, None
 3. NLLB-200, Dense, 1.3B, 5.48 GB, https://tinyurl.com/nllb200dense1bmetrics, zsm_Latn-jav_Latn, None
+""",
+    'en-zho_Hans': """
+NLLB Metrics, https://github.com/facebookresearch/fairseq/tree/nllb#multilingual-translation-models:
+1. NLLB-200, MOE, 54.5B, https://tinyurl.com/nllb200moe54bmetrics, eng_Latn-zho_Hans,22.8
+2. NLLB-200, Dense, 3.3B, 17.58 GB, https://tinyurl.com/nllb200dense3bmetrics, eng_Latn-zho_Hans,22.3
+3. NLLB-200, Dense, 1.3B, 5.48 GB, https://tinyurl.com/nllb200dense1bmetrics, eng_Latn-zho_Hans,21.3
+""",
+    'zho_Hans-en': """
+NLLB Metrics, https://github.com/facebookresearch/fairseq/tree/nllb#multilingual-translation-models:
+1. NLLB-200, MOE, 54.5B, https://tinyurl.com/nllb200moe54bmetrics, zho_Hans-eng_Latn,54.7
+2. NLLB-200, Dense, 3.3B, 17.58 GB, https://tinyurl.com/nllb200dense3bmetrics, zho_Hans-eng_Latn,56.2
+3. NLLB-200, Dense, 1.3B, 5.48 GB, https://tinyurl.com/nllb200dense1bmetrics, zho_Hans-eng_Latn,54.7
 """
 }
 
@@ -92,124 +102,175 @@ chrF2++ = 60.27
 """
 }
 
-_huggingface_availability = {
-    'mesolitica/finetune-translation-t5-tiny-standard-bahasa-cased-v2': {
-        'Size (MB)': 139,
-        'BLEU': 41.625536185056305,
-        'SacreBLEU Verbose': '73.4/50.1/35.7/25.7 (BP = 0.971 ratio = 0.972 hyp_len = 21400 ref_len = 22027)',
-        'SacreBLEU-chrF++-FLORES200': 65.70,
-        'Suggested length': 1024,
-        'from lang': ['en', 'ms'],
-        'to lang': ['ms', 'ms'],
+available_word = {
+    'mesolitica/word-en-ms': {
+        'Size (MB)': 42.6,
+        'total words': 1599797,
     },
-    'mesolitica/finetune-translation-t5-small-standard-bahasa-cased-v2': {
-        'Size (MB)': 242,
-        'BLEU': 43.93729753370648,
-        'SacreBLEU Verbose': '74.9/52.2/37.9/27.7 (BP = 0.976 ratio = 0.977 hyp_len = 21510 ref_len = 22027)',
-        'SacreBLEU-chrF++-FLORES200': 67.43,
-        'Suggested length': 1024,
-        'from lang': ['en', 'ms'],
-        'to lang': ['ms', 'ms'],
-    },
-    'mesolitica/finetune-translation-t5-base-standard-bahasa-cased-v2': {
-        'Size (MB)': 892,
-        'BLEU': 44.17355862158963,
-        'SacreBLEU Verbose': '74.7/52.3/38.0/28.0 (BP = 0.979 ratio = 0.979 hyp_len = 21569 ref_len = 22027)',
-        'SacreBLEU-chrF++-FLORES200': 67.60,
-        'Suggested length': 1024,
-        'from lang': ['en', 'ms'],
-        'to lang': ['ms', 'ms'],
-    },
-    'mesolitica/finetune-noisy-translation-t5-tiny-bahasa-cased-v4': {
-        'Size (MB)': 139,
-        'BLEU': 60.0009672168891,
-        'SacreBLEU Verbose': '77.9/63.9/54.6/47.7 (BP = 1.000 ratio = 1.036 hyp_len = 110970 ref_len = 107150)',
-        'SacreBLEU-chrF++-FLORES200': None,
-        'Suggested length': 1024,
-        'from lang': [None, 'en', 'ms'],
-        'to lang': ['ms', 'ms'],
-    },
-    'mesolitica/finetune-noisy-translation-t5-small-bahasa-cased-v4': {
-        'Size (MB)': 242,
-        'BLEU': 64.06258219941243,
-        'SacreBLEU Verbose': '80.1/67.7/59.1/52.5 (BP = 1.000 ratio = 1.042 hyp_len = 111635 ref_len = 107150)',
-        'SacreBLEU-chrF++-FLORES200': None,
-        'Suggested length': 1024,
-        'from lang': [None, 'en', 'ms'],
-        'to lang': ['ms', 'ms'],
-    },
-    'mesolitica/finetune-noisy-translation-t5-base-bahasa-cased-v2': {
-        'Size (MB)': 892,
-        'BLEU': 64.583819005204,
-        'SacreBLEU Verbose': '80.2/68.1/59.8/53.2 (BP = 1.000 ratio = 1.048 hyp_len = 112260 ref_len = 107150)',
-        'SacreBLEU-chrF++-FLORES200': None,
-        'Suggested length': 1024,
-        'from lang': ['en', 'ms'],
-        'to lang': ['ms', 'ms'],
-    },
-    'mesolitica/finetune-translation-austronesian-t5-tiny-standard-bahasa-cased': {
-        'Size (MB)': 139,
-        'BLEU': 30.277470707798773,
-        'SacreBLEU Verbose': '64.2/38.0/24.1/15.6 (BP = 0.978 ratio = 0.978 hyp_len = 21542 ref_len = 22027)',
-        'SacreBLEU-chrF++-FLORES200': 57.38,
-        'Suggested length': 512,
-        'from lang': ['ind', 'jav', 'ms'],
-        'to lang': ['ind', 'jav', 'ms'],
-    },
-    'mesolitica/finetune-translation-austronesian-t5-small-standard-bahasa-cased': {
-        'Size (MB)': 242,
-        'BLEU': 30.24358980824753,
-        'SacreBLEU Verbose': '61.1/36.9/23.8/15.6 (BP = 1.000 ratio = 1.052 hyp_len = 23174 ref_len = 22027)',
-        'SacreBLEU-chrF++-FLORES200': 58.43,
-        'Suggested length': 512,
-        'from lang': ['ind', 'jav', 'ms'],
-        'to lang': ['ind', 'jav', 'ms'],
-    },
-    'mesolitica/finetune-translation-austronesian-t5-base-standard-bahasa-cased': {
-        'Size (MB)': 892,
-        'BLEU': 31.494673032706213,
-        'SacreBLEU Verbose': '64.1/38.8/25.1/16.5 (BP = 0.989 ratio = 0.990 hyp_len = 21796 ref_len = 22027)',
-        'SacreBLEU-chrF++-FLORES200': 58.10,
-        'Suggested length': 512,
-        'from lang': ['ind', 'jav', 'ms'],
-        'to lang': ['ind', 'jav', 'ms'],
-    },
+    'mesolitica/word-id-ms': {
+        'Size (MB)': 53,
+        'total words': 1902607,
+    }
 }
 
+available_huggingface = {
+    'mesolitica/translation-t5-tiny-standard-bahasa-cased': {
+        'Size (MB)': 139,
+        'Suggested length': 1536,
+        'en-ms chrF2++': 65.91,
+        'ms-en chrF2++': 61.30,
+        'ind-ms chrF2++': 58.15,
+        'jav-ms chrF2++': 49.33,
+        'pasar ms-ms chrF2++': 58.46,
+        'pasar ms-en chrF2++': 55.76,
+        'manglish-ms chrF2++': 51.04,
+        'manglish-en chrF2++': 52.20,
+        'from lang': ['en', 'ms', 'ind', 'jav', 'bjn', 'manglish', 'pasar ms'],
+        'to lang': ['en', 'ms'],
+    },
+    'mesolitica/translation-t5-small-standard-bahasa-cased': {
+        'Size (MB)': 242,
+        'Suggested length': 1536,
+        'en-ms chrF2++': 67.37,
+        'ms-en chrF2++': 63.79,
+        'ind-ms chrF2++': 58.09,
+        'jav-ms chrF2++': 52.11,
+        'pasar ms-ms chrF2++': 62.49,
+        'pasar ms-en chrF2++': 60.77,
+        'manglish-ms chrF2++': 52.84,
+        'manglish-en chrF2++': 53.65,
+        'from lang': ['en', 'ms', 'ind', 'jav', 'bjn', 'manglish', 'pasar ms'],
+        'to lang': ['en', 'ms'],
+    },
+    'mesolitica/translation-t5-base-standard-bahasa-cased': {
+        'Size (MB)': 892,
+        'Suggested length': 1536,
+        'en-ms chrF2++': 67.62,
+        'ms-en chrF2++': 64.41,
+        'ind-ms chrF2++': 59.25,
+        'jav-ms chrF2++': 52.86,
+        'pasar ms-ms chrF2++': 62.99,
+        'pasar ms-en chrF2++': 62.06,
+        'manglish-ms chrF2++': 54.40,
+        'manglish-en chrF2++': 54.14,
+        'from lang': ['en', 'ms', 'ind', 'jav', 'bjn', 'manglish', 'pasar ms'],
+        'to lang': ['en', 'ms'],
+    },
+    'mesolitica/translation-t5-small-standard-bahasa-cased-v2': {
+        'Size (MB)': 242,
+        'Suggested length': 1536,
+        'en-ms chrF2++': 67.37,
+        'ms-en chrF2++': 63.79,
+        'ind-ms chrF2++': 58.09,
+        'jav-ms chrF2++': 52.11,
+        'pasar ms-ms chrF2++': 62.49,
+        'pasar ms-en chrF2++': 60.77,
+        'manglish-ms chrF2++': 52.84,
+        'manglish-en chrF2++': 53.65,
+        'from lang': ['en', 'ms', 'ind', 'jav', 'bjn'],
+        'to lang': ['en', 'ms'],
+    },
+    'mesolitica/translation-t5-small-standard-bahasa-cased-code': {
+        'Size (MB)': 242,
+        'Suggested length': 2048,
+        'en-ms chrF2++': 67.37,
+        'ms-en chrF2++': 63.79,
+        'ind-ms chrF2++': 58.09,
+        'jav-ms chrF2++': 52.11,
+        'pasar ms-ms chrF2++': 62.49,
+        'pasar ms-en chrF2++': 60.77,
+        'manglish-ms chrF2++': 52.84,
+        'manglish-en chrF2++': 53.65,
+        'from lang': ['en', 'ms', 'ind', 'jav', 'bjn'],
+        'to lang': ['en', 'ms'],
+    },
+    'mesolitica/translation-nanot5-tiny-malaysian-cased': {
+        'Size (MB)': 205,
+        'Suggested length': 2048,
+        'en-ms chrF2++': 63.61,
+        'ms-en chrF2++': 59.55,
+        'ind-ms chrF2++': 56.38,
+        'jav-ms chrF2++': 47.68,
+        'mandarin-ms chrF2++': 36.61,
+        'mandarin-en chrF2++': 39.78,
+        'pasar ms-ms chrF2++': 58.74,
+        'pasar ms-en chrF2++': 54.87,
+        'manglish-ms chrF2++': 50.76,
+        'manglish-en chrF2++': 53.16,
+        'from lang': ['en', 'ms', 'ind', 'jav', 'bjn', 'manglish', 'pasar ms', 'mandarin', 'pasar mandarin'],
+        'to lang': ['en', 'ms'],
+    },
+    'mesolitica/translation-nanot5-small-malaysian-cased': {
+        'Size (MB)': 358,
+        'Suggested length': 2048,
+        'en-ms chrF2++': 66.98,
+        'ms-en chrF2++': 63.52,
+        'ind-ms chrF2++': 58.10,
+        'jav-ms chrF2++': 51.55,
+        'mandarin-ms chrF2++': 46.09,
+        'mandarin-en chrF2++': 44.13,
+        'pasar ms-ms chrF2++': 63.20,
+        'pasar ms-en chrF2++': 59.78,
+        'manglish-ms chrF2++': 54.09,
+        'manglish-en chrF2++': 55.27,
+        'from lang': ['en', 'ms', 'ind', 'jav', 'bjn', 'manglish', 'pasar ms', 'mandarin', 'pasar mandarin'],
+        'to lang': ['en', 'ms'],
+    },
+    'mesolitica/translation-nanot5-base-malaysian-cased': {
+        'Size (MB)': 990,
+        'Suggested length': 2048,
+        'en-ms chrF2++': 67.87,
+        'ms-en chrF2++': 64.79,
+        'ind-ms chrF2++': 56.98,
+        'jav-ms chrF2++': 51.21,
+        'mandarin-ms chrF2++': 47.39,
+        'mandarin-en chrF2++': 48.78,
+        'pasar ms-ms chrF2++': 65.06,
+        'pasar ms-en chrF2++': 64.03,
+        'manglish-ms chrF2++': 57.91,
+        'manglish-en chrF2++': 55.66,
+        'from lang': ['en', 'ms', 'ind', 'jav', 'bjn', 'manglish', 'pasar ms', 'mandarin', 'pasar mandarin'],
+        'to lang': ['en', 'ms'],
+    },
 
-def available_huggingface():
+}
+
+info = """
+1. tested on FLORES200 pair `dev` set, https://github.com/huseinzol05/malay-dataset/tree/master/translation/flores200-eval
+2. tested on noisy test set, https://github.com/huseinzol05/malay-dataset/tree/master/translation/noisy-eval
+3. check out NLLB 200 metrics from `malaya.translation.nllb_metrics`.
+4. check out Google Translate metrics from `malaya.translation.google_translate_metrics`.
+""".strip()
+
+
+def word(model: str = 'mesolitica/word-en-ms', **kwargs):
     """
-    List available HuggingFace models.
-    """
+    Load word dictionary, based on google translate.
 
-    logger.info(
-        'tested on FLORES200 EN-MS pair `dev` set, https://github.com/facebookresearch/flores/tree/main/flores200')
-    return describe_availability(_huggingface_availability)
-
-
-def dictionary(**kwargs):
-    """
-    Load dictionary {EN: MS} .
+    Parameters
+    ----------
+    model, optional (default='mesolitica/word-en-ms')
+        Check available models at `malaya.translation.available_word`.
 
     Returns
     -------
     result: Dict[str, str]
     """
-    path = check_file(
-        PATH_PREPROCESSING['english-malay'],
-        S3_PATH_PREPROCESSING['english-malay'],
-        **kwargs,
-    )
-    try:
-        with open(path['model']) as fopen:
-            translator = json.load(fopen)
-    except BaseException:
-        raise Exception('failed to load EN-MS vocab, please try clear cache or rerun again.')
+    if model not in available_word:
+        raise ValueError(
+            'model not supported, please check supported models from `malaya.translation.available_word`.'
+        )
+
+    s3_file = {'model': 'dictionary.json'}
+    path = download_files(model, s3_file, **kwargs)
+
+    with open(path['model']) as fopen:
+        translator = json.load(fopen)
     return translator
 
 
 def huggingface(
-    model: str = 'mesolitica/finetune-translation-t5-small-standard-bahasa-cased-v2',
+    model: str = 'mesolitica/translation-t5-small-standard-bahasa-cased',
     force_check: bool = True,
     **kwargs,
 ):
@@ -218,8 +279,8 @@ def huggingface(
 
     Parameters
     ----------
-    model: str, optional (default='mesolitica/finetune-translation-t5-small-standard-bahasa-cased-v2')
-        Check available models at `malaya.translation.available_huggingface()`.
+    model: str, optional (default='mesolitica/translation-t5-small-standard-bahasa-cased')
+        Check available models at `malaya.translation.available_huggingface`.
     force_check: bool, optional (default=True)
         Force check model one of malaya model.
         Set to False if you have your own huggingface model.
@@ -228,13 +289,11 @@ def huggingface(
     -------
     result: malaya.torch_model.huggingface.Translation
     """
-    if model not in _huggingface_availability and force_check:
-        raise ValueError(
-            'model not supported, please check supported models from `malaya.translation.available_huggingface()`.'
-        )
-    return load_huggingface.load_translation(
+    return load(
         model=model,
-        from_lang=_huggingface_availability[model]['from lang'],
-        to_lang=_huggingface_availability[model]['to lang'],
+        class_model=Translation,
+        available_huggingface=available_huggingface,
+        force_check=force_check,
+        path=__name__,
         **kwargs,
     )

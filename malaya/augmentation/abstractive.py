@@ -1,45 +1,73 @@
-from malaya.supervised import huggingface as load_huggingface
-from malaya.function import describe_availability
-from herpetologist import check_type
-import logging
+from malaya.supervised.huggingface import load
+from malaya.torch_model.huggingface import Translation
+from typing import List
 
-logger = logging.getLogger(__name__)
-
-_huggingface_availability = {
-    'mesolitica/finetune-noisy-translation-t5-tiny-bahasa-cased-v3': {
+available_huggingface = {
+    'mesolitica/translation-t5-tiny-standard-bahasa-cased': {
         'Size (MB)': 139,
-        'BLEU': 60.0009672168891,
-        'SacreBLEU Verbose': '77.9/63.9/54.6/47.7 (BP = 1.000 ratio = 1.036 hyp_len = 110970 ref_len = 107150)',
-        'Suggested length': 256,
+        'Suggested length': 1536,
+        'ms-pasar ms chrF2++': 49.01,
+        'en-pasar ms chrF2++': 45.29,
+        'ms-manglish chrF2++': 37.55,
+        'en-manglish chrF2++': 44.32,
+        'from lang': ['en', 'ms', 'ind', 'jav', 'bjn'],
+        'to lang': ['manglish', 'pasar ms'],
     },
-    'mesolitica/finetune-noisy-translation-t5-small-bahasa-cased-v3': {
+    'mesolitica/translation-t5-small-standard-bahasa-cased': {
         'Size (MB)': 242,
-        'BLEU': 64.06258219941243,
-        'SacreBLEU Verbose': '80.1/67.7/59.1/52.5 (BP = 1.000 ratio = 1.042 hyp_len = 111635 ref_len = 107150)',
-        'Suggested length': 256,
+        'Suggested length': 1536,
+        'ms-pasar ms chrF2++': 54.30,
+        'en-pasar ms chrF2++': 51.88,
+        'ms-manglish chrF2++': 39.98,
+        'en-manglish chrF2++': 44.58,
+        'from lang': ['en', 'ms', 'ind', 'jav', 'bjn'],
+        'to lang': ['manglish', 'pasar ms'],
     },
-    'mesolitica/finetune-noisy-translation-t5-base-bahasa-cased-v2': {
+    'mesolitica/translation-t5-base-standard-bahasa-cased': {
         'Size (MB)': 892,
-        'BLEU': 64.583819005204,
-        'SacreBLEU Verbose': '80.2/68.1/59.8/53.2 (BP = 1.000 ratio = 1.048 hyp_len = 112260 ref_len = 107150)',
-        'Suggested length': 256,
+        'Suggested length': 1536,
+        'ms-pasar ms chrF2++': 50.25,
+        'en-pasar ms chrF2++': 49.26,
+        'ms-manglish chrF2++': 38.41,
+        'en-manglish chrF2++': 43.38,
+        'from lang': ['en', 'ms', 'ind', 'jav', 'bjn'],
+        'to lang': ['manglish', 'pasar ms'],
+    },
+    'mesolitica/translation-nanot5-tiny-malaysian-cased': {
+        'Size (MB)': 205,
+        'Suggested length': 2048,
+        'ms-pasar ms chrF2++': 53.36,
+        'en-pasar ms chrF2++': 49.31,
+        'ms-manglish chrF2++': 37.22,
+        'en-manglish chrF2++': 43.50,
+        'from lang': ['en', 'ms', 'ind', 'jav', 'bjn', 'manglish', 'pasar ms', 'mandarin', 'pasar mandarin'],
+        'to lang': ['manglish', 'pasar ms', 'pasar mandarin'],
+    },
+    'mesolitica/translation-nanot5-small-malaysian-cased': {
+        'Size (MB)': 358,
+        'Suggested length': 2048,
+        'ms-pasar ms chrF2++': 55.09,
+        'en-pasar ms chrF2++': 53.01,
+        'ms-manglish chrF2++': 40.19,
+        'en-manglish chrF2++': 45.69,
+        'from lang': ['en', 'ms', 'ind', 'jav', 'bjn', 'manglish', 'pasar ms', 'mandarin', 'pasar mandarin'],
+        'to lang': ['manglish', 'pasar ms', 'pasar mandarin'],
+    },
+    'mesolitica/translation-nanot5-base-malaysian-cased': {
+        'Size (MB)': 990,
+        'Suggested length': 2048,
+        'ms-pasar ms chrF2++': 55.57,
+        'en-pasar ms chrF2++': 55.02,
+        'ms-manglish chrF2++': 40.17,
+        'en-manglish chrF2++': 43.44,
+        'from lang': ['en', 'ms', 'ind', 'jav', 'bjn', 'manglish', 'pasar ms', 'mandarin', 'pasar mandarin'],
+        'to lang': ['manglish', 'pasar ms', 'pasar mandarin'],
     },
 }
 
 
-def available_huggingface():
-    """
-    List available huggingface models.
-    """
-
-    logger.info(
-        'tested on noisy twitter google translation, https://huggingface.co/datasets/mesolitica/augmentation-test-set')
-    return describe_availability(_huggingface_availability)
-
-
 def huggingface(
-    model: str = 'mesolitica/finetune-noisy-translation-t5-small-bahasa-cased-v3',
-    lang: str = 'ms',
+    model: str = 'mesolitica/translation-t5-small-standard-bahasa-cased',
     force_check: bool = True,
     **kwargs,
 ):
@@ -48,28 +76,20 @@ def huggingface(
 
     Parameters
     ----------
-    model: str, optional (default='mesolitica/finetune-noisy-translation-t5-small-bahasa-cased-v3')
-        Check available models at `malaya.augmentation.abstractive.available_huggingface()`.
-    lang: str, optional (default='ms')
-        Input language, only accept `ms` or `en`.
+    model: str, optional (default='mesolitica/translation-t5-small-standard-bahasa-cased')
+        Check available models at `malaya.augmentation.abstractive.available_huggingface`.
     force_check: bool, optional (default=True)
         Force check model one of malaya model.
         Set to False if you have your own huggingface model.
 
     Returns
     -------
-    result: malaya.torch_model.huggingface.Generator
+    result: malaya.torch_model.huggingface.Translation
     """
-    map_lang = {'en': 'Inggeris', 'ms': 'Melayu'}
-    lang = lang.lower()
-    if lang not in map_lang:
-        raise ValueError('`lang` only accept `en` or `ms`.')
-
-    if model not in _huggingface_availability and force_check:
-        raise ValueError(
-            'model not supported, please check supported models from `malaya.augmentation.abstractive.available_huggingface()`.'
-        )
-    return load_huggingface.load_generator(
+    return load(
         model=model,
-        initial_text=f'terjemah {map_lang[lang]} ke pasar Melayu: ',
-        **kwargs)
+        class_model=Translation,
+        available_huggingface=available_huggingface,
+        path=__name__,
+        **kwargs,
+    )

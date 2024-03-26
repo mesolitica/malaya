@@ -1,4 +1,0 @@
-References
-====================
-
-.. include:: references.rst

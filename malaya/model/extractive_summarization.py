@@ -9,7 +9,6 @@ from malaya.text.function import (
 from malaya.cluster import cluster_words
 from malaya.graph.pagerank import pagerank
 from sklearn.metrics.pairwise import cosine_similarity
-from herpetologist import check_type
 from scipy.sparse import vstack
 
 
@@ -141,7 +140,6 @@ class SKLearn:
             cluster_words(top_words),
         )
 
-    @check_type
     def word_level(
         self,
         corpus,
@@ -183,7 +181,6 @@ class SKLearn:
             'score': splitted,
         }
 
-    @check_type
     def sentence_level(
         self,
         corpus,

@@ -8,7 +8,7 @@ class Tokenizer:
     def __init__(self, **kwargs):
         """
         Load Tokenizer object.
-        Check supported regex pattern at 
+        Check supported regex pattern at
         https://github.com/huseinzol05/Malaya/blob/master/malaya/text/regex.py#L85
 
         Parameters

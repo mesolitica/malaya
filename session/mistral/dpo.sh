@@ -1,0 +1,22 @@
+WANDB_PROJECT="dpo-mallam-small" \
+deepspeed dpo.py \
+--deepspeed ds_config_zero2.json \
+--model_name_or_path=mesolitica/mallam-small-32768-fpf-v2 \
+--per_device_train_batch_size 2 \
+--gradient_accumulation_steps 4 \
+--learning_rate 5e-6 \
+--warmup_ratio 0.1 \
+--bf16 \
+--do_train \
+--do_eval false \
+--num_train_epochs 10 \
+--logging_steps 1 \
+--save_steps 100 \
+--save_total_limit 3 \
+--gradient_checkpointing true \
+--output_dir="dpo-mistral-v2" \
+--max_length 10240 \
+--max_prompt_length 1024 \
+--log_level "info" \
+--torch_dtype "bfloat16" \
+--optim "paged_adamw_32bit"

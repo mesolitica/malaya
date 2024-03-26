@@ -1,11 +1,7 @@
-from malaya.supervised import huggingface as load_huggingface
-from malaya.function import describe_availability
-from herpetologist import check_type
-import logging
+from malaya.supervised.huggingface import load
+from malaya.torch_model.huggingface import Keyword
 
-logger = logging.getLogger(__name__)
-
-_huggingface_availability = {
+available_huggingface = {
     'mesolitica/finetune-keyword-t5-small-standard-bahasa-cased': {
         'Size (MB)': 242,
         'f1': 0.3291554473802324,
@@ -18,14 +14,9 @@ _huggingface_availability = {
     },
 }
 
-
-def available_huggingface():
-    """
-    List available huggingface models.
-    """
-
-    logger.info('tested on test set, https://huggingface.co/datasets/51la5/keyword-extraction/tree/main')
-    return describe_availability(_huggingface_availability)
+info = """
+tested on test set, https://huggingface.co/datasets/51la5/keyword-extraction/tree/main
+""".strip()
 
 
 def huggingface(
@@ -48,8 +39,12 @@ def huggingface(
     -------
     result: malaya.torch_model.huggingface.Keyword
     """
-    if model not in _huggingface_availability and force_check:
-        raise ValueError(
-            'model not supported, please check supported models from `malaya.keyword.abstractive.available_huggingface()`.'
-        )
-    return load_huggingface.load_keyword(model=model, **kwargs)
+
+    return load(
+        model=model,
+        class_model=Keyword,
+        available_huggingface=available_huggingface,
+        force_check=force_check,
+        path=__name__,
+        **kwargs,
+    )

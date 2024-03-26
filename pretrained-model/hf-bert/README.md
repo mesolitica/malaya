@@ -4,22 +4,6 @@ Thanks to Huggingface for opensourcing source code to pretrain BERT.
 
 **This directory is very lack of comments, understand PyTorch and Transformers are really helpful**.
 
-## Table of contents
-  * [Objective](#objective)
-  * [Acknowledgement](#acknowledgement)
-  * [How-to](#how-to)
-  * [Download](#download)
-  * [Citation](#citation)
-  * [Donation](#donation)
-
-## Objective
-
-1. Provide BERT for Bahasa.
-
-## Acknowledgement
-
-Thanks to [Mesolitica](https://mesolitica.com/) for RTX servers.
-
 ## How-to
 
 1. Create tokenizer, [prepare-wordpiece.ipynb](prepare-wordpiece.ipynb).

@@ -8,7 +8,6 @@ import unicodedata
 import six
 import logging
 import collections
-import tensorflow as tf
 import regex as re
 from functools import lru_cache
 from malaya.text.function import transformer_textcleaning, malaya_textcleaning
@@ -172,7 +171,7 @@ class WordPieceTokenizer(object):
     def load_vocab(self, vocab_file):
         vocab = collections.OrderedDict()
         index = 0
-        with tf.compat.v1.gfile.GFile(vocab_file, 'r') as reader:
+        with (vocab_file) as reader:
             while True:
                 token = convert_to_unicode(reader.readline())
                 if not token:

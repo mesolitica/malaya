@@ -2,7 +2,6 @@ dateparser
 scikit-learn
 requests
 unidecode
-tensorflow==1.15
 numpy
 scipy
 PySastrawi
@@ -10,15 +9,9 @@ ftfy
 networkx
 sentencepiece
 tqdm
-herpetologist
-youtokentome
-albert-tensorflow
-malaya
-malaya-boilerplate
-protobuf==3.13.0
+malaya-boilerplate==0.0.25rc3
 --extra-index-url https://download.pytorch.org/whl/torch_stable.html
-torch==1.12.1
-malaya-boilerplate==0.0.24rc2
+torch==2.1.0
 matplotlib
 transformers
 nbconvert==5.6.1

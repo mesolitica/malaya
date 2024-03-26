@@ -1,13 +1,5 @@
 ## Word2Vec Bahasa
 
-## Table of contents
-  * [Objective](#objective)
-  * [Acknowledgement](#acknowledgement)
-  * [How-to](#how-to)
-  * [Download](#download)
-  * [Citation](#citation)
-  * [Donation](#donation)
-
 ## Objective
 
 1. Provide word2vec for bahasa wikipedia, news and social media

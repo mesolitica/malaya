@@ -26,7 +26,6 @@ from malaya.text.bpe import padding_sequence
 from collections import defaultdict
 from tempfile import NamedTemporaryFile
 from typing import List
-import tensorflow as tf
 import itertools
 import logging
 
@@ -85,7 +84,7 @@ class Eflomal:
             self._ferr_priors_dict.clear()
             self._hmmf_priors.clear()
             self._hmmr_priors.clear()
-        except:
+        except BaseException:
             pass
 
     def _process_priors(self):
@@ -117,11 +116,15 @@ class Eflomal:
                 elif fields[0] == 'HMMR' and len(fields) == 3:
                     self._hmmr_priors[int(fields[1])] = alpha
                 elif fields[0] == 'FERF' and len(fields) == 4:
-                    self._ferf_priors_dict[self._preprocessing_func(fields[1].lower())].append((int(fields[2]), alpha))
+                    self._ferf_priors_dict[self._preprocessing_func(
+                        fields[1].lower())].append((int(fields[2]), alpha))
                 elif fields[0] == 'FERR' and len(fields) == 4:
-                    self._ferr_priors_dict[self._preprocessing_func(fields[1].lower())].append((int(fields[2]), alpha))
+                    self._ferr_priors_dict[self._preprocessing_func(
+                        fields[1].lower())].append((int(fields[2]), alpha))
                 else:
-                    raise ValueError('ERROR: priors file %s line %d is invalid ' % (self._priors_filename, i+1))
+                    raise ValueError(
+                        'ERROR: priors file %s line %d is invalid ' %
+                        (self._priors_filename, i+1))
 
                 i += 1
 
@@ -208,7 +211,8 @@ class Eflomal:
                 key = f'{self._preprocessing_func(k.lower())}-{self._preprocessing_func(v.lower())}'
                 if key in self._priors_list_dict:
                     for n in range(len(self._priors_list_dict[key])):
-                        priors_indexed[(e, f)] = priors_indexed.get((e, f), 0.0) + self._priors_list_dict[key][n]
+                        priors_indexed[(e, f)] = priors_indexed.get(
+                            (e, f), 0.0) + self._priors_list_dict[key][n]
 
         ferf_indexed = {}
         for k in src_index:
@@ -309,97 +313,3 @@ class Eflomal:
             rev_results.append(rev_results_)
 
         return {'forward': fwd_results, 'reverse': rev_results}
-
-
-class HuggingFace:
-    def __init__(self, model, tokenizer):
-        self.model = model
-        self.tokenizer = tokenizer
-
-    def align(
-        self,
-        source: List[str],
-        target: List[str],
-        align_layer: int = 8,
-        threshold: float = 1e-3,
-    ):
-        """
-        align text using softmax output layers.
-
-        Parameters
-        ----------
-        source: List[str]
-        target: List[str]
-        align_layer: int, optional (default=3)
-            transformer layer-k to choose for embedding output.
-        threshold: float, optional (default=1e-3)
-            minimum probability to assume as alignment.
-
-        Returns
-        -------
-        result: List[List[Tuple]]
-        """
-
-        if len(source) != len(target):
-            raise ValueError('length source must be same as length of target')
-
-        if align_layer >= self._model.config.num_hidden_layers:
-            raise ValueError(f'`align_layer` must be < {self._model.config.num_hidden_layers}')
-
-        input_ids_src, token_type_ids_src, attention_mask_src = [], [], []
-        input_ids_tgt, token_type_ids_tgt, attention_mask_tgt = [], [], []
-        sub2word_map_srcs, sub2word_map_tgts = [], []
-        for i in range(len(source)):
-            sent_src, sent_tgt = source[i].strip().split(), target[i].strip().split()
-            token_src, token_tgt = [self._tokenizer.tokenize(word) for word in sent_src], [
-                self._tokenizer.tokenize(word) for word in sent_tgt]
-            wid_src, wid_tgt = [self._tokenizer.convert_tokens_to_ids(x) for x in token_src], [
-                self._tokenizer.convert_tokens_to_ids(x) for x in token_tgt]
-            ids_src = self._tokenizer.prepare_for_model(list(itertools.chain(
-                *wid_src)), return_tensors='np', model_max_length=self._tokenizer.model_max_length, truncation=True)
-            input_ids_src.append(ids_src['input_ids'].tolist())
-            token_type_ids_src.append(ids_src['token_type_ids'].tolist())
-            attention_mask_src.append(ids_src['attention_mask'].tolist())
-
-            ids_src = self._tokenizer.prepare_for_model(list(itertools.chain(
-                *wid_tgt)), return_tensors='np', model_max_length=self._tokenizer.model_max_length, truncation=True)
-            input_ids_tgt.append(ids_src['input_ids'].tolist())
-            token_type_ids_tgt.append(ids_src['token_type_ids'].tolist())
-            attention_mask_tgt.append(ids_src['attention_mask'].tolist())
-
-            sub2word_map_src = []
-            for i, word_list in enumerate(token_src):
-                sub2word_map_src += [i for x in word_list]
-            sub2word_map_tgt = []
-            for i, word_list in enumerate(token_tgt):
-                sub2word_map_tgt += [i for x in word_list]
-
-            sub2word_map_srcs.append(sub2word_map_src)
-            sub2word_map_tgts.append(sub2word_map_tgt)
-
-        input_ids_src, lens_src = padding_sequence(input_ids_src, return_len=True)
-        attention_mask_src = padding_sequence(attention_mask_src)
-
-        input_ids_tgt, lens_tgt = padding_sequence(input_ids_tgt, return_len=True)
-        attention_mask_tgt = padding_sequence(attention_mask_tgt)
-
-        out_src = self._model(np.array(input_ids_src), attention_mask=np.array(
-            attention_mask_src), output_hidden_states=True).hidden_states
-        out_tgt = self._model(np.array(input_ids_tgt), attention_mask=np.array(
-            attention_mask_tgt), output_hidden_states=True).hidden_states
-        out_src = out_src[align_layer]
-        out_tgt = out_tgt[align_layer]
-
-        aligns = []
-        for i in range(len(out_src)):
-            dot_product = tf.matmul(out_src[i, :lens_src[i]][1:-1], tf.transpose(out_tgt[i, :lens_tgt[i]][1:-1]))
-            softmax_srctgt = tf.nn.softmax(dot_product, axis=-1)
-            softmax_tgtsrc = tf.nn.softmax(dot_product, axis=-2)
-            softmax_inter = tf.cast(softmax_srctgt > threshold, tf.float32) * \
-                tf.cast(softmax_tgtsrc > threshold, tf.float32)
-            align_words = set()
-            for k, j in np.array(np.nonzero(softmax_inter)).T:
-                align_words.add((sub2word_map_srcs[i][k], sub2word_map_tgts[i][j]))
-
-            aligns.append([(i, j) for i, j in sorted(align_words)])
-        return aligns

@@ -6,6 +6,5 @@
 # URL: <https://malaya.readthedocs.io/>
 # For license information, see https://github.com/huseinzol05/Malaya/blob/master/LICENSE
 
-from . import lda2vec
 from . import decomposition
 from . import transformer

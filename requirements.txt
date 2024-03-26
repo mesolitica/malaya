@@ -8,7 +8,6 @@ ftfy
 networkx>=2.8.8
 sentencepiece
 tqdm
-herpetologist
-malaya-boilerplate>=0.0.24rc2
+malaya-boilerplate>=0.0.25rc2
 regex
 transformers

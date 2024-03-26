@@ -18,35 +18,24 @@ Contents:
 
    speech-toolkit
    installation
-   mock-tensorflow
    Dataset
    running-on-windows
    Contributing
+   Api
 
 .. toctree::
    :maxdepth: 2
    :caption: GPU Environment
 
-   gpu-environment-tensorflow
-   gpu-environment-pytorch
-   different-precision-pytorch
+   gpu-environment
+   different-precision
 
 .. toctree::
    :maxdepth: 2
    :caption: Pre-trained model
 
    load-transformer
-   load-transformer-huggingface
    load-wordvector
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Alignment Module
-
-   alignment-en-ms-eflomal
-   alignment-en-ms-huggingface
-   alignment-ms-en-eflomal
-   alignment-ms-en-huggingface
 
 .. toctree::
    :maxdepth: 2
@@ -81,15 +70,13 @@ Contents:
 .. toctree::
    :maxdepth: 2
    :caption: Spelling Correction Module
-
-   load-spelling-correction-jamspell
+   
    load-spelling-correction-probability
    load-spelling-correction-probability-lm
-   load-compare-lm-spelling-correction
+   load-spelling-correction-jamspell
    load-spelling-correction-spylls
    load-spelling-correction-symspell
-   load-spelling-correction-encoder-transformer
-   load-spelling-correction-transformer
+   load-compare-lm-spelling-correction
 
 .. toctree::
    :maxdepth: 2
@@ -99,44 +86,34 @@ Contents:
    load-demoji
    load-stemmer
    load-true-case
-   load-true-case-huggingface
    load-segmentation
-   load-segmentation-huggingface
    load-num2word
    load-word2num
-   load-coreference-resolution
-   load-normalizer-abstractive
    load-normalizer
 
 .. toctree::
    :maxdepth: 2
-   :caption: Convert Module
+   :caption: Jawi Module
 
-   load-phoneme
-   load-phoneme-ipa
-   load-rumi-jawi
-   load-jawi-rumi
+   load-jawi
 
 .. toctree::
    :maxdepth: 2
    :caption: Kesalahan Tatabahasa Module
 
    load-tatabahasa-tagging
-   load-tatabahasa-tagging-huggingface
 
 .. toctree::
    :maxdepth: 2
    :caption: Generative Module
 
-   load-prefix-generator
-   load-isi-penting-generator
-   load-isi-penting-generator-huggingface-article-style
-   load-isi-penting-generator-huggingface-headline-news-style
-   load-isi-penting-generator-huggingface-karangan-style
-   load-isi-penting-generator-huggingface-news-style
-   load-isi-penting-generator-huggingface-product-description-style
+   load-isi-penting-generator-article-style
+   load-isi-penting-generator-headline-news-style
+   load-isi-penting-generator-karangan-style
+   load-isi-penting-generator-news-style
+   load-isi-penting-generator-product-description-style
    load-paraphrase
-   load-paraphrase-huggingface
+   load-llm
 
 .. toctree::
    :maxdepth: 2
@@ -146,18 +123,14 @@ Contents:
    load-language-detection
    language-detection-words
    load-nsfw
-   load-relevancy
    load-sentiment
-   load-subjectivity
-   load-toxic
 
 .. toctree::
    :maxdepth: 2
    :caption: Similarity Module
 
-   load-doc2vec-similarity
-   load-semantic-similarity
-   load-semantic-similarity-huggingface
+   load-similarity-doc2vec
+   load-similarity-semantic
 
 .. toctree::
    :maxdepth: 2
@@ -172,53 +145,39 @@ Contents:
    :caption: Parsing Module
 
    load-dependency
-   load-dependency-huggingface
    load-constituency
 
 .. toctree::
    :maxdepth: 2
    :caption: Summarization Module
 
-   load-extractive
-   load-abstractive
-   load-abstractive-huggingface
+   load-summarization-extractive
+   load-summarization-abstractive
 
 .. toctree::
    :maxdepth: 2
    :caption: Translation Module
 
-   load-translation-ms-en
-   load-translation-ms-en-huggingface
-   load-translation-noisy-ms-en-huggingface
-   load-translation-en-ms
-   load-translation-en-ms-huggingface
-   load-translation-noisy-en-ms-huggingface
-   load-translation-ind-ms-huggingface
-   load-translation-jav-ms-huggingface
-   load-translation-ms-ind-huggingface
-   load-translation-ms-jav-huggingface
+   load-translation
+   load-noisy-translation
 
 .. toctree::
    :maxdepth: 2
    :caption: Question Answer Module
 
    load-qa-extractive
-   load-qa-extractive-huggingface
 
 .. toctree::
    :maxdepth: 2
    :caption: Zeroshot Module
 
    load-zeroshot-classification
-   load-zeroshot-classification-huggingface
-   zeroshot-ner
 
 .. toctree::
    :maxdepth: 2
    :caption: Topic Modeling Module
 
    load-topic-model-decomposition
-   load-topic-model-lda2vec
    load-topic-model-transformer
    load-topic-model-bertopic
 
@@ -226,40 +185,25 @@ Contents:
    :maxdepth: 2
    :caption: Keyword Module
 
-   load-abstractive-keyword-huggingface
+   load-keyword-abstractive
    load-keyword-extractive
 
 .. toctree::
    :maxdepth: 2
-   :caption: Text to Knowledge Graph
+   :caption: Knowledge Graph
 
-   e2e-text-to-kg
-   dependency-parser-text-to-kg
-
+   text-to-kg
+   
 .. toctree::
    :maxdepth: 2
-   :caption: Knowledge Graph to Text
+   :caption: Converter
 
-   kg-to-text
-   
+   t5-ctranslate2
+
 .. toctree::
    :maxdepth: 2
    :caption: Misc Module
    
-   load-lexicon
-   load-clustering
    load-stack
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Bias
-
    sentiment-bias-towards-countries
    sentiment-bias-towards-politicians
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Misc
-   
-   Api
-   Donation

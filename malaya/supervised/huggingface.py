@@ -1,120 +1,30 @@
-import tensorflow as tf
-from malaya.torch_model.huggingface import (
-    Generator,
-    Prefix,
-    Paraphrase,
-    Summarization,
-    Similarity,
-    ZeroShotClassification,
-    ZeroShotNER,
-    ExtractiveQA,
-    AbstractiveQA,
-    Transformer,
-    IsiPentingGenerator,
-    Tatabahasa,
-    Normalizer,
-    Keyword,
-    Dependency,
-    TexttoKG,
-    KGtoText,
-    Translation,
-)
-from transformers import TFAutoModel, AutoTokenizer
-from transformers import AutoTokenizer
-from malaya_boilerplate.utils import check_tf2
+import inspect
+
+additional_parameters = {
+    'from_lang': 'from lang',
+    'to_lang': 'to lang',
+}
 
 
-@check_tf2
-def load_automodel(model, model_class, huggingface_class=None, **kwargs):
-
-    tokenizer = AutoTokenizer.from_pretrained(model)
-    if huggingface_class is None:
-        huggingface_class = TFAutoModel
-    model = huggingface_class.from_pretrained(model)
-    return model_class(model=model, tokenizer=tokenizer, **kwargs)
-
-
-def load_generator(model, initial_text, **kwargs):
-    return Generator(model, initial_text, **kwargs)
-
-
-def load_prefix(model, **kwargs):
-    return Prefix(model, **kwargs)
-
-
-def load_paraphrase(model, initial_text, **kwargs):
-    return Paraphrase(model, initial_text, **kwargs)
-
-
-def load_summarization(model, initial_text, **kwargs):
-    return Summarization(model, initial_text, **kwargs)
-
-
-def load_similarity(model, **kwargs):
-    return Similarity(model=model, **kwargs)
-
-
-def load_zeroshot_classification(model, **kwargs):
-    return ZeroShotClassification(model=model, **kwargs)
-
-
-def load_zeroshot_ner(model, **kwargs):
-    return ZeroShotNER(model=model, **kwargs)
-
-
-def load_extractive_qa(model, **kwargs):
-    return ExtractiveQA(model=model, flan_mode='flan' in model, **kwargs)
-
-
-def load_abstractive_qa(model, **kwargs):
-    return AbstractiveQA(model=model, **kwargs)
-
-
-def load_transformer(model, **kwargs):
-    return Transformer(model=model, **kwargs)
-
-
-def load_isi_penting(model, **kwargs):
-    return IsiPentingGenerator(model, **kwargs)
-
-
-def load_tatabahasa(model, initial_text, **kwargs):
-    return Tatabahasa(model, initial_text, **kwargs)
-
-
-def load_normalizer(
+def load(
     model,
-    initial_text,
-    normalizer,
-    segmenter=None,
-    text_scorer=None,
+    class_model,
+    available_huggingface,
+    force_check: bool = True,
+    path: str = __name__,
     **kwargs,
 ):
-    return Normalizer(
-        model,
-        initial_text,
-        normalizer,
-        segmenter=segmenter,
-        text_scorer=text_scorer,
+    if model not in available_huggingface and force_check:
+        raise ValueError(
+            f'model not supported, please check supported models from `{path}.available_huggingface`.'
+        )
+
+    args = inspect.getargspec(class_model)
+    for k, v in additional_parameters.items():
+        if k in args.args:
+            kwargs[k] = available_huggingface[model].get(v)
+
+    return class_model(
+        model=model,
         **kwargs,
     )
-
-
-def load_keyword(model, **kwargs):
-    return Keyword(model, **kwargs)
-
-
-def load_dependency(model, **kwargs):
-    return Dependency(model, **kwargs)
-
-
-def load_ttkg(model, **kwargs):
-    return TexttoKG(model=model, **kwargs)
-
-
-def load_kgtt(model, **kwargs):
-    return KGtoText(model=model, **kwargs)
-
-
-def load_translation(model, from_lang, to_lang, **kwargs):
-    return Translation(model=model, from_lang=from_lang, to_lang=to_lang, **kwargs)

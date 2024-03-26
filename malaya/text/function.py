@@ -10,7 +10,7 @@ from malaya.text.tatabahasa import (
     laughing,
     mengeluh,
 )
-from malaya.text.rules import normalized_chars
+from malaya.text.rules import normalized_chars, rules_normalizer
 from malaya.text.unicode.emoji import emoji
 from malaya.text.regex import _expressions
 from malaya.text.ngram import ngrams
@@ -608,7 +608,6 @@ def split_into_sentences(text, minimum_length=5):
     text = text.replace('\x97', '\n')
     text = '. '.join([s for s in text.split('\n') if len(s)])
     text = text + '.'
-    text = unidecode(text)
     text = ' ' + text + '  '
     text = text.replace('\n', ' ')
     text = re.sub(prefixes, '\\1<prd>', text)
@@ -776,7 +775,7 @@ def get_similar_substrings(needle, hay, additional_length_ratio=0.1, right_slide
             max_sim_val = similarity
             max_sim_string = hay_ngram
 
-    right_slided = ' '.join(query.split()[-right_slide:])
+    right_slided = ' '.join(hay.split()[-right_slide:])
     rfind = max_sim_string.rfind(right_slided)
     if rfind >= 0:
         max_sim_string = max_sim_string[:rfind + len(right_slided)]
@@ -800,3 +799,19 @@ def fuzzy_substring_search(major: str, minor: str, errs: int = 10):
         return major[span[0]: span[1]]
     else:
         return None
+
+
+def classification_textcleaning_stemmer(string, stemmer):
+    string = re.sub(
+        'http\\S+|www.\\S+',
+        '',
+        ' '.join(
+            [i for i in string.split() if i.find('#') < 0 and i.find('@') < 0]
+        ),
+    )
+    string = unidecode(string).replace('.', ' . ').replace(',', ' , ')
+    string = re.sub('[^A-Za-z ]+', ' ', string)
+    string = re.sub(r'[ ]+', ' ', string.lower()).strip()
+    string = [rules_normalizer.get(w, w) for w in string.split()]
+    string = [(stemmer.stem(word), word) for word in string]
+    return ' '.join([word[0] for word in string if len(word[0]) > 1])

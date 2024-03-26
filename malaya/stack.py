@@ -1,6 +1,5 @@
 from scipy.stats.mstats import gmean
 import numpy as np
-from herpetologist import check_type
 from typing import List, Callable
 
 
@@ -8,7 +7,6 @@ def _most_common(l):
     return max(set(l), key=l.count)
 
 
-@check_type
 def voting_stack(models, text: str):
     """
     Stacking for POS, Entities and Dependency models.
@@ -60,7 +58,6 @@ def voting_stack(models, text: str):
         return output
 
 
-@check_type
 def predict_stack(
     models, strings: List[str], aggregate: Callable = gmean, **kwargs
 ):

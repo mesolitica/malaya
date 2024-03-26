@@ -1,38 +1,7 @@
-from malaya.supervised import t5 as t5_load
-from malaya.model.t5 import Paraphrase as T5_Paraphrase
-from malaya.supervised import huggingface as load_huggingface
-from herpetologist import check_type
-from malaya.function import describe_availability
-import logging
-import warnings
+from malaya.supervised.huggingface import load
+from malaya.torch_model.huggingface import Paraphrase
 
-logger = logging.getLogger(__name__)
-
-_transformer_availability = {
-    't5': {
-        'Size (MB)': 1250,
-        'Quantized Size (MB)': 481,
-        'BLEU': 35.86211127195363,
-        'SacreBLEU Verbose': '61.1/40.6/31.3/25.2 (BP = 0.959 ratio = 0.960 hyp_len = 96986 ref_len = 101064)',
-        'Suggested length': 256,
-    },
-    'small-t5': {
-        'Size (MB)': 355.6,
-        'Quantized Size (MB)': 195,
-        'BLEU': 37.24731076156855,
-        'SacreBLEU Verbose': '61.6/41.7/32.5/26.3 (BP = 0.968 ratio = 0.968 hyp_len = 97840 ref_len = 101064)',
-        'Suggested length': 256,
-    },
-    'tiny-t5': {
-        'Size (MB)': 208,
-        'Quantized Size (MB)': 103,
-        'BLEU': 13.253918978157994,
-        'SacreBLEU Verbose': '38.6/16.3/9.4/5.8 (BP = 0.973 ratio = 0.974 hyp_len = 98419 ref_len = 101064)',
-        'Suggested length': 256,
-    },
-}
-
-_huggingface_availability = {
+available_huggingface = {
     'mesolitica/finetune-paraphrase-t5-tiny-standard-bahasa-cased': {
         'Size (MB)': 139,
         'BLEU': 36.92696648298233,
@@ -53,68 +22,10 @@ _huggingface_availability = {
     },
 }
 
-
-def _describe():
-    logger.info('tested on MRPC validation set, https://huggingface.co/datasets/mesolitica/translated-MRPC')
-    logger.info('tested on ParaSCI ARXIV test set, https://huggingface.co/datasets/mesolitica/translated-paraSCI')
-
-
-def available_transformer():
-    """
-    List available transformer models.
-    """
-
-    warnings.warn(
-        '`malaya.paraphrase.available_transformer` is deprecated, use `malaya.paraphrase.available_huggingface` instead', DeprecationWarning)
-
-    _describe()
-    return describe_availability(_transformer_availability)
-
-
-def available_huggingface():
-    """
-    List available huggingface models.
-    """
-
-    _describe()
-    return describe_availability(_huggingface_availability)
-
-
-@check_type
-def transformer(model: str = 'small-t5', quantized: bool = False, **kwargs):
-    """
-    Load Malaya transformer encoder-decoder model to paraphrase.
-
-    Parameters
-    ----------
-    model: str, optional (default='small-t5')
-        Check available models at `malaya.paraphrase.available_transformer()`.
-    quantized: bool, optional (default=False)
-        if True, will load 8-bit quantized model.
-        Quantized model not necessary faster, totally depends on the machine.
-
-    Returns
-    -------
-    result: model
-        List of model classes:
-
-        * if `t5` in model, will return `malaya.model.t5.Paraphrase`.
-    """
-    warnings.warn(
-        '`malaya.paraphrase.transformer` is deprecated, use `malaya.paraphrase.huggingface` instead', DeprecationWarning)
-
-    model = model.lower()
-    if model not in _transformer_availability:
-        raise ValueError(
-            'model not supported, please check supported models from `malaya.paraphrase.available_transformer()`.'
-        )
-    return t5_load.load(
-        module='paraphrase-v2',
-        model=model,
-        model_class=T5_Paraphrase,
-        quantized=quantized,
-        **kwargs,
-    )
+info = """
+tested on MRPC validation set, https://huggingface.co/datasets/mesolitica/translated-MRPC
+tested on ParaSCI ARXIV test set, https://huggingface.co/datasets/mesolitica/translated-paraSCI
+""".strip()
 
 
 def huggingface(
@@ -128,7 +39,7 @@ def huggingface(
     Parameters
     ----------
     model: str, optional (default='mesolitica/finetune-paraphrase-t5-small-standard-bahasa-cased')
-        Check available models at `malaya.paraphrase.available_huggingface()`.
+        Check available models at `malaya.paraphrase.available_huggingface`.
     force_check: bool, optional (default=True)
         Force check model one of malaya model.
         Set to False if you have your own huggingface model.
@@ -137,8 +48,16 @@ def huggingface(
     -------
     result: malaya.torch_model.huggingface.Paraphrase
     """
-    if model not in _huggingface_availability and force_check:
+    if model not in available_huggingface and force_check:
         raise ValueError(
-            'model not supported, please check supported models from `malaya.paraphrase.available_huggingface()`.'
+            'model not supported, please check supported models from `malaya.paraphrase.available_huggingface`.'
         )
-    return load_huggingface.load_paraphrase(model=model, initial_text='parafrasa: ', **kwargs)
+
+    return load(
+        model=model,
+        class_model=Paraphrase,
+        available_huggingface=available_huggingface,
+        force_check=force_check,
+        path=__name__,
+        **kwargs,
+    )

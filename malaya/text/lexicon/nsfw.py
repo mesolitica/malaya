@@ -1,4 +1,3 @@
-from herpetologist import check_type
 from typing import List
 
 
@@ -10,7 +9,6 @@ class Lexicon:
         self.gambling_rejected = self._corpus['gambling_rejected']
         self.rejected = self._corpus['rejected']
 
-    @check_type
     def predict(self, strings: List[str]):
         """
         classify list of strings.

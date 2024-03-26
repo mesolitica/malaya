@@ -1,137 +1,61 @@
-from malaya.function import (
-    check_file,
-    load_graph,
-    generate_session,
-    nodes_session,
-)
-from malaya.text.bpe import SentencePieceTokenizer
-from malaya.model.tf import Constituency
-from malaya.path import MODEL_VOCAB, MODEL_BPE
-from malaya.supervised import settings
-from malaya.function import describe_availability
-from herpetologist import check_type
+from malaya.supervised.huggingface import load
+from malaya.torch_model.huggingface import Constituency
 import logging
 
 logger = logging.getLogger(__name__)
 
-_transformer_availability = {
-    'bert': {
-        'Size (MB)': 470.0,
-        'Quantized Size (MB)': 118.0,
-        'Recall': 78.96,
-        'Precision': 81.78,
-        'FScore': 80.35,
-        'CompleteMatch': 10.37,
-        'TaggingAccuracy': 91.59,
+available_huggingface = {
+    'mesolitica/constituency-parsing-t5-small-standard-bahasa-cased': {
+        'Size (MB)': 247,
+        'Recall': 81.62,
+        'Precision': 83.32,
+        'FScore': 82.46,
+        'CompleteMatch': 22.40,
+        'TaggingAccuracy': 94.95,
     },
-    'tiny-bert': {
-        'Size (MB)': 125.0,
-        'Quantized Size (MB)': 31.8,
-        'Recall': 74.89,
-        'Precision': 78.79,
-        'FScore': 76.79,
-        'CompleteMatch': 9.01,
-        'TaggingAccuracy': 91.17,
-    },
-    'albert': {
-        'Size (MB)': 180.0,
-        'Quantized Size (MB)': 45.7,
-        'Recall': 77.57,
-        'Precision': 80.50,
-        'FScore': 79.01,
-        'CompleteMatch': 5.77,
-        'TaggingAccuracy': 90.30,
-    },
-    'tiny-albert': {
-        'Size (MB)': 56.7,
-        'Quantized Size (MB)': 14.5,
-        'Recall': 67.21,
-        'Precision': 74.89,
-        'FScore': 70.84,
-        'CompleteMatch': 2.11,
-        'TaggingAccuracy': 87.75,
-    },
-    'xlnet': {
-        'Size (MB)': 498.0,
-        'Quantized Size (MB)': 126.0,
-        'Recall': 81.52,
-        'Precision': 85.18,
-        'FScore': 83.31,
-        'CompleteMatch': 11.71,
-        'TaggingAccuracy': 91.71,
-    },
+    'mesolitica/constituency-parsing-t5-base-standard-bahasa-cased': {
+        'Size (MB)': 545,
+        'Recall': 82.23,
+        'Precision': 82.12,
+        'FScore': 82.18,
+        'CompleteMatch': 23.50,
+        'TaggingAccuracy': 94.69,
+    }
 }
 
-_vectorizer_mapping = {
-    'bert': 'import/bert/encoder/layer_11/output/LayerNorm/batchnorm/add_1:0',
-    'tiny-bert': 'import/bert/encoder/layer_11/output/LayerNorm/batchnorm/add_1:0',
-    'albert': 'import/bert/encoder/transformer/group_0_11/layer_11/inner_group_0/LayerNorm_1/batchnorm/add_1:0',
-    'tiny-albert': 'import/bert/encoder/transformer/group_0_3/layer_3/inner_group_0/LayerNorm_1/batchnorm/add_1:0',
-    'xlnet': 'import/model/transformer/layer_11/ff/LayerNorm/batchnorm/add_1:0',
-}
+info = """
+Tested on https://github.com/aisingapore/seacorenlp-data/tree/main/id/constituency test set.
+""".strip()
 
 
-def available_transformer():
+def huggingface(
+    model: str = 'mesolitica/constituency-parsing-t5-small-standard-bahasa-cased',
+    force_check: bool = True,
+    **kwargs,
+):
     """
-    List available transformer models.
-    """
-
-    logger.info(
-        'tested on test set at https://github.com/huseinzol05/malaya/blob/master/session/constituency/download-data.ipynb')
-
-    return describe_availability(_transformer_availability)
-
-
-@check_type
-def transformer(model: str = 'xlnet', quantized: bool = False, **kwargs):
-    """
-    Load Transformer Constituency Parsing model, transfer learning Transformer + self attentive parsing.
+    Load HuggingFace model to Constituency parsing.
 
     Parameters
     ----------
-    model: str, optional (default='bert')
-        Check available models at `malaya.constituency.available_transformer()`.
-    quantized: bool, optional (default=False)
-        if True, will load 8-bit quantized model.
-        Quantized model not necessary faster, totally depends on the machine.
+    model: str, optional (default='mesolitica/constituency-parsing-t5-small-standard-bahasa-cased')
+        Check available models at `malaya.constituency.available_huggingface`.
+    force_check: bool, optional (default=True)
+        Force check model one of malaya model.
+        Set to False if you have your own huggingface model.
 
     Returns
     -------
-    result: malaya.model.tf.Constituency class
+    result: malaya.torch_model.huggingface.Constituency
     """
+    logger.warning(
+        '`malaya.constituency.huggingface` trained on indonesian dataset, not an actual malay dataset.')
 
-    model = model.lower()
-    if model not in _transformer_availability:
-        raise ValueError(
-            'model not supported, please check supported models from `malaya.constituency.available_transformer()`.'
-        )
-
-    path = check_file(
-        file=model,
-        module='constituency',
-        keys={
-            'model': 'model.pb',
-            'vocab': MODEL_VOCAB[model],
-            'tokenizer': MODEL_BPE[model],
-        },
-        quantized=quantized,
+    return load(
+        model=model,
+        class_model=Constituency,
+        available_huggingface=available_huggingface,
+        force_check=force_check,
+        path=__name__,
         **kwargs,
-    )
-    g = load_graph(path['model'], **kwargs)
-
-    inputs = ['input_ids', 'word_end_mask']
-    outputs = ['charts', 'tags']
-    tokenizer = SentencePieceTokenizer(vocab_file=path['vocab'], spm_model_file=path['tokenizer'])
-    input_nodes, output_nodes = nodes_session(
-        g, inputs, outputs, extra={'vectorizer': _vectorizer_mapping[model]}
-    )
-    mode = 'bert' if 'bert' in model else 'xlnet'
-
-    return Constituency(
-        input_nodes=input_nodes,
-        output_nodes=output_nodes,
-        sess=generate_session(graph=g, **kwargs),
-        tokenizer=tokenizer,
-        dictionary=settings.constituency,
-        mode=mode,
     )
