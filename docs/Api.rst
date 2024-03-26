@@ -416,6 +416,9 @@ malaya.torch_model.huggingface
 .. autoclass:: malaya.torch_model.huggingface.Embedding()
     :members:
 
+.. autoclass:: malaya.torch_model.huggingface.Reranker()
+    :members:
+
 malaya.torch_model.llm
 ----------------------------------
 

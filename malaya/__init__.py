@@ -21,6 +21,7 @@ from . import dictionary
 from . import generator
 from . import keyword
 from . import normalizer
+from . import qa
 from . import similarity
 from . import spelling_correction
 from . import summarization
@@ -31,6 +32,7 @@ from . import zero_shot
 
 from . import constituency
 from . import dependency
+from . import embedding
 from . import emotion
 from . import entity
 from . import jawi
@@ -44,7 +46,7 @@ from . import num2word
 from . import paraphrase
 from . import pos
 from . import preprocessing
-from . import qa
+from . import reranker
 from . import segmentation
 from . import sentiment
 from . import stack

@@ -32,13 +32,6 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
-   :caption: Pre-trained model
-
-   load-transformer
-   load-wordvector
-
-.. toctree::
-   :maxdepth: 2
    :caption: Augmentation Module
 
    load-augmentation-abstractive
@@ -124,6 +117,14 @@ Contents:
    language-detection-words
    load-nsfw
    load-sentiment
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Retrieval Module
+
+   load-wordvector
+   load-embedding
+   load-reranker
 
 .. toctree::
    :maxdepth: 2

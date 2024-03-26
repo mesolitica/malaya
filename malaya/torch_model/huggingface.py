@@ -2,6 +2,8 @@ from transformers import (
     AutoModelForSeq2SeqLM,
     AutoModelForCausalLM,
     AutoModelForMaskedLM,
+    AutoModelForSequenceClassification,
+    AutoModel,
     AutoTokenizer,
     RobertaTokenizer,
     ElectraTokenizer,
@@ -1316,16 +1318,11 @@ class Tagging(Base):
 class Embedding(Base):
     def __init__(self, model, **kwargs):
         self.tokenizer = AutoTokenizer.from_pretrained(model, **kwargs)
-        self.is_t5 = 'nanot5' in model
-        if self.is_t5:
-            model_class = T5Embedding
-        else:
-            model_class = LlamaModelEmbedding
-        self.model = model_class.from_pretrained(model, **kwargs)
+        self.model = AutoModel.from_pretrained(model, trust_remote_code=True, **kwargs)
 
     def encode(self, strings: List[str]):
         """
-        Encode texts into embedding.
+        Encode strings into embedding.
 
         Parameters
         ----------
@@ -1335,10 +1332,44 @@ class Embedding(Base):
         -------
         result: np.array
         """
-        padded = tokenizer(strings, return_tensors='pt', padding=True)
+        padded = self.tokenizer(strings, return_tensors='pt', padding=True)
         for k in padded.keys():
             padded[k] = padded[k].to(self.model.device)
 
         padded.pop('token_type_ids', None)
 
-        return to_numpy(model.encode(padded))
+        return to_numpy(self.model.encode(padded))
+
+
+class Reranker(Base):
+    def __init__(self, model, **kwargs):
+        self.tokenizer = AutoTokenizer.from_pretrained(model, **kwargs)
+        self.model = AutoModelForSequenceClassification.from_pretrained(model, **kwargs)
+
+    def sort(self, left_string: str, right_strings: List[str]):
+        """
+        Sort the strings.
+
+        Parameters
+        ----------
+        left_string: str
+            reference string.
+        right_strings: List[str]
+            query strings, list of strings need to sort based on reference string.
+
+        Returns
+        -------
+        result: np.array
+        """
+        batch = []
+        for s in right_strings:
+            input_ids = self.tokenizer.encode_plus(left_string, s)
+            input_ids.pop('token_type_ids')
+            batch.append(input_ids)
+        padded = self.tokenizer.pad(batch, return_tensors='pt')
+        for k in padded.keys():
+            padded[k] = padded[k].to(self.model.device)
+
+        padded.pop('token_type_ids', None)
+
+        return to_numpy(self.model(**padded).logits[:, 1])
