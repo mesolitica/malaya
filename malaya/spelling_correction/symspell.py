@@ -182,8 +182,9 @@ class Symspell(Spell):
 
         if len(hujung_result) and not word.endswith(hujung_result) and combined:
             word = word + hujung_result
-        if len(permulaan_result) and not word.startswith(permulaan_result) and combined:
-            if permulaan_result[-1] == word[0]:
+        if len(permulaan_result) and not word.startswith(
+                permulaan_result) and combined:
+            if len(word) and permulaan_result[-1] == word[0]:
                 word = permulaan_result + word[1:]
             else:
                 word = permulaan_result + word
