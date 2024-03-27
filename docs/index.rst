@@ -160,7 +160,6 @@ Contents:
    :caption: Translation Module
 
    load-translation
-   load-noisy-translation
 
 .. toctree::
    :maxdepth: 2
