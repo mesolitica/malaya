@@ -32,6 +32,7 @@ from malaya.text.function import (
 from malaya_boilerplate.converter import ctranslate2_translator
 from malaya.function.parse_dependency import DependencyGraph
 from malaya.text.rouge import postprocess_summary, find_kata_encik
+from malaya.torch_model.base import Base
 from malaya.torch_model.t5 import (
     T5ForSequenceClassification,
     T5ForTokenClassification,
@@ -58,29 +59,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 MAPPING_LANG = {'ms': 'Malay', 'en': 'Inggeris'}
-
-
-class Base:
-    def compile(self):
-        if getattr(self, 'use_ctranslate2', False):
-            raise ValueError('`compile` method not able to use for ctranslate2 model.')
-        self.model = torch.compile(self.model)
-
-    def eval(self, **kwargs):
-        if getattr(self, 'use_ctranslate2', False):
-            raise ValueError('`eval` method not able to use for ctranslate2 model.')
-        return self.model.eval(**kwargs)
-
-    def cuda(self, **kwargs):
-        if getattr(self, 'use_ctranslate2', False):
-            raise ValueError('`cuda` method not able to use for ctranslate2 model.')
-        return self.model.cuda(**kwargs)
-
-    def save_pretrained(self, *args, **kwargs):
-        if getattr(self, 'use_ctranslate2', False):
-            raise ValueError('`save_pretrained` method not able to use for ctranslate2 model.')
-        return self.model.save_pretrained(
-            *args, **kwargs), self.tokenizer.save_pretrained(*args, **kwargs)
 
 
 class Generator(Base):
@@ -540,7 +518,7 @@ class Transformer(Base):
     ):
         self.tokenizer = AutoTokenizer.from_pretrained(model, **kwargs)
 
-        if self.tokenizer.slow_tokenizer_class in (RobertaTokenizer,):
+        if self.tokenizer.slow_tokenizer_class in (RobertaTokenizer, None):
             self._tokenizer_type = 'bpe'
             self._merge = merge_bpe_tokens
         elif self.tokenizer.slow_tokenizer_class in (ElectraTokenizer, BertTokenizer):

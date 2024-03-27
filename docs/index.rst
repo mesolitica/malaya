@@ -56,6 +56,7 @@ Contents:
    :maxdepth: 2
    :caption: Language Model Module
 
+   load-transformer
    load-kenlm
    load-mlm
    load-gpt2-lm
@@ -119,7 +120,7 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
-   :caption: Retrieval Module
+   :caption: Embedding Module
 
    load-wordvector
    load-embedding

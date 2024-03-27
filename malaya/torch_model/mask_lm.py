@@ -26,10 +26,16 @@ https://github.com/awslabs/mlm-scoring/blob/master/LICENSE
 
 import numpy as np
 import torch
-from transformers import BertForMaskedLM, AlbertForMaskedLM, RobertaForMaskedLM
+from transformers import (
+    BertForMaskedLM,
+    AlbertForMaskedLM,
+    RobertaForMaskedLM,
+    DebertaV2ForMaskedLM
+)
 from transformers.modeling_outputs import MaskedLMOutput
 from torch.nn import CrossEntropyLoss
 from transformers import AutoTokenizer
+from malaya.torch_model.base import Base
 from malaya_boilerplate.torch_utils import to_tensor_cuda, to_numpy
 
 
@@ -259,7 +265,78 @@ class RobertaForMaskedLMOptimized(RobertaForMaskedLM):
         )
 
 
-class MLMScorer:
+class DebertaV2ForMaskedLMOptimized(DebertaV2ForMaskedLM):
+    def forward(
+        self,
+        input_ids=None,
+        attention_mask=None,
+        token_type_ids=None,
+        position_ids=None,
+        inputs_embeds=None,
+        labels=None,
+        output_attentions=None,
+        output_hidden_states=None,
+        return_dict=None,
+        select_positions=None,
+        **kwargs,
+    ):
+        r"""
+        labels (:obj:`torch.LongTensor` of shape :obj:`(batch_size, sequence_length)`, `optional`):
+            Labels for computing the masked language modeling loss.
+            Indices should be in ``[-100, 0, ..., config.vocab_size]`` (see ``input_ids`` docstring)
+            Tokens with indices set to ``-100`` are ignored (masked), the loss is only computed for the tokens with labels
+            in ``[0, ..., config.vocab_size]``
+        kwargs (:obj:`Dict[str, any]`, optional, defaults to `{}`):
+            Used to hide legacy arguments that have been deprecated.
+        """
+        if "masked_lm_labels" in kwargs:
+            warnings.warn(
+                "The `masked_lm_labels` argument is deprecated and will be removed in a future version, use `labels` instead.",
+                FutureWarning,
+            )
+            labels = kwargs.pop("masked_lm_labels")
+        assert "lm_labels" not in kwargs, "Use `BertWithLMHead` for autoregressive language modeling task."
+        assert kwargs == {}, f"Unexpected keyword arguments: {list(kwargs.keys())}."
+
+        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
+
+        outputs = self.deberta(
+            input_ids,
+            attention_mask=attention_mask,
+            token_type_ids=token_type_ids,
+            position_ids=position_ids,
+            inputs_embeds=inputs_embeds,
+            output_attentions=output_attentions,
+            output_hidden_states=output_hidden_states,
+            return_dict=return_dict,
+        )
+
+        sequence_output = outputs[0]
+        if select_positions is not None:
+            sequence_output = sequence_output[[[i] for i in range(
+                sequence_output.shape[0])], select_positions, :]
+
+        prediction_scores = self.cls(sequence_output)
+
+        masked_lm_loss = None
+        if labels is not None:
+            loss_fct = CrossEntropyLoss()  # -100 index = padding token
+            masked_lm_loss = loss_fct(
+                prediction_scores.view(-1, self.config.vocab_size), labels.view(-1))
+
+        if not return_dict:
+            output = (prediction_scores,) + outputs[2:]
+            return ((masked_lm_loss,) + output) if masked_lm_loss is not None else output
+
+        return MaskedLMOutput(
+            loss=masked_lm_loss,
+            logits=prediction_scores,
+            hidden_states=outputs.hidden_states,
+            attentions=outputs.attentions,
+        )
+
+
+class MLMScorer(Base):
     def __init__(self, model, **kwargs):
         splitted = model.lower().replace('/', '-').split('-')
         if 'bert' in splitted:
@@ -268,14 +345,14 @@ class MLMScorer:
             model_class = AlbertForMaskedLMOptimized
         elif 'roberta' in splitted:
             model_class = RobertaForMaskedLMOptimized
+        elif 'debertav2' in splitted:
+            model_class = DebertaV2ForMaskedLMOptimized
         else:
             raise ValueError(
-                f'cannot determined model class for {model}, only supported BERT, ALBERT and RoBERTa for now.')
+                f'cannot determined model class for {model}, only supported BERT, ALBERT, RoBERTa and DebertaV2 for now.'
+            )
         self.tokenizer = AutoTokenizer.from_pretrained(model, use_fast=False, **kwargs)
         self.model = model_class.from_pretrained(model, **kwargs)
-
-    def cuda(self):
-        return self.model.cuda()
 
     def _ids_to_masked(self, token_ids):
         token_ids_masked_list = []
@@ -286,7 +363,7 @@ class MLMScorer:
         # We don't mask the [CLS], [SEP] for now for PLL
         mask_indices = mask_indices[1:-1]
 
-        mask_token_id = self.tokenizer._convert_token_to_id(self.tokenizer.mask_token)
+        mask_token_id = self.tokenizer.convert_tokens_to_ids([self.tokenizer.mask_token])
         for mask_set in mask_indices:
             token_ids_masked = token_ids.copy()
             token_ids_masked[mask_set] = mask_token_id
@@ -307,7 +384,8 @@ class MLMScorer:
                 mask_set,
                 ids_original[mask_set],
                 1)
-                for ids, mask_set in ids_masked]
+                for ids, mask_set in ids_masked
+            ]
         return sents_expanded
 
     def score(self, string):

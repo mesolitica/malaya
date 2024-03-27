@@ -26,6 +26,9 @@ available_huggingface = {
     'mesolitica/electra-small-generator-bahasa-cased': {
         'Size (MB)': 19.3,
     },
+    'mesolitica/malaysian-debertav2-base': {
+        'Size (MB)': 228,
+    },
 }
 
 

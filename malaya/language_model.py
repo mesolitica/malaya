@@ -1,5 +1,5 @@
 from malaya.function import check_file
-from malaya.torch_model.gpt2_lm import LM as GPT2LM
+from malaya.torch_model.causal_lm import GPT2 as GPT2LM
 from malaya.torch_model.mask_lm import MLMScorer
 
 available_kenlm = {
@@ -78,6 +78,9 @@ available_mlm = {
     'mesolitica/roberta-tiny-standard-bahasa-cased': {
         'Size (MB)': 66.1,
     },
+    'mesolitica/malaysian-debertav2-base': {
+        'Size (MB)': 228,
+    },
 }
 
 
@@ -149,7 +152,7 @@ def gpt2(
 
 
 def mlm(
-    model: str = 'mesolitica/bert-tiny-standard-bahasa-cased',
+    model: str = 'mesolitica/malaysian-debertav2-base',
     force_check: bool = True,
     **kwargs
 ):
@@ -158,7 +161,7 @@ def mlm(
 
     Parameters
     ----------
-    model: str, optional (default='mesolitica/bert-tiny-standard-bahasa-cased')
+    model: str, optional (default='mesolitica/malaysian-debertav2-base')
         Check available models at `malaya.language_model.available_mlm`.
     force_check: bool, optional (default=True)
         Force check model one of malaya model.

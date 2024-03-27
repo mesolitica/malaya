@@ -27,7 +27,7 @@ from transformers import GPT2Tokenizer, GPT2LMHeadModel
 from malaya_boilerplate.torch_utils import to_tensor_cuda, to_numpy
 
 
-class LM(GPT2LMHeadModel):
+class GPT2(GPT2LMHeadModel):
     def __init__(self, config):
         super().__init__(config)
 
@@ -109,3 +109,8 @@ class LM(GPT2LMHeadModel):
             scored = scored.exp()
 
         return float(to_numpy(scored))
+
+
+class Causal(GPT2LMHeadModel):
+    def __init__(self, config):
+        super().__init__(config)

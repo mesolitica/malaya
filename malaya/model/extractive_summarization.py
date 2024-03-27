@@ -72,7 +72,7 @@ class SKLearn:
                 indices = np.argsort(self.vectorizer.idf_)[::-1]
             else:
                 indices = np.argsort(np.asarray(freq.sum(axis=0))[0])[::-1]
-            features = self.vectorizer.get_feature_names()
+            features = self.vectorizer.get_feature_names_out()
             top_words = [features[i] for i in indices[:important_words]]
         else:
             top_words = []
@@ -108,7 +108,7 @@ class SKLearn:
                 indices = np.argsort(self.vectorizer.idf_)[::-1]
             else:
                 indices = np.argsort(np.asarray(freq.sum(axis=0))[0])[::-1]
-            features = self.vectorizer.get_feature_names()
+            features = self.vectorizer.get_feature_names_out()
             top_words = [features[i] for i in indices[:important_words]]
         else:
             top_words = []
