@@ -52,7 +52,8 @@ def initialize_sastrawi():
 
 def _replace_compound(string):
     for k in rules_compound_normalizer_keys:
-        results = [(m.start(0), m.end(0)) for m in re.finditer(r'\b' + k, string, flags=re.IGNORECASE)]
+        results = [(m.start(0), m.end(0))
+                   for m in re.finditer(r'\b' + k, string, flags=re.IGNORECASE)]
         for r in results:
             sub = string[r[0]: r[1]]
             replaced = rules_compound_normalizer.get(sub.lower())
@@ -137,9 +138,9 @@ def get_permulaan(word, stemmer=None):
     return word, ''
 
 
-def _remove_postfix(word, stemmer=None):
+def _remove_postfix(word, stemmer=None, validate_word=True):
 
-    if is_malay(word) or is_english(word) or word in rules_normalizer:
+    if validate_word and (is_malay(word) or is_english(word) or word in rules_normalizer):
         return word, ''
     for p in ignore_postfix:
         if word.endswith(p):
@@ -181,6 +182,10 @@ def _normalize_money(
         return currency[splitted[-1]] + str(v)
     else:
         return word
+
+
+def _is_mandarin_char(s):
+    return re.match(r'[\u4e00-\u9fff]+', s) is not None
 
 
 def _is_number_regex(s):
@@ -455,7 +460,7 @@ def normalize_numbers_with_shortform(x):
         if x.endswith('.0'):
             x = x[:-2]
         return x
-    except:
+    except BaseException:
         return x_
 
 

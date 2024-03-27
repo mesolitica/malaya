@@ -1,0 +1,22 @@
+WANDB_PROJECT=mixtral-qlora-instructions-16k-deepspeed \
+deepspeed mixtral-lora-deepspeed.py \
+--deepspeed ds_config_zero2.json \
+--model_name_or_path mistralai/Mixtral-8x7B-Instruct-v0.1 \
+--per_device_train_batch_size 1 \
+--gradient_accumulation_steps 9 \
+--output_dir mixtral-deepspeed \
+--bf16 \
+--do_train \
+--do_eval false \
+--num_train_epochs 3 \
+--train_file 'mosaic-chat-instructions-mixtral' \
+--logging_steps 1 \
+--learning_rate 2e-5 \
+--block_size 16384 \
+--save_steps 20 \
+--save_total_limit 2 \
+--gradient_checkpointing true \
+--torch_dtype 'bfloat16' \
+--lora_r 32 \
+--target_modules q_proj k_proj v_proj o_proj \
+--lr_scheduler_type 'constant'

@@ -26,9 +26,16 @@ https://github.com/awslabs/mlm-scoring/blob/master/LICENSE
 
 import numpy as np
 import torch
-from transformers import BertForMaskedLM, AlbertForMaskedLM, RobertaForMaskedLM
+from transformers import (
+    BertForMaskedLM,
+    AlbertForMaskedLM,
+    RobertaForMaskedLM,
+    DebertaV2ForMaskedLM
+)
 from transformers.modeling_outputs import MaskedLMOutput
 from torch.nn import CrossEntropyLoss
+from transformers import AutoTokenizer
+from malaya.torch_model.base import Base
 from malaya_boilerplate.torch_utils import to_tensor_cuda, to_numpy
 
 
@@ -86,14 +93,16 @@ class BertForMaskedLMOptimized(BertForMaskedLM):
 
         sequence_output = outputs[0]
         if select_positions is not None:
-            sequence_output = sequence_output[[[i] for i in range(sequence_output.shape[0])], select_positions, :]
+            sequence_output = sequence_output[[[i] for i in range(
+                sequence_output.shape[0])], select_positions, :]
 
         prediction_scores = self.cls(sequence_output)
 
         masked_lm_loss = None
         if labels is not None:
             loss_fct = CrossEntropyLoss()  # -100 index = padding token
-            masked_lm_loss = loss_fct(prediction_scores.view(-1, self.config.vocab_size), labels.view(-1))
+            masked_lm_loss = loss_fct(
+                prediction_scores.view(-1, self.config.vocab_size), labels.view(-1))
 
         if not return_dict:
             output = (prediction_scores,) + outputs[2:]
@@ -156,14 +165,16 @@ class AlbertForMaskedLMOptimized(AlbertForMaskedLM):
         sequence_outputs = outputs[0]
 
         if select_positions is not None:
-            sequence_outputs = sequence_outputs[[[i] for i in range(sequence_outputs.shape[0])], select_positions, :]
+            sequence_outputs = sequence_outputs[[[i] for i in range(
+                sequence_outputs.shape[0])], select_positions, :]
 
         prediction_scores = self.predictions(sequence_outputs)
 
         masked_lm_loss = None
         if labels is not None:
             loss_fct = CrossEntropyLoss()
-            masked_lm_loss = loss_fct(prediction_scores.view(-1, self.config.vocab_size), labels.view(-1))
+            masked_lm_loss = loss_fct(
+                prediction_scores.view(-1, self.config.vocab_size), labels.view(-1))
 
         if not return_dict:
             output = (prediction_scores,) + outputs[2:]
@@ -231,14 +242,16 @@ class RobertaForMaskedLMOptimized(RobertaForMaskedLM):
 
         sequence_output = outputs[0]
         if select_positions is not None:
-            sequence_output = sequence_output[[[i] for i in range(sequence_output.shape[0])], select_positions, :]
+            sequence_output = sequence_output[[[i] for i in range(
+                sequence_output.shape[0])], select_positions, :]
 
         prediction_scores = self.lm_head(sequence_output)
 
         masked_lm_loss = None
         if labels is not None:
             loss_fct = CrossEntropyLoss()  # -100 index = padding token
-            masked_lm_loss = loss_fct(prediction_scores.view(-1, self.config.vocab_size), labels.view(-1))
+            masked_lm_loss = loss_fct(
+                prediction_scores.view(-1, self.config.vocab_size), labels.view(-1))
 
         if not return_dict:
             output = (prediction_scores,) + outputs[2:]
@@ -252,13 +265,94 @@ class RobertaForMaskedLMOptimized(RobertaForMaskedLM):
         )
 
 
-class MLMScorer:
-    def __init__(self, model, tokenizer):
-        self._model = model
-        self._tokenizer = tokenizer
+class DebertaV2ForMaskedLMOptimized(DebertaV2ForMaskedLM):
+    def forward(
+        self,
+        input_ids=None,
+        attention_mask=None,
+        token_type_ids=None,
+        position_ids=None,
+        inputs_embeds=None,
+        labels=None,
+        output_attentions=None,
+        output_hidden_states=None,
+        return_dict=None,
+        select_positions=None,
+        **kwargs,
+    ):
+        r"""
+        labels (:obj:`torch.LongTensor` of shape :obj:`(batch_size, sequence_length)`, `optional`):
+            Labels for computing the masked language modeling loss.
+            Indices should be in ``[-100, 0, ..., config.vocab_size]`` (see ``input_ids`` docstring)
+            Tokens with indices set to ``-100`` are ignored (masked), the loss is only computed for the tokens with labels
+            in ``[0, ..., config.vocab_size]``
+        kwargs (:obj:`Dict[str, any]`, optional, defaults to `{}`):
+            Used to hide legacy arguments that have been deprecated.
+        """
+        if "masked_lm_labels" in kwargs:
+            warnings.warn(
+                "The `masked_lm_labels` argument is deprecated and will be removed in a future version, use `labels` instead.",
+                FutureWarning,
+            )
+            labels = kwargs.pop("masked_lm_labels")
+        assert "lm_labels" not in kwargs, "Use `BertWithLMHead` for autoregressive language modeling task."
+        assert kwargs == {}, f"Unexpected keyword arguments: {list(kwargs.keys())}."
 
-    def cuda(self):
-        return self._model.cuda()
+        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
+
+        outputs = self.deberta(
+            input_ids,
+            attention_mask=attention_mask,
+            token_type_ids=token_type_ids,
+            position_ids=position_ids,
+            inputs_embeds=inputs_embeds,
+            output_attentions=output_attentions,
+            output_hidden_states=output_hidden_states,
+            return_dict=return_dict,
+        )
+
+        sequence_output = outputs[0]
+        if select_positions is not None:
+            sequence_output = sequence_output[[[i] for i in range(
+                sequence_output.shape[0])], select_positions, :]
+
+        prediction_scores = self.cls(sequence_output)
+
+        masked_lm_loss = None
+        if labels is not None:
+            loss_fct = CrossEntropyLoss()  # -100 index = padding token
+            masked_lm_loss = loss_fct(
+                prediction_scores.view(-1, self.config.vocab_size), labels.view(-1))
+
+        if not return_dict:
+            output = (prediction_scores,) + outputs[2:]
+            return ((masked_lm_loss,) + output) if masked_lm_loss is not None else output
+
+        return MaskedLMOutput(
+            loss=masked_lm_loss,
+            logits=prediction_scores,
+            hidden_states=outputs.hidden_states,
+            attentions=outputs.attentions,
+        )
+
+
+class MLMScorer(Base):
+    def __init__(self, model, **kwargs):
+        splitted = model.lower().replace('/', '-').split('-')
+        if 'bert' in splitted:
+            model_class = BertForMaskedLMOptimized
+        elif 'albert' in splitted:
+            model_class = AlbertForMaskedLMOptimized
+        elif 'roberta' in splitted:
+            model_class = RobertaForMaskedLMOptimized
+        elif 'debertav2' in splitted:
+            model_class = DebertaV2ForMaskedLMOptimized
+        else:
+            raise ValueError(
+                f'cannot determined model class for {model}, only supported BERT, ALBERT, RoBERTa and DebertaV2 for now.'
+            )
+        self.tokenizer = AutoTokenizer.from_pretrained(model, use_fast=False, **kwargs)
+        self.model = model_class.from_pretrained(model, **kwargs)
 
     def _ids_to_masked(self, token_ids):
         token_ids_masked_list = []
@@ -269,7 +363,7 @@ class MLMScorer:
         # We don't mask the [CLS], [SEP] for now for PLL
         mask_indices = mask_indices[1:-1]
 
-        mask_token_id = self._tokenizer._convert_token_to_id(self._tokenizer.mask_token)
+        mask_token_id = self.tokenizer.convert_tokens_to_ids([self.tokenizer.mask_token])
         for mask_set in mask_indices:
             token_ids_masked = token_ids.copy()
             token_ids_masked[mask_set] = mask_token_id
@@ -281,7 +375,7 @@ class MLMScorer:
     def corpus_to_dataset(self, corpus):
         sents_expanded = []
         for sent_idx, sent in enumerate(corpus):
-            ids_original = np.array(self._tokenizer.encode(sent, add_special_tokens=True))
+            ids_original = np.array(self.tokenizer.encode(sent, add_special_tokens=True))
             ids_masked = self._ids_to_masked(ids_original)
             sents_expanded += [(
                 sent_idx,
@@ -290,7 +384,8 @@ class MLMScorer:
                 mask_set,
                 ids_original[mask_set],
                 1)
-                for ids, mask_set in ids_masked]
+                for ids, mask_set in ids_masked
+            ]
         return sents_expanded
 
     def score(self, string):
@@ -305,7 +400,6 @@ class MLMScorer:
         -------
         result: float
         """
-        cuda = next(self._model.parameters()).is_cuda
         corpus = [string]
         dataset = self.corpus_to_dataset(corpus)
         sent_idxs = np.stack([d[0] for d in dataset], 0)
@@ -321,16 +415,19 @@ class MLMScorer:
             masked_positions = torch.tensor(masked_positions).reshape(-1, 1)
             token_masked_ids = torch.tensor(token_masked_ids).reshape(-1)
 
-            token_ids = to_tensor_cuda(token_ids, cuda)
-            valid_length = to_tensor_cuda(valid_length, cuda)
-            masked_positions = to_tensor_cuda(masked_positions, cuda)
-            token_masked_ids = to_tensor_cuda(token_masked_ids, cuda)
+            token_ids = token_ids.to(self.model.device)
+            valid_length = valid_length.to(self.model.device)
+            masked_positions = masked_positions.to(self.model.device)
+            token_masked_ids = token_masked_ids.to(self.model.device)
 
             split_size = token_ids.shape[0]
             alen = torch.arange(token_ids.shape[1], dtype=torch.long)
-            alen = to_tensor_cuda(alen, cuda)
+            alen = alen.to(self.model.device)
             mask = alen < valid_length[:, None]
-            out = self._model(input_ids=token_ids, attention_mask=mask, select_positions=masked_positions)
+            out = self.model(
+                input_ids=token_ids,
+                attention_mask=mask,
+                select_positions=masked_positions)
             out = out[0].squeeze()
             if len(out.shape) == 1:
                 out = out.unsqueeze(0)

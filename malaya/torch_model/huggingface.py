@@ -2,6 +2,8 @@ from transformers import (
     AutoModelForSeq2SeqLM,
     AutoModelForCausalLM,
     AutoModelForMaskedLM,
+    AutoModelForSequenceClassification,
+    AutoModel,
     AutoTokenizer,
     RobertaTokenizer,
     ElectraTokenizer,
@@ -19,24 +21,36 @@ from malaya.text.bpe import (
     merge_bpe_tokens,
 )
 from malaya.text.function import (
-    summarization_textcleaning,
     upperfirst,
     remove_repeat_fullstop,
     remove_newlines,
     remove_html_tags as f_remove_html_tags,
+    pad_sentence_batch,
+    tag_chunk,
     STOPWORDS,
 )
+from malaya_boilerplate.converter import ctranslate2_translator
 from malaya.function.parse_dependency import DependencyGraph
 from malaya.text.rouge import postprocess_summary, find_kata_encik
-from malaya.torch_model.t5 import T5ForSequenceClassification, T5Tagging, T5Diaparser
-from malaya_boilerplate.torch_utils import to_tensor_cuda, to_numpy
+from malaya.torch_model.base import Base
+from malaya.torch_model.t5 import (
+    T5ForSequenceClassification,
+    T5ForTokenClassification,
+    T5Tagging,
+    T5Diaparser,
+    T5Constituency,
+    T5Embedding,
+)
+from malaya.torch_model.llama2 import LlamaModelEmbedding
+from malaya.torch_model.constituency_modules import BatchIndices
+from malaya_boilerplate.torch_utils import to_numpy
 from malaya.function.activation import softmax
 from malaya.parser.conll import CoNLL
 from malaya.parser.alg import eisner, mst
 from malaya.supervised.settings import dependency as dependency_settings
+from malaya.graph.triplet import dict_to_list, rebel_format, parse_rebel
 from collections import defaultdict
-from herpetologist import check_type
-from typing import List, Callable
+from typing import List, Callable, Dict
 import numpy as np
 import torch
 import re
@@ -47,22 +61,35 @@ logger = logging.getLogger(__name__)
 MAPPING_LANG = {'ms': 'Malay', 'en': 'Inggeris'}
 
 
-class Base:
-    def cuda(self, **kwargs):
-        return self.model.cuda(**kwargs)
-
-    def save_pretrained(self, *args, **kwargs):
-        return self.model.save_pretrained(*args, **kwargs), self.tokenizer.save_pretrained(*args, **kwargs)
-
-
 class Generator(Base):
-    def __init__(self, model, initial_text, base_model=AutoModelForSeq2SeqLM, **kwargs):
-        self.tokenizer = AutoTokenizer.from_pretrained(model, **kwargs)
-        self.model = base_model.from_pretrained(model, **kwargs)
+    def __init__(
+        self,
+        model,
+        initial_text='',
+        base_model=AutoModelForSeq2SeqLM,
+        use_ctranslate2=False,
+        **kwargs
+    ):
+
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            model,
+            use_fast=False,
+            **kwargs
+        )
+        self.is_gpt2tokenizer = 'GPT2Tokenizer' in str(type(self.tokenizer))
+        self.use_ctranslate2 = use_ctranslate2
+
+        if self.use_ctranslate2:
+            if base_model != AutoModelForSeq2SeqLM:
+                raise ValueError('`base_model` must `AutoModelForSeq2SeqLM` if `use_ctranslate2`.')
+
+            self.model = ctranslate2_translator(model=model, **kwargs)
+        else:
+            self.model = base_model.from_pretrained(model, **kwargs)
+
         self._initial_text = initial_text
 
-    @check_type
-    def generate(self, strings: List[str], return_generate=False, **kwargs):
+    def generate(self, strings: List[str], return_generate=False, prefix=None, **kwargs):
         """
         Generate texts from the input.
 
@@ -72,25 +99,104 @@ class Generator(Base):
         **kwargs: vector arguments pass to huggingface `generate` method.
             Read more at https://huggingface.co/docs/transformers/main_classes/text_generation
 
+            If you are using `use_ctranslate2`, vector arguments pass to ctranslate2 `translate_batch` method.
+            Read more at https://opennmt.net/CTranslate2/python/ctranslate2.Translator.html?highlight=translate_batch#ctranslate2.Translator.translate_batch
+
         Returns
         -------
         result: List[str]
         """
 
-        logger.debug(f'generate, initial_text: {self._initial_text}')
+        if isinstance(prefix, str):
+            _initial_text = prefix
+        else:
+            _initial_text = self._initial_text
+
+        logger.debug(f'generate, initial_text: {_initial_text}')
         logger.debug(f'generate, strings: {strings}')
 
-        cuda = next(self.model.parameters()).is_cuda
-        input_ids = [{'input_ids': self.tokenizer.encode(f'{self._initial_text}{s}', return_tensors='pt')[
-            0]} for s in strings]
-        padded = self.tokenizer.pad(input_ids, padding='longest')
-        for k in padded.keys():
-            padded[k] = to_tensor_cuda(padded[k], cuda)
-        outputs = self.model.generate(**padded, **kwargs)
+        combined = []
+        for s in strings:
+            s = f'{_initial_text}{s}'
+            if self.is_gpt2tokenizer:
+                s += self.tokenizer.eos_token
+            combined.append(s)
+
+        if self.use_ctranslate2:
+            tokens = [self.tokenizer.convert_ids_to_tokens(
+                self.tokenizer.encode(s)) for s in combined]
+            results = self.model.translate_batch(tokens, **kwargs)
+            outputs = []
+            for o in results:
+                for h in o.hypotheses:
+                    outputs.append(self.tokenizer.convert_tokens_to_ids(h))
+        else:
+            input_ids = [{'input_ids': self.tokenizer.encode(
+                s, return_tensors='pt')[0]} for s in combined]
+            padded = self.tokenizer.pad(input_ids, padding='longest', return_tensors='pt')
+            for k in padded.keys():
+                padded[k] = padded[k].to(self.model.device)
+            padded.pop('token_type_ids', None)
+            outputs = self.model.generate(**padded, **kwargs)
+
         if return_generate:
             return outputs
         else:
             return self.tokenizer.batch_decode(outputs, skip_special_tokens=True)
+
+    def alignment(
+        self,
+        source: str,
+        target: str,
+    ):
+        """
+        align texts using cross attention and `dtw-python`.
+
+        Parameters
+        ----------
+        source: List[str]
+        target: List[str]
+
+        Returns
+        -------
+        result: Dict
+        """
+        if self.use_ctranslate2:
+            raise ValueError('`alignment` method not able to use for ctranslate2 model.')
+
+        try:
+            from dtw import dtw
+        except Exception as e:
+            raise ModuleNotFoundError(
+                'dtw-python not installed. Please install it by `pip install dtw-python` and try again.'
+            )
+
+        input_ids = [{'input_ids': self.tokenizer.encode(
+            f'{self._initial_text}{s}', return_tensors='pt')[0]} for s in source]
+
+        padded = self.tokenizer.pad(input_ids, padding='longest')
+        labels = self.tokenizer(target, padding=True, return_tensors='pt')['input_ids']
+        padded['labels'] = labels
+        for k in padded.keys():
+            padded[k] = padded[k].to(self.model.device)
+
+        with torch.no_grad():
+            o = self.model(**padded, output_attentions=True, return_dict=True)
+
+        weights = torch.cat(o['cross_attentions'])
+        weights = weights.cpu()
+        weights = torch.tensor(weights).softmax(dim=-1)
+        w = weights / weights.norm(dim=-2, keepdim=True)
+        matrix = w.mean(axis=(0, 1)).T
+        alignment = dtw(np.ascontiguousarray(-matrix.double().numpy()))
+
+        alignment_x = alignment.index2s
+        alignment_y = alignment.index1s
+        return {
+            'alignment': matrix,
+            'alignment_x': alignment_x,
+            'alignment_y': alignment_y,
+        }
 
 
 class Prefix(Base):
@@ -98,7 +204,6 @@ class Prefix(Base):
         self.tokenizer = AutoTokenizer.from_pretrained(model, **kwargs)
         self.model = AutoModelForCausalLM.from_pretrained(model, **kwargs)
 
-    @check_type
     def generate(self, string, **kwargs):
         """
         Generate texts from the input.
@@ -113,24 +218,22 @@ class Prefix(Base):
         -------
         result: List[str]
         """
-        cuda = next(self.model.parameters()).is_cuda
         padded = {'input_ids': self.tokenizer.encode(string, return_tensors='pt')}
         for k in padded.keys():
-            padded[k] = to_tensor_cuda(padded[k], cuda)
+            padded[k] = padded[k].to(self.model.device)
         outputs = self.model.generate(**padded, **kwargs)
         return self.tokenizer.batch_decode(outputs, skip_special_tokens=True)
 
 
 class Paraphrase(Generator):
-    def __init__(self, model, initial_text, **kwargs):
+    def __init__(self, model, **kwargs):
         Generator.__init__(
             self,
             model=model,
-            initial_text=initial_text,
+            initial_text='parafrasa: ',
             **kwargs,
         )
 
-    @check_type
     def generate(
         self,
         strings: List[str],
@@ -161,15 +264,14 @@ class Paraphrase(Generator):
 
 
 class Summarization(Generator):
-    def __init__(self, model, initial_text, **kwargs):
+    def __init__(self, model, **kwargs):
         Generator.__init__(
             self,
             model=model,
-            initial_text=initial_text,
+            initial_text='ringkasan: ',
             **kwargs,
         )
 
-    @check_type
     def generate(
         self,
         strings: List[str],
@@ -223,8 +325,6 @@ class Similarity(Base):
         if len(strings_left) != len(strings_right):
             raise ValueError('len(strings_left) != len(strings_right)')
 
-        cuda = next(self.model.parameters()).is_cuda
-
         strings = []
         for i in range(len(strings_left)):
             s1 = strings_left[i]
@@ -232,15 +332,16 @@ class Similarity(Base):
             s = f'ayat1: {s1} ayat2: {s2}'
             strings.append(s)
 
-        input_ids = [{'input_ids': self.tokenizer.encode(s, return_tensors='pt')[0]} for s in strings]
+        input_ids = [{'input_ids': self.tokenizer.encode(
+            s, return_tensors='pt')[0]} for s in strings]
         padded = self.tokenizer.pad(input_ids, padding='longest')
         for k in padded.keys():
-            padded[k] = to_tensor_cuda(padded[k], cuda)
+            padded[k] = padded[k].to(self.model.device)
+        padded.pop('token_type_ids', None)
 
         outputs = self.model(**padded, return_dict=True)
         return outputs
 
-    @check_type
     def predict_proba(self, strings_left: List[str], strings_right: List[str]):
         """
         calculate similarity for two different batch of texts.
@@ -273,7 +374,7 @@ class ZeroShotClassification(Similarity):
         self,
         strings: List[str],
         labels: List[str],
-        prefix: str = 'ayat ini berkaitan tentang',
+        prefix: str = 'ayat ini berkaitan tentang ',
         multilabel: bool = True,
     ):
         """
@@ -283,7 +384,7 @@ class ZeroShotClassification(Similarity):
         ----------
         strings: List[str]
         labels: List[str]
-        prefix: str, optional (default='ayat ini berkaitan tentang')
+        prefix: str, optional (default='ayat ini berkaitan tentang ')
             prefix of labels to zero shot. Playing around with prefix can get better results.
         multilabel: bool, optional (default=True)
             probability of labels can be more than 1.0
@@ -297,7 +398,7 @@ class ZeroShotClassification(Similarity):
         for no, string in enumerate(strings):
             for label in labels:
                 strings_left.append(string)
-                text_label = f'{prefix} {label}'
+                text_label = f'{prefix}{label}'
                 text_label = re.sub(r'[ ]+', ' ', text_label).strip()
                 strings_right.append(text_label)
                 mapping[no].append(index)
@@ -331,104 +432,14 @@ class ZeroShotClassification(Similarity):
         return results
 
 
-class ZeroShotNER(Generator):
+class ExtractiveQA(Generator):
     def __init__(self, model, **kwargs):
         Generator.__init__(
             self,
             model=model,
-            initial_text='',
             **kwargs,
         )
-        self._q = 'Ekstrak <entity> dari teks: '
-        self._placeholder = '<entity>'
-
-    def predict(
-        self,
-        string: str,
-        tags: List[str],
-        minimum_length: int = 2,
-        **kwargs,
-    ):
-        """
-        classify entities in a string.
-
-        Parameters
-        ----------
-        strings: str
-            We assumed the string input been properly tokenized.
-        tags: List[str]
-        minimum_length: int, optional (default=2)
-            minimum length of string for an entity.
-        **kwargs: vector arguments pass to huggingface `generate` method.
-            Read more at https://huggingface.co/docs/transformers/main_classes/text_generation
-
-        Returns
-        -------
-        list: Dict[str, List[str]]
-        """
-
-        strings = []
-        for t in tags:
-            q = self._q.replace(self._placeholder, t)
-            s = f'{q}{string}'
-            strings.append(s)
-
-        logger.debug(strings)
-
-        outputs = super().generate(strings, **kwargs)
-        entities = defaultdict(list)
-        for no, t in enumerate(tags):
-            e = outputs[no].split(' dan ')
-            e = [e_ for e_ in e if len(e_) >= minimum_length and e_ != 'tiada' and e_ !=
-                 'tiada jawapan' and e_ in string]
-            e = list(set(e))
-            entities[t].extend(e)
-
-        return dict(entities)
-
-
-class Aligment(Generator):
-    def __init__(self, model, initial_text):
-        Generator.__init__(
-            self,
-            model=model,
-            initial_text=initial_text,
-        )
-
-    def align(self):
-        s = 'The Normans (Norman: Nourmands; French: Normands; Latin: Normanni) were the people who in the 10th and 11th centuries gave their name to Normandy, a region in France. They were descended from Norse ("Norman" comes from "Norseman") raiders and pirates from Denmark, Iceland and Norway who, under their leader Rollo, agreed to swear fealty to King Charles III of West Francia. Through generations of assimilation and mixing with the native Frankish and Roman-Gaulish populations, their descendants would gradually merge with the Carolingian-based cultures of West Francia. The distinct cultural and ethnic identity of the Normans emerged initially in the first half of the 10th century, and it continued to evolve over the succeeding centuries.'
-        input_ids = {'input_ids': tokenizer.encode(f'terjemah Inggeris ke Melayu: {s}', return_tensors='pt')}
-        outputs = model.generate(**input_ids, max_length=256)
-        outputs = tokenizer.batch_decode(outputs, skip_special_tokens=True)
-        decoder_input_ids = tokenizer.encode(outputs[0], return_tensors='pt')
-        o = model.forward(**input_ids, decoder_input_ids=decoder_input_ids, output_attentions=True)
-        c = []
-        for a in o['cross_attentions']:
-            c.append(a.detach().numpy())
-
-        n = np.mean(np.mean(c, axis=0)[0], axis=0)
-        s_t = tokenizer.tokenize(f'terjemah Inggeris ke Melayu: {s}')
-        t_t = tokenizer.tokenize(outputs[0])
-        rejected = tokenizer.all_special_tokens
-
-        a = merge_sentencepiece_tokens_tagging(s_t, np.argmax(n.T, axis=1).tolist())
-
-        prefix = 'terjemah Inggeris ke Melayu:'.split()
-        f = []
-        for no in range(len(a[0])):
-            if a[0][no] not in prefix:
-                f.append((a[0][no], t_t[a[1][no]]))
-
-
-class ExtractiveQA(Generator):
-    def __init__(self, model, flan_mode=False, **kwargs):
-        Generator.__init__(
-            self,
-            model=model,
-            initial_text='',
-            **kwargs,
-        )
-        self.flan_mode = flan_mode
+        self.flan_mode = 'flan' in model
 
     def predict(
         self,
@@ -499,117 +510,6 @@ class ExtractiveQA(Generator):
         return results
 
 
-class AbstractiveQA(Generator):
-    def __init__(self, model, **kwargs):
-        Generator.__init__(
-            self,
-            model=model,
-            initial_text='',
-            **kwargs,
-        )
-
-    def predict(
-        self,
-        paragraph_text: str,
-        question_texts: List[str],
-        langs: List[str],
-        **kwargs,
-    ):
-        """
-        Predict abstractive answers from questions given a paragraph.
-
-        Parameters
-        ----------
-        paragraph_text: str
-        question_texts: List[str]
-            List of questions, results really depends on case sensitive questions.
-        langs: List[str]
-            Must same length as `question_texts`. Only accept `ms` or `en` only, case insensitive.
-        **kwargs: vector arguments pass to huggingface `generate` method.
-            Read more at https://huggingface.co/docs/transformers/main_classes/text_generation
-
-        Returns
-        -------
-        result: List[str]
-        """
-
-        if len(question_texts) != len(langs):
-            raise ValueError('length of `langs` must be same as length of `question_texts`')
-
-        langs_ = []
-
-        for no, l in enumerate(langs):
-            l_ = MAPPING_LANG.get(l.lower())
-            if l_ is None:
-                raise ValueError(f'langs[{no}] should only `ms` or `en`.')
-            langs_.append(l_)
-
-        text = remove_newlines(paragraph_text)
-        strings = []
-        for no, q in enumerate(question_texts):
-            q_ = remove_newlines(q)
-            s = f'abstrak jawapan {langs_[no]}: {text} soalan: {q_}'
-            strings.append(s)
-
-        r = super().generate(strings, **kwargs)
-        return r
-
-
-class GenerateQuestion(Generator):
-    def __init__(self, model, **kwargs):
-        Generator.__init__(
-            self,
-            model=model,
-            initial_text='',
-            **kwargs,
-        )
-
-    def predict(
-        self,
-        paragraph_texts: List[str],
-        answer_texts: List[str],
-        langs: List[str],
-        **kwargs,
-    ):
-        """
-        Generate questions from answers given paragraphs.
-
-        Parameters
-        ----------
-        paragraph_text: List[str]
-        answer_texts: List[str]
-            List of answers, can be extract or abstract.
-        langs: List[str]
-            Must same length as `answer_texts`. Only accept `ms` or `en` only, case insensitive.
-        **kwargs: vector arguments pass to huggingface `generate` method.
-            Read more at https://huggingface.co/docs/transformers/main_classes/text_generation
-
-        Returns
-        -------
-        result: List[str]
-        """
-        if len(answer_texts) != len(langs):
-            raise ValueError('length of `langs` must be same as length of `answer_texts`')
-
-        langs_ = []
-
-        for no, l in enumerate(langs):
-            l_ = MAPPING_LANG.get(l.lower())
-            if l_ is None:
-                raise ValueError(f'langs[{no}] should only `ms` or `en`.')
-            langs_.append(l_)
-
-        strings = []
-        for no, a in enumerate(answer_texts):
-            a_ = remove_newlines(a)
-            text = remove_newlines(paragraph_texts[no])
-            s = f'bina soalan {langs_[no]}: jawapan: {a_}'
-            strings.append(s)
-
-        r = super().generate(strings, **kwargs)
-        return r
-
-
 class Transformer(Base):
     def __init__(
         self,
@@ -618,7 +518,7 @@ class Transformer(Base):
     ):
         self.tokenizer = AutoTokenizer.from_pretrained(model, **kwargs)
 
-        if self.tokenizer.slow_tokenizer_class in (RobertaTokenizer,):
+        if self.tokenizer.slow_tokenizer_class in (RobertaTokenizer, None):
             self._tokenizer_type = 'bpe'
             self._merge = merge_bpe_tokens
         elif self.tokenizer.slow_tokenizer_class in (ElectraTokenizer, BertTokenizer):
@@ -631,25 +531,17 @@ class Transformer(Base):
             raise ValueError(
                 'currently `malaya.transformer.load_huggingface` only supported `bpe`, `wordpiece` and `sentencepiece` tokenizer')
 
-        self._t5 = False
-        if 't5' in model:
-            self.model = T5ForSequenceClassification.from_pretrained(model, **kwargs)
-            self._t5 = True
-        else:
-            self.model = AutoModelForMaskedLM.from_pretrained(model, **kwargs)
+        self.model = AutoModelForMaskedLM.from_pretrained(model, **kwargs)
 
     def forward(self, strings):
-        cuda = next(self.model.parameters()).is_cuda
-        input_ids = [{'input_ids': self.tokenizer.encode(s, return_tensors='pt')[0]} for s in strings]
+        input_ids = [{'input_ids': self.tokenizer.encode(
+            s, return_tensors='pt')[0]} for s in strings]
         padded = self.tokenizer.pad(input_ids, padding='longest')
         for k in padded.keys():
-            padded[k] = to_tensor_cuda(padded[k], cuda)
+            padded[k] = padded[k].to(self.model.device)
 
-        if self._t5:
-            return self.model.embed(**padded, return_dict=True, output_attentions=True,
-                                    output_hidden_states=True), padded
-        else:
-            return self.model(**padded, return_dict=True, output_attentions=True, output_hidden_states=True), padded
+        return self.model(**padded, return_dict=True, output_attentions=True,
+                          output_hidden_states=True), padded
 
     def _method(self, layers, method, dim=0):
         method = method.lower()
@@ -703,20 +595,11 @@ class Transformer(Base):
         result: np.array
         """
 
-        if self._t5:
-            logits = self.forward(strings=strings)[0].logits
-            if t5_head_logits:
-                logits = logits[1]
-            else:
-                logits = logits[0]
-            return to_numpy(logits)
-
-        else:
-            hidden_states = self.forward(strings=strings)[0].hidden_states
-            stacked = torch.stack(hidden_states)
-            layer = self._method(stacked, method)
-            layer = layer.transpose(0, 1)
-            return to_numpy(self._method(layer, method_token))
+        hidden_states = self.forward(strings=strings)[0].hidden_states
+        stacked = torch.stack(hidden_states)
+        layer = self._method(stacked, method)
+        layer = layer.transpose(0, 1)
+        return to_numpy(self._method(layer, method_token))
 
     def attention(
         self,
@@ -759,10 +642,7 @@ class Transformer(Base):
         """
 
         forward = self.forward(strings=strings)
-        if self._t5:
-            attentions = getattr(forward[0], t5_attention)
-        else:
-            attentions = forward[0].attentions
+        attentions = forward[0].attentions
         stacked = torch.stack(attentions)
         layer = self._method(stacked, method)
         layer = layer.transpose(0, 2).transpose(1, 2)
@@ -786,7 +666,6 @@ class IsiPentingGenerator(Generator):
         Generator.__init__(
             self,
             model=model,
-            initial_text='',
             **kwargs,
         )
         self._mode = [
@@ -797,7 +676,6 @@ class IsiPentingGenerator(Generator):
             'karangan',
         ]
 
-    @check_type
     def generate(
         self,
         strings: List[str],
@@ -848,16 +726,15 @@ class IsiPentingGenerator(Generator):
 
 
 class Tatabahasa(Generator):
-    def __init__(self, model, initial_text, **kwargs):
+    def __init__(self, model, **kwargs):
         Generator.__init__(
             self,
             model=model,
-            initial_text=initial_text,
+            initial_text='kesalahan tatabahasa:',
             base_model=T5Tagging,
             **kwargs,
         )
 
-    @check_type
     def generate(
         self,
         strings: List[str],
@@ -904,69 +781,6 @@ class Tatabahasa(Generator):
         return results
 
 
-class Normalizer(Generator):
-    def __init__(
-        self,
-        model,
-        initial_text,
-        normalizer,
-        segmenter=None,
-        text_scorer=None,
-        **kwargs,
-    ):
-        Generator.__init__(
-            self,
-            model=model,
-            initial_text=initial_text,
-            **kwargs,
-        )
-        self.normalizer = normalizer
-        self.segmenter = segmenter
-        self.text_scorer = text_scorer
-
-    @check_type
-    def generate(
-        self,
-        strings: List[str],
-        **kwargs,
-    ):
-        """
-        abstractive text normalization.
-
-        Parameters
-        ----------
-        strings : List[str]
-        **kwargs: vector arguments pass to huggingface `generate` method.
-            Read more at https://huggingface.co/docs/transformers/main_classes/text_generation
-
-            Also vector arguments pass to `malaya.normalizer.rules.Normalizer.normalize`
-
-        Returns
-        -------
-        result: List[str]
-        """
-        if self.normalizer is not None:
-            for i in range(len(strings)):
-                t = strings[i]
-                try:
-                    normalized = self.normalizer.normalize(
-                        t, normalize_hingga=False, normalize_cardinal=False,
-                        normalize_ordinal=False, normalize_pada_hari_bulan=False,
-                        normalize_fraction=False, normalize_money=False, normalize_date=False,
-                        normalize_time=False, normalize_ic=False, normalize_units=False,
-                        normalize_url=False, normalize_percent=False, normalize_telephone=False,
-                        text_scorer=self.text_scorer, segmenter=self.segmenter,
-                        not_a_word_threshold=1e-9,
-                    )['normalize']
-                    logger.debug(f'input: {t}, normalized: {normalized}')
-                    strings[i] = normalized
-                except Exception as e:
-                    logger.warning(f'input: {t}, exception {e}')
-                    logger.warning(f'input: {t}, `self.normalizer` exception, skip to normalize.')
-
-        return super().generate(strings, **kwargs)
-
-
 class Keyword(Generator):
     def __init__(self, model, **kwargs):
         Generator.__init__(
@@ -976,7 +790,6 @@ class Keyword(Generator):
             **kwargs,
         )
 
-    @check_type
     def generate(
         self,
         strings: List[str],
@@ -1008,12 +821,138 @@ class Keyword(Generator):
         return outputs
 
 
+class Constituency(Base):
+    def __init__(self, model, **kwargs):
+        kwargs.pop('initial_text', None)
+        self.tokenizer = AutoTokenizer.from_pretrained(model, **kwargs)
+        self.model = T5Constituency.from_pretrained(model, **kwargs)
+        self.START = '<s>'
+        self.STOP = '</s>'
+        self.TAG_UNK = 'UNK'
+
+    def forward(self, string):
+        all_input_ids = []
+        all_word_start_mask = []
+        all_word_end_mask = []
+
+        string = [(None, w) for w in string.split()]
+        sentences = [string]
+
+        for snum, sentence in enumerate(sentences):
+
+            tokens = []
+            word_start_mask = []
+            word_end_mask = []
+            tokens.append(self.START)
+            word_start_mask.append(1)
+            word_end_mask.append(1)
+
+            cleaned_words = []
+            for _, word in sentence:
+                cleaned_words.append(word)
+
+            for word in cleaned_words:
+                word_tokens = self.tokenizer.tokenize(word)
+                for _ in range(len(word_tokens)):
+                    word_start_mask.append(0)
+                    word_end_mask.append(0)
+                word_start_mask[len(tokens)] = 1
+                word_end_mask[-1] = 1
+                tokens.extend(word_tokens)
+            tokens.append(self.STOP)
+            word_start_mask.append(1)
+            word_end_mask.append(1)
+
+            input_ids = self.tokenizer.convert_tokens_to_ids(tokens)
+            all_input_ids.append(input_ids)
+            all_word_start_mask.append(word_start_mask)
+            all_word_end_mask.append(word_end_mask)
+
+        padded = self.tokenizer.pad({
+            'input_ids': all_input_ids,
+        }, return_tensors='pt')
+        all_word_start_mask = torch.from_numpy(
+            np.array(pad_sentence_batch(all_word_start_mask, 0)[0]))
+        all_word_end_mask = torch.from_numpy(np.array(pad_sentence_batch(all_word_end_mask, 0)[0]))
+
+        padded['sentences'] = sentences
+        padded['all_word_start_mask'] = all_word_start_mask
+        padded['all_word_end_mask'] = all_word_end_mask
+
+        packed_len = sum([(len(sentence) + 2) for sentence in sentences])
+        i = 0
+        tag_idxs = np.zeros(packed_len, dtype=int)
+        batch_idxs = np.zeros(packed_len, dtype=int)
+        for snum, sentence in enumerate(sentences):
+            for (tag, word) in [(self.START, self.START)] + sentence + [(self.STOP, self.STOP)]:
+                tag_idxs[i] = 0
+                batch_idxs[i] = snum
+                i += 1
+
+        batch_idxs = BatchIndices(batch_idxs)
+        padded['batch_idxs'] = batch_idxs
+        tag_idxs = torch.from_numpy(tag_idxs)
+        padded['tag_idxs'] = tag_idxs
+
+        for k in padded.keys():
+            if isinstance(padded[k], torch.Tensor):
+                padded[k] = padded[k].to(self.model.device)
+
+        padded['batch_idxs'].batch_idxs_torch = padded['batch_idxs'].batch_idxs_torch.to(
+            self.model.device)
+
+        return self.model(**padded)[0][0]
+
+    def predict(self, string):
+        """
+        Parse a string into malaya.function.constituency.trees_newline.InternalParseNode.
+
+        Parameters
+        ----------
+        string : str
+
+        Returns
+        -------
+        result: malaya.function.constituency.trees_newline.InternalParseNode object
+        """
+        return self.forward(string=string)
+
+
 class Dependency(Base):
     def __init__(self, model, **kwargs):
         self.tokenizer = AutoTokenizer.from_pretrained(model, **kwargs)
         self.model = T5Diaparser.from_pretrained(model, **kwargs)
 
-    @check_type
+    def forward(self, string):
+
+        texts, indices = [1], [0]
+        text = string.split()
+        for i in range(len(text)):
+            t = self.tokenizer.encode(text[i], add_special_tokens=False)
+            texts.extend(t)
+            indices.extend([i + 1] * len(t))
+
+        model_inputs = {
+            'input_ids': texts,
+            'attention_mask': [1] * len(texts),
+            'indices': indices
+        }
+
+        padded = self.tokenizer.pad(
+            [model_inputs],
+            padding=True,
+            max_length=None,
+            pad_to_multiple_of=None,
+            return_tensors='pt',
+        )
+        for k in padded.keys():
+            padded[k] = padded[k].to(self.model.device)
+
+        return self.model(**padded), padded
+
+    def vectorize(self, string):
+        return self.forward(string=string)[0].decoder_hidden_states
+
     def predict(
         self,
         string: str,
@@ -1037,33 +976,8 @@ class Dependency(Base):
         -------
         result: Tuple
         """
-        cuda = next(self.model.parameters()).is_cuda
 
-        texts, indices = [1], [0]
-        text = string.split()
-        for i in range(len(text)):
-            t = self.tokenizer.encode(text[i], add_special_tokens=False)
-            texts.extend(t)
-            indices.extend([i + 1] * len(t))
-
-        model_inputs = {
-            'input_ids': texts,
-            'attention_mask': [1] * len(texts),
-            'indices': indices
-        }
-
-        padded = self.tokenizer.pad(
-            [model_inputs],
-            padding=True,
-            max_length=None,
-            pad_to_multiple_of=None,
-            return_tensors='pt',
-        )
-        for k in padded.keys():
-            padded[k] = to_tensor_cuda(padded[k], cuda)
-
-        o = self.model(**padded)
-
+        o, padded = self.forward(string=string)
         seq = padded['input_ids'][0, 1:]
         seq = self.tokenizer.convert_ids_to_tokens(seq)
         arc_preds = o.s_arc.argmax(axis=-1)
@@ -1093,8 +1007,8 @@ class Dependency(Base):
                 for k in c:
                     new_score[k] = np.mean(c[k], axis=0)
 
-                new_index = f_tree(torch.Tensor(new_score).unsqueeze(0),
-                                   torch.Tensor([0] + [1] * (len(new_score) - 1)).int().unsqueeze(0))[0].tolist()
+                new_index = f_tree(torch.Tensor(new_score).unsqueeze(0), torch.Tensor(
+                    [0] + [1] * (len(new_score) - 1)).int().unsqueeze(0))[0].tolist()
 
                 arcs = [0]
                 for i in range(len(text)):
@@ -1108,9 +1022,11 @@ class Dependency(Base):
         depend = to_numpy(arc_preds[0, 1:])
         tagging = [dependency_settings['idx2tag'][i] for i in tagging]
 
-        tagging = merge_sentencepiece_tokens_tagging(seq, tagging, rejected=self.tokenizer.all_special_tokens)
+        tagging = merge_sentencepiece_tokens_tagging(
+            seq, tagging, rejected=self.tokenizer.all_special_tokens)
         tagging = list(zip(*tagging))
-        indexing = merge_sentencepiece_tokens_tagging(seq, depend, rejected=self.tokenizer.all_special_tokens)
+        indexing = merge_sentencepiece_tokens_tagging(
+            seq, depend, rejected=self.tokenizer.all_special_tokens)
         indexing = list(zip(*indexing))
 
         result, indexing_ = [], []
@@ -1129,3 +1045,309 @@ class Dependency(Base):
             )
         d = DependencyGraph('\n'.join(result), top_relation_label='root')
         return d, tagging, indexing_
+
+
+class TexttoKG(Generator):
+    def __init__(self, model, **kwargs):
+        Generator.__init__(
+            self,
+            model=model,
+            initial_text='teks ke grafik pengetahuan: ',
+            **kwargs,
+        )
+
+    def generate(self, strings: List[Dict], got_networkx: bool = True, **kwargs):
+        """
+        Generate list of knowledge graphs from the input.
+
+        Parameters
+        ----------
+        strings : List[str]
+        got_networkx: bool, optional (default=True)
+            If True, will generate networkx.MultiDiGraph.
+        **kwargs: vector arguments pass to huggingface `generate` method.
+            Read more at https://huggingface.co/docs/transformers/main_classes/text_generation
+
+        Returns
+        -------
+        result: List[List[Dict]]
+        """
+        if got_networkx:
+            try:
+                import pandas as pd
+                import networkx as nx
+            except BaseException:
+                logger.warning(
+                    'pandas and networkx not installed. Please install it by `pip install pandas networkx` and try again. Will skip to generate networkx.MultiDiGraph'
+                )
+                got_networkx = False
+
+        outputs_ = super().generate(strings, **kwargs)
+        outputs = [parse_rebel(o) for o in outputs_]
+
+        for no in range(len(outputs)):
+            G = None
+            if got_networkx:
+                try:
+                    df = pd.DataFrame(outputs[no])
+                    G = nx.from_pandas_edgelist(
+                        df,
+                        source='head',
+                        target='tail',
+                        edge_attr='type',
+                        create_using=nx.MultiDiGraph(),
+                    )
+                except Exception as e:
+                    logger.warning(e)
+
+            outputs[no] = {'G': G, 'triple': outputs[no], 'rebel': outputs_[no]}
+        return outputs
+
+
+class Translation(Generator):
+    def __init__(self, model, from_lang=None, to_lang=None, **kwargs):
+        Generator.__init__(
+            self,
+            model=model,
+            initial_text='',
+            **kwargs,
+        )
+
+        self.from_lang = from_lang
+        self.to_lang = to_lang
+
+        self.map_lang = {
+            'en': 'Inggeris',
+            'jav': 'Jawa',
+            'bjn': 'Banjarese',
+            'ms': 'Melayu',
+            'ind': 'Indonesia',
+            'pasar ms': 'pasar Melayu',
+            'manglish': 'Manglish',
+            'mandarin': 'Mandarin',
+            'pasar mandarin': 'pasar Mandarin',
+            'jawi': 'Jawi',
+            'rumi': 'Rumi',
+            'tamil': 'Tamil',
+            'punjabi': 'Punjabi',
+        }
+
+        self.all_special_ids = [0, 1, 2]
+
+    def generate(self, strings: List[str], to_lang: str = 'ms', **kwargs):
+        """
+        Generate texts from the input.
+
+        Parameters
+        ----------
+        strings : List[str]
+        to_lang: str, optional (default='ms')
+            target language to translate.
+        **kwargs: vector arguments pass to huggingface `generate` method.
+            Read more at https://huggingface.co/docs/transformers/main_classes/text_generation
+
+            If you are using `use_ctranslate2`, vector arguments pass to ctranslate2 `translate_batch` method.
+            Read more at https://opennmt.net/CTranslate2/python/ctranslate2.Translator.html?highlight=translate_batch#ctranslate2.Translator.translate_batch
+
+        Returns
+        -------
+        result: List[str]
+        """
+
+        if to_lang not in self.to_lang:
+            raise ValueError(f'this model does not support `{to_lang}` for `to_lang`')
+
+        to_lang = self.map_lang[to_lang]
+
+        prefix = f'terjemah ke {to_lang}: '
+        if self.is_gpt2tokenizer:
+            results = super().generate(strings, prefix=prefix, **kwargs)
+        else:
+            results = super().generate(strings, prefix=prefix, return_generate=True, **kwargs)
+            results = self.tokenizer.batch_decode(
+                [[i for i in o if i not in self.all_special_ids] for o in results],
+                spaces_between_special_tokens=False,
+            )
+        return results
+
+
+class Classification(Base):
+    def __init__(self, model, **kwargs):
+        self.tokenizer = AutoTokenizer.from_pretrained(model, **kwargs)
+        self.model = T5ForSequenceClassification.from_pretrained(model, **kwargs)
+
+    def forward(self, strings):
+        padded = self.tokenizer(strings, padding='longest', return_tensors='pt')
+        for k in padded.keys():
+            padded[k] = padded[k].to(self.model.device)
+        padded.pop('token_type_ids', None)
+
+        return to_numpy(self.model(**padded)[0])
+
+    def predict(self, strings):
+        """
+        classify list of strings.
+
+        Parameters
+        ----------
+        strings: List[str]
+
+        Returns
+        -------
+        result: List[str]
+        """
+        results = self.forward(strings=strings)
+        argmax = np.argmax(results, axis=1)
+        return [self.model.config.vocab[i] for i in argmax]
+
+    def predict_proba(self, strings):
+        """
+        classify list of strings and return probability.
+
+        Parameters
+        ----------
+        strings : List[str]
+
+        Returns
+        -------
+        result: List[dict[str, float]]
+        """
+        results = self.forward(strings=strings)
+        results = softmax(results, axis=1)
+        returns = []
+        for r in results:
+            returns.append({self.model.config.vocab[no]: float(r_) for no, r_ in enumerate(r)})
+        return returns
+
+
+class Tagging(Base):
+    def __init__(self, model, **kwargs):
+
+        self.tokenizer = AutoTokenizer.from_pretrained(model, **kwargs)
+        self.model = T5ForTokenClassification.from_pretrained(model, **kwargs)
+
+        self.rev_vocab = {v: k for k, v in self.model.config.vocab.items()}
+
+    def forward(self, string: str):
+
+        tokens = string.split()
+        tokenized_inputs = self.tokenizer([tokens], truncation=True, is_split_into_words=True)
+        tags = [[1] * len(t) for t in [tokens]]
+
+        labels = []
+        for i, label in enumerate(tags):
+            word_ids = tokenized_inputs.word_ids(batch_index=i)
+            previous_word_idx = None
+            label_ids = []
+            for word_idx in word_ids:
+                if word_idx is None:
+                    label_ids.append(-100)
+                elif word_idx != previous_word_idx:
+                    label_ids.append(label[word_idx])
+                else:
+                    label_ids.append(-100)
+                previous_word_idx = word_idx
+            labels.append(label_ids)
+
+        indices = labels[0]
+        padded = tokenized_inputs
+
+        for k in padded.keys():
+            padded[k] = torch.from_numpy(np.array(padded[k])).to(self.model.device)
+
+        pred = self.model(**padded)[0]
+        predictions = to_numpy(pred)[0].argmax(axis=1)
+        filtered = [self.rev_vocab[int(predictions[i])]
+                    for i in range(len(predictions)) if indices[i] != -100]
+        filtered = [(tokens[i], filtered[i]) for i in range(len(filtered))]
+        return filtered
+
+    def predict(self, string: str):
+        """
+        Tag a string.
+
+        Parameters
+        ----------
+        string : str
+
+        Returns
+        -------
+        result: Tuple[str, str]
+        """
+
+        return self.forward(string=string)
+
+    def analyze(self, string: str):
+        """
+        Analyze a string.
+
+        Parameters
+        ----------
+        string : str
+
+        Returns
+        -------
+        result: {'words': List[str], 'tags': [{'text': 'text', 'type': 'location', 'score': 1.0, 'beginOffset': 0, 'endOffset': 1}]}
+        """
+        predicted = self.predict(string)
+        return tag_chunk(predicted)
+
+
+class Embedding(Base):
+    def __init__(self, model, **kwargs):
+        self.tokenizer = AutoTokenizer.from_pretrained(model, **kwargs)
+        self.model = AutoModel.from_pretrained(model, trust_remote_code=True, **kwargs)
+
+    def encode(self, strings: List[str]):
+        """
+        Encode strings into embedding.
+
+        Parameters
+        ----------
+        strings: List[str]
+
+        Returns
+        -------
+        result: np.array
+        """
+        padded = self.tokenizer(strings, return_tensors='pt', padding=True)
+        for k in padded.keys():
+            padded[k] = padded[k].to(self.model.device)
+
+        padded.pop('token_type_ids', None)
+
+        return to_numpy(self.model.encode(padded))
+
+
+class Reranker(Base):
+    def __init__(self, model, **kwargs):
+        self.tokenizer = AutoTokenizer.from_pretrained(model, **kwargs)
+        self.model = AutoModelForSequenceClassification.from_pretrained(model, **kwargs)
+
+    def sort(self, left_string: str, right_strings: List[str]):
+        """
+        Sort the strings.
+
+        Parameters
+        ----------
+        left_string: str
+            reference string.
+        right_strings: List[str]
+            query strings, list of strings need to sort based on reference string.
+
+        Returns
+        -------
+        result: np.array
+        """
+        batch = []
+        for s in right_strings:
+            input_ids = self.tokenizer.encode_plus(left_string, s)
+            input_ids.pop('token_type_ids')
+            batch.append(input_ids)
+        padded = self.tokenizer.pad(batch, return_tensors='pt')
+        for k in padded.keys():
+            padded[k] = padded[k].to(self.model.device)
+
+        padded.pop('token_type_ids', None)
+
+        return to_numpy(self.model(**padded).logits[:, 1])

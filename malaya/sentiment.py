@@ -1,67 +1,29 @@
 from malaya.supervised import classification
+from malaya.supervised.huggingface import load
+from malaya.torch_model.huggingface import Classification
 from malaya.path import PATH_SENTIMENT, S3_PATH_SENTIMENT
-from herpetologist import check_type
-from malaya.function import describe_availability
-import logging
-
-logger = logging.getLogger(__name__)
 
 label = ['negative', 'neutral', 'positive']
 
-_transformer_availability = {
-    'bert': {
-        'Size (MB)': 425.6,
-        'Quantized Size (MB)': 111,
-        'macro precision': 0.93182,
-        'macro recall': 0.93442,
-        'macro f1-score': 0.93307,
+available_huggingface = {
+    'mesolitica/sentiment-analysis-nanot5-tiny-malaysian-cased': {
+        'Size (MB)': 93,
+        'macro precision': 0.67768,
+        'macro recall': 0.68266,
+        'macro f1-score': 0.67997,
     },
-    'tiny-bert': {
-        'Size (MB)': 57.4,
-        'Quantized Size (MB)': 15.4,
-        'macro precision': 0.93390,
-        'macro recall': 0.93141,
-        'macro f1-score': 0.93262,
-    },
-    'albert': {
-        'Size (MB)': 48.6,
-        'Quantized Size (MB)': 12.8,
-        'macro precision': 0.91228,
-        'macro recall': 0.91929,
-        'macro f1-score': 0.91540,
-    },
-    'tiny-albert': {
-        'Size (MB)': 22.4,
-        'Quantized Size (MB)': 5.98,
-        'macro precision': 0.91442,
-        'macro recall': 0.91646,
-        'macro f1-score': 0.91521,
-    },
-    'xlnet': {
-        'Size (MB)': 446.6,
-        'Quantized Size (MB)': 118,
-        'macro precision': 0.92390,
-        'macro recall': 0.92629,
-        'macro f1-score': 0.92444,
-    },
-    'alxlnet': {
-        'Size (MB)': 46.8,
-        'Quantized Size (MB)': 13.3,
-        'macro precision': 0.91896,
-        'macro recall': 0.92589,
-        'macro f1-score': 0.92198,
-    },
+    'mesolitica/sentiment-analysis-nanot5-small-malaysian-cased': {
+        'Size (MB)': 167,
+        'macro precision': 0.67602,
+        'macro recall': 0.67120,
+        'macro f1-score': 0.67339,
+    }
 }
 
-
-def available_transformer():
-    """
-    List available transformer sentiment analysis models.
-    """
-
-    logger.info('tested on test set at https://github.com/huseinzol05/malay-dataset/tree/master/sentiment/semisupervised-twitter-3class')
-
-    return describe_availability(_transformer_availability)
+info = """
+Trained on https://huggingface.co/datasets/mesolitica/chatgpt-explain-sentiment
+Split 90% to train, 10% to test.
+""".strip()
 
 
 def multinomial(**kwargs):
@@ -81,38 +43,32 @@ def multinomial(**kwargs):
     )
 
 
-@check_type
-def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
+def huggingface(
+    model: str = 'mesolitica/sentiment-analysis-nanot5-small-malaysian-cased',
+    force_check: bool = True,
+    **kwargs,
+):
     """
-    Load Transformer sentiment model.
+    Load HuggingFace model to classify sentiment.
 
     Parameters
     ----------
-    model: str, optional (default='bert')
-        Check available models at `malaya.sentiment.available_transformer()`.
-    quantized: bool, optional (default=False)
-        if True, will load 8-bit quantized model.
-        Quantized model not necessary faster, totally depends on the machine.
+    model: str, optional (default='mesolitica/sentiment-analysis-nanot5-small-malaysian-cased')
+        Check available models at `malaya.sentiment.available_huggingface`.
+    force_check: bool, optional (default=True)
+        Force check model one of malaya model.
+        Set to False if you have your own huggingface model.
 
     Returns
     -------
-    result: model
-        List of model classes:
-
-        * if `bert` in model, will return `malaya.model.bert.MulticlassBERT`.
-        * if `xlnet` in model, will return `malaya.model.xlnet.MulticlassXLNET`.
-        * if `fastformer` in model, will return `malaya.model.fastformer.MulticlassFastFormer`.
+    result: malaya.torch_model.huggingface.Classification
     """
 
-    model = model.lower()
-    if model not in _transformer_availability:
-        raise ValueError(
-            'model not supported, please check supported models from `malaya.sentiment.available_transformer()`.'
-        )
-    return classification.transformer(
-        module='sentiment-v2',
-        label=label,
+    return load(
         model=model,
-        quantized=quantized,
-        **kwargs
+        class_model=Classification,
+        available_huggingface=available_huggingface,
+        force_check=force_check,
+        path=__name__,
+        **kwargs,
     )

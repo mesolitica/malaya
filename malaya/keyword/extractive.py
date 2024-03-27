@@ -1,5 +1,6 @@
 import re
 import operator
+import numpy as np
 from collections import defaultdict
 from sklearn.metrics.pairwise import cosine_similarity
 from malaya.text import rake as rake_function
@@ -7,21 +8,20 @@ from malaya.text.function import (
     transformer_textcleaning,
     get_stopwords,
 )
-from malaya.function import (
-    check_file,
-    load_graph,
-    generate_session,
-    nodes_session,
-)
 from malaya.text.bpe import SentencePieceTokenizer
-from malaya.model.bert import KeyphraseBERT
-from malaya.model.xlnet import KeyphraseXLNET
 from malaya.path import MODEL_VOCAB, MODEL_BPE
 from malaya.function import validator
 from malaya.graph.pagerank import pagerank
-from malaya.function import describe_availability
-from herpetologist import check_type
-import warnings
+from typing import List
+
+
+def _calculate_count(strings):
+    vocab = defaultdict(int)
+    for k in strings:
+        results = [(m.start(0), m.end(0))
+                   for m in re.finditer(r'\b' + k, string, flags=re.IGNORECASE)]
+        vocab[k] = len(results)
+    return vocab
 
 
 def _auto_ngram(string, stopwords):
@@ -51,9 +51,9 @@ def _base(string, vectorizer, **kwargs):
     return vocab
 
 
-@check_type
 def rake(
     string: str,
+    vocab: List[str] = None,
     model=None,
     vectorizer=None,
     top_k: int = 5,
@@ -67,8 +67,11 @@ def rake(
     Parameters
     ----------
     string: str
+    vocab: List[str], optional (default=None)
+        List of important substrings.
+        This will override `vectorizer` parameter.
     model: Object, optional (default=None)
-        Transformer model or any model has `attention` method.
+        model must has `attention` method.
     vectorizer: Object, optional (default=None)
         Prefer `sklearn.feature_extraction.text.CountVectorizer` or,
         `malaya.text.vectorizer.SkipGramCountVectorizer`.
@@ -113,11 +116,17 @@ def rake(
     else:
         d = None
 
-    if auto_ngram:
-        vocab = _auto_ngram(string, stopwords)
+    if vocab:
+        vocab = [v for v in vocab if v in string]
+        vocab = _calculate_count(vocab)
     else:
-        vocab = _base(string, vectorizer=vectorizer, **kwargs)
+        if auto_ngram:
+            vocab = _auto_ngram(string, stopwords)
+        else:
+            vocab = _base(string, vectorizer=vectorizer, **kwargs)
+
     phrase_list = list(vocab.keys())
+
     scores = rake_function.calculate_word_scores(phrase_list, attentions=d)
     keywordcandidates = rake_function.generate_candidate_keyword_scores(
         phrase_list, scores
@@ -135,9 +144,9 @@ def rake(
     return ranked_sentences[:top_k]
 
 
-@check_type
 def textrank(
     string: str,
+    vocab: List[str] = None,
     model=None,
     vectorizer=None,
     top_k: int = 5,
@@ -151,8 +160,11 @@ def textrank(
     Parameters
     ----------
     string: str
+    vocab: List[str], optional (default=None)
+        List of important substrings.
+        This will override `vectorizer` parameter.
     model: Object, optional (default='None')
-        model has `fit_transform` or `vectorize` method.
+        model must has `fit_transform` or `vectorize` method.
     vectorizer: Object, optional (default=None)
         Prefer `sklearn.feature_extraction.text.CountVectorizer` or,
         `malaya.text.vectorizer.SkipGramCountVectorizer`.
@@ -188,17 +200,23 @@ def textrank(
     if auto_ngram and not len(stopwords):
         raise ValueError('insert stopwords if auto_ngram')
 
-    if auto_ngram:
-        vocab = _auto_ngram(string, stopwords)
+    if vocab:
+        vocab = [v for v in vocab if v in string]
+        vocab = _calculate_count(vocab)
     else:
-        vocab = _base(string, vectorizer=vectorizer, **kwargs)
+        if auto_ngram:
+            vocab = _auto_ngram(string, stopwords)
+        else:
+            vocab = _base(string, vectorizer=vectorizer, **kwargs)
+
+    phrase_list = list(vocab.keys())
 
     if hasattr(model, 'fit_transform'):
-        vectors = model.fit_transform(list(vocab.keys()))
+        vectors = model.fit_transform(phrase_list)
     if hasattr(model, 'vectorize'):
-        vectors = model.vectorize(list(vocab.keys()))
+        vectors = model.vectorize(phrase_list)
     similar = cosine_similarity(vectors, vectors)
-    similar[similar >= 0.99999] = 0
+    similar[np.diag_indices(len(similar))] = 0.0
     scores = pagerank(similar, **kwargs)
     total = sum(scores)
     ranked_sentences = sorted(
@@ -213,10 +231,10 @@ def textrank(
     return ranked_sentences[:top_k]
 
 
-@check_type
 def attention(
     string: str,
     model,
+    vocab: List[str] = None,
     vectorizer=None,
     top_k: int = 5,
     atleast: int = 1,
@@ -230,7 +248,10 @@ def attention(
     ----------
     string: str
     model: Object
-        Transformer model or any model has `attention` method.
+        model must has `attention` method.
+    vocab: List[str], optional (default=None)
+        List of important substrings.
+        This will override `vectorizer` parameter.
     vectorizer: Object, optional (default=None)
         Prefer `sklearn.feature_extraction.text.CountVectorizer` or,
         `malaya.text.vectorizer.SkipGramCountVectorizer`.
@@ -266,10 +287,14 @@ def attention(
 
     string = transformer_textcleaning(string)
 
-    if auto_ngram:
-        vocab = _auto_ngram(string, stopwords)
+    if vocab:
+        vocab = [v for v in vocab if v in string]
+        vocab = _calculate_count(vocab)
     else:
-        vocab = _base(string, vectorizer=vectorizer, **kwargs)
+        if auto_ngram:
+            vocab = _auto_ngram(string, stopwords)
+        else:
+            vocab = _base(string, vectorizer=vectorizer, **kwargs)
 
     attention = model.attention([string])[0]
     d = defaultdict(float)
@@ -293,10 +318,10 @@ def attention(
     return ranked_sentences[:top_k]
 
 
-@check_type
 def similarity(
     string: str,
     model,
+    vocab: List[str] = None,
     vectorizer=None,
     top_k: int = 5,
     atleast: int = 1,
@@ -345,10 +370,14 @@ def similarity(
 
     string = transformer_textcleaning(string)
 
-    if auto_ngram:
-        vocab = _auto_ngram(string, stopwords)
+    if vocab:
+        vocab = [v for v in vocab if v in string]
+        vocab = _calculate_count(vocab)
     else:
-        vocab = _base(string, vectorizer=vectorizer, **kwargs)
+        if auto_ngram:
+            vocab = _auto_ngram(string, stopwords)
+        else:
+            vocab = _base(string, vectorizer=vectorizer, **kwargs)
 
     words = list(vocab.keys())
     vectors_keywords = model.vectorize(words)
@@ -361,126 +390,3 @@ def similarity(
 
     ranked_sentences = [i for i in ranked_sentences if vocab[i[1]] >= atleast]
     return ranked_sentences[:top_k]
-
-
-_transformer_availability = {
-    'bert': {
-        'Size (MB)': 443,
-        'Quantized Size (MB)': 112,
-        'macro precision': 0.99403,
-        'macro recall': 0.99568,
-        'macro f1-score': 0.99485,
-    },
-    'tiny-bert': {
-        'Size (MB)': 59.5,
-        'Quantized Size (MB)': 15.1,
-        'macro precision': 0.99494,
-        'macro recall': 0.99707,
-        'macro f1-score': 0.99600,
-    },
-    'alxlnet': {
-        'Size (MB)': 53,
-        'Quantized Size (MB)': 14,
-        'macro precision': 0.98170,
-        'macro recall': 0.99182,
-        'macro f1-score': 0.98663,
-    },
-    'xlnet': {
-        'Size (MB)': 472,
-        'Quantized Size (MB)': 120,
-        'macro precision': 0.99667,
-        'macro recall': 0.99819,
-        'macro f1-score': 0.99742,
-    },
-}
-
-
-def available_transformer():
-    """
-    List available transformer keyword similarity model.
-    """
-
-    warnings.warn(
-        '`malaya.keyword.extractive.available_transformer` is deprecated', DeprecationWarning)
-
-    return describe_availability(_transformer_availability)
-
-
-@check_type
-def transformer(model: str = 'bert', quantized: bool = False, **kwargs):
-    """
-    Load Transformer keyword similarity model.
-
-    Parameters
-    ----------
-    model: str, optional (default='bert')
-        Check available models at `malaya.keyword.extractive.available_transformer()`.
-    quantized: bool, optional (default=False)
-        if True, will load 8-bit quantized model.
-        Quantized model not necessary faster, totally depends on the machine.
-
-    Returns
-    -------
-    result: model
-        List of model classes:
-
-        * if `bert` in model, will return `malaya.model.bert.KeyphraseBERT`.
-        * if `xlnet` in model, will return `malaya.model.xlnet.KeyphraseXLNET`.
-    """
-
-    warnings.warn(
-        '`malaya.keyword.extractive.transformer` is deprecated', DeprecationWarning)
-
-    model = model.lower()
-    if model not in _transformer_availability:
-        raise ValueError(
-            'model not supported, please check supported models from `malaya.keyword.extractive.available_transformer()`.'
-        )
-
-    path = check_file(
-        file=model,
-        module='keyword-extraction',
-        keys={
-            'model': 'model.pb',
-            'vocab': MODEL_VOCAB[model],
-            'tokenizer': MODEL_BPE[model],
-        },
-        quantized=quantized,
-        **kwargs,
-    )
-    g = load_graph(path['model'], **kwargs)
-    outputs = ['logits']
-
-    if model in ['bert', 'tiny-bert']:
-        inputs = [
-            'Placeholder',
-            'Placeholder_1',
-            'Placeholder_2',
-            'Placeholder_3',
-        ]
-        outputs.append('bert/summary')
-        selected_class = KeyphraseBERT
-
-    if model in ['xlnet', 'alxlnet']:
-
-        inputs = [
-            'Placeholder',
-            'Placeholder_1',
-            'Placeholder_2',
-            'Placeholder_3',
-            'Placeholder_4',
-            'Placeholder_5',
-        ]
-        outputs.append('xlnet/summary')
-        selected_class = KeyphraseXLNET
-
-    tokenizer = SentencePieceTokenizer(vocab_file=path['vocab'], spm_model_file=path['tokenizer'])
-    input_nodes, output_nodes = nodes_session(g, inputs, outputs)
-
-    return selected_class(
-        input_nodes=input_nodes,
-        output_nodes=output_nodes,
-        sess=generate_session(graph=g, **kwargs),
-        tokenizer=tokenizer,
-        label=['not similar', 'similar'],
-    )

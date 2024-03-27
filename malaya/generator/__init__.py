@@ -7,14 +7,11 @@
 # For license information, see https://github.com/huseinzol05/Malaya/blob/master/LICENSE
 
 from malaya.text.ngram import ngrams as generate_ngrams
-from herpetologist import check_type
 from typing import List, Tuple
 
 from . import isi_penting
-from . import prefix
 
 
-@check_type
 def ngrams(
     sequence,
     n: int,
@@ -47,7 +44,6 @@ def ngrams(
     )
 
 
-@check_type
 def pos_entities_ngram(
     result_pos: List[Tuple[str, str]],
     result_entities: List[Tuple[str, str]],
@@ -105,7 +101,6 @@ def pos_entities_ngram(
     return list(set(sentences))
 
 
-@check_type
 def sentence_ngram(sentence: str, ngram: Tuple[int, int] = (1, 3)):
     """
     generate ngram for a text

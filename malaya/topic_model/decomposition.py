@@ -6,7 +6,6 @@ from malaya.text.function import (
     print_topics_modeling,
 )
 from malaya.function import validator
-from herpetologist import check_type
 from typing import List, Tuple
 
 
@@ -21,7 +20,6 @@ class Topic:
         self.vectorizer = vectorizer
         self._vectors = vectors
 
-    @check_type
     def visualize_topics(self, notebook_mode: bool = False, mds: str = 'pcoa'):
         """
         Print important topics based on decomposition.
@@ -53,7 +51,6 @@ class Topic:
         else:
             pyLDAvis.show(prepared_vis_data)
 
-    @check_type
     def top_topics(
         self, len_topic: int, top_n: int = 10, return_df: bool = True
     ):
@@ -77,7 +74,6 @@ class Topic:
             return_df=return_df,
         )
 
-    @check_type
     def get_topics(self, len_topic: int):
         """
         Return important topics based on decomposition.
@@ -107,7 +103,6 @@ class Topic:
             )
         return results
 
-    @check_type
     def get_sentences(self, len_sentence: int, k: int = 0):
         """
         Return important sentences related to selected column based on decomposition.
@@ -128,7 +123,6 @@ class Topic:
         return [self.corpus[i] for i in reverse_sorted[:len_sentence]]
 
 
-@check_type
 def fit(
     corpus: List[str],
     model,

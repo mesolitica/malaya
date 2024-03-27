@@ -1,13 +1,12 @@
 from malaya.path import PATH_AUGMENTATION, S3_PATH_AUGMENTATION
-from malaya.augmentation.base import _make_upper, _replace
+from malaya.augmentation.base import _make_upper
 from malaya.text.tatabahasa import consonants, vowels
 from malaya.text.function import case_of
 from malaya.function import check_file
-from herpetologist import check_type
 from collections import defaultdict
 import random
 import json
-from typing import Callable, Dict, List
+from typing import Dict, List
 
 _synonym_dict = None
 
@@ -20,7 +19,6 @@ def replace_synonym(string, threshold):
     return string
 
 
-@check_type
 def synonym(
     string: str,
     threshold: float = 0.5,
@@ -113,7 +111,8 @@ def replace_similar_consonants(
         if random.random() >= threshold and c in consonants and results[no + 1] in vowels:
             results[no] = random.choice(replace_consonants.get(c, [c]))
 
-    if random.random() >= threshold and results[-1] in consonants and results[-2] in vowels and results[-3] in consonants:
+    if random.random(
+    ) >= threshold and results[-1] in consonants and results[-2] in vowels and results[-3] in consonants:
         results[-1] = random.choice(replace_consonants.get(results[-1], [results[-1]]))
 
     return ''.join(results)
@@ -148,13 +147,13 @@ def replace_similar_vowels(
         if random.random() >= threshold and c in vowels and results[no + 1] in consonants:
             results[no] = random.choice(replace_vowels.get(c, [c]))
 
-    if random.random() >= threshold and results[-1] in vowels and results[-2] in consonants and results[-3] in vowels:
+    if random.random(
+    ) >= threshold and results[-1] in vowels and results[-2] in consonants and results[-3] in vowels:
         results[-1] = random.choice(replace_vowels.get(results[-1], [results[-1]]))
 
     return ''.join(results)
 
 
-@check_type
 def socialmedia_form(word: str):
     """
     augmenting a word into socialmedia form.
@@ -247,7 +246,6 @@ def vowel_alternate(word: str, threshold: float = 0.5):
     return case_of(word_temp)(''.join(word))
 
 
-@check_type
 def kelantanese_form(word: str):
     """
     augmenting a word into kelantanese form.

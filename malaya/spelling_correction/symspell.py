@@ -15,7 +15,6 @@ from malaya.text.tatabahasa import (
     hujung,
     stopword_tatabahasa,
 )
-from herpetologist import check_type
 from typing import List
 
 
@@ -140,7 +139,6 @@ class Symspell(Spell):
         else:
             return list(ttt)
 
-    @check_type
     def correct(self, word: str, **kwargs):
         """
         Most probable spelling correction for word.
@@ -184,8 +182,9 @@ class Symspell(Spell):
 
         if len(hujung_result) and not word.endswith(hujung_result) and combined:
             word = word + hujung_result
-        if len(permulaan_result) and not word.startswith(permulaan_result) and combined:
-            if permulaan_result[-1] == word[0]:
+        if len(permulaan_result) and not word.startswith(
+                permulaan_result) and combined:
+            if len(word) and permulaan_result[-1] == word[0]:
                 word = permulaan_result + word[1:]
             else:
                 word = permulaan_result + word
@@ -193,7 +192,6 @@ class Symspell(Spell):
         return word
 
 
-@check_type
 def load(
     max_edit_distance_dictionary: int = 2,
     prefix_length: int = 7,

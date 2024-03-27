@@ -22,7 +22,6 @@ from malaya.text.tatabahasa import (
     hujung,
     stopword_tatabahasa,
 )
-from herpetologist import check_type
 from typing import List, Callable, Dict
 import logging
 
@@ -218,13 +217,12 @@ class Spell:
         ttt = list(ttt)
         if self.validate_end_vowel:
             if word[-1] in vowels:
-                ttt = [w for w in ttt if w[-1] == word[-1]
-                       or (w[-1] in 'a' and word[-1] in 'eo') or (len(w) >= 2 and w[-2:] in 'arur' and word[-1] in 'o')]
+                ttt = [w for w in ttt if w[-1] == word[-1] or (w[-1] in 'a' and word[-1] in 'eo') or (
+                    len(w) >= 2 and w[-2:] in 'arur' and word[-1] in 'o')]
             if not len(ttt):
                 return [word]
         return ttt
 
-    @check_type
     def correct_text(self, text: str):
         """
         Correct all the words within a text, returning the corrected text.
@@ -255,7 +253,6 @@ class Spell:
         word = match.group()
         return self.correct_word(word)
 
-    @check_type
     def correct_word(self, word: str):
         """
         Spell-correct word, and preserve proper upper, lower and title case.
@@ -302,7 +299,6 @@ class Probability(Spell):
         else:
             return []
 
-    @check_type
     def correct(self, word: str, score_func=None, **kwargs):
         """
         Most probable spelling correction for word.
@@ -365,7 +361,8 @@ class Probability(Spell):
 
         if len(hujung_result) and not word.endswith(hujung_result) and combined:
             word = word + hujung_result
-        if len(permulaan_result) and len(word) > 1 and not word.startswith(permulaan_result) and combined:
+        if len(permulaan_result) and len(word) > 1 and not word.startswith(
+                permulaan_result) and combined:
             if permulaan_result[-1] == word[0]:
                 word = permulaan_result + word[1:]
             else:
@@ -434,7 +431,6 @@ class ProbabilityLM(Probability):
 
         return score
 
-    @check_type
     def correct(
         self,
         word: str,
@@ -484,7 +480,6 @@ class ProbabilityLM(Probability):
             **kwargs
         )
 
-    @check_type
     def correct_text(
         self,
         text: str,
@@ -527,7 +522,6 @@ class ProbabilityLM(Probability):
 
         return ' '.join(strings)
 
-    @check_type
     def correct_word(
         self,
         word: str,
@@ -567,7 +561,6 @@ class ProbabilityLM(Probability):
             lookback=lookback,
             lookforward=lookforward))
 
-    @check_type
     def correct_match(
         self,
         match,
@@ -599,7 +592,6 @@ class ProbabilityLM(Probability):
         return case_of(word)(self.best_elong_candidate(word.lower()))
 
 
-@check_type
 def load(
     language_model=None,
     sentence_piece: bool = False,

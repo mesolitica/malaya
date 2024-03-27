@@ -9,7 +9,6 @@ from malaya.text.function import (
 from malaya.cluster import cluster_words
 from malaya.graph.pagerank import pagerank
 from sklearn.metrics.pairwise import cosine_similarity
-from herpetologist import check_type
 from scipy.sparse import vstack
 
 
@@ -73,7 +72,7 @@ class SKLearn:
                 indices = np.argsort(self.vectorizer.idf_)[::-1]
             else:
                 indices = np.argsort(np.asarray(freq.sum(axis=0))[0])[::-1]
-            features = self.vectorizer.get_feature_names()
+            features = self.vectorizer.get_feature_names_out()
             top_words = [features[i] for i in indices[:important_words]]
         else:
             top_words = []
@@ -109,7 +108,7 @@ class SKLearn:
                 indices = np.argsort(self.vectorizer.idf_)[::-1]
             else:
                 indices = np.argsort(np.asarray(freq.sum(axis=0))[0])[::-1]
-            features = self.vectorizer.get_feature_names()
+            features = self.vectorizer.get_feature_names_out()
             top_words = [features[i] for i in indices[:important_words]]
         else:
             top_words = []
@@ -141,7 +140,6 @@ class SKLearn:
             cluster_words(top_words),
         )
 
-    @check_type
     def word_level(
         self,
         corpus,
@@ -183,7 +181,6 @@ class SKLearn:
             'score': splitted,
         }
 
-    @check_type
     def sentence_level(
         self,
         corpus,

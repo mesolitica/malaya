@@ -9,23 +9,22 @@ Dataset
         </a>
     </p>
 
-We want to make sure not just the code we open-sourced, but also goes to
-dataset, so everyone can validate.
+We want to make sure that not just the code is open-sourced, but the
+dataset as well, so everyone can help validate it.
 
-You can check in
+You can visit our repository  at
 `Malay-Dataset <https://github.com/huseinzol05/Malay-Dataset>`__ for
-our open dataset.
+the datasets that we used.
 
 Citation
 --------
 
-1. Please citate the repository if use these corpus.
-2. Please at least email us first before distributing these data.
-   Remember all these hard workings we want to give it for free.
-3. What do you see just the data, but nobody can see how much we spent
-   our cost to make it public.
+1. Please cite the repository if you use any of our corpus.
+2. We kindly ask that you at least email us first before distributing any of our datasets.
+   Remember that all of these are our hard work and we gave it out for free.
+3. What you only see is just the publicized data, but nobody can see how much we spent to make it public.
 
 Contribution
 -------------
 
-Contact us at husein.zol05@gmail.com or husein@mesolitica.com if want to contribute to bahasa dataset.
+Contact us at husein.zol05@gmail.com or husein@mesolitica.com if you want to contribute to the bahasa dataset.

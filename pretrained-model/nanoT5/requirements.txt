@@ -1,0 +1,4 @@
+pytorch-lightning
+hydra-core==1.3.2
+transformers
+omegaconf

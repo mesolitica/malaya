@@ -7,7 +7,6 @@ from malaya.text.function import (
 from sklearn.cluster import KMeans
 from malaya.text.ngram import ngrams as ngrams_generator
 from malaya.function import validator
-from herpetologist import check_type
 from typing import List, Tuple
 import warnings
 
@@ -24,7 +23,6 @@ class AttentionTopic:
         self._features = features
         self._components = components
 
-    @check_type
     def top_topics(
         self, len_topic: int, top_n: int = 10, return_df: bool = True
     ):
@@ -48,7 +46,6 @@ class AttentionTopic:
             return_df=return_df,
         )
 
-    @check_type
     def get_topics(self, len_topic: int):
         """
         Return important topics based on decomposition.
@@ -78,7 +75,6 @@ class AttentionTopic:
         return results
 
 
-@check_type
 def attention(
     corpus: List[str],
     n_topics: int,

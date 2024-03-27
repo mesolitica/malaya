@@ -6,6 +6,4 @@
 # URL: <https://malaya.readthedocs.io/>
 # For license information, see https://github.com/huseinzol05/Malaya/blob/master/LICENSE
 
-from . import abstractive
 from . import extractive
-from . import generate_question

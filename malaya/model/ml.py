@@ -3,9 +3,7 @@ from malaya.text.function import (
     simple_textcleaning,
     language_detection_textcleaning,
 )
-from malaya.model.abstract import Classification
 from malaya.function.activation import add_neutral as neutral
-from herpetologist import check_type
 from typing import List
 
 
@@ -17,24 +15,19 @@ class Bayes:
         vectorize,
         bpe,
         cleaning=simple_textcleaning,
-        wordpiece=True,
     ):
         self._multinomial = multinomial
         self._label = label
         self._vectorize = vectorize
         self._bpe = bpe
         self._cleaning = cleaning
-        self._wordpiece = wordpiece
 
     def _classify(self, strings):
         strings = [self._cleaning(string) for string in strings]
-        if self._wordpiece:
-            subs
-        else:
-            subs = [
-                ' '.join(s)
-                for s in self._bpe.bpe.encode(strings, output_type=self._bpe.mode)
-            ]
+        subs = [
+            ' '.join(s)
+            for s in self._bpe.bpe.encode(strings, output_type=self._bpe.mode)
+        ]
         vectors = self._vectorize.transform(subs)
         return self._multinomial.predict_proba(vectors)
 
@@ -64,7 +57,7 @@ class Bayes:
         return outputs
 
 
-class BinaryBayes(Bayes, Classification):
+class BinaryBayes(Bayes):
     def __init__(
         self,
         multinomial,
@@ -77,7 +70,6 @@ class BinaryBayes(Bayes, Classification):
             self, multinomial, label, vectorize, bpe, cleaning
         )
 
-    @check_type
     def predict(self, strings: List[str], add_neutral: bool = True):
         """
         classify list of strings.
@@ -95,7 +87,6 @@ class BinaryBayes(Bayes, Classification):
 
         return self._predict(strings=strings, add_neutral=add_neutral)
 
-    @check_type
     def predict_proba(self, strings: List[str], add_neutral: bool = True):
         """
         classify list of strings and return probability.
@@ -114,7 +105,7 @@ class BinaryBayes(Bayes, Classification):
         return self._predict_proba(strings=strings, add_neutral=add_neutral)
 
 
-class MulticlassBayes(Bayes, Classification):
+class MulticlassBayes(Bayes):
     def __init__(
         self,
         multinomial,
@@ -127,7 +118,6 @@ class MulticlassBayes(Bayes, Classification):
             self, multinomial, label, vectorize, bpe, cleaning
         )
 
-    @check_type
     def predict(self, strings: List[str]):
         """
         classify list of strings.
@@ -143,7 +133,6 @@ class MulticlassBayes(Bayes, Classification):
 
         return self._predict(strings=strings)
 
-    @check_type
     def predict_proba(self, strings: List[str]):
         """
         classify list of strings and return probability.
@@ -160,7 +149,7 @@ class MulticlassBayes(Bayes, Classification):
         return self._predict_proba(strings=strings)
 
 
-class MultilabelBayes(Bayes, Classification):
+class MultilabelBayes(Bayes):
     def __init__(
         self,
         multinomial,
@@ -173,7 +162,6 @@ class MultilabelBayes(Bayes, Classification):
             self, multinomial, label, vectorize, bpe, cleaning
         )
 
-    @check_type
     def predict(self, strings: List[str]):
         """
         classify list of strings.
@@ -199,7 +187,6 @@ class MultilabelBayes(Bayes, Classification):
             results.append(nested_results)
         return results
 
-    @check_type
     def predict_proba(self, strings: List[str]):
         """
         classify list of strings and return probability.
@@ -224,7 +211,7 @@ class MultilabelBayes(Bayes, Classification):
         return results
 
 
-class LanguageDetection(Classification):
+class LanguageDetection:
     def __init__(self, model, lang_labels):
         self._model = model
         self._labels = list(lang_labels.values())
@@ -235,7 +222,6 @@ class LanguageDetection(Classification):
         ]
         return self._model.predict(strings)
 
-    @check_type
     def predict(self, strings: List[str]):
         """
         classify list of strings.
@@ -252,7 +238,6 @@ class LanguageDetection(Classification):
         result_labels, result_probs = self._predict(strings)
         return [label[0].replace('__label__', '') for label in result_labels]
 
-    @check_type
     def predict_proba(self, strings: List[str]):
         """
         classify list of strings and return probability.

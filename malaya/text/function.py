@@ -10,9 +10,11 @@ from malaya.text.tatabahasa import (
     laughing,
     mengeluh,
 )
-from malaya.text.rules import normalized_chars
+from malaya.text.rules import normalized_chars, rules_normalizer
 from malaya.text.unicode.emoji import emoji
 from malaya.text.regex import _expressions
+from malaya.text.ngram import ngrams
+from difflib import SequenceMatcher as SM
 import logging
 
 logger = logging.getLogger(__name__)
@@ -606,7 +608,6 @@ def split_into_sentences(text, minimum_length=5):
     text = text.replace('\x97', '\n')
     text = '. '.join([s for s in text.split('\n') if len(s)])
     text = text + '.'
-    text = unidecode(text)
     text = ' ' + text + '  '
     text = text.replace('\n', ' ')
     text = re.sub(prefixes, '\\1<prd>', text)
@@ -757,3 +758,60 @@ def remove_html_tags(string):
         string = re.sub('<[^<]+?>', ' ', string)
 
     return re.sub(r'[ ]+', ' ', string).strip()
+
+
+def get_similar_substrings(needle, hay, additional_length_ratio=0.1, right_slide=3):
+    """
+    https://stackoverflow.com/a/31433394/7389343
+    """
+    needle_length = len(needle.split())
+    max_sim_val = 0
+    max_sim_string = ''
+
+    for ngram in ngrams(hay.split(), needle_length + int(additional_length_ratio * needle_length)):
+        hay_ngram = ' '.join(ngram)
+        similarity = SM(None, hay_ngram, needle).ratio()
+        if similarity > max_sim_val:
+            max_sim_val = similarity
+            max_sim_string = hay_ngram
+
+    right_slided = ' '.join(hay.split()[-right_slide:])
+    rfind = max_sim_string.rfind(right_slided)
+    if rfind >= 0:
+        max_sim_string = max_sim_string[:rfind + len(right_slided)]
+    return max_sim_val, max_sim_string
+
+
+def fuzzy_substring_search(major: str, minor: str, errs: int = 10):
+    """
+    Find the closest matching fuzzy substring.
+    https://stackoverflow.com/a/73298537/7389343
+    """
+    import regex
+    errs_ = 0
+    s = regex.search(f"({minor}){{e<={errs_}}}", major)
+    while s is None and errs_ <= errs:
+        errs_ += 1
+        s = regex.search(f"({minor}){{e<={errs_}}}", major)
+
+    if s is not None:
+        span = s.spans()[0]
+        return major[span[0]: span[1]]
+    else:
+        return None
+
+
+def classification_textcleaning_stemmer(string, stemmer):
+    string = re.sub(
+        'http\\S+|www.\\S+',
+        '',
+        ' '.join(
+            [i for i in string.split() if i.find('#') < 0 and i.find('@') < 0]
+        ),
+    )
+    string = unidecode(string).replace('.', ' . ').replace(',', ' , ')
+    string = re.sub('[^A-Za-z ]+', ' ', string)
+    string = re.sub(r'[ ]+', ' ', string.lower()).strip()
+    string = [rules_normalizer.get(w, w) for w in string.split()]
+    string = [(stemmer.stem(word), word) for word in string]
+    return ' '.join([word[0] for word in string if len(word[0]) > 1])

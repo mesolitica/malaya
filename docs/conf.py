@@ -22,8 +22,8 @@ sys.path.insert(0, SOURCE_DIR)
 # -- Project information -----------------------------------------------------
 
 project = 'malaya'
-copyright = '2020, huseinzol05'
-author = 'huseinzol05'
+copyright = '2020, mesolitica'
+author = 'mesolitica'
 
 # The short X.Y version
 version = ''
@@ -156,7 +156,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'malaya.tex', 'malaya Documentation', 'huseinzol05', 'manual')
+    (master_doc, 'malaya.tex', 'malaya Documentation', 'mesolitica', 'manual')
 ]
 
 

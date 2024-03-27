@@ -1,14 +1,13 @@
 dateparser
-scikit-learn
+scikit-learn>=1.2
 requests
 unidecode
 numpy
 scipy
 ftfy
-networkx<=2.5.1
+networkx
 sentencepiece
 tqdm
-herpetologist
-malaya-boilerplate>=0.0.23
+malaya-boilerplate>=0.0.25
 regex
 transformers
