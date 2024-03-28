@@ -1,4 +1,4 @@
-from malaya.model.stem import Tokenizer
+from malaya.model.syllable import Tokenizer
 from malaya.supervised.rnn import load
 from malaya.torch_model.rnn import Syllable
 
