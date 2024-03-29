@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+  <title>Livestream</title>
+
+</head>
+
+<body>
+  <div style="overflow: auto">
+    <img style="float: left; margin-right: 10px;" src="/video_feed" width="60%">
+    Your ID: <span id="ws-id"></span>, ask me to do something: <button>Enter</button><br>
+    <textarea id="askme" rows="4" style="width: 30%">go to google.com</textarea><br>
+    Text: <br>
+    <div id="text"></div>
+  </div>
+
+
+</body>
+
+<script type="text/javascript">
+  var client_id = Date.now()
+  const isLocalhost = location.protocol !== "https:"
+  const protocol = isLocalhost ? 'ws://' : 'wss://';
+  const domain = window.location.host;
+  document.querySelector("#ws-id").textContent = client_id;
+  document.querySelector('img').src = '/video_feed?client_id=' + client_id;
+  const ws = new WebSocket(`${protocol}${domain}/ws/${client_id}`);
+  ws.onopen = function (e) {
+    startRecording.disabled = false;
+    console.log('opened');
+  };
+</script>
+
+</html>

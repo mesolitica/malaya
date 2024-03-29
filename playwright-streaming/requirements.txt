@@ -1,0 +1,3 @@
+fastapi
+playwright
+jinja2

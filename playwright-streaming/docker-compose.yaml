@@ -1,0 +1,15 @@
+version: "3.0"
+
+services:
+  playwright-streaming:
+    build:
+      context: .
+    container_name: playwright-streaming
+    environment:
+      WORKERS_PER_CORE: 1.0
+      loglevel: DEBUG
+    volumes:
+      - "./app:/app"
+      - "./huggingface:/root/.cache/huggingface"
+    ports:
+      - "9091:9091"
