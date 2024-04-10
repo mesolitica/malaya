@@ -218,7 +218,7 @@ torchvision==0.14.1
 tornado==6.3.3
 tqdm==4.66.1
 traitlets==5.9.0
-transformers==4.36.2
+transformers==4.38.0
 transformers-neuronx==0.9.474
 typing_extensions==4.8.0
 tzdata==2023.3
