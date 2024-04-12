@@ -73,7 +73,7 @@ h5py==3.10.0
 httplib2==0.22.0
 huggingface-hub==0.20.3
 humanfriendly==10.0
-idna==3.4
+idna==3.7
 imageio==2.31.6
 importlib-metadata==6.8.0
 inotify-simple==1.2.1
