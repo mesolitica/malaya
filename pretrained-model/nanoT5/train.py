@@ -78,7 +78,7 @@ class Module(LightningModule):
 
 @hydra.main(config_path="configs", config_name="default", version_base='1.1')
 def main(args):
-    wandb_logger = WandbLogger(log_model='all')
+    wandb_logger = WandbLogger(project=os.environ.get('WANDB_PROJECT', 'lightning_project'))
     config = get_config(args)
     model = Module(args, config)
     tokenizer = get_tokenizer(args)

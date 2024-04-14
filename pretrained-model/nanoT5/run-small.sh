@@ -1,11 +1,10 @@
-rm -rf /dev/shm/*
 WANDB_PROJECT=nanoT5-small \
 ~/.local/bin/torchrun --nproc_per_node 4 \
 -m train \
 model.name="/home/ubuntu/malaya/pretrained-model/nanoT5/out-small-1.1" \
 model.random_init=false \
-data.filename.train="/home/ubuntu/nanot5-512" \
-data.filename.test="/home/ubuntu/nanot5-512" \
+data.filename.train="/home/ubuntu/mosaic-nanot5-512" \
+data.filename.test="/home/ubuntu/mosaic-nanot5-512" \
 data.input_length=512 \
 checkpoint.every_steps=2000 \
 optim.total_steps=65536 \
