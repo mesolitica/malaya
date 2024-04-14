@@ -17,24 +17,24 @@ from .copied_utils import (
 from .t5_model import MyT5
 
 from streaming.base.format.mds.encodings import Encoding, _encodings
-from streaming import StreamingDataset
+from streaming import LocalDataset
 import numpy as np
 
 
-class Int32(Encoding):
+class UInt16(Encoding):
     def encode(self, obj) -> bytes:
         return obj.tobytes()
 
     def decode(self, data: bytes):
-        return np.frombuffer(data, np.int32)
+        return np.frombuffer(data, np.uint16)
 
 
-_encodings['int32'] = Int32
+_encodings['uint16'] = UInt16
 
 
 class DatasetFixed(torch.utils.data.Dataset):
     def __init__(self, local):
-        self.dataset = StreamingDataset(local=local)
+        self.dataset = LocalDataset(local=local)
 
     def __getitem__(self, idx):
         data = self.dataset[idx]

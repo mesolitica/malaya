@@ -1,4 +1,4 @@
-pytorch-lightning
+pytorch-lightning==1.9.5
 hydra-core==1.3.2
 transformers
 omegaconf
