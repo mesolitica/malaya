@@ -51,6 +51,7 @@ from transformers.trainer_utils import get_last_checkpoint
 from transformers.utils import check_min_version, send_example_telemetry
 from transformers.utils.versions import require_version
 from tokenizers import AddedToken
+from streaming import LocalDataset
 
 # Will error if the minimal version of Transformers is not installed. Remove at your own risks.
 # check_min_version("4.23.0.dev0")
@@ -416,86 +417,34 @@ def main():
             "label_smoothing is enabled but the `prepare_decoder_input_ids_from_labels` method is not defined for"
             f"`{model.__class__.__name__}`. This will lead to loss being calculated twice and will take up more memory")
 
-    def preprocess_function(examples):
-        inputs = [ex['prefix'] + ex[source_lang] +
-                  tokenizer.eos_token for ex in examples["translation"]]
-        targets = [ex[target_lang] + tokenizer.eos_token for ex in examples["translation"]]
-        model_inputs = tokenizer(
-            inputs,
-            max_length=data_args.max_source_length,
-            padding=padding,
-            truncation=True)
+    class DatasetFixed(torch.utils.data.Dataset):
+        def __init__(self, remote):
 
-        # Tokenize targets with the `text_target` keyword argument
-        with tokenizer.as_target_tokenizer():
+            self.dataset = LocalDataset(local=remote)
+
+        def __getitem__(self, idx):
+            row = self.dataset[idx]
+            t = row['prefix'] + row['src'] + tokenizer.eos_token
+            outputs = tokenizer(
+                t,
+                max_length=data_args.max_source_length,
+                truncation=True
+            )
             labels = tokenizer(
-                targets,
+                row['tgt'] + tokenizer.eos_token,
                 max_length=max_target_length,
-                padding=padding,
-                truncation=True)
-
-        # If we are padding here, replace all tokenizer.pad_token_id in the labels by -100 when we want to ignore
-        # padding in the loss.
-        if padding == "max_length" and data_args.ignore_pad_token_for_loss:
-            labels["input_ids"] = [[(l if l != tokenizer.pad_token_id else -100)
-                                    for l in label] for label in labels["input_ids"]]
-
-        model_inputs["labels"] = labels["input_ids"]
-        return model_inputs
-
-    if training_args.do_train:
-        if "train" not in raw_datasets:
-            raise ValueError("--do_train requires a train dataset")
-        train_dataset = raw_datasets["train"]
-        if data_args.max_train_samples is not None:
-            max_train_samples = min(len(train_dataset), data_args.max_train_samples)
-            train_dataset = train_dataset.select(range(max_train_samples))
-        with training_args.main_process_first(desc="train dataset map pre-processing"):
-            train_dataset = train_dataset.map(
-                preprocess_function,
-                batched=True,
-                num_proc=data_args.preprocessing_num_workers,
-                remove_columns=column_names,
-                load_from_cache_file=not data_args.overwrite_cache,
-                desc="Running tokenizer on train dataset",
-                cache_file_name='./train_cache',
+                truncation=True
             )
+            return {
+                "input_ids": outputs["input_ids"],
+                "attention_mask": outputs["attention_mask"],
+                'labels': labels['input_ids'],
+            }
 
-    if training_args.do_eval:
-        max_target_length = data_args.val_max_target_length
-        if "validation" not in raw_datasets:
-            raise ValueError("--do_eval requires a validation dataset")
-        eval_dataset = raw_datasets["validation"]
-        if data_args.max_eval_samples is not None:
-            max_eval_samples = min(len(eval_dataset), data_args.max_eval_samples)
-            eval_dataset = eval_dataset.select(range(max_eval_samples))
-        with training_args.main_process_first(desc="validation dataset map pre-processing"):
-            eval_dataset = eval_dataset.map(
-                preprocess_function,
-                batched=True,
-                remove_columns=column_names,
-                load_from_cache_file=not data_args.overwrite_cache,
-                desc="Running tokenizer on validation dataset",
-                cache_file_name='./validation_cache'
-            )
+        def __len__(self):
+            return len(self.dataset)
 
-    if training_args.do_predict:
-        max_target_length = data_args.val_max_target_length
-        if "test" not in raw_datasets:
-            raise ValueError("--do_predict requires a test dataset")
-        predict_dataset = raw_datasets["test"]
-        if data_args.max_predict_samples is not None:
-            max_predict_samples = min(len(predict_dataset), data_args.max_predict_samples)
-            predict_dataset = predict_dataset.select(range(max_predict_samples))
-        with training_args.main_process_first(desc="prediction dataset map pre-processing"):
-            predict_dataset = predict_dataset.map(
-                preprocess_function,
-                batched=True,
-                remove_columns=column_names,
-                load_from_cache_file=not data_args.overwrite_cache,
-                desc="Running tokenizer on prediction dataset",
-                cache_file_name='./predict_cache'
-            )
+    train_dataset = DatasetFixed(data_args.train_file)
 
     # Data collator
     label_pad_token_id = -100 if data_args.ignore_pad_token_for_loss else tokenizer.pad_token_id

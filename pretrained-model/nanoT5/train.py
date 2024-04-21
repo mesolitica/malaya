@@ -110,9 +110,12 @@ def main(args):
 
     checkpoints = glob(os.path.join(args.model_directory, 'model-*'))
     if len(checkpoints):
-        checkpoint = sorted(x, key=lambda x: int(x.split('-')[-1]), reverse=True)[0]
+        checkpoint = sorted(checkpoints, key=lambda x: int(
+            x.split('=')[-1].replace('.ckpt', '')), reverse=True)[0]
     else:
         checkpoint = None
+
+    print(checkpoint)
 
     trainer.fit(
         model=model,

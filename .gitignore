@@ -78,6 +78,7 @@ session/llama2/ctranslate2
 session/llama2/example.jsonl
 session/llama2/results-1536-v2
 session/llama2/results-1024-packing
+session/llm2vec/*.json
 *.pkl_memoize_py3
 session/emotion/emotion-twitter-lexicon.json
 session/entities/*.json
