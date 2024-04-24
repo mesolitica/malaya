@@ -1,0 +1,8 @@
+version: 2
+updates:
+
+  # Maintain dependencies for pip in main package
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
