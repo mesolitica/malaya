@@ -1,4 +1,4 @@
-# Finetune Gemma
+# Finetune Llama-3
 
 ## Flash Attention 2
 
@@ -16,10 +16,8 @@ Dataset prepared at https://github.com/malaysia-ai/text-dataset-dedup/tree/main/
 ### 8B, 8192 Context length
 
 ```bash
-bash train-7b.sh
+bash train-8b.sh
 ```
-
-https://wandb.ai/huseinzol05/finetune-gemma-7b?workspace=user-huseinzol05
 
 ## Full Parameter Finetuning
 
