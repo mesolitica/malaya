@@ -55,20 +55,20 @@ def main(args):
                               "wandb": {"name": args.output_dir.split("/")[-1]}})
     accelerator.print(f"Total GPUS: {accelerator.num_processes}")
 
-    try:
-        train_dataset = load_dataset(args.dataset)
-    except BaseException:
-        train_dataset = load_from_disk(args.dataset)
+    train_dataset = load_dataset(args.dataset)
     if isinstance(train_dataset, DatasetDict):
         train_dataset = train_dataset["train"]
 
+    accelerator.print(f"Loading model {args.model} {args.rope_theta}")
     model = AutoModelForCausalLM.from_pretrained(
         args.model,
         device_map=accelerator.device,
         torch_dtype=torch.bfloat16,
         rope_theta=args.rope_theta,
+        max_position_embeddings=args.seq_length,
         _attn_implementation="flash_attention_2",
     )
+    accelerator.print(f"Done load model {args.model} {args.rope_theta}")
 
     assert isinstance(
         model, (transformers.LlamaForCausalLM, transformers.MistralForCausalLM)
@@ -100,6 +100,7 @@ def main(args):
         num_training_steps=args.max_train_steps,
         total_num_steps=args.max_train_steps,
     )
+
     model, optim, scheduler = accelerator.prepare(model, optim, scheduler)
     train_loader = prepare_dataloader(args.parallel_mode, train_loader, accelerator)
     model.gradient_checkpointing_enable()
@@ -110,7 +111,7 @@ def main(args):
     progress_bar = tqdm(
         range(args.max_train_steps), disable=not accelerator.is_local_main_process
     )
-    save_every = 20
+    save_every = args.save_every
     folder = str(args.seq_length)
     os.makedirs(folder, exist_ok=True)
 
@@ -171,9 +172,19 @@ def main(args):
                 # we now try gathered loss to verify if ring attention and dist flash attention produce the same loss
                 # this may slow down the training
                 gathered_loss = accelerator.reduce(loss.clone().detach(), "mean")
+                try:
+                    last_lr = scheduler.get_last_lr()[0]
+                except AssertionError as e:
+                    if "need to call step" in str(e):
+                        logger.warning(
+                            "tried to get lr value before scheduler/optimizer started stepping, returning lr=0")
+                        last_lr = 0
+                    else:
+                        raise
                 loss_log = {
                     "loss": gathered_loss.item(),
                     "ppl": math.exp(gathered_loss.item()),
+                    'last_lr': last_lr,
                 }
                 accelerator.log(loss_log, step=completed_steps)
 
@@ -187,16 +198,23 @@ def main(args):
                 progress_bar.set_postfix(loss_log)
             completed_steps += 1
 
-        if completed_steps > 0 and completed_steps % save_every == 0:
-            checkpoint_folder = os.path.join(folder, f'checkpoint_{completed_steps}')
-            accelerator.print(f"saving checkpoint to {checkpoint_folder}")
-            accelerator.save_state(output_dir=checkpoint_folder)
-            steps = glob(os.path.join(folder, 'checkpoint_*'))
-            steps = [int(f.split('_')[-1].replace('.json', '')) for f in steps]
-            if len(steps) >= 3:
-                min_steps = min(steps)
-                shutil.rmtree(os.path.join(folder, f'checkpoint_{min_steps}'))
-            accelerator.print(f"done saving checkpoint to {checkpoint_folder}")
+            if completed_steps > 0 and completed_steps % save_every == 0:
+                checkpoint_folder = os.path.join(folder, f'checkpoint_{completed_steps}')
+                accelerator.print(f"saving checkpoint to {checkpoint_folder}")
+                accelerator.save_state(output_dir=checkpoint_folder)
+                steps = glob(os.path.join(folder, 'checkpoint_*'))
+                steps = [int(f.split('_')[-1].replace('.json', '')) for f in steps]
+                if len(steps) >= 3:
+                    min_steps = min(steps)
+                    try:
+                        shutil.rmtree(
+                            os.path.join(
+                                folder,
+                                f'checkpoint_{min_steps}'),
+                            ignore_errors=True)
+                    except BaseException:
+                        pass
+                accelerator.print(f"done saving checkpoint to {checkpoint_folder}")
 
         if completed_steps >= args.max_train_steps:
             break
@@ -229,6 +247,7 @@ if __name__ == "__main__":
     args.add_argument("--wandb", type=str)
     args.add_argument("--seed", type=int, default=42)
     args.add_argument("--max-train-steps", type=int, default=400)
+    args.add_argument("--save-every", type=int, default=5)
     args.add_argument("--learning-rate", type=float, default=2e-5)
     args.add_argument("--rope-theta", type=float, default=100000)
     args.add_argument("--model", type=str, default="meta-llama/Llama-2-7b-hf")
