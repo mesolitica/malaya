@@ -216,7 +216,7 @@ torch-neuronx==1.13.1.1.13.1
 torch-xla==1.13.1+torchneurond
 torchvision==0.14.1
 tornado==6.3.3
-tqdm==4.66.1
+tqdm==4.66.3
 traitlets==5.9.0
 transformers==4.36.2
 transformers-neuronx==0.9.474
