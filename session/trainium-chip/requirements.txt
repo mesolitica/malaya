@@ -12,7 +12,7 @@ attrs==23.1.0
 aws-neuronx-runtime-discovery==2.9
 awscli==1.29.73
 azure-core==1.30.0
-azure-identity==1.15.0
+azure-identity==1.16.1
 azure-storage-blob==12.19.0
 azure-storage-file-datalake==12.14.0
 banal==1.0.6
