@@ -41,3 +41,16 @@ pip install --pre torch==2.4.0.dev20240324  --index-url https://download.pytorch
 pip install packaging &&  pip install ninja && pip install flash-attn --no-build-isolation --no-cache-dir
 pip install -r requirements.txt
 ```
+
+## Unsloth
+
+1. Install dependencies,
+
+```
+pip3 install pip -U
+pip3 uninstall torch torchvision flash-attn -y
+pip3 install torch torchvision
+pip3 install mosaicml-streaming
+pip3 install "unsloth[cu121-torch230] @ git+https://github.com/unslothai/unsloth.git"
+pip3 install flash-attn --no-build-isolation
+```

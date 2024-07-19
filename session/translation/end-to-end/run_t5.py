@@ -284,6 +284,7 @@ def main():
         cache_dir=model_args.cache_dir,
         revision=model_args.model_revision,
         use_auth_token=True if model_args.use_auth_token else None,
+        attn_implementation = 'sdpa',
     )
     model.config.use_cache = False
 
@@ -291,8 +292,6 @@ def main():
     print(model)
 
     # Get the language codes for input/target.
-    source_lang = 'src'
-    target_lang = 'tgt'
 
     # Temporarily set max_target_length for training.
     max_target_length = data_args.max_target_length
@@ -333,7 +332,7 @@ def main():
 
     train_dataset = DatasetFixed(data_args.train_file)
 
-    label_pad_token_id = -100 if data_args.ignore_pad_token_for_loss else tokenizer.pad_token_id
+    label_pad_token_id = -100
     if data_args.pad_to_max_length:
         data_collator = default_data_collator
     else:

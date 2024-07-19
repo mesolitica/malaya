@@ -1,5 +1,5 @@
 WANDB_PROJECT="unsloth-malaysian-llama-3-8b-instruct-16k" \
-~/.local/bin/torchrun --nproc_per_node 1 \
+~/.local/bin/torchrun --nproc_per_node 4 \
 -m train_unsloth \
 --model_name_or_path mesolitica/malaysian-llama-3-8b-instruct-16k \
 --per_device_train_batch_size 2 \
@@ -9,7 +9,7 @@ WANDB_PROJECT="unsloth-malaysian-llama-3-8b-instruct-16k" \
 --do_train \
 --do_eval false \
 --num_train_epochs 5 \
---dataset 'final-sft' \
+--dataset 'final-sft-llama3-packing-32k' \
 --logging_steps 1 \
 --learning_rate 5e-5 \
 --embedding_learning_rate 5e-6 \

@@ -32,7 +32,6 @@ from itertools import chain
 from typing import Optional
 
 import datasets
-import evaluate
 import torch
 from datasets import load_dataset
 
@@ -276,15 +275,6 @@ def main():
     if os.path.isdir(
             training_args.output_dir) and training_args.do_train and not training_args.overwrite_output_dir:
         last_checkpoint = get_last_checkpoint(training_args.output_dir)
-        if last_checkpoint is None and len(os.listdir(training_args.output_dir)) > 0:
-            raise ValueError(
-                f"Output directory ({training_args.output_dir}) already exists and is not empty. "
-                "Use --overwrite_output_dir to overcome."
-            )
-        elif last_checkpoint is not None and training_args.resume_from_checkpoint is None:
-            logger.info(
-                f"Checkpoint detected, resuming training at {last_checkpoint}. To avoid this behavior, change "
-                "the `--output_dir` or add `--overwrite_output_dir` to train from scratch.")
 
     # Set seed before initializing model.
     set_seed(training_args.seed)
@@ -294,7 +284,6 @@ def main():
         "revision": model_args.model_revision,
         "token": model_args.token,
         "trust_remote_code": model_args.trust_remote_code,
-        'max_position_embeddings': 32768,
     }
 
     if model_args.config_name:
