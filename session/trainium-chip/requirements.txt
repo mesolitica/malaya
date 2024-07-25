@@ -211,7 +211,7 @@ terminado==0.18.0
 threadpoolctl==3.2.0
 tinycss2==1.2.1
 tokenizers==0.15.2
-torch==1.13.1
+torch==2.2.0
 torch-neuronx==1.13.1.1.13.1
 torch-xla==1.13.1+torchneurond
 torchvision==0.14.1
