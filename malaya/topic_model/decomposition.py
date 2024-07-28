@@ -178,7 +178,7 @@ def fit(
             corpus[i] = cleaning(corpus[i])
 
     tf = vectorizer.fit_transform(corpus)
-    tf_features = vectorizer.get_feature_names()
+    tf_features = vectorizer.get_feature_names_out()
     compose = model(n_topics).fit(tf)
     return Topic(
         tf_features, compose, corpus, compose.transform(tf), vectorizer, tf
