@@ -36,7 +36,7 @@ coloredlogs==15.0.1
 comm==0.2.1
 contextlib2==21.6.0
 contourpy==1.1.1
-cryptography==41.0.5
+cryptography==43.0.1
 cycler==0.12.1
 dataset==1.6.2
 datasets==2.14.7
