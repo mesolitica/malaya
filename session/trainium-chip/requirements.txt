@@ -185,7 +185,7 @@ s3transfer==0.7.0
 safetensors==0.4.0
 sagemaker==2.183.0
 sagemaker-pytorch-training==2.8.1
-sagemaker-training==4.7.0
+sagemaker-training==4.8.0
 schema==0.7.5
 scikit-learn==1.3.2
 scipy==1.11.2
