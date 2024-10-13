@@ -120,13 +120,15 @@ class DataCollatorForSeq2Seq:
         if return_tensors is None:
             return_tensors = self.return_tensors
 
+        features = [f for f in features if f is not None]
+
         label_name = 'labels'
-        labels = [feature[label_name] for feature in features if feature is not None]
+        labels = [feature[label_name] for feature in features]
         # reconvert list[None] to None if necessary
         # this might occur when we pass {..., "labels": None}
         if labels is not None and all(label is None for label in labels):
             labels = None
-        non_labels_features = [{k: v for k, v in feature.items() if k != label_name} for feature in features if feature is not None]
+        non_labels_features = [{k: v for k, v in feature.items() if k != label_name} for feature in features]
 
         # run through tokenizer without labels to ensure no side effects
         batch = pad_without_fast_tokenizer_warning(
