@@ -1,21 +1,24 @@
-WANDB_PROJECT="nanot5-small-malaysian-cased-translation-v3" \
+WANDB_PROJECT="nanot5-small-malaysian-cased-translation-v4" \
 torchrun \
---nproc_per_node 4 \
+--nproc_per_node 1 \
 -m run_t5_v2 \
 --model_name_or_path mesolitica/nanot5-small-malaysian-cased \
 --num_train_epochs 2 \
 --eval_steps 1000000000 \
 --logging_steps 2 \
---save_steps 1500 \
+--save_steps 200 \
 --save_total_limit 3 \
 --do_train \
---train_file malaysian-translation \
---output_dir nanot5-small-malaysian-cased-translation-v3 \
---per_device_train_batch_size=12 \
+--train_file mosaic \
+--output_dir nanot5-small-malaysian-cased-translation-v4-v2 \
+--dataloader_num_workers=10 \
+--per_device_train_batch_size=2 \
 --per_device_eval_batch_size=3 \
---gradient_accumulation_steps=2 \
---max_source_length 4096 \
---max_target_length 4096 \
+--gradient_accumulation_steps=16 \
+--max_source_length 2048 \
+--max_target_length 2048 \
 --learning_rate 2e-4 \
 --gradient_checkpointing true \
---bf16
+--weight_decay 0.01 \
+--bf16 \
+--run_name nanot5-small-malaysian-cased-translation-v4-1
