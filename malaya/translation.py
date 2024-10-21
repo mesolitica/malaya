@@ -56,6 +56,14 @@ NLLB Metrics, https://github.com/facebookresearch/fairseq/tree/nllb#multilingual
 1. NLLB-200, MOE, 54.5B, https://tinyurl.com/nllb200moe54bmetrics, zho_Hans-eng_Latn,54.7
 2. NLLB-200, Dense, 3.3B, 17.58 GB, https://tinyurl.com/nllb200dense3bmetrics, zho_Hans-eng_Latn,56.2
 3. NLLB-200, Dense, 1.3B, 5.48 GB, https://tinyurl.com/nllb200dense1bmetrics, zho_Hans-eng_Latn,54.7
+""",
+    'tam_Taml-en': """
+NLLB Metrics, https://github.com/facebookresearch/fairseq/tree/nllb#multilingual-translation-models:
+1. NLLB-200, MOE, 54.5B, https://tinyurl.com/nllb200moe54bmetrics, tam_Taml-eng_Latn,60.8
+""",
+    'tam_Taml-ms': """
+NLLB Metrics, https://github.com/facebookresearch/fairseq/tree/nllb#multilingual-translation-models:
+1. NLLB-200, MOE, 54.5B, https://tinyurl.com/nllb200moe54bmetrics, tam_Taml-zsm_Latn,53.9
 """
 }
 

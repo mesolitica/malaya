@@ -1,5 +1,5 @@
 WANDB_PROJECT=unsloth-Meta-Llama-3.1-8B-Instruct-lora-128-embedding-16k-multipack \
-deepspeed run-instruction-qlora-embedding-multipack.py \
+deepspeed run-instruction-lora-embedding-multipack.py \
 --deepspeed ds_config_zero3.json \
 --model_name_or_path unsloth/Meta-Llama-3.1-8B-Instruct \
 --per_device_train_batch_size 1 \
