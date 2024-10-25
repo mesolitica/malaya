@@ -227,7 +227,7 @@ urllib3==1.26.18
 wcwidth==0.2.13
 webencodings==0.5.1
 websocket-client==1.7.0
-Werkzeug==3.0.1
+Werkzeug==3.0.6
 widgetsnbextension==4.0.9
 xxhash==3.4.1
 xyzservices==2023.10.1
