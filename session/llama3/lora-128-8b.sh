@@ -1,18 +1,18 @@
-WANDB_PROJECT=unsloth-Meta-Llama-3.1-8B-Instruct-lora-128-embedding-16k-multipack \
+WANDB_PROJECT=unsloth-Meta-Llama-3.1-8B-Instruct-lora-128-embedding-8k-multipack \
 deepspeed run-instruction-lora-embedding-multipack.py \
 --deepspeed ds_config_zero3.json \
 --model_name_or_path unsloth/Meta-Llama-3.1-8B-Instruct \
---per_device_train_batch_size 1 \
+--per_device_train_batch_size 4 \
 --gradient_accumulation_steps 6 \
---output_dir unsloth-Meta-Llama-3.1-8B-Instruct-lora-128-embedding-16k-multipack \
+--output_dir unsloth-Meta-Llama-3.1-8B-Instruct-lora-128-embedding-8k-multipack \
 --bf16 \
 --do_train \
 --do_eval false \
 --num_train_epochs 5 \
---train_file 'malaysian-llama3.1-24k-language-multipack' \
+--train_file 'malaysian-llama3.1-8k-language-multipack' \
 --logging_steps 1 \
 --learning_rate 2e-5 \
---embedding_learning_rate 5e-6 \
+--learning_rate 2e-5 \
 --weight_decay 0.01 \
 --block_size 24576 \
 --save_steps 20 \
