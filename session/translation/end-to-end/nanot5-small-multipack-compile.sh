@@ -1,0 +1,28 @@
+WANDB_PROJECT="nanot5-small-malaysian-cased-translation-v6-multipack-post" \
+torchrun \
+--nproc_per_node 2 \
+-m run_t5_multipack_compile \
+--model_name_or_path mesolitica/nanot5-small-malaysian-translation-v2 \
+--num_train_epochs 2 \
+--eval_steps 1000000000 \
+--logging_steps 2 \
+--save_steps 200 \
+--save_total_limit 3 \
+--do_train \
+--train_file /home/husein/ssd3/t5-sdpa-multipack/packing-post \
+--output_dir nanot5-small-malaysian-cased-translation-v5-multipack-post \
+--dataloader_num_workers 5 \
+--dataloader_prefetch_factor 4 \
+--per_device_train_batch_size=2 \
+--per_device_eval_batch_size=3 \
+--gradient_accumulation_steps=8 \
+--max_source_length 2048 \
+--max_target_length 2048 \
+--learning_rate 2e-5 \
+--max_grad_norm 1.0 \
+--gradient_checkpointing false \
+--weight_decay 0.001 \
+--bf16 \
+--ddp_find_unused_parameters true \
+--model_revision d3d615448b7153d849116cf028a1290f86d7f744 \
+--torch_compile
