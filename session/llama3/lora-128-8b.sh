@@ -1,8 +1,10 @@
 WANDB_PROJECT=unsloth-Meta-Llama-3.1-8B-Instruct-lora-128-embedding-8k-multipack \
-deepspeed run-instruction-lora-embedding-multipack.py \
+TORCH_DISTRIBUTED_DEBUG="info" \
+torchrun --nproc_per_node 4 \
+-m run-instruction-lora-liger-flex \
 --deepspeed ds_config_zero3.json \
 --model_name_or_path unsloth/Meta-Llama-3.1-8B-Instruct \
---per_device_train_batch_size 4 \
+--per_device_train_batch_size 3 \
 --gradient_accumulation_steps 6 \
 --output_dir unsloth-Meta-Llama-3.1-8B-Instruct-lora-128-embedding-8k-multipack \
 --bf16 \
@@ -12,7 +14,7 @@ deepspeed run-instruction-lora-embedding-multipack.py \
 --train_file 'malaysian-llama3.1-8k-language-multipack' \
 --logging_steps 1 \
 --learning_rate 2e-5 \
---learning_rate 2e-5 \
+--warmup_steps 10 \
 --weight_decay 0.01 \
 --block_size 24576 \
 --save_steps 20 \
@@ -20,4 +22,6 @@ deepspeed run-instruction-lora-embedding-multipack.py \
 --gradient_checkpointing true \
 --neftune_noise_alpha 5.0 \
 --torch_dtype bfloat16 \
---rank 128
+--rank 128 \
+--dataloader_num_workers 3 \
+--dataloader_prefetch_factor 4
