@@ -6,5 +6,5 @@
 
 ```bash
 pip3 install transformers==4.47.0 accelerate==1.1.1
-pip3 install git+https://github.com/mesolitica/ml-cross-entropy-lora-embedding
+pip3 install git+https://github.com/mesolitica/ml-cross-entropy-lora-lm-head
 ```
