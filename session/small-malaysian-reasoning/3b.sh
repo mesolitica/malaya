@@ -1,7 +1,7 @@
 WANDB_PROJECT="lora-embedding-256-llama3.2-3b-small-malaysian-reasoning" \
-CUDA_VISIBLE_DEVICES="2" \
+CUDA_VISIBLE_DEVICES="0,1" \
 TORCH_DISTRIBUTED_DEBUG="info" \
-torchrun --nproc_per_node 1 \
+torchrun --nproc_per_node 2 \
 -m train \
 --model_name_or_path unsloth/Llama-3.2-3B-Instruct \
 --per_device_train_batch_size 2 \
