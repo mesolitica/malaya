@@ -1,4 +1,4 @@
-WANDB_PROJECT="lora-embedding-256-llama3.2-3b-small-malaysian-reasoning" \
+WANDB_PROJECT="lora-embedding-256-llama3.2-3b-small-malaysian-reasoning-cont" \
 CUDA_VISIBLE_DEVICES="0,1" \
 TORCH_DISTRIBUTED_DEBUG="info" \
 torchrun --nproc_per_node 2 \
@@ -7,8 +7,8 @@ torchrun --nproc_per_node 2 \
 --per_device_train_batch_size 2 \
 --gradient_accumulation_steps 6 \
 --output_dir lora-embedding-256-llama3.2-3b-small-malaysian-reasoning \
---bf16 --do_train --do_eval false --num_train_epochs 5 \
---train_file packing-3k \
+--bf16 --do_train --do_eval false --num_train_epochs 100 \
+--train_file packing-3k-reasoning \
 --logging_steps 1 \
 --learning_rate 2e-5 \
 --weight_decay 0.01 \

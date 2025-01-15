@@ -24,8 +24,6 @@ https://huggingface.co/models?filter=text-generation
 
 import torch
 
-torch._dynamo.config.optimize_ddp=False
-
 import logging
 import math
 import os
@@ -47,6 +45,7 @@ from transformers import (
     AutoConfig,
     AutoModelForCausalLM,
     AutoTokenizer,
+    AutoProcessor,
     HfArgumentParser,
     Trainer,
     TrainingArguments,
@@ -55,18 +54,15 @@ from transformers import (
     DataCollatorForLanguageModeling,
     is_torch_tpu_available,
     set_seed,
-    Qwen2AudioForConditionalGeneration,
 )
 from transformers.testing_utils import CaptureLogger
 from transformers.trainer_utils import get_last_checkpoint
 from transformers.utils import check_min_version, send_example_telemetry
 from transformers.utils.versions import require_version
 from transformers.models.llama.modeling_llama import LlamaForCausalLM
-import streaming
 import json
+import os
 import numpy as np
-from streaming import LocalDataset
-from streaming.base.format.mds.encodings import Encoding, _encodings
 from peft import LoraConfig, get_peft_model
 from cut_cross_entropy import linear_cross_entropy
 
@@ -250,21 +246,6 @@ def print_trainable_parameters(model):
         f"trainable params: {trainable_params} || all params: {all_param} || trainable%: {100 * trainable_params / all_param}"
     )
 
-def block_diagonal_concat_inverted(*masks, dtype=torch.bfloat16):
-    total_size = sum(mask.size(0) for mask in masks)
-    combined_mask = torch.zeros(total_size, total_size, dtype=dtype)
-
-    current_pos = 0
-
-    for mask in masks:
-        size = mask.size(0)
-        combined_mask[current_pos:current_pos + size, current_pos:current_pos + size] = mask
-        current_pos += size
-
-    min_value = torch.finfo(dtype).min if dtype.is_floating_point else torch.iinfo(dtype).min
-    inverted_mask = torch.where(combined_mask == 1, torch.tensor(0, dtype=dtype), min_value)
-    return inverted_mask.unsqueeze(0)
-
 class Model(Qwen2AudioForConditionalGeneration):
     def __init__(self, config):
         super().__init__(config)
@@ -354,82 +335,110 @@ def main():
     # The .from_pretrained methods guarantee that only one local process can concurrently
     # download model & vocab.
 
-    config_kwargs = {
-        "cache_dir": model_args.cache_dir,
-        "revision": model_args.model_revision,
-        "token": model_args.token,
-        "trust_remote_code": model_args.trust_remote_code,
-    }
-
-    if model_args.config_name:
-        config = AutoConfig.from_pretrained(model_args.config_name, **config_kwargs)
-    elif model_args.model_name_or_path:
-        config = AutoConfig.from_pretrained(model_args.model_name_or_path, **config_kwargs)
-    else:
-        config = CONFIG_MAPPING[model_args.model_type]()
-        logger.warning("You are instantiating a new config instance from scratch.")
-        if model_args.config_overrides is not None:
-            logger.info(f"Overriding config: {model_args.config_overrides}")
-            config.update_from_string(model_args.config_overrides)
-            logger.info(f"New config: {config}")
-
-    tokenizer = AutoTokenizer.from_pretrained(model_args.model_name_or_path)
-
-    class UInt32(Encoding):
-        def encode(self, obj) -> bytes:
-            return obj.tobytes()
-
-        def decode(self, data: bytes):
-            return np.frombuffer(data, np.uint32)
-
-    _encodings['uint32'] = UInt32
+    processor = AutoProcessor.from_pretrained(model_args.model_name_or_path)
+    audio_token = "<|AUDIO|>"
+    audio_bos_token = "<|audio_bos|>"
+    audio_eos_token = "<|audio_eos|>"
+    audio_token_id = processor.tokenizer._convert_token_to_id_with_added_voc('<|AUDIO|>')
+    pad_token_id = processor.tokenizer.pad_token_id
 
     class DatasetFixed(torch.utils.data.Dataset):
         def __init__(self, local):
-            self.dataset = LocalDataset(local=local)
+            self.dataset = []
+            with open(local) as fopen:
+                for l in fopen:
+                    l = json.loads(l)
+                    self.dataset.append(l)
+            self.audio = Audio(sampling_rate=16000)
 
         def __getitem__(self, idx):
             data = self.dataset[idx]
-            data['labels'] = data["input_ids"].copy()
-            masking = data.pop('attention_mask')
-            
-            data.pop('token_type_ids', None)
-            for k in data.keys():
-                data[k] = data[k].astype(np.int64)
+            if not os.path.exists(data['audio']):
+                continue
+            try:
+                audio = self.audio.decode_example(
+                    self.audio.encode_example(
+                        data['audio']))['array']
+
+                inputs_audio = processor.feature_extractor([audio], return_attention_mask=True, padding="max_length", return_tensors = 'pt')
+                audio_lengths = inputs_audio["attention_mask"].sum(-1).tolist()
+                num_audio_tokens = sample.count(audio_token)
+
+                sample = data['text']
+                replace_str = []
+                while audio_token in sample:
+                    audio_length = audio_lengths.pop(0)
+                    input_length = (audio_length - 1) // 2 + 1
+                    num_audio_tokens = (input_length - 2) // 2 + 1
+
+                    expanded_audio_token = audio_token * num_audio_tokens
+
+                    audio_token_start_idx = sample.find(audio_token)
+                    audio_token_end_idx = audio_token_start_idx + len(audio_token)
+
+                    has_bos = (
+                        sample[audio_token_start_idx - len(audio_bos_token) : audio_token_start_idx]
+                        == audio_bos_token
+                    )
+                    has_eos = (
+                        sample[audio_token_end_idx : audio_token_end_idx + len(audio_eos_token)]
+                        == audio_eos_token
+                    )
+
+                    if not has_bos and not has_eos:
+                        expanded_audio_token = audio_bos_token + expanded_audio_token + audio_eos_token
+
+                    replace_str.append(expanded_audio_token)
+                    sample = sample.replace(audio_token, "<placeholder>", 1)
+
+                while "<placeholder>" in sample:
+                    sample = sample.replace("<placeholder>", replace_str.pop(0), 1)
                 
-            masks = []
-            for m in masking:
-                masks.append(torch.tril(torch.ones(m, m)))
-            attention_mask = block_diagonal_concat_inverted(*masks)
-            data['attention_mask'] = attention_mask
-            
-            return data
+                inputs = {
+                    'text': sample,
+                    'input_features': inputs_audio['input_features'],
+                    'feature_attention_mask': inputs_audio['attention_mask'],
+                }
+                return inputs
+
+            except Exception as e:
+                print(e)
+                return None
 
         def __len__(self):
             return len(self.dataset)
 
+    def collator(batch):
+        batch = [b for b in batch if b is not None]        
+        texts = [b['text'] for b in batch]
+        
+        input_ids = processor.tokenizer(
+            texts, 
+            return_tensors = 'pt', 
+            truncation = True, 
+            max_length = data_args.block_size,
+        )
+        labels = input_ids['input_ids'].clone()
+        labels[labels == audio_token_id] = -100
+        labels[labels == pad_token_id] = -100
+        input_ids['labels'] = labels
+        input_ids['input_features'] = torch.concat([b['input_features'] for b in batch], 0)
+        input_ids['feature_attention_mask'] = torch.concat([b['feature_attention_mask'] for b in batch], 0)
+        
+        return input_ids
+
     dataset = DatasetFixed(data_args.train_file)
-    print('dataset', len(dataset), dataset[0]['attention_mask'].shape)
+    print('dataset', len(dataset))
 
     torch_dtype = (
         model_args.torch_dtype
         if model_args.torch_dtype in ["auto", None]
         else getattr(torch, model_args.torch_dtype)
     )
-
-    model = Llama.from_pretrained(
-        model_args.model_name_or_path,
-        from_tf=bool(".ckpt" in model_args.model_name_or_path),
-        config=config,
-        cache_dir=model_args.cache_dir,
-        revision=model_args.model_revision,
-        token=model_args.token,
-        trust_remote_code=model_args.trust_remote_code,
-        torch_dtype=torch_dtype,
-        low_cpu_mem_usage=model_args.low_cpu_mem_usage,
-        attn_implementation = 'sdpa',
+    model = Model.from_pretrained(
+        model_args.model_name_or_path, 
+        torch_dtype = torch_dtype
     )
-    print(model)
 
     peft_config = LoraConfig(
         lora_alpha=model_args.rank * 2,
@@ -448,8 +457,14 @@ def main():
             output.requires_grad_(True)
 
         model.get_input_embeddings().register_forward_hook(make_inputs_require_grad)
+    
+    model.language_model = get_peft_model(model.language_model, peft_config)
+    for param in model.audio_tower.parameters():
+        param.requires_grad = False
+        
+    for param in model.multi_modal_projector.parameters():
+        param.requires_grad = False
 
-    model = get_peft_model(model, peft_config)
     print_trainable_parameters(model)
 
     trainer = Trainer(
@@ -457,8 +472,7 @@ def main():
         args=training_args,
         train_dataset=dataset,
         eval_dataset=None,
-        tokenizer=tokenizer,
-        data_collator=default_data_collator,
+        data_collator=collator,
         compute_metrics=None,
         preprocess_logits_for_metrics=None,
     )
