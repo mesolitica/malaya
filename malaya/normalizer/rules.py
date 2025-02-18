@@ -3,6 +3,7 @@ import dateparser
 import itertools
 import math
 import numpy as np
+from unidecode import unidecode
 from malaya.num2word import to_cardinal
 from malaya.text.function import (
     is_laugh,
@@ -65,7 +66,6 @@ from typing import Callable, List
 import logging
 
 logger = logging.getLogger(__name__)
-
 
 def normalized_entity(normalized):
 
@@ -161,13 +161,18 @@ def check_repeat(word):
         return word, 1
 
     if word[-1].isdigit() and not word[-2].isdigit():
-        repeat = int(word[-1])
-        word = word[:-1]
+        try:
+            repeat = int(unidecode(word[-1]))
+            word = word[:-1]
+        except Exception as e:
+            logging.debug(f'check repeat failed, {e}')
+            repeat = 1
     else:
         repeat = 1
 
     if repeat < 1:
         repeat = 1
+    
     return word, repeat
 
 
@@ -193,6 +198,13 @@ def put_spacing_num(string):
     string = ' '.join(string)
     return re.sub(r'[ ]+', ' ', string).strip()
 
+def replace_multiple_cardinal(string):
+    def custom_replace(match):
+        number = match.group(0)
+        return f' {cardinal(number)} '
+
+    string = re.sub(_expressions['number'], custom_replace, string)
+    return re.sub(r'[ ]+', ' ', string).strip()
 
 class Normalizer:
     def __init__(self, tokenizer, speller=None, stemmer=None):
@@ -208,6 +220,7 @@ class Normalizer:
         self,
         string: str,
         normalize_text: bool = True,
+        normalize_word_rules: bool = True,
         normalize_url: bool = False,
         normalize_email: bool = False,
         normalize_year: bool = True,
@@ -248,6 +261,8 @@ class Normalizer:
         ----------
         string : str
         normalize_text: bool, optional (default=True)
+            if True, will try to normalize words.
+        normalize_word_rules: bool, optional (default=True)
             if True, will try to replace shortforms with internal corpus.
         normalize_url: bool, optional (default=False)
             if True, replace `://` with empty and `.` with `dot`.
@@ -268,7 +283,9 @@ class Normalizer:
             if False, `2017 Jun` -> `01/06/2017`.
             if False, `Jun 2017` -> `01/06/2017`.
         normalize_time: bool, optional (default=True)
-            if True, `pukul 2.30` -> `pukul dua tiga puluh minit`.
+            if True, `pukul 2.30` -> `pukul dua tiga puluh minit pagi`.
+            if True, `pukul 22.30` -> `pukul sepuluh tiga puluh minit malam`.
+            if True, `12:10 AM` -> `pukul dua belas sepuluh minit pagi`.
             if False, `pukul 2.30` -> `'02:00:00'`
         normalize_emoji: bool, (default=True)
             if True, `🔥` -> `emoji api`
@@ -530,7 +547,7 @@ class Normalizer:
                 s = f'index: {index}, word: {word}, condition not in money and date'
                 logger.debug(s)
 
-                if word_lower in rules_normalizer and normalize_text:
+                if normalize_text and word_lower in rules_normalizer:
                     result.append(case_of(word)(rules_normalizer[word_lower]))
                     index += 1
                     continue
@@ -648,7 +665,7 @@ class Normalizer:
                 index += 1
                 continue
 
-            if word_lower in rules_normalizer and normalize_text:
+            if normalize_word_rules and word_lower in rules_normalizer:
                 s = f'index: {index}, word: {word}, condition in early rules normalizer'
                 logger.debug(s)
                 result.append(case_of(word)(rules_normalizer[word_lower]))
@@ -877,10 +894,7 @@ class Normalizer:
                 word = word_lower
                 word = multireplace(word, date_replace)
                 word = re.sub(r'[ ]+', ' ', word).strip()
-                if index - 1 >= 0 and tokenized[index - 1].lower() in ['pkul', 'pukul', 'pkl']:
-                    prefix = ''
-                else:
-                    prefix = 'pukul '
+                prefix = 'pukul '
                 try:
                     s = f'index: {index}, word: {word}, parsing time'
                     logger.debug(s)
@@ -889,6 +903,14 @@ class Normalizer:
                         word = parsed.strftime('%H:%M:%S')
                         hour, minute, second = word.split(':')
                         if normalize_time:
+                            hour = parsed.strftime('%I')
+                            hour = hour.lstrip('0')
+                            if parsed.hour < 12:
+                                period = 'pagi'
+                            elif parsed.hour < 19:
+                                period = 'petang'
+                            else:
+                                period = 'malam'
                             hour = cardinal(hour)
                             if int(minute) > 0:
                                 minute = cardinal(minute)
@@ -900,7 +922,7 @@ class Normalizer:
                                 second = f'{second} saat'
                             else:
                                 second = ''
-                            word = f'{prefix}{hour} {minute} {second}'
+                            word = f'{prefix}{hour} {minute} {second} {period}'
                         else:
                             pukul = f'{prefix}{hour}'
                             if int(minute) > 0:
@@ -965,7 +987,11 @@ class Normalizer:
             if len(re.findall(_expressions['number'], word)):
                 s = f'index: {index}, word: {word}, condition is number'
                 logger.debug(s)
-                result.append(word)
+                if normalize_cardinal:
+                    w = replace_multiple_cardinal(word)
+                else:
+                    w = word
+                result.append(w)
                 index += 1
                 continue
 
@@ -974,6 +1000,7 @@ class Normalizer:
                 logger.debug(s)
                 if normalize_cardinal:
                     w = normalize_numbers_with_shortform(word_lower)
+                    w = cardinal(w)
                 else:
                     w = word
                 result.append(w)
@@ -1019,13 +1046,16 @@ class Normalizer:
                 if normalize_text:
                     s = f'index: {index}, word: {word}, condition normalize text'
                     logger.debug(s)
-                    if word in sounds:
+                    if normalize_word_rules and word in sounds:
                         selected = sounds[word]
-                    elif word in rules_normalizer:
+                    elif normalize_word_rules and word in rules_normalizer:
                         selected = rules_normalizer[word]
                     # betuii -> betui -> betul
-                    elif len(word) > 1 and word[-1] == word[-2] and word[:-1] in rules_normalizer:
-                        selected = rules_normalizer[word[:-1]]
+                    elif len(word) > 1 and word[-1] == word[-2]:
+                        if normalize_word_rules and word[:-1] in rules_normalizer:
+                            selected = rules_normalizer[word[:-1]]
+                        else:
+                            selected = word[:-1]
                     # betuii -> betui -> betul
                     elif len(word) > 1 and word[-1] == word[-2] and word[:-1] in rules_normalizer_rev:
                         selected = word[:-1]
