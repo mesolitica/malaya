@@ -32,16 +32,17 @@ _full_date_parts = [
     # prefix
     r'(?:(?<!:)\b\'?\d{1,4},? ?)',
     r'\b(?:[Jj]an(?:uari)?|[Ff]eb(?:ruari)?|[Mm]a(?:c)?|[Aa]pr(?:il)?|[Mm]ei|[Jj]u(?:n)?|[Jj]ula(?:i)?|[Aa]ug(?:ust)?|[Oo]gos|[Ss]ept?(?:ember)?|[Oo]kt(?:ober)?|[Nn]ov(?:ember)?|[Dd]is(?:ember)?)\b',
-    r'(?:(?:,? ?\'?)?\d{1,4}(?:st|nd|rd|n?th)?\b(?:[,\/]? ?\'?\d{2,4}[a-zA-Z]*)?(?: ?- ?\d{2,4}[a-zA-Z]*)?(?!:\d{1,4})\b)',
+    r'(?:(?:,? ?\'?)?\d{1,4}(?:st|nd|rd|n?th)?\b[,\/]? ?\'?\d{2,4}[a-zA-Z]*(?: ?- ?\d{2,4}[a-zA-Z]*)?(?!:\d{1,4})\b)'
 ]
 _fd1 = '(?:{})'.format(
     ''.join(
         [_full_date_parts[0] + '?', _full_date_parts[1], _full_date_parts[2]]
     )
 )
+
 _fd2 = '(?:{})'.format(
     ''.join(
-        [_full_date_parts[0], _full_date_parts[1], _full_date_parts[2] + '?']
+        [_full_date_parts[0], _full_date_parts[1], _full_date_parts[2]]
     )
 )
 
@@ -57,7 +58,7 @@ _yesterday_tomorrow_date_string = (
 _future_date_string = '(?:dlm|dalam)\\s*\\d+(?:minggu|bulan|tahun|hari|thun|hri|mnggu|jam|minit|saat)\\b'
 _depan_date_string = '(?:\\s|\\d+)\\s*(?:minggu|bulan|tahun|hari|thun|hri|mnggu|jam|minit|saat)\\s*(?:depan|dpan|dpn)\\b'
 
-_number = r"\b\d+(?:[\.,']\d+)?\b"
+_number = r"(?<!\w)-?\d+(?:[\.,']\d+)?(?!\w)"
 _number_with_shortform = r"\b(?:\d+(?:[\.,']\d+)?\s*(?:[Rr]ibu|[Jj]uta|[MmKkBbj](?:n|(?:i(?:lion|llion)?))?)?)\b|\b(?:\d+(?:[\.,']\d+)?\s*(?:[MmKkBbj](?:n|(?:i(?:lion|llion)?))?|[Rr]ibu|[Jj]uta)?)\b"
 _percentage = _number + '%'
 _money = r"(?:(?:[$€£¢]|RM|rm)\s*\d+(?:[\.,']\d+)?\s*(?:[Rr]ibu|[Jj]uta|[MmKkBbj](?:n|(?:i(?:lion|llion)?))?)?)\b|(?:\d+(?:[\.,']\d+)?\s*(?:[MmKkBbj](?:n|(?:i(?:lion|llion)?))?|[Rr]ibu|[Jj]uta)?\s*(?:[$€£¢]|sen|ringgit|cent|penny))\b"

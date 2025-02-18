@@ -203,7 +203,8 @@ def replace_multiple_cardinal(string):
         number = match.group(0)
         return f' {cardinal(number)} '
 
-    string = re.sub(_expressions['number'], custom_replace, string)
+    string = string.replace('-', ' ')
+    string = re.sub(r'\d+', custom_replace, string)
     return re.sub(r'[ ]+', ' ', string).strip()
 
 class Normalizer:
@@ -239,6 +240,7 @@ class Normalizer:
         normalize_number: bool = True,
         normalize_x_kali: bool = True,
         normalize_cardinal: bool = True,
+        normalize_cardinal_title: bool = True,
         normalize_ordinal: bool = True,
         normalize_entity: bool = True,
         expand_contractions: bool = True,
@@ -312,6 +314,8 @@ class Normalizer:
             if True `10x` -> 'sepuluh kali'
         normalize_cardinal: bool, optional (default=True)
             if True, `123` -> `seratus dua puluh tiga`
+        normalize_cardinal_title: bool, optional (default=True)
+            if True, `B-15` -> `B- lima belas`
         normalize_ordinal: bool, optional (default=True)
             if True, `ke-123` -> `keseratus dua puluh tiga`
         normalize_entity: bool, optional (default=True)
@@ -478,7 +482,7 @@ class Normalizer:
                 logger.debug(s)
                 if normalize_email:
                     word = (
-                        word.replace('://', ' ')
+                        word.upper().replace('://', ' ')
                         .replace('.', ' dot ')
                         .replace('@', ' di ')
                     )
@@ -547,7 +551,7 @@ class Normalizer:
                 s = f'index: {index}, word: {word}, condition not in money and date'
                 logger.debug(s)
 
-                if normalize_text and word_lower in rules_normalizer:
+                if normalize_word_rules and word_lower in rules_normalizer:
                     result.append(case_of(word)(rules_normalizer[word_lower]))
                     index += 1
                     continue
@@ -610,7 +614,11 @@ class Normalizer:
                     if titled:
                         s = f'index: {index}, word: {word}, condition titled'
                         logger.debug(s)
-                        result.append(word)
+                        if normalize_cardinal_title:
+                            w = replace_multiple_cardinal(word)
+                        else:
+                            w = word
+                        result.append(w)
                         index += 1
                         continue
 
@@ -860,7 +868,8 @@ class Normalizer:
                 continue
 
             if re.findall(_expressions['date'], word_lower):
-                s = f'index: {index}, word: {word}, condition date'
+                f = re.findall(_expressions['date'], word_lower)
+                s = f'index: {index}, word: {word}, condition date, {f}'
                 logger.debug(s)
                 word = word_lower
                 word = multireplace(word, date_replace)
@@ -984,17 +993,6 @@ class Normalizer:
                     index += 1
                     continue
 
-            if len(re.findall(_expressions['number'], word)):
-                s = f'index: {index}, word: {word}, condition is number'
-                logger.debug(s)
-                if normalize_cardinal:
-                    w = replace_multiple_cardinal(word)
-                else:
-                    w = word
-                result.append(w)
-                index += 1
-                continue
-
             if re.findall(_expressions['number_with_shortform'], word_lower):
                 s = f'index: {index}, word: {word_lower}, condition is number_with_shortform'
                 logger.debug(s)
@@ -1006,6 +1004,18 @@ class Normalizer:
                 result.append(w)
                 index += 1
                 continue
+
+            if len(re.findall(_expressions['number'], word)):
+                s = f'index: {index}, word: {word}, condition is number'
+                logger.debug(s)
+                if normalize_cardinal:
+                    w = replace_multiple_cardinal(word)
+                else:
+                    w = word
+                result.append(w)
+                index += 1
+                continue
+            
 
             if segmenter is not None:
                 s = f'index: {index}, word: {word}, condition to segment'
