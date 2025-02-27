@@ -237,6 +237,7 @@ class Normalizer:
         normalize_units: bool = True,
         normalize_percent: bool = True,
         normalize_ic: bool = True,
+        ic_dash_sempang: bool = False,
         normalize_number: bool = True,
         normalize_x_kali: bool = True,
         normalize_cardinal: bool = True,
@@ -308,6 +309,9 @@ class Normalizer:
             if True, `0.8%` -> `kosong perpuluhan lapan peratus`
         normalize_ic: bool, optional (default=True)
             if True, `911111-01-1111` -> `sembilan satu satu satu satu satu sempang kosong satu sempang satu satu satu satu`
+        ic_dash_sempang: bool, optional (default=False)
+            if True, `911111-01-1111` -> `sembilan satu satu satu satu satu sempang kosong satu sempang satu satu satu satu`
+            else, `911111-01-1111` -> `sembilan satu satu satu satu satu kosong satu satu satu satu satu`
         normalize_number: bool, optional (default=True)
             if True `0123` -> `kosong satu dua tiga`
         normalize_x_kali: bool, optional (default=True)
@@ -448,7 +452,11 @@ class Normalizer:
                 if normalize_ic:
                     splitted = word.split('-')
                     ics = [digit(s) for s in splitted]
-                    word = ' sempang '.join(ics)
+                    if ic_dash_sempang:
+                        join_w = ' sempang '
+                    else:
+                        join_w = ' '
+                    word = join_w.join(ics)
                 result.append(word)
                 index += 1
                 continue

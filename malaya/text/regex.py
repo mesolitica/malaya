@@ -59,7 +59,7 @@ _future_date_string = '(?:dlm|dalam)\\s*\\d+(?:minggu|bulan|tahun|hari|thun|hri|
 _depan_date_string = '(?:\\s|\\d+)\\s*(?:minggu|bulan|tahun|hari|thun|hri|mnggu|jam|minit|saat)\\s*(?:depan|dpan|dpn)\\b'
 
 _number = r"(?<!\w)-?\d+(?:[\.,']\d+)?(?!\w)"
-_number_with_shortform = r"\b(?:\d+(?:[\.,']\d+)?\s*(?:[Rr]ibu|[Jj]uta|[MmKkBbj](?:n|(?:i(?:lion|llion)?))?)?)\b|\b(?:\d+(?:[\.,']\d+)?\s*(?:[MmKkBbj](?:n|(?:i(?:lion|llion)?))?|[Rr]ibu|[Jj]uta)?)\b"
+_number_with_shortform = r"\b(?<![-\w])(?:\d+(?:[\.,']\d+)?\s*(?:[Rr]ibu|[Jj]uta|[MmKkBbj](?:n|(?:i(?:lion|llion)?))?)?)\b|\b(?<![-\w])(?:\d+(?:[\.,']\d+)?\s*(?:[MmKkBbj](?:n|(?:i(?:lion|llion)?))?|[Rr]ibu|[Jj]uta)?)\b"
 _percentage = _number + '%'
 _money = r"(?:(?:[$€£¢]|RM|rm)\s*\d+(?:[\.,']\d+)?\s*(?:[Rr]ibu|[Jj]uta|[MmKkBbj](?:n|(?:i(?:lion|llion)?))?)?)\b|(?:\d+(?:[\.,']\d+)?\s*(?:[MmKkBbj](?:n|(?:i(?:lion|llion)?))?|[Rr]ibu|[Jj]uta)?\s*(?:[$€£¢]|sen|ringgit|cent|penny))\b"
 _temperature = "-?\\d+(?:[\\.,']\\d+)?\\s*(?:K|Kelvin|kelvin|Kvin|F|f|Farenheit|farenheit|C|c|Celcius|celcius|clcius|celsius)\\b"
