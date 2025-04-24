@@ -6,6 +6,11 @@ from trl import GRPOConfig, GRPOTrainer
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from datasets import load_dataset
 
+chinese_pattern = re.compile(r'[\u4e00-\u9fff]')
+
+def contains_chinese(completions, **kwargs):
+    return [int(not bool(chinese_pattern.search(completion[0]["content"]))) for completion in completions]
+    
 def length_reward_func(completions, **kwargs):
     """Reward function that gives higher scores to longer completions."""
     return [float(len(completion[0]["content"].split()) / 4096) for completion in completions]
@@ -42,15 +47,14 @@ def main(model_name):
         adam_beta1 = 0.9,
         adam_beta2 = 0.99,
         weight_decay = 0.1,
-        warmup_ratio = 0.1,
-        lr_scheduler_type='cosine',
+        warmup_steps = 50,
         logging_steps=1,
         bf16=True,
         per_device_train_batch_size=1,
         gradient_accumulation_steps=4,
-        num_generations=16,
+        num_generations=4,
         max_prompt_length=256,
-        max_completion_length=8192,
+        max_completion_length=4096,
         num_train_epochs=5,
         save_steps=100,
         max_grad_norm=0.1,
@@ -60,6 +64,7 @@ def main(model_name):
         vllm_gpu_memory_utilization=0.8,
         gradient_checkpointing=True,
         ddp_find_unused_parameters=False,
+        deepspeed='ds_config_zero3.json'
     )
     print(training_args)
     peft_config = LoraConfig(
@@ -76,13 +81,13 @@ def main(model_name):
         attn_implementation="sdpa",
         device_map=None
     )
-    model = get_peft_model(model, peft_config)
     print(model)
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     trainer = GRPOTrainer(
         model=model,
         processing_class=tokenizer,
         reward_funcs=[
+            contains_chinese,
             length_reward_func,
             format_reward_func,
             correct_reward_func,
