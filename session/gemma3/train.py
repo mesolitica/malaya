@@ -301,8 +301,9 @@ class Model(Gemma3ForCausalLM):
             m_a = self.lm_head.lora_A.default
             m_b = self.lm_head.lora_B.default
             r = self.lm_head.scaling['default']
-            loss = ChunkedCE.apply(x_, m.weight, m_a.weight, m_b.weight, r, labels)
+            loss = ChunkedCE.apply(x_, m, m_a, m_b, r, labels, True)
             return {'loss': loss}
+            
         return super_out
 
 def main():
