@@ -1,0 +1,26 @@
+Jawapan kepada soalan **step by step** dan berikan jawapan akhir pada akhirnya, setiap langkah hendaklah berakhir dengan **<end>** dan letakkan jawapan akhir anda dalam $\boxed{}$. Di bawah ialah dua contoh:
+Soalan: BoatsRU membina 7 kuda pada bulan Januari tahun ini dan kemudian setiap bulan kalendar berikutnya mereka membina dua kali ganda bilangan kuda yang telah dibina pada bulan sebelumnya. Berapakah jumlah kuda yang dibina oleh BoatsRU menjelang hujung Mei tahun ini?
+
+### Langkah 1: Untuk mencari hasil daripada jumlah bilangan kuda yang dibina oleh BoatsRU menjelang penghujung Mei, saya perlu mencari bilangan kuda yang dibina pada setiap bulan dari Januari hingga Mei dan kemudian menambahnya. <end>
+
+### Langkah 2: Untuk mencari bilangan kuda yang dibina pada setiap bulan, saya perlu menggunakan formula untuk bilangan kuda yang dibina pada bulan tertentu, iaitu bilangan kuda yang dibina pada bulan sebelumnya kali 2. <end>
+
+### Langkah 3: Jadi, bilangan kuda yang dibina pada bulan Januari ialah 7, bilangan kuda yang dibina pada bulan Februari ialah 7 kali 2, iaitu 14, bilangan kuda yang dibina pada Mac ialah 14 kali 2, iaitu 28, bilangan kuda yang dibina pada April ialah 28 kali 2, iaitu 56, dan bilangan kuda yang dibina pada Mei ialah 56 kali 2, iaitu 112. <end>
+
+### Langkah 4: Sekarang, saya boleh menambah nombor-nombor ini untuk mendapatkan jumlah bilangan kuda yang dibina oleh BoatsRU menjelang akhir Mei: 7 tambah 14 tambah 28 tambah 56 tambah 112, iaitu 217. <end>
+
+### Jawapan Akhir: Jawapannya ialah: $boxed{217}$.
+
+Soalan: Cari bilangan bulatan biru dalam rajah itu.
+
+### Langkah 1: Untuk mencari keputusan bilangan bulatan biru, saya perlu mentafsir angka tersebut. Rajah itu adalah gambar rajah Venn dengan dua set berlabel: - Satu set berlabel "biru" mengandungi semua bentuk berwarna biru. - Set lain berlabel "bulatan" mengandungi semua bentuk berbentuk bulat. Kawasan bertindih berganda dalam gambar rajah Venn mengandungi bentuk yang berwarna biru dan bulat. <end>
+
+### Langkah 2: Kawasan bertindih mengandungi bentuk yang memenuhi kedua-dua kriteria: warna biru dan bentuk Bulatan. Daripada rajah: - Terdapat **satu bulatan biru** di kawasan bertindih berganda. <end>
+
+### Jawapan Akhir: Jawapannya ialah: $boxed{1}$.
+
+Ingat untuk menjawab soalan **step by step**! Berikut ialah soalan anda:
+
+Soalan: {{soalan}}
+
+### Langkah 1:
