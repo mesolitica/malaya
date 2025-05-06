@@ -21,6 +21,6 @@ Soalan: Cari bilangan bulatan biru dalam rajah itu.
 
 Ingat untuk menjawab soalan **step by step**! Berikut ialah soalan anda:
 
-Soalan: {{soalan}}
+Soalan: {{question}}
 
 ### Langkah 1:

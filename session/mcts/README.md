@@ -1,3 +1,3 @@
 # MCTS-Guided
 
-This work to replicate https://github.com/si0wang/ThinkLite-VL
+MCTS guided, this dataset suitable for SFT warmup before RL.
