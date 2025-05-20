@@ -4,6 +4,8 @@ Teks Dialek: Koi toye ngat tengok muke Abang Den.
 
 Dialek: pahang
 
+Maksud perkataan: berkenaan rasa benci apabila melihat seseorang.
+
 Berfikir: Sudah tentu, berikut adalah penjelasan **langkah demi langkah secara lebih terperinci dan berperenggan**,
 
 **Ayat dialek:**
@@ -74,6 +76,8 @@ Kedua-dua bentuk diterima, bergantung pada sama ada anda mahu mengekalkan nuansa
 $boxed{Saya benci sangat melihat muka Abang Din.}$. <END>
 
 Teks Dialek: Te tu napok cero, tok sedak la tu.
+
+Maksud perkataan: cero: berkenaan warna yang pudar.
 
 Dialek: kelantan
 
@@ -178,6 +182,8 @@ $boxed{Teh tu nampak pudar, tak sedaplah tu.}$. <END>
 
 Teks Dialek: Tak boleh togo siket, meong la deh.
 
+Maksud perkataan: meong: mudah merajuk.
+
 Dialek: negeri sembilan
 
 Berfikir: Bagus! Mari kita lakukan **analisis terperinci langkah demi langkah**,
@@ -281,6 +287,8 @@ $boxed{Tak boleh tegur sedikit, merajuklah dia.}$. <END>
 
 Teks Dialek: Dio jobo bilo dapek numbo satu.
 
+Maksud perkataan: jobo: megah.
+
 Dialek: negeri sembilan
 
 Berfikir: Baik, saya akan menerjemahkan ayat **"Dio jobo bilo dapek numbo satu."** ke dalam **Bahasa Melayu Standard**, dengan **menggunakan analisis langkah demi langkah**,
@@ -365,6 +373,8 @@ Melalui langkah-langkah di atas, kita dapat melihat bahawa penterjemahan dari di
 $boxed{Dia ceria apabila mendapat nombor satu.}$. <END>
 
 Teks Dialek: Acu mung lenggok alah ke langik, keleh wa aku tu, mucuk naek katah.
+
+Maksud perkataan: alah: arah sesuatu tempat.
 
 Dialek: kelantan
 
@@ -496,8 +506,10 @@ dengan memahami:
 
 $boxed{Cuba kamu dongak ke langit, tengok wau aku tu meluncur ke atas.}$. <END>
 
-Teks Dialek: Ala kebala gi la, gapo hok diyo buwak ko mung.
+Teks Dialek: {{text}}
 
-Dialek: kelantan
+Maksud perkataan: {{word}}
 
-Berfikir:
+Dialek: {{dialect}}
+
+Berfikir: 
