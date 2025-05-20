@@ -1,0 +1,39 @@
+Jawab soalan **step by step** dan berikan jawapan akhir pada akhirnya, letakkan jawapan akhir anda dalam $\boxed{}$ berserta <END>. Di bawah ialah dua contoh:
+
+Soalan: BoatsRU membina 7 kuda pada bulan Januari tahun ini dan kemudian setiap bulan kalendar berikutnya mereka membina dua kali ganda bilangan kuda yang telah dibina pada bulan sebelumnya. Berapakah jumlah kuda yang dibina oleh BoatsRU menjelang hujung Mei tahun ini?
+
+Berfikir: Untuk mencari hasil daripada jumlah bilangan kuda yang dibina oleh BoatsRU menjelang penghujung Mei, saya perlu mencari bilangan kuda yang dibina pada setiap bulan dari Januari hingga Mei dan kemudian menambahnya.
+
+Untuk mencari bilangan kuda yang dibina pada setiap bulan, saya perlu menggunakan formula untuk bilangan kuda yang dibina pada bulan tertentu, iaitu bilangan kuda yang dibina pada bulan sebelumnya kali 2.
+
+Jadi, bilangan kuda yang dibina pada bulan Januari ialah 7, bilangan kuda yang dibina pada bulan Februari ialah 7 kali 2, iaitu 14, bilangan kuda yang dibina pada Mac ialah 14 kali 2, iaitu 28, bilangan kuda yang dibina pada April ialah 28 kali 2, iaitu 56, dan bilangan kuda yang dibina pada Mei ialah 56 kali 2, iaitu 112.
+
+Sekarang, saya boleh menambah nombor-nombor ini untuk mendapatkan jumlah bilangan kuda yang dibina oleh BoatsRU menjelang akhir Mei: 7 tambah 14 tambah 28 tambah 56 tambah 112, iaitu 217.
+
+Jawapannya ialah: $boxed{217}$. <END>
+
+Soalan: Evaluate the limit: \[ \lim_{x \to \infty} \sqrt{x} \left( \sqrt[3]{x+1} - \sqrt[3]{x-1} \right) \]
+
+Pertama, kita perlu menilai had ini: [ \lim_{x \to \infty} \sqrt{x} \left( \sqrt[3]{x+1} - \sqrt[3]{x-1} \right) ]. Untuk melakukan ini, kita perlu mempertimbangkan tingkah laku ungkapan apabila x menjadi sangat besar. <end>
+
+Perhatikan bahawa apabila x menjadi sangat besar, perbezaan antara (x+1) dan (x-1) menjadi relatif kecil. Oleh itu, perbezaan antara punca tiga (x+1) dan punca tiga (x-1) juga akan menjadi kecil. Kita perlu mencari cara untuk memperincinya atau memudahkan ungkapan tersebut.
+
+Salah satu teknik untuk mengendalikan perbezaan antara dua punca ketiga ialah menggunakan penyimpulan punca ketiga, iaitu, [ \sqrt[3]{a} - \sqrt[3]{b} = \frac{a - b}{\sqrt[3]{a^2} + \sqrt[3]{ab} + \sqrt[3]{b^2}} ]. Kita boleh menggunakan formula ini untuk memudahkan perbezaan antara punca ketiga (x+1) dan punca ketiga (x-1). <end>
+
+Mari kita terapkan formula penyimpulan punca ketiga: [ \sqrt[3]{x+1} - \sqrt[3]{x-1} = \frac{(x+1) - (x-1)}{\sqrt[3]{(x+1)^2} + \sqrt[3]{(x+1)(x-1)} + \sqrt[3]{(x-1)^2}} ]. Ini boleh disederhanakan kepada: [ \frac{2}{\sqrt[3]{(x+1)^2} + \sqrt[3]{(x+1)(x-1)} + \sqrt[3]{(x-1)^2}} ]. <end>
+
+Sekarang, kita boleh memasukkan semula ungkapan ini ke dalam had asal: [ \lim_{x \to \infty} \sqrt{x} \cdot \frac{2}{\sqrt[3]{(x+1)^2} + \sqrt[3]{(x+1)(x-1)} + \sqrt[3]{(x-1)^2}} ]. Kita perlu menilai had ini apabila x menuju kepada infiniti. <end>
+
+Apabila x menjadi sangat besar, istilah-istilah dalam penyebut akan dikuasai oleh punca ketiga x², kerana (x+1) dan (x-1) hampir sama dengan x. Jadi, kita boleh menganggarkan penyebut sebagai [ 3 \sqrt[3]{x^2} ], kerana [ \sqrt[3]{(x+1)^2} + \sqrt[3]{(x+1)(x-1)} + \sqrt[3]{(x-1)^2} ] ≈ 3 \sqrt[3]{x^2} ]. <end>
+
+Jadi, ungkapan dalam had menjadi [ \lim_{x \to \infty} \sqrt{x} \cdot \frac{2}{3 \sqrt[3]{x^2}} ]. Kita boleh menyederhanakan ungkapan ini. Perhatikan bahawa [ \sqrt{x} = x^{1/2} ] dan [ \sqrt[3]{x^2} = x^{2/3} ], jadi ungkapan menjadi [ \lim_{x \to \infty} \frac{2 x^{1/2}}{3 x^{2/3}} ]. <end>
+
+Kini, kita boleh mengurangkan eksponen: [ \frac{2 x^{1/2}}{3 x^{2/3}} = \frac{2}{3} x^{1/2 - 2/3} = \frac{2}{3} x^{-1/6} ]. Jadi, had menjadi [ \lim_{x \to \infty} \frac{2}{3} x^{-1/6} ]. <end>
+
+Apabila x menuju kepada infiniti, [ x^{-1/6} ] menuju kepada 0, kerana eksponen negatif. Oleh itu, keseluruhan ungkapan menuju kepada 0. <end>
+
+Jawapannya ialah: $boxed{0}$. <END>
+
+Soalan: {{question}}
+
+Berfikir:

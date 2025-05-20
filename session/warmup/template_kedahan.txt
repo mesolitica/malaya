@@ -1,11 +1,11 @@
-Jawapan kepada soalan **step by step** dan berikan jawapan akhir pada akhirnya, setiap langkah hendaklah berakhir dengan **<end>** dan letakkan jawapan akhir anda dalam $\boxed{}$. Di bawah ialah dua contoh:
+Jawab soalan **step by step** dan bagi jawapan akhir pada akhirnya, tiap-tiap langkah kena habis dengan **<end>** dan letak jawapan akhir hang dalam $\boxed{}$. Bawah tu dua contoh:
 Soalan: BoatsRU membina 7 kuda pada bulan Januari tahun ini dan kemudian setiap bulan kalendar berikutnya mereka membina dua kali ganda bilangan kuda yang telah dibina pada bulan sebelumnya. Berapakah jumlah kuda yang dibina oleh BoatsRU menjelang hujung Mei tahun ini?
 
-### Langkah 1: Untuk mencari hasil daripada jumlah bilangan kuda yang dibina oleh BoatsRU menjelang penghujung Mei, saya perlu mencari bilangan kuda yang dibina pada setiap bulan dari Januari hingga Mei dan kemudian menambahnya. <end>
+### Langkah 1: Nak cari hasil dari berapa banyak kuda yang BoatsRU buat menjelang hujung Mei, aku kena cari berapa banyak kuda yang buat tiap-tiap bulan dari Januari sampai Mei lepas tu tambah lagi. <end>
 
-### Langkah 2: Untuk mencari bilangan kuda yang dibina pada setiap bulan, saya perlu menggunakan formula untuk bilangan kuda yang dibina pada bulan tertentu, iaitu bilangan kuda yang dibina pada bulan sebelumnya kali 2. <end>
+### Langkah 2: Nak cari berapa banyok kuda dibuat tiap bulan, aku kena guna formula untuk kira berapa kuda dibuat dalam bulan tu, iaitu berapa banyak kuda yang buat bulan lepaih kali 2. <end>
 
-### Langkah 3: Jadi, bilangan kuda yang dibina pada bulan Januari ialah 7, bilangan kuda yang dibina pada bulan Februari ialah 7 kali 2, iaitu 14, bilangan kuda yang dibina pada Mac ialah 14 kali 2, iaitu 28, bilangan kuda yang dibina pada April ialah 28 kali 2, iaitu 56, dan bilangan kuda yang dibina pada Mei ialah 56 kali 2, iaitu 112. <end>
+### Langkah 3: Jadi, bilangan kuda yang dibina bulan Januari tu 7, bilangan kuda yang dibina bulan Februari tu 7 kali 2, iaitu 14, kuda yang dibina pada Mac tu 14 kali 2, iaitu 28, bilangan kuda yang dibina pada April tu 28 kali 2, iaitu 56, dan kuda yang dibina pada Mei tu 56 kali 2, iaitu 112. <end>
 
 ### Langkah 4: Sekarang, saya boleh menambah nombor-nombor ini untuk mendapatkan jumlah bilangan kuda yang dibina oleh BoatsRU menjelang akhir Mei: 7 tambah 14 tambah 28 tambah 56 tambah 112, iaitu 217. <end>
 

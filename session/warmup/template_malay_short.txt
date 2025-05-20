@@ -1,0 +1,41 @@
+Jawab soalan **step by step** dan berikan jawapan akhir pada akhirnya, letakkan jawapan akhir anda dalam $\boxed{}$ berserta <END>. Di bawah ialah dua contoh:
+Soalan: BoatsRU membina 7 kuda pada bulan Januari tahun ini dan kemudian setiap bulan kalendar berikutnya mereka membina dua kali ganda bilangan kuda yang telah dibina pada bulan sebelumnya. Berapakah jumlah kuda yang dibina oleh BoatsRU menjelang hujung Mei tahun ini?
+
+### Langkah 1: Untuk mencari hasil daripada jumlah bilangan kuda yang dibina oleh BoatsRU menjelang penghujung Mei, saya perlu mencari bilangan kuda yang dibina pada setiap bulan dari Januari hingga Mei dan kemudian menambahnya.
+
+### Langkah 2: Untuk mencari bilangan kuda yang dibina pada setiap bulan, saya perlu menggunakan formula untuk bilangan kuda yang dibina pada bulan tertentu, iaitu bilangan kuda yang dibina pada bulan sebelumnya kali 2.
+
+### Langkah 3: Jadi, bilangan kuda yang dibina pada bulan Januari ialah 7, bilangan kuda yang dibina pada bulan Februari ialah 7 kali 2, iaitu 14, bilangan kuda yang dibina pada Mac ialah 14 kali 2, iaitu 28, bilangan kuda yang dibina pada April ialah 28 kali 2, iaitu 56, dan bilangan kuda yang dibina pada Mei ialah 56 kali 2, iaitu 112.
+
+### Langkah 4: Sekarang, saya boleh menambah nombor-nombor ini untuk mendapatkan jumlah bilangan kuda yang dibina oleh BoatsRU menjelang akhir Mei: 7 tambah 14 tambah 28 tambah 56 tambah 112, iaitu 217.
+
+### Jawapan Akhir: Jawapannya ialah: $boxed{217}$. <END>
+
+Soalan: Manakah antara berikut merupakan catatan kontra bagi Akaun Jualan?
+
+A. Pulangan masuk
+B. Pulangan keluar
+C. Angkutan masuk
+D. Angkutan keluar
+
+### Langkah 1: Soalan ini meminta kita mencari "catatan kontra" bagi Akaun Jualan. Dalam perakaunan, "catatan kontra" ialah transaksi atau jurnal yang mengurangkan baki akaun tersebut.
+
+### Langkah 2: Mari kita analisis setiap pilihan jawapan:
+
+- **Pilihan A (Pulangan masuk):** Ini biasanya termasuk dana yang dikembalikan kepada pelanggan kerana kesilapan atau kekecewaan. Jika pelanggan mengembalikan barangan, ini akan mengurangkan pendapatan, jadi ia boleh dianggap sebagai "catatan kontra" bagi Akaun Jualan.
+
+- **Pilihan B (Pulangan keluar):** Ini mungkin merujuk kepada kos pulangan atau pengeluaran tambahan yang terhasil daripada penjualan, tetapi ia tidak secara langsung mengurangkan pendapatan. Ia lebih berkaitan dengan pengurangan keuntungan.
+
+- **Pilihan C (Angkutan masuk):** Ini merujuk kepada dana yang masuk akibat jualan produk atau perkhidmatan. Ini akan meningkatkan pendapatan, jadi ia bukan "catatan kontra" tetapi sebaliknya.
+
+- **Pilihan D (Angkutan keluar):** Ini mungkin merujuk kepada kos pengangkutan untuk produk yang dijual. Walau bagaimanapun, kos pengangkutan diuruskan dalam akaun kos, bukan langsung mengurangkan baki Akaun Jualan.
+
+### Langkah 3: Dari analisis di atas, Pilihan A (Pulangan masuk) adalah satu-satunya yang secara langsung mengurangkan pendapatan, yang bermakna ia merupakan "catatan kontra" bagi Akaun Jualan.
+
+### Jawapan Akhir: Jawapannya ialah: $boxed{A}$. <END>
+
+Ingat untuk menjawab soalan **step by step**! Berikut ialah soalan anda:
+
+Soalan: {{question}}
+
+### Langkah 1:

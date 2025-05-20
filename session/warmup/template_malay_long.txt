@@ -1,0 +1,66 @@
+Jawab soalan **step by step** dan berikan jawapan akhir pada akhirnya, letakkan jawapan akhir anda dalam $\boxed{}$ berserta <END>. Di bawah ialah dua contoh:
+
+Soalan: Isikan tempat kosong dengan kata bantu yang sesuai.
+Sebelum terbabit dalam kemalangan itu, En. Ganesan yang memandu kereta Proton Waja __________ dalam perjalanan ke Alor Star.
+A. sedang
+B. mesti
+C. telah
+D. akan
+
+Berfikir: Saya perlu mengisi tempat kosong dalam ayat ini dengan kata bantu yang sesuai. Ayatnya ialah: "Sebelum terlibat dalam kemalangan itu, En. Ganesan yang memandu kereta Proton Waja __________ dalam perjalanan ke Alor Star." Pilihan kata gantinya adalah A. sedang, B. mesti, C. telah, D. akan.
+
+Okay, pertama sekali, saya harus memahami konteks ayat ini. Ayat ini bercakap tentang En. Ganesan yang memandu kereta Proton Waja dan ada sesuatu kejadian tidak menyenangkan atau kemalangan berlaku. Kata kunci di sini ialah "sebelum terbabit dalam kemalangan itu", yang bermaksud bahawa kejadian ini berlaku sebelum kemalangan itu berlaku.
+
+Jadi, saya perlu menentukan kata bantu yang paling sesuai untuk menggambarkan status perjalanan En. Ganesan sebelum kemalangan itu berlaku.
+
+Mari kita lihat pilihan-pilihan ini satu persatu.
+
+Pilihan A adalah "sedang". "Sedang" merujuk kepada sesuatu yang sedang berlangsung atau sedang dalam proses. Jadi, jika saya masukkan "sedang" ke dalam ayat, ia akan menjadi: "Sebelum terlibat dalam kemalangan itu, En. Ganesan yang memandu kereta Proton Waja sedang dalam perjalanan ke Alor Star."
+
+Ini bermakna bahawa pada saat sebelum kemalangan itu berlaku, En. Ganesan sedang dalam perjalanan ke Alor Star. Ini kelihatan masuk akal.
+
+Pilihan B pula ialah "mesti". "Mesti" biasanya bermaksud wajib atau wajib. Jadi, jika saya masukkan "mesti", ayat menjadi: "Sebelum terlibat dalam kemalangan itu, En. Ganesan yang memandu kereta Proton Waja mestilah dalam perjalanan ke Alor Star."
+
+Ini kedengaran kurang alam. Perkataan "mesti" tidak sesuai dalam konteks ini kerana ia tidak menggambarkan status perjalanan secara tepat.
+
+Pilihan C pula ialah "telah". "Telah" merujuk kepada sesuatu yang sudah berlaku atau selesai. Jadi, jika saya masukkan "telah", ayat menjadi: "Sebelum terlibat dalam kemalangan itu, En. Ganesan yang memandu kereta Proton Waja telah berada dalam perjalanan ke Alor Star."
+
+Ini juga boleh difahami, maksudnya sebelum kemalangan, dia sudah berada dalam perjalanan ke Alor Star. Walau bagaimanapun, "sedang" mungkin lebih tepat untuk menggambarkan bahawa perjalanan tersebut sedang berjalan ketika itu.
+
+Pilihan D pula ialah "akan". "Akan" merujuk kepada sesuatu yang akan berlaku pada masa hadapan. Jadi, jika saya masukkan "akan", ayat menjadi: "Sebelum terlibat dalam kemalangan itu, En. Ganesan yang memandu kereta Proton Waja akan berada dalam perjalanan ke Alor Star."
+
+Ini tidak masuk akal kerana "sebelum kemalangan" menunjukkan waktu sebelum kejadian, jadi perjalanan sudah berlaku, bukan akan berlaku.
+
+Jadi, jika saya bandingkan semua pilihan, "sedang" (pilihan A) terdengar paling sesuai kerana menggambarkan bahawa En. Ganesan sedang dalam proses perjalanan semasa sebelum kemalangan itu berlaku.
+
+Selain itu, dalam bahasa Melayu, "sedang" sering digunakan untuk menggambarkan tindakan yang sedang berlangsung dalam tempoh tertentu, yang sesuai dengan konteks ayat ini.
+
+Jadi, jawapan yang paling sesuai ialah $boxed{A}$. <END>
+
+Soalan: Encik Azri dan Encik Wahid berhasrat menubuhkan syarikat persendirian. Mengapakah mereka perlu membuat permohonan carian nama syarikat?
+A. Untuk mencari nama yang ringkas
+B. Untuk mencari nama yang bercirikan Malaysia
+C. Untuk mengelakkan daripada menggunakan nama syarikat yang sama
+D. Untuk mengelakkan daripada menggunakan nama syarikat yang telah didenda.
+
+Berfikir: Encik Azri dan Wahid ingin menubuhkan syarikat mereka sendiri. Mereka perlu mencari nama untuk syarikat tersebut. Tetapi, mengapa mereka perlu memohon carian nama syarikat? Terdapat pilihan A, B, C, D. Pilihan C adalah untuk mengelakkan penggunaan nama syarikat yang sama dengan nama sedia ada. Saya rasa ini penting.
+
+Bayangkan bahawa terdapat banyak syarikat di luar sana. Jika mereka memilih nama yang sudah wujud, ia akan menimbulkan kekeliruan, kerana orang tidak tahu mana satu syarikat itu berada. Oleh itu, dengan membuat carian nama syarikat, mereka boleh memastikan bahawa nama yang dipilih belum digunakan oleh syarikat lain.
+
+Pilihan A, untuk mencari nama ringkas, ya, nama ringkas itu baik, tetapi bukan sebab utama mereka perlu melakukan carian nama. Nama ringkas lebih kepada keutamaan mereka sendiri.
+
+Pilihan B, untuk mencari nama yang bercirikan Malaysia juga baik, tetapi lagi, bukan sebab utama mereka perlu melakukan carian nama. Mereka boleh memilih apa sahaja nama, selagi belum ada yang menggunakannya.
+
+Pilihan D, untuk mengelakkan menggunakan nama syarikat yang telah didenda, hmm, mungkin ada sebabnya, tetapi saya fikir bukan sebab utama. Walaupun nama syarikat pernah didenda, tetapi ia tidak aktif lagi, mungkin masih boleh digunakan.
+
+Jadi, pilihan C, untuk mengelakkan penggunaan nama syarikat yang sama adalah paling munasabah. Mereka perlu memastikan bahawa nama syarikat mereka unik dan tidak berbeza daripada nama sedia ada dalam pendakwaan syarikat.
+
+Ya, mungkin juga. Jadi, carian nama syarikat bukan hanya untuk mengelakkan nama yang sama, tetapi juga untuk memastikan bahawa nama tersebut sesuai dan boleh didaftarkan mengikut peraturan pendaftaran syarikat.
+
+Oleh itu, dalam pilihan jawapan, hanya pilihan C yang paling sesuai, iaitu mengelakkan penggunaan nama syarikat yang sama.
+
+Jadi, jawapan yang betul ialah $boxed{C}$. <END>
+
+Soalan: {{question}}
+
+Berfikir:
