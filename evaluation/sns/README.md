@@ -1,0 +1,111 @@
+# SNS
+
+Evaluate SNS server using Qwen2.5 models.
+
+## LLM Engine
+
+### vLLM Requirements
+
+```bash
+python3 -m venv --without-pip vllm
+wget https://bootstrap.pypa.io/get-pip.py
+vllm/bin/python3 get-pip.py
+vllm/bin/pip3 install vllm==0.8.5.post1 aiohttp
+```
+
+### TensorRT-LLM Requirements
+
+```bash
+python3 -m venv --without-pip tensorrt
+wget https://bootstrap.pypa.io/get-pip.py
+tensorrt/bin/python3 get-pip.py
+tensorrt/bin/pip3 install tensorrt_llm aiohttp
+```
+
+### 14B vLLM
+
+#### FP16
+
+```bash
+./vllm/bin/vllm serve "mesolitica/Malaysian-Qwen2.5-14B-Instruct" \
+--served-model-name "model" \
+--tensor_parallel_size "8"
+```
+
+Stress test,
+
+```bash
+python3 benchmark.py \
+--model "model" \
+--save "Malaysian-Qwen2.5-14B-Instruct-warmup" \
+--rps-list "5"
+
+python3 benchmark.py \
+--model "model" \
+--save "Malaysian-Qwen2.5-14B-Instruct"
+```
+
+#### FP8
+
+```bash
+./vllm/bin/vllm serve "mesolitica/Malaysian-Qwen2.5-14B-Instruct-FP8" \
+--served-model-name "model" \
+--tensor_parallel_size "8"
+```
+
+Stress test,
+
+```bash
+python3 benchmark.py \
+--model "model" \
+--save "Malaysian-Qwen2.5-14B-Instruct-FP8-warmup" \
+--rps-list "5"
+
+python3 benchmark.py \
+--model "model" \
+--save "Malaysian-Qwen2.5-14B-Instruct-FP8"
+```
+
+### 72B vLLM
+
+#### FP16
+
+```bash
+./vllm/bin/vllm serve "mesolitica/Malaysian-Qwen2.5-72B-Instruct" \
+--served-model-name "model" \
+--tensor_parallel_size "8"
+```
+
+Stress test,
+
+```bash
+python3 benchmark.py \
+--model "model" \
+--save "Malaysian-Qwen2.5-72B-Instruct-warmup" \
+--rps-list "5"
+
+python3 benchmark.py \
+--model "model" \
+--save "Malaysian-Qwen2.5-72B-Instruct"
+```
+
+#### FP8
+
+```bash
+./vllm/bin/vllm serve "mesolitica/Malaysian-Qwen2.5-72B-Instruct-FP8" \
+--served-model-name "model" \
+--tensor_parallel_size "8"
+```
+
+Stress test,
+
+```bash
+python3 benchmark.py \
+--model "model" \
+--save "Malaysian-Qwen2.5-72B-Instruct-FP8-warmup" \
+--rps-list "5"
+
+python3 benchmark.py \
+--model "model" \
+--save "Malaysian-Qwen2.5-72B-Instruct-FP8"
+```
