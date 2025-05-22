@@ -1,0 +1,63 @@
+Jana multiturn between pengguna dan pembantu untuk telecommunications.
+
+Pengguna: Hai, saya nak semak bil telefon saya dan ada beberapa soalan tentang pelan data.
+Pembantu: Selamat datang ke perkhidmatan pelanggan Telekom Malaysia. Boleh saya tahu nombor telefon atau akaun pelanggan anda?
+Pengguna: Nombor saya 012-3456789.
+Pembantu: Terima kasih. Bil terakhir anda ialah RM145.80, tempoh penggunaan dari 1 April hingga 30 April 2025. Ada bayaran tertunggak sebanyak RM50 dari bulan lepas.
+Pengguna: Saya nak tahu kenapa bil saya tinggi bulan ni, sebab saya tak guna banyak data.
+Pembantu: Baik. Saya akan semak penggunaan data anda. Nampaknya, anda telah menggunakan 12GB data bulan ini, melebihi had pelan 10GB. Anda dikenakan caj lebihan sebanyak RM30.
+Pengguna: Saya ingat pelan saya 20GB. Saya nak tukar ke pelan yang lebih sesuai.
+Pembantu: Saya semak rekod anda. Anda masih dalam pelan 'Basic 10GB'. Anda boleh upgrade ke pelan 'Super 20GB' dengan tambahan RM40 sebulan. Nak saya teruskan tukar pelan?
+Pengguna: Ya, saya nak. Tapi adakah saya boleh kekal harga lama jika saya bayar penuh untuk 6 bulan?
+Pembantu: Maaf, harga promosi hanya untuk langganan bulanan. Namun, jika anda bayar selama 12 bulan sekaligus, kami boleh beri diskaun 10%.
+Pengguna: Okey, saya nak cuba bayar 12 bulan.
+Pembantu: Baik. Saya akan buat pindaan pelan dan hantar invois ke e-mel anda. Sila semak dan bayar sebelum 5 Mei untuk dapatkan diskaun.
+Pengguna: Terima kasih. Saya juga nak tanya tentang roaming, saya akan ke Thailand minggu depan.
+Pembantu: Untuk roaming Thailand, kami ada pakej RM15 sehari yang termasuk 100MB data dan panggilan tanpa had ke Malaysia. Ingin saya aktifkan pakej ini untuk anda?
+Pengguna: Saya cuma perlukan data sahaja. Boleh aktifkan data sahaja?
+Pembantu: Boleh. Saya akan aktifkan roaming data sahaja pada RM10 sehari. Panggilan akan dikenakan caj biasa.
+Pengguna: Bagus. Satu lagi, saya ada masalah talian saya selalu putus, terutama waktu malam.
+Pembantu: Maaf atas gangguan itu. Saya akan jalankan pemeriksaan rangkaian di kawasan anda. Boleh saya tahu alamat anda?
+Pengguna: Saya di Jalan Bukit Indah, Johor Bahru.
+Pembantu: Terima kasih. Saya dapati ada gangguan teknikal di kawasan tersebut dan pasukan teknikal sedang membaiki. Dijangka selesai dalam 24 jam.
+Pengguna: Kalau tak selesai, saya boleh minta pampasan ke?
+Pembantu: Ya, jika gangguan melebihi 48 jam, anda layak dapat kredit bil sebanyak 5% untuk tempoh gangguan.
+Pengguna: Okey, saya akan pantau. Terakhir, saya nak tahu tentang insurans telefon saya.
+Pembantu: Anda ada melanggan insurans peranti 'TelcoCare' yang melindungi kerosakan fizikal dan kehilangan. Anda sudah membuat satu tuntutan pada Januari lalu.
+Pengguna: Boleh saya buat tuntutan sekali lagi jika telefon saya rosak?
+Pembantu: Boleh, tapi maksimum dua tuntutan setahun. Jika anda ingin buat tuntutan, saya boleh hantar borang ke e-mel.
+Pengguna: Ya, tolong hantar sekarang.
+Pembantu: Borang sudah dihantar. Sila lengkapkan dan kembalikan bersama bukti kerosakan. Ada apa-apa lagi yang saya boleh bantu?
+Pengguna: Itu sahaja, terima kasih banyak!
+Pembantu: Sama-sama. Terima kasih kerana menghubungi Telekom Malaysia. Selamat hari!
+<END>
+
+Pengguna: Assalamualaikum. Saya ada masalah dengan internet rumah saya, sambungan selalu terputus.
+Pembantu: Waalaikumussalam. Maaf atas kesulitan Encik. Boleh saya tahu nombor akaun atau nombor telefon yang digunakan?
+Pengguna: Nombor akaun saya 88990011 dan nombor telefon 012-3456789.
+Pembantu: Terima kasih. Saya akan semak status perkhidmatan di kawasan Encik.
+Pengguna: Sementara itu, saya nak tahu sama ada saya boleh naik taraf pelan internet ke yang lebih laju?
+Pembantu: Boleh. Pelan internet Fiber 500 Mbps kami ada promosi sekarang dengan harga RM150 sebulan.
+Pengguna: Berapa kos pemasangan untuk pelan baru?
+Pembantu: Kos pemasangan adalah percuma untuk promosi ini.
+Pengguna: Bagaimana proses naik taraf?
+Pembantu: Saya boleh uruskan permohonan naik taraf sekarang dan juruteknik akan hubungi Encik untuk janji temu pemasangan.
+Pengguna: Baik. Satu lagi, saya ada bil bulan lepas yang saya rasa ada caj yang salah. Boleh saya buat aduan?
+Pembantu: Boleh. Boleh saya tahu butiran caj yang ingin dipertikaikan?
+Pengguna: Ada caj roaming RM100 sedangkan saya tidak gunakan roaming langsung.
+Pembantu: Kami akan semak rekod penggunaan dan maklumkan status aduan dalam 3 hari bekerja.
+Pengguna: Saya juga nak tanya tentang insurans peranti yang saya ambil. Apa yang dilindungi?
+Pembantu: Insurans peranti melindungi kerosakan fizikal, kehilangan, dan kecurian dengan had perlindungan sehingga RM2,000 setahun.
+Pengguna: Kalau saya nak buat tuntutan, macam mana prosedurnya?
+Pembantu: Encik perlu buat laporan polis, hantar borang tuntutan, dan lampirkan bukti pembelian peranti.
+Pengguna: Saya ada masalah dengan telefon saya juga, kamera tak berfungsi. Boleh dapatkan bantuan teknikal?
+Pembantu: Kami boleh aturkan janji temu dengan pusat servis rasmi atau bantuan melalui chat teknikal dalam talian.
+Pengguna: Kalau saya pilih servis pusat, berapa lama masa tunggu?
+Pembantu: Biasanya 2 hingga 3 hari bekerja bergantung pada jadual pusat servis.
+Pengguna: Baiklah, tolong uruskan semua itu ya.
+Pembantu: Sudah saya catatkan semua permintaan Encik. Kami akan hubungi Encik untuk pengesahan lanjut.
+Pengguna: Terima kasih banyak atas bantuan yang cepat dan jelas.
+Pembantu: Sama-sama Encik. Kami sentiasa sedia membantu. Selamat hari!
+<END>
+
+Pengguna: 

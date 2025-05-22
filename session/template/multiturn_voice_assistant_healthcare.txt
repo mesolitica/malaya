@@ -1,0 +1,59 @@
+Jana multiturn between pengguna dan pembantu untuk healthcare.
+
+Pengguna: Assalamualaikum. Saya nak buat janji temu dengan doktor pakar untuk pemeriksaan kesihatan.
+Pembantu: Waalaikumussalam. Boleh saya tahu jenis pemeriksaan yang Encik perlukan dan cawangan hospital pilihan?
+Pengguna: Saya mahu pemeriksaan kesihatan penuh di Hospital Kuala Lumpur.
+Pembantu: Baik Encik. Bila tarikh dan masa yang sesuai untuk janji temu?
+Pengguna: Saya boleh datang hari Jumaat depan selepas pukul 2 petang.
+Pembantu: Kami ada slot pada hari Jumaat, 3 petang dan 4 petang. Mana satu yang Encik pilih?
+Pengguna: Saya pilih 3 petang. Boleh juga saya tahu sama ada pemeriksaan ini dilindungi oleh insurans saya?
+Pembantu: Boleh. Boleh saya tahu nama syarikat insurans dan nombor polisi?
+Pengguna: Syarikat XYZ Insurans, nombor polisi 99887766.
+Pembantu: Semakan menunjukkan pemeriksaan kesihatan penuh dilindungi sehingga RM2,000 setahun.
+Pengguna: Bagus. Saya juga ada beberapa keputusan ujian darah dari bulan lepas. Boleh saya tahu tafsiran dan nasihat lanjut?
+Pembantu: Boleh Encik. Sila nyatakan jenis ujian darah yang dibuat dan keputusan yang ada.
+Pengguna: Ujian kolesterol saya tinggi, 6.5 mmol/L, dan kadar gula saya 7.2 mmol/L.
+Pembantu: Keputusan kolesterol melebihi paras normal dan gula juga sedikit tinggi. Adalah disarankan untuk jumpa doktor untuk penilaian lanjut dan pengurusan diet.
+Pengguna: Boleh saya dapatkan nasihat pemakanan dan cara kawal gula darah?
+Pembantu: Disarankan kurangkan makanan bergula dan berlemak, tingkatkan pengambilan sayur-sayuran dan buah-buahan, serta aktiviti fizikal sekurang-kurangnya 30 minit sehari.
+Pengguna: Bagaimana kalau saya nak tukar tarikh janji temu kerana ada kecemasan?
+Pembantu: Boleh, bila tarikh baru yang Encik cadangkan?
+Pengguna: Boleh tukar ke hari Isnin depan, pagi selepas pukul 10?
+Pembantu: Ada slot pada pukul 11 pagi Isnin depan. Saya akan kemas kini tempahan Encik.
+Pengguna: Terima kasih. Satu lagi, saya ada soalan tentang vaksinasi Covid-19. Apakah saya layak untuk dos penggalak sekarang?
+Pembantu: Boleh saya tahu tarikh vaksinasi terakhir anda?
+Pengguna: Saya ambil dos kedua pada bulan Disember tahun lepas.
+Pembantu: Anda layak untuk dos penggalak selepas 6 bulan dari dos kedua. Anda boleh buat tempahan dos penggalak sekarang.
+Pengguna: Baiklah, tolong tempahkan juga janji temu untuk vaksinasi itu.
+Pembantu: Sudah dibuat tempahan untuk vaksinasi dos penggalak pada hari Isnin, 2 petang di klinik berhampiran.
+Pengguna: Terima kasih banyak atas bantuan.
+Pembantu: Sama-sama Encik. Semoga Encik sentiasa sihat dan selamat!
+<END>
+
+Pengguna: Assalamualaikum. Saya ingin bertanya tentang proses mendapatkan rujukan ke pakar kardiologi.
+Pembantu: Waalaikumussalam. Boleh saya tahu adakah Encik sudah menjalani pemeriksaan awal dengan doktor umum kami?
+Pengguna: Ya, saya sudah jumpa doktor umum minggu lalu dan beliau mencadangkan saya berjumpa pakar kardiologi.
+Pembantu: Baik. Untuk mendapatkan rujukan, adakah Encik sudah mengemukakan permohonan rujukan melalui sistem kami?
+Pengguna: Saya belum. Macam mana cara untuk mohon?
+Pembantu: Encik boleh buat permohonan rujukan melalui portal pesakit kami atau saya boleh bantu buat permohonan sekarang.
+Pengguna: Tolong buatkan sekarang, ya.
+Pembantu: Baik, saya perlukan nombor kad pengenalan dan maklumat doktor umum yang merujuk.
+Pengguna: Kad pengenalan saya 901231-14-5678 dan doktor saya Dr. Lim.
+Pembantu: Permohonan rujukan ke pakar kardiologi sudah dibuat. Proses kelulusan biasanya mengambil masa 3 hingga 5 hari bekerja.
+Pengguna: Bagaimana dengan pra-kebenaran insurans saya?
+Pembantu: Boleh saya tahu syarikat insurans dan nombor polisi Encik?
+Pengguna: Syarikat ABC Insurans, polisi nombor 22334455.
+Pembantu: Pra-kebenaran untuk rawatan pakar kardiologi sedang dalam proses. Kami akan maklumkan status kelulusan melalui SMS dan e-mel.
+Pengguna: Saya ada janji temu dengan doktor umum minggu depan, boleh saya tukar ke hari lain?
+Pembantu: Boleh, bila tarikh dan masa yang sesuai untuk Encik?
+Pengguna: Saya mahu tukar ke hari Khamis pukul 10 pagi.
+Pembantu: Janji temu Encik dengan doktor umum telah ditukar ke hari Khamis, 10 pagi.
+Pengguna: Selepas jumpa pakar nanti, bagaimana saya nak dapatkan maklumat rawatan dan ubat?
+Pembantu: Pakar akan berikan laporan rawatan dan preskripsi ubat. Encik boleh dapatkan maklumat tersebut melalui portal pesakit atau hubungi kami untuk bantuan.
+Pengguna: Saya juga mahu tahu tentang sesi susulan selepas rawatan utama.
+Pembantu: Sesi susulan boleh ditempah melalui portal atau dengan menghubungi kami. Biasanya sesi susulan dijadualkan dalam masa 4 minggu selepas rawatan utama.
+Pengguna: Terima kasih banyak atas bantuan dan maklumat yang sangat lengkap.
+Pembantu: Sama-sama Encik. Kami sentiasa di sini untuk membantu. Semoga Encik cepat sembuh dan sihat selalu.
+<END>
+
+Pengguna:

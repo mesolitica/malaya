@@ -1,0 +1,59 @@
+Jana multiturn between pengguna dan pembantu untuk insurances.
+
+Pengguna: Assalamualaikum. Saya ingin bertanya tentang pelan insurans saya dan juga cara buat tuntutan kemalangan baru-baru ini.
+Pembantu: Waalaikumussalam. Terima kasih kerana menghubungi. Boleh saya tahu nombor polisi atau nama penuh anda?
+Pengguna: Nombor polisi saya 123456789, nama Ahmad Faizal bin Mohd.
+Pembantu: Baik, Encik Ahmad Faizal. Polisi anda meliputi insurans hayat, insurans kenderaan, dan takaful kesihatan.
+Pengguna: Betul, saya nak tanya dulu tentang tuntutan kemalangan kereta saya minggu lepas.
+Pembantu: Saya faham. Boleh saya tahu butiran kemalangan seperti tarikh, lokasi, dan laporan polis?
+Pengguna: Kemalangan berlaku pada 10 Mei di Lebuhraya Utara Selatan, dan saya sudah buat laporan polis pada hari yang sama.
+Pembantu: Terima kasih. Anda sudah hantar dokumen tuntutan atau belum?
+Pengguna: Belum lagi.
+Pembantu: Baik. Saya akan hantar borang tuntutan dan senarai dokumen diperlukan ke e-mel anda. Sila lengkapkan dokumen termasuk laporan polis, gambar kereta, dan laporan bengkel.
+Pengguna: Berapa lama masa proses tuntutan ni biasanya?
+Pembantu: Biasanya 14 hingga 21 hari bekerja selepas semua dokumen lengkap diterima. Kami juga boleh membantu pantau status tuntutan anda.
+Pengguna: Bagaimana kalau saya nak tuntut kos rawatan hospital saya selepas kemalangan?
+Pembantu: Jika anda mempunyai perlindungan takaful kesihatan dengan kami, anda boleh tuntut kos perubatan tersebut. Sila hantar bil hospital dan laporan doktor bersama borang tuntutan.
+Pengguna: Baik. Boleh saya tahu had maksimum perlindungan saya?
+Pembantu: Had tahunan perlindungan takaful kesihatan anda adalah RM150,000, dan kos rawatan kemalangan boleh dituntut sehingga RM50,000 dalam had tersebut.
+Pengguna: Saya juga nak tahu tentang perlindungan hayat saya, adakah ada pampasan jika berlaku kematian?
+Pembantu: Ya, polisi hayat anda mempunyai nilai pampasan RM500,000. Jika berlaku kematian akibat kemalangan atau penyakit kritikal, waris anda layak untuk tuntutan.
+Pengguna: Bagaimana proses waris untuk tuntut pampasan?
+Pembantu: Waris perlu sediakan dokumen seperti sijil kematian, sijil faraid atau surat kuasa wakil, dan dokumen pengenalan diri waris. Kami boleh hantar borang tuntutan waris melalui emel.
+Pengguna: Saya juga dengar ada polisi medical card yang boleh bantu saya jika masuk hospital. Ada tak saya dilindungi?
+Pembantu: Ya, anda ada medical card dengan had tahunan RM100,000 dan boleh guna di hospital panel kami seperti KPJ dan Gleneagles. Anda boleh hubungi kami untuk pengesahan sebelum masuk wad.
+Pengguna: Kalau saya nak batalkan salah satu polisi, boleh tak?
+Pembantu: Boleh. Sila nyatakan polisi mana yang ingin dibatalkan dan sebab pembatalan.
+Pengguna: Saya nak batalkan insurans kenderaan sebab dah jual kereta.
+Pembantu: Faham. Kami perlukan surat jual beli kereta dan borang pembatalan. Bayaran prabayar akan dikira dan dikembalikan selepas pemprosesan.
+Pengguna: Terima kasih banyak. Satu lagi, adakah anda ada program diskaun untuk pelanggan setia?
+Pembantu: Ya, kami ada program diskaun 10% untuk pelanggan yang telah bersama kami lebih dari 5 tahun dan tiada tuntutan dalam tempoh tersebut. Saya akan semak kelayakan anda dan maklumkan kemudian.
+Pengguna: Baguslah. Saya tunggu khabar dari anda.
+Pembantu: Terima kasih, Encik Ahmad Faizal. Jika ada apa-apa soalan lagi, jangan segan untuk hubungi kami. Selamat hari!
+<END>
+
+Pengguna: Assalamualaikum. Saya nak tanya tentang tuntutan insurans kemalangan yang saya buat bulan lepas.
+Pembantu: Waalaikumussalam. Boleh saya tahu nombor polisi anda untuk semakan?
+Pengguna: Nombor polisi saya 55667788.
+Pembantu: Terima kasih Encik. Semakan mendapati tuntutan anda diterima dan sedang dalam proses kelulusan.
+Pengguna: Berapa lama lagi masa untuk bayaran dibuat?
+Pembantu: Proses kelulusan biasanya mengambil masa 7 hingga 10 hari bekerja. Kami akan maklumkan melalui SMS dan e-mel.
+Pengguna: Saya juga nak tahu, apa jenis perlindungan yang saya ada dalam polisi ini?
+Pembantu: Polisi anda merangkumi perlindungan kemalangan diri, hospitalisasi, dan pampasan hilang upaya sehingga RM150,000.
+Pengguna: Kalau saya nak tambah perlindungan penyakit kritikal, boleh tak?
+Pembantu: Boleh, kami ada pelan tambahan penyakit kritikal dengan premium tambahan RM120 sebulan.
+Pengguna: Bagaimana cara saya nak tambah pelan itu?
+Pembantu: Anda boleh buat kemas kini polisi secara online atau hadir ke cawangan kami. Saya juga boleh hantar borang kemas kini ke e-mel anda.
+Pengguna: Saya mahu borang tersebut. Satu lagi, saya belum bayar premium bulan ini. Boleh saya tahu jumlah yang perlu saya bayar?
+Pembantu: Jumlah premium bulan ini ialah RM350, dan tarikh akhir pembayaran adalah pada 30 Mei.
+Pengguna: Apa yang berlaku kalau saya lewat bayar?
+Pembantu: Jika lewat bayar, polisi akan tergantung selepas 30 hari dari tarikh akhir pembayaran dan perlindungan akan digantung.
+Pengguna: Saya faham. Kalau saya nak bayar sekarang, boleh bayar secara online?
+Pembantu: Boleh, anda boleh bayar melalui portal online kami atau menggunakan aplikasi mudah alih bank anda.
+Pengguna: Baik. Kalau saya ada aduan tentang khidmat pelanggan, bagaimana saya nak buat aduan?
+Pembantu: Anda boleh hubungi talian khidmat pelanggan kami, hantar e-mel, atau isi borang aduan di laman web rasmi kami.
+Pengguna: Terima kasih banyak atas maklumat dan bantuan.
+Pembantu: Sama-sama Encik. Jangan segan untuk hubungi kami bila-bila masa. Selamat hari!
+<END>
+
+Pengguna: 

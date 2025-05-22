@@ -1,0 +1,52 @@
+Jana multiturn between pengguna dan pembantu untuk TNB.
+
+Pengguna: Assalamualaikum. Saya nak tanya tentang bil elektrik saya bulan ni.
+Pembantu: Waalaikumussalam. Boleh saya dapatkan nombor akaun TNB Encik untuk semakan?
+Pengguna: Nombor akaun saya 1234567890.
+Pembantu: Terima kasih Encik. Bil elektrik bulan ini adalah RM185.50 dengan tarikh akhir pembayaran pada 30 Mei.
+Pengguna: Saya dah bayar tapi bil masih ada dalam akaun saya. Macam mana ni?
+Pembantu: Boleh saya tahu tarikh dan cara pembayaran yang Encik buat?
+Pengguna: Saya bayar online melalui aplikasi bank pada 10 Mei.
+Pembantu: Baik, saya akan semak transaksi tersebut. Sila tunggu sebentar... Semakan mendapati pembayaran belum dikemaskini dalam sistem kami.
+Pengguna: Apa yang perlu saya buat?
+Pembantu: Encik boleh hantarkan resit pembayaran melalui emel ke support@tnb.com.my untuk pengesahan manual.
+Pengguna: Baik, saya akan buat begitu. Satu lagi, saya nak laporkan gangguan elektrik di kawasan rumah saya.
+Pembantu: Maaf atas kesulitan. Boleh saya tahu alamat lengkap dan nombor akaun untuk rekod?
+Pengguna: Alamat saya di Jalan Melur 25, Taman Melur, dan nombor akaun sama seperti tadi.
+Pembantu: Terima kasih. Semakan menunjukkan terdapat gangguan bekalan elektrik di kawasan tersebut disebabkan kerja penyelenggaraan. Dijangka pulih dalam masa 3 jam.
+Pengguna: Boleh saya dapatkan anggaran bil selepas kerja penyelenggaraan ini selesai?
+Pembantu: Anggaran bil akan berdasarkan penggunaan meter biasa, tiada caj tambahan untuk gangguan ini.
+Pengguna: Bagaimana saya boleh kemas kini bacaan meter saya?
+Pembantu: Encik boleh buat bacaan meter secara manual melalui portal pelanggan TNB atau melalui aplikasi mudah alih kami.
+Pengguna: Saya juga berminat untuk naik taraf kepada pelan elektrik yang lebih jimat tenaga.
+Pembantu: Kami ada pelan “Hijau” yang menawarkan diskaun untuk penggunaan tenaga rendah. Saya boleh hantar maklumat lengkap dan borang permohonan ke e-mel Encik.
+Pengguna: Sila buat begitu. Terima kasih banyak atas bantuan dan maklumat.
+Pembantu: Sama-sama Encik. Jangan segan untuk hubungi kami bila-bila masa. Semoga hari Encik baik!
+<END>
+
+Pengguna: Assalamualaikum. Saya ingin melaporkan gangguan elektrik di rumah saya yang sudah berlaku sejak semalam.
+Pembantu: Waalaikumussalam. Maaf atas kesulitan Encik. Boleh saya dapatkan nombor akaun TNB dan alamat lengkap untuk rekod?
+Pengguna: Nombor akaun saya 55667788 dan alamat rumah di No. 45, Jalan Melati, Taman Sri Melati.
+Pembantu: Terima kasih Encik. Boleh Encik ceritakan lebih lanjut jenis gangguan yang berlaku?
+Pengguna: Lampu rumah berkedip-kedip dan kadang-kadang terus padam, ada juga bunyi berdengung dari papan suis utama.
+Pembantu: Faham. Adakah Encik perasan ada masalah hanya di satu kawasan atau keseluruhan rumah?
+Pengguna: Keseluruhan rumah terjejas, tapi lebih teruk di bahagian ruang tamu dan dapur.
+Pembantu: Baik, kami akan semak rekod gangguan di kawasan Encik...
+Pembantu: Terdapat laporan gangguan berkaitan talian utama di kawasan Encik sejak semalam dan kerja pembaikan sedang dijalankan.
+Pengguna: Kalau macam itu, apa yang saya boleh buat sementara menunggu pembaikan?
+Pembantu: Kami cadangkan untuk matikan suis utama dan cabut peralatan elektrik yang sensitif bagi mengelakkan kerosakan.
+Pengguna: Saya sudah buat begitu, tapi masalah masih berlaku bila elektrik kembali.
+Pembantu: Terima kasih maklumat itu. Kami akan aturkan juruteknik untuk datang periksa di rumah Encik. Bila masa yang sesuai untuk juruteknik datang?
+Pengguna: Boleh hari ini selepas pukul 2 petang?
+Pembantu: Baik, saya akan maklumkan juruteknik. Sementara itu, boleh Encik rekodkan bacaan meter elektrik untuk kami?
+Pengguna: Bacaan meter sekarang 012345.
+Pembantu: Terima kasih. Selepas pemeriksaan, kami akan hubungi Encik untuk maklum balas dan status pembaikan.
+Pengguna: Bagaimana jika masalah tidak selesai selepas juruteknik datang?
+Pembantu: Jika perlu, kami akan buat lawatan susulan atau gantikan peralatan yang rosak. Encik juga boleh hubungi kami semula bila-bila masa.
+Pengguna: Berapa lama biasanya masa pembaikan?
+Pembantu: Biasanya antara 1 hingga 3 hari bekerja, bergantung pada tahap kerosakan.
+Pengguna: Baiklah, terima kasih atas bantuan dan maklumat yang jelas.
+Pembantu: Sama-sama Encik. Kami komited untuk menyelesaikan masalah ini dengan segera. Semoga Encik sentiasa selamat.
+<END>
+
+Pengguna: 

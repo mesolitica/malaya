@@ -1,0 +1,63 @@
+Jana multiturn between pengguna dan pembantu untuk goverment service.
+
+Pengguna: Assalamualaikum. Saya nak tanya tentang bantuan kerajaan yang saya layak dapat.
+Pembantu: Waalaikumussalam. Boleh saya tahu nombor kad pengenalan anda untuk semakan?
+Pengguna: 800101-01-1234.
+Pembantu: Terima kasih Encik. Anda layak untuk Program Bantuan Sara Hidup (BSH) dan Bantuan Prihatin Rakyat (BPR).
+Pengguna: Bagaimana cara saya nak mohon bantuan tersebut?
+Pembantu: Anda boleh mohon secara dalam talian melalui portal rasmi eBantuan atau hadir ke pejabat LHDN terdekat.
+Pengguna: Kalau saya mohon online, berapa lama masa proses?
+Pembantu: Proses kelulusan biasanya mengambil masa 14 hari bekerja selepas permohonan lengkap.
+Pengguna: Saya juga nak tanya tentang cukai pendapatan. Bila tarikh akhir saya perlu bayar?
+Pembantu: Untuk tahun taksiran 2024, tarikh akhir pembayaran cukai ialah 30 Jun 2025.
+Pengguna: Saya ada slip gaji dari dua tempat kerja, macam mana nak isi borang cukai?
+Pembantu: Anda perlu gabungkan jumlah pendapatan dari kedua-dua majikan dalam borang e-filing. Saya boleh hantar panduan pengisian ke e-mel anda.
+Pengguna: Bagus, saya nak juga daftar perniagaan kecil saya. Macam mana prosesnya?
+Pembantu: Untuk pendaftaran perniagaan kecil, anda boleh buat secara online melalui SSM dengan bayaran RM30 untuk satu tahun pendaftaran.
+Pengguna: Saya tak ada internet, boleh daftar di mana?
+Pembantu: Anda boleh hadir ke pejabat SSM cawangan terdekat dan buat pendaftaran secara manual.
+Pengguna: Ada diskaun untuk usahawan baru?
+Pembantu: Ada program subsidi pendaftaran untuk usahawan baru di bawah usia 30 tahun dengan pengesahan dokumen. Sila rujuk pusat khidmat usahawan di daerah anda.
+Pengguna: Ok, terima kasih. Satu lagi, macam mana saya boleh mohon kad pengenalan baru kalau hilang?
+Pembantu: Anda perlu buat laporan polis dan hadir ke Jabatan Pendaftaran Negara (JPN) dengan dokumen sokongan seperti salinan laporan polis dan surat pengesahan.
+Pengguna: Berapa lama masa ambil kad baru?
+Pembantu: Biasanya dalam masa 7 hari bekerja. Anda akan dihubungi bila kad siap.
+Pengguna: Bagaimana pula kalau saya nak mohon bantuan kewangan untuk pelajar?
+Pembantu: Bantuan kewangan pelajar disediakan melalui PTPTN dan juga biasiswa kerajaan. Boleh saya tahu tahap pengajian dan universiti anda?
+Pengguna: Saya pelajar universiti awam di semester 4.
+Pembantu: Anda layak memohon pinjaman PTPTN serta beberapa biasiswa berdasarkan kelayakan akademik dan kewangan. Saya akan hantar senarai permohonan dan dokumen diperlukan ke e-mel anda.
+Pengguna: Terima kasih banyak atas bantuan.
+Pembantu: Sama-sama Encik. Jika ada apa-apa soalan lagi, sila hubungi kami semula. Selamat hari!
+<END>
+
+Pengguna: Assalamualaikum. Saya ada beberapa soalan tentang bantuan kerajaan dan juga aduan berkaitan kawasan tempat tinggal saya.
+Pembantu: Waalaikumussalam. Terima kasih kerana menghubungi. Boleh saya tahu nombor kad pengenalan anda untuk mula semakan?
+Pengguna: 920305-14-5678.
+Pembantu: Terima kasih Encik. Boleh saya tahu bantuan apa yang anda ingin tanya?
+Pengguna: Saya ingin tahu cara memohon Bantuan Prihatin Rakyat dan juga status permohonan saya kalau ada.
+Pembantu: Baik, Encik. Semakan mendapati anda belum membuat permohonan Bantuan Prihatin Rakyat tahun ini.
+Pengguna: Bagaimana saya nak mohon?
+Pembantu: Anda boleh mohon secara online melalui portal rasmi kerajaan, atau hadir ke pejabat Lembaga Hasil Dalam Negeri (LHDN) untuk bantuan pendaftaran.
+Pengguna: Saya tak ada akses internet, boleh saya mohon di pejabat kerajaan lain?
+Pembantu: Ya, anda juga boleh ke Pejabat Pembangunan Masyarakat daerah anda untuk bantuan permohonan.
+Pengguna: Baik. Saya juga nak buat aduan tentang jalan rosak di kawasan saya.
+Pembantu: Kami boleh bantu rekod aduan anda. Boleh berikan alamat penuh dan butiran kerosakan jalan?
+Pengguna: Jalan Taman Melati, Batu 5, banyak lubang dan lampu jalan rosak sejak sebulan lalu.
+Pembantu: Terima kasih. Aduan anda akan disalurkan ke pihak Majlis Perbandaran dan anda boleh semak status aduan dalam 3 hari bekerja.
+Pengguna: Bagaimana saya nak tahu status aduan?
+Pembantu: Anda boleh semak melalui aplikasi rasmi Majlis Perbandaran atau hubungi kami semula.
+Pengguna: Saya juga ada soalan pasal pendaftaran kelahiran anak saya baru-baru ini.
+Pembantu: Tahniah atas kelahiran anak anda. Adakah anda sudah buat pendaftaran kelahiran di Jabatan Pendaftaran Negara (JPN)?
+Pengguna: Belum. Apa dokumen yang saya perlu bawa?
+Pembantu: Dokumen diperlukan termasuk sijil kelahiran hospital, kad pengenalan ibu bapa, dan borang pendaftaran.
+Pengguna: Berapa lama proses pendaftaran?
+Pembantu: Biasanya 3 hingga 5 hari bekerja selepas dokumen lengkap diserahkan.
+Pengguna: Terima kasih. Satu lagi, saya nak tahu bagaimana nak perbaharui lesen memandu yang akan tamat bulan depan.
+Pembantu: Anda boleh perbaharui lesen di JPJ secara dalam talian atau hadir ke kaunter JPJ. Jangan lupa bawa kad pengenalan dan lesen lama.
+Pengguna: Ada bayaran dikenakan?
+Pembantu: Ya, bayaran bergantung pada jenis lesen. Biasanya RM30 untuk lesen memandu biasa.
+Pengguna: Baiklah, terima kasih banyak atas bantuan.
+Pembantu: Sama-sama Encik. Jangan segan untuk hubungi kami lagi bila perlu. Semoga hari anda baik.
+<END>
+
+Pengguna:

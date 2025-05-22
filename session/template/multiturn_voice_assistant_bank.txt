@@ -1,0 +1,55 @@
+Jana multiturn between pengguna dan pembantu untuk banking.
+
+Pengguna: Assalamualaikum. Saya nak tanya tentang akaun simpanan dan juga pinjaman peribadi saya.
+Pembantu: Waalaikumussalam. Boleh saya tahu nombor akaun atau nombor kad pengenalan untuk semakan?
+Pengguna: Nombor akaun saya 1122334455.
+Pembantu: Terima kasih Encik. Akaun simpanan anda aktif dengan baki RM3,500. Ada apa-apa soalan khusus tentang akaun?
+Pengguna: Saya nak tahu tentang faedah simpanan saya, dan adakah ada promosi terbaru?
+Pembantu: Faedah simpanan semasa adalah 1.25% setahun. Untuk promosi, kami ada kempen “Bonus Faedah” untuk akaun baru sehingga 2% untuk 6 bulan pertama.
+Pengguna: Bagaimana saya nak tukar akaun simpanan biasa kepada akaun simpanan premium?
+Pembantu: Akaun simpanan premium memerlukan deposit minimum RM10,000. Saya boleh bantu proses permohonan secara telefon sekarang atau hantar borang ke e-mel anda.
+Pengguna: Hantar borang ke e-mel saya ya. Satu lagi, saya ada pinjaman peribadi aktif. Boleh saya tahu baki tertunggak dan tempoh baki pinjaman?
+Pembantu: Baki tertunggak pinjaman anda ialah RM15,000 dengan tempoh baki 24 bulan.
+Pengguna: Boleh saya buat pembayaran lebih awal? Ada penalti?
+Pembantu: Ya, anda boleh buat bayaran prabayar tanpa penalti. Sila maklumkan jumlah yang ingin dibayar lebih awal.
+Pengguna: Saya nak bayar tambahan RM5,000 bulan ini.
+Pembantu: Baik, saya akan kemaskini rekod dan hantarkan pengesahan melalui SMS dan e-mel.
+Pengguna: Saya juga nak semak kad kredit saya, ada caj luar biasa?
+Pembantu: Semakan mendapati caj kad kredit anda untuk bulan lepas adalah RM1,200, termasuk pembelian biasa dan satu caj luar biasa RM350 dari kedai atas talian.
+Pengguna: Saya tak buat pembelian tu. Saya nak lapor penipuan kad kredit.
+Pembantu: Kami akan blok kad anda serta-merta dan bantu proses tuntutan penipuan. Boleh saya dapatkan nombor kad untuk pengesahan?
+Pengguna: Nombor kad akhir 7890.
+Pembantu: Kad anda sudah diblok serta-merta. Sila hadir ke cawangan kami untuk tuntutan dan dapatkan kad gantian.
+Pengguna: Berapa lama masa kad gantian akan siap?
+Pembantu: Kad gantian akan siap dalam 7 hari bekerja. Anda akan dihubungi bila kad sudah boleh diambil.
+Pengguna: Terima kasih banyak atas bantuan.
+Pembantu: Sama-sama Encik. Jika ada apa-apa soalan lagi, jangan segan untuk hubungi kami. Selamat hari!
+<END>
+
+Pengguna: Assalamualaikum. Saya nak dapatkan maklumat lengkap tentang akaun semasa saya dan juga pinjaman rumah.
+Pembantu: Waalaikumussalam. Boleh saya tahu nombor akaun atau nombor kad pengenalan anda untuk semakan?
+Pengguna: Nombor akaun saya 6677889900.
+Pembantu: Terima kasih Encik. Akaun semasa anda mempunyai baki RM8,750 dan tiada transaksi tertunggak.
+Pengguna: Baik. Saya nak tanya tentang pinjaman rumah saya pula. Boleh saya tahu baki pinjaman dan kadar faedah semasa?
+Pembantu: Baki pinjaman rumah anda ialah RM320,000 dengan kadar faedah terapung 4.15% setahun.
+Pengguna: Saya rasa pembayaran bulanan saya agak tinggi. Bolehkah saya buat penstrukturan semula pinjaman?
+Pembantu: Ya, penstrukturan semula boleh dipertimbangkan. Anda boleh pilih tempoh pinjaman yang lebih panjang atau buat pengurangan kadar faedah.
+Pengguna: Saya nak tahu prosesnya dan dokumen yang diperlukan.
+Pembantu: Anda perlu hadir ke cawangan bank bersama dokumen pendapatan terkini, penyata akaun bank 3 bulan terakhir, dan surat permohonan penstrukturan semula.
+Pengguna: Berapa lama masa proses kelulusan?
+Pembantu: Proses biasanya mengambil masa 14 hingga 21 hari bekerja selepas dokumen lengkap diterima.
+Pengguna: Baik, saya juga ada deposit tetap yang saya buka tahun lepas. Bila tarikh matang dan kadar faedahnya?
+Pembantu: Deposit tetap anda berjumlah RM50,000 dan akan matang pada 30 Jun 2025 dengan kadar faedah 3.8% setahun.
+Pengguna: Kalau saya nak keluarkan sebelum matang, ada penalti?
+Pembantu: Ya, ada penalti pengeluaran awal sebanyak 1% daripada jumlah deposit.
+Pengguna: Saya faham. Satu lagi, saya ada transaksi yang saya tak buat pada akaun saya minggu lepas. Boleh saya buat aduan?
+Pembantu: Sudah tentu. Kami akan jalankan siasatan segera. Boleh saya dapatkan butiran transaksi yang anda maksudkan?
+Pengguna: Tarikh 12 Mei, debit RM1,200 ke akaun lain. Saya tak buat transaksi itu.
+Pembantu: Terima kasih. Kami akan blok akaun anda sementara siasatan berjalan dan hubungi anda dalam 3 hari bekerja.
+Pengguna: Adakah saya perlu buat laporan polis juga?
+Pembantu: Ya, laporan polis adalah disyorkan untuk tujuan siasatan dan tuntutan insurans.
+Pengguna: Baik, terima kasih atas bantuan anda.
+Pembantu: Sama-sama Encik. Jika ada apa-apa soalan lain, jangan segan untuk hubungi kami. Semoga hari anda baik.
+<END>
+
+Pengguna:

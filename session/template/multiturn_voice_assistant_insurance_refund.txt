@@ -1,0 +1,51 @@
+Jana multiturn between pengguna dan pembantu untuk insurance refunds.
+
+Pengguna: Assalamualaikum. Saya nak tanya tentang cara mohon refund untuk polisi insurans saya.
+Pembantu: Waalaikumussalam. Boleh saya tahu nombor polisi anda untuk saya semak maklumat?
+Pengguna: Nombor polisi saya 33445566.
+Pembantu: Terima kasih Encik. Polisi anda berstatus aktif dan masih dalam tempoh bayaran premium. Boleh saya tahu sebab anda nak mohon refund?
+Pengguna: Saya dah buat pembatalan polisi sebab saya dah tukar ke syarikat insurans lain.
+Pembantu: Faham. Proses refund bergantung pada tempoh polisi aktif dan jumlah premium yang telah dibayar.
+Pengguna: Berapa lama masa refund biasanya ambil?
+Pembantu: Biasanya proses refund mengambil masa antara 14 hingga 21 hari bekerja selepas permohonan lengkap diterima.
+Pengguna: Apa dokumen yang saya perlu sediakan?
+Pembantu: Anda perlu sediakan salinan borang pembatalan polisi, bukti pembayaran premium, dan surat permohonan refund bertulis.
+Pengguna: Macam mana saya nak hantar dokumen itu?
+Pembantu: Anda boleh hantar melalui e-mel ke alamat rasmi kami atau datang ke cawangan terdekat untuk serahkan secara manual.
+Pengguna: Ada bayaran proses atau caj dikenakan untuk refund?
+Pembantu: Tiada caj proses untuk refund. Namun, jumlah refund akan ditolak dengan bayaran pro-rata bagi tempoh polisi yang telah digunakan.
+Pengguna: Saya faham. Kalau saya mohon refund sekarang, boleh saya tahu berapa anggaran jumlah yang akan saya dapat?
+Pembantu: Berdasarkan semakan, anggaran refund anda adalah RM850 selepas potongan.
+Pengguna: Bagaimana saya boleh semak status refund selepas mohon?
+Pembantu: Anda boleh semak status melalui portal online kami dengan log masuk akaun anda atau hubungi kami semula untuk bantuan.
+Pengguna: Jika ada masalah atau kelewatan, siapa yang boleh saya hubungi?
+Pembantu: Anda boleh hubungi pegawai khidmat pelanggan khusus untuk refund di talian 1300-xxx-xxx atau emel refund@syarikatinsurans.com.my.
+Pengguna: Baik, terima kasih atas penjelasan yang sangat jelas.
+Pembantu: Sama-sama Encik. Jika ada apa-apa soalan lain, kami sedia membantu. Semoga hari anda baik!
+<END>
+
+Pengguna: Assalamualaikum. Saya nak buat permohonan refund untuk insurans motor saya.
+Pembantu: Waalaikumussalam. Boleh saya tahu nombor polisi atau nombor kad pengenalan untuk semakan?
+Pengguna: Nombor polisi saya 77889900.
+Pembantu: Terima kasih Encik. Polisi motor anda masih aktif dan dalam tempoh 6 bulan pertama. Boleh saya tahu sebab anda mahu refund?
+Pengguna: Saya telah menjual kenderaan dan tidak lagi memerlukan polisi ini.
+Pembantu: Faham. Untuk refund, kami akan kira pro-rata berdasarkan tempoh polisi yang belum digunakan.
+Pengguna: Bagaimana proses permohonan refund?
+Pembantu: Anda perlu isi borang pembatalan polisi dan sertakan salinan geran jualan kenderaan serta dokumen pengenalan diri.
+Pengguna: Boleh saya hantar dokumen itu melalui emel?
+Pembantu: Boleh, sila hantar ke alamat refund@insuranscontoh.com.my.
+Pengguna: Berapa lama masa proses refund biasanya?
+Pembantu: Proses mengambil masa antara 10 hingga 15 hari bekerja selepas dokumen lengkap diterima.
+Pengguna: Kalau saya nak semak status permohonan selepas hantar, macam mana caranya?
+Pembantu: Anda boleh log masuk ke portal pelanggan kami atau hubungi talian khidmat pelanggan untuk kemaskini status.
+Pengguna: Ada caj yang dikenakan ke untuk pembatalan dan refund?
+Pembantu: Tiada caj pembatalan, tetapi jumlah refund akan dikurangkan dengan bayaran premium bagi tempoh polisi yang sudah digunakan dan kos pentadbiran.
+Pengguna: Kalau saya batalkan selepas 6 bulan, apa perbezaannya?
+Pembantu: Selepas 6 bulan, jumlah refund akan berkurang kerana polisi dianggap sudah lebih matang dan ada peraturan tertentu.
+Pengguna: Faham. Boleh saya tahu anggaran refund yang saya akan dapat?
+Pembantu: Berdasarkan pengiraan awal, anggaran refund adalah RM480 selepas potongan.
+Pengguna: Terima kasih atas penjelasan yang terperinci ini.
+Pembantu: Sama-sama Encik. Jangan segan hubungi kami semula jika ada pertanyaan lain. Selamat hari!
+<END>
+
+Pengguna:
