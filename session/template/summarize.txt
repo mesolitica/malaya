@@ -1,0 +1,81 @@
+please summarize less than 300 characters, suitable for voice assistant. 
+- If the text is english, summarize it to english.
+- If the text is malay, summarize it to malay.
+
+text = """
+Sekularisme memberi kesan yang mendalam terhadap kedudukan amalan perbuatan dalam iman. Ia cuba memisahkan agama daripada semua aspek kehidupan, termasuk politik, sosial, dan ekonomi. Ia juga menjadikan agama hanya berkaitan dengan amalan ritual semata-mata. Ini bertentangan dengan ajaran Islam yang merangkumi seluruh aspek kehidupan manusia. Seorang Muslim diwajibkan mematuhi syariah dan perintah Allah SWT dalam setiap aspek kehidupan, termasuk politik, sosial, dan ekonomi. Jika hukum syariah ditolak, maka Islam hanya akan tinggal di hati dan bibir semata-mata.
+
+Bagaimana pengaruh pemikiran kapitalis terhadap iman?
+"""
+
+Summary: Secularisme memisahkan agama dari segala aspek kehidupan manusia termasuk politik, sosial, dan ekonomi. Ia menganggap agama hanya berkaitan dengan amalan ritual semata-mata. Namun, ajaran Islam meliputi semua aspek kehidupan manusia. <END>
+
+text = """
+The Malaysian Anti-Corruption Commission (MACC) has made significant strides in combating corruption in Malaysia, but like any institution, it faces certain limitations in its powers. Here are some ways MACC has been effective and the limitations it faces:
+
+Effectiveness of MACC:
+
+1. Increased prosecution and conviction rates: MACC has been successful in increasing the number of corruption-related prosecutions and convictions. According to their annual reports, the number of cases investigated and referred for prosecution has been on the rise, indicating a more proactive approach.
+2. Strengthened legal framework: MACC has been instrumental in proposing and advocating for amendments to the MACC Act, enhancing its powers, and introducing stricter penalties for corruption offenses. The amendments to the Act in 2018 and 2020 expanded the definition of bribery, increased the maximum jail terms, and added provisions for asset declaration by public officials.
+3. Whistleblower protection: The Whistleblower Protection Act, enacted in 2010, offers protection to individuals who report corruption-related offenses. This has led to an increase in the number of tips and information received by MACC, enabling them to investigate and prosecute more cases.
+4. International cooperation: MACC has collaborated with international bodies like the United Nations Office on Drugs and Crime (UNODC) and the Association of Southeast Asian Nations (ASEAN) to strengthen institutional capacity and exchange best practices in fighting corruption.
+5. Public awareness campaigns: MACC has been actively engaging with the public through various outreach programs and awareness campaigns to promote integrity and encourage the reporting of corruption.
+
+Limitations of MACC's powers:
+
+1. Limited jurisdiction: Although MACC has the authority to investigate corruption cases involving public officials and private sector entities, it cannot investigate offenses committed by politicians or civil servants at the state level in Sarawak and Sabah. This is due to the separate jurisdiction of the Anti-Corruption Agency Sarawak and the Anti-Corruption Agency Sabah.
+2. Politically influenced appointments: The Chief Commissioner and other commissioners of MACC are appointed by the Yang di-Pertuan Agong, on the advice of the Prime Minister. This can potentially lead to politically motivated appointments, thereby undermining MACC's independence and integrity.
+3. Insufficient resources and staff: While the number of corruption cases has been increasing, there are concerns regarding the availability of resources and staff to effectively investigate and prosecute these cases. More resources would be required to enhance MACC's capabilities and ensure its success in the fight against corruption.
+4. Inadequate protection for whistleblowers: Despite the Whistleblower Protection Act, there have been instances where whistleblowers have faced retaliation or have not been adequately protected. Strengthening whistleblower protection measures can encourage more individuals to come forward with information on corruption.
+5. Perception of political interference: Public perception of political interference in MACC's work remains a concern, as it can undermine the public's trust in the institution and its ability to effectively combat corruption. Addressing this issue requires ensuring that the institution remains independent and free from political influence.
+"""
+
+Summary: MACC has boosted anti-corruption efforts with more prosecutions, stronger laws, and public campaigns. But it faces limits like political influence, limited jurisdiction, and lack of resources. Whistleblower protection also needs improvement. <END>
+
+text = """
+Masyarakat antarabangsa secara amnya mengalu-alukan usaha kerajaan Malaysia sekarang untuk menangani rasuah dan memulihkan keyakinan terhadap sistem politik dan ekonomi negara. Inisiatif kerajaan untuk menyiasat skandal 1MDB, mengukuhkan undang-undang anti-rasuah, meningkatkan ketelusan dan akauntabiliti, menggalakkan penyertaan awam, dan mendapatkan semula aset yang dicuri telah dilihat sebagai langkah positif ke arah menangani isu sistemik yang membawa kepada skandal itu.
+
+Usaha kerajaan telah diiktiraf oleh organisasi antarabangsa, seperti Transparency International, yang telah mencatatkan peningkatan dalam kedudukan Malaysia dalam Indeks Persepsi Rasuahnya. Bank Dunia juga telah menekankan usaha kerajaan untuk meningkatkan persekitaran perniagaan dan menggalakkan ketelusan.
+
+Walau bagaimanapun, lebih banyak boleh dilakukan untuk meningkatkan lagi reputasi Malaysia di pentas global. Berikut adalah beberapa langkah yang boleh diambil oleh kerajaan untuk membina usaha semasanya:
+
+1. Teruskan mengukuhkan undang-undang anti-rasuah: Walaupun kerajaan telah mengambil langkah untuk mengukuhkan undang-undang anti-rasuah, lebih banyak boleh dilakukan untuk memastikan undang-undang ini dikuatkuasakan dengan berkesan. Ini boleh termasuk meningkatkan sumber dan kuasa suruhanjaya anti-rasuah dan menyediakan perlindungan yang lebih besar untuk pemberi maklumat.
+2. Melaksanakan Pelan Anti-Rasuah Kebangsaan dan Pelan Integriti Kebangsaan: Walaupun kerajaan telah melancarkan inisiatif ini, adalah penting untuk memastikan ia dilaksanakan dengan berkesan dan tindakan konkrit diambil untuk mempromosikan budaya integriti dalam kedua-dua sektor awam dan swasta.
+3. Galakkan ketelusan yang lebih besar dalam kerajaan: Kerajaan boleh mengambil langkah tambahan untuk menggalakkan ketelusan, seperti meningkatkan ketelusan proses perolehan kerajaan dan menyediakan akses yang lebih besar kepada maklumat.
+4. Promosi akauntabiliti yang lebih besar dalam sektor swasta: Kerajaan boleh menggalakkan akauntabiliti yang lebih besar dalam sektor swasta dengan memperkenalkan langkah untuk memastikan syarikat bertanggungjawab atas tindakan mereka dan terdapat akibat daripada tingkah laku yang tidak beretika.
+5. Berinteraksi dengan organisasi dan rakan kongsi antarabangsa: Kerajaan boleh melibatkan diri dengan lebih aktif dengan organisasi dan rakan kongsi antarabangsa untuk mempromosikan ketelusan, akauntabiliti dan tadbir urus yang baik. Ini boleh termasuk mengambil bahagian dalam inisiatif antarabangsa untuk memerangi rasuah dan berkongsi amalan terbaik dengan negara lain.
+6. Memupuk sistem politik yang lebih terbuka dan inklusif: Kerajaan boleh mengambil langkah untuk memupuk sistem politik yang lebih terbuka dan inklusif, termasuk meningkatkan penyertaan politik dan memastikan kumpulan terpinggir mempunyai suara dalam proses politik.
+7. Berkomunikasi usaha kerajaan dengan berkesan: Kerajaan harus menyampaikan usahanya untuk menangani rasuah dengan berkesan dan menggalakkan ketelusan kepada masyarakat antarabangsa. Ini akan membantu membina keyakinan terhadap sistem politik dan ekonomi Malaysia dan menarik pelaburan asing.
+
+Dengan mengambil langkah ini, kerajaan boleh membina usaha semasanya untuk menangani rasuah dan memulihkan keyakinan terhadap sistem politik dan ekonomi Malaysia. Ini bukan sahaja akan membantu meningkatkan reputasi Malaysia di pentas global tetapi juga mewujudkan negara yang lebih stabil dan makmur untuk rakyatnya.
+"""
+
+Summary: Masyarakat antarabangsa sokong usaha Malaysia tangani rasuah. Kerajaan disaran terus kuatkuasa undang-undang, laksana pelan antirasuah, galak ketelusan dan akauntabiliti, serta libatkan diri dengan rakan antarabangsa untuk pulih keyakinan global. <END>
+
+text = """
+Malaysia faces several specific challenges in implementing anti-corruption reforms and restoring confidence in its institutions in the wake of the 1MDB scandal. These challenges include:
+
+1. Building public trust: Malaysia needs to rebuild public trust in its institutions, particularly in the areas of law enforcement, judiciary, and political leadership. The international community can help address this challenge by supporting initiatives that promote transparency, accountability, and civic engagement, and by encouraging the Malaysian government to take concrete steps to address public concerns and grievances.
+2. Strengthening institutions: Malaysia needs to strengthen its institutions to prevent corruption and ensure that those who engage in corrupt practices are held accountable. The international community can help address this challenge by providing technical assistance and expertise to help Malaysia build robust institutions, improve governance, and promote the rule of law.
+3. Addressing vested interests: Malaysia faces a significant challenge in addressing vested interests that have historically benefited from corruption and cronyism. The international community can help address this challenge by supporting initiatives that promote transparency and accountability in procurement, contracting, and public-private partnerships, and by encouraging the Malaysian government to adopt policies that promote fair competition and level playing fields.
+4. Building capacity: Malaysia needs to build capacity in its law enforcement and judicial systems to investigate and prosecute complex corruption cases, such as those related to the 1MDB scandal. The international community can help address this challenge by providing technical assistance and training to Malaysian law enforcement agencies, prosecutors, and judges, and by supporting initiatives that promote international cooperation and information-sharing.
+5. Fostering a culture of integrity: Malaysia needs to foster a culture of integrity and ethical behavior in its public and private sectors. The international community can help address this challenge by supporting initiatives that promote ethics and integrity in education, business, and civil society, and by encouraging Malaysian leaders to set a strong example of ethical behavior and transparency.
+
+To help address these challenges, the international community can take several specific actions, including:
+
+1. Providing technical assistance and training: The international community can provide technical assistance and training to help Malaysia build robust institutions, improve governance, and promote the rule of law. This could include training and capacity building for law enforcement agencies, prosecutors, and judges, as well as assistance in developing and implementing effective anti-corruption strategies and policies.
+2. Supporting international cooperation: The international community can support international cooperation and information-sharing on corruption and money laundering investigations related to the 1MDB scandal. This can help ensure that those responsible for the scandal are held accountable and that Malaysia's institutions are strengthened.
+3. Encouraging transparency and accountability: The international community can encourage transparency and accountability in Malaysia's institutions by supporting initiatives that promote transparency and openness. This could include promoting access to information, supporting civil society organizations that promote transparency and accountability, and encouraging public-private partnerships that promote good governance and anti-corruption measures.
+4. Providing financial support: The international community can provide financial support to help Malaysia implement anti-corruption reforms and build strong institutions. This could include funding for anti-corruption agencies, support for civil society organizations that promote transparency and accountability, and funding for projects that promote good governance and the rule of law.
+5. Fostering a culture of integrity: The international community can foster a culture of integrity and ethical behavior in Malaysia by supporting initiatives that promote ethics and integrity in education, business, and civil society. This could include supporting programs that promote ethical leadership, encourage ethical decision-making, and promote a culture of integrity in the workplace.
+
+By taking these actions, the international community can help Malaysia address the specific challenges it faces in implementing anti-corruption reforms and restoring confidence in its institutions. This can help promote sustainable economic growth and development in Malaysia, and strengthen its position as a responsible and trusted partner in the global community.
+"""
+
+Summary: Malaysia faces challenges post-1MDB in rebuilding trust, strengthening institutions, and fighting corruption. The global community can help with training, cooperation, financial aid, and promoting integrity to support reforms and restore confidence. <END>
+
+text = """
+{{text}}
+"""
+
+Summary:
