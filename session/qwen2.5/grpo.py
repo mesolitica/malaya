@@ -67,7 +67,7 @@ def correct_reward_func(completions, ground_truth, **kwargs):
     score = chrf.corpus_score([answers[0]], [[answer]]).score
     """
     chrf = CHRF()
-    matches = [re.search(r"\\boxed\{(.*?)\}", completion[0]["content"]) for completion in completions]
+    matches = [re.search(r"\$boxed\{(.*?)\}\$", completion[0]["content"]) for completion in completions]
     contents = [match.group(1) if match else "" for match in matches]
     scores = []
     for c, gt in zip(contents, ground_truth):
@@ -80,7 +80,7 @@ format = lambda x: {
     'prompt': [
         {
             "role": "system",
-            "content": 'You are going to enter reasoning mode. First, you try to think step-by-step in Malay. After that, put your final answer within $\boxed{}$.',
+            "content": 'You are going to enter reasoning mode. First, you try to think step-by-step in Malay. After that, put your final answer within $\\boxed{}$.',
         },
         {
             'role': 'user',
@@ -128,22 +128,23 @@ def main(model_args, data_args, training_args):
     model = AutoModelForCausalLM.from_pretrained(
         model_args.model_name_or_path,
         attn_implementation="sdpa",
-        device_map=None
+        use_cache=False,
     )
-    if model_args.alpha is None:
-        alpha = model_args.rank * 2
+    if model_args.rank > 0:
+        if model_args.alpha is None:
+            alpha = model_args.rank * 2
 
-    peft_config = LoraConfig(
-        lora_alpha=alpha,
-        lora_dropout=0.0,
-        r=model_args.rank,
-        use_rslora=model_args.use_rslora,
-        bias="none",
-        task_type="CAUSAL_LM",
-        target_modules=["q_proj", "k_proj", "v_proj", "o_proj",
-                        "gate_proj", "up_proj", "down_proj", "embed_tokens", "lm_head"],
-    )
-    model = get_peft_model(model, peft_config)
+        peft_config = LoraConfig(
+            lora_alpha=alpha,
+            lora_dropout=0.0,
+            r=model_args.rank,
+            use_rslora=model_args.use_rslora,
+            bias="none",
+            task_type="CAUSAL_LM",
+            target_modules=["q_proj", "k_proj", "v_proj", "o_proj",
+                            "gate_proj", "up_proj", "down_proj", "embed_tokens", "lm_head"],
+        )
+        model = get_peft_model(model, peft_config)
     tokenizer = AutoTokenizer.from_pretrained(model_args.model_name_or_path)
     trainer = GRPOTrainer(
         model=model,
