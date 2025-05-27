@@ -14,9 +14,9 @@ torchrun --nproc_per_node 6 \
 --bf16 --do_train --do_eval false --num_train_epochs 2 \
 --dataset huseinzol05/malaysian-dialect-qa \
 --logging_steps 1 \
---learning_rate 2e-5 \
+--learning_rate 2e-6 \
 --warmup_steps 10 \
---max_grad_norm 0.1 \
+--max_grad_norm 0.01 \
 --weight_decay 0.01 \
 --save_steps 20 \
 --gradient_checkpointing true \

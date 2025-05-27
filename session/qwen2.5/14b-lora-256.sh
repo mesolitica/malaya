@@ -20,7 +20,7 @@ torchrun --nproc_per_node 8 \
 --gradient_checkpointing true \
 --neftune_noise_alpha 5.0 \
 --torch_dtype bfloat16 \
---rank 128 \
+--rank 256 \
 --ddp_find_unused_parameters false \
 --dataloader_num_workers 5 \
 --dataloader_prefetch_factor 4
