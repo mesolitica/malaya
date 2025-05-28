@@ -251,7 +251,7 @@ class Model(Qwen2AudioForConditionalGeneration):
         super().__init__(config)
         
     def forward(self, input_ids, attention_mask, input_features, feature_attention_mask, labels = None, **kwargs):
-        super_out = super().forward(
+        super_out = self.model.forward(
             input_ids = input_ids, 
             attention_mask = attention_mask, 
             input_features = input_features, 
