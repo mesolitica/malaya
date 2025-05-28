@@ -1,0 +1,8 @@
+{
+    "backward_prefetch": "backward_pre",
+    "cpu_ram_efficient_loading": false,
+    "forward_prefetch": false,
+    "sync_module_states": true,
+    "use_orig_params": false,
+    "activation_checkpointing": true
+}

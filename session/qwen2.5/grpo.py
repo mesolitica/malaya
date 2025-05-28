@@ -1,6 +1,7 @@
 from trl import GRPOConfig, GRPOTrainer, TrlParser
 import re
 import torch
+from transformers.trainer_utils import get_last_checkpoint
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from datasets import load_dataset
 from sacrebleu.metrics import CHRF
@@ -157,7 +158,8 @@ def main(model_args, data_args, training_args):
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
     )
-    trainer.train()
+    last_checkpoint = get_last_checkpoint(training_args.output_dir)
+    trainer.train(resume_from_checkpoint=last_checkpoint)
 
 if __name__ == "__main__":
     parser = TrlParser((ModelArguments, DataTrainingArguments, GRPOConfig,))
