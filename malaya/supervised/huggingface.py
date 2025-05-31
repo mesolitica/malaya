@@ -19,7 +19,7 @@ def load(
             f'model not supported, please check supported models from `{path}.available_huggingface`.'
         )
 
-    args = inspect.getargspec(class_model)
+    args = inspect.getfullargspec(class_model)
     for k, v in additional_parameters.items():
         if k in args.args:
             kwargs[k] = available_huggingface[model].get(v)
