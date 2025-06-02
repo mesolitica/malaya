@@ -19,7 +19,8 @@ vllm/bin/pip3 install vllm==0.8.5.post1 aiohttp
 python3 -m venv --without-pip tensorrt
 wget https://bootstrap.pypa.io/get-pip.py
 tensorrt/bin/python3 get-pip.py
-tensorrt/bin/pip3 install tensorrt_llm aiohttp
+tensorrt/bin/pip3 install tensorrt_llm==0.18.2 aiohttp flash_attn
+tensorrt/bin/pip3 install -U "nvidia-modelopt[all]"
 ```
 
 ### 14B vLLM
@@ -66,6 +67,38 @@ python3 benchmark.py \
 --save "Malaysian-Qwen2.5-14B-Instruct-FP8"
 ```
 
+### 14B TensorRT-LLM
+
+#### FP16
+
+```bash
+./tensorrt/bin/trtllm-serve "mesolitica/Malaysian-Qwen2.5-14B-Instruct" \
+--tp_size "8" --host "0.0.0.0" --backend pytorch
+```
+
+Stress test,
+
+```bash
+python3 benchmark.py \
+--model "mesolitica/Malaysian-Qwen2.5-14B-Instruct" \
+--save "Malaysian-Qwen2.5-14B-Instruct-warmup-tensorrt" \
+--rps-list "5"
+
+python3 benchmark.py \
+--model "mesolitica/Malaysian-Qwen2.5-14B-Instruct" \
+--save "Malaysian-Qwen2.5-14B-Instruct-warmup-tensorrt" \
+--rps-list "5"
+
+python3 benchmark.py \
+--model "mesolitica/Malaysian-Qwen2.5-14B-Instruct" \
+--save "Malaysian-Qwen2.5-14B-Instruct-warmup-tensorrt" \
+--rps-list "5"
+
+python3 benchmark.py \
+--model "Malaysian-Qwen2.5-14B-Instruct" \
+--save "Malaysian-Qwen2.5-14B-Instruct-tensorrt"
+```
+
 ### 72B vLLM
 
 #### FP16
@@ -108,4 +141,36 @@ python3 benchmark.py \
 python3 benchmark.py \
 --model "model" \
 --save "Malaysian-Qwen2.5-72B-Instruct-FP8"
+```
+
+### 72B TensorRT-LLM
+
+#### FP16
+
+```bash
+./tensorrt/bin/trtllm-serve "mesolitica/Malaysian-Qwen2.5-72B-Instruct" \
+--tp_size "8" --host "0.0.0.0" --backend pytorch
+```
+
+Stress test,
+
+```bash
+python3 benchmark.py \
+--model "mesolitica/Malaysian-Qwen2.5-72B-Instruct" \
+--save "Malaysian-Qwen2.5-72B-Instruct-warmup-tensorrt" \
+--rps-list "5"
+
+python3 benchmark.py \
+--model "mesolitica/Malaysian-Qwen2.5-72B-Instruct" \
+--save "Malaysian-Qwen2.5-72B-Instruct-warmup-tensorrt" \
+--rps-list "5"
+
+python3 benchmark.py \
+--model "mesolitica/Malaysian-Qwen2.5-72B-Instruct" \
+--save "Malaysian-Qwen2.5-72B-Instruct-warmup-tensorrt" \
+--rps-list "5"
+
+python3 benchmark.py \
+--model "Malaysian-Qwen2.5-72B-Instruct" \
+--save "Malaysian-Qwen2.5-72B-Instruct-tensorrt"
 ```
