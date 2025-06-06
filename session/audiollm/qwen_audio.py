@@ -58,21 +58,17 @@ from torch._inductor.fx_passes import quantization
 quantization._is_valid_woq_optimization_pattern = _is_valid_woq_optimization_pattern
 
 from torch import nn
+import torch.nn.functional as F
+import torch.nn.init as init
+
 import logging
 import math
 import os
 import sys
 import warnings
-import torch.nn.functional as F
 from dataclasses import dataclass, field
 from itertools import chain
 from typing import Optional
-
-import datasets
-import evaluate
-from datasets import load_dataset
-from datasets import Audio
-
 import transformers
 import random
 from transformers import (
@@ -80,54 +76,39 @@ from transformers import (
     MODEL_FOR_CAUSAL_LM_MAPPING,
     AutoConfig,
     AutoModelForCausalLM,
+    Qwen2ForCausalLM,
     AutoTokenizer,
-    AutoProcessor,
     HfArgumentParser,
     Trainer,
     TrainingArguments,
     default_data_collator,
     DataCollatorWithPadding,
     DataCollatorForLanguageModeling,
-    is_torch_tpu_available,
     set_seed,
+    WhisperPreTrainedModel,
+    WhisperConfig,
+    AddedToken,
+    AutoProcessor,
 )
-from transformers import AddedToken, AutoModel, Qwen2ForCausalLM
 from transformers.models.whisper.modeling_whisper import WhisperEncoderLayer
-from transformers import WhisperPreTrainedModel, WhisperConfig
 from transformers.modeling_outputs import BaseModelOutput
-from datasets import Audio
-import math
-from torch import nn
 from transformers.testing_utils import CaptureLogger
 from transformers.trainer_utils import get_last_checkpoint
-from transformers.utils import check_min_version, send_example_telemetry
-from transformers.utils.versions import require_version
-from transformers.models.llama.modeling_llama import LlamaForCausalLM
+from datasets import Audio
+import streaming
 import json
-import os
 import numpy as np
 from streaming import LocalDataset
 from streaming.base.format.mds.encodings import Encoding, _encodings
 from peft import LoraConfig, get_peft_model
-from chunk_loss_lora.ce import ChunkedCE
-
-require_version(
-    "datasets>=1.8.0",
-    "To fix: pip install -r examples/pytorch/language-modeling/requirements.txt")
+from cut_cross_entropy import linear_cross_entropy
 
 logger = logging.getLogger(__name__)
 
-class UInt32(Encoding):
-    def encode(self, obj) -> bytes:
-        return obj.tobytes()
-
-    def decode(self, data: bytes):
-        return np.frombuffer(data, np.uint32)
-
-_encodings['uint32'] = UInt32
 
 MODEL_CONFIG_CLASSES = list(MODEL_FOR_CAUSAL_LM_MAPPING.keys())
 MODEL_TYPES = tuple(conf.model_type for conf in MODEL_CONFIG_CLASSES)
+
 
 @dataclass
 class ModelArguments:
@@ -135,18 +116,19 @@ class ModelArguments:
     Arguments pertaining to which model/config/tokenizer we are going to fine-tune, or train from scratch.
     """
 
-    rank: int = field(
-        default=256,
-        metadata={
-            "help": "lora rank"
-        },
-    )
-
     model_name_or_path: Optional[str] = field(
         default=None,
         metadata={
             "help": (
                 "The model checkpoint for weights initialization.Don't set if you want to train a model from scratch."
+            )
+        },
+    )
+    rank: Optional[int] = field(
+        default=0,
+        metadata={
+            "help": (
+                "rank"
             )
         },
     )
@@ -198,7 +180,7 @@ class ModelArguments:
                 "should only be set to `True` for repositories you trust and in which you have read the code, as it will"
                 "execute code present on the Hub on your local machine.")}, )
     torch_dtype: Optional[str] = field(
-        default=None,
+        default="bfloat16",
         metadata={
             "help": (
                 "Override the default `torch.dtype` and load the model under this dtype. If `auto` is passed, the "
@@ -434,12 +416,13 @@ class Model(Qwen2ForCausalLM):
     def __init__(self, config):
         super().__init__(config)
         self.encoder = WhisperEncoder(config.audio_encoder_config)
-        self.projection = nn.Linear(self.encoder.config.d_model, self.config.hidden_size, bias=True)
+        self.projection = nn.Linear(self.encoder.config.d_model, self.config.hidden_size, bias=False)
     
     def forward(
         self, 
         input_ids, 
-        attention_mask, 
+        attention_mask,
+        position_ids,
         input_features = None, 
         feature_attention_mask = None, 
         labels = None, 
@@ -474,67 +457,71 @@ class Model(Qwen2ForCausalLM):
                 num_audio_tokens.device
             ) < num_audio_tokens.unsqueeze(1)
             masked_audio_features = audio_features[audio_features_mask].view(-1, embed_dim)
-            inputs_embeds[input_ids == model.config.audio_token_index] = masked_audio_features.contiguous()
+            inputs_embeds[input_ids == self.config.audio_token_index] = masked_audio_features.contiguous()
         
         super_out = self.model.forward(
             inputs_embeds = inputs_embeds, 
             attention_mask = attention_mask,
-            output_hidden_states = True,
-        )
-        return super_out
-
-class Model(Qwen2AudioForConditionalGeneration):
-    def __init__(self, config):
-        super().__init__(config)
-        
-    def forward(self, input_ids, attention_mask, position_ids, input_features = None, feature_attention_mask = None, labels = None, **kwargs):
-        super_out = super().forward(
-            input_ids = input_ids, 
-            attention_mask = attention_mask, 
             position_ids = position_ids,
-            input_features = input_features, 
-            feature_attention_mask = feature_attention_mask,
             output_hidden_states = True,
         )
         if labels is not None:
-            x = super_out.last_hidden_state[:,:-1]
-            x_ = x.reshape(-1, x.shape[-1])
-            labels = labels[:,1:].reshape(-1)
-            m = self.lm_head
-            m_a = self.lm_head.lora_A.default
-            m_b = self.lm_head.lora_B.default
-            r = self.lm_head.scaling['default']
-            loss = ChunkedCE.apply(x_, m, m_a, m_b, r, labels, True)
-            return {'loss': loss}
+            embeddings = super_out.last_hidden_state
+            auto_shift_loss = linear_cross_entropy(
+                embeddings, 
+                self.lm_head.weight, 
+                labels, 
+                shift=True,
+            )
+            return {'loss': auto_shift_loss}
         return super_out
+
+class LinearLoRA(nn.Module):
+    def __init__(self, linear: nn.Linear, r=4, alpha=1.0):
+        super().__init__()
+        self.linear = linear
+        self.r = r
+        self.alpha = alpha
+        self.scaling = alpha / r
+
+        in_features = linear.in_features
+        out_features = linear.out_features
+        
+        device = self.linear.weight.device
+        dtype = self.linear.weight.dtype
+        
+        self.lora_A = nn.Linear(
+            in_features, r, bias=False, 
+            device = device,
+            dtype = dtype,
+        )
+        self.lora_B = nn.Linear(
+            r, out_features, bias=False, 
+            device = device,
+            dtype = dtype,
+        )
+
+        for param in self.lora_A.parameters():
+            param.requires_grad = True
+        for param in self.lora_B.parameters():
+            param.requires_grad = True
+
+        init.kaiming_uniform_(self.lora_A.weight, a=math.sqrt(5))
+        init.zeros_(self.lora_B.weight)
+
+    def forward(self, x):
+        out = self.linear(x)
+        lora_update = self.lora_B(self.lora_A(x)) * self.scaling
+        return out + lora_update
 
 def main():
 
-    # See all possible arguments in src/transformers/training_args.py
-    # or by passing the --help flag to this script.
-    # We now keep distinct sets of args, for a cleaner separation of concerns.
-
     parser = HfArgumentParser((ModelArguments, DataTrainingArguments, TrainingArguments))
     if len(sys.argv) == 2 and sys.argv[1].endswith(".json"):
-        # If we pass only one argument to the script and it's the path to a json file,
-        # let's parse it to get our arguments.
         model_args, data_args, training_args = parser.parse_json_file(
             json_file=os.path.abspath(sys.argv[1]))
     else:
         model_args, data_args, training_args = parser.parse_args_into_dataclasses()
-
-    if model_args.use_auth_token is not None:
-        warnings.warn(
-            "The `use_auth_token` argument is deprecated and will be removed in v4.34.",
-            FutureWarning)
-        if model_args.token is not None:
-            raise ValueError(
-                "`token` and `use_auth_token` are both specified. Please set only the argument `token`.")
-        model_args.token = model_args.use_auth_token
-
-    # Sending telemetry. Tracking the example usage helps us better allocate resources to maintain them. The
-    # information sent is the one passed as arguments along with your Python/PyTorch versions.
-    send_example_telemetry("run_clm", model_args, data_args)
 
     # Setup logging
     logging.basicConfig(
@@ -544,18 +531,14 @@ def main():
     )
 
     if training_args.should_log:
-        # The default of training_args.log_level is passive, so we set log level
-        # at info here to have that default.
         transformers.utils.logging.set_verbosity_info()
 
     log_level = training_args.get_process_log_level()
     logger.setLevel(log_level)
-    datasets.utils.logging.set_verbosity(log_level)
     transformers.utils.logging.set_verbosity(log_level)
     transformers.utils.logging.enable_default_handler()
     transformers.utils.logging.enable_explicit_format()
 
-    # Log on each process the small summary:
     logger.warning(
         f"Process rank: {training_args.local_rank}, device: {training_args.device}, n_gpu: {training_args.n_gpu}" +
         f"distributed training: {training_args.parallel_mode.value == 'distributed'}, 16-bits training: {training_args.fp16}")
@@ -566,16 +549,22 @@ def main():
             training_args.output_dir) and training_args.do_train and not training_args.overwrite_output_dir:
         last_checkpoint = get_last_checkpoint(training_args.output_dir)
 
-    set_seed(training_args.seed)
-
-    processor = AutoProcessor.from_pretrained('openai/whisper-large-v3')
-    audio_token = "<|file_sep|>"
+    tokenizer = AutoTokenizer.from_pretrained(model_args.model_name_or_path)
+    chat_template = "{% set audio_count = namespace(value=0) %}{% for message in messages %}{% if loop.first and message['role'] != 'system' %}<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n{% endif %}<|im_start|>{{ message['role'] }}\n{% if message['content'] is string %}{{ message['content'] }}<|im_end|>\n{% else %}{% for content in message['content'] %}{% if 'audio' in content or 'audio_url' in content or message['type'] == 'audio' %}{% set audio_count.value = audio_count.value + 1 %}Audio {{ audio_count.value }}: <|audio_bos|><|AUDIO|><|audio_eos|>\n{% elif 'text' in content %}{{ content['text'] }}{% endif %}{% endfor %}<|im_end|>\n{% endif %}{% endfor %}{% if add_generation_prompt %}<|im_start|>assistant\n{% endif %}"
+    tokenizer.chat_template = chat_template
+    audio_token = "<|AUDIO|>"
     audio_bos_token = "<|audio_bos|>"
     audio_eos_token = "<|audio_eos|>"
-    audio_token_id = tokenizer._convert_token_to_id_with_added_voc(audio_token)
-    pad_token_id = tokenizer.pad_token_id
-    new_tokens = [AddedToken(audio_bos_token), AddedToken(audio_eos_token)]
+    new_tokens = [AddedToken(audio_token), AddedToken(audio_bos_token), AddedToken(audio_eos_token)]
     tokenizer.add_tokens(new_tokens)
+    audio_token_id = tokenizer.vocab[audio_token]
+    pad_token_id = tokenizer.pad_token_id
+        
+    processor = AutoProcessor.from_pretrained('openai/whisper-large-v3')
+    config = AutoConfig.from_pretrained(model_args.model_name_or_path)
+    audio_encoder_config = AutoConfig.from_pretrained('huseinzol05/whisper-large-v3-encoder')
+    config.audio_encoder_config = audio_encoder_config
+    config.audio_token_index = audio_token_id
 
     torch_dtype = (
         model_args.torch_dtype
@@ -584,6 +573,15 @@ def main():
     )
     min_dtype = torch.finfo(torch_dtype).min
     sequence_length = data_args.block_size
+
+    class UInt32(Encoding):
+        def encode(self, obj) -> bytes:
+            return obj.tobytes()
+
+        def decode(self, data: bytes):
+            return np.frombuffer(data, np.uint32)
+
+    _encodings['uint32'] = UInt32
 
     class DatasetFixed(torch.utils.data.Dataset):
         def __init__(self, local):
@@ -679,42 +677,39 @@ def main():
 
     model = Model.from_pretrained(
         model_args.model_name_or_path, 
-        torch_dtype = 'auto',
+        config = config,
     )
+    model.encoder = model.encoder.from_pretrained('huseinzol05/whisper-large-v3-encoder')
+    model.resize_token_embeddings(len(tokenizer), mean_resizing=False)
 
-    selected = ["q_proj", "k_proj", "v_proj", "o_proj",
-                  "gate_proj", "up_proj", "down_proj", "embed_tokens", "lm_head"]
-
-    target_modules = []
-    for id, (name, param) in enumerate(model.named_modules()):
-        if 'encoder.' in name:
-            continue
-        if any([s in name for s in selected]):
-            target_modules.append(name)
-
-    peft_config = LoraConfig(
-        lora_alpha=model_args.rank * 2,
-        lora_dropout=0.0,
-        r=model_args.rank,
-        bias="none",
-        task_type="CAUSAL_LM",
-        target_modules=target_modules,
-    )
-    print(peft_config)
-
-    if hasattr(model, "enable_input_require_grads"):
-        model.enable_input_require_grads()
-    else:
-        def make_inputs_require_grad(module, input, output):
-            output.requires_grad_(True)
-
-        model.get_input_embeddings().register_forward_hook(make_inputs_require_grad)
-    
-    model = get_peft_model(model, peft_config)
-    model.projection.weight.requires_grad = True
-
-    for param in model.encoder.parameters():
+    for name, param in model.named_parameters():
         param.requires_grad = False
+
+    if model_args.rank > 0:
+        selected = [
+            "q_proj", 
+            "k_proj", 
+            "v_proj", 
+            "o_proj",
+            "gate_proj", 
+            "up_proj", 
+            "down_proj",
+        ]
+        r = model_args.rank
+        alpha = r * 2
+        for name, module in model.named_modules():
+            if 'encoder' in name:
+                continue
+            for child_name, child in module.named_children():
+                if len(child_name) and any([a in child_name for a in selected]) and isinstance(child, nn.Linear):
+                    lora = LinearLoRA(child, r=r, alpha=alpha)
+                    setattr(module, child_name, lora)
+
+    model.projection.weight.requires_grad = True
+    model.model.embed_tokens.weight.requires_grad = True
+    model.lm_head.weight.requires_grad = True
+    
+    print(model)
 
     trainer = Trainer(
         model=model,
@@ -726,7 +721,6 @@ def main():
         preprocess_logits_for_metrics=None,
     )
 
-    # Training
     if training_args.do_train:
         checkpoint = None
         if training_args.resume_from_checkpoint is not None:
@@ -737,7 +731,6 @@ def main():
         trainer.save_model()
         trainer.save_state()
 
-
 def _mp_fn(index):
     # For xla_spawn (TPUs)
     main()
@@ -745,4 +738,3 @@ def _mp_fn(index):
 
 if __name__ == "__main__":
     main()
-
