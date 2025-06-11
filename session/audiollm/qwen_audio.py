@@ -678,8 +678,12 @@ def main():
     model = Model.from_pretrained(
         model_args.model_name_or_path, 
         config = config,
+        torch_dtype = torch.bfloat16,
     )
-    model.encoder = model.encoder.from_pretrained('huseinzol05/whisper-large-v3-encoder')
+    model.encoder = model.encoder.from_pretrained(
+        'huseinzol05/whisper-large-v3-encoder',
+        torch_dtype = torch.bfloat16,
+    )
     model.resize_token_embeddings(len(tokenizer), mean_resizing=False)
 
     for name, param in model.named_parameters():
