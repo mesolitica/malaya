@@ -223,7 +223,7 @@ transformers-neuronx==0.9.474
 typing_extensions==4.8.0
 tzdata==2023.3
 uritemplate==3.0.1
-urllib3==1.26.18
+urllib3==2.5.0
 wcwidth==0.2.13
 webencodings==0.5.1
 websocket-client==1.7.0
