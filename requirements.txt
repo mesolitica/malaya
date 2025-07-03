@@ -11,3 +11,4 @@ tqdm
 malaya-boilerplate>=0.0.25
 regex
 transformers
+num2words
