@@ -1,6 +1,6 @@
 import re
 import traceback
-from malaya.num2word import to_cardinal, to_ordinal
+from malaya import num2word
 from malaya.word2num import word2num
 from malaya.text.tatabahasa import (
     hujung_malaysian,
@@ -8,11 +8,16 @@ from malaya.text.tatabahasa import (
     hujung,
     permulaan,
     laughing,
+    bulan,
+    bulan_en,
 )
 from malaya.text.rules import rules_normalizer, rules_compound_normalizer
 from malaya.text.function import case_of, MENGELUH, BETUL, GEMBIRA
 from malaya.dictionary import ENGLISH_WORDS, MALAY_WORDS, is_malay, is_english
 from malaya.text.regex import _expressions
+from num2words import num2words
+from datetime import time
+import dateparser
 import math
 import logging
 
@@ -31,6 +36,17 @@ unit_mapping = {
     'cm': 'sentimeter',
     'kilo': 'kilogram',
 }
+unit_mapping_en = {
+    'kg': 'kilogram',
+    'g': 'gram',
+    'l': 'liter',
+    'ml': 'milliliter',
+    'c': 'celcius',
+    'km': 'kilometer',
+    'm': 'meter',
+    'cm': 'centimeter',
+    'kilo': 'kilogram',
+}
 
 rules_compound_normalizer_regex = (
     r'\b(?:' + '|'.join(list(rules_compound_normalizer.keys())) + ')'
@@ -41,6 +57,36 @@ rules_compound_normalizer_keys = list(rules_compound_normalizer.keys())
 digits = '0123456789'
 sastrawi_stemmer = None
 
+time_descriptors = {
+    "am": "pagi", "a.m.": "pagi", "morning": "pagi", "pagi": "pagi", "pgi": "pagi",
+    "pm": "petang", "p.m.": "petang", "petang": "petang", "ptg": "petang",
+    "tengahari": "tengahari", "tngahari": "tengahari",
+    "malam": "malam",
+    "hours": "", "hour": "", "hrs": "", "jam": ""
+}
+
+time_pattern = re.compile(
+    r'(?:pkul|pukul|kul)?\s*'
+    r'(?P<hour>[0-2]?[0-9])'
+    r'(?:[:.](?P<minute>[0-5][0-9]))?'
+    r'(?:[:.](?P<second>[0-5][0-9]))?'
+    r'(?:\s*(?P<desc>AM|PM|am|pm|a\.m\.|p\.m\.|pagi|pgi|morning|tengahari|tngahari|petang|ptg|malam|hours|hrs|jam))?',
+    re.IGNORECASE
+)
+
+def to_cardinal(n, english=False):
+    if english:
+        s = num2words(n).replace('-', ' ')
+        return re.sub(r'[ ]+', ' ', s).strip()
+    else:
+        return num2word.to_cardinal(n)
+
+def to_ordinal(n, english=False):
+    if english:
+        s = num2words(n, to='ordinal').replace('-', ' ')
+        return re.sub(r'[ ]+', ' ', s).strip()
+    else:
+        return num2word.to_ordinal(n)
 
 def initialize_sastrawi():
     global sastrawi_stemmer
@@ -201,7 +247,7 @@ def _string_to_num(word):
         return int(word)
 
 
-def cardinal(x):
+def cardinal(x, english=False):
     cp_x = x[:]
     try:
         if re.match('.*[A-Za-z]+.*', x):
@@ -209,11 +255,11 @@ def cardinal(x):
         x = re.sub(',', '', x, count=10)
 
         if re.match('.+\\..*', x):
-            x = to_cardinal(float(x))
+            x = to_cardinal(float(x), english=english)
         elif re.match('\\..*', x):
-            x = to_cardinal(float(x))
+            x = to_cardinal(float(x), english=english)
         else:
-            x = to_cardinal(int(x))
+            x = to_cardinal(int(x), english=english)
         x = re.sub('-', ' ', x, count=10)
         return x
     except BaseException as e:
@@ -221,22 +267,22 @@ def cardinal(x):
         return cp_x
 
 
-def split_currency(x):
+def split_currency(x, english=False):
     results = []
     for no, u in enumerate(x.split('.')):
         if no and len(u) == 1:
             u = u + '0'
-        results.append(cardinal(u))
+        results.append(cardinal(u, english=english))
     return results
 
 
-def digit(x):
+def digit(x, english=False):
     cp_x = x[:]
     try:
         x = re.sub('[^0-9]', '', x)
         result_string = ''
         for i in x:
-            result_string = result_string + cardinal(i) + ' '
+            result_string = result_string + cardinal(i, english=english) + ' '
         result_string = result_string.strip()
         return result_string
     except BaseException as e:
@@ -244,17 +290,21 @@ def digit(x):
         return cp_x
 
 
-def digit_unit(x):
+def digit_unit(x, english=False):
     cp_x = x[:]
     try:
         n = re.sub('[^0-9.]', '', x)
         u = re.sub('[0-9. ]', '', x)
-        u = unit_mapping.get(u.lower(), u)
+        if english:
+            mapping = unit_mapping_en
+        else:
+            mapping = unit_mapping
+        u = mapping.get(u.lower(), u)
         if '.' in n:
             n = float(n)
         else:
             n = int(n)
-        n = to_cardinal(n)
+        n = to_cardinal(n, english=english)
         return f'{n} {u}'
     except Exception as e:
         logger.debug(traceback.format_exc())
@@ -318,14 +368,14 @@ def rom_to_int(string):
     return returnint
 
 
-def ordinal(x):
+def ordinal(x, english=False):
     cp_x = x[:]
     try:
         result_string = ''
         x = x.replace(',', '')
         x = x.replace('[\\.]$', '')
         if re.match('^[0-9]+$', x):
-            x = to_ordinal(int(x))
+            x = to_ordinal(int(x), english=english)
             return x
         if re.match('.*(V|X|I|L|D)', x):
             x = x.replace('-', '')
@@ -334,19 +384,23 @@ def ordinal(x):
                 x = rom_to_int(x)
                 if x == -1:
                     return cp_x
-                result_string = to_ordinal(x)
+                result_string = to_ordinal(x, english=english)
             else:
                 x = rom_to_int(x)
                 if x == -1:
                     return cp_x
-                result_string = to_ordinal(x)
-                result_string = 'yang ' + result_string
+                result_string = to_ordinal(x, english=english)
+                if english:
+                    p = ''
+                else:
+                    p = 'yang '
+                result_string = p + result_string
         elif re.match('^ke.*', x):
             x = x.replace('-', '')
             x = x[2:]
-            result_string = to_ordinal(int(x))
+            result_string = to_ordinal(int(x), english=english)
         else:
-            result_string = to_ordinal(int(x))
+            result_string = to_ordinal(int(x), english=english)
         return result_string
     except Exception as e:
         logger.debug(traceback.format_exc())
@@ -398,36 +452,41 @@ def electronic(x):
         return x
 
 
-def fraction(x):
+def fraction(x, english=False):
     try:
         y = x.split('/')
         result_string = ''
-        y[0] = cardinal(y[0])
-        y[1] = cardinal(y[1])
-        return '%s per %s' % (y[0], y[1])
+        y[0] = cardinal(y[0], english=english)
+        y[1] = cardinal(y[1], english=english)
+        if english:
+            over = 'over'
+        else:
+            over = 'per'
+        return '%s %s %s' % (y[0], over, y[1])
     except BaseException as e:
         logger.debug(traceback.format_exc())
         return x
 
 
 def combine_with_cent(
-    x, currency='RM', currency_end='ringgit', cent='sen'
+    x, currency='RM', currency_end='ringgit', cent='sen', english=False,
 ):
-    text = split_currency(str(x))
+    zeros = {'kosong', 'zero'}
+    text = split_currency(str(x), english=english)
     c = '%s%s' % (currency, str(x))
-    if text[0] != 'kosong':
+    if text[0] not in zeros:
         x = '%s %s' % (text[0], currency_end)
     else:
         x = ''
     if len(text) == 2:
-        if text[1] != 'kosong':
+        if text[1] != zeros:
             x = '%s %s %s' % (x, text[1], cent)
     return x, c
 
 
 def replace_ribu_juta(x):
-    x = x.lower().replace('ribu', 'k')
-    x = x.lower().replace('juta', 'm')
+    x = x.lower().replace('ribu', 'k').replace('thousand', 'k')
+    x = x.lower().replace('juta', 'm').replace('million', 'm')
     return x
 
 
@@ -464,7 +523,7 @@ def normalize_numbers_with_shortform(x):
         return x_
 
 
-def money(x):
+def money(x, english=False):
     try:
         if (
             re.match('^\\$', x)
@@ -503,7 +562,7 @@ def money(x):
                 x = math.ceil(x)
 
             x, c = combine_with_cent(
-                x, currency='$', currency_end='dollar', cent='cent'
+                x, currency='$', currency_end='dollar', cent='cent', english=english
             )
 
             return re.sub(r'[ ]+', ' ', x.lower()).strip(), c
@@ -551,7 +610,7 @@ def money(x):
                 x = math.ceil(x)
 
             x, c = combine_with_cent(
-                x, currency='$', currency_end='dollar', cent='cent'
+                x, currency='$', currency_end='dollar', cent='cent', english=english
             )
 
             return re.sub(r'[ ]+', ' ', x.lower()).strip(), c
@@ -593,7 +652,7 @@ def money(x):
                 x = math.ceil(x)
 
             x, c = combine_with_cent(
-                x, currency='£', currency_end='pound', cent='cent'
+                x, currency='£', currency_end='pound', cent='cent', english=english
             )
             return re.sub(r'[ ]+', ' ', x.lower()).strip(), c
 
@@ -633,7 +692,7 @@ def money(x):
                 x = math.ceil(x)
 
             x, c = combine_with_cent(
-                x, currency='€', currency_end='euro', cent='cent'
+                x, currency='€', currency_end='euro', cent='cent', english=english
             )
             return re.sub(r'[ ]+', ' ', x.lower()).strip(), c
 
@@ -675,7 +734,7 @@ def money(x):
             if isinstance(x, float) and 1 - (x % 1) < 1e-5:
                 x = math.ceil(x)
 
-            x, c = combine_with_cent(x)
+            x, c = combine_with_cent(x, english=english)
             return re.sub(r'[ ]+', ' ', x.lower()).strip(), c
         return x, None
 
@@ -773,18 +832,88 @@ def replace_any(string, lists, replace_with):
         result.append(word)
     return ' '.join(result)
 
+def parse_time_string(text):
+    matches = []
+    
+    for match in time_pattern.finditer(text):
+        hour = int(match.group("hour"))
+        minute = int(match.group("minute") or 0)
+        second = int(match.group("second") or 0)
+        desc = (match.group("desc") or "").lower()
+
+        desc = time_descriptors.get(desc, desc)
+
+        if desc == "pagi":
+            if hour == 12: hour = 0
+        elif desc == "tengahari":
+            if 1 <= hour <= 6: hour += 12
+        elif desc == "petang":
+            if hour < 12: hour += 12
+        elif desc == "malam":
+            if 1 <= hour < 12: hour += 12
+
+        try:
+            t = time(hour, minute, second)
+            matches.append(t)
+        except ValueError:
+            continue
+        
+    return matches
+
+def parse_date_string(
+    word, 
+    normalize_date=True, 
+    dateparser_settings={'TIMEZONE': 'GMT+8'},
+    english=False,
+):
+    if english:
+        month_map = bulan_en
+    else:
+        month_map = bulan
+    try:
+        parsed = dateparser.parse(word, settings=dateparser_settings)
+        if parsed:
+            word = parsed.strftime('%d/%m/%Y')
+            if normalize_date:
+                day, month, year = word.split('/')
+                day = cardinal(day, english=english)
+
+                month = month_map[int(month)].title()
+                year = cardinal(year, english=english)
+                word = f'{day} {month} {year}'
+
+    except Exception as e:
+        logger.warning(str(e))
+    return word
+
+def fix_spacing(text):
+    
+    quote_pattern = r'"([^"]*)"'
+    def fix_quotes(match):
+        content = match.group(1).strip()
+        return f'"{content}"'
+    
+    text = re.sub(quote_pattern, fix_quotes, text)
+    paren_pattern = r'\(([^)]*)\)'
+    
+    def fix_parens(match):
+        content = match.group(1).strip()
+        return f'({content})'
+    text = re.sub(paren_pattern, fix_parens, text)
+    
+    punct_pattern = r'\s+([,.?!])'
+    text = re.sub(punct_pattern, r'\1', text)
+    
+    return text
 
 def replace_laugh(string, replace_with='haha'):
     return replace_any(string, laughing, replace_with)
 
-
 def replace_mengeluh(string, replace_with='aduh'):
     return replace_any(string, MENGELUH, replace_with)
 
-
 def replace_betul(string, replace_with='betul'):
     return replace_any(string, BETUL, replace_with)
-
 
 def replace_gembira(string, replace_with='gembira'):
     return replace_any(string, GEMBIRA, replace_with)

@@ -69,6 +69,14 @@ class Tokenizer:
             True to keep title with dot, Dr. ayam -> ['Dr.', 'ayam']
         parliament: bool, optional (default=True)
             True to keep P.123 / D.123
+        hijri_year: bool, optional (default=True)
+            True to keep pada hijri year expressions.
+        hari_bulan: bool, optional (default=True)
+            True to keep pada hari bulan expressions.
+        pada_tarikh: bool, optional (default=True)
+            True to keep pada tarikh expressions.
+        word_dash: bool, optional (default=True)
+            True to keep pada a word that at least 2 dashes expressions.
         """
 
         pipeline = []
@@ -103,6 +111,13 @@ class Tokenizer:
         ic = kwargs.get('ic', True)
         title = kwargs.get('title', True)
         parliament = kwargs.get('parliament', True)
+        hijri_year = kwargs.get('hijri_year', True)
+        hari_bulan = kwargs.get('hari_bulan', True)
+        pada_tarikh = kwargs.get('pada_tarikh', True)
+        word_dash = kwargs.get('word_dash', True)
+
+        if word_dash:
+            pipeline.append(self.regexes['word_dash'])
 
         if title:
             pipeline.append(self.regexes['title'])
@@ -197,6 +212,15 @@ class Tokenizer:
 
         if hypens:
             pipeline.append(self.regexes['hypen'])
+        
+        if hijri_year:
+            pipeline.append(self.wrap_non_matching(self.regexes['hijri_year']))
+        
+        if hari_bulan:
+            pipeline.append(self.wrap_non_matching(self.regexes['hari_bulan']))
+        
+        if pada_tarikh:
+            pipeline.append(self.wrap_non_matching(self.regexes['pada_tarikh']))
 
         pipeline.append(self.regexes['apostrophe'])
         pipeline.append(self.regexes['word'])

@@ -27,7 +27,8 @@ _rtl_emoticon = [
 _LTR_FACE = ''.join(_ltr_emoticon)
 _RTL_FACE = ''.join(_rtl_emoticon)
 
-_short_date = r'(?:\b(?<!\d\.)(?:(?:(?:[0123]?[0-9][\.\-\/])?[0123]?[0-9][\.\-\/][12][0-9]{3})|(?:[0123]?[0-9][\.\-\/][0123]?[0-9][\.\-\/][12]?[0-9]{2,3}))(?!\.\d)\b)'
+_short_date = r'\b(?:[12][0-9]{3}[-/\.](?:0?[1-9]|1[0-2])[-/\.](?:0?[1-9]|[12][0-9]|3[01])|' \
+              r'(?:0?[1-9]|[12][0-9]|3[01])[-/\.](?:0?[1-9]|1[0-2])[-/\.][12][0-9]{3})\b'
 _full_date_parts = [
     # prefix
     r'(?:(?<!:)\b\'?\d{1,4},? ?)',
@@ -46,10 +47,22 @@ _fd2 = '(?:{})'.format(
     )
 )
 
-
-_date = '(?:' + '(?:' + _fd1 + '|' + _fd2 + ')' + '|' + _short_date + ')'
+_day_month_date = r'\b[0123]?[0-9]\s+(?:[Jj]an(?:uari)?|[Ff]eb(?:ruari)?|[Mm]a(?:c)?|[Aa]pr(?:il)?|[Mm]ei|[Jj]u(?:n)?|[Jj]ula(?:i)?|[Aa]ug(?:ust)?|[Oo]gos|[Ss]ept?(?:ember)?|[Oo]kt(?:ober)?|[Nn]ov(?:ember)?|[Dd]is(?:ember)?)\b'
+_day_month_year = (
+    r'\b[0123]?[0-9]\s+'
+    r'(?:[Jj]an(?:uari)?|[Ff]eb(?:ruari)?|[Mm]a(?:c)?|[Aa]pr(?:il)?|[Mm]ei|'
+    r'[Jj]u(?:n)?|[Jj]ula(?:i)?|[Aa]ug(?:ust)?|[Oo]gos|[Ss]ept?(?:ember)?|'
+    r'[Oo]kt(?:ober)?|[Nn]ov(?:ember)?|[Dd]is(?:ember)?)\s+'
+    r'(?:\d{2,4})\b'
+)
+_date = '(?:' + '(?:' + _fd1 + '|' + _fd2 + ')' + '|' + _short_date + '|' + _day_month_year + '|' + _day_month_date + ')'
 _time = r'(?:(?:\d+)?\.?\d+\s*(?:AM|PM|am|pm|a\.m\.|p\.m\.|pagi|pgi|morning|tengahari|tngahari|petang|ptg|malam|jam|hours|hour|hrs))|(?:(?:[0-2]?[0-9]|[2][0-3]):(?:[0-5][0-9])(?::(?:[0-5][0-9]))?(?: ?(?:AM|PM|am|pm|a\.m\.|p\.m\.|pagi|pgi|morning|tengahari|tngahari|petang|ptg|malam|hours|hrs|jam))?)'
-_today_time = r'(?:(?:pkul|pukul|kul)\s*(?:[0-2]?[0-9]|[2][0-3]):(?:[0-5][0-9])(?::(?:[0-5][0-9])))|(?:(?:pkul|pukul|kul)\s*(?:\d+)?\.?\d+)'
+_today_time = (
+    r'(?:(?:pkul|pukul|kul)\s*'
+    r'(?:[0-2]?[0-9](?::[0-5][0-9])?(?::[0-5][0-9])?|(?:\d+)?\.?\d+)'
+    r'(?:\s*(?:AM|PM|am|pm|a\.m\.|p\.m\.|pagi|pgi|morning|tengahari|tngahari|'
+    r'petang|ptg|malam|hours|hrs|jam))?)'
+)
 _past_date_string = '(?:\\s|\\d+)\\s*(?:minggu|bulan|tahun|hari|thun|hri|mnggu|jam|minit|saat)\\s*(?:lalu|lepas|lps)\\b'
 _now_date_string = '(?:sekarang|skrg|jam|tahun|thun|saat|minit) (?:ini|ni)\\b'
 _yesterday_tomorrow_date_string = (
@@ -59,14 +72,18 @@ _future_date_string = '(?:dlm|dalam)\\s*\\d+(?:minggu|bulan|tahun|hari|thun|hri|
 _depan_date_string = '(?:\\s|\\d+)\\s*(?:minggu|bulan|tahun|hari|thun|hri|mnggu|jam|minit|saat)\\s*(?:depan|dpan|dpn)\\b'
 
 _number = r"(?<!\w)-?\d+(?:[\.,']\d+)?(?!\w)"
-_number_with_shortform = r"\b(?<![-\w])(?:\d+(?:[\.,']\d+)?\s*(?:[Rr]ibu|[Jj]uta|[MmKkBbj](?:n|(?:i(?:lion|llion)?))?)?)\b|\b(?<![-\w])(?:\d+(?:[\.,']\d+)?\s*(?:[MmKkBbj](?:n|(?:i(?:lion|llion)?))?|[Rr]ibu|[Jj]uta)?)\b"
+_number_with_shortform = r"\b(?:\d+(?:[\.,']\d+)?(?:[KkMmBbJj])|\d+(?:[\.,']\d+)?\s+(?:[Rr]ibu|[Tt]housand|[Jj]uta|[Mm]illion|[Bb]ilion|[Bb]illion))\b"
 _percentage = _number + '%'
-_money = r"(?:(?:[$€£¢]|RM|rm)\s*\d+(?:[\.,']\d+)?\s*(?:[Rr]ibu|[Jj]uta|[MmKkBbj](?:n|(?:i(?:lion|llion)?))?)?)\b|(?:\d+(?:[\.,']\d+)?\s*(?:[MmKkBbj](?:n|(?:i(?:lion|llion)?))?|[Rr]ibu|[Jj]uta)?\s*(?:[$€£¢]|sen|ringgit|cent|penny))\b"
+_money = r"(?:(?:[$€£¢]|RM|rm)\s*\d+(?:[\.,']\d+)?\s*(?:[Rr]ibu|[Jj]uta|[Tt]housand|[Mm]illion|[MmKkBbj](?:n|(?:i(?:lion|llion)?))?)?)\b|(?:\d+(?:[\.,']\d+)?\s*(?:[MmKkBbj](?:n|(?:i(?:lion|llion)?))?|[Rr]ibu|[Jj]uta|[Tt]housand|[Mm]illion)?\s*(?:[$€£¢]|sen|ringgit|cent|penny))\b"
 _temperature = "-?\\d+(?:[\\.,']\\d+)?\\s*(?:K|Kelvin|kelvin|Kvin|F|f|Farenheit|farenheit|C|c|Celcius|celcius|clcius|celsius)\\b"
 _distance = "-?\\d+(?:[\\.,']\\d+)?\\s*(?:kaki|mtrs|metres|meters|feet|km|m|cm|feet|feets|miles|batu|inch|inches|feets)\\b"
 _volume = "-?\\d+(?:[\\.,']\\d+)?\\s*(?:ml|ML|l|L|mililiter|Mililiter|millilitre|liter|litre|litres|liters|gallon|gallons|galon)\\b"
 _duration = '\\d+\\s*(?:jam|minit|hari|minggu|tahun|hours|hour|saat|second)\\b|(?:sejam|sehari|setahun|sesaat|seminit)\\b'
 _weight = "\\d+(?:[\\.,']\\d+)?\\s*(?:kg|kilo|kilogram|g|gram|KG)\\b"
+_hijri_year = r'\b\d{3,4}\s*[Hh]\b'
+_hari_bulan = r'\b(?:[1-9]|[12][0-9]|3[01])[Hh][Bb]\b'
+_pada_tarikh = r"\b((?:pada|tarikh)\s+(?:0?[1-9]|[12][0-9]|3[01])\s(?:0?[1-9]|1[0-2]))\b"
+_word_dash = r'(?:[A-Za-z0-9]+-){2,}[A-Za-z0-9]+'
 
 _left_datetime = '(%s) (%s)' % (_time, _date)
 _right_datetime = '(%s) (%s)' % (_date, _time)
@@ -139,4 +156,8 @@ _expressions = {
     'bracket': r'(\(.*?\))',
     'title': r'Sdn\.|Bhd\.|Corp\.|Corporation\.|corp\.|Datuk\.|datuk\.|Datin.\|datin.\|Datik\.|datik\.|dr\.|Dr\.|DR\.|yb\.|YB\.|hj\.|HJ\.|Hj\.|ybm\.|YBM\.|Ybm\.|tyt\.|TYT\.|yab\.|YAB\.|Yab\.|ybm\.|YBM\.|Ybm\.|yabhg\.|YABHG.\|Yabhg\.|ybhg\.|YBHG\.|Ybhg\.|YBhg\.|phd\.|PhD\.',
     'parliament': r'[A-Z]\.\d+',
+    'hijri_year': _hijri_year,
+    'hari_bulan': _hari_bulan,
+    'pada_tarikh': _pada_tarikh,
+    'word_dash': _word_dash,
 }

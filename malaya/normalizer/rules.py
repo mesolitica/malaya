@@ -4,7 +4,7 @@ import itertools
 import math
 import numpy as np
 from unidecode import unidecode
-from malaya.num2word import to_cardinal
+from datetime import datetime
 from malaya.text.function import (
     is_laugh,
     is_mengeluh,
@@ -35,6 +35,7 @@ from malaya.text.tatabahasa import (
     consonants,
     sounds,
     bulan,
+    bulan_en,
 )
 from malaya.text.normalization import (
     _remove_postfix,
@@ -42,6 +43,8 @@ from malaya.text.normalization import (
     _is_number_regex,
     _string_to_num,
     _replace_compound,
+    to_cardinal,
+    to_ordinal,
     cardinal,
     digit_unit,
     rom_to_int,
@@ -57,6 +60,9 @@ from malaya.text.normalization import (
     replace_betul,
     digits,
     normalize_numbers_with_shortform,
+    parse_time_string,
+    parse_date_string,
+    fix_spacing,
 )
 from malaya.text.rules import rules_normalizer, rules_normalizer_rev
 from malaya.cluster import cluster_words
@@ -190,31 +196,36 @@ def groupby(string):
     return ' '.join(results)
 
 
-def put_spacing_num(string):
+def put_spacing_num(string, english=False):
     string = re.sub('[A-Za-z]+', lambda ele: ' ' + ele[0] + ' ', string).split()
     for i in range(len(string)):
         if _is_number_regex(string[i]):
-            string[i] = ' '.join([to_cardinal(int(n)) for n in string[i]])
+            string[i] = ' '.join([to_cardinal(int(n), english=english) for n in string[i]])
     string = ' '.join(string)
     return re.sub(r'[ ]+', ' ', string).strip()
 
-def replace_multiple_cardinal(string):
+def replace_multiple_cardinal(string, english=False):
     def custom_replace(match):
         number = match.group(0)
-        return f' {cardinal(number)} '
+        return f' {cardinal(number, english=english)} '
 
     string = string.replace('-', ' ')
     string = re.sub(r'\d+', custom_replace, string)
     return re.sub(r'[ ]+', ' ', string).strip()
 
 class Normalizer:
-    def __init__(self, tokenizer, speller=None, stemmer=None):
+    def __init__(
+        self, 
+        tokenizer, 
+        speller=None, 
+        stemmer=None,
+    ):
         self._tokenizer = tokenizer
         self._speller = speller
         self._stemmer = stemmer
         self._demoji = None
         self._compiled = {
-            k.lower(): re.compile(_expressions[k]) for k, v in _expressions.items()
+            k.lower(): re.compile(v) for k, v in _expressions.items()
         }
 
     def normalize(
@@ -245,6 +256,7 @@ class Normalizer:
         normalize_ordinal: bool = True,
         normalize_entity: bool = True,
         expand_contractions: bool = True,
+        normalize_in_english: bool = False,
         check_english_func=is_english,
         check_malay_func=is_malay,
         translator: Callable = None,
@@ -326,6 +338,8 @@ class Normalizer:
             normalize entities, only effect `date`, `datetime`, `time` and `money` patterns string only.
         expand_contractions: bool, optional (default=True)
             expand english contractions.
+        normalize_in_english: bool, optional (default=False)
+            normalize in English instead in Malay.
         check_english_func: Callable, optional (default=malaya.text.function.is_english)
             function to check a word in english dictionary, default is malaya.text.function.is_english.
             this parameter also will be use for malay text normalization.
@@ -362,7 +376,7 @@ class Normalizer:
                 logger.info('caching malaya.preprocessing.demoji inside normalizer')
                 self._demoji = demoji().demoji
 
-            result_demoji = self._demoji(string)
+            result_demoji = self._demoji(string, english=normalize_in_english)
         else:
             result_demoji = None
 
@@ -386,15 +400,15 @@ class Normalizer:
                     len(re.findall(r'(.)\1{1}', word))
                     and not word[0].isupper()
                     and not word_lower.startswith('ke-')
-                    and not len(re.findall(_expressions['email'], word))
-                    and not len(re.findall(_expressions['url'], word))
-                    and not len(re.findall(_expressions['hashtag'], word))
-                    and not len(re.findall(_expressions['phone'], word))
-                    and not len(re.findall(_expressions['money'], word))
-                    and not len(re.findall(_expressions['date'], word))
-                    and not len(re.findall(_expressions['ic'], word))
-                    and not len(re.findall(_expressions['user'], word))
-                    and not len(re.findall(_expressions['number'], word))
+                    and not self._compiled['email'].search(word)
+                    and not self._compiled['url'].search(word)
+                    and not self._compiled['hashtag'].search(word)
+                    and not self._compiled['phone'].search(word)
+                    and not self._compiled['money'].search(word)
+                    and not self._compiled['date'].search(word)
+                    and not self._compiled['ic'].search(word)
+                    and not self._compiled['user'].search(word)
+                    and not self._compiled['number'].search(word)
                     and not _is_number_regex(word)
                     and check_english_func is not None
                     and not check_english_func(word_lower)
@@ -446,14 +460,17 @@ class Normalizer:
                 index += 1
                 continue
 
-            if re.findall(_expressions['ic'], word_lower):
+            if self._compiled['ic'].search(word_lower):
                 s = f'index: {index}, word: {word}, condition IC'
                 logger.debug(s)
                 if normalize_ic:
                     splitted = word.split('-')
-                    ics = [digit(s) for s in splitted]
+                    ics = [digit(s, english=normalize_in_english) for s in splitted]
                     if ic_dash_sempang:
-                        join_w = ' sempang '
+                        if normalize_in_english:
+                            join_w = ' dash '
+                        else:
+                            join_w = ' sempang '
                     else:
                         join_w = ' '
                     word = join_w.join(ics)
@@ -461,19 +478,19 @@ class Normalizer:
                 index += 1
                 continue
 
-            if re.findall(_expressions['hashtag'], word_lower):
+            if self._compiled['hashtag'].search(word_lower):
                 s = f'index: {index}, word: {word}, condition hashtag'
                 logger.debug(s)
                 result.append(word)
                 index += 1
                 continue
 
-            if re.findall(_expressions['url'], word_lower):
+            if self._compiled['url'].search(word_lower):
                 s = f'index: {index}, word: {word}, condition url'
                 logger.debug(s)
                 if normalize_url:
                     word = word.replace('://', ' ').replace('.', ' dot ')
-                    word = put_spacing_num(word)
+                    word = put_spacing_num(word, english=normalize_in_english)
                     word = word.replace(
                         'https',
                         'HTTPS').replace(
@@ -485,36 +502,61 @@ class Normalizer:
                 index += 1
                 continue
 
-            if re.findall(_expressions['email'], word_lower):
+            if self._compiled['email'].search(word_lower):
                 s = f'index: {index}, word: {word}, condition email'
                 logger.debug(s)
                 if normalize_email:
+                    if normalize_in_english:
+                        at = ' at '
+                    else:
+                        at = ' di '
                     word = (
                         word.upper().replace('://', ' ')
                         .replace('.', ' dot ')
-                        .replace('@', ' di ')
+                        .replace('@', at)
                     )
-                    word = put_spacing_num(word)
+                    word = put_spacing_num(word, english=normalize_in_english)
                 result.append(word)
                 index += 1
                 continue
 
-            if re.findall(_expressions['phone'], word_lower):
+            if self._compiled['phone'].search(word_lower):
                 s = f'index: {index}, word: {word}, condition phone'
                 logger.debug(s)
                 if normalize_telephone:
                     splitted = word.split('-')
                     if len(splitted) == 2:
-                        left = put_spacing_num(splitted[0])
-                        right = put_spacing_num(splitted[1])
+                        left = put_spacing_num(splitted[0], english=normalize_in_english)
+                        right = put_spacing_num(splitted[1], english=normalize_in_english)
                         word = f'{left}, {right}'
                 result.append(word)
                 index += 1
                 continue
 
-            if re.findall(_expressions['user'], word_lower):
+            if self._compiled['user'].search(word_lower):
                 s = f'index: {index}, word: {word}, condition user'
                 logger.debug(s)
+                result.append(word)
+                index += 1
+                continue
+            
+            if self._compiled['word_dash'].search(word_lower):
+                s = f'index: {index}, word: {word}, condition word dash'
+                logger.debug(s)
+                words = []
+                for c in word:
+                    if c == '-':
+                        if normalize_in_english:
+                            w = 'dash'
+                        else:
+                            w = 'sempang'
+                    elif c in digits:
+                        w = digit(c, english=normalize_in_english)
+                    else:
+                        w = c.upper()
+                    words.append(w)
+
+                word = ' '.join(words)
                 result.append(word)
                 index += 1
                 continue
@@ -553,8 +595,8 @@ class Normalizer:
 
             if (
                 first_c
-                and not len(re.findall(_expressions['money'], word_lower))
-                and not len(re.findall(_expressions['date'], word_lower))
+                and not self._compiled['money'].search(word_lower)
+                and not self._compiled['date'].search(word_lower)
             ):
                 s = f'index: {index}, word: {word}, condition not in money and date'
                 logger.debug(s)
@@ -623,7 +665,7 @@ class Normalizer:
                         s = f'index: {index}, word: {word}, condition titled'
                         logger.debug(s)
                         if normalize_cardinal_title:
-                            w = replace_multiple_cardinal(word)
+                            w = replace_multiple_cardinal(word, english=normalize_in_english)
                         else:
                             w = word
                         result.append(w)
@@ -742,10 +784,14 @@ class Normalizer:
                 if tokenized[index + 1] == '-' and _is_number_regex(
                     tokenized[index + 2]
                 ):
+                    if normalize_in_english:
+                        until = ' until '
+                    else:
+                        until = ' hingga '
                     result.append(
-                        to_cardinal(_string_to_num(word))
-                        + ' hingga '
-                        + to_cardinal(_string_to_num(tokenized[index + 2]))
+                        to_cardinal(_string_to_num(word), english=normalize_in_english)
+                        + until
+                        + to_cardinal(_string_to_num(tokenized[index + 2]), english=normalize_in_english)
                     )
                     index += 3
                     continue
@@ -758,13 +804,17 @@ class Normalizer:
                     and tokenized[index + 2] in '/-'
                     and _is_number_regex(tokenized[index + 3])
                 ):
-                    result.append(
-                        'pada %s hari bulan %s'
-                        % (
+                    if normalize_in_english:
+                        s = 'on the %s day of the %s month' % (
+                            to_ordinal(_string_to_num(tokenized[index + 1]), english=True),
+                            to_ordinal(_string_to_num(tokenized[index + 3]), english=True),
+                        )
+                    else:
+                        s = 'pada %s hari bulan %s' % (
                             to_cardinal(_string_to_num(tokenized[index + 1])),
                             to_cardinal(_string_to_num(tokenized[index + 3])),
                         )
-                    )
+                    result.append(s)
                     index += 4
                     continue
 
@@ -781,22 +831,29 @@ class Normalizer:
                 ):
                     t = tokenized[index + 1]
                     if t[1] != '0':
-                        l = to_cardinal(int(t[:2]))
-                        r = to_cardinal(int(t[2:]))
+                        l = to_cardinal(int(t[:2]), english=normalize_in_english)
+                        r = to_cardinal(int(t[2:]), english=normalize_in_english)
                         c = f'{l} {r}'
                     else:
-                        c = to_cardinal(int(t))
+                        c = to_cardinal(int(t), english=normalize_in_english)
                     if (
                         index < (len(tokenized) - 3)
                         and tokenized[index + 2] == '-'
                         and tokenized[index + 3].lower() == 'an'
                     ):
-                        end = 'an'
+                        if normalize_in_english:
+                            end = 's'
+                        else:
+                            end = 'an'
                         plus = 4
                     else:
                         end = ''
                         plus = 2
-                    result.append(f'tahun {c}{end}')
+                    if normalize_in_english:
+                        start = ''
+                    else:
+                        start = 'tahun '
+                    result.append(f'{start}{c}{end}')
                     index += plus
                     continue
 
@@ -822,20 +879,20 @@ class Normalizer:
                 ):
                     t = word
                     if t[1] != '0':
-                        l = to_cardinal(int(t[:2]))
-                        r = to_cardinal(int(t[2:]))
+                        l = to_cardinal(int(t[:2]), english=normalize_in_english)
+                        r = to_cardinal(int(t[2:]), english=normalize_in_english)
                         c = f'{l} {r}'
                     else:
-                        c = to_cardinal(int(t))
+                        c = to_cardinal(int(t), english=normalize_in_english)
                     result.append(f'{c}an')
                     index += 3
                     continue
 
-            if re.findall(_expressions['money'], word_lower):
+            if self._compiled['money'].search(word_lower):
                 s = f'index: {index}, word: {word}, condition money'
                 logger.debug(s)
                 if normalize_money:
-                    money_, _ = money(word)
+                    money_, _ = money(word, english=normalize_in_english)
                     result.append(money_)
                     if index < (len(tokenized) - 1):
                         if tokenized[index + 1].lower() in ('sen', 'cent'):
@@ -850,92 +907,164 @@ class Normalizer:
                 continue
 
             if (
-                re.findall(_expressions['temperature'], word_lower)
-                or re.findall(_expressions['distance'], word_lower)
-                or re.findall(_expressions['volume'], word_lower)
-                or re.findall(_expressions['duration'], word_lower)
-                or re.findall(_expressions['weight'], word_lower)
+                self._compiled['temperature'].search(word_lower)
+                or self._compiled['distance'].search(word_lower)
+                or self._compiled['volume'].search(word_lower)
+                or self._compiled['duration'].search(word_lower)
+                or self._compiled['weight'].search(word_lower)
             ):
                 s = f'index: {index}, word: {word}, condition units'
                 logger.debug(s)
                 if normalize_units:
                     word = word.replace(' ', '')
-                    word = digit_unit(word)
+                    word = digit_unit(word, english=normalize_in_english)
                 result.append(word)
                 index += 1
                 continue
 
-            if re.findall(_expressions['percent'], word_lower):
+            if self._compiled['percent'].search(word_lower):
                 s = f'index: {index}, word: {word}, condition percent'
                 logger.debug(s)
                 if normalize_percent:
                     word = word.replace('%', '')
-                    word = cardinal(word) + ' peratus'
+                    if normalize_in_english:
+                        percent = ' percent'
+                    else:
+                        percent = ' peratus'
+                    word = cardinal(word, english=normalize_in_english) + percent
                 result.append(word)
                 index += 1
                 continue
 
-            if re.findall(_expressions['date'], word_lower):
+            if self._compiled['date'].search(word_lower):
                 f = re.findall(_expressions['date'], word_lower)
                 s = f'index: {index}, word: {word}, condition date, {f}'
                 logger.debug(s)
                 word = word_lower
                 word = multireplace(word, date_replace)
                 word = re.sub(r'[ ]+', ' ', word).strip()
-                try:
-                    s = f'index: {index}, word: {word}, parsing date'
-                    logger.debug(s)
-                    parsed = dateparser.parse(word, settings=dateparser_settings)
-                    if parsed:
-                        word = parsed.strftime('%d/%m/%Y')
-                        if normalize_date:
-                            day, month, year = word.split('/')
-                            day = cardinal(day)
-                            month = bulan[int(month)].title()
-                            year = cardinal(year)
-                            word = f'{day} {month} {year}'
+                s = f'index: {index}, word: {word}, parsing date'
+                logger.debug(s)
+                word = parse_date_string(
+                    word, 
+                    normalize_date=normalize_date,
+                    dateparser_settings=dateparser_settings,
+                    english=normalize_in_english,
+                )
+                result.append(word)
 
+                index += 1
+                continue
+            
+            if self._compiled['hijri_year'].search(word):
+                s = f'index: {index}, word: {word}, condition hijri_year'
+                logger.debug(s)
+
+                word = word_lower[:-1]
+                word = re.sub(r'[ ]+', ' ', word).strip()
+                try:
+                    word = cardinal(word, english=normalize_in_english)
                 except Exception as e:
                     logger.warning(str(e))
+                
+                word = word + ' Hijrah'
+                result.append(word)
+
+                index += 1
+                continue
+            
+            if self._compiled['hari_bulan'].search(word):
+                s = f'index: {index}, word: {word}, condition hari bulan'
+                logger.debug(s)
+                word = word_lower[:-2]
+                word = re.sub(r'[ ]+', ' ', word).strip()
+                try:
+                    word = cardinal(word, english=normalize_in_english)
+                except Exception as e:
+                    logger.warning(str(e))
+                
+                if normalize_in_english:
+                    end = ' days of the month'
+                else:
+                    end = ' hari bulan'
+                word = word + end
+                result.append(word)
+
+                index += 1
+                continue
+            
+            if self._compiled['pada_tarikh'].search(word_lower):
+                s = f'index: {index}, word: {word}, condition pada tarikh'
+                logger.debug(s)
+
+                _pada_tarikh = r"\b(?:pada|tarikh)\s+(0?[1-9]|[12][0-9]|3[01])\s(0?[1-9]|1[0-2])\b"
+                r = re.findall(_pada_tarikh, word_lower)
+                day = r[0][0]
+                month = r[0][1]
+
+                date_obj = datetime.strptime(f"{day} {month} {datetime.today().year}", "%d %m %Y")
+                word = date_obj.strftime("%Y-%m-%d")
+                word = parse_date_string(
+                    word,
+                    normalize_date=normalize_date,
+                    dateparser_settings=dateparser_settings,
+                    english=normalize_in_english
+                )
                 result.append(word)
 
                 index += 1
                 continue
 
             if (
-                re.findall(_expressions['time'], word_lower)
-                or re.findall(_expressions['time_pukul'], word_lower)
+                self._compiled['time'].search(word_lower)
+                or self._compiled['time_pukul'].search(word_lower)
             ):
                 s = f'index: {index}, word: {word}, condition time'
                 logger.debug(s)
                 word = word_lower
-                word = multireplace(word, date_replace)
                 word = re.sub(r'[ ]+', ' ', word).strip()
-                prefix = 'pukul '
+                if normalize_in_english:
+                    prefix  = 'at '
+                else:
+                    prefix = 'pukul '
                 try:
                     s = f'index: {index}, word: {word}, parsing time'
                     logger.debug(s)
-                    parsed = dateparser.parse(word.replace('.', ':'))
-                    if parsed:
+                    parsed = parse_time_string(word)
+                    if len(parsed):
+                        parsed = parsed[0]
                         word = parsed.strftime('%H:%M:%S')
                         hour, minute, second = word.split(':')
                         if normalize_time:
                             hour = parsed.strftime('%I')
                             hour = hour.lstrip('0')
                             if parsed.hour < 12:
-                                period = 'pagi'
+                                if normalize_in_english:
+                                    period = 'morning'
+                                else:
+                                    period = 'pagi'
                             elif parsed.hour < 19:
-                                period = 'petang'
+                                if normalize_in_english:
+                                    period = 'evening'
+                                else:
+                                    period = 'petang'
                             else:
-                                period = 'malam'
-                            hour = cardinal(hour)
+                                if normalize_in_english:
+                                    period = 'night'
+                                else:
+                                    period = 'malam'
+                            hour = cardinal(hour, english=normalize_in_english)
                             if int(minute) > 0:
-                                minute = cardinal(minute)
-                                minute = f'{minute} minit'
+                                minute = cardinal(minute, english=normalize_in_english)
+                                if normalize_in_english:
+                                    end = 'minute'
+                                else:
+                                    end = 'minit'
+                                minute = f'{minute} {end}'
                             else:
                                 minute = ''
                             if int(second) > 0:
-                                second = cardinal(second)
+                                second = cardinal(second, english=normalize_in_english)
                                 second = f'{second} saat'
                             else:
                                 second = ''
@@ -955,36 +1084,40 @@ class Normalizer:
                 continue
 
             if (
-                re.findall(_expressions['number'], word_lower)
+                self._compiled['number'].search(word_lower)
                 and word_lower[0] == '0'
                 and '.' not in word_lower
             ):
                 s = f'index: {index}, word: {word}, condition digit and word[0] == `0`'
                 logger.debug(s)
                 if normalize_number:
-                    word = digit(word)
+                    word = digit(word, english=normalize_in_english)
                 result.append(word)
                 index += 1
                 continue
 
             if (
-                len(word_lower) >= 2
+                normalize_x_kali
+                and len(word_lower) >= 2
                 and word_lower[-1] == 'x'
-                and re.findall(_expressions['number'], word_lower[:-1])
+                and self._compiled['number'].search(word_lower[:-1])
                 and '.' not in word_lower
             ):
                 s = f'index: {index}, word: {word}, condition x kali'
                 logger.debug(s)
                 word = word[:-1]
-                if normalize_x_kali:
-                    word = cardinal(word)
-                word = f'{word} kali'
+                word = cardinal(word, english=normalize_in_english)
+                if normalize_in_english:
+                    end = 'times'
+                else:
+                    end = 'kali'
+                word = f'{word} {end}'
                 result.append(word)
                 index += 1
                 continue
 
             if normalize_cardinal:
-                cardinal_ = cardinal(word)
+                cardinal_ = cardinal(word, english=normalize_in_english)
                 if cardinal_ != word:
                     s = f'index: {index}, word: {word}, condition cardinal'
                     logger.debug(s)
@@ -993,7 +1126,7 @@ class Normalizer:
                     continue
 
             if normalize_ordinal:
-                normalized_ke = ordinal(word)
+                normalized_ke = ordinal(word, english=normalize_in_english)
                 if normalized_ke != word:
                     s = f'index: {index}, word: {word}, condition ordinal'
                     logger.debug(s)
@@ -1001,7 +1134,7 @@ class Normalizer:
                     index += 1
                     continue
 
-            if re.findall(_expressions['number_with_shortform'], word_lower):
+            if self._compiled['number_with_shortform'].search(word_lower):
                 s = f'index: {index}, word: {word_lower}, condition is number_with_shortform'
                 logger.debug(s)
                 if normalize_cardinal:
@@ -1013,11 +1146,13 @@ class Normalizer:
                 index += 1
                 continue
 
-            if len(re.findall(_expressions['number'], word)):
+            if self._compiled['number'].search(word):
                 s = f'index: {index}, word: {word}, condition is number'
                 logger.debug(s)
                 if normalize_cardinal:
-                    w = replace_multiple_cardinal(word)
+                    w = replace_multiple_cardinal(word, english=normalize_in_english)
+                elif normalize_number:
+                    w = ' '.join([digit(c, english=normalize_in_english) for c in word])
                 else:
                     w = word
                 result.append(w)
@@ -1169,7 +1304,8 @@ class Normalizer:
 
         else:
             dates_, money_ = {}, {}
-        return {'normalize': result, 'date': dates_, 'money': money_}
+        
+        return {'normalize': fix_spacing(result), 'date': dates_, 'money': money_}
 
 
 def load(

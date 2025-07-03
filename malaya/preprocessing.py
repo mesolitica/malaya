@@ -231,7 +231,7 @@ class Demoji:
         escp = (re.escape(c) for c in sorted(self._dictionary, key=len, reverse=True))
         self._compiled = re.compile(r'|'.join(escp))
 
-    def demoji(self, string: str):
+    def demoji(self, string: str, english=False):
         """
         Find emojis with string representation.
         🔥 -> emoji api.
@@ -239,6 +239,8 @@ class Demoji:
         Parameters
         ----------
         string: str
+        english: bool, optional (default=True)
+            normalize in english.
 
         Returns
         -------
@@ -246,7 +248,11 @@ class Demoji:
         """
 
         results = self._compiled.findall(string)
-        return {r: self._dictionary[r]['ms'] for r in results}
+        if english:
+            k = 'en'
+        else:
+            k = 'ms'
+        return {r: self._dictionary[r][k] for r in results}
 
 
 def preprocessing(
