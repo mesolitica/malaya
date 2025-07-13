@@ -10,8 +10,28 @@ Evaluate SNS server using Qwen2.5 models.
 python3 -m venv --without-pip vllm
 wget https://bootstrap.pypa.io/get-pip.py
 vllm/bin/python3 get-pip.py
-vllm/bin/pip3 install vllm==0.8.5.post1 aiohttp
+vllm/bin/pip3 install vllm==0.8.5.post1 aiohttp "ray[default]" "ray[train]"
 ```
+
+#### Multi-nodes using Ray
+
+```bash
+# Elect any head node
+screen -dmS "ray-head" bash -c "~/vllm/bin/ray start --block --head --port=6379 --dashboard-host=0.0.0.0"
+# other nodes
+screen -dmS "ray-slave" bash -c "~/vllm/bin/ray start --block --address=10.10.100.104:6379"
+```
+
+To verify multi-nodes is working, you can run simple reduce scatter using Ray,
+
+```bash
+python3 test_multinode_ray.py
+```
+
+```
+(RayTrainWorker pid=2754037, ip=10.10.100.107) Average AllReduce time over 10 runs: 0.0059 s | Avg Bandwidth: 88.79 GB/s
+```
+
 
 ### TensorRT-LLM Requirements
 
