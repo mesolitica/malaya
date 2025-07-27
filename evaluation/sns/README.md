@@ -17,9 +17,9 @@ vllm/bin/pip3 install vllm==0.8.5.post1 aiohttp "ray[default]" "ray[train]"
 
 ```bash
 # Elect any head node
-screen -dmS "ray-head" bash -c "~/vllm/bin/ray start --block --head --port=6379 --dashboard-host=0.0.0.0"
+NCCL_SOCKET_IFNAME=eno8303 GLOO_SOCKET_IFNAME=eno8303 ~/vllm/bin/ray start --block --head --port=6379 --dashboard-host=0.0.0.0
 # other nodes
-screen -dmS "ray-slave" bash -c "~/vllm/bin/ray start --block --address=10.10.100.104:6379"
+NCCL_SOCKET_IFNAME=eno8303 GLOO_SOCKET_IFNAME=eno8303 ~/vllm/bin/ray start --block --address=10.10.100.104:6379
 ```
 
 To verify multi-nodes is working, you can run simple reduce scatter using Ray,
@@ -161,6 +161,53 @@ python3 benchmark.py \
 python3 benchmark.py \
 --model "model" \
 --save "Malaysian-Qwen2.5-72B-Instruct-FP8"
+```
+
+#### FP16 2 Nodes
+
+```bash
+NCCL_SOCKET_IFNAME=eno8303 GLOO_SOCKET_IFNAME=eno8303 \
+~/vllm/bin/vllm serve "mesolitica/Malaysian-Qwen2.5-72B-Instruct" \
+--served-model-name "model" \
+--tensor-parallel-size 8 \
+--pipeline-parallel-size 2
+```
+
+Stress test,
+
+```bash
+python3 benchmark.py \
+--model "model" \
+--save "Malaysian-Qwen2.5-72B-Instruct-warmup-2nodes" \
+--rps-list "5"
+
+python3 benchmark.py \
+--model "model" \
+--save "Malaysian-Qwen2.5-72B-Instruct-2nodes"
+```
+
+
+#### FP8 2 Nodes
+
+```bash
+NCCL_SOCKET_IFNAME=eno8303 GLOO_SOCKET_IFNAME=eno8303 \
+~/vllm/bin/vllm serve "mesolitica/Malaysian-Qwen2.5-72B-Instruct-FP8" \
+--served-model-name "model" \
+--tensor-parallel-size 8 \
+--pipeline-parallel-size 2
+```
+
+Stress test,
+
+```bash
+python3 benchmark.py \
+--model "model" \
+--save "Malaysian-Qwen2.5-72B-Instruct-FP8-warmup-2nodes" \
+--rps-list "5"
+
+python3 benchmark.py \
+--model "model" \
+--save "Malaysian-Qwen2.5-72B-Instruct-FP8-2nodes"
 ```
 
 ### 72B TensorRT-LLM
