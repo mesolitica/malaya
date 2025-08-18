@@ -115,6 +115,7 @@ class Tokenizer:
         hari_bulan = kwargs.get('hari_bulan', True)
         pada_tarikh = kwargs.get('pada_tarikh', True)
         word_dash = kwargs.get('word_dash', True)
+        passport = kwargs.get('passport', True)
 
         if word_dash:
             pipeline.append(self.regexes['word_dash'])
@@ -221,6 +222,9 @@ class Tokenizer:
         
         if pada_tarikh:
             pipeline.append(self.wrap_non_matching(self.regexes['pada_tarikh']))
+
+        if passport:
+            pipeline.append(self.wrap_non_matching(self.regexes['passport']))
 
         pipeline.append(self.regexes['apostrophe'])
         pipeline.append(self.regexes['word'])

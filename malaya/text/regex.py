@@ -84,6 +84,7 @@ _hijri_year = r'\b\d{3,4}\s*[Hh]\b'
 _hari_bulan = r'\b(?:[1-9]|[12][0-9]|3[01])[Hh][Bb]\b'
 _pada_tarikh = r"\b((?:pada|tarikh)\s+(?:0?[1-9]|[12][0-9]|3[01])\s(?:0?[1-9]|1[0-2]))\b"
 _word_dash = r'(?:[A-Za-z0-9]+-){2,}[A-Za-z0-9]+'
+_passport = r'^(?:[A-PR-WY][1-9]\d\s?\d{4}[1-9]|[A-Za-z][0-9]{8}|[A-Za-z](?=.*\d)[A-Za-z0-9]{5,19})$'
 
 _left_datetime = '(%s) (%s)' % (_time, _date)
 _right_datetime = '(%s) (%s)' % (_date, _time)
@@ -160,4 +161,5 @@ _expressions = {
     'hari_bulan': _hari_bulan,
     'pada_tarikh': _pada_tarikh,
     'word_dash': _word_dash,
+    'passport': _passport,
 }

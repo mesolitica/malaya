@@ -560,6 +560,18 @@ class Normalizer:
                 result.append(word)
                 index += 1
                 continue
+            
+            if self._compiled['passport'].search(word):
+                s = f'index: {index}, word: {word}, condition passport'
+                logger.debug(s)
+                chars = []
+                for c in word:
+                    if c in digits:
+                        c = digit(c, english=normalize_in_english)
+                    chars.append(c)
+                result.append(' '.join(chars))
+                index += 1
+                continue
 
             if normalize_emoji and word_lower in result_demoji:
                 s = f'index: {index}, word: {word}, condition emoji'
@@ -592,6 +604,7 @@ class Normalizer:
                     result.append(word)
                     index += 1
                     continue
+                    
 
             if (
                 first_c
