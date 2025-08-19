@@ -88,7 +88,7 @@ isodate==0.7.2
 isoduration==20.11.0
 jedi==0.18.0
 jeepney==0.7.1
-Jinja2==3.1.0
+Jinja2==3.1.6
 jmespath==1.0.1
 json5==0.12.0
 jsonpatch==1.32
