@@ -78,8 +78,18 @@ _money = r"(?:(?:[$€£¢]|RM|rm)\s*\d+(?:[\.,']\d+)?\s*(?:[Rr]ibu|[Jj]uta|[Tt]
 _temperature = "-?\\d+(?:[\\.,']\\d+)?\\s*(?:K|Kelvin|kelvin|Kvin|F|f|Farenheit|farenheit|C|c|Celcius|celcius|clcius|celsius)\\b"
 _distance = "-?\\d+(?:[\\.,']\\d+)?\\s*(?:kaki|mtrs|metres|meters|feet|km|m|cm|feet|feets|miles|batu|inch|inches|feets)\\b"
 _volume = "-?\\d+(?:[\\.,']\\d+)?\\s*(?:ml|ML|l|L|mililiter|Mililiter|millilitre|liter|litre|litres|liters|gallon|gallons|galon)\\b"
-_duration = '\\d+\\s*(?:jam|minit|hari|minggu|tahun|hours|hour|saat|second)\\b|(?:sejam|sehari|setahun|sesaat|seminit)\\b'
+_duration = '\\d+\\s*(?:jam|minit|hari|minggu|bulan|tahun|hours|hour|saat|second|month|months)\\b|(?:sejam|sehari|setahun|sesaat|seminit|sebulan)\\b'
 _weight = "\\d+(?:[\\.,']\\d+)?\\s*(?:kg|kilo|kilogram|g|gram|KG)\\b"
+_data_size = (
+    r'\d+\s*(?:'
+    r'bits?|bit|'
+    r'bytes?|bait|'
+    r'kb|kilobytes?|kilobait|kilobit|'
+    r'mb|megabytes?|megabait|megabit|'
+    r'gb|gigabytes?|gigabait|gigabit|'
+    r'tb|terabytes?|terabait|terabit'
+    r')\b'
+)
 _hijri_year = r'\b\d{3,4}\s*[Hh]\b'
 _hari_bulan = r'\b(?:[1-9]|[12][0-9]|3[01])[Hh][Bb]\b'
 _pada_tarikh = r"\b((?:pada|tarikh)\s+(?:0?[1-9]|[12][0-9]|3[01])\s(?:0?[1-9]|1[0-2]))\b"
@@ -153,6 +163,7 @@ _expressions = {
     'volume': _volume,
     'duration': _duration,
     'weight': _weight,
+    'data_size': _data_size,
     'ic': r'(([[0-9]{2})(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01]))-([0-9]{2})-([0-9]{4})',
     'bracket': r'(\(.*?\))',
     'title': r'Sdn\.|Bhd\.|Corp\.|Corporation\.|corp\.|Datuk\.|datuk\.|Datin.\|datin.\|Datik\.|datik\.|dr\.|Dr\.|DR\.|yb\.|YB\.|hj\.|HJ\.|Hj\.|ybm\.|YBM\.|Ybm\.|tyt\.|TYT\.|yab\.|YAB\.|Yab\.|ybm\.|YBM\.|Ybm\.|yabhg\.|YABHG.\|Yabhg\.|ybhg\.|YBHG\.|Ybhg\.|YBhg\.|phd\.|PhD\.',

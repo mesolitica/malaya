@@ -61,6 +61,8 @@ class Tokenizer:
             True to keep durations.
         weight: bool, optional (default=True)
             True to keep weights.
+        data_size: bool, optional (default=True)
+            True to keep data size.
         hypen: bool, optional (default=True)
             True to keep hypens.
         ic: bool, optional (default=True)
@@ -107,6 +109,7 @@ class Tokenizer:
         volumes = kwargs.get('volume', True)
         durations = kwargs.get('duration', True)
         weights = kwargs.get('weight', True)
+        data_sizes = kwargs.get('data_size', True)
         hypens = kwargs.get('hypen', True)
         ic = kwargs.get('ic', True)
         title = kwargs.get('title', True)
@@ -117,6 +120,9 @@ class Tokenizer:
         word_dash = kwargs.get('word_dash', True)
         passport = kwargs.get('passport', True)
 
+        """
+        Position does matter!
+        """
         if word_dash:
             pipeline.append(self.regexes['word_dash'])
 
@@ -198,6 +204,9 @@ class Tokenizer:
 
         if weights:
             pipeline.append(self.wrap_non_matching(self.regexes['weight']))
+
+        if data_sizes:
+            pipeline.append(self.wrap_non_matching(self.regexes['data_size']))
 
         if ic:
             pipeline.append(self.wrap_non_matching(self.regexes['ic']))
