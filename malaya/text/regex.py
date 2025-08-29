@@ -57,6 +57,7 @@ _day_month_year = (
 )
 _date = '(?:' + '(?:' + _fd1 + '|' + _fd2 + ')' + '|' + _short_date + '|' + _day_month_year + '|' + _day_month_date + ')'
 _time = r'(?:(?:\d+)?\.?\d+\s*(?:AM|PM|am|pm|a\.m\.|p\.m\.|pagi|pgi|morning|tengahari|tngahari|petang|ptg|malam|jam|hours|hour|hrs))|(?:(?:[0-2]?[0-9]|[2][0-3]):(?:[0-5][0-9])(?::(?:[0-5][0-9]))?(?: ?(?:AM|PM|am|pm|a\.m\.|p\.m\.|pagi|pgi|morning|tengahari|tngahari|petang|ptg|malam|hours|hrs|jam))?)'
+_time_with_ampm = r'(?:[0-2]?[0-9]):(?:[0-5][0-9])(?::(?:[0-5][0-9]))?\s*(?:a\.m\.|p\.m\.|AM|PM|am|pm)'
 _today_time = (
     r'(?:(?:pkul|pukul|kul)\s*'
     r'(?:[0-2]?[0-9](?::[0-5][0-9])?(?::[0-5][0-9])?|(?:\d+)?\.?\d+)'
@@ -162,6 +163,7 @@ _expressions = {
     'url_dperini': r'^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z0-9\u00a1-\uffff][a-z0-9\u00a1-\uffff_-]{0,62})?[a-z0-9\u00a1-\uffff]\.)+(?:[a-z\u00a1-\uffff]{2,}\.?))(?::\d{2,5})?(?:[/?#]\S*)?$',
     'date': _date,
     'time': _time,
+    'time_with_ampm': _time_with_ampm,
     'time_pukul': _today_time,
     # "CAMEL_SPLIT": '((?<=[a-z])[A-Z]|(?<!\A)[A-Z](?=[a-z]))',
     # r'((?<=[a-z])[A-Z]|(?<=[A-Z][A-Z])[a-z]|(?<!^)(?<![A-Z])[A-Z](?=[a-z])|[0-9]+|(?<=[0-9\-\_])[A-Za-z]|[\-\_])',
@@ -187,4 +189,6 @@ _expressions = {
     'pada_tarikh': _pada_tarikh,
     'word_dash': _word_dash,
     'passport': _passport,
+    'am_pm': r'\b(?:a\.m\.|p\.m\.|AM|PM|am|pm)\b',
+    'am_pm_dots': r'\b(?:a\.m\.|p\.m\.)\b',
 }
