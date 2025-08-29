@@ -48,6 +48,78 @@ unit_mapping_en = {
     'kilo': 'kilogram',
 }
 
+expansions_data_size_en = {
+    "bit": "bit",
+    "Bit": "bit",
+    "BIT": "bit",
+    "bits": "bits",
+    "Bits": "bits",
+    "BITS": "bits",
+
+    "byte": "byte",
+    "Byte": "byte",
+    "BYTE": "byte",
+    "bytes": "bytes",
+    "Bytes": "bytes",
+    "BYTES": "bytes",
+
+    "kb": "kilobits",
+    "Kb": "kilobits",
+    "KB": "kilobytes",
+    "kB": "kilobytes",
+
+    "mb": "megabits",
+    "Mb": "megabits",
+    "MB": "megabytes",
+    "mB": "megabytes",
+
+    "gb": "gigabits",
+    "Gb": "gigabits",
+    "GB": "gigabytes",
+    "gB": "gigabytes",
+
+    "tb": "terabits",
+    "Tb": "terabits",
+    "TB": "terabytes",
+    "tB": "terabytes",
+}
+
+expansions_data_size_ms = {
+    "bit": "bit",
+    "Bit": "bit",
+    "BIT": "bit",
+    "bits": "bit-bit",
+    "Bits": "bit-bit",
+    "BITS": "bit-bit",
+
+    "bait": "bait",
+    "Bait": "bait",
+    "BAIT": "bait",
+    "baits": "bait-bait",
+    "Baits": "bait-bait",
+    "BAITS": "bait-bait",
+
+    "kb": "kilobit",
+    "Kb": "kilobit",
+    "KB": "kilobait",
+    "kB": "kilobait",
+
+    "mb": "megabit",
+    "Mb": "megabit",
+    "MB": "megabait",
+    "mB": "megabait",
+
+    "gb": "gigabit",
+    "Gb": "gigabit",
+    "GB": "gigabait",
+    "gB": "gigabait",
+
+    "tb": "terabit",
+    "Tb": "terabit",
+    "TB": "terabait",
+    "tB": "terabait",
+}
+
 rules_compound_normalizer_regex = (
     r'\b(?:' + '|'.join(list(rules_compound_normalizer.keys())) + ')'
 )
@@ -290,16 +362,22 @@ def digit(x, english=False):
         return cp_x
 
 
-def digit_unit(x, english=False):
+def digit_unit(x, expand_units=True, english=False):
     cp_x = x[:]
     try:
         n = re.sub('[^0-9.]', '', x)
         u = re.sub('[0-9. ]', '', x)
-        if english:
-            mapping = unit_mapping_en
-        else:
-            mapping = unit_mapping
-        u = mapping.get(u.lower(), u)
+        if expand_units:
+            if english:
+                mapping = unit_mapping_en
+            else:
+                mapping = unit_mapping
+            u = mapping.get(u.lower(), u)
+            if english:
+                mapping = expansions_data_size_en
+            else:
+                mapping = expansions_data_size_ms
+            u = mapping.get(u, u)
         if '.' in n:
             n = float(n)
         else:

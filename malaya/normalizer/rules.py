@@ -256,6 +256,7 @@ class Normalizer:
         normalize_ordinal: bool = True,
         normalize_entity: bool = True,
         expand_contractions: bool = True,
+        expand_units: bool = True,
         normalize_in_english: bool = False,
         check_english_func=is_english,
         check_malay_func=is_malay,
@@ -338,6 +339,8 @@ class Normalizer:
             normalize entities, only effect `date`, `datetime`, `time` and `money` patterns string only.
         expand_contractions: bool, optional (default=True)
             expand english contractions.
+        expand_units: bool, optional (default=True)
+            expand units, kg -> kilogram.
         normalize_in_english: bool, optional (default=False)
             normalize in English instead in Malay.
         check_english_func: Callable, optional (default=malaya.text.function.is_english)
@@ -925,12 +928,13 @@ class Normalizer:
                 or self._compiled['volume'].search(word_lower)
                 or self._compiled['duration'].search(word_lower)
                 or self._compiled['weight'].search(word_lower)
+                or self._compiled['data_size'].search(word_lower)
             ):
                 s = f'index: {index}, word: {word}, condition units'
                 logger.debug(s)
                 if normalize_units:
                     word = word.replace(' ', '')
-                    word = digit_unit(word, english=normalize_in_english)
+                    word = digit_unit(word, expand_units=expand_units, english=normalize_in_english)
                 result.append(word)
                 index += 1
                 continue
