@@ -68,7 +68,7 @@ google-cloud-storage==2.10.0
 google-crc32c==1.7.1
 google-resumable-media==2.7.2
 googleapis-common-protos==1.70.0
-h11==0.14.0
+h11==0.16.0
 hf_transfer==0.1.9
 hjson==3.1.0
 html5lib==1.1
