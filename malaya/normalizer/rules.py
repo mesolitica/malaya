@@ -228,8 +228,32 @@ class Normalizer:
             k.lower(): re.compile(v) for k, v in _expressions.items()
         }
 
+    def _split_title_case_word(self, word):
+        if len(word) <= 1:
+            return [word]
+        
+        title_case_count = sum(1 for c in word if c.isupper())
+        if title_case_count <= 1:
+            return [word]
+        
+        parts = []
+        current_part = ""
+        
+        for i, char in enumerate(word):
+            if char.isupper() and i > 0:
+                if current_part:
+                    parts.append(current_part)
+                current_part = char
+            else:
+                current_part += char
+
+        if current_part:
+            parts.append(current_part)
+        
+        return parts
+
     def _process_multiword_dates(self, result, normalize_date, dateparser_settings, normalize_in_english):
-        """Process multi-word date patterns that weren't caught during individual word processing"""
+
         if not normalize_date:
             return result
         
@@ -481,6 +505,15 @@ class Normalizer:
                 s = f'index: {index}, word: {word}, condition punct'
                 logger.debug(s)
                 result.append(word)
+                index += 1
+                continue
+
+            title_case_parts = self._split_title_case_word(word)
+            if len(title_case_parts) > 1:
+                s = f'index: {index}, word: {word}, splitting title case: {title_case_parts}'
+                logger.debug(s)
+                for part in title_case_parts:
+                    result.append(part)
                 index += 1
                 continue
 
