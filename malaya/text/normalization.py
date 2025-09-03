@@ -949,16 +949,25 @@ def parse_date_string(
     else:
         month_map = bulan
     try:
+        has_year = bool(re.search(r'\b(19|20)\d{2}\b', word))
+        
         parsed = dateparser.parse(word, settings=dateparser_settings)
         if parsed:
-            word = parsed.strftime('%d/%m/%Y')
-            if normalize_date:
-                day, month, year = word.split('/')
-                day = cardinal(day, english=english)
-
-                month = month_map[int(month)].title()
-                year = cardinal(year, english=english)
-                word = f'{day} {month} {year}'
+            if has_year:
+                word = parsed.strftime('%d/%m/%Y')
+                if normalize_date:
+                    day, month, year = word.split('/')
+                    day = cardinal(day, english=english)
+                    month = month_map[int(month)].title()
+                    year = cardinal(year, english=english)
+                    word = f'{day} {month} {year}'
+            else:
+                word = parsed.strftime('%d/%m')
+                if normalize_date:
+                    day, month = word.split('/')
+                    day = cardinal(day, english=english)
+                    month = month_map[int(month)].title()
+                    word = f'{day} {month}'
 
     except Exception as e:
         logger.warning(str(e))

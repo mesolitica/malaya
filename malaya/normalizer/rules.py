@@ -228,6 +228,31 @@ class Normalizer:
             k.lower(): re.compile(v) for k, v in _expressions.items()
         }
 
+    def _process_multiword_dates(self, result, normalize_date, dateparser_settings, normalize_in_english):
+        """Process multi-word date patterns that weren't caught during individual word processing"""
+        if not normalize_date:
+            return result
+        
+        text = ' '.join(result)
+        
+
+        date_matches = re.findall(_expressions['date'], text)
+        
+        if date_matches:
+            for match in date_matches:
+                parsed_date = parse_date_string(
+                    match,
+                    normalize_date=normalize_date,
+                    dateparser_settings=dateparser_settings,
+                    english=normalize_in_english,
+                )
+                
+                text = text.replace(match, parsed_date)
+            
+            result = text.split()
+        
+        return result
+
     def normalize(
         self,
         string: str,
@@ -1317,6 +1342,8 @@ class Normalizer:
             selected = result_string + selected + end_result_string
             result[index] = selected
 
+        result = self._process_multiword_dates(result, normalize_date, dateparser_settings, normalize_in_english)
+        
         result = ' '.join(result)
         normalized = ' '.join(normalized)
 
