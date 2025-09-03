@@ -48,6 +48,7 @@ _fd2 = '(?:{})'.format(
 )
 
 _day_month_date = r'\b[0123]?[0-9]\s+(?:[Jj]an(?:uari)?|[Ff]eb(?:ruari)?|[Mm]a(?:c)?|[Aa]pr(?:il)?|[Mm]ei|[Jj]u(?:n)?|[Jj]ula(?:i)?|[Aa]ug(?:ust)?|[Oo]gos|[Ss]ept?(?:ember)?|[Oo]kt(?:ober)?|[Nn]ov(?:ember)?|[Dd]is(?:ember)?)\b'
+_month_day_date = r'\b(?:[Jj]an(?:uari)?|[Ff]eb(?:ruari)?|[Mm]a(?:c)?|[Aa]pr(?:il)?|[Mm]ei|[Jj]u(?:n)?|[Jj]ula(?:i)?|[Aa]ug(?:ust)?|[Oo]gos|[Ss]ept?(?:ember)?|[Oo]kt(?:ober)?|[Nn]ov(?:ember)?|[Dd]is(?:ember)?)\s+[0123]?[0-9]\b'
 _day_month_year = (
     r'\b[0123]?[0-9]\s+'
     r'(?:[Jj]an(?:uari)?|[Ff]eb(?:ruari)?|[Mm]a(?:c)?|[Aa]pr(?:il)?|[Mm]ei|'
@@ -55,7 +56,7 @@ _day_month_year = (
     r'[Oo]kt(?:ober)?|[Nn]ov(?:ember)?|[Dd]is(?:ember)?)\s+'
     r'(?:\d{2,4})\b'
 )
-_date = '(?:' + '(?:' + _fd1 + '|' + _fd2 + ')' + '|' + _short_date + '|' + _day_month_year + '|' + _day_month_date + ')'
+_date = '(?:' + '(?:' + _fd1 + '|' + _fd2 + ')' + '|' + _short_date + '|' + _day_month_year + '|' + _day_month_date + '|' + _month_day_date + ')'
 _time = r'(?:(?:\d+)?\.?\d+\s*(?:AM|PM|am|pm|a\.m\.|p\.m\.|pagi|pgi|morning|tengahari|tngahari|petang|ptg|malam|jam|hours|hour|hrs))|(?:(?:[0-2]?[0-9]|[2][0-3]):(?:[0-5][0-9])(?::(?:[0-5][0-9]))?(?: ?(?:AM|PM|am|pm|a\.m\.|p\.m\.|pagi|pgi|morning|tengahari|tngahari|petang|ptg|malam|hours|hrs|jam))?)'
 _today_time = (
     r'(?:(?:pkul|pukul|kul)\s*'

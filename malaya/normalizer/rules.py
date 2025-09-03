@@ -228,6 +228,55 @@ class Normalizer:
             k.lower(): re.compile(v) for k, v in _expressions.items()
         }
 
+    def _split_title_case_word(self, word):
+        if len(word) <= 1:
+            return [word]
+        
+        title_case_count = sum(1 for c in word if c.isupper())
+        if title_case_count <= 1:
+            return [word]
+        
+        parts = []
+        current_part = ""
+        
+        for i, char in enumerate(word):
+            if char.isupper() and i > 0:
+                if current_part:
+                    parts.append(current_part)
+                current_part = char
+            else:
+                current_part += char
+
+        if current_part:
+            parts.append(current_part)
+        
+        return parts
+
+    def _process_multiword_dates(self, result, normalize_date, dateparser_settings, normalize_in_english):
+
+        if not normalize_date:
+            return result
+        
+        text = ' '.join(result)
+        
+
+        date_matches = re.findall(_expressions['date'], text)
+        
+        if date_matches:
+            for match in date_matches:
+                parsed_date = parse_date_string(
+                    match,
+                    normalize_date=normalize_date,
+                    dateparser_settings=dateparser_settings,
+                    english=normalize_in_english,
+                )
+                
+                text = text.replace(match, parsed_date)
+            
+            result = text.split()
+        
+        return result
+
     def normalize(
         self,
         string: str,
@@ -239,6 +288,7 @@ class Normalizer:
         normalize_telephone: bool = True,
         normalize_date: bool = True,
         normalize_time: bool = True,
+        time_to_words: bool = False,
         normalize_emoji: bool = True,
         normalize_elongated: bool = True,
         normalize_hingga: bool = True,
@@ -303,6 +353,10 @@ class Normalizer:
             if True, `pukul 22.30` -> `pukul sepuluh tiga puluh minit malam`.
             if True, `12:10 AM` -> `pukul dua belas sepuluh minit pagi`.
             if False, `pukul 2.30` -> `'02:00:00'`
+        time_to_words: bool, optional (default=False)
+            if True, converts time to words without adding prefixes or suffixes.
+            `2:15 p.m.` -> `two fifteen p m`
+            `12:30 AM` -> `twelve thirty a m`
         normalize_emoji: bool, (default=True)
             if True, `🔥` -> `emoji api`
             Load from `malaya.preprocessing.demoji`.
@@ -451,6 +505,15 @@ class Normalizer:
                 s = f'index: {index}, word: {word}, condition punct'
                 logger.debug(s)
                 result.append(word)
+                index += 1
+                continue
+
+            title_case_parts = self._split_title_case_word(word)
+            if len(title_case_parts) > 1:
+                s = f'index: {index}, word: {word}, splitting title case: {title_case_parts}'
+                logger.debug(s)
+                for part in title_case_parts:
+                    result.append(part)
                 index += 1
                 continue
 
@@ -1038,64 +1101,107 @@ class Normalizer:
             ):
                 s = f'index: {index}, word: {word}, condition time'
                 logger.debug(s)
-                word = word_lower
-                word = re.sub(r'[ ]+', ' ', word).strip()
-                if normalize_in_english:
-                    prefix  = 'at '
-                else:
-                    prefix = 'pukul '
-                try:
-                    s = f'index: {index}, word: {word}, parsing time'
+                
+                if time_to_words:
+                    s = f'index: {index}, word: {word}, condition time_to_words'
                     logger.debug(s)
-                    parsed = parse_time_string(word)
-                    if len(parsed):
-                        parsed = parsed[0]
-                        word = parsed.strftime('%H:%M:%S')
-                        hour, minute, second = word.split(':')
-                        if normalize_time:
-                            hour = parsed.strftime('%I')
-                            hour = hour.lstrip('0')
-                            if parsed.hour < 12:
-                                if normalize_in_english:
-                                    period = 'morning'
-                                else:
-                                    period = 'pagi'
-                            elif parsed.hour < 19:
-                                if normalize_in_english:
-                                    period = 'evening'
-                                else:
-                                    period = 'petang'
-                            else:
-                                if normalize_in_english:
-                                    period = 'night'
-                                else:
-                                    period = 'malam'
-                            hour = cardinal(hour, english=normalize_in_english)
+                    
+                    try:
+                        parsed = parse_time_string(word_lower)
+                        if len(parsed):
+                            parsed = parsed[0]
+                            hour = parsed.strftime('%I').lstrip('0')  # 12-hour format without leading zero
+                            minute = parsed.strftime('%M')
+                            
+                            hour_words = cardinal(hour, english=normalize_in_english)
                             if int(minute) > 0:
-                                minute = cardinal(minute, english=normalize_in_english)
-                                if normalize_in_english:
-                                    end = 'minute'
-                                else:
-                                    end = 'minit'
-                                minute = f'{minute} {end}'
+                                minute_words = cardinal(minute, english=normalize_in_english)
                             else:
-                                minute = ''
-                            if int(second) > 0:
-                                second = cardinal(second, english=normalize_in_english)
-                                second = f'{second} saat'
-                            else:
-                                second = ''
-                            word = f'{prefix}{hour} {minute} {second} {period}'
+                                minute_words = ''
+                            
+                            am_pm = ''
+                            original_lower = word.lower()
+                            if 'a.m.' in original_lower:
+                                am_pm = 'a m'
+                            elif 'p.m.' in original_lower:
+                                am_pm = 'p m'
+                            elif 'am' in original_lower:
+                                am_pm = 'a m'
+                            elif 'pm' in original_lower:
+                                am_pm = 'p m'
+                            
+                            parts = [hour_words]
+                            if minute_words:
+                                parts.append(minute_words)
+                            if am_pm:
+                                parts.append(am_pm)
+                            
+                            word = ' '.join(parts)
                         else:
-                            pukul = f'{prefix}{hour}'
-                            if int(minute) > 0:
-                                pukul = f'{pukul}.{minute}'
-                            if int(second) > 0:
-                                pukul = f'{pukul}:{second}'
-                            word = pukul
-                        word = re.sub(r'[ ]+', ' ', word).strip()
-                except Exception as e:
-                    logger.warning(str(e))
+                            pass
+                    except Exception as e:
+                        logger.warning(f'time_to_words parsing failed: {e}')
+                        pass
+                else:
+                    word = word_lower
+                    word = re.sub(r'[ ]+', ' ', word).strip()
+                    if normalize_in_english:
+                        prefix  = 'at '
+                    else:
+                        prefix = 'pukul '
+                    try:
+                        s = f'index: {index}, word: {word}, parsing time'
+                        logger.debug(s)
+                        parsed = parse_time_string(word)
+                        if len(parsed):
+                            parsed = parsed[0]
+                            word = parsed.strftime('%H:%M:%S')
+                            hour, minute, second = word.split(':')
+                            if normalize_time:
+                                hour = parsed.strftime('%I')
+                                hour = hour.lstrip('0')
+                                if parsed.hour < 12:
+                                    if normalize_in_english:
+                                        period = 'morning'
+                                    else:
+                                        period = 'pagi'
+                                elif parsed.hour < 19:
+                                    if normalize_in_english:
+                                        period = 'evening'
+                                    else:
+                                        period = 'petang'
+                                else:
+                                    if normalize_in_english:
+                                        period = 'night'
+                                    else:
+                                        period = 'malam'
+                                hour = cardinal(hour, english=normalize_in_english)
+                                if int(minute) > 0:
+                                    minute = cardinal(minute, english=normalize_in_english)
+                                    if normalize_in_english:
+                                        end = 'minute'
+                                    else:
+                                        end = 'minit'
+                                    minute = f'{minute} {end}'
+                                else:
+                                    minute = ''
+                                if int(second) > 0:
+                                    second = cardinal(second, english=normalize_in_english)
+                                    second = f'{second} saat'
+                                else:
+                                    second = ''
+                                word = f'{prefix}{hour} {minute} {second} {period}'
+                            else:
+                                pukul = f'{prefix}{hour}'
+                                if int(minute) > 0:
+                                    pukul = f'{pukul}.{minute}'
+                                if int(second) > 0:
+                                    pukul = f'{pukul}:{second}'
+                                word = pukul
+                            word = re.sub(r'[ ]+', ' ', word).strip()
+                    except Exception as e:
+                        logger.warning(str(e))
+                
                 result.append(word)
                 index += 1
                 continue
@@ -1269,6 +1375,8 @@ class Normalizer:
             selected = result_string + selected + end_result_string
             result[index] = selected
 
+        result = self._process_multiword_dates(result, normalize_date, dateparser_settings, normalize_in_english)
+        
         result = ' '.join(result)
         normalized = ' '.join(normalized)
 
